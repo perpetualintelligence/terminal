@@ -15,9 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{2D8A578B
 		build\tools\omap.json = build\tools\omap.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Tools.TestMapper", "src\PerpetualIntelligence.Tools.TestMapper\PerpetualIntelligence.Tools.TestMapper.csproj", "{8B4CB466-CF79-41FC-A99F-AF0C711702CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli", "src\PerpetualIntelligence.Cli\PerpetualIntelligence.Cli.csproj", "{F6DADEF3-E913-49CB-ADC4-EB177535BA68}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Tools.TestMapper.Test", "test\PerpetualIntelligence.Tools.TestMapper.Test\PerpetualIntelligence.Tools.TestMapper.Test.csproj", "{25669A29-EF38-4052-BF90-096A7FF6B706}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli.Test", "test\PerpetualIntelligence.Cli.Test\PerpetualIntelligence.Cli.Test.csproj", "{041FD485-C19C-4207-86F1-98802F048900}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,22 +25,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8B4CB466-CF79-41FC-A99F-AF0C711702CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B4CB466-CF79-41FC-A99F-AF0C711702CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B4CB466-CF79-41FC-A99F-AF0C711702CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B4CB466-CF79-41FC-A99F-AF0C711702CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25669A29-EF38-4052-BF90-096A7FF6B706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25669A29-EF38-4052-BF90-096A7FF6B706}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25669A29-EF38-4052-BF90-096A7FF6B706}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25669A29-EF38-4052-BF90-096A7FF6B706}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6DADEF3-E913-49CB-ADC4-EB177535BA68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6DADEF3-E913-49CB-ADC4-EB177535BA68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6DADEF3-E913-49CB-ADC4-EB177535BA68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6DADEF3-E913-49CB-ADC4-EB177535BA68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{041FD485-C19C-4207-86F1-98802F048900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{041FD485-C19C-4207-86F1-98802F048900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{041FD485-C19C-4207-86F1-98802F048900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{041FD485-C19C-4207-86F1-98802F048900}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2D8A578B-80A1-43D0-B102-A2F74ACAD461} = {1A8779C7-3B84-405C-86D7-F000E5EA9AD8}
-		{8B4CB466-CF79-41FC-A99F-AF0C711702CA} = {9BD50919-76C1-424C-BD98-F870E6DE8903}
-		{25669A29-EF38-4052-BF90-096A7FF6B706} = {E3A2F609-5E85-4740-8899-6A2B777BE31B}
+		{F6DADEF3-E913-49CB-ADC4-EB177535BA68} = {9BD50919-76C1-424C-BD98-F870E6DE8903}
+		{041FD485-C19C-4207-86F1-98802F048900} = {E3A2F609-5E85-4740-8899-6A2B777BE31B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FB18F489-0BCB-4389-AE92-18E7DBEA4818}
