@@ -46,12 +46,19 @@ try
     if (args != null && args.Length > 0)
     {
         Console.WriteLine();
-        Log.Information("Found {0} in command line arguments...", args[0]);
-        Console.WriteLine();
+        Log.Warning("Found {0} in command line arguments...", args[0]);
 
         Thread.Sleep(1000);
 
         await ProcessCommandLineArgumentsAsync(args);
+
+        Console.WriteLine();        
+        Log.Information("Starting command execution loop...");
+        Thread.Sleep(1000);
+    }
+    else
+    {
+        Console.WriteLine();
     }
 
     // Regular command execution loop
@@ -60,11 +67,12 @@ try
         try
         {
             // Get the command to execute from user.
-            Console.WriteLine();
             Command command = await ReadCommandAsync();
 
             // Check and process the command
             await ProcessCommandAsync(command);
+
+            Console.WriteLine();
         }
         catch (Exception ex)
         {
@@ -139,26 +147,22 @@ Task<string?> ReadAnswerAsync(string question, params string[]? answers)
 async Task ProcessCommandAsync(Command command)
 {
     Log.Information("Begin command {0}", command.Name);
-    if (command.Name == "tsrc")
+    if (command.Name == "map")
     {
-        await ExecuteTestSourceCommandAsync(command);
+        await ExecuteMapCommandAsync(command);
     }
     else if (command.Name == "exit")
     {
-        string? answer = await ReadAnswerAsync("Are you sure ?", new[] { "y", "n" });
-        if (answer == null || answer == "y")
-        {
-            await ExecuteExitCommandAsync(command);
-        }
+        await ExecuteExitCommandAsync(command);
     }
     else
     {
-        Log.Error("The command is not valid. command={0}", command);
+        Log.Error("The command {0} is not valid.", command.Name);
     }
     Log.Information("End command {0}", command.Name);
 }
 
-async Task ExecuteTestSourceCommandAsync(Command command)
+async Task ExecuteMapCommandAsync(Command command)
 {
     // Root Directory
     string testRoot = CheckArgument(command, "r");
@@ -229,14 +233,17 @@ async Task ExecuteTestSourceCommandAsync(Command command)
     await File.WriteAllBytesAsync(oMapFile, JsonSerializer.SerializeToUtf8Bytes(testData, new JsonSerializerOptions() { WriteIndented = true }));
 }
 
-Task ExecuteExitCommandAsync(Command command)
+async Task ExecuteExitCommandAsync(Command command)
 {
-    Console.WriteLine("");
-    Log.Warning("Shutting down {0} server...", "TestMapper");
-    Thread.Sleep(500);
-    Log.Information("OK to close window.");
-    Environment.Exit(-1);
-    return Task.CompletedTask;
+    string? answer = await ReadAnswerAsync("Are you sure ?", new[] { "y", "n" });
+    if (answer == null || answer == "y")
+    {
+        Console.WriteLine("");
+        Log.Warning("Shutting down {0} server...", "TestMapper");
+        Thread.Sleep(500);
+        Log.Information("OK to close window.");
+        Environment.Exit(-1);
+    }
 }
 
 Task<string?> CheckFileOrFolder(string root, string fileOrfolder)
