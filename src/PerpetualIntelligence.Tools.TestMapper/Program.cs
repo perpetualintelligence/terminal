@@ -40,8 +40,21 @@ try
     Log.Information("Starting {0} server...", "TestMapper");
     Log.Information("Version={0}", typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "<none>");
 
-    Thread.Sleep(300);
+    Thread.Sleep(500);
 
+    // Check if we have any command line args
+    if (args != null && args.Length > 0)
+    {
+        Console.WriteLine();
+        Log.Information("Found {0} in command line arguments...", args[0]);
+        Console.WriteLine();
+
+        Thread.Sleep(1000);
+
+        await ProcessCommandLineArgumentsAsync(args);
+    }
+
+    // Regular command execution loop
     while (true)
     {
         try
@@ -266,18 +279,23 @@ Task<Command> ParseCommand(string command)
     // Now process the args
     for (int idx = 1; idx < args.Length; ++idx)
     {
-        string arg = args[idx];
-
-        // Split by space
-        string[] argSplit = arg.Split(new char[] { '=' });
-        if (argSplit.Length != 2)
-        {
-            throw new ArgumentException("Command arguments must be in format -arg=value");
-        }
-        commandObj.Arguments.Add(argSplit[0].Trim(new char[] { '-', ' ' }), argSplit[1].Trim());
+        var kvp = ParseArgument(args[idx]);
+        commandObj.Arguments.Add(kvp.Key, kvp.Value);
     }
 
     return Task.FromResult(commandObj);
+}
+
+KeyValuePair<string, string> ParseArgument(string arg)
+{
+    // Split by space
+    string[] argSplit = arg.Split(new char[] { '=' });
+    if (argSplit.Length != 2)
+    {
+        throw new ArgumentException("Command arguments must be in format -arg=value");
+    }
+
+    return new KeyValuePair<string, string>(argSplit[0].Trim(new char[] { '-', ' ' }), argSplit[1].Trim());
 }
 
 void WriteLineRed(string message)
@@ -456,4 +474,18 @@ bool IsXUnitTestFile(string arg)
     }
 
     return false;
+}
+
+async Task ProcessCommandLineArgumentsAsync(string[] args)
+{
+    // arg[0] => command arg[idx] => command arg (-arg={value})
+    Command argCommand = await ParseCommand(args[0]);
+    for (int idx = 1; idx < args.Length; ++idx)
+    {
+        var kvp = ParseArgument(args[idx]);
+        argCommand.Arguments.Add(kvp.Key, kvp.Value);
+    }
+
+    // Check and process the command
+    await ProcessCommandAsync(argCommand);
 }
