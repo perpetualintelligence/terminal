@@ -92,7 +92,7 @@ finally
 Task<Command> ReadCommandAsync()
 {
     // Read a command
-    Console.Write("Enter your command: ");
+    Console.Write("cmd > ");
     string? command = Console.ReadLine();
     if (!string.IsNullOrWhiteSpace(command))
     {
