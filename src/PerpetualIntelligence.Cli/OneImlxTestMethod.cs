@@ -6,7 +6,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace PerpetualIntelligence.Tools.TestMapper
+namespace PerpetualIntelligence.Cli
 {
     public sealed class OneImlxTestMethod
     {

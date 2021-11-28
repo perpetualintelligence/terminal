@@ -4,7 +4,7 @@
     https://api.perpetualintelligence.com
 */
 
-namespace PerpetualIntelligence.Tools.TestMapper
+namespace PerpetualIntelligence.Cli
 {
     /// <summary>
     /// Represents a command.

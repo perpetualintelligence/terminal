@@ -7,4 +7,4 @@
 using System.Runtime.CompilerServices;
 
 // Unit tests
-[assembly: InternalsVisibleTo("PerpetualIntelligence.Tools.TestMapper.Test")]
+[assembly: InternalsVisibleTo("PerpetualIntelligence.Cli.Test")]

@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace PerpetualIntelligence.Tools.TestMapper.Test
+namespace PerpetualIntelligence.Cli.Test
 {
     [TestClass]
     public class ProgramTests
