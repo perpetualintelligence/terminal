@@ -1,0 +1,31 @@
+
+<!--
+    Copyright (c) 2021. All Rights Reserved. Perpetual Intelligence L.L.C.
+    https://perpetualintelligence.com
+    https://api.perpetualintelligence.com
+-->
+
+<!--
+Provide a set of shared build properties with Apache license.
+https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=msvc-160
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+        <RootNamespace>$(MSBuildProjectName.Replace(".Test", ""))</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
+        <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+        <PackageReference Include="coverlet.collector" Version="3.1.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+</Project>
+

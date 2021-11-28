@@ -1,0 +1,22 @@
+<!--
+    Copyright (c) 2021. All Rights Reserved. Perpetual Intelligence L.L.C.
+    https://perpetualintelligence.com
+    https://api.perpetualintelligence.com
+-->
+
+<!--
+Provide a set of shared build properties with Apache license.
+https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=msvc-160
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Import Project="Package.props" />
+
+    <!-- 
+        Shared package properties.
+    -->
+    <PropertyGroup Label="PiApachePackageProps">
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    </PropertyGroup>
+
+</Project>

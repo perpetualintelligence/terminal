@@ -1,0 +1,63 @@
+<!--
+    Copyright (c) 2021. All Rights Reserved. Perpetual Intelligence L.L.C.
+    https://perpetualintelligence.com
+    https://api.perpetualintelligence.com
+-->
+
+<!--
+Provide a set of shared build properties for all DevOps packages.
+https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=msvc-160
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- 
+        Shared package properties.
+    -->
+    <PropertyGroup Label="PiPackageProps">
+        <Copyright>Copyright (c) 2021. All Rights Reserved. Perpetual Intelligence L.L.C.</Copyright>
+        <Authors>Perpetual Intelligence</Authors>
+        <Company>Perpetual Intelligence L.L.C.</Company>
+
+        <PackageProjectUrl>https://perpetualintelligence.azurewebsites.net/</PackageProjectUrl>
+
+        <RepositoryUrl>https://github.com/perpetualintelligence</RepositoryUrl>        
+
+        <!--
+            We are using Visual Studio Team Services/TFS and CI build process and that has versioning built-in. So we utilize msbuild's Condition attribute.
+            This will tell the .NET Core compiler to use whatever is in the BUILD_BUILDNUMBER environment variable if it's present, or fall-back to 1.0.2
+            if you're doing a build on your local machine.
+        -->
+        <Version Condition="'$(BUILD_BUILDNUMBER)' == ''">1.0.2-local</Version>
+        <Version Condition="'$(BUILD_BUILDNUMBER)' != ''">$(BUILD_BUILDNUMBER)</Version>
+
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <RepositoryType>tfs</RepositoryType>        
+    </PropertyGroup>
+
+    <!--
+        Package icon
+    -->
+    <PropertyGroup>
+        <PackageIcon>icon.png</PackageIcon>
+    </PropertyGroup>
+
+    <!--
+        Package Icon - Linked to the actual build/images location
+        https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-an-icon-image-file
+        The Include location is relative to the src/<package>.csproj that will import the props file.
+    -->
+    <ItemGroup>
+        <None Include="..\..\build\images\icon.png" Link="icon.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
+    <PropertyGroup Label="PiProjectConfig">        
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <WarningsAsErrors />
+    </PropertyGroup>
+</Project>
+
+
+
+
