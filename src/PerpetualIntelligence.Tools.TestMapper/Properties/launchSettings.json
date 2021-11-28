@@ -2,7 +2,7 @@
   "profiles": {
     "PerpetualIntelligence.Tools.TestMapper": {
       "commandName": "Project",
-      "commandLineArgs": "tsrc -r=D:\\this\\research\\IdSvr\\IdentityServer-main -p=IdentityServer.UnitTests,IdentityServer.IntegrationTests,EntityFramework.Tests,EntityFramework.Storage.UnitTests,EntityFramework.Storage.IntegrationTests -c=Debug -f=net6.0 -i=D:\\this\\git\\pi\\tools\\build\\tools\\imap.json -o=D:\\this\\git\\pi\\tools\\build\\tools\\omap.json"
+      "commandLineArgs": "map -r=D:\\this\\research\\IdSvr\\IdentityServer-main -p=IdentityServer.UnitTests,IdentityServer.IntegrationTests,EntityFramework.Tests,EntityFramework.Storage.UnitTests,EntityFramework.Storage.IntegrationTests -c=Debug -f=net6.0 -i=D:\\this\\git\\pi\\tools\\build\\tools\\imap.json -o=D:\\this\\git\\pi\\tools\\build\\tools\\omap.json"
     }
   }
 }

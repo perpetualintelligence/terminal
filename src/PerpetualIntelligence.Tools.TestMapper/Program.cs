@@ -52,8 +52,8 @@ try
 
         await ProcessCommandLineArgumentsAsync(args);
 
-        Console.WriteLine();        
-        Log.Information("Starting command execution loop...");
+        Console.WriteLine();
+        Log.Warning("Starting command execution loop...");
         Thread.Sleep(1000);
     }
     else
@@ -71,13 +71,13 @@ try
 
             // Check and process the command
             await ProcessCommandAsync(command);
-
-            Console.WriteLine();
         }
         catch (Exception ex)
         {
             Log.Error(ex.Message);
         }
+
+        Console.WriteLine();
     };
 }
 catch (Exception ex)
@@ -238,10 +238,9 @@ async Task ExecuteExitCommandAsync(Command command)
     string? answer = await ReadAnswerAsync("Are you sure ?", new[] { "y", "n" });
     if (answer == null || answer == "y")
     {
-        Console.WriteLine("");
-        Log.Warning("Shutting down {0} server...", "TestMapper");
-        Thread.Sleep(500);
-        Log.Information("OK to close window.");
+        WriteLineRed("Shutting down server. Please wait...");
+        Thread.Sleep(1000);
+        Console.WriteLine($"Shut down is complete on {DateTimeOffset.UtcNow}.");
         Environment.Exit(-1);
     }
 }
