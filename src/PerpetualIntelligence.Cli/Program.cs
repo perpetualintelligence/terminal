@@ -16,7 +16,7 @@ using System.Text.Json;
 using Xunit;
 
 Activity.DefaultIdFormat = ActivityIdFormat.W3C;
-Console.Title = OrgConstants.FullName;
+Console.Title = "pi.cli();";
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -37,7 +37,7 @@ try
     Console.WriteLine("https://oneimlx.com");
     Console.WriteLine("---------------------------------------------------------------------------------------------");
 
-    Log.Information("Starting {0} server...", "cli");
+    Log.Information("Starting {0} server...", "pi.cli();");
     Log.Information("Version={0}", typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "<none>");
 
     Thread.Sleep(500);
