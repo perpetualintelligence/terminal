@@ -8,7 +8,6 @@ namespace PerpetualIntelligence.Cli.Test
         [TestMethod]
         public void SampleTest()
         {
-            Program program = new Program();
         }
     }
 }

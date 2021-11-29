@@ -4,6 +4,7 @@
     https://api.perpetualintelligence.com
 */
 
+using System;
 using System.Text.Json.Serialization;
 
 namespace PerpetualIntelligence.Cli

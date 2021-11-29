@@ -1,0 +1,17 @@
+﻿/*
+    Copyright (c) 2019-2022. All Rights Reserved. Perpetual Intelligence L.L.C.
+    https://perpetualintelligence.com
+    https://api.perpetualintelligence.com
+*/
+
+using PerpetualIntelligence.Protocols.Abstractions;
+
+namespace PerpetualIntelligence.Cli.Commands
+{
+    /// <summary>
+    /// An abstraction of command request router.
+    /// </summary>
+    public interface ICommandRequestRouter : IRouter<CommandRequestContext, CommandRequestResult, CommandRequestHandler>
+    {
+    }
+}

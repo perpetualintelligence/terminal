@@ -1,8 +1,7 @@
 {
   "profiles": {
     "PerpetualIntelligence.Cli": {
-      "commandName": "Project",
-      "commandLineArgs": "map -r=D:\\this\\research\\IdSvr\\IdentityServer-main -p=IdentityServer.UnitTests,IdentityServer.IntegrationTests,EntityFramework.Tests,EntityFramework.Storage.UnitTests,EntityFramework.Storage.IntegrationTests -c=Debug -f=net6.0 -i=D:\\this\\git\\pi\\tools\\build\\tools\\imap.json -o=D:\\this\\git\\pi\\tools\\build\\tools\\omap.json"
+      "commandName": "Project"
     }
   }
 }
