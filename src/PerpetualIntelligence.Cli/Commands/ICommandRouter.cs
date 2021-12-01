@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// An abstraction of command request router.
     /// </summary>
-    public interface ICommandRequestRouter : IRouter<CommandRequestContext, CommandRequestResult, CommandRequestHandler>
+    public interface ICommandRouter : IRouter<CommandContext, CommandResult, CommandHandler>
     {
     }
 }

@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The default command request result with no response.
+    /// The default command result with no response.
     /// </summary>
-    public class CommandRequestResult : OneImlxResult, IPublisher<CommandRequestContext>
+    public class CommandResult : OneImlxResult, IPorcessor<CommandContext>
     {
         /// <summary>
         /// The checked command.
@@ -25,6 +25,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Determines whether the result publishes a response for the requesting party (RP).
         /// </summary>
+        // This should check Runs the result. 
         public virtual bool PublishesResponse
         {
             get
@@ -39,7 +40,7 @@ namespace PerpetualIntelligence.Cli.Commands
         public ICommandRunner? Runner { get; set; }
 
         /// <inheritdoc/>
-        public async Task ProcessResultAsync(CommandRequestContext context)
+        public async Task ProcessAsync(CommandContext context)
         {
             // DO we need to check the Command and command string here ?
             if (Command == null || !Command.Checked)

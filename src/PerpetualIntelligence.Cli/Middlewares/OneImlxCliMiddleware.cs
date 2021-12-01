@@ -36,17 +36,17 @@ namespace PerpetualIntelligence.Cli.Middlewares
         /// <returns></returns>
         public async Task Invoke(
             HttpContext context,
-            ICommandRequestRouter router)
+            ICommandRouter router)
         {
             try
             {
                 // Setup the request context for route
-                CommandRequestContext ccontext = new("tbd", context.RequestServices);
+                CommandContext ccontext = new("tbd", context.RequestServices);
 
                 // Route the request and process the result. If the request is not routed then fall through to the next
                 // in pipeline.
-                bool routed = await router.RouteRequestAsync(ccontext);
-                if (routed)
+                CommandResult routed = await router.RouteAsync(ccontext);
+                if (!routed.IsError)
                 {
                     return;
                 }

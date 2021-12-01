@@ -511,10 +511,10 @@ namespace PerpetualIntelligence.OneImlx.Server
                 }
 
                 // Route the request.
-                CommandRequestContext context = new(commandString, host.Services);
-                ICommandRequestRouter router = host.Services.GetRequiredService<ICommandRequestRouter>();
-                bool routed = await router.RouteRequestAsync(context);
-                if (!routed)
+                CommandContext context = new(commandString, host.Services);
+                ICommandRouter router = host.Services.GetRequiredService<ICommandRouter>();
+                CommandResult routed = await router.RouteAsync(context);
+                if (!routed.IsError)
                 {
                     Log.Error("The request routing failed. path={0}", commandString);
                 }

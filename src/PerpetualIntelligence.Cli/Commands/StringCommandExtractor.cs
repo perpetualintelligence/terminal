@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Shared.Infrastructure.OneImlxTryResult<CommandIdentity> commandResult = await commandLookup.TryFindByNameAsync(commandName);
             if (commandResult.IsError)
             {
-                result.SetError(commandResult.TryError);
+                result.SyncError(commandResult);
                 return result;
             }
 

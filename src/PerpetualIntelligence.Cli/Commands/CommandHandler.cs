@@ -14,12 +14,12 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// The default command request handler.
     /// </summary>
-    public class CommandRequestHandler : ICommandRequestHandler
+    public class CommandHandler : ICommandRequestHandler
     {
         /// <summary>
         /// Initialize a news instance.
         /// </summary>
-        public CommandRequestHandler(ICommandExtractor commandExtractor, ICommandChecker commandChecker, CliOptions options, ILogger<CommandRequestHandler> logger)
+        public CommandHandler(ICommandExtractor commandExtractor, ICommandChecker commandChecker, CliOptions options, ILogger<CommandHandler> logger)
         {
             this.commandExtractor = commandExtractor ?? throw new ArgumentNullException(nameof(commandExtractor));
             this.commandChecker = commandChecker ?? throw new ArgumentNullException(nameof(commandChecker));
@@ -28,9 +28,9 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <inheritdoc/>
-        public async Task<CommandRequestResult> HandleRequestAsync(CommandRequestContext context)
+        public async Task<CommandResult> HandleRequestAsync(CommandContext context)
         {
-            CommandRequestResult result = new();
+            CommandResult result = new();
 
             // Extract the command
             CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(context.CommandString));
@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Commands
 
         private readonly ICommandChecker commandChecker;
         private readonly ICommandExtractor commandExtractor;
-        private readonly ILogger<CommandRequestHandler> logger;
+        private readonly ILogger<CommandHandler> logger;
         private readonly CliOptions options;
     }
 }

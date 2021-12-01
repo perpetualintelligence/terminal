@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// An abstraction to run a <see cref="Command"/>.
     /// </summary>
-    public interface ICommandRequestHandler : IHandler<CommandRequestContext, CommandRequestResult>
+    public interface ICommandRequestHandler : IHandler<CommandContext, CommandResult>
     {
     }
 }

@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Commands
                 OneImlxTryResult<KeyValuePair<string, object?>> tryKvp = TryCheckArgument(context.CommandIdentity, arg);
                 if (tryKvp.IsError)
                 {
-                    result.SetError(tryKvp.TryError);
+                    result.SyncError(tryKvp);
                     return Task.FromResult(result);
                 }
 
@@ -74,7 +74,7 @@ namespace PerpetualIntelligence.Cli.Commands
             if (argSplit.Length != 2)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument format is not valid. command={0} arg={1}", commandIdentity.Name, arg);
-                tryResult.TryError = new OneImlxError(Errors.InvalidRequest, errorDesc);
+                tryResult.SetError(new OneImlxError(Errors.InvalidRequest, errorDesc));
             }
 
             // Trim all the spaces

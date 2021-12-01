@@ -30,8 +30,8 @@ namespace PerpetualIntelligence.Cli
             services.AddSingleton(OptionsSetupAction);
 
             // The command request router to find the handler and route request.
-            services.AddScoped<ICommandRequestRouter, CommandRequestRouter>();
-            services.AddScoped<ICommandRequestHandler, CommandRequestHandler>();
+            services.AddScoped<ICommandRouter, CommandRouter>();
+            services.AddScoped<ICommandRequestHandler, CommandHandler>();
             services.AddScoped<ICommandExtractor, StringCommandExtractor>();
             services.AddScoped<IArgumentsExtractor, StringArgumentsExtractor>();
             services.AddScoped<ICommandChecker, CommandChecker>();

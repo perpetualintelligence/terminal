@@ -45,13 +45,13 @@ namespace PerpetualIntelligence.Cli.Extensions
                 }
 
                 // Route the request.
-                CommandRequestContext context = new(commandString, host.Services);
-                ICommandRequestRouter router = host.Services.GetRequiredService<ICommandRequestRouter>();
-                bool routed = await router.RouteRequestAsync(context);
-                if (!routed)
+                CommandContext context = new(commandString, host.Services);
+                ICommandRouter router = host.Services.GetRequiredService<ICommandRouter>();
+                CommandResult routed = await router.RouteAsync(context);
+                if (routed.IsError)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<CommandRequestContext> logger = host.Services.GetRequiredService<ILogger<CommandRequestContext>>();
+                    ILogger<CommandContext> logger = host.Services.GetRequiredService<ILogger<CommandContext>>();
                     logger.FormatAndLog(LogLevel.Error, options.Logging, "The request routing failed. path={0}", commandString);
                 }
             };

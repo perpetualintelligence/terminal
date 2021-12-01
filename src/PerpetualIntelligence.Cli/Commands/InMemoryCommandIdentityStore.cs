@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Commands
             var command = Commands.FirstOrDefault(e => id.Equals(e.Id));
             if (command == null)
             {
-                result.TryError = new OneImlxError(Errors.InvalidRequest, "The command is not valid.");
+                result.SetError(Errors.InvalidRequest, "The command is not valid.");
             }
             else
             {
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Commands
             var command = Commands.FirstOrDefault(e => name.Equals(e.Name));
             if (command == null)
             {
-                result.TryError = new OneImlxError(Errors.InvalidRequest, "The command name is not valid.");
+                result.SetError(Errors.InvalidRequest, "The command name is not valid.");
             }
             else
             {
@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Cli.Commands
                 }
             }
 
-            result.TryError = new OneImlxError(Errors.InvalidRequest, "The path did not match with any command.");
+            result.SetError(Errors.InvalidRequest, "The path did not match with any command.");
             return Task.FromResult(result);
         }
 

@@ -12,14 +12,14 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// The default command request context.
     /// </summary>
-    public class CommandRequestContext
+    public class CommandContext
     {
         /// <summary>
         /// The command string.
         /// </summary>
         /// <param name="commandString">The command string.</param>
         /// <param name="requestServices">The request services.</param>
-        public CommandRequestContext(string commandString, IServiceProvider requestServices)
+        public CommandContext(string commandString, IServiceProvider requestServices)
         {
             CommandString = commandString;
             RequestServices = requestServices;
