@@ -14,6 +14,10 @@
     <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Middlewares\" />
+  </ItemGroup>
+
 	<!--
         CAUTION: DO NOT EDIT UNLESS YOU ARE KNOWLEDGEABLE ABOUT THE PERPETUAL INTELLIGENCE'S AZURE AND GITHUB DEVOPS INTEGRATION.
 

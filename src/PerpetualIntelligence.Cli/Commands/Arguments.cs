@@ -11,7 +11,20 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// The command arguments.
     /// </summary>
-    public class Arguments : Dictionary<string, object?>
+    public sealed class Arguments : HashSet<Argument>
     {
+        /// <summary>
+        /// Returns a dictionary of argument name and value.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, object> ToDictionary()
+        {
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            foreach (var key in this)
+            {
+                args.Add(key.Name, key.Value);
+            }
+            return args;
+        }
     }
 }

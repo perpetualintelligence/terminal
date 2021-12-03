@@ -14,6 +14,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class CliOptions
     {
         /// <summary>
+        /// The extractor configuration options.
+        /// </summary>
+        public ExtractorOptions Extractor { get; set; } = new ExtractorOptions();
+
+        /// <summary>
         /// The logging configuration options.
         /// </summary>
         public OneImlxLoggingOptions Logging { get; set; } = new OneImlxLoggingOptions();

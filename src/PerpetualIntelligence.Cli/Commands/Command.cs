@@ -4,7 +4,6 @@
     https://api.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Attributes;
 using System.Text.Json.Serialization;
 
 namespace PerpetualIntelligence.Cli.Commands
@@ -25,14 +24,6 @@ namespace PerpetualIntelligence.Cli.Commands
         [JsonPropertyName("arguments")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Arguments? Arguments { get; set; }
-
-        /// <summary>
-        /// Determines if the command is checked.
-        /// </summary>
-        /// <seealso cref="ICommandChecker"/>
-        [JsonIgnore]
-        [ToUnitTest("JsonIgnore and Internal and design.")]
-        public bool Checked { get; internal set; }
 
         /// <summary>
         /// The command description.

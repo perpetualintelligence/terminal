@@ -4,7 +4,7 @@
     https://api.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Attributes;
+using PerpetualIntelligence.Cli.Extensions;
 using System;
 
 namespace PerpetualIntelligence.Cli.Commands
@@ -19,9 +19,9 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <param name="id">The command id.</param>
         /// <param name="name">The command name.</param>
-        /// <param name="requestHandler">The command request handler.</param>
-        [ToUnitTest("null checks")]
-        public CommandIdentity(string id, string name, Type requestHandler)
+        /// <param name="prefix">The command prefix to map the command string.</param>
+        /// <param name="arguments">The command arguments.</param>
+        public CommandIdentity(string id, string name, string prefix, ArgumentIdentity[]? arguments)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -33,9 +33,15 @@ namespace PerpetualIntelligence.Cli.Commands
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
             }
 
+            if (string.IsNullOrEmpty(prefix))
+            {
+                throw new ArgumentException($"'{nameof(prefix)}' cannot be null or empty.", nameof(prefix));
+            }
+
             Id = id;
             Name = name;
-            RequestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
+            Arguments = arguments;
+            Prefix = prefix;
         }
 
         /// <summary>
@@ -44,8 +50,9 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="groupId">The command group id.</param>
         /// <param name="id">The command id.</param>
         /// <param name="name">The command named.</param>
-        /// <param name="requestHandler">The command request handler.</param>
-        public CommandIdentity(string groupId, string id, string name, Type requestHandler) : this(id, name, requestHandler)
+        /// <param name="prefix"></param>
+        /// <param name="arguments">The command arguments.</param>
+        public CommandIdentity(string groupId, string id, string name, string prefix, ArgumentIdentity[]? arguments) : this(id, name, prefix, arguments)
         {
             if (string.IsNullOrWhiteSpace(groupId))
             {
@@ -53,8 +60,22 @@ namespace PerpetualIntelligence.Cli.Commands
             }
 
             GroupId = groupId;
-            RequestHandler = requestHandler;
         }
+
+        /// <summary>
+        /// The command arguments identity.
+        /// </summary>
+        public ArgumentIdentity[]? Arguments { get; set; }
+
+        /// <summary>
+        /// The command checker.
+        /// </summary>
+        /// <remarks>This is set during startup configuration via <see cref="ICliBuilderExtensions.AddCommandIdentity{TRunner, TChecker}(OneImlx.Configuration.ICliBuilder, CommandIdentity)"/>.</remarks>
+        public Type? Checker { get; set; }
+
+        // <summary>
+        /// The command description. </summary>
+        public string? Description { get; set; }
 
         /// <summary>
         /// The command group id.
@@ -74,8 +95,14 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Name { get; set; }
 
         /// <summary>
-        /// The command request handler.
+        /// The prefix to match the command string.
         /// </summary>
-        public Type RequestHandler { get; set; }
+        public string Prefix { get; set; }
+
+        /// <summary>
+        /// The command runner.
+        /// </summary>
+        /// <remarks>This is set during startup configuration via <see cref="ICliBuilderExtensions.AddCommandIdentity{TRunner, TChecker}(OneImlx.Configuration.ICliBuilder, CommandIdentity)"/>.</remarks>
+        public Type? Runner { get; set; }
     }
 }

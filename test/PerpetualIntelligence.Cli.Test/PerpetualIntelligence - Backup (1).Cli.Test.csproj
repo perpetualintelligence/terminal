@@ -12,7 +12,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PerpetualIntelligence.Cli\PerpetualIntelligence.Cli.csproj" />
-	  <ProjectReference Include="..\..\..\protocols\src\PerpetualIntelligence.Test\PerpetualIntelligence.Test.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mocks\" />
   </ItemGroup>
 
 </Project>
