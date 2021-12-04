@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The default <c>oneimlx</c> argument syntax checker.
+    /// The default <c>oneimlx</c> argument data type extractor.
     /// </summary>
     /// <remarks>
     /// The default syntax format is either <c>-{arg}={value}</c> for a key-value pair or <c>-{arg}</c> for a boolean argument.

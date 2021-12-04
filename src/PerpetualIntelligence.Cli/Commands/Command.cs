@@ -19,6 +19,35 @@ namespace PerpetualIntelligence.Cli.Commands
     public sealed class Command
     {
         /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        public Command()
+        {
+        }
+
+        /// <summary>
+        /// Initialize a new instance from the specified command identity.
+        /// </summary>
+        public Command(CommandIdentity commandIdentity)
+        {
+            Id = commandIdentity.Id;
+            Name = commandIdentity.Name;
+            Description = commandIdentity.Description;
+
+            if (commandIdentity.ArgumentIdentities != null)
+            {
+                Arguments = new Arguments();
+                foreach (var argument in commandIdentity.ArgumentIdentities)
+                {
+                    // FOMAC: We dont have access to argument values here !
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                    Argument arg = new Argument(argument, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                }
+            }
+        }
+
+        /// <summary>
         /// The command arguments.
         /// </summary>
         [JsonPropertyName("arguments")]
@@ -31,13 +60,6 @@ namespace PerpetualIntelligence.Cli.Commands
         [JsonPropertyName("description")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Description { get; set; }
-
-        /// <summary>
-        /// The command group id.
-        /// </summary>
-        [JsonPropertyName("group_id")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? GroupId { get; set; }
 
         /// <summary>
         /// The command id unique.

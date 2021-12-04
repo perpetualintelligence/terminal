@@ -4,7 +4,6 @@
     https://api.perpetualintelligence.com
 */
 
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -23,9 +22,9 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             ExtractorOptions options = new ExtractorOptions();
 
-            Assert.AreEqual('-', options.KeyValuePrefix);
-            Assert.AreEqual('=', options.KeyValueSeparator);
-            Assert.AreEqual(' ', options.Separator);
+            Assert.AreEqual("-", options.ArgumentPrefix);
+            Assert.AreEqual("=", options.ArgumentValueSeparator);
+            Assert.AreEqual(" ", options.Separator);
         }
     }
 }

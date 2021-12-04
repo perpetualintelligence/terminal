@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// The command arguments.
     /// </summary>
-    public sealed class Arguments : HashSet<Argument>
+    public sealed class Arguments : List<Argument>
     {
         /// <summary>
         /// Returns a dictionary of argument name and value.

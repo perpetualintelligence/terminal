@@ -6,9 +6,11 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Protocols.Oidc;
+using PerpetualIntelligence.Protocols.Cli;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
+using System;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Extractors
@@ -17,8 +19,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// The default <c>oneimlx</c> separator based argument extractor.
     /// </summary>
     /// <remarks>The syntax for separator based argument is <c>-{arg}={value}</c> for e.g. -name=testname.</remarks>
-    /// <seealso cref="ExtractorOptions.KeyValuePrefix"/>
-    /// <seealso cref="ExtractorOptions.KeyValueSeparator"/>
+    /// <seealso cref="ExtractorOptions.ArgumentPrefix"/>
+    /// <seealso cref="ExtractorOptions.ArgumentValueSeparator"/>
     public class SeparatorArgumentExtractor : IArgumentExtractor
     {
         /// <summary>
@@ -35,46 +37,102 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <inheritdoc/>
         public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
         {
-            ArgumentExtractorResult result = new();
+            // Null command identity
+            if (context.CommandIdentity == null)
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command identity is missing in the request. extractor={0}", GetType().FullName);
+                return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidRequest, errorDesc));
+            }
 
             // Null or whitespace
             if (string.IsNullOrWhiteSpace(context.ArgumentString))
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string is missing in the request. command_name={0} command_id={1}", context.CommandIdentity.Name, context.CommandIdentity.Id);
-                result.SetError(new OneImlxError(Errors.InvalidRequest, errorDesc));
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string is missing in the request. command_name={0} command_id={1} extractor={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, GetType().FullName);
+                return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
             }
 
             // Check if an app requested a syntax prefix
-            if (options.Extractor.KeyValuePrefix != null)
+            string argumentString = context.ArgumentString;
+            if (options.Extractor.ArgumentPrefix != null)
             {
-                if (!context.ArgumentString.StartsWith(options.Extractor.KeyValuePrefix.Value))
+                if (!context.ArgumentString.StartsWith(options.Extractor.ArgumentPrefix, System.StringComparison.Ordinal))
                 {
-                    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string does not have a valid syntax prefix. command_name={0} command_id={1} arg={2} key_value_prefix={3}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString, options.Extractor.KeyValuePrefix.Value);
-                    result.SetError(new OneImlxError(Errors.InvalidRequest, errorDesc));
+                    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string does not have a valid prefix. command_name={0} command_id={1} arg={2} prefix={3}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString, options.Extractor.ArgumentPrefix);
+                    return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
+                }
+                else
+                {
+                    // Trim the argument prefix
+                    argumentString = context.ArgumentString.TrimStart(options.Extractor.ArgumentPrefix);
                 }
             }
 
             // Split by key-value separator
-            string[] argSplit = context.ArgumentString.Split(options.Extractor.KeyValueSeparator);
-            if (argSplit.Length == 1)
+            ArgumentExtractorResult result = new();
+            string[] argSplit = argumentString.Split(options.Extractor.ArgumentValueSeparator);
+            if (argSplit.Length > 2)
             {
-                // Boolean, arg present that means value is true.
-                result.Argument = new Argument("<tbd>", argSplit[0].TrimStart(options.Extractor.KeyValuePrefix ?? default, ' '), true, typeof(bool).Name);
+                // Invalid syntax
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument syntax is not valid. command_name={0} command_id={1} argument_string={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString);
+                return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
             }
 
-            // key-value
-            else if (argSplit.Length == 2)
+            // The split key cannot be null or empty
+            if (string.IsNullOrWhiteSpace(argSplit[0]))
             {
-                // Trim all the spaces
-                result.Argument = new Argument("{id}", argSplit[0].TrimStart(options.Extractor.KeyValuePrefix ?? default, ' '), argSplit[1]);
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument name is null or empty. command_name={0} command_id={1} arg={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString);
+                return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
+            }
+
+            // Now find the argument by key or name
+            var argFindResult = TryFindAttributeByName(context.CommandIdentity, argSplit[0]);
+            if (argFindResult.IsError)
+            {
+                return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(argFindResult));
+            }
+
+            // Key only (treat it as a boolean) value=true
+            if (argSplit.Length == 1)
+            {
+                result.Argument = new Argument(argFindResult.Result!, true);
             }
             else
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument syntax is not valid. command_name={0} command_id={1} arg={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString);
-                result.SetError(new OneImlxError(Errors.InvalidRequest, errorDesc));
+                // key-value TODO Trim all the prefix
+                result.Argument = new Argument(argFindResult.Result!, argSplit[1]);
             }
 
             return Task.FromResult(result);
+        }
+
+        private OneImlxTryResult<ArgumentIdentity> TryFindAttributeByName(CommandIdentity commandIdentity, string argName)
+        {
+            if (commandIdentity.ArgumentIdentities != null)
+            {
+                try
+                {
+                    ArgumentIdentity? arg = commandIdentity.ArgumentIdentities.FindByName(argName);
+                    if (arg == null)
+                    {
+                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support the request argument. command_name={0} command_id={1} argument_name={2}", commandIdentity.Name, commandIdentity.Id, argName);
+                        return OneImlxResult.NewError<OneImlxTryResult<ArgumentIdentity>>(Errors.UnsupportedArgument, errorDesc);
+                    }
+                    else
+                    {
+                        return new OneImlxTryResult<ArgumentIdentity>(arg);
+                    }
+                }
+                catch (NotUniqueException)
+                {
+                    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command contains duplicate arguments. command_name={0} command_id={1} argument_name={2}", commandIdentity.Name, commandIdentity.Id, argName);
+                    return OneImlxResult.NewError<OneImlxTryResult<ArgumentIdentity>>(Errors.UnsupportedArgument, errorDesc);
+                }
+            }
+            else
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support any argument. command_name={0} command_id={1}", commandIdentity.Name, commandIdentity.Id);
+                return OneImlxResult.NewError<OneImlxTryResult<ArgumentIdentity>>(Errors.UnsupportedArgument, errorDesc);
+            }
         }
 
         private readonly ILogger<SeparatorArgumentExtractor> logger;

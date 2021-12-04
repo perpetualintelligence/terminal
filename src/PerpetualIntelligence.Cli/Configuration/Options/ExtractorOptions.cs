@@ -12,18 +12,18 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class ExtractorOptions
     {
         /// <summary>
-        /// The argument key value prefix. Set it to <c>null</c> if you don't want to use argument prefix.
+        /// The argument prefix. Defaults to dash char <c>-</c>. You can set it to <c>null</c> for no prefix.
         /// </summary>
-        public char? KeyValuePrefix { get; set; } = '-';
+        public string? ArgumentPrefix { get; set; } = "-";
 
         /// <summary>
-        /// The argument key value separator. Defaults to equals char <c>=</c>.
+        /// The argument value separator. Defaults to equals char <c>=</c>.
         /// </summary>
-        public char KeyValueSeparator { get; set; } = '=';
+        public string ArgumentValueSeparator { get; set; } = "=";
 
         /// <summary>
         /// The command string separator. Defaults to space char <c></c>.
         /// </summary>
-        public char Separator { get; set; } = ' ';
+        public string Separator { get; set; } = " ";
     }
 }

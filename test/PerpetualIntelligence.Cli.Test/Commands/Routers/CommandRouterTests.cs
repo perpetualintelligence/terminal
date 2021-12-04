@@ -163,7 +163,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         private MockExtractor extractor = null!;
         private MockHandler handler = null!;
         private IHost host = null!;
-        private CliOptions options = MockCliOptions.New();
+        private CliOptions options = null!;
         private CommandRouter router = null!;
     }
 }

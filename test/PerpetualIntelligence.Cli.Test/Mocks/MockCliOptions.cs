@@ -20,9 +20,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                 },
                 Extractor = new ExtractorOptions()
                 {
-                    KeyValuePrefix = '-',
-                    KeyValueSeparator = '=',
-                    Separator = ' ',
+                    ArgumentPrefix = "-",
+                    ArgumentValueSeparator = "=",
+                    Separator = " ",
                 },
             };
         }

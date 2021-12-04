@@ -24,6 +24,21 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
+        /// <param name="argumentIdentity">The argument identity.</param>
+        /// <param name="value">The argument value.</param>
+        public Argument(ArgumentIdentity argumentIdentity, object value)
+        {
+            Id = argumentIdentity.Id;
+            Name = argumentIdentity.Name;
+            DataType = argumentIdentity.DataType;
+            CustomDataType = argumentIdentity.CustomDataType;
+            Description = argumentIdentity.Description;
+            Value = value;
+        }
+
+        /// <summary>
+        /// Initialize a new instance..
+        /// </summary>
         /// <param name="id">The argument id.</param>
         /// <param name="name">The argument name.</param>
         /// <param name="value">The argument value.</param>

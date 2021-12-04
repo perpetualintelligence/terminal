@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [Todo("Move this to OneImlx server")]
         internal static ICliBuilder AddOneImlxCommandIdentities(this ICliBuilder builder)
         {
-            CommandIdentity map = new("urn:oneimlx:cli:map", "map", "map", new[]
+            CommandIdentity map = new("urn:oneimlx:cli:map", "map", "map", new()
             {
                     new ArgumentIdentity("urn:oneimlx:cli:map:r", "r", System.ComponentModel.DataAnnotations.DataType.Text, true, "The root path for source projects."),
                     new ArgumentIdentity("urn:oneimlx:cli:map:p", "p", System.ComponentModel.DataAnnotations.DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),

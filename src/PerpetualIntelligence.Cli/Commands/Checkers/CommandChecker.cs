@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             }
 
             // If the command does not support any arguments then there is nothing much to check.
-            if (context.CommandIdentity.Arguments == null)
+            if (context.CommandIdentity.ArgumentIdentities == null)
             {
                 // User pass unexpected arguments
                 if (args.Count != 0)
@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             }
 
             // Make sure the command has the supported args based on command definition
-            IEnumerable<string> invalidArgs = args.Keys.Except(context.CommandIdentity.Arguments.Select(e => e.Name));
+            IEnumerable<string> invalidArgs = args.Keys.Except(context.CommandIdentity.ArgumentIdentities.Select(e => e.Name));
             if (invalidArgs.Any())
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The arguments are not valid. command_name={0} command_id={1} arguments={2}", context.Command.Name, context.Command.Id, invalidArgs.JoinSpace());
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             }
 
             // Check for required attributes
-            IEnumerable<string> requiredArgs = context.CommandIdentity.Arguments.Where(a => a.Required).Select(e => e.Name);
+            IEnumerable<string> requiredArgs = context.CommandIdentity.ArgumentIdentities.Where(a => a.Required).Select(e => e.Name);
             var missingArgs = requiredArgs.Except(args.Keys.AsEnumerable());
             if (missingArgs.Any())
             {

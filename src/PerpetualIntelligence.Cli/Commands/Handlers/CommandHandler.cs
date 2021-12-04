@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The <c>oneimlx</c> generic command handler.
+    /// The <c>cli</c> generic command handler.
     /// </summary>
     public class CommandHandler : ICommandHandler
     {
@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             CommandHandlerResult result = new();
 
             // Find the checker
-            OneImlxTryResult<CommandChecker> commandChecker = await TryFindCheckerAsync(context);
+            OneImlxTryResult<ICommandChecker> commandChecker = await TryFindCheckerAsync(context);
             if (commandChecker.IsError)
             {
                 result.SyncError(commandChecker);
@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
 
             // Find the runner
-            OneImlxTryResult<CommandRunner> commandRunner = await TryFindRunnerAsync(context);
+            OneImlxTryResult<ICommandRunner> commandRunner = await TryFindRunnerAsync(context);
             if (commandRunner.IsError)
             {
                 result.SyncError(commandRunner);
@@ -71,32 +71,60 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             return result;
         }
 
-        private Task<OneImlxTryResult<CommandChecker>> TryFindCheckerAsync(CommandHandlerContext context)
+        private Task<OneImlxTryResult<ICommandChecker>> TryFindCheckerAsync(CommandHandlerContext context)
         {
-            if (context.Services.GetService(context.CommandIdentity.Checker) is CommandChecker checker)
-            {
-                logger.LogDebug("The handler found a command checker. command_name={0} command_id={1} checker={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, checker.GetType().FullName);
-                return Task.FromResult<OneImlxTryResult<CommandChecker>>(new(checker));
-            }
-            else
+            // No checker configured.
+            if (context.CommandIdentity.Checker == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command checker is not configured. command_name={0} command_id={1}", context.CommandIdentity.Name, context.CommandIdentity.Id);
-                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<CommandChecker>>(Errors.ServerError, errorDesc));
+                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
             }
+
+            // Not added to service collection
+            object? checkerObj = context.Services.GetService(context.CommandIdentity.Checker);
+            if (checkerObj == null)
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Checker.FullName);
+                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
+            }
+
+            // Invalid checker configured
+            if (checkerObj is not ICommandChecker checker)
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Checker.FullName);
+                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
+            }
+
+            logger.FormatAndLog(LogLevel.Debug, options.Logging, "The handler found a command checker. command_name={0} command_id={1} checker={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, checker.GetType().FullName);
+            return Task.FromResult<OneImlxTryResult<ICommandChecker>>(new(checker));
         }
 
-        private Task<OneImlxTryResult<CommandRunner>> TryFindRunnerAsync(CommandHandlerContext context)
+        private Task<OneImlxTryResult<ICommandRunner>> TryFindRunnerAsync(CommandHandlerContext context)
         {
-            if (context.Services.GetService(context.CommandIdentity.Runner) is CommandRunner runner)
+            // No runner configured.
+            if (context.CommandIdentity.Runner == null)
             {
-                logger.LogDebug("The handler found a command runner. command_name={0} command_id={1} runner={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, runner.GetType().FullName);
-                return Task.FromResult<OneImlxTryResult<CommandRunner>>(new(runner));
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command runner is not configured. command_name={0} command_id={1}", context.CommandIdentity.Name, context.CommandIdentity.Id);
+                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
             }
-            else
+
+            // Not added to service collection
+            object? runnerObj = context.Services.GetService(context.CommandIdentity.Runner);
+            if (runnerObj == null)
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command checker is not configured. command_name={0} command_id={1}", context.CommandIdentity.Name, context.CommandIdentity.Id);
-                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<CommandRunner>>(Errors.ServerError, errorDesc));
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Runner.FullName);
+                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
             }
+
+            // Invalid runner configured
+            if (runnerObj is not ICommandRunner runner)
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command runner is not valid. command_name={0} command_id={1} runner={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Runner.FullName);
+                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
+            }
+
+            logger.FormatAndLog(LogLevel.Debug, options.Logging, "The handler found a command runner. command_name={0} command_id={1} runner={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, runner.GetType().FullName);
+            return Task.FromResult<OneImlxTryResult<ICommandRunner>>(new(runner));
         }
 
         private readonly ILogger<CommandHandler> logger;

@@ -46,6 +46,37 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="id">The argument id.</param>
+        /// <param name="name">The argument name.</param>
+        /// <param name="customDataType">The argument custom data type.</param>
+        /// <param name="required">The argument is optional or required.</param>
+        /// <param name="description">The argument description.</param>
+        /// <param name="supportedValues">The supported values.</param>
+        [ToUnitTest("null checks")]
+        public ArgumentIdentity(string id, string name, string customDataType, bool required = false, string? description = null, object[]? supportedValues = null)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
+            }
+
+            Id = id;
+            Name = name;
+            DataType =  DataType.Custom;
+            CustomDataType = customDataType;
+            Required = required;
+            Description = description;
+            SupportedValues = supportedValues;
+        }
+
+        /// <summary>
         /// The argument custom data type.
         /// </summary>
         /// <remarks>This custom data type is used only if the <see cref="DataType"/> property is set to <see cref="DataType.Custom"/>.</remarks>

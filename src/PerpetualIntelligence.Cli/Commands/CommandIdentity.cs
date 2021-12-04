@@ -20,8 +20,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="id">The command id.</param>
         /// <param name="name">The command name.</param>
         /// <param name="prefix">The command prefix to map the command string.</param>
-        /// <param name="arguments">The command arguments.</param>
-        public CommandIdentity(string id, string name, string prefix, ArgumentIdentity[]? arguments)
+        /// <param name="argumentIdentities">The command argument identities.</param>
+        /// <param name="description">The command description.</param>
+        /// <param name="checker">The command checker.</param>
+        /// <param name="runner">The command runner.</param>
+        public CommandIdentity(string id, string name, string prefix, ArgumentIdentities? argumentIdentities = null, string? description = null, Type? checker = null, Type? runner = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -40,32 +43,17 @@ namespace PerpetualIntelligence.Cli.Commands
 
             Id = id;
             Name = name;
-            Arguments = arguments;
             Prefix = prefix;
-        }
-
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        /// <param name="groupId">The command group id.</param>
-        /// <param name="id">The command id.</param>
-        /// <param name="name">The command named.</param>
-        /// <param name="prefix"></param>
-        /// <param name="arguments">The command arguments.</param>
-        public CommandIdentity(string groupId, string id, string name, string prefix, ArgumentIdentity[]? arguments) : this(id, name, prefix, arguments)
-        {
-            if (string.IsNullOrWhiteSpace(groupId))
-            {
-                throw new ArgumentException($"'{nameof(groupId)}' cannot be null or whitespace.", nameof(groupId));
-            }
-
-            GroupId = groupId;
+            Description = description;
+            ArgumentIdentities = argumentIdentities;
+            Checker = checker;
+            Runner = runner;
         }
 
         /// <summary>
         /// The command arguments identity.
         /// </summary>
-        public ArgumentIdentity[]? Arguments { get; set; }
+        public ArgumentIdentities? ArgumentIdentities { get; set; }
 
         /// <summary>
         /// The command checker.
@@ -76,11 +64,6 @@ namespace PerpetualIntelligence.Cli.Commands
         // <summary>
         /// The command description. </summary>
         public string? Description { get; set; }
-
-        /// <summary>
-        /// The command group id.
-        /// </summary>
-        public string? GroupId { get; set; }
 
         /// <summary>
         /// The command id.

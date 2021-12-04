@@ -6,7 +6,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Protocols.Oidc;
+using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The default <c>oneimlx</c> separator based command extractor.
+    /// The <c>cli</c> separator based command extractor.
     /// </summary>
     public class SeparatorCommandExtractor : ICommandExtractor
     {
@@ -37,26 +37,31 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <inheritdoc/>
         public async Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context)
         {
-            // Check if command string is empty
-            if (string.IsNullOrWhiteSpace(context.CommandString))
-            {
-                return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidRequest, logger.FormatAndLog(LogLevel.Error, options.Logging, "The command string is missing in the request."));
-            }
-
             // Find the command identify by prefix
-            OneImlxTryResult<CommandIdentity> commandResult = await commandLookup.TryFindByPrefixAsync(context.CommandString);
+            OneImlxTryResult<CommandIdentity> commandResult = await commandLookup.TryMatchByPrefixAsync(context.CommandString);
             if (commandResult.IsError)
             {
                 return OneImlxResult.NewError<CommandExtractorResult>(commandResult);
             }
 
-            // Extract the prefix string so we can process arguments. Argument may be optional for commands
+            // Make sure we have the result to proceed. Protect bad custom implementations.
+            if (commandResult.Result == null)
+            {
+                return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidCommand, logger.FormatAndLog(LogLevel.Error, options.Logging, "The command string did not return an error or match the command prefix. command_string={0}", context.CommandString));
+            }
+
+            // Extract the prefix string so we can process arguments. Arguments are optional for commands
             CommandExtractorResult result = new();
-            Arguments arguments = new();
+            Arguments? arguments = null;
+            string[] cmdSplits = context.CommandString.Split(options.Extractor.Separator);
+
             int prefixEndIndex = context.CommandString.IndexOf(commandResult.Result.Prefix, StringComparison.Ordinal);
             string argString = context.CommandString.Remove(prefixEndIndex, commandResult.Result.Prefix.Length);
             if (!string.IsNullOrWhiteSpace(argString))
             {
+                // Init the arguments collection
+                arguments = new();
+
                 // Split by separator
                 string[] args = argString.Split(options.Extractor.Separator, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string arg in args)
@@ -69,7 +74,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     }
                     else
                     {
-                        arguments.Add(argResult.Argument);
+                        // Protect for bad custom implementation
+                        if (argResult.Argument == null)
+                        {
+                            result.AppendError(OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string did not return an error or extract the argument. argument_string={0}", arg)));
+                        }
+                        else
+                        {
+                            arguments.Add(argResult.Argument);
+                        }
                     }
                 }
             }
@@ -85,7 +98,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 Id = commandResult.Result.Id,
                 Name = commandResult.Result.Name,
-                GroupId = commandResult.Result.GroupId,
                 Description = commandResult.Result.Description,
                 Arguments = arguments,
             };
