@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             ExtractorOptions options = new ExtractorOptions();
 
             Assert.AreEqual("-", options.ArgumentPrefix);
-            Assert.AreEqual("=", options.ArgumentValueSeparator);
+            Assert.AreEqual("=", options.ArgumentSeparator);
             Assert.AreEqual(" ", options.Separator);
         }
     }

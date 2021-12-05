@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// </summary>
     /// <remarks>The syntax for separator based argument is <c>-{arg}={value}</c> for e.g. -name=testname.</remarks>
     /// <seealso cref="ExtractorOptions.ArgumentPrefix"/>
-    /// <seealso cref="ExtractorOptions.ArgumentValueSeparator"/>
+    /// <seealso cref="ExtractorOptions.ArgumentSeparator"/>
     public class SeparatorArgumentExtractor : IArgumentExtractor
     {
         /// <summary>
@@ -69,7 +69,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             // Split by key-value separator
             ArgumentExtractorResult result = new();
-            string[] argSplit = argumentString.Split(options.Extractor.ArgumentValueSeparator);
+            string[] argSplit = argumentString.Split(options.Extractor.ArgumentSeparator);
             if (argSplit.Length > 2)
             {
                 // Invalid syntax

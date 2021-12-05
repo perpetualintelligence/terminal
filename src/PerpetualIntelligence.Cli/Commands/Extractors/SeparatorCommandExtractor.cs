@@ -37,6 +37,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <inheritdoc/>
         public async Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context)
         {
+            // Ensure that extractor options are compatible.
+            CommandExtractorResult compatibilityResult = EnsureOptionsCompatibility();
+            if (compatibilityResult.IsError)
+            {
+                return compatibilityResult;
+            }
+
             // Find the command identify by prefix
             OneImlxTryResult<CommandIdentity> commandResult = await commandLookup.TryMatchByPrefixAsync(context.CommandString);
             if (commandResult.IsError)
@@ -50,23 +57,24 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidCommand, logger.FormatAndLog(LogLevel.Error, options.Logging, "The command string did not return an error or match the command prefix. command_string={0}", context.CommandString));
             }
 
-            // Extract the prefix string so we can process arguments. Arguments are optional for commands
             CommandExtractorResult result = new();
             Arguments? arguments = null;
-            string[] cmdSplits = context.CommandString.Split(options.Extractor.Separator);
 
+            // Extract the prefix string so we can process arguments. Arguments are optional for commands
             int prefixEndIndex = context.CommandString.IndexOf(commandResult.Result.Prefix, StringComparison.Ordinal);
             string argString = context.CommandString.Remove(prefixEndIndex, commandResult.Result.Prefix.Length);
             if (!string.IsNullOrWhiteSpace(argString))
             {
-                // Init the arguments collection
                 arguments = new();
 
-                // Split by separator
-                string[] args = argString.Split(options.Extractor.Separator, StringSplitOptions.RemoveEmptyEntries);
+                string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
+                string[] args = argString.Split(argSplit, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string arg in args)
                 {
-                    ArgumentExtractorResult argResult = await argumentExtractor.ExtractAsync(new ArgumentExtractorContext(arg, commandResult.Result));
+                    // Restore the arg prefix for the extractor
+                    string prefixArg = string.Concat(options.Extractor.ArgumentPrefix, arg);
+
+                    ArgumentExtractorResult argResult = await argumentExtractor.ExtractAsync(new ArgumentExtractorContext(prefixArg, commandResult.Result));
                     if (argResult.IsError)
                     {
                         // Get all errors
@@ -77,7 +85,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                         // Protect for bad custom implementation
                         if (argResult.Argument == null)
                         {
-                            result.AppendError(OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string did not return an error or extract the argument. argument_string={0}", arg)));
+                            result.AppendError(OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string did not return an error or extract the argument. argument_string={0}", prefixArg)));
                         }
                         else
                         {
@@ -106,6 +114,53 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             result.CommandIdentity = commandResult.Result;
             result.Command = command;
             return result;
+        }
+
+        private CommandExtractorResult EnsureOptionsCompatibility()
+        {
+            // Separator can be whitespace
+            if (options.Extractor.Separator == null)
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command separator is null or not configured.", options.Extractor.Separator);
+                return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidConfiguration, errorDesc);
+            }
+
+            // Command separator and argument separator cannot be same
+            if (options.Extractor.Separator.Equals(options.Extractor.ArgumentSeparator, StringComparison.Ordinal))
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command separator and argument separator cannot be same. separator={0}", options.Extractor.Separator);
+                return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidConfiguration, errorDesc);
+            }
+
+            // Command separator and argument prefix cannot be same
+            if (options.Extractor.Separator.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command separator and argument prefix cannot be same. separator={0}", options.Extractor.Separator);
+                return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidConfiguration, errorDesc);
+            }
+
+            // Argument separator cannot be null, empty or whitespace
+            if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentSeparator))
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument separator cannot be null or whitespace.", options.Extractor.ArgumentSeparator);
+                return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidConfiguration, errorDesc);
+            }
+
+            // Argument separator and argument prefix cannot be same
+            if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentSeparator);
+                return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidConfiguration, errorDesc);
+            }
+
+            // Argument prefix cannot be null, empty or whitespace
+            if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentPrefix))
+            {
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument prefix cannot be null or whitespace.", options.Extractor.ArgumentPrefix);
+                return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidConfiguration, errorDesc);
+            }
+
+            return new();
         }
 
         private readonly IArgumentExtractor argumentExtractor;

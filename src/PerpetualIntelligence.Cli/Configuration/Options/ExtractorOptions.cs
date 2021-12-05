@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// <summary>
         /// The argument value separator. Defaults to equals char <c>=</c>.
         /// </summary>
-        public string ArgumentValueSeparator { get; set; } = "=";
+        public string ArgumentSeparator { get; set; } = "=";
 
         /// <summary>
         /// The command string separator. Defaults to space char <c></c>.

@@ -61,7 +61,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task InvalidArgumentValueSepratorShouldFailAsync(string valid, string invalid)
         {
             // Set the correct separator
-            options.Extractor.ArgumentValueSeparator = valid;
+            options.Extractor.ArgumentSeparator = valid;
 
             // Arg string has incorrect separator
             // Without the valid value separator the extractor will interpret as a key only argument and that wil fail
@@ -259,7 +259,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task SamePrefixAndSeparatorShoudNotErrorAsync(string input)
         {
             options.Extractor.ArgumentPrefix = input;
-            options.Extractor.ArgumentValueSeparator = input;
+            options.Extractor.ArgumentSeparator = input;
 
             ArgumentExtractorContext context = new ArgumentExtractorContext($"{input}key1{input}value1", command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -280,7 +280,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task ValidPrefixAndSepratorShoudNotErrorAsync(string prefix, string separator)
         {
             options.Extractor.ArgumentPrefix = prefix;
-            options.Extractor.ArgumentValueSeparator = separator;
+            options.Extractor.ArgumentSeparator = separator;
 
             ArgumentExtractorContext context = new ArgumentExtractorContext($"{prefix}key1{separator}value1", command.Item1);
             var result = await extractor.ExtractAsync(context);

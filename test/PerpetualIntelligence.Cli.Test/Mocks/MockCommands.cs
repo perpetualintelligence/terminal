@@ -31,7 +31,8 @@ namespace PerpetualIntelligence.Cli.Mocks
             new ArgumentIdentity("aid6", "key6", nameof(Boolean), false, "Key6 no value"),
             new ArgumentIdentity("aid7", "key7", DataType.Currency, true, "Key7 value currency", new[] { "INR", "USD", "EUR" }),
             new ArgumentIdentity("aid8", "key8", nameof(Int32), false, "Key8 value custom int"),
-            new ArgumentIdentity("aid9", "key9", nameof(Double), true, "Key9 value custom double", new object[] { 2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5 })
+            new ArgumentIdentity("aid9", "key9", nameof(Double), true, "Key9 value custom double", new object[] { 2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5 }),
+            new ArgumentIdentity("aid10", "key10", nameof(String), true, "Key10 value custom string")
         };
 
         public static List<CommandIdentity> Commands = new()

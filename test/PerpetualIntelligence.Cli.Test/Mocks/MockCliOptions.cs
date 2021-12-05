@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 Extractor = new ExtractorOptions()
                 {
                     ArgumentPrefix = "-",
-                    ArgumentValueSeparator = "=",
+                    ArgumentSeparator = "=",
                     Separator = " ",
                 },
             };
