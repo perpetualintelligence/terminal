@@ -23,6 +23,28 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
+        public async Task AttributeValueWithArgumentSeparatorShoudNotErrorAsync()
+        {
+            ArgumentExtractorContext context = new ArgumentExtractorContext($"-key1=value=value2", command.Item1);
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.Argument);
+            Assert.AreEqual($"key1", result.Argument.Name);
+            Assert.AreEqual($"value=value2", result.Argument.Value);
+        }
+
+        [TestMethod]
+        public async Task AttributeValueWithCommandSeparatorSeparatorShoudNotErrorAsync()
+        {
+            ArgumentExtractorContext context = new ArgumentExtractorContext($"-key1=value value2", command.Item1);
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.Argument);
+            Assert.AreEqual($"key1", result.Argument.Name);
+            Assert.AreEqual($"value value2", result.Argument.Value);
+        }
+
+        [TestMethod]
         public async Task AttrubuteExtractShouldExtractNonKeyValueAsBooleanAsync()
         {
             ArgumentExtractorContext context = new ArgumentExtractorContext($"-key6", command.Item1);
@@ -63,19 +85,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Set the correct separator
             options.Extractor.ArgumentSeparator = valid;
 
-            // Arg string has incorrect separator
-            // Without the valid value separator the extractor will interpret as a key only argument and that wil fail
+            // Arg string has incorrect separator Without the valid value separator the extractor will interpret as a
+            // key only argument and that wil fail
             ArgumentExtractorContext context = new ArgumentExtractorContext($"-key1{invalid}value1", command.Item1);
             var result = await extractor.ExtractAsync(context);
             TestHelper.AssertOneImlxError(result, Errors.UnsupportedArgument, $"The command does not support the request argument. command_name=name1 command_id=id1 argument_name=key1{invalid}value1");
-        }
-
-        [TestMethod]
-        public async Task InvalidAttributeSyntaxShouldErrorAsync()
-        {
-            ArgumentExtractorContext context = new ArgumentExtractorContext($"-key=value=value2", command.Item1);
-            var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument syntax is not valid. command_name=name1 command_id=id1 argument_string=-key=value=value2");
         }
 
         [TestMethod]

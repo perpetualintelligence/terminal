@@ -153,6 +153,60 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [DataTestMethod]
+        [DataRow("@")]
+        [DataRow("~")]
+        [DataRow("#")]
+        [DataRow("sp")]
+        [DataRow("öö")]
+        [DataRow("माणूस")]
+        [DataRow("女性")]
+        public async Task CommandStringShouldAllowArgumentPrefixInArgumentValueAsync(string prefix)
+        {
+            // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
+            // argument values
+            // -> prefix1 -key=Test-prefix-message -key2=nosprefixmessage -key3=again-with-prefix
+            options.Extractor.ArgumentPrefix = prefix;
+
+            CommandExtractorContext context = new CommandExtractorContext($"prefix1 {prefix}key1=Test{prefix}prefix{prefix}message {prefix}key2=nospacemessage {prefix}key6 {prefix}key10=Again{prefix}with{prefix}prefix");
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.Command);
+            Assert.IsNotNull(result.Command.Arguments);
+            Assert.AreEqual(4, result.Command.Arguments.Count);
+            AssertArgument(result.Command.Arguments[0], "aid1", "key1", DataType.Text, "Key1 value text", $"Test{prefix}prefix{prefix}message");
+            AssertArgument(result.Command.Arguments[1], "aid2", "key2", DataType.Text, "Key2 value text", "nospacemessage");
+            AssertArgument(result.Command.Arguments[2], "aid6", "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[3], "aid10", "key10", nameof(String), "Key10 value custom string", $"Again{prefix}with{prefix}prefix");
+        }
+
+        [DataTestMethod]
+        [DataRow("@")]
+        [DataRow("~")]
+        [DataRow("#")]
+        [DataRow("sp")]
+        [DataRow("öö")]
+        [DataRow("माणूस")]
+        [DataRow("女性")]
+        public async Task CommandStringShouldAllowArgumentSeparatorInArgumentValueAsync(string separator)
+        {
+            // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
+            // argument values
+            // -> prefix1 -key=Test=separator=message -key2=nosseparatormessage -key3=again=with=separator
+            options.Extractor.ArgumentSeparator = separator;
+
+            CommandExtractorContext context = new CommandExtractorContext($"prefix1 -key1{separator}Test{separator}separator{separator}message -key2{separator}nosseparatormessage -key6 -key10{separator}Again{separator}with{separator}separator");
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.Command);
+            Assert.IsNotNull(result.Command.Arguments);
+            Assert.AreEqual(4, result.Command.Arguments.Count);
+            AssertArgument(result.Command.Arguments[0], "aid1", "key1", DataType.Text, "Key1 value text", $"Test{separator}separator{separator}message");
+            AssertArgument(result.Command.Arguments[1], "aid2", "key2", DataType.Text, "Key2 value text", "nosseparatormessage");
+            AssertArgument(result.Command.Arguments[2], "aid6", "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[3], "aid10", "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}separator");
+        }
+
+        [DataTestMethod]
         [DataRow(" ")]
         [DataRow("~")]
         [DataRow("#")]
@@ -160,7 +214,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldAllowSeparatorInArgumentValueAsync(string seperator)
+        public async Task CommandStringShouldAllowCommandSeparatorInArgumentValueAsync(string seperator)
         {
             // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
             // argument values
@@ -337,7 +391,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1-key1=value1-key2=value2");
             var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument syntax is not valid. command_name=name1 command_id=id1 argument_string=--key1=value1-key2=value2");
+            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
         }
 
         protected override void OnTestInitialize()

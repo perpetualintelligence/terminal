@@ -65,6 +65,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             string argString = context.CommandString.Remove(prefixEndIndex, commandResult.Result.Prefix.Length);
             if (!string.IsNullOrWhiteSpace(argString))
             {
+                // Make sure there is a separator between the command prefix and arguments
+                if (!argString.StartsWith(options.Extractor.Separator, StringComparison.Ordinal))
+                {
+                    return OneImlxResult.NewError<CommandExtractorResult>(Errors.InvalidCommand, logger.FormatAndLog(LogLevel.Error, options.Logging, "The command separator is missing. command_string={0}", context.CommandString));
+                }
+
                 arguments = new();
 
                 string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);

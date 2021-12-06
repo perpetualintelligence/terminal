@@ -69,37 +69,51 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             // Split by key-value separator
             ArgumentExtractorResult result = new();
-            string[] argSplit = argumentString.Split(options.Extractor.ArgumentSeparator);
-            if (argSplit.Length > 2)
+            int sepIdx = argumentString.IndexOf(options.Extractor.ArgumentSeparator, StringComparison.Ordinal);
+            string argName;
+            string? argValue = null;
+            if (sepIdx < 0)
             {
-                // Invalid syntax
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument syntax is not valid. command_name={0} command_id={1} argument_string={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString);
-                return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
+                // Boolean (Non value arg)
+                argName = argumentString;
+            }
+            else
+            {
+                argName = argumentString.Substring(0, sepIdx);
+                argValue = argumentString.TrimStart(argName).TrimStart(options.Extractor.ArgumentSeparator);
             }
 
+            //string[] argSplit = argumentString.Split(options.Extractor.ArgumentSeparator);
+            //if (argSplit.Length > 2)
+            //{
+            //    // Invalid syntax
+            //    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument syntax is not valid. command_name={0} command_id={1} argument_string={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString);
+            //    return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
+            //}
+
             // The split key cannot be null or empty
-            if (string.IsNullOrWhiteSpace(argSplit[0]))
+            if (string.IsNullOrWhiteSpace(argName))
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument name is null or empty. command_name={0} command_id={1} arg={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString);
                 return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
             }
 
             // Now find the argument by key or name
-            var argFindResult = TryFindAttributeByName(context.CommandIdentity, argSplit[0]);
+            var argFindResult = TryFindAttributeByName(context.CommandIdentity, argName);
             if (argFindResult.IsError)
             {
                 return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(argFindResult));
             }
 
             // Key only (treat it as a boolean) value=true
-            if (argSplit.Length == 1)
+            if (argValue == null)
             {
                 result.Argument = new Argument(argFindResult.Result!, true);
             }
             else
             {
                 // key-value TODO Trim all the prefix
-                result.Argument = new Argument(argFindResult.Result!, argSplit[1]);
+                result.Argument = new Argument(argFindResult.Result!, argValue);
             }
 
             return Task.FromResult(result);
