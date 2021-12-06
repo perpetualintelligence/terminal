@@ -126,11 +126,11 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             CommandIdentity map = new("urn:oneimlx:cli:map", "map", "map", new()
             {
-                    new ArgumentIdentity("urn:oneimlx:cli:map:r", "r", System.ComponentModel.DataAnnotations.DataType.Text, true, "The root path for source projects."),
-                    new ArgumentIdentity("urn:oneimlx:cli:map:p", "p", System.ComponentModel.DataAnnotations.DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),
-                    new ArgumentIdentity("urn:oneimlx:cli:map:c", "c", System.ComponentModel.DataAnnotations.DataType.Text, true, "The configuration, Debug or Release.", new string[] { "Debug", "Release" }),
-                    new ArgumentIdentity("urn:oneimlx:cli:map:f", "f", System.ComponentModel.DataAnnotations.DataType.Text, true, "The .NET framework identifier."),
-                    new ArgumentIdentity("urn:oneimlx:cli:map:o", "o", System.ComponentModel.DataAnnotations.DataType.Text, true, "The mapping JSON file path.")
+                new ArgumentIdentity("r", System.ComponentModel.DataAnnotations.DataType.Text, true, "The root path for source projects."),
+                new ArgumentIdentity("p", System.ComponentModel.DataAnnotations.DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),
+                new ArgumentIdentity("c", System.ComponentModel.DataAnnotations.DataType.Text, true, "The configuration, Debug or Release.", new string[] { "Debug", "Release" }),
+                new ArgumentIdentity("f", System.ComponentModel.DataAnnotations.DataType.Text, true, "The .NET framework identifier."),
+                new ArgumentIdentity("o", System.ComponentModel.DataAnnotations.DataType.Text, true, "The mapping JSON file path.")
             });
             builder.AddCommandIdentity<MapCommandRunner, CommandChecker>(map);
 

@@ -16,8 +16,7 @@ namespace PerpetualIntelligence.Cli.Commands
     /// </summary>
     /// <remarks>
     /// A argument implements the default equality <see cref="IEquatable{T}"/> and <see cref="GetHashCode()"/> using
-    /// <see cref="Id"/> and <see cref="Name"/>. Thus, two arguments with the same id and name are equal irrespective of
-    /// other property values.
+    /// <see cref="Name"/>. Thus, two arguments with the same name are equal irrespective of other property values.
     /// </remarks>
     public sealed class Argument : IEquatable<Argument?>
     {
@@ -28,7 +27,6 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="value">The argument value.</param>
         public Argument(ArgumentIdentity argumentIdentity, object value)
         {
-            Id = argumentIdentity.Id;
             Name = argumentIdentity.Name;
             DataType = argumentIdentity.DataType;
             CustomDataType = argumentIdentity.CustomDataType;
@@ -39,30 +37,28 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
-        /// <param name="id">The argument id.</param>
         /// <param name="name">The argument name.</param>
         /// <param name="value">The argument value.</param>
-        public Argument(string id, string name, object value)
+        /// <param name="customDataType">The argument custom data type.</param>
+        public Argument(string name, object value, string customDataType)
         {
-            Id = id;
             Name = name;
             Value = value;
+            DataType = DataType.Custom;
+            CustomDataType = customDataType;
         }
 
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
-        /// <param name="id">The argument id.</param>
         /// <param name="name">The argument name.</param>
         /// <param name="value">The argument value.</param>
-        /// <param name="customDataType">The argument custom data type.</param>
-        public Argument(string id, string name, object value, string customDataType)
+        /// <param name="dataType">The argument data type.</param>
+        public Argument(string name, object value, DataType dataType)
         {
-            Id = id;
             Name = name;
             Value = value;
-            DataType = DataType.Custom;
-            CustomDataType = customDataType;
+            DataType = dataType;
         }
 
         /// <summary>
@@ -86,13 +82,6 @@ namespace PerpetualIntelligence.Cli.Commands
         public string? Description { get; set; }
 
         /// <summary>
-        /// The argument identifier.
-        /// </summary>
-        /// <remarks>The argument identifier is unique across all commands.</remarks>
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
-
-        /// <summary>
         /// The argument name.
         /// </summary>
         /// <remarks>The argument name is unique with in a command.</remarks>
@@ -102,7 +91,6 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The argument value.
         /// </summary>
-        /// <remarks>The argument name is unique with in a command.</remarks>
         [JsonPropertyName("value")]
         public object Value { get; set; }
 
@@ -128,14 +116,13 @@ namespace PerpetualIntelligence.Cli.Commands
         public bool Equals(Argument? other)
         {
             return other != null &&
-                   Id == other.Id &&
                    Name == other.Name;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Name);
+            return HashCode.Combine(Name);
         }
     }
 }

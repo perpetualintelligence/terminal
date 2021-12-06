@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Cli.Commands.RequestHandlers
 
         private static async Task ExecuteMapCommandAsync(Command command)
         {
-            Dictionary<string, object> args = command.Arguments.ToDictionary();
+            Dictionary<string, object> args = command.Arguments.ToNameValueCollection();
 
             // Root Directory
             string testRoot = (string)args["r"];

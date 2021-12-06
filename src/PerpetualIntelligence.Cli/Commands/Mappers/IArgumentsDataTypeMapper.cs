@@ -7,12 +7,12 @@
 using PerpetualIntelligence.Protocols.Abstractions;
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Extractors
+namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
     /// An abstraction to extract a data type of an argument.
     /// </summary>
-    public interface IArgumentsDataTypeExtractor : IExtractor<Argument, Type>
+    public interface IArgumentDataTypeMapper : IMapper<Argument, Type>
     {
     }
 }

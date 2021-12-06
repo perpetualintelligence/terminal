@@ -14,6 +14,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class CliOptions
     {
         /// <summary>
+        /// The checker configuration options.
+        /// </summary>
+        public CheckerOptions Checker { get; set; } = new CheckerOptions();
+
+        /// <summary>
         /// The extractor configuration options.
         /// </summary>
         public ExtractorOptions Extractor { get; set; } = new ExtractorOptions();

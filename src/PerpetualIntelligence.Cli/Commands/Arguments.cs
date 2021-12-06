@@ -14,10 +14,24 @@ namespace PerpetualIntelligence.Cli.Commands
     public sealed class Arguments : List<Argument>
     {
         /// <summary>
-        /// Returns a dictionary of argument name and value.
+        /// Returns a collection of argument name and argument itself.
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, object> ToDictionary()
+        public Dictionary<string, Argument> ToNameArgumentCollection()
+        {
+            Dictionary<string, Argument> args = new Dictionary<string, Argument>();
+            foreach (var key in this)
+            {
+                args.Add(key.Name, key);
+            }
+            return args;
+        }
+
+        /// <summary>
+        /// Returns a collection of argument name and value.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, object> ToNameValueCollection()
         {
             Dictionary<string, object> args = new Dictionary<string, object>();
             foreach (var key in this)

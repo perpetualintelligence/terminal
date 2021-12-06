@@ -173,10 +173,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(4, result.Command.Arguments.Count);
-            AssertArgument(result.Command.Arguments[0], "aid1", "key1", DataType.Text, "Key1 value text", $"Test{prefix}prefix{prefix}message");
-            AssertArgument(result.Command.Arguments[1], "aid2", "key2", DataType.Text, "Key2 value text", "nospacemessage");
-            AssertArgument(result.Command.Arguments[2], "aid6", "key6", nameof(Boolean), "Key6 no value", true);
-            AssertArgument(result.Command.Arguments[3], "aid10", "key10", nameof(String), "Key10 value custom string", $"Again{prefix}with{prefix}prefix");
+            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", $"Test{prefix}prefix{prefix}message");
+            AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
+            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[3], "key10", nameof(String), "Key10 value custom string", $"Again{prefix}with{prefix}prefix");
         }
 
         [DataTestMethod]
@@ -200,10 +200,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(4, result.Command.Arguments.Count);
-            AssertArgument(result.Command.Arguments[0], "aid1", "key1", DataType.Text, "Key1 value text", $"Test{separator}separator{separator}message");
-            AssertArgument(result.Command.Arguments[1], "aid2", "key2", DataType.Text, "Key2 value text", "nosseparatormessage");
-            AssertArgument(result.Command.Arguments[2], "aid6", "key6", nameof(Boolean), "Key6 no value", true);
-            AssertArgument(result.Command.Arguments[3], "aid10", "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}separator");
+            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", $"Test{separator}separator{separator}message");
+            AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "nosseparatormessage");
+            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}separator");
         }
 
         [DataTestMethod]
@@ -227,23 +227,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(4, result.Command.Arguments.Count);
-            AssertArgument(result.Command.Arguments[0], "aid1", "key1", DataType.Text, "Key1 value text", $"Test{seperator}space{seperator}message");
-            AssertArgument(result.Command.Arguments[1], "aid2", "key2", DataType.Text, "Key2 value text", "nospacemessage");
-            AssertArgument(result.Command.Arguments[2], "aid6", "key6", nameof(Boolean), "Key6 no value", true);
-            AssertArgument(result.Command.Arguments[3], "aid10", "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}space");
-        }
-
-        [TestMethod]
-        public async Task ExtractorShouldReturnMultipleArgErrorAsync()
-        {
-            CommandExtractorContext context = new CommandExtractorContext("prefix1 -invalid_key1=value1 -invalid_key2=value2 -invalid_key3=value3");
-            var result = await extractor.ExtractAsync(context);
-            Assert.IsTrue(result.IsError);
-            Assert.IsNotNull(result.Errors);
-            Assert.AreEqual(3, result.Errors.Length);
-            TestHelper.AssertOneImlxError(result.Errors[0], Errors.UnsupportedArgument, "The command does not support the request argument. command_name=name1 command_id=id1 argument_name=invalid_key1");
-            TestHelper.AssertOneImlxError(result.Errors[1], Errors.UnsupportedArgument, "The command does not support the request argument. command_name=name1 command_id=id1 argument_name=invalid_key2");
-            TestHelper.AssertOneImlxError(result.Errors[2], Errors.UnsupportedArgument, "The command does not support the request argument. command_name=name1 command_id=id1 argument_name=invalid_key3");
+            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}space{seperator}message");
+            AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
+            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}space");
         }
 
         [TestMethod]
@@ -307,6 +294,19 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command string did not match any command prefix. command_string=invalidprefix -key1=value1 -key2=value2");
         }
 
+        [TestMethod]
+        public async Task UnsupportedArgumentsShouldErrorMultipleAsync()
+        {
+            CommandExtractorContext context = new CommandExtractorContext("prefix1 -invalid_key1=value1 -invalid_key2=value2 -invalid_key3=value3");
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsTrue(result.IsError);
+            Assert.IsNotNull(result.Errors);
+            Assert.AreEqual(3, result.Errors.Length);
+            TestHelper.AssertOneImlxError(result.Errors[0], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key1");
+            TestHelper.AssertOneImlxError(result.Errors[1], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key2");
+            TestHelper.AssertOneImlxError(result.Errors[2], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key3");
+        }
+
         [DataTestMethod]
         [DataRow(" ")]
         [DataRow("~")]
@@ -332,16 +332,16 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(typeof(CommandRunner), result.CommandIdentity.Runner);
             Assert.IsNotNull(result.CommandIdentity.ArgumentIdentities);
             Assert.AreEqual(10, result.CommandIdentity.ArgumentIdentities.Count);
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[0], "aid1", "key1", DataType.Text, false, "Key1 value text");
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[1], "aid2", "key2", DataType.Text, true, "Key2 value text");
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[2], "aid3", "key3", DataType.PhoneNumber, false, "Key3 value phone");
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[3], "aid4", "key4", DataType.EmailAddress, false, "Key4 value email");
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[4], "aid5", "key5", DataType.Url, false, "Key5 value url");
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[5], "aid6", "key6", nameof(Boolean), false, "Key6 no value");
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[6], "aid7", "key7", DataType.Currency, true, "Key7 value currency", new[] { "INR", "USD", "EUR" });
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[7], "aid8", "key8", nameof(Int32), false, "Key8 value custom int");
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[8], "aid9", "key9", nameof(Double), true, "Key9 value custom double", new object[] { 2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5 });
-            AssertArgument(result.CommandIdentity.ArgumentIdentities[9], "aid10", "key10", nameof(String), true, "Key10 value custom string");
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[0], "key1", DataType.Text, false, "Key1 value text");
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[1], "key2", DataType.Text, true, "Key2 value text");
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[2], "key3", DataType.PhoneNumber, false, "Key3 value phone");
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[3], "key4", DataType.EmailAddress, false, "Key4 value email");
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[4], "key5", DataType.Url, false, "Key5 value url");
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[5], "key6", nameof(Boolean), false, "Key6 no value");
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[6], "key7", DataType.Currency, true, "Key7 value currency", new[] { "INR", "USD", "EUR" });
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[7], "key8", nameof(Int32), false, "Key8 value custom int");
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[8], "key9", nameof(Double), true, "Key9 value custom double", new object[] { 2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5 });
+            AssertArgument(result.CommandIdentity.ArgumentIdentities[9], "key10", nameof(String), true, "Key10 value custom string");
 
             // Supported arguments 10, user only passed 7
             Assert.IsNotNull(result.Command);
@@ -350,13 +350,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("desc2", result.Command.Description);
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(7, result.Command.Arguments.Count);
-            AssertArgument(result.Command.Arguments[0], "aid1", "key1", DataType.Text, "Key1 value text", "value1");
-            AssertArgument(result.Command.Arguments[1], "aid2", "key2", DataType.Text, "Key2 value text", "value2");
-            AssertArgument(result.Command.Arguments[2], "aid3", "key3", DataType.PhoneNumber, "Key3 value phone", "+1-2365985632");
-            AssertArgument(result.Command.Arguments[3], "aid4", "key4", DataType.EmailAddress, "Key4 value email", "testmail@gmail.com");
-            AssertArgument(result.Command.Arguments[4], "aid5", "key5", DataType.Url, "Key5 value url", "C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt");
-            AssertArgument(result.Command.Arguments[5], "aid6", "key6", "Boolean", "Key6 no value", true);
-            AssertArgument(result.Command.Arguments[6], "aid9", "key9", "Double", "Key9 value custom double", "33.368");
+            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1");
+            AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "value2");
+            AssertArgument(result.Command.Arguments[2], "key3", DataType.PhoneNumber, "Key3 value phone", "+1-2365985632");
+            AssertArgument(result.Command.Arguments[3], "key4", DataType.EmailAddress, "Key4 value email", "testmail@gmail.com");
+            AssertArgument(result.Command.Arguments[4], "key5", DataType.Url, "Key5 value url", "C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt");
+            AssertArgument(result.Command.Arguments[5], "key6", "Boolean", "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[6], "key9", "Double", "Key9 value custom double", "33.368");
         }
 
         [TestMethod]
@@ -402,9 +402,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
         }
 
-        private void AssertArgument(ArgumentIdentity arg, string id, string name, DataType dataType, bool required = false, string? description = null, object[]? supportedValues = null)
+        private void AssertArgument(ArgumentIdentity arg, string name, DataType dataType, bool required = false, string? description = null, object[]? supportedValues = null)
         {
-            Assert.AreEqual(arg.Id, id);
             Assert.AreEqual(arg.Name, name);
             Assert.AreEqual(arg.DataType, dataType);
             Assert.IsNull(arg.CustomDataType);
@@ -413,9 +412,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CollectionAssert.AreEqual(arg.SupportedValues, supportedValues);
         }
 
-        private void AssertArgument(ArgumentIdentity arg, string id, string name, string customDataType, bool required = false, string? description = null, object[]? supportedValues = null)
+        private void AssertArgument(ArgumentIdentity arg, string name, string customDataType, bool required = false, string? description = null, object[]? supportedValues = null)
         {
-            Assert.AreEqual(arg.Id, id);
             Assert.AreEqual(arg.Name, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
             Assert.AreEqual(arg.CustomDataType, customDataType);
@@ -424,9 +422,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CollectionAssert.AreEqual(arg.SupportedValues, supportedValues);
         }
 
-        private void AssertArgument(Argument arg, string id, string name, string customDataType, string description, object value)
+        private void AssertArgument(Argument arg, string name, string customDataType, string description, object value)
         {
-            Assert.AreEqual(arg.Id, id);
             Assert.AreEqual(arg.Name, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
             Assert.AreEqual(arg.CustomDataType, customDataType);
@@ -434,9 +431,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgument(Argument arg, string id, string name, DataType dataType, string description, object value)
+        private void AssertArgument(Argument arg, string name, DataType dataType, string description, object value)
         {
-            Assert.AreEqual(arg.Id, id);
             Assert.AreEqual(arg.Name, name);
             Assert.AreEqual(arg.DataType, dataType);
             Assert.IsNull(arg.CustomDataType);

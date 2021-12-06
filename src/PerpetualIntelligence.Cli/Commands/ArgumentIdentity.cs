@@ -18,26 +18,19 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="id">The argument id.</param>
         /// <param name="name">The argument name.</param>
         /// <param name="dataType">The argument data type.</param>
         /// <param name="required">The argument is optional or required.</param>
         /// <param name="description">The argument description.</param>
         /// <param name="supportedValues">The supported values.</param>
         [ToUnitTest("null checks")]
-        public ArgumentIdentity(string id, string name, DataType dataType, bool required = false, string? description = null, object[]? supportedValues = null)
+        public ArgumentIdentity(string name, DataType dataType, bool required = false, string? description = null, object[]? supportedValues = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
-            }
-
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
             }
 
-            Id = id;
             Name = name;
             DataType = dataType;
             Required = required;
@@ -48,28 +41,21 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="id">The argument id.</param>
         /// <param name="name">The argument name.</param>
         /// <param name="customDataType">The argument custom data type.</param>
         /// <param name="required">The argument is optional or required.</param>
         /// <param name="description">The argument description.</param>
         /// <param name="supportedValues">The supported values.</param>
         [ToUnitTest("null checks")]
-        public ArgumentIdentity(string id, string name, string customDataType, bool required = false, string? description = null, object[]? supportedValues = null)
+        public ArgumentIdentity(string name, string customDataType, bool required = false, string? description = null, object[]? supportedValues = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
-            }
-
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
             }
 
-            Id = id;
             Name = name;
-            DataType =  DataType.Custom;
+            DataType = DataType.Custom;
             CustomDataType = customDataType;
             Required = required;
             Description = description;
@@ -94,10 +80,9 @@ namespace PerpetualIntelligence.Cli.Commands
         public string? Description { get; set; }
 
         /// <summary>
-        /// The argument id.
+        /// Determines whether the argument is disabled
         /// </summary>
-        /// <remarks>The argument id is unique across all commands.</remarks>
-        public string Id { get; set; }
+        public bool? Disabled { get; set; }
 
         /// <summary>
         /// The argument name.
@@ -106,9 +91,14 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Name { get; set; }
 
         /// <summary>
+        /// Determines whether the argument is obsolete.
+        /// </summary>
+        public bool? Obsolete { get; set; }
+
+        /// <summary>
         /// Determines whether the argument is required to execute the command.
         /// </summary>
-        public bool Required { get; set; }
+        public bool? Required { get; set; }
 
         /// <summary>
         /// The supported values.

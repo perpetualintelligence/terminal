@@ -43,8 +43,8 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
                 return result;
             }
 
-            // Check the command
-            var checkerResult = await commandChecker.Result.CheckAsync(new CommandCheckerContext(context.CommandIdentity, context.Command));
+            // Check the command, result will not be null here we already checked it in TryFindCheckerAsync.
+            var checkerResult = await commandChecker.Result!.CheckAsync(new CommandCheckerContext(context.CommandIdentity, context.Command));
             if (checkerResult.IsError)
             {
                 result.SyncError(checkerResult);
@@ -59,8 +59,8 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
                 return result;
             }
 
-            // Run the command
-            CommandRunnerResult runnerResult = await commandRunner.Result.RunAsync(new CommandRunnerContext(context.Command));
+            // Run the command, result will not be null here we already checked it in TryFindRunnerAsync.
+            CommandRunnerResult runnerResult = await commandRunner.Result!.RunAsync(new CommandRunnerContext(context.Command));
             if (runnerResult.IsError)
             {
                 result.SyncError(runnerResult);

@@ -128,7 +128,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     ArgumentIdentity? arg = commandIdentity.ArgumentIdentities.FindByName(argName);
                     if (arg == null)
                     {
-                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support the request argument. command_name={0} command_id={1} argument_name={2}", commandIdentity.Name, commandIdentity.Id, argName);
+                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support the specified argument. command_name={0} command_id={1} argument={2}", commandIdentity.Name, commandIdentity.Id, argName);
                         return OneImlxResult.NewError<OneImlxTryResult<ArgumentIdentity>>(Errors.UnsupportedArgument, errorDesc);
                     }
                     else
@@ -138,7 +138,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
                 catch (NotUniqueException)
                 {
-                    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command contains duplicate arguments. command_name={0} command_id={1} argument_name={2}", commandIdentity.Name, commandIdentity.Id, argName);
+                    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support the same multiple arguments. command_name={0} command_id={1} argument={2}", commandIdentity.Name, commandIdentity.Id, argName);
                     return OneImlxResult.NewError<OneImlxTryResult<ArgumentIdentity>>(Errors.UnsupportedArgument, errorDesc);
                 }
             }

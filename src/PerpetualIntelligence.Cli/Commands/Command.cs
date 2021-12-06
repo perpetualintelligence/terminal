@@ -42,6 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands
                     // FOMAC: We dont have access to argument values here !
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                     Argument arg = new Argument(argument, null);
+                    Arguments.Add(arg);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
             }

@@ -6,11 +6,10 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Protocols.Oidc;
+using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Checkers
@@ -23,59 +22,79 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
+        /// <param name="dataTypeChecker">The argument data-type checker.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandChecker(CliOptions options, ILogger<CommandChecker> logger)
+        public CommandChecker(IArgumentDataTypeChecker dataTypeChecker, CliOptions options, ILogger<CommandChecker> logger)
         {
+            this.dataTypeChecker = dataTypeChecker;
             this.options = options;
             this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public virtual Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
+        public virtual async Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {
-            // The user may not pass any args so they can be null.
-            Dictionary<string, object> args = new();
+            // FOMAC: The default extractor will filter out unsupported arguments. So we don't check it here.
+
+            // The user may not pass any arguments.
+            Dictionary<string, Argument> args = new();
             if (context.Command.Arguments != null)
             {
-                args = context.Command.Arguments.ToDictionary();
+                args = context.Command.Arguments.ToNameArgumentCollection();
             }
 
-            // If the command does not support any arguments then there is nothing much to check.
+            // If the command itself do not support any arguments then there is nothing much to check. Extractor will
+            // reject any unsupported attributes.
             if (context.CommandIdentity.ArgumentIdentities == null)
             {
-                // User pass unexpected arguments
-                if (args.Count != 0)
+                return new CommandCheckerResult();
+            }
+
+            // Check the augments against the identity constraints
+            // TODO: process multiple errors.
+            foreach (var argIdentity in context.CommandIdentity.ArgumentIdentities)
+            {
+                // Optimize (not all arguments are required)
+                bool containsArg = args.TryGetValue(argIdentity.Name, out Argument? arg);
+                if (!containsArg)
                 {
-                    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support any arguments. command_name={0} command_id={1} arguments={2}", context.Command.Name, context.Command.Id, args.Keys.JoinSpace());
-                    return Task.FromResult(OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidRequest, errorDesc));
+                    // Required argument is missing
+                    if (argIdentity.Required.GetValueOrDefault())
+                    {
+                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The required argument is missing. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Name);
+                        return OneImlxResult.NewError<CommandCheckerResult>(Errors.MissingArgument, errorDesc);
+                    }
                 }
+                else
+                {
+                    // Check obsolete
+                    if (argIdentity.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteArgument.GetValueOrDefault())
+                    {
+                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is obsolete. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Name);
+                        return OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
+                    }
 
-                return Task.FromResult(new CommandCheckerResult());
+                    // Check disabled
+                    if (argIdentity.Disabled.GetValueOrDefault())
+                    {
+                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is disabled. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Name);
+                        return OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
+                    }
+
+                    // Check data type
+                    var dataTypeResult = await dataTypeChecker.CheckAsync(new ArgumentDataTypeCheckerContext(arg!));
+                    if (dataTypeResult.IsError)
+                    {
+                        return OneImlxResult.NewError<CommandCheckerResult>(dataTypeResult);
+                    }
+                }
             }
 
-            // Make sure the command has the supported args based on command definition
-            IEnumerable<string> invalidArgs = args.Keys.Except(context.CommandIdentity.ArgumentIdentities.Select(e => e.Name));
-            if (invalidArgs.Any())
-            {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The arguments are not valid. command_name={0} command_id={1} arguments={2}", context.Command.Name, context.Command.Id, invalidArgs.JoinSpace());
-                return Task.FromResult(OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidRequest, errorDesc));
-            }
-
-            // Check for required attributes
-            IEnumerable<string> requiredArgs = context.CommandIdentity.ArgumentIdentities.Where(a => a.Required).Select(e => e.Name);
-            var missingArgs = requiredArgs.Except(args.Keys.AsEnumerable());
-            if (missingArgs.Any())
-            {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The arguments are missing. command_name={0} command_id={1} arguments={2}", context.Command.Name, context.Command.Id, missingArgs.JoinSpace());
-                return Task.FromResult(OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidRequest, errorDesc));
-            }
-
-            // TODO check arg data type
-
-            return Task.FromResult(new CommandCheckerResult());
+            return new CommandCheckerResult();
         }
 
+        private readonly IArgumentDataTypeChecker dataTypeChecker;
         private readonly ILogger<CommandChecker> logger;
         private readonly CliOptions options;
     }
