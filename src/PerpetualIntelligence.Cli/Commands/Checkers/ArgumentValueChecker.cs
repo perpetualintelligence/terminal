@@ -6,7 +6,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Mappers;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Integration.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <inheritdoc/>
         public async Task<ArgumentValueCheckerResult> CheckAsync(ArgumentValueCheckerContext context)
         {
-            // Check argument value
+            // Check for null argument value
             if (context.Argument.Value == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value cannot be null. argument={0}", context.Argument.Name);

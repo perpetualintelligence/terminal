@@ -6,7 +6,7 @@
 
 using PerpetualIntelligence.Shared.Infrastructure;
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Cli.Integration.Configuration.Options
 {
     /// <summary>
     /// The <c>cli</c> configuration options.

@@ -4,7 +4,7 @@
     https://api.perpetualintelligence.com
 */
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Cli.Integration.Configuration.Options
 {
     /// <summary>
     /// The checker configuration option.

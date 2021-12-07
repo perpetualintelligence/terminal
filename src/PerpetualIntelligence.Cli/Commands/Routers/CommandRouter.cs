@@ -7,7 +7,7 @@
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Integration.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             // Delegate to handler
             OneImlxTryResult<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
             CommandHandlerContext handlerContext = new(tryResult.CommandIdentity, tryResult.Command, services);
-            CommandHandlerResult handlerResult = await tryHandler.Result.HandleAsync(handlerContext);
+            CommandHandlerResult handlerResult = await tryHandler.Result!.HandleAsync(handlerContext);
             if (handlerResult.IsError)
             {
                 return OneImlxResult.NewError<CommandRouterResult>(handlerResult);

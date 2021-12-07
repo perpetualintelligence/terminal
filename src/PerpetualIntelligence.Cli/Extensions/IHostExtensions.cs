@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Integration.Configuration.Options;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.Threading;

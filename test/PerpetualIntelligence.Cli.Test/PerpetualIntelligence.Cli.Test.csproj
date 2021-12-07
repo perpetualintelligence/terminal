@@ -11,12 +11,18 @@
   <Import Project="..\..\build\props\Test.props" />
 
   <ItemGroup>
+    <Compile Remove="Commands\Mappers\NewFolder\**" />
+    <EmbeddedResource Remove="Commands\Mappers\NewFolder\**" />
+    <None Remove="Commands\Mappers\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\PerpetualIntelligence.Cli\PerpetualIntelligence.Cli.csproj" />
 	  <ProjectReference Include="..\..\..\protocols\src\PerpetualIntelligence.Test\PerpetualIntelligence.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Mappers\NewFolder\" />
+    <Folder Include="Integration\" />
   </ItemGroup>
 
 </Project>

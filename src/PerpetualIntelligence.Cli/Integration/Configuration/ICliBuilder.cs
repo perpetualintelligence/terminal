@@ -6,7 +6,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace PerpetualIntelligence.OneImlx.Configuration
+namespace PerpetualIntelligence.Cli.Integration.Configuration
 {
     /// <summary>
     /// An abstraction of <c>oneimlx</c> cli builder.
