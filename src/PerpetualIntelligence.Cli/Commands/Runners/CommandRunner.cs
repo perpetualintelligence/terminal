@@ -5,7 +5,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Runners

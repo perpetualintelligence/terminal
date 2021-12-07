@@ -11,20 +11,20 @@ using PerpetualIntelligence.Test.Services;
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     [TestClass]
-    public class ExtractorOptionsTests : OneImlxLogTest
+    public class CliOptionsTests : OneImlxLogTest
     {
-        public ExtractorOptionsTests() : base(TestLogger.Create<ExtractorOptionsTests>())
+        public CliOptionsTests() : base(TestLogger.Create<CliOptionsTests>())
         {
         }
 
         [TestMethod]
-        public void ExtractorOptionsShouldHaveCorrectDefaultValues()
+        public void CliOptionsShouldHaveCorrectDefaultValues()
         {
-            ExtractorOptions options = new ExtractorOptions();
+            CliOptions options = new CliOptions();
 
-            Assert.AreEqual("-", options.ArgumentPrefix);
-            Assert.AreEqual("=", options.ArgumentSeparator);
-            Assert.AreEqual(" ", options.Separator);
+            Assert.IsNotNull(options.Checker);
+            Assert.IsNotNull(options.Extractor);
+            Assert.IsNotNull(options.Logging);
         }
     }
 }

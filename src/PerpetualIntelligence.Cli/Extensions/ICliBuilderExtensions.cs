@@ -13,9 +13,9 @@ using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.RequestHandlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
+using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Stores.InMemory;
-using PerpetualIntelligence.Cli.Integration.Configuration;
 using PerpetualIntelligence.Shared.Attributes;
 using System;
 

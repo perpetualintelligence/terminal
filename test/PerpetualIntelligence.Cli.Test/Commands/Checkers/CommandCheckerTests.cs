@@ -6,7 +6,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Mappers;
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores.InMemory;
 using PerpetualIntelligence.Protocols.Cli;

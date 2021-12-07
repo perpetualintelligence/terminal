@@ -5,7 +5,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;

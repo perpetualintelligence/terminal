@@ -4,7 +4,7 @@
     https://api.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
+using PerpetualIntelligence.Cli.Configuration.Options;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         {
             return new CliOptions()
             {
-                Logging = new Shared.Infrastructure.OneImlxLoggingOptions()
+                Logging = new LoggingOptions()
                 {
                     ErrorArguments = true
                 },

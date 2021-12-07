@@ -6,7 +6,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Mappers;
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;

@@ -6,8 +6,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
-using PerpetualIntelligence.Cli.Integration.Configuration;
+using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Integration;
 using System;
 
 namespace PerpetualIntelligence.Cli.Extensions

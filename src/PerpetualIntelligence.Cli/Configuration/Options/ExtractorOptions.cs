@@ -4,7 +4,7 @@
     https://api.perpetualintelligence.com
 */
 
-namespace PerpetualIntelligence.Cli.Integration.Configuration.Options
+namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     /// <summary>
     /// The extractor configuration option.

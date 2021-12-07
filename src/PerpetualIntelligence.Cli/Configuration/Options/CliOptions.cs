@@ -4,9 +4,7 @@
     https://api.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
-
-namespace PerpetualIntelligence.Cli.Integration.Configuration.Options
+namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     /// <summary>
     /// The <c>cli</c> configuration options.
@@ -26,6 +24,6 @@ namespace PerpetualIntelligence.Cli.Integration.Configuration.Options
         /// <summary>
         /// The logging configuration options.
         /// </summary>
-        public OneImlxLoggingOptions Logging { get; set; } = new OneImlxLoggingOptions();
+        public LoggingOptions Logging { get; set; } = new LoggingOptions();
     }
 }

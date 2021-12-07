@@ -6,12 +6,11 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Mappers;
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -130,7 +129,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public void ValidationAttributeCheckFailShoudError()
         {
-
         }
 
         protected override void OnTestInitialize()

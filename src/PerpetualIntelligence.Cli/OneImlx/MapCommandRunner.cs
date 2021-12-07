@@ -6,7 +6,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Runners;
-using PerpetualIntelligence.Cli.Integration.Configuration.Options;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using Serilog;
 using System;
 using System.Collections.Generic;

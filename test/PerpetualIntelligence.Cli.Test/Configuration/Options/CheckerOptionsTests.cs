@@ -11,20 +11,18 @@ using PerpetualIntelligence.Test.Services;
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     [TestClass]
-    public class ExtractorOptionsTests : OneImlxLogTest
+    public class CheckerOptionsTests : OneImlxLogTest
     {
-        public ExtractorOptionsTests() : base(TestLogger.Create<ExtractorOptionsTests>())
+        public CheckerOptionsTests() : base(TestLogger.Create<CheckerOptionsTests>())
         {
         }
 
         [TestMethod]
-        public void ExtractorOptionsShouldHaveCorrectDefaultValues()
+        public void CheckerOptionsShouldHaveCorrectDefaultValues()
         {
-            ExtractorOptions options = new ExtractorOptions();
+            CheckerOptions options = new CheckerOptions();
 
-            Assert.AreEqual("-", options.ArgumentPrefix);
-            Assert.AreEqual("=", options.ArgumentSeparator);
-            Assert.AreEqual(" ", options.Separator);
+            Assert.AreEqual(null, options.AllowObsoleteArgument);
         }
     }
 }
