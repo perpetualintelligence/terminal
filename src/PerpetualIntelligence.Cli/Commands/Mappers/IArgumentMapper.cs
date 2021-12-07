@@ -5,14 +5,13 @@
 */
 
 using PerpetualIntelligence.Protocols.Abstractions;
-using System;
 
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
     /// An abstraction to extract a data type of an argument.
     /// </summary>
-    public interface IArgumentDataTypeMapper : IMapper<Argument, Type>
+    public interface IArgumentMapper : IMapper<DataAnnotationMapperContext, DataAnnotationMapperResult>
     {
     }
 }

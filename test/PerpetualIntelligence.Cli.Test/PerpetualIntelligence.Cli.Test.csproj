@@ -15,4 +15,8 @@
 	  <ProjectReference Include="..\..\..\protocols\src\PerpetualIntelligence.Test\PerpetualIntelligence.Test.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\Mappers\NewFolder\" />
+  </ItemGroup>
+
 </Project>

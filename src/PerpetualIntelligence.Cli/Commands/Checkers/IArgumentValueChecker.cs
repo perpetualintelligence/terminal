@@ -4,14 +4,14 @@
     https://api.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
+using PerpetualIntelligence.Protocols.Abstractions;
 
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// The argument checker result.
+    /// An abstraction to extract a data type of an argument.
     /// </summary>
-    public class ArgumentDataTypeCheckerResult : OneImlxResult
+    public interface IArgumentValueChecker : IChecker<ArgumentValueCheckerContext, ArgumentValueCheckerResult>
     {
     }
 }

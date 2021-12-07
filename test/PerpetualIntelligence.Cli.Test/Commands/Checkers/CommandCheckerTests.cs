@@ -84,6 +84,26 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
+        public async Task InvalidValueValidShouldErrorAsync()
+        {
+            CommandIdentity identity = new CommandIdentity("id1", "name1", "prefix1");
+            identity.ArgumentIdentities = new ArgumentIdentities()
+            {
+                new ArgumentIdentity("key1", DataType.Text)
+            };
+
+            Command argsCommand = new Command(identity);
+            argsCommand.Arguments = new Arguments()
+            {
+                new Argument("key1", 36, DataType.Text)
+            };
+
+            CommandCheckerContext context = new CommandCheckerContext(identity, argsCommand);
+            var result = await checker.CheckAsync(context);
+            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value does not match the mapped type. argument=key1 type=System.String data_type=Text value_type=Int32 value=36");
+        }
+
+        [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteAllowedShouldNotErrorAsync()
         {
             CommandIdentity noArgsIdentity = new("id1", "name1", "prefix1");
@@ -173,24 +193,32 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Assert.IsFalse(result.IsError);
         }
 
-        [DataTestMethod]
-        [DataRow(DataType.Text, "test message")]
-        public async Task TestDataTypeShouldCheckCorrectlyAsync(DataType dataType, object value)
+        [TestMethod]
+        public async Task ValueValidShouldNotErrorAsync()
         {
-            var cmdIdentity = NewDataTypeCmdIdentity(DataType.Text);
-            var cmd = NewDataTypeCmd(cmdIdentity, value);
+            CommandIdentity identity = new CommandIdentity("id1", "name1", "prefix1");
+            identity.ArgumentIdentities = new ArgumentIdentities()
+            {
+                new ArgumentIdentity("key1", DataType.Text)
+            };
 
-            CommandCheckerContext context = new CommandCheckerContext(cmdIdentity, cmd);
+            Command argsCommand = new Command(identity);
+            argsCommand.Arguments = new Arguments()
+            {
+                new Argument("key1", "value1", DataType.Text)
+            };
+
+            CommandCheckerContext context = new CommandCheckerContext(identity, argsCommand);
             var result = await checker.CheckAsync(context);
-            Assert.IsTrue(result.IsError);
+            Assert.IsFalse(result.IsError);
         }
 
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            mapper = new DataAnnotationsDataTypeMapper(options, TestLogger.Create<DataAnnotationsDataTypeMapper>());
-            dataTypeChecker = new DataAnnotationsDataTypeChecker(mapper, options, TestLogger.Create<DataAnnotationsDataTypeChecker>());
-            checker = new CommandChecker(dataTypeChecker, options, TestLogger.Create<CommandChecker>());
+            mapper = new DataAnnotationMapper(options, TestLogger.Create<DataAnnotationMapper>());
+            valueChecker = new ArgumentValueChecker(mapper, options, TestLogger.Create<ArgumentValueChecker>());
+            checker = new CommandChecker(valueChecker, options, TestLogger.Create<CommandChecker>());
             commands = new InMemoryCommandIdentityStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
         }
 
@@ -223,8 +251,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         private CommandChecker checker = null!;
         private ICommandIdentityStore commands = null!;
-        private IArgumentDataTypeChecker dataTypeChecker = null!;
-        private IArgumentDataTypeMapper mapper = null!;
+        private IArgumentMapper mapper = null!;
         private CliOptions options = null!;
+        private IArgumentValueChecker valueChecker = null!;
     }
 }

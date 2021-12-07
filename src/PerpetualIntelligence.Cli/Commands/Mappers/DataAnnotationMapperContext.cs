@@ -6,19 +6,19 @@
 
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
     /// The argument data-type checker context.
     /// </summary>
-    public class ArgumentDataTypeCheckerContext
+    public class DataAnnotationMapperContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="argument">The argument.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ArgumentDataTypeCheckerContext(Argument argument)
+        public DataAnnotationMapperContext(Argument argument)
         {
             Argument = argument ?? throw new ArgumentNullException(nameof(argument));
         }
