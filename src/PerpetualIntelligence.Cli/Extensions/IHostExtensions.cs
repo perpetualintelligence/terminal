@@ -57,21 +57,27 @@ namespace PerpetualIntelligence.Cli.Extensions
 
                 try
                 {
-                    routeTask.Wait(timeout, cancellationToken);
+                    bool success = routeTask.Wait(timeout, cancellationToken);
+                    if(!success)
+                    {
+                        CliOptions options = host.Services.GetRequiredService<CliOptions>();
+                        ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. path={0}", commandString);
+
+                    }
                 }
-                catch
+                catch (OperationCanceledException)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. path={0}", commandString);
 
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. path={0}", commandString);
-                    }
-                    else
-                    {
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. path={0}", commandString);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    CliOptions options = host.Services.GetRequiredService<CliOptions>();
+                    ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. path={0} additional_info={1}", commandString, ex.Message);
                 }
             };
         }
