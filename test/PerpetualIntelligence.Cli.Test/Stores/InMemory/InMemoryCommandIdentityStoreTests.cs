@@ -96,6 +96,28 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         }
 
         [TestMethod]
+        public async Task TryMatchByPrefixWithValidArgsShouldNotErrorIfMatchedAsync()
+        {
+            var result = await cmdStore.TryMatchByPrefixAsync("prefix1 -key1=value1 -key2=value2");
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual("id1", result.Result.Id);
+            Assert.AreEqual("name1", result.Result.Name);
+            Assert.AreEqual("prefix1", result.Result.Prefix);
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixWithInValidArgsShouldNotErrorIfMatchedAsync()
+        {
+            var result = await cmdStore.TryMatchByPrefixAsync("prefix1 -invalidarg=test -invalidsolo -key1=value1 -key2=value2");
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual("id1", result.Result.Id);
+            Assert.AreEqual("name1", result.Result.Name);
+            Assert.AreEqual("prefix1", result.Result.Prefix);
+        }
+
+        [TestMethod]
         public async Task TryMatchByPrefixWithInsufficientPharasesShouldErrorAsync()
         {
             // Missing name3

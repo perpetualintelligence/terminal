@@ -10,7 +10,6 @@ using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.RequestHandlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -27,7 +26,7 @@ namespace PerpetualIntelligence.Cli.Extensions
     public static class ICliBuilderExtensions
     {
         /// <summary>
-        /// Adds the required <see cref="CliOptions"/> with singleton scope.
+        /// Adds the required <see cref="CliOptions"/>.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
@@ -83,23 +82,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the required core services with transient scope.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddCore(this ICliBuilder builder)
-        {
-            // Add command router
-            builder.Services.AddTransient<ICommandRouter, CommandRouter>();
-
-            // Add command handler
-            builder.Services.AddTransient<ICommandHandler, CommandHandler>();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the required command extractor services with transient scope.
+        /// Adds the required command extractor to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
@@ -117,26 +100,21 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <c>oneimlx</c> cli commands to the service collection.
+        /// Adds the core services to the service collection.
         /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
-        [Todo("Move this to OneImlx server")]
-        internal static ICliBuilder AddOneImlxCommandIdentities(this ICliBuilder builder)
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TRouter">The command router type.</typeparam>
+        /// <typeparam name="THandler">The argument handler type.</typeparam>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddRouting<TRouter, THandler>(this ICliBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler
         {
-            CommandIdentity map = new("urn:oneimlx:cli:map", "map", "map", new()
-            {
-                new ArgumentIdentity("r", System.ComponentModel.DataAnnotations.DataType.Text, true, "The root path for source projects."),
-                new ArgumentIdentity("p", System.ComponentModel.DataAnnotations.DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),
-                new ArgumentIdentity("c", System.ComponentModel.DataAnnotations.DataType.Text, true, "The configuration, Debug or Release.", new string[] { "Debug", "Release" }),
-                new ArgumentIdentity("f", System.ComponentModel.DataAnnotations.DataType.Text, true, "The .NET framework identifier."),
-                new ArgumentIdentity("o", System.ComponentModel.DataAnnotations.DataType.Text, true, "The mapping JSON file path.")
-            });
-            builder.AddCommandIdentity<MapCommandRunner, CommandChecker>(map);
+            // Add command router
+            builder.Services.AddTransient<ICommandRouter, TRouter>();
 
-            builder.AddCommandIdentityStore<InMemoryCommandIdentityStore>();
+            // Add command handler
+            builder.Services.AddTransient<ICommandHandler, THandler>();
 
             return builder;
-        }
+        }       
     }
 }

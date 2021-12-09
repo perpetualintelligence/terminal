@@ -122,7 +122,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name);
+            return Name.GetHashCode();
         }
     }
 }

@@ -5,30 +5,27 @@
 */
 
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.OneImlx.Cli;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Commands.RequestHandlers
+namespace PerpetualIntelligence.OneImlx.Cli.Runners
 {
     /// <summary>
     /// The <c>map</c> command runner.
     /// </summary>
-    public class MapCommandRunner : CommandRunner
+    public class OneImlxMapRunner : CommandRunner
     {
         /// <summary>
         /// </summary>
         /// <param name="options"></param>
         /// <param name="logger"></param>
-        public MapCommandRunner(CliOptions options, ILogger<CommandRunner> logger) : base(options, logger)
+        public OneImlxMapRunner(CliOptions options, ILogger<CommandRunner> logger) : base(options, logger)
         {
         }
 

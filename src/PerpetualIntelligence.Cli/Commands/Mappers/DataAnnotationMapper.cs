@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
             {
                 case DataType.CreditCard: return Task.FromResult(Valid(typeof(string), typeof(CreditCardAttribute)));
                 case DataType.Currency: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.Date: return Task.FromResult(Valid(typeof(DateOnly), typeof(DataTypeAttribute)));
+                case DataType.Date: return Task.FromResult(Valid(typeof(DateTime), typeof(DataTypeAttribute)));
                 case DataType.DateTime: return Task.FromResult(Valid(typeof(DateTime), typeof(DataTypeAttribute)));
                 case DataType.Duration: return Task.FromResult(Valid(typeof(TimeSpan), typeof(DataTypeAttribute)));
                 case DataType.EmailAddress: return Task.FromResult(Valid(typeof(string), typeof(EmailAddressAttribute)));
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
                 case DataType.PhoneNumber: return Task.FromResult(Valid(typeof(string), typeof(PhoneAttribute)));
                 case DataType.PostalCode: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
                 case DataType.Text: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.Time: return Task.FromResult(Valid(typeof(TimeOnly), typeof(DataTypeAttribute)));
+                case DataType.Time: return Task.FromResult(Valid(typeof(DateTime), typeof(DataTypeAttribute)));
                 case DataType.Upload: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
                 case DataType.Url: return Task.FromResult(Valid(typeof(Uri), typeof(UrlAttribute)));
                 case DataType.Custom:

@@ -1,18 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup Label="Globals">
+        <SccProjectName>SAK</SccProjectName>
+        <SccProvider>SAK</SccProvider>
+        <SccAuxPath>SAK</SccAuxPath>
+        <SccLocalPath>SAK</SccLocalPath>
+        <Configurations>Debug;Release</Configurations>
+    </PropertyGroup>
 
-  <Import Project="..\..\build\props\PackageApache.props" />
+    <Import Project="..\..\build\props\PackageApache.props" />
 
-  <ItemGroup>
-    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
-    <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <Description>The Perpetual Intelligence cross platform cli framework.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
+    </ItemGroup>
 
 	<!--
         CAUTION: DO NOT EDIT UNLESS YOU ARE KNOWLEDGEABLE ABOUT THE PERPETUAL INTELLIGENCE'S AZURE AND GITHUB DEVOPS INTEGRATION.
@@ -63,6 +71,6 @@
 				<PackageReference Include="PerpetualIntelligence.Protocols" Version="$(PI_LIBRARY_PACKAGEVERSION)" />
 			</ItemGroup>
 		</Otherwise>
-	</Choose>
+	</Choose>	
 
 </Project>

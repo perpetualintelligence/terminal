@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="timeout">The routing timeout in milliseconds.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="title">The command title to show in the console.</param>
-        public static async Task RunRoutingAsync(this IHost host, string? title, TimeSpan timeout, CancellationToken cancellationToken)
+        public static async Task RunRoutingAsync(this IHost host, string? title, int timeout, CancellationToken cancellationToken)
         {
             // FOMAC: check IHost.RunAsync to see how async is implemented
             while (true)
@@ -57,7 +57,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
                 try
                 {
-                    await routeTask.WaitAsync(timeout, cancellationToken);
+                    routeTask.Wait(timeout, cancellationToken);
                 }
                 catch
                 {

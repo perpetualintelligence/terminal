@@ -74,7 +74,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 arguments = new();
 
                 string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
-                string[] args = argString.Split(argSplit, StringSplitOptions.RemoveEmptyEntries);
+                string[] args = argString.Split(new string[] { argSplit }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string arg in args)
                 {
                     // Restore the arg prefix for the extractor

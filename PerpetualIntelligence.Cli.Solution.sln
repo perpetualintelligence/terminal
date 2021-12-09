@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli.Test", "test\PerpetualIntelligence.Cli.Test\PerpetualIntelligence.Cli.Test.csproj", "{041FD485-C19C-4207-86F1-98802F048900}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli.OneImlx", "src\PerpetualIntelligence.Cli.OneImlx\PerpetualIntelligence.Cli.OneImlx.csproj", "{5CBF9774-8D55-4136-91A7-82FFED413D36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{041FD485-C19C-4207-86F1-98802F048900}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{041FD485-C19C-4207-86F1-98802F048900}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{041FD485-C19C-4207-86F1-98802F048900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CBF9774-8D55-4136-91A7-82FFED413D36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CBF9774-8D55-4136-91A7-82FFED413D36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CBF9774-8D55-4136-91A7-82FFED413D36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CBF9774-8D55-4136-91A7-82FFED413D36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 		{2D8A578B-80A1-43D0-B102-A2F74ACAD461} = {1A8779C7-3B84-405C-86D7-F000E5EA9AD8}
 		{F6DADEF3-E913-49CB-ADC4-EB177535BA68} = {9BD50919-76C1-424C-BD98-F870E6DE8903}
 		{041FD485-C19C-4207-86F1-98802F048900} = {E3A2F609-5E85-4740-8899-6A2B777BE31B}
+		{5CBF9774-8D55-4136-91A7-82FFED413D36} = {9BD50919-76C1-424C-BD98-F870E6DE8903}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FB18F489-0BCB-4389-AE92-18E7DBEA4818}
