@@ -47,7 +47,8 @@ namespace PerpetualIntelligence.OneImlx.Cli
                 new ArgumentIdentity("p", System.ComponentModel.DataAnnotations.DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),
                 new ArgumentIdentity("c", System.ComponentModel.DataAnnotations.DataType.Text, true, "The configuration, Debug or Release.", new System.ComponentModel.DataAnnotations.ValidationAttribute[] { new OneOfAttribute("Debug", "Release") }),
                 new ArgumentIdentity("f", System.ComponentModel.DataAnnotations.DataType.Text, true, "The .NET framework identifier."),
-                new ArgumentIdentity("o", System.ComponentModel.DataAnnotations.DataType.Text, true, "The mapping JSON file path.")
+                new ArgumentIdentity("i", System.ComponentModel.DataAnnotations.DataType.Text, true, "The input mapping JSON file path."),
+                new ArgumentIdentity("o", System.ComponentModel.DataAnnotations.DataType.Text, true, "The output mapping JSON file path.")
             });
             builder.AddCommandIdentity<OneImlxMapRunner, CommandChecker>(map);
 
