@@ -12,7 +12,6 @@ using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Checkers
@@ -55,66 +54,49 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 return OneImlxResult.NewError<ArgumentValueCheckerResult>(mapperResult);
             }
 
+            // Check value compatibility
+            return await CheckValueCompatibilityAsync(context, mapperResult);
+        }
+
+        /// <summary>
+        /// Checks the argument value compatibility.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="mapperResult"></param>
+        /// <returns></returns>
+        protected Task<ArgumentValueCheckerResult> CheckValueCompatibilityAsync(ArgumentValueCheckerContext context, DataAnnotationMapperResult mapperResult)
+        {
+            ArgumentValueCheckerResult result = new();
+
             // Check the system type compatibility
             if (mapperResult.MappedSystemType != null && !mapperResult.MappedSystemType.IsAssignableFrom(context.Argument.Value.GetType()))
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Name, mapperResult.MappedSystemType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
-                return OneImlxResult.NewError<ArgumentValueCheckerResult>(Errors.InvalidArgument, errorDesc);
-            }
-
-            // Check value compatibility
-            return await CheckValueAsync(context, mapperResult);
-        }
-
-        private Task<ArgumentValueCheckerResult> CheckValueAsync(ArgumentValueCheckerContext context, DataAnnotationMapperResult mapperResult)
-        {
-            if (context.ArgumentIdentity.SupportedValues != null && !context.ArgumentIdentity.SupportedValues.Contains(context.Argument.Value))
-            {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value is not supported. argument={0}", context.Argument.Name);
                 return Task.FromResult(OneImlxResult.NewError<ArgumentValueCheckerResult>(Errors.InvalidArgument, errorDesc));
             }
 
-            // FOMAC: SHould this be tolerant ?
-            if (mapperResult.MappedValidationAttribute != null)
+            if (context.ArgumentIdentity.ValidationAttributes != null)
             {
-                // Check the special data types
-                try
+                foreach (ValidationAttribute vAttr in context.ArgumentIdentity.ValidationAttributes)
                 {
-                    // Use the validation attribute to check the value
-                    ValidationContext validationContext = new(context.Argument);
-                    ValidationAttribute? validationAttribute = null;
-                    if (mapperResult.MappedValidationAttribute != null)
+                    try
                     {
-                        if (mapperResult.MappedValidationAttribute == typeof(DataTypeAttribute))
-                        {
-                            if (context.Argument.DataType == DataType.Custom)
-                            {
-                                validationAttribute = (ValidationAttribute?)Activator.CreateInstance(mapperResult.MappedValidationAttribute, context.Argument.CustomDataType);
-                            }
-                            else
-                            {
-                                validationAttribute = (ValidationAttribute?)Activator.CreateInstance(mapperResult.MappedValidationAttribute, context.Argument.DataType);
-                            }
-                        }
-                        else
-                        {
-                            // We expect all other validation attributes to have parameterized constructor.
-                            validationAttribute = (ValidationAttribute?)Activator.CreateInstance(mapperResult.MappedValidationAttribute);
-                        }
-
-                        if (validationAttribute != null)
-                        {
-                            validationAttribute.Validate(context.Argument.Value, validationContext);
-                        }
+                        ValidationContext validationContext = new(context.Argument);
+                        vAttr.Validate(context.Argument.Value, validationContext);
                     }
-                }
-                catch (Exception ex)
-                {
-                    return Task.FromResult(OneImlxResult.NewError<ArgumentValueCheckerResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Name, context.Argument.Value, ex.Message)));
+                    catch (Exception ex)
+                    {
+                        result.AppendError(OneImlxResult.NewError<ArgumentValueCheckerResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Name, context.Argument.Value, ex.Message)));
+                    }
                 }
             }
 
-            return Task.FromResult(new ArgumentValueCheckerResult() { MappedSystemType = mapperResult.MappedSystemType });
+            if (!result.IsError)
+            {
+                result.MappedSystemType = mapperResult.MappedSystemType;
+            }
+
+            return Task.FromResult(result);
         }
 
         private readonly ILogger<ArgumentValueChecker> logger;

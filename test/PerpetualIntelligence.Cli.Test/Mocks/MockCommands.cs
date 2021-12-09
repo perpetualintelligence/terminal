@@ -7,6 +7,7 @@
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Runners;
+using PerpetualIntelligence.Shared.Attributes.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -29,9 +30,9 @@ namespace PerpetualIntelligence.Cli.Mocks
             new ArgumentIdentity("key4", DataType.EmailAddress, false, "Key4 value email"),
             new ArgumentIdentity("key5", DataType.Url, false, "Key5 value url"),
             new ArgumentIdentity("key6", nameof(Boolean), false, "Key6 no value"),
-            new ArgumentIdentity("key7", DataType.Currency, true, "Key7 value currency", new[] { "INR", "USD", "EUR" }),
+            new ArgumentIdentity("key7", DataType.Currency, true, "Key7 value currency", new[] { new OneOfAttribute("INR", "USD", "EUR") }),
             new ArgumentIdentity("key8", nameof(Int32), false, "Key8 value custom int"),
-            new ArgumentIdentity("key9", nameof(Double), true, "Key9 value custom double", new object[] { 2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5 }),
+            new ArgumentIdentity("key9", nameof(Double), true, "Key9 value custom double", new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) }),
             new ArgumentIdentity("key10", nameof(String), true, "Key10 value custom string")
         };
 

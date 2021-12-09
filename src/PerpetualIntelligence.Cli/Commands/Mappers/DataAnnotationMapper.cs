@@ -41,38 +41,38 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
 
             switch (context.Argument.DataType)
             {
-                case DataType.CreditCard: return Task.FromResult(Valid(typeof(string), typeof(CreditCardAttribute)));
-                case DataType.Currency: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.Date: return Task.FromResult(Valid(typeof(DateOnly), typeof(DataTypeAttribute)));
-                case DataType.DateTime: return Task.FromResult(Valid(typeof(DateTime), typeof(DataTypeAttribute)));
-                case DataType.Duration: return Task.FromResult(Valid(typeof(TimeSpan), typeof(DataTypeAttribute)));
-                case DataType.EmailAddress: return Task.FromResult(Valid(typeof(string), typeof(EmailAddressAttribute)));
-                case DataType.Html: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.ImageUrl: return Task.FromResult(Valid(typeof(Uri), typeof(UrlAttribute)));
-                case DataType.MultilineText: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.Password: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.PhoneNumber: return Task.FromResult(Valid(typeof(string), typeof(PhoneAttribute)));
-                case DataType.PostalCode: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.Text: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.Time: return Task.FromResult(Valid(typeof(TimeOnly), typeof(DataTypeAttribute)));
-                case DataType.Upload: return Task.FromResult(Valid(typeof(string), typeof(DataTypeAttribute)));
-                case DataType.Url: return Task.FromResult(Valid(typeof(Uri), typeof(UrlAttribute)));
+                case DataType.CreditCard: return Task.FromResult(Valid(typeof(string)));
+                case DataType.Currency: return Task.FromResult(Valid(typeof(string)));
+                case DataType.Date: return Task.FromResult(Valid(typeof(DateOnly)));
+                case DataType.DateTime: return Task.FromResult(Valid(typeof(DateTime)));
+                case DataType.Duration: return Task.FromResult(Valid(typeof(TimeSpan)));
+                case DataType.EmailAddress: return Task.FromResult(Valid(typeof(string)));
+                case DataType.Html: return Task.FromResult(Valid(typeof(string)));
+                case DataType.ImageUrl: return Task.FromResult(Valid(typeof(Uri)));
+                case DataType.MultilineText: return Task.FromResult(Valid(typeof(string)));
+                case DataType.Password: return Task.FromResult(Valid(typeof(string)));
+                case DataType.PhoneNumber: return Task.FromResult(Valid(typeof(string)));
+                case DataType.PostalCode: return Task.FromResult(Valid(typeof(string)));
+                case DataType.Text: return Task.FromResult(Valid(typeof(string)));
+                case DataType.Time: return Task.FromResult(Valid(typeof(TimeOnly)));
+                case DataType.Upload: return Task.FromResult(Valid(typeof(string)));
+                case DataType.Url: return Task.FromResult(Valid(typeof(Uri)));
                 case DataType.Custom:
                     {
                         switch (context.Argument.CustomDataType)
                         {
                             // The system defined custom data type don't need any type validation as they are validated
                             // explicitly by the checker.
-                            case nameof(Boolean): return Task.FromResult(Valid(typeof(bool), null));
-                            case nameof(String): return Task.FromResult(Valid(typeof(string), null));
-                            case nameof(Int16): return Task.FromResult(Valid(typeof(short), null));
-                            case nameof(UInt16): return Task.FromResult(Valid(typeof(ushort), null));
-                            case nameof(Int32): return Task.FromResult(Valid(typeof(int), null));
-                            case nameof(UInt32): return Task.FromResult(Valid(typeof(uint), null));
-                            case nameof(Int64): return Task.FromResult(Valid(typeof(long), null));
-                            case nameof(UInt64): return Task.FromResult(Valid(typeof(ulong), null));
-                            case nameof(Single): return Task.FromResult(Valid(typeof(float), null));
-                            case nameof(Double): return Task.FromResult(Valid(typeof(double), null));
+                            case nameof(Boolean): return Task.FromResult(Valid(typeof(bool)));
+                            case nameof(String): return Task.FromResult(Valid(typeof(string)));
+                            case nameof(Int16): return Task.FromResult(Valid(typeof(short)));
+                            case nameof(UInt16): return Task.FromResult(Valid(typeof(ushort)));
+                            case nameof(Int32): return Task.FromResult(Valid(typeof(int)));
+                            case nameof(UInt32): return Task.FromResult(Valid(typeof(uint)));
+                            case nameof(Int64): return Task.FromResult(Valid(typeof(long)));
+                            case nameof(UInt64): return Task.FromResult(Valid(typeof(ulong)));
+                            case nameof(Single): return Task.FromResult(Valid(typeof(float)));
+                            case nameof(Double): return Task.FromResult(Valid(typeof(double)));
                             default:
                                 {
                                     return Task.FromResult(OneImlxResult.NewError<DataAnnotationMapperResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is not supported. argument={0} custom_data_type={1}", context.Argument.Name, context.Argument.CustomDataType)));
@@ -86,9 +86,9 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
             }
         }
 
-        private DataAnnotationMapperResult Valid(Type type, Type? validationAttribute)
+        private DataAnnotationMapperResult Valid(Type type)
         {
-            return new DataAnnotationMapperResult() { MappedSystemType = type, MappedValidationAttribute = validationAttribute };
+            return new DataAnnotationMapperResult() { MappedSystemType = type };
         }
 
         private readonly ILogger<DataAnnotationMapper> logger;

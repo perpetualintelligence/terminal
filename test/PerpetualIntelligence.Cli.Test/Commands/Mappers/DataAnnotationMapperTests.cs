@@ -66,7 +66,6 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
             var result = await mapper.MapAsync(new DataAnnotationMapperContext(argument));
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(systemType, result.MappedSystemType);
-            Assert.AreEqual(valiationAttribute, result.MappedValidationAttribute);
         }
 
         [TestMethod]

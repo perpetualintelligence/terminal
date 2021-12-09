@@ -17,7 +17,9 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Stores.InMemory;
 using PerpetualIntelligence.Shared.Attributes;
+using PerpetualIntelligence.Shared.Attributes.Validation;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
@@ -126,11 +128,11 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             CommandIdentity map = new("urn:oneimlx:cli:map", "map", "map", new()
             {
-                new ArgumentIdentity("r", System.ComponentModel.DataAnnotations.DataType.Text, true, "The root path for source projects."),
-                new ArgumentIdentity("p", System.ComponentModel.DataAnnotations.DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),
-                new ArgumentIdentity("c", System.ComponentModel.DataAnnotations.DataType.Text, true, "The configuration, Debug or Release.", new string[] { "Debug", "Release" }),
-                new ArgumentIdentity("f", System.ComponentModel.DataAnnotations.DataType.Text, true, "The .NET framework identifier."),
-                new ArgumentIdentity("o", System.ComponentModel.DataAnnotations.DataType.Text, true, "The mapping JSON file path.")
+                new ArgumentIdentity("r", DataType.Text, true, "The root path for source projects."),
+                new ArgumentIdentity("p", DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),
+                new ArgumentIdentity("c", DataType.Text, true, "The configuration, Debug or Release.", new[] { new OneOfAttribute("Debug", "Release") }),
+                new ArgumentIdentity("f", DataType.Text, true, "The .NET framework identifier."),
+                new ArgumentIdentity("o", DataType.Text, true, "The mapping JSON file path.")
             });
             builder.AddCommandIdentity<MapCommandRunner, CommandChecker>(map);
 

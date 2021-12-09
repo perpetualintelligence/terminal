@@ -6,7 +6,9 @@
 
 using PerpetualIntelligence.Shared.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
@@ -20,11 +22,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <param name="name">The argument name.</param>
         /// <param name="dataType">The argument data type.</param>
-        /// <param name="required">The argument is optional or required.</param>
+        /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
-        /// <param name="supportedValues">The supported values.</param>
+        /// <param name="validationAttributes">The data validation attributes.</param>
         [ToUnitTest("null checks")]
-        public ArgumentIdentity(string name, DataType dataType, bool required = false, string? description = null, object[]? supportedValues = null)
+        public ArgumentIdentity(string name, DataType dataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -33,9 +35,17 @@ namespace PerpetualIntelligence.Cli.Commands
 
             Name = name;
             DataType = dataType;
-            Required = required;
             Description = description;
-            SupportedValues = supportedValues;
+
+            if (validationAttributes != null)
+            {
+                ValidationAttributes = new HashSet<ValidationAttribute>(validationAttributes);
+            }
+
+            if (required)
+            {
+                SetRequired();
+            }
         }
 
         /// <summary>
@@ -43,11 +53,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <param name="name">The argument name.</param>
         /// <param name="customDataType">The argument custom data type.</param>
-        /// <param name="required">The argument is optional or required.</param>
+        /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
-        /// <param name="supportedValues">The supported values.</param>
+        /// <param name="validationAttributes">The data validation attributes.</param>
         [ToUnitTest("null checks")]
-        public ArgumentIdentity(string name, string customDataType, bool required = false, string? description = null, object[]? supportedValues = null)
+        public ArgumentIdentity(string name, string customDataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -57,9 +67,17 @@ namespace PerpetualIntelligence.Cli.Commands
             Name = name;
             DataType = DataType.Custom;
             CustomDataType = customDataType;
-            Required = required;
             Description = description;
-            SupportedValues = supportedValues;
+
+            if (validationAttributes != null)
+            {
+                ValidationAttributes = new HashSet<ValidationAttribute>(validationAttributes);
+            }
+
+            if (required)
+            {
+                SetRequired();
+            }
         }
 
         /// <summary>
@@ -69,9 +87,9 @@ namespace PerpetualIntelligence.Cli.Commands
         public string? CustomDataType { get; set; }
 
         /// <summary>
-        /// The argument data type. Defaults to <see cref="DataType.Text"/>.
+        /// The argument data type.
         /// </summary>
-        public DataType DataType { get; set; } = DataType.Text;
+        public DataType DataType { get; set; }
 
         /// <summary>
         /// The argument description.
@@ -85,6 +103,22 @@ namespace PerpetualIntelligence.Cli.Commands
         public bool? Disabled { get; set; }
 
         /// <summary>
+        /// Determines is the argument is required.
+        /// </summary>
+        public bool IsRequired
+        {
+            get
+            {
+                if (ValidationAttributes == null)
+                {
+                    return false;
+                }
+
+                return ValidationAttributes.Contains(new RequiredAttribute());
+            }
+        }
+
+        /// <summary>
         /// The argument name.
         /// </summary>
         /// <remarks>The argument name is unique within a command.</remarks>
@@ -96,13 +130,25 @@ namespace PerpetualIntelligence.Cli.Commands
         public bool? Obsolete { get; set; }
 
         /// <summary>
-        /// Determines whether the argument is required to execute the command.
+        /// The data annotation validation attributes to check the argument value.
         /// </summary>
-        public bool? Required { get; set; }
+        public IEnumerable<ValidationAttribute>? ValidationAttributes { get; set; }
 
         /// <summary>
-        /// The supported values.
+        /// Sets the argument as required.
         /// </summary>
-        public object[]? SupportedValues { get; set; }
+        protected void SetRequired()
+        {
+            if (ValidationAttributes == null)
+            {
+                ValidationAttributes = new HashSet<ValidationAttribute>() { new RequiredAttribute() };
+            }
+            else
+            {
+                List<ValidationAttribute> attributes = new(ValidationAttributes);
+                attributes.Add(new RequiredAttribute());
+                ValidationAttributes = attributes;
+            }
+        }
     }
 }

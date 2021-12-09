@@ -6,7 +6,6 @@
 
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
@@ -19,10 +18,5 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         /// The mapped system type.
         /// </summary>
         public Type? MappedSystemType { get; set; }
-
-        /// <summary>
-        /// The mapped <see cref="ValidationAttribute"/> type.
-        /// </summary>
-        public Type? MappedValidationAttribute { get; set; }
     }
 }

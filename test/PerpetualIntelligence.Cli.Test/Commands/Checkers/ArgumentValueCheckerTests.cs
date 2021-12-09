@@ -9,6 +9,7 @@ using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Protocols.Cli;
+using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System.ComponentModel.DataAnnotations;
@@ -49,12 +50,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task NotSupportedValueShouldErrorAsync()
         {
-            ArgumentIdentity identity = new("arg1", DataType.Text, supportedValues: new string[] { "test1", "test2" });
+            ArgumentIdentity identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
             Argument value = new("arg1", "test3", DataType.Text);
 
             ArgumentValueCheckerContext context = new ArgumentValueCheckerContext(identity, value);
             var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value is not supported. argument=arg1");
+            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=test3 additional_info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -73,7 +74,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task SupportedValueShouldNotErrorAsync()
         {
-            ArgumentIdentity identity = new("arg1", DataType.Text, supportedValues: new string[] { "test1", "test2" });
+            ArgumentIdentity identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
             Argument value = new("arg1", "test2", DataType.Text);
 
             ArgumentValueCheckerContext context = new ArgumentValueCheckerContext(identity, value);
@@ -84,7 +85,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task SystemTypeMatchAndDataValidationFailShouldErrorAsync()
         {
-            ArgumentIdentity identity = new("arg1", DataType.CreditCard);
+            ArgumentIdentity identity = new("arg1", DataType.CreditCard, validationAttributes: new[] { new CreditCardAttribute() });
             Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);
 
             ArgumentValueCheckerContext context = new ArgumentValueCheckerContext(identity, value);

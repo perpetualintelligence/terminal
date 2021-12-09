@@ -60,7 +60,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 if (!containsArg)
                 {
                     // Required argument is missing
-                    if (argIdentity.Required.GetValueOrDefault())
+                    if (argIdentity.IsRequired)
                     {
                         string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The required argument is missing. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Name);
                         return OneImlxResult.NewError<CommandCheckerResult>(Errors.MissingArgument, errorDesc);
