@@ -20,7 +20,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli
+namespace PerpetualIntelligence.OneImlx.Cli
 {
     /// <summary>
     /// Main program entry point.
@@ -48,7 +48,7 @@ namespace PerpetualIntelligence.Cli
                     .Start();
 
                 // The console loop for routing commands.
-                await host.RunRoutingAsync("cmd > ", TimeSpan.FromMilliseconds(5000), CancellationToken.None);
+                await host.RunRoutingAsync("cmd > ", 5000, CancellationToken.None);
             }
             catch (Exception ex)
             {

@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="timeout">The routing timeout in milliseconds.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="title">The command title to show in the console.</param>
-        public static async Task RunRoutingAsync(this IHost host, string? title, TimeSpan timeout, CancellationToken cancellationToken)
+        public static async Task RunRoutingAsync(this IHost host, string? title, int timeout, CancellationToken cancellationToken)
         {
             // FOMAC: check IHost.RunAsync to see how async is implemented
             while (true)
@@ -57,21 +57,27 @@ namespace PerpetualIntelligence.Cli.Extensions
 
                 try
                 {
-                    await routeTask.WaitAsync(timeout, cancellationToken);
+                    bool success = routeTask.Wait(timeout, cancellationToken);
+                    if(!success)
+                    {
+                        CliOptions options = host.Services.GetRequiredService<CliOptions>();
+                        ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. path={0}", commandString);
+
+                    }
                 }
-                catch
+                catch (OperationCanceledException)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. path={0}", commandString);
 
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. path={0}", commandString);
-                    }
-                    else
-                    {
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. path={0}", commandString);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    CliOptions options = host.Services.GetRequiredService<CliOptions>();
+                    ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. path={0} additional_info={1}", commandString, ex.Message);
                 }
             };
         }

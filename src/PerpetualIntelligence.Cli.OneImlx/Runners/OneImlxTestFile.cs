@@ -7,7 +7,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace PerpetualIntelligence.Cli
+namespace PerpetualIntelligence.OneImlx.Cli.Runners
 {
     public sealed class OneImlxTestFile
     {

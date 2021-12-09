@@ -6,6 +6,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using System;
@@ -18,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Extensions
     public static class IServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds <c>cli</c> services.
+        /// Adds the Perpetual Intelligence default <c>cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="setupAction">The setup action.</param>
@@ -29,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds <c>cli</c> services.
+        /// Adds the Perpetual Intelligence default <c>cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
@@ -41,18 +43,18 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds <c>cli</c> services.
+        /// Adds the Perpetual Intelligence default <c>cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         public static ICliBuilder AddCli(this IServiceCollection services)
         {
             return services.AddCliBuilder()
                 .AddCliOptions()
-                .AddCore();
+                .AddRouting<CommandRouter, CommandHandler>();
         }
 
         /// <summary>
-        /// Adds <c>cli</c> builder to the service collection.
+        /// Adds the Perpetual Intelligence default <c>cli</c> builder to the service collection.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <returns></returns>
