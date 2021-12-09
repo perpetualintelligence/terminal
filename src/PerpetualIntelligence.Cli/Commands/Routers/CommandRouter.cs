@@ -29,11 +29,10 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// <param name="services">The services.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRouter(ICommandExtractor extractor, ICommandHandler handler, IServiceProvider services, CliOptions options, ILogger<CommandRouter> logger)
+        public CommandRouter(ICommandExtractor extractor, ICommandHandler handler, CliOptions options, ILogger<CommandRouter> logger)
         {
             this.extrator = extractor ?? throw new ArgumentNullException(nameof(extractor));
             this.handler = handler ?? throw new ArgumentNullException(nameof(handler));
-            this.services = services ?? throw new ArgumentNullException(nameof(services));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -64,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
 
             // Delegate to handler
             OneImlxTryResult<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
-            CommandHandlerContext handlerContext = new(tryResult.CommandIdentity, tryResult.Command, services);
+            CommandHandlerContext handlerContext = new(tryResult.CommandIdentity, tryResult.Command);
             CommandHandlerResult handlerResult = await tryHandler.Result!.HandleAsync(handlerContext);
             if (handlerResult.IsError)
             {
@@ -85,6 +84,5 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         private readonly ICommandHandler handler;
         private readonly ILogger<CommandRouter> logger;
         private readonly CliOptions options;
-        private readonly IServiceProvider services;
     }
 }

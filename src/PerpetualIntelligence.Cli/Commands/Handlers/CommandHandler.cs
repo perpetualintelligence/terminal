@@ -24,8 +24,9 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         /// <summary>
         /// Initialize a news instance.
         /// </summary>
-        public CommandHandler(CliOptions options, ILogger<CommandHandler> logger)
+        public CommandHandler(IServiceProvider services, CliOptions options, ILogger<CommandHandler> logger)
         {
+            this.services = services ?? throw new ArgumentNullException(nameof(services));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -81,7 +82,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
 
             // Not added to service collection
-            object? checkerObj = context.Services.GetService(context.CommandIdentity.Checker);
+            object? checkerObj = services.GetService(context.CommandIdentity.Checker);
             if (checkerObj == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Checker.FullName);
@@ -109,7 +110,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
 
             // Not added to service collection
-            object? runnerObj = context.Services.GetService(context.CommandIdentity.Runner);
+            object? runnerObj = services.GetService(context.CommandIdentity.Runner);
             if (runnerObj == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Runner.FullName);
@@ -129,5 +130,6 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
         private readonly ILogger<CommandHandler> logger;
         private readonly CliOptions options;
+        private readonly IServiceProvider services;
     }
 }

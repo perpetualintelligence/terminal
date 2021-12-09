@@ -56,15 +56,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual(typeof(MockCommandRunner), impIstance.Runner);
             Assert.AreEqual(typeof(MockCommandChecker), impIstance.Checker);
 
-            var cmdRunner = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandRunner)));
+            var cmdRunner = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(MockCommandRunner)));
             Assert.IsNotNull(cmdRunner);
             Assert.AreEqual(ServiceLifetime.Transient, cmdRunner.Lifetime);
-            Assert.AreEqual(typeof(MockCommandRunner), cmdRunner.ImplementationType);
 
-            var cmdChecker = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandChecker)));
+            var cmdChecker = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(MockCommandChecker)));
             Assert.IsNotNull(cmdChecker);
             Assert.AreEqual(ServiceLifetime.Transient, cmdChecker.Lifetime);
-            Assert.AreEqual(typeof(MockCommandChecker), cmdChecker.ImplementationType);
         }
 
         [TestMethod]

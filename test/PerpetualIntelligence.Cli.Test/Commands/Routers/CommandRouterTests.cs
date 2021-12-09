@@ -133,11 +133,10 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public void RouteWithNullArgumentsShouldThrow()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(null, null, null, null, null), "Value cannot be null. (Parameter 'extractor')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(extractor, null, null, null, null), "Value cannot be null. (Parameter 'handler')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(extractor, handler, null, null, null), "Value cannot be null. (Parameter 'services')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(extractor, handler, host.Services, null, null), "Value cannot be null. (Parameter 'options')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(extractor, handler, host.Services, options, null), "Value cannot be null. (Parameter 'logger')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(null, null, null, null), "Value cannot be null. (Parameter 'extractor')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(extractor, null, null, null), "Value cannot be null. (Parameter 'handler')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(extractor, handler, null, null), "Value cannot be null. (Parameter 'options')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(extractor, handler, options, null), "Value cannot be null. (Parameter 'logger')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
@@ -157,7 +156,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             options = MockCliOptions.New();
             extractor = new MockExtractor();
             handler = new MockHandler();
-            router = new CommandRouter(extractor, handler, host.Services, options, TestLogger.Create<CommandRouter>());
+            router = new CommandRouter(extractor, handler, options, TestLogger.Create<CommandRouter>());
         }
 
         private MockExtractor extractor = null!;

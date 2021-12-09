@@ -59,10 +59,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             builder.Services.AddSingleton(commandIdentity);
 
             // Add command runner
-            builder.Services.AddTransient<ICommandRunner, TRunner>();
+            builder.Services.AddTransient<TRunner>();
 
             // Add command checker
-            builder.Services.AddTransient<ICommandChecker, TChecker>();
+            builder.Services.AddTransient<TChecker>();
 
             return builder;
         }

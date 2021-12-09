@@ -35,9 +35,9 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>());
             using var newhost = hostBuilder.Build();
 
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, newhost.Services);
-            var result = await handler.HandleAsync(commandHandler);
-
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
+            var newHandler = new CommandHandler(newhost.Services, options, TestLogger.Create<CommandHandler>());
+            var result = await newHandler.HandleAsync(commandHandler);
             TestHelper.AssertOneImlxError(result, Errors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockChecker");
         }
 
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         {
             command.Item1.Checker = typeof(MockErrorChecker);
 
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, host.Services);
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
             var result = await handler.HandleAsync(commandHandler);
 
             TestHelper.AssertOneImlxError(result, "test_checker_error", "test_checker_error_desc");
@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         [TestMethod]
         public async Task CheckerNotConfiguredShouldError()
         {
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, host.Services);
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
             var result = await handler.HandleAsync(commandHandler);
             TestHelper.AssertOneImlxError(result, Errors.ServerError, "The command checker is not configured. command_name=name1 command_id=id1");
         }
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Not a ICommandChecker
             command.Item1.Checker = typeof(MockNotCheckerOrRunner);
 
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, host.Services);
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
             var result = await handler.HandleAsync(commandHandler);
             TestHelper.AssertOneImlxError(result, Errors.ServerError, "The command checker is not valid. command_name=name1 command_id=id1 checker=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockNotCheckerOrRunner");
         }
@@ -80,7 +80,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Not a ICommandChecker
             command.Item1.Runner = typeof(MockNotCheckerOrRunner);
 
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, host.Services);
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
             var result = await handler.HandleAsync(commandHandler);
             TestHelper.AssertOneImlxError(result, Errors.ServerError, "The command runner is not valid. command_name=name1 command_id=id1 runner=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockNotCheckerOrRunner");
         }
@@ -97,9 +97,9 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             command.Item1.Runner = typeof(MockRunner);
 
             using var newhost = hostBuilder.Build();
-
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, newhost.Services);
-            var result = await handler.HandleAsync(commandHandler);
+            var newHandler = new CommandHandler(newhost.Services, options, TestLogger.Create<CommandHandler>());
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
+            var result = await newHandler.HandleAsync(commandHandler);
 
             TestHelper.AssertOneImlxError(result, Errors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockRunner");
         }
@@ -112,7 +112,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             command.Item1.Runner = typeof(MockErrorRunner);
 
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, host.Services);
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
             var result = await handler.HandleAsync(commandHandler);
 
             TestHelper.AssertOneImlxError(result, "test_runner_error", "test_runner_error_desc");
@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Make sure checker pass so runner can fail
             command.Item1.Checker = typeof(MockChecker);
 
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, host.Services);
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
             var result = await handler.HandleAsync(commandHandler);
             TestHelper.AssertOneImlxError(result, Errors.ServerError, "The command runner is not configured. command_name=name1 command_id=id1");
         }
@@ -135,7 +135,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             command.Item1.Checker = typeof(MockChecker);
             command.Item1.Runner = typeof(MockRunner);
 
-            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2, host.Services);
+            CommandHandlerContext commandHandler = new CommandHandlerContext(command.Item1, command.Item2);
             var result = await handler.HandleAsync(commandHandler);
 
             Assert.IsFalse(result.IsError);
@@ -148,7 +148,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             command = MockCommands.NewCommand("id1", "name1", "prefix1");
             options = MockCliOptions.New();
-            handler = new CommandHandler(options, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, options, TestLogger.Create<CommandHandler>());
         }
 
         private void ConfigureCheckerOnly(IServiceCollection arg2)
