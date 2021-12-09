@@ -12,7 +12,6 @@ using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Mocks;
@@ -28,6 +27,17 @@ namespace PerpetualIntelligence.Cli.Extensions
     {
         public ICliBuilderExtensionsTests() : base(TestLogger.Create<ICliBuilderExtensionsTests>())
         {
+        }
+
+        [TestMethod]
+        public void AddArgumentCheckerShouldCorrectlyInitialize()
+        {
+            cliBuilder.AddArgumentChecker<MockArgumentMapper, MockArgumentChecker>();
+
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentChecker)));
+            Assert.IsNotNull(arg);
+            Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
+            Assert.AreEqual(typeof(MockArgumentChecker), arg.ImplementationType);
         }
 
         [TestMethod]

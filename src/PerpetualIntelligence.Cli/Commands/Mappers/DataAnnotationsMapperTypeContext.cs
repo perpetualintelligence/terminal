@@ -11,14 +11,14 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// The argument data-type checker context.
     /// </summary>
-    public class DataAnnotationMapperContext
+    public class DataAnnotationsMapperTypeContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="argument">The argument.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public DataAnnotationMapperContext(Argument argument)
+        public DataAnnotationsMapperTypeContext(Argument argument)
         {
             Argument = argument ?? throw new ArgumentNullException(nameof(argument));
         }

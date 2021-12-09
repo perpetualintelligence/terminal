@@ -7,23 +7,16 @@
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
     /// The argument checker result.
     /// </summary>
-    public class ArgumentValueCheckerResult : OneImlxResult
+    public class DataAnnotationsMapperTypeResult : OneImlxResult
     {
-        /// <summary>
-        /// Initialize a new instance.
-        /// </summary>
-        public ArgumentValueCheckerResult()
-        {
-        }
-
         /// <summary>
         /// The mapped system type.
         /// </summary>
-        public Type? MappedSystemType { get; set; }
+        public Type? MappedType { get; set; }
     }
 }

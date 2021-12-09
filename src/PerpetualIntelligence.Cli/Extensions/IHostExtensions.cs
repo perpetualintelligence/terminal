@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             while (true)
             {
                 // FOMAC: avoid blocking threads.
-                Thread.Sleep(200);
+                await Task.Delay(200);
 
                 // Read a command
                 if (!string.IsNullOrWhiteSpace(title))
@@ -58,12 +58,11 @@ namespace PerpetualIntelligence.Cli.Extensions
                 try
                 {
                     bool success = routeTask.Wait(timeout, cancellationToken);
-                    if(!success)
+                    if (!success)
                     {
                         CliOptions options = host.Services.GetRequiredService<CliOptions>();
                         ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
                         logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. path={0}", commandString);
-
                     }
                 }
                 catch (OperationCanceledException)
@@ -71,7 +70,6 @@ namespace PerpetualIntelligence.Cli.Extensions
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
                     logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. path={0}", commandString);
-
                 }
                 catch (Exception ex)
                 {

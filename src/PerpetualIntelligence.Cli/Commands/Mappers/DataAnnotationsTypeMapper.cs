@@ -18,32 +18,32 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// The <c>cli</c> data type mapper for <see cref="DataType"/>.
     /// </summary>
-    public class DataAnnotationMapper : IArgumentMapper
+    public class DataAnnotationsTypeMapper : IArgumentMapper
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public DataAnnotationMapper(CliOptions options, ILogger<DataAnnotationMapper> logger)
+        public DataAnnotationsTypeMapper(CliOptions options, ILogger<DataAnnotationsTypeMapper> logger)
         {
             this.options = options;
             this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public Task<DataAnnotationMapperResult> MapAsync(DataAnnotationMapperContext context)
+        public Task<DataAnnotationsMapperTypeResult> MapAsync(DataAnnotationsMapperTypeContext context)
         {
             if (context.Argument.DataType == DataType.Custom && string.IsNullOrWhiteSpace(context.Argument.CustomDataType))
             {
-                return Task.FromResult(OneImlxResult.NewError<DataAnnotationMapperResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is null or whitespace. argument={0}", context.Argument.Name)));
+                return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is null or whitespace. argument={0}", context.Argument.Name)));
             }
 
             switch (context.Argument.DataType)
             {
                 case DataType.CreditCard: return Task.FromResult(Valid(typeof(string)));
                 case DataType.Currency: return Task.FromResult(Valid(typeof(string)));
-                case DataType.Date: return Task.FromResult(Valid(typeof(DateOnly)));
+                case DataType.Date: return Task.FromResult(Valid(typeof(DateTime)));
                 case DataType.DateTime: return Task.FromResult(Valid(typeof(DateTime)));
                 case DataType.Duration: return Task.FromResult(Valid(typeof(TimeSpan)));
                 case DataType.EmailAddress: return Task.FromResult(Valid(typeof(string)));
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
                 case DataType.PhoneNumber: return Task.FromResult(Valid(typeof(string)));
                 case DataType.PostalCode: return Task.FromResult(Valid(typeof(string)));
                 case DataType.Text: return Task.FromResult(Valid(typeof(string)));
-                case DataType.Time: return Task.FromResult(Valid(typeof(TimeOnly)));
+                case DataType.Time: return Task.FromResult(Valid(typeof(DateTime)));
                 case DataType.Upload: return Task.FromResult(Valid(typeof(string)));
                 case DataType.Url: return Task.FromResult(Valid(typeof(Uri)));
                 case DataType.Custom:
@@ -75,23 +75,23 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
                             case nameof(Double): return Task.FromResult(Valid(typeof(double)));
                             default:
                                 {
-                                    return Task.FromResult(OneImlxResult.NewError<DataAnnotationMapperResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is not supported. argument={0} custom_data_type={1}", context.Argument.Name, context.Argument.CustomDataType)));
+                                    return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is not supported. argument={0} custom_data_type={1}", context.Argument.Name, context.Argument.CustomDataType)));
                                 }
                         }
                     }
                 default:
                     {
-                        return Task.FromResult(OneImlxResult.NewError<DataAnnotationMapperResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument data type is not supported. argument={0} data_type={1}", context.Argument.Name, context.Argument.DataType)));
+                        return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument data type is not supported. argument={0} data_type={1}", context.Argument.Name, context.Argument.DataType)));
                     }
             }
         }
 
-        private DataAnnotationMapperResult Valid(Type type)
+        private DataAnnotationsMapperTypeResult Valid(Type type)
         {
-            return new DataAnnotationMapperResult() { MappedSystemType = type };
+            return new DataAnnotationsMapperTypeResult() { MappedType = type };
         }
 
-        private readonly ILogger<DataAnnotationMapper> logger;
+        private readonly ILogger<DataAnnotationsTypeMapper> logger;
         private readonly CliOptions options;
     }
 }

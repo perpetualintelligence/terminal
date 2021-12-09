@@ -10,16 +10,12 @@ using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.RequestHandlers;
+using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
-using PerpetualIntelligence.Cli.Stores.InMemory;
-using PerpetualIntelligence.Shared.Attributes;
-using PerpetualIntelligence.Shared.Attributes.Validation;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
@@ -28,6 +24,20 @@ namespace PerpetualIntelligence.Cli.Extensions
     /// </summary>
     public static class ICliBuilderExtensions
     {
+        /// <summary>
+        /// Adds the argument checker to the service..
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TMapper">The command extractor type.</typeparam>
+        /// <typeparam name="TChecker">The command extractor type.</typeparam>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddArgumentChecker<TMapper, TChecker>(this ICliBuilder builder) where TMapper : class, IArgumentMapper where TChecker : class, IArgumentChecker
+        {
+            builder.Services.AddTransient<IArgumentMapper, TMapper>();
+            builder.Services.AddTransient<IArgumentChecker, TChecker>();
+            return builder;
+        }
+
         /// <summary>
         /// Adds the required <see cref="CliOptions"/> with singleton scope.
         /// </summary>
@@ -62,10 +72,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             builder.Services.AddSingleton(commandIdentity);
 
             // Add command runner
-            builder.Services.AddTransient<ICommandRunner, TRunner>();
+            builder.Services.AddTransient<TRunner>();
 
             // Add command checker
-            builder.Services.AddTransient<ICommandChecker, TChecker>();
+            builder.Services.AddTransient<TChecker>();
 
             return builder;
         }
@@ -80,22 +90,6 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandIdentityStore, TStore>();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the required core services with transient scope.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddCore(this ICliBuilder builder)
-        {
-            // Add command router
-            builder.Services.AddTransient<ICommandRouter, CommandRouter>();
-
-            // Add command handler
-            builder.Services.AddTransient<ICommandHandler, CommandHandler>();
 
             return builder;
         }
@@ -119,24 +113,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <c>oneimlx</c> cli commands to the service collection.
+        /// Adds the required core services with transient scope.
         /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
-        [Todo("Move this to OneImlx server")]
-        internal static ICliBuilder AddOneImlxCommandIdentities(this ICliBuilder builder)
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddRouting<TRouter, THandler>(this ICliBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler
         {
-            CommandIdentity map = new("urn:oneimlx:cli:map", "map", "map", new()
-            {
-                new ArgumentIdentity("r", DataType.Text, true, "The root path for source projects."),
-                new ArgumentIdentity("p", DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),
-                new ArgumentIdentity("c", DataType.Text, true, "The configuration, Debug or Release.", new[] { new OneOfAttribute("Debug", "Release") }),
-                new ArgumentIdentity("f", DataType.Text, true, "The .NET framework identifier."),
-                new ArgumentIdentity("o", DataType.Text, true, "The mapping JSON file path.")
-            });
-            builder.AddCommandIdentity<MapCommandRunner, CommandChecker>(map);
+            // Add command router
+            builder.Services.AddTransient<ICommandRouter, TRouter>();
 
-            builder.AddCommandIdentityStore<InMemoryCommandIdentityStore>();
+            // Add command handler
+            builder.Services.AddTransient<ICommandHandler, THandler>();
 
             return builder;
         }

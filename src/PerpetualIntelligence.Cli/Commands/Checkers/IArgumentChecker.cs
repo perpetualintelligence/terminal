@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// <summary>
     /// An abstraction to extract a data type of an argument.
     /// </summary>
-    public interface IArgumentValueChecker : IChecker<ArgumentValueCheckerContext, ArgumentValueCheckerResult>
+    public interface IArgumentChecker : IChecker<ArgumentCheckerContext, ArgumentCheckerResult>
     {
     }
 }

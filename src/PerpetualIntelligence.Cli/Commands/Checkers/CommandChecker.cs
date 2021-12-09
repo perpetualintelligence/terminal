@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="dataTypeChecker">The argument data-type checker.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandChecker(IArgumentValueChecker dataTypeChecker, CliOptions options, ILogger<CommandChecker> logger)
+        public CommandChecker(IArgumentChecker dataTypeChecker, CliOptions options, ILogger<CommandChecker> logger)
         {
             this.valueChecker = dataTypeChecker;
             this.options = options;
@@ -83,7 +83,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     }
 
                     // Check arg value
-                    var dataTypeResult = await valueChecker.CheckAsync(new ArgumentValueCheckerContext(argIdentity, arg!));
+                    var dataTypeResult = await valueChecker.CheckAsync(new ArgumentCheckerContext(argIdentity, arg!));
                     if (dataTypeResult.IsError)
                     {
                         return OneImlxResult.NewError<CommandCheckerResult>(dataTypeResult);
@@ -96,6 +96,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         private readonly ILogger<CommandChecker> logger;
         private readonly CliOptions options;
-        private readonly IArgumentValueChecker valueChecker;
+        private readonly IArgumentChecker valueChecker;
     }
 }

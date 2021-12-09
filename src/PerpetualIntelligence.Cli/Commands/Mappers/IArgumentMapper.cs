@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// An abstraction to extract a data type of an argument.
     /// </summary>
-    public interface IArgumentMapper : IMapper<DataAnnotationMapperContext, DataAnnotationMapperResult>
+    public interface IArgumentMapper : IMapper<DataAnnotationsMapperTypeContext, DataAnnotationsMapperTypeResult>
     {
     }
 }

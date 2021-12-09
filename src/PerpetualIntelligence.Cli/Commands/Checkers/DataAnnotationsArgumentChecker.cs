@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// <remarks>
     /// The default syntax format is either <c>-{arg}={value}</c> for a key-value pair or <c>-{arg}</c> for a boolean argument.
     /// </remarks>
-    public class ArgumentValueChecker : IArgumentValueChecker
+    public class DataAnnotationsArgumentChecker : IArgumentChecker
     {
         /// <summary>
         /// Initialize a new instance.
@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="mapper">The argument data-type mapper.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ArgumentValueChecker(IArgumentMapper mapper, CliOptions options, ILogger<ArgumentValueChecker> logger)
+        public DataAnnotationsArgumentChecker(IArgumentMapper mapper, CliOptions options, ILogger<DataAnnotationsArgumentChecker> logger)
         {
             this.mapper = mapper;
             this.options = options;
@@ -38,20 +38,20 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public async Task<ArgumentValueCheckerResult> CheckAsync(ArgumentValueCheckerContext context)
+        public async Task<ArgumentCheckerResult> CheckAsync(ArgumentCheckerContext context)
         {
             // Check for null argument value
             if (context.Argument.Value == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value cannot be null. argument={0}", context.Argument.Name);
-                return OneImlxResult.NewError<ArgumentValueCheckerResult>(Errors.InvalidArgument, errorDesc);
+                return OneImlxResult.NewError<ArgumentCheckerResult>(Errors.InvalidArgument, errorDesc);
             }
 
             // Check argument data type and value type
-            DataAnnotationMapperResult mapperResult = await mapper.MapAsync(new DataAnnotationMapperContext(context.Argument));
+            DataAnnotationsMapperTypeResult mapperResult = await mapper.MapAsync(new DataAnnotationsMapperTypeContext(context.Argument));
             if (mapperResult.IsError)
             {
-                return OneImlxResult.NewError<ArgumentValueCheckerResult>(mapperResult);
+                return OneImlxResult.NewError<ArgumentCheckerResult>(mapperResult);
             }
 
             // Check value compatibility
@@ -64,15 +64,15 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="context"></param>
         /// <param name="mapperResult"></param>
         /// <returns></returns>
-        protected Task<ArgumentValueCheckerResult> CheckValueCompatibilityAsync(ArgumentValueCheckerContext context, DataAnnotationMapperResult mapperResult)
+        protected Task<ArgumentCheckerResult> CheckValueCompatibilityAsync(ArgumentCheckerContext context, DataAnnotationsMapperTypeResult mapperResult)
         {
-            ArgumentValueCheckerResult result = new();
+            ArgumentCheckerResult result = new();
 
             // Check the system type compatibility
-            if (mapperResult.MappedSystemType != null && !mapperResult.MappedSystemType.IsAssignableFrom(context.Argument.Value.GetType()))
+            if (mapperResult.MappedType != null && !mapperResult.MappedType.IsAssignableFrom(context.Argument.Value.GetType()))
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Name, mapperResult.MappedSystemType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
-                return Task.FromResult(OneImlxResult.NewError<ArgumentValueCheckerResult>(Errors.InvalidArgument, errorDesc));
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Name, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
+                return Task.FromResult(OneImlxResult.NewError<ArgumentCheckerResult>(Errors.InvalidArgument, errorDesc));
             }
 
             if (context.ArgumentIdentity.ValidationAttributes != null)
@@ -86,20 +86,20 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     }
                     catch (Exception ex)
                     {
-                        result.AppendError(OneImlxResult.NewError<ArgumentValueCheckerResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Name, context.Argument.Value, ex.Message)));
+                        result.AppendError(OneImlxResult.NewError<ArgumentCheckerResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Name, context.Argument.Value, ex.Message)));
                     }
                 }
             }
 
             if (!result.IsError)
             {
-                result.MappedSystemType = mapperResult.MappedSystemType;
+                result.MappedSystemType = mapperResult.MappedType;
             }
 
             return Task.FromResult(result);
         }
 
-        private readonly ILogger<ArgumentValueChecker> logger;
+        private readonly ILogger<DataAnnotationsArgumentChecker> logger;
         private readonly IArgumentMapper mapper;
         private readonly CliOptions options;
     }

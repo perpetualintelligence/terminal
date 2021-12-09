@@ -216,8 +216,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            mapper = new DataAnnotationMapper(options, TestLogger.Create<DataAnnotationMapper>());
-            valueChecker = new ArgumentValueChecker(mapper, options, TestLogger.Create<ArgumentValueChecker>());
+            mapper = new DataAnnotationsTypeMapper(options, TestLogger.Create<DataAnnotationsTypeMapper>());
+            valueChecker = new DataAnnotationsArgumentChecker(mapper, options, TestLogger.Create<DataAnnotationsArgumentChecker>());
             checker = new CommandChecker(valueChecker, options, TestLogger.Create<CommandChecker>());
             commands = new InMemoryCommandIdentityStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
         }
@@ -253,6 +253,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         private ICommandIdentityStore commands = null!;
         private IArgumentMapper mapper = null!;
         private CliOptions options = null!;
-        private IArgumentValueChecker valueChecker = null!;
+        private IArgumentChecker valueChecker = null!;
     }
 }

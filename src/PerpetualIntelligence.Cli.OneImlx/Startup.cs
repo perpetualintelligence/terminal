@@ -8,10 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
+using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Stores.InMemory;
 using PerpetualIntelligence.OneImlx.Cli.Runners;
+using PerpetualIntelligence.Shared.Attributes.Validation;
 
 namespace PerpetualIntelligence.OneImlx.Cli
 {
@@ -28,6 +30,7 @@ namespace PerpetualIntelligence.OneImlx.Cli
         {
             services.AddCli(options => { options.Logging.ErrorArguments = true; })
                 .AddExtractor<SeparatorCommandExtractor, SeparatorArgumentExtractor>()
+                .AddArgumentChecker<DataAnnotationsTypeMapper, DataAnnotationsArgumentChecker>()
                 .AddOneImlxCommandIdentities();
         }
 
@@ -42,7 +45,7 @@ namespace PerpetualIntelligence.OneImlx.Cli
             {
                 new ArgumentIdentity("r", System.ComponentModel.DataAnnotations.DataType.Text, true, "The root path for source projects."),
                 new ArgumentIdentity("p", System.ComponentModel.DataAnnotations.DataType.Text, true, "The comma (,) separated source project names. Projects must organized be in the standard src and test hierarchy."),
-                new ArgumentIdentity("c", System.ComponentModel.DataAnnotations.DataType.Text, true, "The configuration, Debug or Release.", new string[] { "Debug", "Release" }),
+                new ArgumentIdentity("c", System.ComponentModel.DataAnnotations.DataType.Text, true, "The configuration, Debug or Release.", new System.ComponentModel.DataAnnotations.ValidationAttribute[] { new OneOfAttribute("Debug", "Release") }),
                 new ArgumentIdentity("f", System.ComponentModel.DataAnnotations.DataType.Text, true, "The .NET framework identifier."),
                 new ArgumentIdentity("o", System.ComponentModel.DataAnnotations.DataType.Text, true, "The mapping JSON file path.")
             });

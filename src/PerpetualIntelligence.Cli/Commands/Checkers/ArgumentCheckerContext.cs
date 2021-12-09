@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// <summary>
     /// The argument data-type checker context.
     /// </summary>
-    public class ArgumentValueCheckerContext
+    public class ArgumentCheckerContext
     {
         /// <summary>
         /// Initialize a new instance.
@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="argumentIdentity">The argument identity.</param>
         /// <param name="argument">The argument.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ArgumentValueCheckerContext(ArgumentIdentity argumentIdentity, Argument argument)
+        public ArgumentCheckerContext(ArgumentIdentity argumentIdentity, Argument argument)
         {
             ArgumentIdentity = argumentIdentity ?? throw new ArgumentNullException(nameof(argumentIdentity));
             Argument = argument ?? throw new ArgumentNullException(nameof(argument));
