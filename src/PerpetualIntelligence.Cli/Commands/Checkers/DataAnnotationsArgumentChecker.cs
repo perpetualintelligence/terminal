@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             // Check for null argument value
             if (context.Argument.Value == null)
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value cannot be null. argument={0}", context.Argument.Name);
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value cannot be null. argument={0}", context.Argument.Id);
                 return OneImlxResult.NewError<ArgumentCheckerResult>(Errors.InvalidArgument, errorDesc);
             }
 
@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             // Check the system type compatibility
             if (mapperResult.MappedType != null && !mapperResult.MappedType.IsAssignableFrom(context.Argument.Value.GetType()))
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Name, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
+                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
                 return Task.FromResult(OneImlxResult.NewError<ArgumentCheckerResult>(Errors.InvalidArgument, errorDesc));
             }
 
@@ -86,7 +86,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     }
                     catch (Exception ex)
                     {
-                        result.AppendError(OneImlxResult.NewError<ArgumentCheckerResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Name, context.Argument.Value, ex.Message)));
+                        result.AppendError(OneImlxResult.NewError<ArgumentCheckerResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Id, context.Argument.Value, ex.Message)));
                     }
                 }
             }

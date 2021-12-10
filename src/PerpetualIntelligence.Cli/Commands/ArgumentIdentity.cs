@@ -4,7 +4,6 @@
     https://api.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,27 +12,32 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// Identifies a command argument uniquely.
+    /// Defines identity of an <see cref="Argument"/>.
     /// </summary>
-    public class ArgumentIdentity
+    /// <remarks>
+    /// The <see cref="ArgumentIdentity"/> defines argument identity, data type and data validation. The
+    /// <see cref="Argument"/> is a runtime validated representation of an actual command argument including its value
+    /// passed by a user or an application.
+    /// </remarks>
+    /// <seealso cref="Argument"/>
+    public sealed class ArgumentIdentity
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="name">The argument name.</param>
+        /// <param name="id">The argument id.</param>
         /// <param name="dataType">The argument data type.</param>
         /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
         /// <param name="validationAttributes">The data validation attributes.</param>
-        [ToUnitTest("null checks")]
-        public ArgumentIdentity(string name, DataType dataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null)
+        public ArgumentIdentity(string id, DataType dataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
+                throw new ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
             }
 
-            Name = name;
+            Id = id;
             DataType = dataType;
             Description = description;
 
@@ -51,20 +55,19 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="name">The argument name.</param>
+        /// <param name="id">The argument id.</param>
         /// <param name="customDataType">The argument custom data type.</param>
         /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
         /// <param name="validationAttributes">The data validation attributes.</param>
-        [ToUnitTest("null checks")]
-        public ArgumentIdentity(string name, string customDataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null)
+        public ArgumentIdentity(string id, string customDataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
+                throw new ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
             }
 
-            Name = name;
+            Id = id;
             DataType = DataType.Custom;
             CustomDataType = customDataType;
             Description = description;
@@ -103,6 +106,12 @@ namespace PerpetualIntelligence.Cli.Commands
         public bool? Disabled { get; set; }
 
         /// <summary>
+        /// The argument id.
+        /// </summary>
+        /// <remarks>The argument id is unique within a command.</remarks>
+        public string Id { get; set; }
+
+        /// <summary>
         /// Determines is the argument is required.
         /// </summary>
         public bool IsRequired
@@ -119,15 +128,14 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// The argument name.
-        /// </summary>
-        /// <remarks>The argument name is unique within a command.</remarks>
-        public string Name { get; set; }
-
-        /// <summary>
         /// Determines whether the argument is obsolete.
         /// </summary>
         public bool? Obsolete { get; set; }
+
+        /// <summary>
+        /// The custom properties.
+        /// </summary>
+        public Dictionary<string, object>? Properties { get; set; }
 
         /// <summary>
         /// The data annotation validation attributes to check the argument value.
@@ -137,7 +145,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Sets the argument as required.
         /// </summary>
-        protected void SetRequired()
+        private void SetRequired()
         {
             if (ValidationAttributes == null)
             {

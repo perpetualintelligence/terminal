@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Dictionary<string, Argument> args = new();
             if (context.Command.Arguments != null)
             {
-                args = context.Command.Arguments.ToNameArgumentCollection();
+                args = context.Command.Arguments.ToNameArgumentDisctionary();
             }
 
             // If the command itself do not support any arguments then there is nothing much to check. Extractor will
@@ -56,13 +56,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             foreach (var argIdentity in context.CommandIdentity.ArgumentIdentities)
             {
                 // Optimize (not all arguments are required)
-                bool containsArg = args.TryGetValue(argIdentity.Name, out Argument? arg);
+                bool containsArg = args.TryGetValue(argIdentity.Id, out Argument? arg);
                 if (!containsArg)
                 {
                     // Required argument is missing
                     if (argIdentity.IsRequired)
                     {
-                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The required argument is missing. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Name);
+                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The required argument is missing. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
                         return OneImlxResult.NewError<CommandCheckerResult>(Errors.MissingArgument, errorDesc);
                     }
                 }
@@ -71,14 +71,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     // Check obsolete
                     if (argIdentity.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteArgument.GetValueOrDefault())
                     {
-                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is obsolete. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Name);
+                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is obsolete. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
                         return OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
                     }
 
                     // Check disabled
                     if (argIdentity.Disabled.GetValueOrDefault())
                     {
-                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is disabled. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Name);
+                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is disabled. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
                         return OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
                     }
 

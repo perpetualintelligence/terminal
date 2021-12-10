@@ -9,34 +9,34 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The command arguments.
+    /// The <see cref="Argument"/> collection.
     /// </summary>
     public sealed class Arguments : List<Argument>
     {
         /// <summary>
-        /// Returns a collection of argument name and argument itself.
+        /// Returns a dictionary of argument name and <see cref="Argument"/>.
         /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, Argument> ToNameArgumentCollection()
+        /// <returns><see cref="Dictionary{TKey, TValue}"/></returns>
+        public Dictionary<string, Argument> ToNameArgumentDisctionary()
         {
-            Dictionary<string, Argument> args = new Dictionary<string, Argument>();
+            Dictionary<string, Argument> args = new();
             foreach (var key in this)
             {
-                args.Add(key.Name, key);
+                args.Add(key.Id, key);
             }
             return args;
         }
 
         /// <summary>
-        /// Returns a collection of argument name and value.
+        /// Returns a dictionary of argument name and value.
         /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> ToNameValueCollection()
+        /// <returns><see cref="Dictionary{TKey, TValue}"/></returns>
+        public Dictionary<string, object> ToNameValueDictionary()
         {
-            Dictionary<string, object> args = new Dictionary<string, object>();
+            Dictionary<string, object> args = new();
             foreach (var key in this)
             {
-                args.Add(key.Name, key.Value);
+                args.Add(key.Id, key.Value);
             }
             return args;
         }

@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         {
             if (context.Argument.DataType == DataType.Custom && string.IsNullOrWhiteSpace(context.Argument.CustomDataType))
             {
-                return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is null or whitespace. argument={0}", context.Argument.Name)));
+                return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is null or whitespace. argument={0}", context.Argument.Id)));
             }
 
             switch (context.Argument.DataType)
@@ -75,13 +75,13 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
                             case nameof(Double): return Task.FromResult(Valid(typeof(double)));
                             default:
                                 {
-                                    return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is not supported. argument={0} custom_data_type={1}", context.Argument.Name, context.Argument.CustomDataType)));
+                                    return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is not supported. argument={0} custom_data_type={1}", context.Argument.Id, context.Argument.CustomDataType)));
                                 }
                         }
                     }
                 default:
                     {
-                        return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument data type is not supported. argument={0} data_type={1}", context.Argument.Name, context.Argument.DataType)));
+                        return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument data type is not supported. argument={0} data_type={1}", context.Argument.Id, context.Argument.DataType)));
                     }
             }
         }

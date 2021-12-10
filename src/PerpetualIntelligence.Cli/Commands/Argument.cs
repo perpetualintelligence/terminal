@@ -12,12 +12,21 @@ using System.Text.Json.Serialization;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// A context-specific command argument.
+    /// An argument of a <see cref="Command"/>.
     /// </summary>
     /// <remarks>
-    /// A argument implements the default equality <see cref="IEquatable{T}"/> and <see cref="GetHashCode()"/> using
-    /// <see cref="Name"/>. Thus, two arguments with the same name are equal irrespective of other property values.
+    /// <para>
+    /// An argument id is always unique within a command. By design <see cref="Argument"/> implements the default
+    /// equality <see cref="IEquatable{T}"/> and <see cref="GetHashCode()"/> using <see cref="Id"/> property. Thus, two
+    /// arguments with the same id are equal irrespective of other property values. This is done to improve performance
+    /// during lookup and avoid multiple arguments with same identifiers.
+    /// </para>
+    /// <para>
+    /// The arguments can have same ids across multiple commands. Each <see cref="Command"/> has
+    /// <see cref="ArgumentIdentities"/> collection that contains arguments with unique ids.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="Command"/>
     public sealed class Argument : IEquatable<Argument?>
     {
         /// <summary>
@@ -27,22 +36,23 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="value">The argument value.</param>
         public Argument(ArgumentIdentity argumentIdentity, object value)
         {
-            Name = argumentIdentity.Name;
+            Id = argumentIdentity.Id;
             DataType = argumentIdentity.DataType;
             CustomDataType = argumentIdentity.CustomDataType;
             Description = argumentIdentity.Description;
             Value = value;
+            Properties = argumentIdentity.Properties;
         }
 
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
-        /// <param name="name">The argument name.</param>
+        /// <param name="id">The argument id.</param>
         /// <param name="value">The argument value.</param>
         /// <param name="customDataType">The argument custom data type.</param>
-        public Argument(string name, object value, string customDataType)
+        public Argument(string id, object value, string customDataType)
         {
-            Name = name;
+            Id = id;
             Value = value;
             DataType = DataType.Custom;
             CustomDataType = customDataType;
@@ -51,12 +61,12 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
-        /// <param name="name">The argument name.</param>
+        /// <param name="id">The argument id.</param>
         /// <param name="value">The argument value.</param>
         /// <param name="dataType">The argument data type.</param>
-        public Argument(string name, object value, DataType dataType)
+        public Argument(string id, object value, DataType dataType)
         {
-            Name = name;
+            Id = id;
             Value = value;
             DataType = dataType;
         }
@@ -82,11 +92,18 @@ namespace PerpetualIntelligence.Cli.Commands
         public string? Description { get; set; }
 
         /// <summary>
-        /// The argument name.
+        /// The argument id.
         /// </summary>
-        /// <remarks>The argument name is unique with in a command.</remarks>
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
+        /// <remarks>The argument id is unique with in a command.</remarks>
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// The argument custom properties.
+        /// </summary>
+        [JsonPropertyName("properties")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Dictionary<string, object>? Properties { get; set; }
 
         /// <summary>
         /// The argument value.
@@ -103,7 +120,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <inheritdoc/>
         public static bool operator ==(Argument? left, Argument? right)
         {
-            return EqualityComparer<Argument>.Default.Equals(left, right);
+            return EqualityComparer<Argument?>.Default.Equals(left, right);
         }
 
         /// <inheritdoc/>
@@ -116,13 +133,13 @@ namespace PerpetualIntelligence.Cli.Commands
         public bool Equals(Argument? other)
         {
             return other != null &&
-                   Name == other.Name;
+                   Id == other.Id;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }

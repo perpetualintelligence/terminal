@@ -11,12 +11,12 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The command arguments.
+    /// The <see cref="ArgumentIdentity"/> collection.
     /// </summary>
     public sealed class ArgumentIdentities : List<ArgumentIdentity>
     {
         /// <summary>
-        /// Attempts to find the only argument by name.
+        /// Attempts to find an argument by name.
         /// </summary>
         /// <param name="name">The argument name</param>
         public ArgumentIdentity? FindByName(string name)
@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Cli.Commands
 
             try
             {
-                return this.SingleOrDefault(e => e.Name.Equals(name, System.StringComparison.Ordinal));
+                return this.SingleOrDefault(e => e.Id.Equals(name, System.StringComparison.Ordinal));
             }
             catch
             {

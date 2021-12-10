@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Name);
+            Assert.AreEqual($"key1", result.Argument.Id);
             Assert.AreEqual($"value=value2", result.Argument.Value);
         }
 
@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Name);
+            Assert.AreEqual($"key1", result.Argument.Id);
             Assert.AreEqual($"value value2", result.Argument.Value);
         }
 
@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("key6", result.Argument.Name);
+            Assert.AreEqual("key6", result.Argument.Id);
             Assert.AreEqual(System.ComponentModel.DataAnnotations.DataType.Custom, result.Argument.DataType);
             Assert.AreEqual(typeof(bool).Name, result.Argument.CustomDataType);
             Assert.IsTrue(Convert.ToBoolean(result.Argument.Value));
@@ -140,7 +140,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("key6", result.Argument.Name);
+            Assert.AreEqual("key6", result.Argument.Id);
         }
 
         [TestMethod]
@@ -150,7 +150,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("key5", result.Argument.Name);
+            Assert.AreEqual("key5", result.Argument.Id);
         }
 
         [TestMethod]
@@ -186,7 +186,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Name);
+            Assert.AreEqual($"key1", result.Argument.Id);
             Assert.AreEqual($"value1", result.Argument.Value);
         }
 
@@ -207,7 +207,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"{prefix}key", result.Argument.Name);
+            Assert.AreEqual($"{prefix}key", result.Argument.Id);
             Assert.AreEqual($"value", result.Argument.Value);
         }
 
@@ -252,7 +252,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"समाणूसkey1", result.Argument.Name);
+            Assert.AreEqual($"समाणूसkey1", result.Argument.Id);
             Assert.AreEqual($"value1", result.Argument.Value);
         }
 
@@ -273,7 +273,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("key", result.Argument.Name);
+            Assert.AreEqual("key", result.Argument.Id);
             Assert.AreEqual(System.ComponentModel.DataAnnotations.DataType.Custom, result.Argument.DataType);
             Assert.AreEqual(nameof(Boolean), result.Argument.CustomDataType);
             Assert.AreEqual(true, result.Argument.Value);
@@ -298,7 +298,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("key", result.Argument.Name);
+            Assert.AreEqual("key", result.Argument.Id);
             Assert.AreEqual(System.ComponentModel.DataAnnotations.DataType.DateTime, result.Argument.DataType);
             Assert.AreEqual(value, result.Argument.Value);
         }
@@ -320,7 +320,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Name);
+            Assert.AreEqual($"key1", result.Argument.Id);
             Assert.AreEqual($"value1", result.Argument.Value);
         }
 
@@ -341,7 +341,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Name);
+            Assert.AreEqual($"key1", result.Argument.Id);
             Assert.AreEqual($"value1", result.Argument.Value);
         }
 

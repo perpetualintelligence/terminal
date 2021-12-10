@@ -4,15 +4,22 @@
     https://api.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Cli.Extensions;
 using System;
+using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// Identifies a command uniquely.
+    /// Defines identity of a <see cref="Command"/>.
     /// </summary>
-    public class CommandIdentity
+    /// <remarks>
+    /// The <see cref="CommandIdentity"/> defines command identity and its argument identities. The
+    /// <see cref="Command"/> is a runtime validated representation of an actual command including its argument values
+    /// passed by a user or an application.
+    /// </remarks>
+    /// <seealso cref="Command"/>
+    /// <seealso cref="ArgumentIdentity"/>
+    public sealed class CommandIdentity
     {
         /// <summary>
         /// Initializes a new instance.
@@ -24,7 +31,8 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="description">The command description.</param>
         /// <param name="checker">The command checker.</param>
         /// <param name="runner">The command runner.</param>
-        public CommandIdentity(string id, string name, string prefix, ArgumentIdentities? argumentIdentities = null, string? description = null, Type? checker = null, Type? runner = null)
+        /// <param name="properties">The custom properties.</param>
+        public CommandIdentity(string id, string name, string prefix, ArgumentIdentities? argumentIdentities = null, string? description = null, Type? checker = null, Type? runner = null, Dictionary<string, object>? properties = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -48,6 +56,7 @@ namespace PerpetualIntelligence.Cli.Commands
             ArgumentIdentities = argumentIdentities;
             Checker = checker;
             Runner = runner;
+            Properties = properties;
         }
 
         /// <summary>
@@ -58,11 +67,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The command checker.
         /// </summary>
-        /// <remarks>This is set during startup configuration via <see cref="ICliBuilderExtensions.AddCommandIdentity{TRunner, TChecker}(OneImlx.Configuration.ICliBuilder, CommandIdentity)"/>.</remarks>
         public Type? Checker { get; set; }
 
-        // <summary>
-        /// The command description. </summary>
+        /// <summary>
+        /// The command description.
+        /// </summary>
         public string? Description { get; set; }
 
         /// <summary>
@@ -83,9 +92,13 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Prefix { get; set; }
 
         /// <summary>
+        /// The custom properties.
+        /// </summary>
+        public Dictionary<string, object>? Properties { get; set; }
+
+        /// <summary>
         /// The command runner.
         /// </summary>
-        /// <remarks>This is set during startup configuration via <see cref="ICliBuilderExtensions.AddCommandIdentity{TRunner, TChecker}(OneImlx.Configuration.ICliBuilder, CommandIdentity)"/>.</remarks>
         public Type? Runner { get; set; }
     }
 }

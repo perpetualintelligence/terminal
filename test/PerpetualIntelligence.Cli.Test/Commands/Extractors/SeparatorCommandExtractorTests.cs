@@ -406,7 +406,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private void AssertArgument(Argument arg, string name, string customDataType, string description, object value)
         {
-            Assert.AreEqual(arg.Name, name);
+            Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
             Assert.AreEqual(arg.CustomDataType, customDataType);
             Assert.AreEqual(arg.Description, description);
@@ -415,7 +415,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private void AssertArgument(Argument arg, string name, DataType dataType, string description, object value)
         {
-            Assert.AreEqual(arg.Name, name);
+            Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
             Assert.IsNull(arg.CustomDataType);
             Assert.AreEqual(arg.Description, description);
@@ -424,7 +424,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private void AssertArgumentIdentity(ArgumentIdentity arg, string name, DataType dataType, string? description = null, ValidationAttribute[]? supportedValues = null)
         {
-            Assert.AreEqual(arg.Name, name);
+            Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
             Assert.IsNull(arg.CustomDataType);
             Assert.AreEqual(arg.Description, description);
@@ -433,7 +433,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private void AssertArgumentIdentity(ArgumentIdentity arg, string name, string customDataType, string? description = null, ValidationAttribute[]? supportedValues = null)
         {
-            Assert.AreEqual(arg.Name, name);
+            Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
             Assert.AreEqual(arg.CustomDataType, customDataType);
             Assert.AreEqual(arg.Description, description);

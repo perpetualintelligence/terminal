@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.OneImlx.Cli.Runners
 
         private static async Task ExecuteMapCommandAsync(Command command)
         {
-            Dictionary<string, object> args = command.Arguments.ToNameValueCollection();
+            Dictionary<string, object> args = command.Arguments.ToNameValueDictionary();
 
             // Root Directory
             string testRoot = (string)args["r"];

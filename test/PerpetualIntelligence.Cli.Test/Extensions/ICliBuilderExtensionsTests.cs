@@ -118,12 +118,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual(typeof(MockCommandHandler), handler.ImplementationType);
         }
 
-        [TestMethod]
-        public void RunRoutingTimeOutShoudFail()
-        {
-            // TODO
-        }
-
         protected override void OnTestInitialize()
         {
             IServiceCollection? serviceDescriptors = null;

@@ -4,18 +4,20 @@
     https://api.perpetualintelligence.com
 */
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// A context specific command.
+    /// A <c>cli</c> command.
     /// </summary>
     /// <remarks>
-    /// The command name can be same within multiple command groups. The command id is unique across all command groups.
+    /// The <see cref="Command"/> name can be same within multiple <see cref="CommandGroup"/>. The <see cref="Command"/>
+    /// id is unique across all <see cref="CommandGroup"/>.
     /// </remarks>
     /// <seealso cref="CommandGroup"/>
-    /// <seealso cref="Commands.Arguments"/>
+    /// <seealso cref="Argument"/>
     public sealed class Command
     {
         /// <summary>
@@ -70,10 +72,17 @@ namespace PerpetualIntelligence.Cli.Commands
         public string? Id { get; set; }
 
         /// <summary>
+        /// The command custom properties.
+        /// </summary>
+        [JsonPropertyName("properties")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Dictionary<string, object>? Properties { get; set; }
+
+        /// <summary>
         /// The command name.
         /// </summary>
         [JsonPropertyName("name")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Name;
+        public string? Name;        
     }
 }
