@@ -9,12 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace PerpetualIntelligence.Cli.Integration
 {
     /// <summary>
-    /// An abstraction of <c>oneimlx</c> cli builder.
+    /// An abstraction of <c>cli</c> builder.
     /// </summary>
     public interface ICliBuilder
     {
         /// <summary>
-        /// The service descriptors.
+        /// The service collection.
         /// </summary>
         IServiceCollection Services { get; }
     }

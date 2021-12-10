@@ -9,17 +9,18 @@ using Microsoft.AspNetCore.Builder;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     /// <summary>
-    /// Pipeline extension methods for adding Perpetual Intelligence identity.
+    /// The <see cref="IApplicationBuilder"/> extension methods.
     /// </summary>
     public static class IApplicationBuilderExtensions
     {
         /// <summary>
-        /// Adds IdentityServer to the pipeline.
+        /// Adds middleware for using Perpetual Intelligence's <c>cli</c> framework.
         /// </summary>
-        /// <param name="app">The application.</param>
+        /// <param name="app">The application builder.</param>
         /// <returns></returns>
         public static IApplicationBuilder UseCli(this IApplicationBuilder app)
         {
+            // TODO
             return app;
         }
     }

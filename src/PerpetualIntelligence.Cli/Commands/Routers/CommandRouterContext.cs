@@ -4,6 +4,8 @@
     https://api.perpetualintelligence.com
 */
 
+using System.Threading;
+
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
@@ -15,10 +17,17 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The command string.
         /// </summary>
         /// <param name="commandString">The command string.</param>
-        public CommandRouterContext(string commandString)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public CommandRouterContext(string commandString, CancellationToken? cancellationToken = null)
         {
             CommandString = commandString;
+            CancellationToken = cancellationToken;
         }
+
+        /// <summary>
+        /// The cancellation token.
+        /// </summary>
+        public CancellationToken? CancellationToken { get; protected set; }
 
         /// <summary>
         /// The command string.

@@ -10,7 +10,7 @@ using System;
 namespace PerpetualIntelligence.Cli.Integration
 {
     /// <summary>
-    /// The <c>oneimlx</c> cli builder.
+    /// The default <see cref="ICliBuilder"/>.
     /// </summary>
     public class CliBuilder : ICliBuilder
     {
@@ -18,14 +18,14 @@ namespace PerpetualIntelligence.Cli.Integration
         /// Initializes a new instance.
         /// </summary>
         /// <param name="services">The services.</param>
-        /// <exception cref="System.ArgumentNullException">services</exception>
+        /// <exception cref="ArgumentNullException">services</exception>
         public CliBuilder(IServiceCollection services)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
         }
 
         /// <summary>
-        /// The services.
+        /// The service collection.
         /// </summary>
         public IServiceCollection Services { get; }
     }

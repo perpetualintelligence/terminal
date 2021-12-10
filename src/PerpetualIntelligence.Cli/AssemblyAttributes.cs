@@ -6,5 +6,5 @@
 
 using System.Runtime.CompilerServices;
 
-// Unit tests
+// For unit tests
 [assembly: InternalsVisibleTo("PerpetualIntelligence.Cli.Test")]

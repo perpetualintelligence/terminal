@@ -15,25 +15,29 @@ namespace PerpetualIntelligence.Cli.Commands
     public interface ICommandIdentityStore
     {
         /// <summary>
-        /// Attempts to finds a command by its id.
+        /// Attempts to finds a <see cref="CommandIdentity"/> by its id.
         /// </summary>
         /// <param name="id">The command id.</param>
         public Task<OneImlxTryResult<CommandIdentity>> TryFindByIdAsync(string id);
 
         /// <summary>
-        /// Attempts to find a command by its name.
+        /// Attempts to find a a <see cref="CommandIdentity"/> by its name.
         /// </summary>
         /// <param name="name">The command name.</param>
         public Task<OneImlxTryResult<CommandIdentity>> TryFindByNameAsync(string name);
 
         /// <summary>
-        /// Attempts to find a command by its prefix.
+        /// Attempts to find a a <see cref="CommandIdentity"/> by its prefix.
         /// </summary>
         public Task<OneImlxTryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix);
 
         /// <summary>
-        /// Attempts to match a command by its prefix.
+        /// Attempts to match a <see cref="CommandIdentity"/> by its prefix.
         /// </summary>
+        /// <remarks>
+        /// This method enumerates all the <see cref="CommandIdentity"/> and attempts to find a first match where the
+        /// specified command string starts with the <see cref="CommandIdentity.Prefix"/>.
+        /// </remarks>
         public Task<OneImlxTryResult<CommandIdentity>> TryMatchByPrefixAsync(string commandString);
     }
 }

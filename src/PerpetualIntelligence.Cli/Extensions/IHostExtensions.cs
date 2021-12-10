@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Protocols.Abstractions;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.Threading;
@@ -23,46 +24,58 @@ namespace PerpetualIntelligence.Cli.Extensions
     public static class IHostExtensions
     {
         /// <summary>
-        /// Returns a task that runs the command router and blocks the calling thread till shutdown.
+        /// Returns a task that runs the command router and blocks the calling thread till a cancellation request.
         /// </summary>
         /// <param name="host">The host.</param>
-        /// <param name="timeout">The routing timeout in milliseconds.</param>
+        /// <param name="timeout">
+        /// The routing timeout in milliseconds. The timeout applies to the
+        /// <see cref="IRouter{TContext, TResult, THandler}.RouteAsync(TContext)"/> method.
+        /// </param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="title">The command title to show in the console.</param>
-        public static async Task RunRoutingAsync(this IHost host, string? title, int timeout, CancellationToken cancellationToken)
+        public static async Task RunRoutingAsync(this IHost host, string title, int? timeout, CancellationToken? cancellationToken)
         {
             // FOMAC: check IHost.RunAsync to see how async is implemented
             while (true)
             {
-                // FOMAC: avoid blocking threads.
-                await Task.Delay(200);
-
-                // Read a command
-                if (!string.IsNullOrWhiteSpace(title))
+                // Honor the cancellation request.
+                if (cancellationToken != null && cancellationToken.Value.IsCancellationRequested)
                 {
-                    Console.Write(title);
+                    CliOptions options = host.Services.GetRequiredService<CliOptions>();
+                    ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    logger.FormatAndLog(LogLevel.Warning, options.Logging, "The routing is canceled.");
+
+                    // We are done, break the loop.
+                    break;
                 }
-                string? commandString = Console.ReadLine();
+
+                // Avoid block threads
+                await Task.Delay(100);
+
+                // Print the title
+                Console.Write(title);
 
                 // Ignore empty commands
+                string? commandString = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(commandString))
                 {
+                    // Wait for next command.
                     continue;
                 }
 
                 // Route the request.
-                CommandRouterContext context = new(commandString);
+                CommandRouterContext context = new(commandString, cancellationToken);
                 ICommandRouter router = host.Services.GetRequiredService<ICommandRouter>();
                 Task routeTask = router.RouteAsync(context);
 
                 try
                 {
-                    bool success = routeTask.Wait(timeout, cancellationToken);
+                    bool success = routeTask.Wait(timeout ?? Timeout.Infinite, cancellationToken ?? CancellationToken.None);
                     if (!success)
                     {
                         CliOptions options = host.Services.GetRequiredService<CliOptions>();
                         ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. path={0}", commandString);
+                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. path={0}", commandString);                        
                     }
                 }
                 catch (OperationCanceledException)
@@ -75,7 +88,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
-                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. path={0} additional_info={1}", commandString, ex.Message);
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. path={0} additional_info={1}", commandString, ex.InnerException.Message);
                 }
             };
         }
