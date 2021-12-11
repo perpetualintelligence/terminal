@@ -12,11 +12,6 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// A <c>cli</c> command.
     /// </summary>
-    /// <remarks>
-    /// The <see cref="Command"/> name can be same within multiple <see cref="CommandGroup"/>. The <see cref="Command"/>
-    /// id is unique across all <see cref="CommandGroup"/>.
-    /// </remarks>
-    /// <seealso cref="CommandGroup"/>
     /// <seealso cref="Argument"/>
     public sealed class Command
     {
@@ -83,6 +78,6 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         [JsonPropertyName("name")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Name;        
+        public string? Name;
     }
 }

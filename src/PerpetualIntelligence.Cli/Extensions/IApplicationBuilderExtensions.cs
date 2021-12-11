@@ -5,11 +5,12 @@
 */
 
 using Microsoft.AspNetCore.Builder;
+using System;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
     /// <summary>
-    /// The <see cref="IApplicationBuilder"/> extension methods.
+    /// The <see cref="Console"/> extension methods.
     /// </summary>
     public static class IApplicationBuilderExtensions
     {

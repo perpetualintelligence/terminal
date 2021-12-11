@@ -7,6 +7,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Defaults;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Extensions;
@@ -32,6 +33,8 @@ namespace PerpetualIntelligence.OneImlx.Cli
                 .AddExtractor<SeparatorCommandExtractor, SeparatorArgumentExtractor>()
                 .AddArgumentChecker<DataAnnotationsArgumentDataTypeMapper, ArgumentChecker>()
                 .AddOneImlxCommandIdentities();
+
+            services.AddHostedService<CliHostedService>();
         }
 
         /// <summary>
@@ -51,6 +54,9 @@ namespace PerpetualIntelligence.OneImlx.Cli
                 new ArgumentIdentity("o", System.ComponentModel.DataAnnotations.DataType.Text, true, "The output mapping JSON file path.")
             });
             builder.AddCommandIdentity<OneImlxMapRunner, CommandChecker>(map);
+
+            CommandIdentity exit = new CommandIdentity("urn:oneimlx:cli:exit", "exit", "exit");
+            builder.AddCommandIdentity<ExitRunner, CommandChecker>(exit);
 
             builder.AddCommandIdentityStore<InMemoryCommandIdentityStore>();
 

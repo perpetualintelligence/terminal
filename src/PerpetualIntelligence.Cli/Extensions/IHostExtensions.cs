@@ -34,11 +34,19 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="title">The command title to show in the console.</param>
         public static async Task RunRouterAsync(this IHost host, string title, int? timeout, CancellationToken? cancellationToken)
         {
+            // Track the application lifetime so we can know whether cancellation is requested.
+            IHostApplicationLifetime? applicationLifetime = host.Services.GetService<IHostApplicationLifetime>();
+
             // FOMAC: check IHost.RunAsync to see how async is implemented
             while (true)
             {
+                // Avoid block threads during cancellation and let the
+                // applicationLifetime.ApplicationStopping.IsCancellationRequested get synchronized so we can honor the
+                // app shutdown
+                await Task.Delay(200);
+
                 // Honor the cancellation request.
-                if (cancellationToken != null && cancellationToken.Value.IsCancellationRequested)
+                if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
@@ -48,14 +56,24 @@ namespace PerpetualIntelligence.Cli.Extensions
                     break;
                 }
 
-                // Avoid block threads
-                await Task.Delay(100);
+                // Check if application is stopping
+                if (applicationLifetime != null && applicationLifetime.ApplicationStopping.IsCancellationRequested)
+                {
+                    CliOptions options = host.Services.GetRequiredService<CliOptions>();
+                    ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    logger.FormatAndLog(LogLevel.Warning, options.Logging, "The routing is canceled.");
+
+                    // We are done, break the loop.
+                    break;
+                }
 
                 // Print the title
                 Console.Write(title);
 
-                // Ignore empty commands
+                // Read the user input
                 string? commandString = Console.ReadLine();
+
+                // Ignore empty commands
                 if (string.IsNullOrWhiteSpace(commandString))
                 {
                     // Wait for next command.
@@ -90,6 +108,11 @@ namespace PerpetualIntelligence.Cli.Extensions
                     logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. path={0} additional_info={1}", commandString, ex.InnerException.Message);
                 }
             };
+        }
+
+        private static void RouterCancellationDelegate()
+        {
+            throw new NotImplementedException();
         }
     }
 }

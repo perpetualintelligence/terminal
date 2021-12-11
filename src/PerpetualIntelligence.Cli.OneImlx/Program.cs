@@ -6,19 +6,12 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Protocols.OneImlx;
-using PerpetualIntelligence.Shared.Extensions;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
-using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.OneImlx.Cli
 {
@@ -31,7 +24,7 @@ namespace PerpetualIntelligence.OneImlx.Cli
         /// Main method.
         /// </summary>
         /// <param name="args"></param>
-        public static async Task Main(string[] args)
+        public static Task Main(string[] args)
         {
             try
             {
@@ -46,9 +39,6 @@ namespace PerpetualIntelligence.OneImlx.Cli
                 using IHost host = CreateHostBuilder(args, Startup.ConfigureServices)
                     .UseSerilog()
                     .Start();
-
-                // The console loop for routing commands.
-                await host.RunRouterAsync("cmd > ", 5000, CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -58,6 +48,8 @@ namespace PerpetualIntelligence.OneImlx.Cli
             {
                 Log.CloseAndFlush();
             }
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -70,18 +62,6 @@ namespace PerpetualIntelligence.OneImlx.Cli
         {
             // https://www.programmingwithwolfgang.com/configure-dependency-injection-for-net-5-console-applications/
             return Host.CreateDefaultBuilder(args).ConfigureServices(configureDelegate);
-        }
-
-        private static async Task ExecuteExitCommandAsync(Command command)
-        {
-            string? answer = await ReadAnswerAsync("Are you sure ?", new[] { "y", "n" });
-            if (answer == null || answer == "y")
-            {
-                //WriteLineRed("Shutting down server. Please wait...");
-                Thread.Sleep(1000);
-                Console.WriteLine($"Shut down is complete on {DateTimeOffset.UtcNow}.");
-                Environment.Exit(-1);
-            }
         }
 
         private static void InitSerilog()
@@ -101,44 +81,6 @@ namespace PerpetualIntelligence.OneImlx.Cli
                 .CreateLogger();
         }
 
-        private static Task<string?> ReadAnswerAsync(string question, params string[]? answers)
-        {
-            // Print the question
-            if (answers != null)
-            {
-                Console.Write($"{question} ({string.Join('/', answers)}): ");
-            }
-            else
-            {
-                Console.Write($"{question}: ");
-            }
-
-            // Check answer
-            string? answer = Console.ReadLine();
-            if (answers != null)
-            {
-                // Special command
-                if (answer == "exit")
-                {
-                    return Task.FromResult<string?>(null);
-                }
-
-                if (answers.Contains(answer))
-                {
-                    return Task.FromResult(answer);
-                }
-                else
-                {
-                    Log.Error("The answer is not valid. answers={0}", answers.JoinSpace());
-                    return ReadAnswerAsync(question, answers);
-                }
-            }
-            else
-            {
-                return Task.FromResult(answer);
-            }
-        }
-
         private static void WriteHeaders()
         {
             Console.WriteLine("---------------------------------------------------------------------------------------------");
@@ -148,10 +90,9 @@ namespace PerpetualIntelligence.OneImlx.Cli
             Console.WriteLine("https://oneimlx.com");
             Console.WriteLine("---------------------------------------------------------------------------------------------");
 
-            Log.Information("Starting {0} server...", "pi.cli();");
-            Log.Information("Version={0}", typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "<none>");
-
+            Console.WriteLine($"Starting server...");
             Thread.Sleep(500);
+            Console.WriteLine($"urn:oneimlx:cli Version={typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
         }
     }
 }
