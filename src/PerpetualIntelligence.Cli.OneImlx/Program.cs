@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.OneImlx.Cli
             Console.Title = OrgConstants.FullName;
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
+                .MinimumLevel.Warning()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Error)
                 .MinimumLevel.Override("System", LogEventLevel.Error)
@@ -92,7 +92,9 @@ namespace PerpetualIntelligence.OneImlx.Cli
 
             Console.WriteLine($"Starting server...");
             Thread.Sleep(500);
-            Console.WriteLine($"urn:oneimlx:cli Version={typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"urn:oneimlx:cli version={typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
+            Console.ResetColor();
         }
     }
 }
