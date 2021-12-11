@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsync("test_title", null, tokenSource.Token);
 
             // The string writer will have both exception message and concatenated routing canceled message
-            Assert.AreEqual("The request failed. path=User has entered this command string additional_info=Test invalid operation. The routing is canceled.", stringWriter.ToString());
+            Assert.AreEqual("The request failed. path=User has entered this command string additional_info=Test invalid operation. Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             Console.SetOut(stringWriter);
 
             // This mocks the command string entered by the user
-            using var input = new StringReader("User has entered this command string");
+            using var input = new StringReader("User has entered this command string. ");
             Console.SetIn(input);
 
             // Cancel on first route and set delay so we can timeout and break the routing loop.
@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsync("test_title", 2000, tokenSource.Token);
 
             // The string writer will have both timeout message and concatenated routing canceled message
-            Assert.AreEqual("The request timed out. path=User has entered this command stringThe routing is canceled.", stringWriter.ToString());
+            Assert.AreEqual("The request timed out. path=User has entered this command string. Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
@@ -120,7 +120,38 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsFalse(mockCommandRouter.RouteCalled);
 
             Assert.IsNotNull(stringWriter);
-            Assert.AreEqual("The routing is canceled.", stringWriter.ToString());
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
+        }
+
+        [TestMethod]
+        public async Task RunRoutingShouldHandleHostStopCorrectlyAsync()
+        {
+            // Mock Console read and write
+            Assert.IsNotNull(stringWriter);
+            Console.SetOut(stringWriter);
+
+            // This mocks the command string entered by the user
+            using var input = new StringReader("does not matter");
+            Console.SetIn(input);
+
+            // Cancel on route
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
+            await host.StartAsync();
+
+            // Issue a callback after 2 seconds.
+            Timer timer = new Timer(HostStopRequestCallback, host, 2000, Timeout.Infinite);
+
+            // Run the router for 2 seconds, the callback will stop the host.
+            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+
+            // Till the timer callback cancel the route will be called multiple times.
+            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            Assert.IsTrue(mockCommandRouter.RouteCalled);
+
+            // Many messages are logged but we are interested in ApplicationStopping event
+            Assert.IsNotNull(stringWriter);
+            Assert.IsTrue(stringWriter.ToString().EndsWith("Application is stopping, the routing is canceled."));
         }
 
         [TestMethod]
@@ -187,7 +218,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual("test_title", titleWriter.ToString());
 
             Assert.IsNotNull(stringWriter);
-            Assert.AreEqual("The routing is canceled.", stringWriter.ToString());
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         protected override void OnTestCleanup()
@@ -272,6 +303,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+        }
+
+        private void HostStopRequestCallback(object? state)
+        {
+            IHost? host = state as IHost;
+            Assert.IsNotNull(host);
+            host.StopAsync().GetAwaiter().GetResult();
         }
 
         private IHost host = null!;

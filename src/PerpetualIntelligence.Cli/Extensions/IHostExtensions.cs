@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
-                    logger.FormatAndLog(LogLevel.Warning, options.Logging, "The routing is canceled.");
+                    logger.FormatAndLog(LogLevel.Warning, options.Logging, "Received cancellation token, the routing is canceled.");
 
                     // We are done, break the loop.
                     break;
@@ -61,7 +61,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
-                    logger.FormatAndLog(LogLevel.Warning, options.Logging, "The routing is canceled.");
+                    logger.FormatAndLog(LogLevel.Warning, options.Logging, "Application is stopping, the routing is canceled.");
 
                     // We are done, break the loop.
                     break;
