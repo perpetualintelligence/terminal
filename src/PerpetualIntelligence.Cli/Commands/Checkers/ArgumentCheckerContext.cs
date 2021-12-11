@@ -9,8 +9,10 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// The argument data-type checker context.
+    /// The argument checker context.
     /// </summary>
+    /// <seealso cref="IArgumentChecker"/>
+    /// <seealso cref="ArgumentCheckerResult"/>
     public class ArgumentCheckerContext
     {
         /// <summary>
@@ -26,7 +28,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         /// <summary>
-        /// The extracted argument to check.
+        /// The argument to check.
         /// </summary>
         public Argument Argument { get; set; }
 

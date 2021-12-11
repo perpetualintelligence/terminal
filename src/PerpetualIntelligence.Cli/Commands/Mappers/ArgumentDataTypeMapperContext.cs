@@ -9,22 +9,22 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
-    /// The argument data-type checker context.
+    /// The argument data-type mapper context.
     /// </summary>
-    public class DataAnnotationsMapperTypeContext
+    public class ArgumentDataTypeMapperContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="argument">The argument.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public DataAnnotationsMapperTypeContext(Argument argument)
+        public ArgumentDataTypeMapperContext(Argument argument)
         {
             Argument = argument ?? throw new ArgumentNullException(nameof(argument));
         }
 
         /// <summary>
-        /// The extracted argument to check.
+        /// The argument to map.
         /// </summary>
         public Argument Argument { get; set; }
     }

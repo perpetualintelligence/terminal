@@ -4,6 +4,7 @@
     https://api.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System.Threading.Tasks;
 

@@ -48,7 +48,7 @@ namespace PerpetualIntelligence.OneImlx.Cli
                     .Start();
 
                 // The console loop for routing commands.
-                await host.RunRoutingAsync("cmd > ", 5000, CancellationToken.None);
+                await host.RunRouterAsync("cmd > ", 5000, CancellationToken.None);
             }
             catch (Exception ex)
             {

@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// The command to extract.
+        /// The command string.
         /// </summary>
         public string CommandString { get; set; }
     }

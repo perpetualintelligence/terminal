@@ -7,7 +7,7 @@
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The <c>onimlx</c> argument syntax checker context.
+    /// The argument extractor context.
     /// </summary>
     public class ArgumentExtractorContext
     {
@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// The argument string to check.
+        /// The argument string.
         /// </summary>
         public string ArgumentString { get; set; }
 

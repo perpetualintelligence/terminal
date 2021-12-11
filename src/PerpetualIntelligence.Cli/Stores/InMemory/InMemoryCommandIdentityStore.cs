@@ -6,6 +6,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Extensions;

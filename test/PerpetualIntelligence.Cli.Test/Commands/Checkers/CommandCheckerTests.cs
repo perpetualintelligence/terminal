@@ -6,6 +6,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Mappers;
+using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores.InMemory;
@@ -216,8 +217,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            mapper = new DataAnnotationsTypeMapper(options, TestLogger.Create<DataAnnotationsTypeMapper>());
-            valueChecker = new DataAnnotationsArgumentChecker(mapper, options, TestLogger.Create<DataAnnotationsArgumentChecker>());
+            mapper = new DataAnnotationsArgumentDataTypeMapper(options, TestLogger.Create<DataAnnotationsArgumentDataTypeMapper>());
+            valueChecker = new ArgumentChecker(mapper, options, TestLogger.Create<ArgumentChecker>());
             checker = new CommandChecker(valueChecker, options, TestLogger.Create<CommandChecker>());
             commands = new InMemoryCommandIdentityStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
         }
@@ -251,7 +252,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         private CommandChecker checker = null!;
         private ICommandIdentityStore commands = null!;
-        private IArgumentMapper mapper = null!;
+        private IArgumentDataTypeMapper mapper = null!;
         private CliOptions options = null!;
         private IArgumentChecker valueChecker = null!;
     }

@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Extensions
     public static class IServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the Perpetual Intelligence default <c>cli</c> services.
+        /// Adds the default <c>cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="setupAction">The setup action.</param>
@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the Perpetual Intelligence default <c>cli</c> services.
+        /// Adds the default <c>cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the Perpetual Intelligence default <c>cli</c> services.
+        /// Adds the default <c>cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         public static ICliBuilder AddCli(this IServiceCollection services)
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the Perpetual Intelligence default <c>cli</c> builder to the service collection.
+        /// Adds the default <see cref="ICliBuilder"/>.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <returns></returns>

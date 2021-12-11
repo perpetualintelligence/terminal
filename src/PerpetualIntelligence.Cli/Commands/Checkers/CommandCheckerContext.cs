@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         /// <summary>
-        /// The extracted command to check.
+        /// The command to check.
         /// </summary>
         public Command Command { get; set; }
 

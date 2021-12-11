@@ -16,9 +16,28 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The default <c>oneimlx</c> separator based argument extractor.
+    /// The separator based argument extractor.
     /// </summary>
-    /// <remarks>The syntax for separator based argument is <c>-{arg}={value}</c> for e.g. -name=testname.</remarks>
+    /// <remarks>
+    /// <para>
+    /// The syntax for a separator based argument is <c>-{arg}={value}</c> for e.g. <c>-name=oneimlx</c>. The syntax has
+    /// 4 parts:
+    /// <list type="number">
+    /// <item>
+    /// <description><c>-</c> is an argument prefix. You can configure it via <see cref="ExtractorOptions.ArgumentPrefix"/></description>
+    /// </item>
+    /// <item>
+    /// <description>{arg} is an argument id. For e.g. <c>name</c></description>
+    /// </item>
+    /// <item>
+    /// <description><c>=</c> is an argument separator. You can configure it via <see cref="ExtractorOptions.ArgumentSeparator"/></description>
+    /// </item>
+    /// <item>
+    /// <description>{value} is an argument value. For e.g. <c>oneimlx</c></description>
+    /// </item>
+    /// </list>
+    /// </para>
+    /// </remarks>
     /// <seealso cref="ExtractorOptions.ArgumentPrefix"/>
     /// <seealso cref="ExtractorOptions.ArgumentSeparator"/>
     public class SeparatorArgumentExtractor : IArgumentExtractor

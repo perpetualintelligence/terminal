@@ -5,6 +5,7 @@
 */
 
 using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System.Threading.Tasks;
 

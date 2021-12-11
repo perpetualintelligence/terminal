@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Router will throw exception and then routing will get canceled
-            await host.RunRoutingAsync("test_title", null, tokenSource.Token);
+            await host.RunRouterAsync("test_title", null, tokenSource.Token);
 
             // The string writer will have both exception message and concatenated routing canceled message
             Assert.AreEqual("The request failed. path=User has entered this command string additional_info=Test invalid operation. The routing is canceled.", stringWriter.ToString());
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Route delay is set to 3000 and timeout is 2000
-            await host.RunRoutingAsync("test_title", 2000, tokenSource.Token);
+            await host.RunRouterAsync("test_title", 2000, tokenSource.Token);
 
             // The string writer will have both timeout message and concatenated routing canceled message
             Assert.AreEqual("The request timed out. path=User has entered this command stringThe routing is canceled.", stringWriter.ToString());
@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
             host = newhostBuilder.Build();
 
-            await host.RunRoutingAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             Assert.IsTrue(mockCommandRouter.RouteCalled);
@@ -113,7 +113,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Wait for more than 2.05 seconds so task is canceled
             await Task.Delay(2050);
 
-            await host.RunRoutingAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
 
             // Canceled task so router will not be called.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -136,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // We will run in a infinite loop due to empty input so break that after 2 seconds
             tokenSource.CancelAfter(2000);
-            await host.RunRoutingAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             Assert.IsFalse(mockCommandRouter.RouteCalled);
@@ -159,7 +159,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
             tokenSource.CancelAfter(3000);
-            await host.RunRoutingAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
 
             // In 3 seconds the Route will be called miltiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -183,7 +183,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // cancel the token after 2 seconds so routing will be called and it will raise an exception
             tokenSource.CancelAfter(2000);
-            await host.RunRoutingAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
             Assert.AreEqual("test_title", titleWriter.ToString());
 
             Assert.IsNotNull(stringWriter);

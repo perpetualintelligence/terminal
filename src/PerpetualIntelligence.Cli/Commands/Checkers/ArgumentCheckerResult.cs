@@ -12,6 +12,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// <summary>
     /// The argument checker result.
     /// </summary>
+    /// <seealso cref="IArgumentChecker"/>
+    /// <seealso cref="ArgumentCheckerContext"/>
     public class ArgumentCheckerResult : OneImlxResult
     {
         /// <summary>
@@ -24,6 +26,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <summary>
         /// The mapped system type.
         /// </summary>
-        public Type? MappedSystemType { get; set; }
+        public Type? MappedType { get; set; }
     }
 }

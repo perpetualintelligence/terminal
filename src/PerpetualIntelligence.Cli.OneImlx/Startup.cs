@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.OneImlx.Cli
         {
             services.AddCli(options => { options.Logging.ErrorArguments = true; })
                 .AddExtractor<SeparatorCommandExtractor, SeparatorArgumentExtractor>()
-                .AddArgumentChecker<DataAnnotationsTypeMapper, DataAnnotationsArgumentChecker>()
+                .AddArgumentChecker<DataAnnotationsArgumentDataTypeMapper, ArgumentChecker>()
                 .AddOneImlxCommandIdentities();
         }
 

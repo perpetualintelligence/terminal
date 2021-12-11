@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// The <c>oneimlx</c> generic command checker.
+    /// The command checker.
     /// </summary>
     public class CommandChecker : ICommandChecker
     {

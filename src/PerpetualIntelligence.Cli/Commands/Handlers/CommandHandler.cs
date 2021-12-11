@@ -6,6 +6,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Oidc;
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The <c>cli</c> generic command handler.
+    /// The command handler to handle a <c>cli</c> command request routed from a <see cref="CommandRouter"/>.
     /// </summary>
     public class CommandHandler : ICommandHandler
     {

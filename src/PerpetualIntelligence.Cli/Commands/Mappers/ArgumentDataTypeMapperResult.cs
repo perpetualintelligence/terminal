@@ -10,9 +10,9 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
-    /// The argument checker result.
+    /// The argument data-type mapper result.
     /// </summary>
-    public class DataAnnotationsMapperTypeResult : OneImlxResult
+    public class ArgumentDataTypeMapperResult : OneImlxResult
     {
         /// <summary>
         /// The mapped system type.

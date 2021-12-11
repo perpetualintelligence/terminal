@@ -9,7 +9,7 @@ using PerpetualIntelligence.Shared.Infrastructure;
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     /// <summary>
-    /// The logger configuration options.
+    /// The logging configuration options.
     /// </summary>
     public class LoggingOptions : OneImlxLoggingOptions
     {

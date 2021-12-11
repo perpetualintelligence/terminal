@@ -15,9 +15,9 @@ namespace PerpetualIntelligence.Cli.Commands
     /// Defines identity of an <see cref="Argument"/>.
     /// </summary>
     /// <remarks>
-    /// The <see cref="ArgumentIdentity"/> defines argument identity, data type and data validation. The
-    /// <see cref="Argument"/> is a runtime validated representation of an actual command argument including its value
-    /// passed by a user or an application.
+    /// The <see cref="ArgumentIdentity"/> defines <see cref="Argument"/> identity, data type and data validation. The
+    /// <see cref="Argument"/> is a runtime validated representation of an actual argument and its value passed by a
+    /// user or an application.
     /// </remarks>
     /// <seealso cref="Argument"/>
     public sealed class ArgumentIdentity

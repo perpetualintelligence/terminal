@@ -7,7 +7,7 @@
 using PerpetualIntelligence.Shared.Infrastructure;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Cli.Commands.Stores
 {
     /// <summary>
     /// A store abstraction to lookup a <see cref="CommandIdentity"/>.

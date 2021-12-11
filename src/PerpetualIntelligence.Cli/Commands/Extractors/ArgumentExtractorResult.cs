@@ -9,7 +9,7 @@ using PerpetualIntelligence.Shared.Infrastructure;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The <c>onimlx</c> argument syntax checker context.
+    /// The argument extractor result.
     /// </summary>
     public class ArgumentExtractorResult : OneImlxResult
     {
@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// The checked argument.
+        /// The extracted argument.
         /// </summary>
         public Argument? Argument { get; set; }
     }

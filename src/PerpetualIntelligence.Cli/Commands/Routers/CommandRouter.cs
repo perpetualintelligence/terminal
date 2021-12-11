@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     /// <summary>
-    /// The <c>cli</c> generic command router.
+    /// The command router.
     /// </summary>
     public class CommandRouter : ICommandRouter
     {
@@ -26,7 +26,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// </summary>
         /// <param name="extractor">The command extractor.</param>
         /// <param name="handler">The command handler.</param>
-        /// <param name="services">The services.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         public CommandRouter(ICommandExtractor extractor, ICommandHandler handler, CliOptions options, ILogger<CommandRouter> logger)

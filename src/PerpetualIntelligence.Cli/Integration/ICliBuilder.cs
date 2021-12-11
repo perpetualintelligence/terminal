@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace PerpetualIntelligence.Cli.Integration
 {
     /// <summary>
-    /// An abstraction of <c>cli</c> builder.
+    /// An abstraction of Perpetual Intelligence <c>cli</c> builder.
     /// </summary>
     public interface ICliBuilder
     {

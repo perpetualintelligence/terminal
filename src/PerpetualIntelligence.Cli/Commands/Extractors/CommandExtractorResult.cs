@@ -5,12 +5,11 @@
 */
 
 using PerpetualIntelligence.Shared.Infrastructure;
-using System;
 
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The default command extractor result.
+    /// The command extractor result.
     /// </summary>
     public class CommandExtractorResult : OneImlxResult
     {
@@ -23,7 +22,5 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// The extracted command identity.
         /// </summary>
         public CommandIdentity? CommandIdentity { get; set; }
-
-       
     }
 }

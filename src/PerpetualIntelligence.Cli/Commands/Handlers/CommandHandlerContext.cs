@@ -9,7 +9,7 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The <c>oneimlx</c> generic command checker context.
+    /// The command handler context.
     /// </summary>
     public class CommandHandlerContext
     {

@@ -13,6 +13,7 @@ using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
+using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using System;
@@ -25,21 +26,21 @@ namespace PerpetualIntelligence.Cli.Extensions
     public static class ICliBuilderExtensions
     {
         /// <summary>
-        /// Adds the argument checker to the service..
+        /// Adds the <see cref="IArgumentDataTypeMapper"/> and <see cref="IArgumentChecker"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <typeparam name="TMapper">The command extractor type.</typeparam>
-        /// <typeparam name="TChecker">The command extractor type.</typeparam>
+        /// <typeparam name="TMapper">The argument mapper type.</typeparam>
+        /// <typeparam name="TChecker">The argument checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddArgumentChecker<TMapper, TChecker>(this ICliBuilder builder) where TMapper : class, IArgumentMapper where TChecker : class, IArgumentChecker
+        public static ICliBuilder AddArgumentChecker<TMapper, TChecker>(this ICliBuilder builder) where TMapper : class, IArgumentDataTypeMapper where TChecker : class, IArgumentChecker
         {
-            builder.Services.AddTransient<IArgumentMapper, TMapper>();
+            builder.Services.AddTransient<IArgumentDataTypeMapper, TMapper>();
             builder.Services.AddTransient<IArgumentChecker, TChecker>();
             return builder;
         }
 
         /// <summary>
-        /// Adds the required <see cref="CliOptions"/> with singleton scope.
+        /// Adds the <see cref="CliOptions"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
@@ -52,7 +53,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <c>cli</c> command identity as service.
+        /// Adds the <see cref="CommandIdentity"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="commandIdentity">The command identity.</param>
@@ -81,7 +82,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <c>cli</c> command identity store to the service collection.
+        /// Adds the <see cref="ICommandIdentityStore"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command identity store type.</typeparam>
@@ -95,7 +96,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the required command extractor services with transient scope.
+        /// Adds the <see cref="ICommandExtractor"/> and <see cref="IArgumentExtractor"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
@@ -113,7 +114,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the required core services with transient scope.
+        /// Adds the <see cref="ICommandRouter"/> and <see cref="ICommandHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>

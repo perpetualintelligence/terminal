@@ -9,7 +9,7 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
-    /// The default command runner context.
+    /// The command runner context.
     /// </summary>
     public class CommandRunnerContext
     {

@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// An argument of a <see cref="Command"/>.
+    /// A <c>cli</c> command argument.
     /// </summary>
     /// <remarks>
     /// <para>

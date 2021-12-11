@@ -9,9 +9,9 @@ using PerpetualIntelligence.Protocols.Abstractions;
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
-    /// An abstraction to extract a data type of an argument.
+    /// An abstraction to map an <see cref="Argument.DataType"/> to <see cref="System.Type"/>.
     /// </summary>
-    public interface IArgumentMapper : IMapper<DataAnnotationsMapperTypeContext, DataAnnotationsMapperTypeResult>
+    public interface IArgumentDataTypeMapper : IMapper<ArgumentDataTypeMapperContext, ArgumentDataTypeMapperResult>
     {
     }
 }

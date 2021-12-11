@@ -9,7 +9,7 @@ using PerpetualIntelligence.Shared.Infrastructure;
 namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
-    /// The default command runner result.
+    /// The command runner result.
     /// </summary>
     public class CommandRunnerResult : OneImlxResult
     {

@@ -6,10 +6,10 @@
 
 using PerpetualIntelligence.Shared.Infrastructure;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     /// <summary>
-    /// The <c>cli</c> generic command router result.
+    /// The command router context.
     /// </summary>
     public class CommandRouterResult : OneImlxResult
     {

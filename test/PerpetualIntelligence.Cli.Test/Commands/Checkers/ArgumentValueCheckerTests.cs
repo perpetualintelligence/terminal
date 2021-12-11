@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
             var result = await checker.CheckAsync(context);
             Assert.IsFalse(result.IsError);
-            Assert.AreEqual(typeof(string), result.MappedSystemType);
+            Assert.AreEqual(typeof(string), result.MappedType);
         }
 
         [TestMethod]
@@ -135,12 +135,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            mapper = new DataAnnotationsTypeMapper(options, TestLogger.Create<DataAnnotationsTypeMapper>());
-            checker = new DataAnnotationsArgumentChecker(mapper, options, TestLogger.Create<DataAnnotationsArgumentChecker>());
+            mapper = new DataAnnotationsArgumentDataTypeMapper(options, TestLogger.Create<DataAnnotationsArgumentDataTypeMapper>());
+            checker = new ArgumentChecker(mapper, options, TestLogger.Create<ArgumentChecker>());
         }
 
         private IArgumentChecker checker = null!;
-        private IArgumentMapper mapper = null!;
+        private IArgumentDataTypeMapper mapper = null!;
         private CliOptions options = null!;
     }
 }

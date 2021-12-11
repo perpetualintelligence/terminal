@@ -16,27 +16,27 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
-    /// The <c>cli</c> data type mapper for <see cref="DataType"/>.
+    /// The argument data type mapper using <see cref="System.ComponentModel.DataAnnotations"/>.
     /// </summary>
-    public class DataAnnotationsTypeMapper : IArgumentMapper
+    public class DataAnnotationsArgumentDataTypeMapper : IArgumentDataTypeMapper
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public DataAnnotationsTypeMapper(CliOptions options, ILogger<DataAnnotationsTypeMapper> logger)
+        public DataAnnotationsArgumentDataTypeMapper(CliOptions options, ILogger<DataAnnotationsArgumentDataTypeMapper> logger)
         {
             this.options = options;
             this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public Task<DataAnnotationsMapperTypeResult> MapAsync(DataAnnotationsMapperTypeContext context)
+        public Task<ArgumentDataTypeMapperResult> MapAsync(ArgumentDataTypeMapperContext context)
         {
             if (context.Argument.DataType == DataType.Custom && string.IsNullOrWhiteSpace(context.Argument.CustomDataType))
             {
-                return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is null or whitespace. argument={0}", context.Argument.Id)));
+                return Task.FromResult(OneImlxResult.NewError<ArgumentDataTypeMapperResult>(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is null or whitespace. argument={0}", context.Argument.Id)));
             }
 
             switch (context.Argument.DataType)
@@ -75,23 +75,23 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
                             case nameof(Double): return Task.FromResult(Valid(typeof(double)));
                             default:
                                 {
-                                    return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is not supported. argument={0} custom_data_type={1}", context.Argument.Id, context.Argument.CustomDataType)));
+                                    return Task.FromResult(OneImlxResult.NewError<ArgumentDataTypeMapperResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument custom data type is not supported. argument={0} custom_data_type={1}", context.Argument.Id, context.Argument.CustomDataType)));
                                 }
                         }
                     }
                 default:
                     {
-                        return Task.FromResult(OneImlxResult.NewError<DataAnnotationsMapperTypeResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument data type is not supported. argument={0} data_type={1}", context.Argument.Id, context.Argument.DataType)));
+                        return Task.FromResult(OneImlxResult.NewError<ArgumentDataTypeMapperResult>(Errors.UnsupportedArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument data type is not supported. argument={0} data_type={1}", context.Argument.Id, context.Argument.DataType)));
                     }
             }
         }
 
-        private DataAnnotationsMapperTypeResult Valid(Type type)
+        private ArgumentDataTypeMapperResult Valid(Type type)
         {
-            return new DataAnnotationsMapperTypeResult() { MappedType = type };
+            return new ArgumentDataTypeMapperResult() { MappedType = type };
         }
 
-        private readonly ILogger<DataAnnotationsTypeMapper> logger;
+        private readonly ILogger<DataAnnotationsArgumentDataTypeMapper> logger;
         private readonly CliOptions options;
     }
 }

@@ -9,7 +9,7 @@ using PerpetualIntelligence.Shared.Infrastructure;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The <c>oneimlx</c> generic command handler result.
+    /// The command handler result.
     /// </summary>
     public class CommandHandlerResult : OneImlxResult
     {

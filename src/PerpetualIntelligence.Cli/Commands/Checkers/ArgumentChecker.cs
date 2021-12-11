@@ -17,12 +17,12 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// The default <c>oneimlx</c> argument data type extractor.
+    /// The argument checker.
     /// </summary>
     /// <remarks>
-    /// The default syntax format is either <c>-{arg}={value}</c> for a key-value pair or <c>-{arg}</c> for a boolean argument.
+    /// The <see cref="ArgumentChecker"/> uses the <see cref="ValidationAttribute"/> to check an argument value.
     /// </remarks>
-    public class DataAnnotationsArgumentChecker : IArgumentChecker
+    public class ArgumentChecker : IArgumentChecker
     {
         /// <summary>
         /// Initialize a new instance.
@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="mapper">The argument data-type mapper.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public DataAnnotationsArgumentChecker(IArgumentMapper mapper, CliOptions options, ILogger<DataAnnotationsArgumentChecker> logger)
+        public ArgumentChecker(IArgumentDataTypeMapper mapper, CliOptions options, ILogger<ArgumentChecker> logger)
         {
             this.mapper = mapper;
             this.options = options;
@@ -48,7 +48,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             }
 
             // Check argument data type and value type
-            DataAnnotationsMapperTypeResult mapperResult = await mapper.MapAsync(new DataAnnotationsMapperTypeContext(context.Argument));
+            ArgumentDataTypeMapperResult mapperResult = await mapper.MapAsync(new ArgumentDataTypeMapperContext(context.Argument));
             if (mapperResult.IsError)
             {
                 return OneImlxResult.NewError<ArgumentCheckerResult>(mapperResult);
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="context"></param>
         /// <param name="mapperResult"></param>
         /// <returns></returns>
-        protected Task<ArgumentCheckerResult> CheckValueCompatibilityAsync(ArgumentCheckerContext context, DataAnnotationsMapperTypeResult mapperResult)
+        protected Task<ArgumentCheckerResult> CheckValueCompatibilityAsync(ArgumentCheckerContext context, ArgumentDataTypeMapperResult mapperResult)
         {
             ArgumentCheckerResult result = new();
 
@@ -93,14 +93,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             if (!result.IsError)
             {
-                result.MappedSystemType = mapperResult.MappedType;
+                result.MappedType = mapperResult.MappedType;
             }
 
             return Task.FromResult(result);
         }
 
-        private readonly ILogger<DataAnnotationsArgumentChecker> logger;
-        private readonly IArgumentMapper mapper;
+        private readonly ILogger<ArgumentChecker> logger;
+        private readonly IArgumentDataTypeMapper mapper;
         private readonly CliOptions options;
     }
 }

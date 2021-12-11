@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
-    /// The <c>oneimlx</c> command runner.
+    /// The command runner.
     /// </summary>
     public abstract class CommandRunner : ICommandRunner
     {

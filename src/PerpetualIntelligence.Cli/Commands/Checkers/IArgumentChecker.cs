@@ -9,7 +9,7 @@ using PerpetualIntelligence.Protocols.Abstractions;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// An abstraction to extract a data type of an argument.
+    /// An abstraction to check an <see cref="Argument"/>.
     /// </summary>
     public interface IArgumentChecker : IChecker<ArgumentCheckerContext, ArgumentCheckerResult>
     {

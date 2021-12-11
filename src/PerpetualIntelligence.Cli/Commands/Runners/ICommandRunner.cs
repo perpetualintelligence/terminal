@@ -9,7 +9,7 @@ using PerpetualIntelligence.Protocols.Abstractions;
 namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
-    /// An abstraction to run a <see cref="Command"/>.
+    /// An abstraction of a command runner.
     /// </summary>
     public interface ICommandRunner : IRunner<CommandRunnerContext, CommandRunnerResult>
     {

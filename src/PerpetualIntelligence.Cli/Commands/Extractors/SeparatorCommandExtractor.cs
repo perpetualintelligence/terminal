@@ -5,6 +5,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Extensions;
@@ -15,8 +16,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The <c>cli</c> separator based command extractor.
+    /// The separator based command extractor.
     /// </summary>
+    /// <seealso cref="ExtractorOptions.Separator"/>
     public class SeparatorCommandExtractor : ICommandExtractor
     {
         /// <summary>

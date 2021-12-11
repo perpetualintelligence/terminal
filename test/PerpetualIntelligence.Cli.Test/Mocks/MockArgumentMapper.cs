@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockArgumentMapper : IArgumentMapper
+    public class MockArgumentMapper : IArgumentDataTypeMapper
     {
         public bool Called { get; set; }
 
-        public Task<DataAnnotationsMapperTypeResult> MapAsync(DataAnnotationsMapperTypeContext context)
+        public Task<ArgumentDataTypeMapperResult> MapAsync(ArgumentDataTypeMapperContext context)
         {
             Called = true;
-            return Task.FromResult(new DataAnnotationsMapperTypeResult());
+            return Task.FromResult(new ArgumentDataTypeMapperResult());
         }
     }
 }

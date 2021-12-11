@@ -9,7 +9,7 @@ using PerpetualIntelligence.Protocols.Abstractions;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// An abstraction to check argument syntax.
+    /// An abstraction to extract an argument.
     /// </summary>
     public interface IArgumentExtractor : IExtractor<ArgumentExtractorContext, ArgumentExtractorResult>
     {
