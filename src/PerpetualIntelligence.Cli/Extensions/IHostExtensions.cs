@@ -92,20 +92,20 @@ namespace PerpetualIntelligence.Cli.Extensions
                     {
                         CliOptions options = host.Services.GetRequiredService<CliOptions>();
                         ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. path={0}", commandString);
+                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. command_string={0}", commandString);
                     }
                 }
                 catch (OperationCanceledException)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
-                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. path={0}", commandString);
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. command_string={0}", commandString);
                 }
                 catch (Exception ex)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
-                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. path={0} additional_info={1}", commandString, ex.InnerException.Message);
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} additional_info={1}", commandString, ex.InnerException.Message);
                 }
             };
         }

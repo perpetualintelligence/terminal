@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsync("test_title", null, tokenSource.Token);
 
             // The string writer will have both exception message and concatenated routing canceled message
-            Assert.AreEqual("The request failed. path=User has entered this command string additional_info=Test invalid operation. Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            Assert.AreEqual("The request failed. command_string=User has entered this command string additional_info=Test invalid operation. Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsync("test_title", 2000, tokenSource.Token);
 
             // The string writer will have both timeout message and concatenated routing canceled message
-            Assert.AreEqual("The request timed out. path=User has entered this command string. Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            Assert.AreEqual("The request timed out. command_string=User has entered this command string. Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
