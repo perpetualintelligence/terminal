@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2019-2022. All Rights Reserved. Perpetual Intelligence L.L.C.
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
     https://perpetualintelligence.com
     https://api.perpetualintelligence.com
 */
@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// for readability. If specified this method will print the answers with question in the format <c>{question} {answer1}/{answer2}/{answer3}?</c>
         /// </param>
         /// <returns>The answer for the question or <c>null</c> if canceled.</returns>
-        [ToUnitTest]
+        [WriteUnitTest]
         public static Task<string?> ReadAnswerAsync(this Command command, string question, params string[]? answers)
         {
             // Print the question
