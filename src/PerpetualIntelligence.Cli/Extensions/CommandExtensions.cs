@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 }
                 else
                 {
-                    Console.WriteLine($"The answer is not valid. answers={answers.JoinSpace()}");
+                    Console.WriteLine($"The answer is not valid. answers={answers.JoinBySpace()}");
                     return ReadAnswerAsync(command, question, answers);
                 }
             }
