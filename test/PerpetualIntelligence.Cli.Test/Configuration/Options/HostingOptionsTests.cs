@@ -7,25 +7,23 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
+using System.Threading;
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     [TestClass]
-    public class CliOptionsTests : OneImlxLogTest
+    public class HostingOptionsTests : OneImlxLogTest
     {
-        public CliOptionsTests() : base(TestLogger.Create<CliOptionsTests>())
+        public HostingOptionsTests() : base(TestLogger.Create<HostingOptionsTests>())
         {
         }
 
         [TestMethod]
-        public void CliOptionsShouldHaveCorrectDefaultValues()
+        public void LoggingOptionsShouldHaveCorrectDefaultValues()
         {
-            CliOptions options = new CliOptions();
+            HostingOptions options = new();
 
-            Assert.IsNotNull(options.Checker);
-            Assert.IsNotNull(options.Extractor);
-            Assert.IsNotNull(options.Logging);
-            Assert.IsNotNull(options.Hosting);
+            Assert.AreEqual(10000, options.CommandRouterTimeout);
         }
     }
 }

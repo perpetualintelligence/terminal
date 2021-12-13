@@ -6,6 +6,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Extensions;
 using System;
 using System.Threading;
@@ -23,11 +24,13 @@ namespace PerpetualIntelligence.Cli.Integration
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="hostApplicationLifetime">The host application lifetime.</param>
+        /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CliHostedService(IHost host, IHostApplicationLifetime hostApplicationLifetime, ILogger<CliHostedService> logger)
+        public CliHostedService(IHost host, IHostApplicationLifetime hostApplicationLifetime, CliOptions options, ILogger<CliHostedService> logger)
         {
             this.host = host;
             this.hostApplicationLifetime = hostApplicationLifetime;
+            this.options = options;
             this.logger = logger;
 
             // For canceling.
@@ -70,7 +73,7 @@ namespace PerpetualIntelligence.Cli.Integration
 
             // The console loop for routing commands.
             logger.LogInformation("Starting command routing...");
-            host.RunRouterAsync("cmd > ", 5000, cancellationTokenSource.Token).GetAwaiter().GetResult();
+            host.RunRouterAsync("cmd > ", options.Hosting.CommandRouterTimeout, cancellationTokenSource.Token).GetAwaiter().GetResult();
 
             // Closing comments
             logger.LogWarning("Command routing stopped.");
@@ -102,5 +105,6 @@ namespace PerpetualIntelligence.Cli.Integration
         private readonly IHost host;
         private readonly IHostApplicationLifetime hostApplicationLifetime;
         private readonly ILogger<CliHostedService> logger;
+        private readonly CliOptions options;
     }
 }

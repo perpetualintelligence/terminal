@@ -22,6 +22,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public ExtractorOptions Extractor { get; set; } = new ExtractorOptions();
 
         /// <summary>
+        /// The hosting configuration options.
+        /// </summary>
+        public HostingOptions Hosting { get; set; } = new HostingOptions();
+
+        /// <summary>
         /// The logging configuration options.
         /// </summary>
         public LoggingOptions Logging { get; set; } = new LoggingOptions();
