@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Mocks
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddCli(options => { options.Logging.ErrorArguments = true; })
+            services.AddCli(options => { options.Logging.RevealErrorArguments = true; })
                .AddExtractor<SeparatorCommandExtractor, SeparatorArgumentExtractor>();
         }
     }

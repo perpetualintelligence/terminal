@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             LoggingOptions options = new LoggingOptions();
 
-            Assert.AreEqual(null, options.ErrorArguments);
+            Assert.AreEqual(null, options.RevealErrorArguments);
         }
     }
 }

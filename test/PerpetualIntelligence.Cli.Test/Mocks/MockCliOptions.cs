@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 Logging = new LoggingOptions()
                 {
-                    ErrorArguments = true
+                    RevealErrorArguments = true
                 },
                 Extractor = new ExtractorOptions()
                 {
