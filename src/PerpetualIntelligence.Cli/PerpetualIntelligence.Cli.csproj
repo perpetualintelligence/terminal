@@ -12,9 +12,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-        <Nullable>enable</Nullable>
-        <LangVersion>latest</LangVersion>
-        <Description>The Perpetual Intelligence cross platform cli framework.</Description>
+        <Description>The cross platform cli framework for managed services, frameworks, and tools.</Description>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,55 +21,25 @@
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
     </ItemGroup>
 
-	<!--
-        CAUTION: DO NOT EDIT UNLESS YOU ARE KNOWLEDGEABLE ABOUT THE PERPETUAL INTELLIGENCE'S AZURE AND GITHUB DEVOPS INTEGRATION.
-
-        Purpose: Runtime reference resolution (Project references Vs Nuget Packages)
-
-        Design: All the packages in a pipeline will have same configuration and same sematic versions.
-
-        Pipeline: protocols
-
-        Cadence:
-            PI_CI_REFERENCE: Azure pipeline library environment variable that determines the release cadence.
-            Undefined/Local: Project References in both Debug and Release mode.
-            preview: Preview Packages
-            rc: Release Candidate Packages
-            release: Released Packages
-
-        Pipeline Package Versioning:
-            PI_LIBRARY_PACKAGEVERSION: Azure pipeline environment variable that determines package version.
-        
-        Important:
-            These environment variables are set in the Azure DevOps and will not be available on the local machine unless you define
-            them explicitly defined as system environment variables.
-
-        Magic:
-            The Azure pipeline takes care of creating a correct PI_LIBRARY_PACKAGEVERSION based on PI_CI_REFERENCE.
+    <!--
+        CI CONFIG:
     -->
-	<Choose>
-		<!-- Undefined or local environment use Project references-->
-		<When Condition="'$(PI_CI_REFERENCE)'=='' Or '$(PI_CI_REFERENCE)'=='local'">
-			<ItemGroup>
-				<!--Add nuget package ref-->
-				<PackageReference Include="PerpetualIntelligence.Protocols" Version="2.3.5-preview.21101801" />
-			</ItemGroup>
-		</When>
-
-		<!-- cross repo environment -->
-		<When Condition="'$(PI_CI_REFERENCE)'=='cross'">
-			<ItemGroup>
-				<ProjectReference Include="..\..\..\protocols\src\PerpetualIntelligence.Protocols\PerpetualIntelligence.Protocols.csproj" />
-			</ItemGroup>
-		</When>
-
-		<!--Honor the cadence and use Nuget references-->
-		<Otherwise>
-			<ItemGroup>
-				<!--Add nuget package ref-->
-				<PackageReference Include="PerpetualIntelligence.Protocols" Version="$(PI_LIBRARY_PACKAGEVERSION)" />
-			</ItemGroup>
-		</Otherwise>
-	</Choose>	
+    <Choose>
+        <When Condition="'$(PI_CI_REFERENCE)'=='local'">
+            <ItemGroup>
+                <PackageReference Include="PerpetualIntelligence.Protocols" Version="$(PI_PROTOCOLS_PACKAGE_VERSION)" />
+            </ItemGroup>
+        </When>
+        <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
+            <ItemGroup>
+                <ProjectReference Include="..\..\..\protocols\src\PerpetualIntelligence.Protocols\PerpetualIntelligence.Protocols.csproj" />
+            </ItemGroup>
+        </When>
+        <Otherwise>
+            <ItemGroup>
+                <PackageReference Include="PerpetualIntelligence.Protocols" Version="$(PI_PROTOCOLS_PACKAGE_VERSION)" />
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
 
 </Project>
