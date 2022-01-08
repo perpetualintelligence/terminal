@@ -33,7 +33,7 @@
         Pipeline: protocols
 
         Cadence:
-            PI_LIBRARY_CADENCE: Azure pipeline library environment variable that determines the release cadence.
+            PI_CI_REFERENCE: Azure pipeline library environment variable that determines the release cadence.
             Undefined/Local: Project References in both Debug and Release mode.
             preview: Preview Packages
             rc: Release Candidate Packages
@@ -47,11 +47,11 @@
             them explicitly defined as system environment variables.
 
         Magic:
-            The Azure pipeline takes care of creating a correct PI_LIBRARY_PACKAGEVERSION based on PI_LIBRARY_CADENCE.
+            The Azure pipeline takes care of creating a correct PI_LIBRARY_PACKAGEVERSION based on PI_CI_REFERENCE.
     -->
 	<Choose>
 		<!-- Undefined or local environment use Project references-->
-		<When Condition="'$(PI_LIBRARY_CADENCE)'=='' Or '$(PI_LIBRARY_CADENCE)'=='local'">
+		<When Condition="'$(PI_CI_REFERENCE)'=='' Or '$(PI_CI_REFERENCE)'=='local'">
 			<ItemGroup>
 				<!--Add nuget package ref-->
 				<PackageReference Include="PerpetualIntelligence.Protocols" Version="2.3.5-preview.21101801" />
@@ -59,7 +59,7 @@
 		</When>
 
 		<!-- cross repo environment -->
-		<When Condition="'$(PI_LIBRARY_CADENCE)'=='cross'">
+		<When Condition="'$(PI_CI_REFERENCE)'=='cross'">
 			<ItemGroup>
 				<ProjectReference Include="..\..\..\protocols\src\PerpetualIntelligence.Protocols\PerpetualIntelligence.Protocols.csproj" />
 			</ItemGroup>

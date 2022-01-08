@@ -1,46 +1,46 @@
 <!--
-    Copyright (c) 2021. All Rights Reserved. Perpetual Intelligence L.L.C.
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0.
+    https://github.com/perpetualintelligence/terms/blob/main/LICENSE
+
+    Additional terms and policies.
+    https://terms.perpetualintelligence.com/articles/intro.html
 -->
 
 <!--
-Provide a set of shared build properties for all DevOps packages.
-https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=msvc-160
+    Provide a set of shared build properties for all DevOps packages.
+    https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view=msvc-160
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <!-- 
         Shared package properties.
     -->
-    <PropertyGroup Label="PiPackageProps">
-        <Copyright>Copyright (c) 2021. All Rights Reserved. Perpetual Intelligence L.L.C.</Copyright>
+    <PropertyGroup>
+        <Copyright>Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.</Copyright>
         <Authors>Perpetual Intelligence</Authors>
         <Company>Perpetual Intelligence L.L.C.</Company>
+        <Product>cli</Product>
+        <PackageProjectUrl>https://github.com/perpetualintelligence/cli</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/perpetualintelligence/cli</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageIcon>icon.png</PackageIcon>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-        <PackageProjectUrl>https://perpetualintelligence.azurewebsites.net/</PackageProjectUrl>
-
-        <RepositoryUrl>https://github.com/perpetualintelligence</RepositoryUrl>        
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
 
         <!--
-            We are using Visual Studio Team Services/TFS and CI build process and that has versioning built-in. So we utilize msbuild's Condition attribute.
-            This will tell the .NET Core compiler to use whatever is in the BUILD_BUILDNUMBER environment variable if it's present, or fall-back to 1.0.2
+            AzureDevOps and CI/CD pipelines with versioning built-in. So we utilize msbuild's Condition attribute.
+            This will tell the .NET Core compiler to use whatever is in the BUILD_BUILDNUMBER environment variable if it's present, or fall-back to 1.0.2-local
             if you're doing a build on your local machine.
         -->
         <Version Condition="'$(BUILD_BUILDNUMBER)' == ''">1.0.2-local</Version>
         <Version Condition="'$(BUILD_BUILDNUMBER)' != ''">$(BUILD_BUILDNUMBER)</Version>
-
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <RepositoryType>tfs</RepositoryType>        
-    </PropertyGroup>
-
-    <!--
-        Package icon
-    -->
-    <PropertyGroup>
-        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <!--
@@ -52,10 +52,16 @@ https://docs.microsoft.com/en-us/cpp/build/reference/vcxproj-file-structure?view
         <None Include="..\..\build\images\icon.png" Link="icon.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
-    <PropertyGroup Label="PiProjectConfig">        
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <WarningsAsErrors />
-    </PropertyGroup>
+
+    <!--
+        Package README.md - 
+        https://devblogs.microsoft.com/nuget/add-a-readme-to-your-nuget-package/
+        The Include location is relative to the src/<package>/readme.md that will import the props file.
+    -->
+    <ItemGroup>
+        <None Include="..\..\src\$(MSBuildProjectName)\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
 </Project>
 
 
