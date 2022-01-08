@@ -123,7 +123,7 @@ jobs:
     - name: PerpetualIntelligence.Cli
       uses: ./.github/actions/push-package
       with:
-        project: PerpetualIntelligence.Data.Shared
+        project: PerpetualIntelligence.Cli
         config: Release
         version: ${{ env.PI_CI_PACKAGE_VERSION }}
         ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
