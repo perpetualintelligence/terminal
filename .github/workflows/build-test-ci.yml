@@ -1,0 +1,155 @@
+#    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0.
+#    https://github.com/perpetualintelligence/terms/blob/main/LICENSE
+#
+#    Additional terms and policies.
+#    https://github.com/perpetualintelligence/terms/blob/main/policies.md
+
+# This pipeline builds and tests the protocol projects. It does not publish any package.
+
+name: build-test-ci
+
+# Triggers
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  ubunto:   
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    # Environment Variables
+    env:     
+      # GitHub package authentication
+      PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
+      PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
+      PI_CI_REFERENCE: local
+      
+    steps:
+
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Read env    
+    - name: Read Env
+      run: cat .github/package_version.env >> $GITHUB_ENV                
+      continue-on-error: false
+
+    # Protocols package version
+    # E.g. 2.3.8-preview.221225369 (latest build version including preview)
+    # PI_DEPENDENCIES_SUFFIX will be empty for release version
+    - name: Dependencies
+      run: echo "PI_PROTOCOLS_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $GITHUB_ENV
+      continue-on-error: false
+    
+    # Setup .Net with global.json
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      
+    # Restore dependencies
+    - name: Restore
+      run: dotnet restore
+      
+    # Build
+    - name: Build
+      run: dotnet build --no-restore
+      
+    # Test
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      
+  macos:   
+    runs-on: macos-latest
+    timeout-minutes: 5
+    
+    # Environment Variables
+    env:     
+      # GitHub package authentication
+      PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
+      PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
+      PI_CI_REFERENCE: local
+      
+    steps:
+
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Read env    
+    - name: Read Env
+      run: cat .github/package_version.env >> $GITHUB_ENV                
+      continue-on-error: false
+
+    # Protocols package version
+    # E.g. 2.3.8-preview.221225369 (latest build version including preview)
+    # PI_DEPENDENCIES_SUFFIX will be empty for release version
+    - name: Dependencies
+      run: echo "PI_PROTOCOLS_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $GITHUB_ENV
+      continue-on-error: false
+      
+    # Setup .Net with global.json
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      
+    # Restore dependencies
+    - name: Restore
+      run: dotnet restore
+      
+    # Build
+    - name: Build
+      run: dotnet build --no-restore
+      
+    # Test
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      
+  windows:   
+    runs-on: windows-latest
+    timeout-minutes: 5
+    
+    # Environment Variables
+    env:     
+      # GitHub package authentication
+      PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
+      PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
+      PI_CI_REFERENCE: local
+      
+    steps:
+    
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Read env    
+    - name: Read Env
+      run: cat .github/package_version.env >> $env:GITHUB_ENV
+      continue-on-error: false
+
+    # Protocols package version
+    # E.g. 2.3.8-preview.221225369 (latest build version including preview)
+    # PI_DEPENDENCIES_SUFFIX will be empty for release version
+    - name: Dependencies
+      run: echo "PI_PROTOCOLS_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $env:GITHUB_ENV
+      continue-on-error: false
+    
+    # Setup .Net with global.json
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      
+    # Restore dependencies
+    - name: Restore
+      run: dotnet restore
+      
+    # Build
+    - name: Build
+      run: dotnet build --no-restore
+      
+    # Test
+    - name: Test
+      run: dotnet test --no-build --verbosity normal

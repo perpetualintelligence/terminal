@@ -1,0 +1,61 @@
+#    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0.
+#    https://github.com/perpetualintelligence/terms/blob/main/LICENSE
+#
+#    Additional terms and policies.
+#    https://github.com/perpetualintelligence/terms/blob/main/policies.md
+
+# Deletes the specified package name
+name: delete-packages
+
+# Controls when the workflow will run
+on:
+  # Weekly automated run 10.30 PM UTC on Friday
+  # Default values: keep 1 latest version for all packages
+  schedule:
+    - cron:  '30 22 * * 5'
+  # Manual
+  workflow_dispatch:
+    inputs:
+      keep:
+        type: choice
+        description: 'The minimum versions to keep'
+        required: true
+        options:
+        - '1'
+        - '2'
+        - '3'
+        - '0'
+        default: '1'  
+      package:
+        type: choice
+        description: 'The package name to delete'
+        required: true
+        options:
+        - PerpetualIntelligence.Cli
+        - All
+        default: 'All'  
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  delete:
+
+    # OS/Platform
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: ${{ github.event.inputs.package }}
+        if: ${{ github.event.inputs.package != 'All' }}
+        uses: actions/delete-package-versions@v2       
+        with:
+          package-name: ${{ github.event.inputs.package }}
+          min-versions-to-keep: ${{ github.event.inputs.keep }}  
+          
+      - name: PerpetualIntelligence.Data.Shared
+        if: ${{ github.event.inputs.package == 'All' }}
+        uses: actions/delete-package-versions@v2       
+        with:
+          package-name: PerpetualIntelligence.Cli
+          min-versions-to-keep: ${{ github.event.inputs.keep }}    
