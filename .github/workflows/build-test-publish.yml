@@ -103,10 +103,10 @@ jobs:
     
     # Print all env
     - name: Print
-      if: ${{ false }}  # Debug
+      if: ${{ true }}  # Debug
       run: |
         env
-        ls
+        ls -R
       shell: bash
     
     # Setup .Net with global.json
