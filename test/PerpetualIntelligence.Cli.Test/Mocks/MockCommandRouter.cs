@@ -1,10 +1,10 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Shared.Infrastructure;
@@ -16,11 +16,12 @@ namespace PerpetualIntelligence.Cli.Mocks
 {
     public class MockCommandRouter : ICommandRouter
     {
-        public MockCommandRouter(int? routeDelay = null, CancellationTokenSource? cancelOnRouteCalled = null, Exception? exception = null)
+        public MockCommandRouter(int? routeDelay = null, CancellationTokenSource? cancelOnRouteCalled = null, Exception? exception = null, string? explicitError = null)
         {
             this.routeDelay = routeDelay;
             this.cancelOnRouteCalled = cancelOnRouteCalled;
             this.exception = exception;
+            this.explicitError = explicitError;
         }
 
         public string? CommandString { get; set; }
@@ -57,6 +58,12 @@ namespace PerpetualIntelligence.Cli.Mocks
                 throw exception;
             }
 
+            // Explicit error
+            if (explicitError != null)
+            {
+                return OneImlxResult.NewError<CommandRouterResult>(explicitError);
+            }
+
             return new CommandRouterResult();
         }
 
@@ -67,6 +74,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         }
 
         private readonly Exception? exception;
+        private readonly string? explicitError;
         private CancellationTokenSource? cancelOnRouteCalled;
         private int? routeDelay;
     }

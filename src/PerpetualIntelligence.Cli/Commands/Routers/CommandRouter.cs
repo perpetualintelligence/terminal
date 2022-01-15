@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,11 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Routes the command request to the registered handler.
+        /// </summary>
+        /// <param name="context">The router context.</param>
+        /// <returns>The <see cref="CommandRouterResult"/> instance.</returns>
         public virtual async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
             // Extract the command

@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -237,6 +238,33 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
+        public async Task InvalidCommandStringWithinCommandGroupShouldNotFailAsync()
+        {
+            // Reset commands
+            commands = new InMemoryCommandIdentityStore(MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
+            extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
+
+            // We are trying to determine the most probable match, an invalid sub command will match the command
+            // group. E.g., 'pi auth cmd invalid' will match to 'pi auth cmd' command since that is closest match.
+            // There is no way for us to know if the command is invalid at this point, this will be handled as 
+            // an invalid argument.
+            CommandExtractorContext context = new CommandExtractorContext("pi auth invalid");
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsTrue(result.IsError);
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=auth command_id=orgid:authid argument= invalid");
+
+
+            // We are trying to determine the most probable match, an invalid sub command will match the command
+            // group. E.g., 'pi auth cmd invalid' will match to 'pi auth cmd' command since that is closest match.
+            // There is no way for us to know if the command is invalid at this point, this will be handled as 
+            // an invalid argument.
+            context = new CommandExtractorContext("pi auth invalid -key1=value1");
+            result = await extractor.ExtractAsync(context);
+            Assert.IsTrue(result.IsError);
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=auth command_id=orgid:authid argument= invalid");
+        }
+
+        [TestMethod]
         public void NullOrEmptyCommandStringShouldThrow()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -377,6 +405,56 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // No Args Passed
             Assert.IsNotNull(result.Command);
             Assert.IsNull(result.Command.Arguments);
+        }
+
+        [TestMethod]
+        public async Task ValidCommandStringWithinCommandGroupShouldNotFailAsync()
+        {
+            // Reset commands
+            commands = new InMemoryCommandIdentityStore(MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
+            extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
+
+            CommandExtractorContext context = new CommandExtractorContext("pi");
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.CommandIdentity);
+            Assert.AreEqual("orgid", result.CommandIdentity.Id);
+            Assert.AreEqual("pi", result.CommandIdentity.Name);
+
+            context = new CommandExtractorContext("pi auth");
+            result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.CommandIdentity);
+            Assert.AreEqual("orgid:authid", result.CommandIdentity.Id);
+            Assert.AreEqual("auth", result.CommandIdentity.Name);
+
+            context = new CommandExtractorContext("pi auth login");
+            result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.CommandIdentity);
+            Assert.AreEqual("orgid:authid:loginid", result.CommandIdentity.Id);
+            Assert.AreEqual("login", result.CommandIdentity.Name);
+
+            context = new CommandExtractorContext("pi auth slogin");
+            result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.CommandIdentity);
+            Assert.AreEqual("orgid:authid:sloginid", result.CommandIdentity.Id);
+            Assert.AreEqual("slogin", result.CommandIdentity.Name);
+
+            context = new CommandExtractorContext("pi auth slogin oidc");
+            result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.CommandIdentity);
+            Assert.AreEqual("orgid:authid:sloginid:oidc", result.CommandIdentity.Id);
+            Assert.AreEqual("oidc", result.CommandIdentity.Name);
+
+            context = new CommandExtractorContext("pi auth slogin oauth");
+            result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.CommandIdentity);
+            Assert.AreEqual("orgid:authid:sloginid:oauth", result.CommandIdentity.Id);
+            Assert.AreEqual("oauth", result.CommandIdentity.Name);
         }
 
         [TestMethod]

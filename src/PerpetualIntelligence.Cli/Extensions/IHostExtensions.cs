@@ -1,7 +1,8 @@
 /*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Abstractions;
+using PerpetualIntelligence.Shared.Attributes;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.Threading;
@@ -32,6 +35,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="title">The command title to show in the console.</param>
+        [WriteDocumentation("Add info about exception handling for ErrorException")]
         public static async Task RunRouterAsync(this IHost host, string title, int? timeout, CancellationToken? cancellationToken)
         {
             // Track the application lifetime so we can know whether cancellation is requested.
@@ -49,7 +53,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
                     logger.FormatAndLog(LogLevel.Warning, options.Logging, "Received cancellation token, the routing is canceled.");
 
                     // We are done, break the loop.
@@ -60,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 if (applicationLifetime != null && applicationLifetime.ApplicationStopping.IsCancellationRequested)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
                     logger.FormatAndLog(LogLevel.Warning, options.Logging, "Application is stopping, the routing is canceled.");
 
                     // We are done, break the loop.
@@ -83,7 +87,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 // Route the request.
                 CommandRouterContext context = new(commandString, cancellationToken);
                 ICommandRouter router = host.Services.GetRequiredService<ICommandRouter>();
-                Task routeTask = router.RouteAsync(context);
+                Task<CommandRouterResult> routeTask = router.RouteAsync(context);
 
                 try
                 {
@@ -91,21 +95,42 @@ namespace PerpetualIntelligence.Cli.Extensions
                     if (!success)
                     {
                         CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                        ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                        ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
                         logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. command_string={0}", commandString);
+                    }
+                    else
+                    {
+                        // No timeout or exception but explicit error
+                        CommandRouterResult result = routeTask.Result;
+                        if (result.IsError)
+                        {
+                            CliOptions options = host.Services.GetRequiredService<CliOptions>();
+                            ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
+                            logger.FormatAndLog(LogLevel.Error, options.Logging, "The request returned an error. error={0} error_description={1}", result.FirstErrorCode!, result.FirstErrorDescription!);
+                        }
                     }
                 }
                 catch (OperationCanceledException)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
+                    ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
                     logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. command_string={0}", commandString);
                 }
                 catch (Exception ex)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<CommandRouterContext> logger = host.Services.GetRequiredService<ILogger<CommandRouterContext>>();
-                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} additional_info={1}", commandString, ex.InnerException.Message);
+                    ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
+
+                    if (ex.InnerException is ErrorException ee)
+                    {
+                        // This is a legit error thrown by the system
+                        logger.FormatAndLog(Microsoft.Extensions.Logging.LogLevel.Error, options.Logging, ee.ErrorDescription, ee.Args);
+                    }
+                    else
+                    {
+                        // Unexpected error.
+                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} additional_info={1}", commandString, ex.InnerException.Message);
+                    }
                 }
             };
         }

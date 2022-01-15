@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using PerpetualIntelligence.Cli.Commands;
@@ -49,6 +50,27 @@ namespace PerpetualIntelligence.Cli.Mocks
 
             // Command with no args
             NewCommand("id4", "name4", "prefix4_noargs").Item1,
+        };
+
+        public static List<CommandIdentity> GroupedCommands = new()
+        {
+            // Different name and prefix
+            NewCommand("orgid", "pi", "pi", "the top org command group", typeof(CommandChecker), typeof(CommandRunner), ArgumentIdentities).Item1,
+
+            // Same name and prefix with args
+            NewCommand("orgid:authid", "auth", "pi auth", "the auth command group", typeof(CommandChecker), typeof(CommandRunner), ArgumentIdentities).Item1,
+
+            // Same name and prefix with args
+            NewCommand("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", typeof(CommandChecker), typeof(CommandRunner), ArgumentIdentities).Item1,
+
+            // Same name and prefix with args
+            NewCommand("orgid:authid:sloginid", "slogin", "pi auth slogin", "the silent login command within the auth group", typeof(CommandChecker), typeof(CommandRunner), ArgumentIdentities).Item1,
+
+            // Same name and prefix with args
+            NewCommand("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "the slient oidc login command within the slogin group", typeof(CommandChecker), typeof(CommandRunner), ArgumentIdentities).Item1,
+
+            // Same name and prefix with args
+            NewCommand("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "the slient oauth login command within the slogin group", typeof(CommandChecker), typeof(CommandRunner), ArgumentIdentities).Item1,
         };
     }
 }
