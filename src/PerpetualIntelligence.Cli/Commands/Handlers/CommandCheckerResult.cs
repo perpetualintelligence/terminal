@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
     /// <summary>
     /// The command handler result.
     /// </summary>
-    public class CommandHandlerResult : OneImlxResult
+    public class CommandHandlerResult : Result
     {
     }
 }

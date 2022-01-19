@@ -38,9 +38,9 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<OneImlxTryResult<CommandIdentity>> TryFindByIdAsync(string id)
+        public Task<TryResult<CommandIdentity>> TryFindByIdAsync(string id)
         {
-            OneImlxTryResult<CommandIdentity> result = new();
+            TryResult<CommandIdentity> result = new();
 
             var command = commandIdentities.FirstOrDefault(e => id.Equals(e.Id));
             if (command == null)
@@ -57,9 +57,9 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<OneImlxTryResult<CommandIdentity>> TryFindByNameAsync(string name)
+        public Task<TryResult<CommandIdentity>> TryFindByNameAsync(string name)
         {
-            OneImlxTryResult<CommandIdentity> result = new();
+            TryResult<CommandIdentity> result = new();
 
             var command = commandIdentities.FirstOrDefault(e => name.Equals(e.Name));
             if (command == null)
@@ -76,9 +76,9 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<OneImlxTryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix)
+        public Task<TryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix)
         {
-            OneImlxTryResult<CommandIdentity> result = new();
+            TryResult<CommandIdentity> result = new();
 
             var command = commandIdentities.FirstOrDefault(e => prefix.Equals(e.Prefix));
             if (command == null)

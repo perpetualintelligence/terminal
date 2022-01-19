@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
 
             if (IsExplicitError)
             {
-                return Task.FromResult(OneImlxResult.NewError<CommandExtractorResult>("test_extractor_error", "test_extractor_error_desc"));
+                return Task.FromResult(Result.NewError<CommandExtractorResult>("test_extractor_error", "test_extractor_error_desc"));
             }
             else
             {

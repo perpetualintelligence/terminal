@@ -61,16 +61,16 @@ namespace PerpetualIntelligence.Cli.Mocks
             // Explicit error
             if (explicitError != null)
             {
-                return OneImlxResult.NewError<CommandRouterResult>(explicitError);
+                return Result.NewError<CommandRouterResult>(explicitError);
             }
 
             return new CommandRouterResult();
         }
 
-        public Task<OneImlxTryResult<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
+        public Task<TryResult<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
         {
             FindCalled = true;
-            return Task.FromResult(new OneImlxTryResult<ICommandHandler>(new MockCommandHandler()));
+            return Task.FromResult(new TryResult<ICommandHandler>(new MockCommandHandler()));
         }
 
         private readonly Exception? exception;

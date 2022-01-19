@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     /// <summary>
     /// The hosting configuration options.
     /// </summary>
-    public class HostingOptions : OneImlxLoggingOptions
+    public class HostingOptions : Shared.Infrastructure.LoggingOptions
     {
         /// <summary>
         /// The command router timeout in milliseconds. Defaults to 10 seconds. Use <see cref="Timeout.Infinite"/> for

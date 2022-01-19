@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// <summary>
     /// The argument extractor result.
     /// </summary>
-    public class ArgumentExtractorResult : OneImlxResult
+    public class ArgumentExtractorResult : Result
     {
         /// <summary>
         /// Initialize a new instance.

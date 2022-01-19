@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
     {
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
-            return Task.FromResult(OneImlxResult.NewError<CommandRunnerResult>("test_runner_error", "test_runner_error_desc"));
+            return Task.FromResult(Result.NewError<CommandRunnerResult>("test_runner_error", "test_runner_error_desc"));
         }
     }
 }

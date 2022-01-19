@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     /// <summary>
     /// The logging configuration options.
     /// </summary>
-    public class LoggingOptions : OneImlxLoggingOptions
+    public class LoggingOptions : Shared.Infrastructure.LoggingOptions
     {
     }
 }

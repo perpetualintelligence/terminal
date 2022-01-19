@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// </summary>
     /// <seealso cref="IArgumentChecker"/>
     /// <seealso cref="ArgumentCheckerContext"/>
-    public class ArgumentCheckerResult : OneImlxResult
+    public class ArgumentCheckerResult : Result
     {
         /// <summary>
         /// Initialize a new instance.

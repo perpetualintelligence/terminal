@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// The argument data-type mapper result.
     /// </summary>
-    public class ArgumentDataTypeMapperResult : OneImlxResult
+    public class ArgumentDataTypeMapperResult : Result
     {
         /// <summary>
         /// The mapped system type.

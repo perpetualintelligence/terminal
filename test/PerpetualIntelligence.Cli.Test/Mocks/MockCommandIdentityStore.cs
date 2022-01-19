@@ -13,22 +13,22 @@ namespace PerpetualIntelligence.Cli.Mocks
 {
     public class MockCommandIdentityStore : ICommandIdentityStore
     {
-        public Task<OneImlxTryResult<CommandIdentity>> TryFindByIdAsync(string id)
+        public Task<TryResult<CommandIdentity>> TryFindByIdAsync(string id)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<OneImlxTryResult<CommandIdentity>> TryFindByNameAsync(string name)
+        public Task<TryResult<CommandIdentity>> TryFindByNameAsync(string name)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<OneImlxTryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix)
+        public Task<TryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<OneImlxTryResult<CommandIdentity>> TryMatchByPrefixAsync(string commandString)
+        public Task<TryResult<CommandIdentity>> TryMatchByPrefixAsync(string commandString)
         {
             throw new System.NotImplementedException();
         }

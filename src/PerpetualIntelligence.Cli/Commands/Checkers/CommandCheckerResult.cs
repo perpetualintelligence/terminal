@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// <summary>
     /// The command checker result.
     /// </summary>
-    public class CommandCheckerResult : OneImlxResult
+    public class CommandCheckerResult : Result
     {
     }
 }

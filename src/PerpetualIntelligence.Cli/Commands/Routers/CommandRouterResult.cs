@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
     /// <summary>
     /// The command router context.
     /// </summary>
-    public class CommandRouterResult : OneImlxResult
+    public class CommandRouterResult : Result
     {
     }
 }

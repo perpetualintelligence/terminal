@@ -48,40 +48,40 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             CommandExtractorResult tryResult = await extrator.ExtractAsync(new CommandExtractorContext(context.CommandString));
             if (tryResult.IsError)
             {
-                return OneImlxResult.NewError<CommandRouterResult>(tryResult);
+                return Result.NewError<CommandRouterResult>(tryResult);
             }
 
             // Must extract command identity
             if (tryResult.CommandIdentity == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The router failed to extract command identity. command_string={0} extractor={1}", context.CommandString, extrator.GetType().FullName);
-                return OneImlxResult.NewError<CommandRouterResult>(Errors.ServerError, errorDesc, context.CommandString);
+                return Result.NewError<CommandRouterResult>(Errors.ServerError, errorDesc, context.CommandString);
             }
 
             // Must extract command
             if (tryResult.Command == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The router failed to extract command. command_string={0} extractor={1}", context.CommandString, extrator.GetType().FullName);
-                return OneImlxResult.NewError<CommandRouterResult>(Errors.ServerError, errorDesc, context.CommandString);
+                return Result.NewError<CommandRouterResult>(Errors.ServerError, errorDesc, context.CommandString);
             }
 
             // Delegate to handler
-            OneImlxTryResult<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
+            TryResult<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
             CommandHandlerContext handlerContext = new(tryResult.CommandIdentity, tryResult.Command);
             CommandHandlerResult handlerResult = await tryHandler.Result!.HandleAsync(handlerContext);
             if (handlerResult.IsError)
             {
-                return OneImlxResult.NewError<CommandRouterResult>(handlerResult);
+                return Result.NewError<CommandRouterResult>(handlerResult);
             }
 
             return new CommandRouterResult();
         }
 
         /// <inheritdoc/>
-        public Task<OneImlxTryResult<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
+        public Task<TryResult<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
         {
             // Dummy for design. We will always find the handler as its checked in constructor.
-            return Task.FromResult(new OneImlxTryResult<ICommandHandler>(handler));
+            return Task.FromResult(new TryResult<ICommandHandler>(handler));
         }
 
         private readonly ICommandExtractor extrator;

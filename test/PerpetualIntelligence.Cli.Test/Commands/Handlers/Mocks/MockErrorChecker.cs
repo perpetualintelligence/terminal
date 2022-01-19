@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
     {
         public Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {
-            return Task.FromResult(OneImlxResult.NewError<CommandCheckerResult>("test_checker_error", "test_checker_error_desc"));
+            return Task.FromResult(Result.NewError<CommandCheckerResult>("test_checker_error", "test_checker_error_desc"));
         }
     }
 }

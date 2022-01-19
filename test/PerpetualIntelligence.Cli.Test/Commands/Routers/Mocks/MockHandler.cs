@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
 
             if (IsExplicitError)
             {
-                return Task.FromResult(OneImlxResult.NewError<CommandHandlerResult>("test_handler_error", "test_handler_error_desc"));
+                return Task.FromResult(Result.NewError<CommandHandlerResult>("test_handler_error", "test_handler_error_desc"));
             }
             else
             {

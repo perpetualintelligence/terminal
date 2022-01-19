@@ -38,7 +38,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             CommandHandlerResult result = new();
 
             // Find the checker
-            OneImlxTryResult<ICommandChecker> commandChecker = await TryFindCheckerAsync(context);
+            TryResult<ICommandChecker> commandChecker = await TryFindCheckerAsync(context);
             if (commandChecker.IsError)
             {
                 result.SyncError(commandChecker);
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
 
             // Find the runner
-            OneImlxTryResult<ICommandRunner> commandRunner = await TryFindRunnerAsync(context);
+            TryResult<ICommandRunner> commandRunner = await TryFindRunnerAsync(context);
             if (commandRunner.IsError)
             {
                 result.SyncError(commandRunner);
@@ -73,13 +73,13 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             return result;
         }
 
-        private Task<OneImlxTryResult<ICommandChecker>> TryFindCheckerAsync(CommandHandlerContext context)
+        private Task<TryResult<ICommandChecker>> TryFindCheckerAsync(CommandHandlerContext context)
         {
             // No checker configured.
             if (context.CommandIdentity.Checker == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command checker is not configured. command_name={0} command_id={1}", context.CommandIdentity.Name, context.CommandIdentity.Id);
-                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
+                return Task.FromResult(Result.NewError<TryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
             }
 
             // Not added to service collection
@@ -87,27 +87,27 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             if (checkerObj == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Checker.FullName);
-                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
+                return Task.FromResult(Result.NewError<TryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
             }
 
             // Invalid checker configured
             if (checkerObj is not ICommandChecker checker)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Checker.FullName);
-                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
+                return Task.FromResult(Result.NewError<TryResult<ICommandChecker>>(Errors.ServerError, errorDesc));
             }
 
             logger.FormatAndLog(LogLevel.Debug, options.Logging, "The handler found a command checker. command_name={0} command_id={1} checker={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, checker.GetType().FullName);
-            return Task.FromResult<OneImlxTryResult<ICommandChecker>>(new(checker));
+            return Task.FromResult<TryResult<ICommandChecker>>(new(checker));
         }
 
-        private Task<OneImlxTryResult<ICommandRunner>> TryFindRunnerAsync(CommandHandlerContext context)
+        private Task<TryResult<ICommandRunner>> TryFindRunnerAsync(CommandHandlerContext context)
         {
             // No runner configured.
             if (context.CommandIdentity.Runner == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command runner is not configured. command_name={0} command_id={1}", context.CommandIdentity.Name, context.CommandIdentity.Id);
-                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
+                return Task.FromResult(Result.NewError<TryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
             }
 
             // Not added to service collection
@@ -115,18 +115,18 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             if (runnerObj == null)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Runner.FullName);
-                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
+                return Task.FromResult(Result.NewError<TryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
             }
 
             // Invalid runner configured
             if (runnerObj is not ICommandRunner runner)
             {
                 string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command runner is not valid. command_name={0} command_id={1} runner={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.CommandIdentity.Runner.FullName);
-                return Task.FromResult(OneImlxResult.NewError<OneImlxTryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
+                return Task.FromResult(Result.NewError<TryResult<ICommandRunner>>(Errors.ServerError, errorDesc));
             }
 
             logger.FormatAndLog(LogLevel.Debug, options.Logging, "The handler found a command runner. command_name={0} command_id={1} runner={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, runner.GetType().FullName);
-            return Task.FromResult<OneImlxTryResult<ICommandRunner>>(new(runner));
+            return Task.FromResult<TryResult<ICommandRunner>>(new(runner));
         }
 
         private readonly ILogger<CommandHandler> logger;

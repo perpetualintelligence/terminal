@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             return Task.FromResult(new CommandRouterResult());
         }
 
-        public Task<OneImlxTryResult<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
+        public Task<TryResult<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
         {
             throw new OperationCanceledException();
         }

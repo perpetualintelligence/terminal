@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     if (argIdentity.IsRequired)
                     {
                         string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The required argument is missing. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
-                        return OneImlxResult.NewError<CommandCheckerResult>(Errors.MissingArgument, errorDesc);
+                        return Result.NewError<CommandCheckerResult>(Errors.MissingArgument, errorDesc);
                     }
                 }
                 else
@@ -72,21 +72,21 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     if (argIdentity.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteArgument.GetValueOrDefault())
                     {
                         string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is obsolete. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
-                        return OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
+                        return Result.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
                     }
 
                     // Check disabled
                     if (argIdentity.Disabled.GetValueOrDefault())
                     {
                         string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is disabled. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
-                        return OneImlxResult.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
+                        return Result.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
                     }
 
                     // Check arg value
                     var dataTypeResult = await valueChecker.CheckAsync(new ArgumentCheckerContext(argIdentity, arg!));
                     if (dataTypeResult.IsError)
                     {
-                        return OneImlxResult.NewError<CommandCheckerResult>(dataTypeResult);
+                        return Result.NewError<CommandCheckerResult>(dataTypeResult);
                     }
                 }
             }

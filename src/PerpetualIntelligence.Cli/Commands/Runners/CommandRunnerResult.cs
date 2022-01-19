@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The command runner result.
     /// </summary>
-    public class CommandRunnerResult : OneImlxResult
+    public class CommandRunnerResult : Result
     {
     }
 }
