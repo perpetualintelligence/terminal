@@ -1,7 +1,8 @@
 /*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Configuration;
@@ -50,7 +51,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             return services.AddCliBuilder()
                 .AddCliOptions()
-                .AddRouting<CommandRouter, CommandHandler>();
+                .AddRouter<CommandRouter, CommandHandler>();
         }
 
         /// <summary>

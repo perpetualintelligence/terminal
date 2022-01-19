@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using System;
@@ -79,6 +80,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <remarks>The command id is unique across all command group.</remarks>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Determines if identity represents a command group.
+        /// </summary>
+        public bool IsGroup { get; set; }
 
         /// <summary>
         /// The command name.

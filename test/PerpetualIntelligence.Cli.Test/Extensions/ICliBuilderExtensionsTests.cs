@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.DependencyInjection;
@@ -106,7 +107,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddRoutingShouldCorrectlyInitialize()
         {
-            cliBuilder.AddRouting<MockCommandRouter, MockCommandHandler>();
+            cliBuilder.AddRouter<MockCommandRouter, MockCommandHandler>();
 
             var router = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandRouter)));
             Assert.IsNotNull(router);
