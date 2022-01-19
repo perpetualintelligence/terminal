@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Logging;
@@ -24,13 +25,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandLookup">The command lookup.</param>
+        /// <param name="commandStore">The command identity store.</param>
         /// <param name="argumentExtractor">The argument extractor.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public SeparatorCommandExtractor(ICommandIdentityStore commandLookup, IArgumentExtractor argumentExtractor, CliOptions options, ILogger<SeparatorCommandExtractor> logger)
+        public SeparatorCommandExtractor(ICommandIdentityStore commandStore, IArgumentExtractor argumentExtractor, CliOptions options, ILogger<SeparatorCommandExtractor> logger)
         {
-            this.commandLookup = commandLookup ?? throw new ArgumentNullException(nameof(commandLookup));
+            this.commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
             this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -47,7 +48,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Find the command identify by prefix
-            OneImlxTryResult<CommandIdentity> commandResult = await commandLookup.TryMatchByPrefixAsync(context.CommandString);
+            OneImlxTryResult<CommandIdentity> commandResult = await MatchByPrefixAsync(context.CommandString);
             if (commandResult.IsError)
             {
                 return OneImlxResult.NewError<CommandExtractorResult>(commandResult);
@@ -171,8 +172,27 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return new();
         }
 
+        /// <inheritdoc/>
+        private Task<OneImlxTryResult<CommandIdentity>> MatchByPrefixAsync(string commandString)
+        {
+            string prefix = commandString;
+
+            // Find the prefix, prefix is the entire string till first argument.
+            int idx = commandString.IndexOf(options.Extractor.ArgumentPrefix, StringComparison.OrdinalIgnoreCase);
+            if (idx > 0)
+            {
+                prefix = commandString.Substring(0, idx);
+            }
+
+            // Make sure we trim the command separator. prefix from the previous step will most likely have a command
+            // separator pi auth login -key=value
+            prefix = prefix.TrimEndRecursive(options.Extractor.Separator);
+
+            return commandStore.TryFindByPrefixAsync(prefix);
+        }
+
         private readonly IArgumentExtractor argumentExtractor;
-        private readonly ICommandIdentityStore commandLookup;
+        private readonly ICommandIdentityStore commandStore;
         private readonly ILogger<SeparatorCommandExtractor> logger;
         private readonly CliOptions options;
     }

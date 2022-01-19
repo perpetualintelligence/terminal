@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,7 +28,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         public async Task TryFindByIdShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByIdAsync("invalid_id");
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command id is not valid. id=invalid_id");
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command id is not valid. id=invalid_id");
         }
 
         [TestMethod]
@@ -45,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         public async Task TryFindByNameShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByNameAsync("invalid_name");
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command name is not valid. name=invalid_name");
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command name is not valid. name=invalid_name");
         }
 
         [TestMethod]
@@ -63,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         public async Task TryFindByPrefixShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByPrefixAsync("invalid_prefix");
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command prefix is not valid. prefix=invalid_prefix");
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix");
         }
 
         [TestMethod]
@@ -75,65 +76,6 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
             Assert.AreEqual("id1", result.Result.Id);
             Assert.AreEqual("name1", result.Result.Name);
             Assert.AreEqual("prefix1", result.Result.Prefix);
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixShouldErrorIfNotFoundAsync()
-        {
-            var result = await cmdStore.TryMatchByPrefixAsync("invalid prefix1");
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command string did not match any command prefix. command_string=invalid prefix1");
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixShouldNotErrorIfMatchedAsync()
-        {
-            var result = await cmdStore.TryMatchByPrefixAsync("prefix1");
-            Assert.IsFalse(result.IsError);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("id1", result.Result.Id);
-            Assert.AreEqual("name1", result.Result.Name);
-            Assert.AreEqual("prefix1", result.Result.Prefix);
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixWithValidArgsShouldNotErrorIfMatchedAsync()
-        {
-            var result = await cmdStore.TryMatchByPrefixAsync("prefix1 -key1=value1 -key2=value2");
-            Assert.IsFalse(result.IsError);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("id1", result.Result.Id);
-            Assert.AreEqual("name1", result.Result.Name);
-            Assert.AreEqual("prefix1", result.Result.Prefix);
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixWithInValidArgsShouldNotErrorIfMatchedAsync()
-        {
-            var result = await cmdStore.TryMatchByPrefixAsync("prefix1 -invalidarg=test -invalidsolo -key1=value1 -key2=value2");
-            Assert.IsFalse(result.IsError);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("id1", result.Result.Id);
-            Assert.AreEqual("name1", result.Result.Name);
-            Assert.AreEqual("prefix1", result.Result.Prefix);
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixWithInsufficientPharasesShouldErrorAsync()
-        {
-            // Missing name3
-            var result = await cmdStore.TryMatchByPrefixAsync("prefix3 sub3");
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command string did not match any command prefix. command_string=prefix3 sub3");
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixWithMultiplePharasesShouldNotErrorIfMatchedAsync()
-        {
-            var result = await cmdStore.TryMatchByPrefixAsync("prefix3 sub3 name3");
-            Assert.IsFalse(result.IsError);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("id3", result.Result.Id);
-            Assert.AreEqual("name3", result.Result.Name);
-            Assert.AreEqual("prefix3 sub3 name3", result.Result.Prefix);
         }
 
         protected override void OnTestInitialize()

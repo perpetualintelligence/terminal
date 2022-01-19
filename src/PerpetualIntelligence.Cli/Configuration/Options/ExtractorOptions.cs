@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
@@ -12,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class ExtractorOptions
     {
         /// <summary>
-        /// The argument prefix. Defaults to dash char <c>-</c>. You can set it to <c>null</c> for no prefix.
+        /// The argument prefix. Defaults to dash char <c>-</c>.
         /// </summary>
         public string? ArgumentPrefix { get; set; } = "-";
 
@@ -22,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string ArgumentSeparator { get; set; } = "=";
 
         /// <summary>
-        /// The command string separator. Defaults to space char <c></c>.
+        /// The command string separator. Defaults to a single space char.
         /// </summary>
         public string Separator { get; set; } = " ";
     }

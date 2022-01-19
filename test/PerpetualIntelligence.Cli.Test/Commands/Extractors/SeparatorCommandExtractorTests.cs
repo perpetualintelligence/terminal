@@ -238,30 +238,21 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task InvalidCommandStringWithinCommandGroupShouldNotFailAsync()
+        public async Task InvalidCommandStringWithinCommandGroupShouldFailAsync()
         {
             // Reset commands
             commands = new InMemoryCommandIdentityStore(MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
 
-            // We are trying to determine the most probable match, an invalid sub command will match the command
-            // group. E.g., 'pi auth cmd invalid' will match to 'pi auth cmd' command since that is closest match.
-            // There is no way for us to know if the command is invalid at this point, this will be handled as 
-            // an invalid argument.
             CommandExtractorContext context = new CommandExtractorContext("pi auth invalid");
             var result = await extractor.ExtractAsync(context);
             Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=auth command_id=orgid:authid argument= invalid");
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
 
-
-            // We are trying to determine the most probable match, an invalid sub command will match the command
-            // group. E.g., 'pi auth cmd invalid' will match to 'pi auth cmd' command since that is closest match.
-            // There is no way for us to know if the command is invalid at this point, this will be handled as 
-            // an invalid argument.
             context = new CommandExtractorContext("pi auth invalid -key1=value1");
             result = await extractor.ExtractAsync(context);
             Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=auth command_id=orgid:authid argument= invalid");
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
         }
 
         [TestMethod]
@@ -314,7 +305,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("invalid_prefix3 sub3 name3 -key1=value1 -key2=value2");
             var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command string did not match any command prefix. command_string=invalid_prefix3 sub3 name3 -key1=value1 -key2=value2");
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix3 sub3 name3");
         }
 
         [TestMethod]
@@ -322,7 +313,36 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("invalidprefix -key1=value1 -key2=value2");
             var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command string did not match any command prefix. command_string=invalidprefix -key1=value1 -key2=value2");
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalidprefix");
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixShouldErrorIfNotFoundAsync()
+        {
+            CommandExtractorContext context = new CommandExtractorContext("invalid prefix1");
+            var result = await extractor.ExtractAsync(context);
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid prefix1");
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixWithInsufficientPharasesShouldErrorAsync()
+        {
+            // Missing name3
+            CommandExtractorContext context = new CommandExtractorContext("prefix3 sub3");
+            var result = await extractor.ExtractAsync(context);
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=prefix3 sub3");
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixWithMultiplePharasesShouldNotErrorIfMatchedAsync()
+        {
+            CommandExtractorContext context = new CommandExtractorContext("prefix3 sub3 name3");
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.CommandIdentity);
+            Assert.AreEqual("id3", result.CommandIdentity.Id);
+            Assert.AreEqual("name3", result.CommandIdentity.Name);
+            Assert.AreEqual("prefix3 sub3 name3", result.CommandIdentity.Prefix);
         }
 
         [TestMethod]
@@ -336,6 +356,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             TestHelper.AssertOneImlxError(result.Errors[0], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key1");
             TestHelper.AssertOneImlxError(result.Errors[1], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key2");
             TestHelper.AssertOneImlxError(result.Errors[2], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key3");
+        }
+
+        [TestMethod]
+        public async Task UnsupportedCommandShouldErrorAsync()
+        {
+            CommandExtractorContext context = new CommandExtractorContext("invalid_cmd");
+            var result = await extractor.ExtractAsync(context);
+            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_cmd");
         }
 
         [DataTestMethod]

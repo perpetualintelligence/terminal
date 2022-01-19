@@ -1,9 +1,11 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System.Threading.Tasks;
 
@@ -29,15 +31,6 @@ namespace PerpetualIntelligence.Cli.Commands.Stores
         /// <summary>
         /// Attempts to find a a <see cref="CommandIdentity"/> by its prefix.
         /// </summary>
-        public Task<OneImlxTryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix);
-
-        /// <summary>
-        /// Attempts to match a <see cref="CommandIdentity"/> by its prefix.
-        /// </summary>
-        /// <remarks>
-        /// This method enumerates all the <see cref="CommandIdentity"/> and attempts to find a first match where the
-        /// specified command string starts with the <see cref="CommandIdentity.Prefix"/>.
-        /// </remarks>
-        public Task<OneImlxTryResult<CommandIdentity>> TryMatchByPrefixAsync(string commandString);
+        public Task<OneImlxTryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix);        
     }
 }

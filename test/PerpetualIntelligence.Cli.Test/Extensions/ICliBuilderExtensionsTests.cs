@@ -134,6 +134,5 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         private ICliBuilder cliBuilder = null!;
-        private IHost host = null!;
     }
 }
