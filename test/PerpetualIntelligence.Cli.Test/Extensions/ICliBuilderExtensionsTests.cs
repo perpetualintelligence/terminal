@@ -25,7 +25,7 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     [TestClass]
-    public class ICliBuilderExtensionsTests : OneImlxLogTest
+    public class ICliBuilderExtensionsTests : LogTest
     {
         public ICliBuilderExtensionsTests() : base(TestLogger.Create<ICliBuilderExtensionsTests>())
         {

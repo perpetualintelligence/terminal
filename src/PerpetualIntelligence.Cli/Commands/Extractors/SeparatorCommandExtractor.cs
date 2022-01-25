@@ -186,7 +186,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             // Make sure we trim the command separator. prefix from the previous step will most likely have a command
             // separator pi auth login -key=value
-            prefix = prefix.TrimEndRecursive(options.Extractor.Separator);
+            prefix = prefix.TrimEnd(options.Extractor.Separator);
 
             return commandStore.TryFindByPrefixAsync(prefix);
         }

@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Stores.InMemory
 {
     [TestClass]
-    public class InMemoryCommandIdentityStoreTests : OneImlxLogTest
+    public class InMemoryCommandIdentityStoreTests : LogTest
     {
         public InMemoryCommandIdentityStoreTests() : base(TestLogger.Create<InMemoryCommandIdentityStoreTests>())
         {

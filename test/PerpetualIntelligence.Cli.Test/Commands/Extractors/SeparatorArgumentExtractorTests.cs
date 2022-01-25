@@ -16,14 +16,14 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     [TestClass]
-    public class SeparatorArgumentExtractorTests : OneImlxLogTest
+    public class SeparatorArgumentExtractorTests : LogTest
     {
         public SeparatorArgumentExtractorTests() : base(TestLogger.Create<SeparatorArgumentExtractorTests>())
         {
         }
 
         [TestMethod]
-        public async Task AttributeValueWithArgumentSeparatorShoudNotErrorAsync()
+        public async Task AttributeValueWithArgumentSeparatorShouldNotErrorAsync()
         {
             ArgumentExtractorContext context = new ArgumentExtractorContext($"-key1=value=value2", command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task AttributeValueWithCommandSeparatorSeparatorShoudNotErrorAsync()
+        public async Task AttributeValueWithCommandSeparatorSeparatorShouldNotErrorAsync()
         {
             ArgumentExtractorContext context = new ArgumentExtractorContext($"-key1=value value2", command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -154,7 +154,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task NullCommandIdentityShoudErrorAsync()
+        public async Task NullCommandIdentityShouldErrorAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             ArgumentExtractorContext context = new("test_arg_string", null);
@@ -164,7 +164,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task NullOrWhiteSpaceArgumentStringShoudErrorAsync()
+        public async Task NullOrWhiteSpaceArgumentStringShouldErrorAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             ArgumentExtractorContext context = new ArgumentExtractorContext(null, command.Item1);
@@ -178,7 +178,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task PrefixDisabledButWithNoPrefixShoudNotErrorAsync()
+        public async Task PrefixDisabledButWithNoPrefixShouldNotErrorAsync()
         {
             options.Extractor.ArgumentPrefix = null;
 
@@ -198,7 +198,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task PrefixDisabledButWithPrefixShoudNotErrorAsync(string prefix)
+        public async Task PrefixDisabledButWithPrefixShouldNotErrorAsync(string prefix)
         {
             options.Extractor.ArgumentPrefix = null;
 
@@ -217,7 +217,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("-", "मा")]
         [DataRow("öö", "-")]
         [DataRow("माणूस", "#")]
-        public async Task PrefixEnabledButInvalidPrefixShoudErrorAsync(string prefix, string invalidPrefix)
+        public async Task PrefixEnabledButInvalidPrefixShouldErrorAsync(string prefix, string invalidPrefix)
         {
             options.Extractor.ArgumentPrefix = prefix;
 
@@ -233,7 +233,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("-")]
         [DataRow("öö")]
         [DataRow("माणूस")]
-        public async Task PrefixEnabledButNotPrefixShoudErrorAsync(string prefix)
+        public async Task PrefixEnabledButNotPrefixShouldErrorAsync(string prefix)
         {
             options.Extractor.ArgumentPrefix = prefix;
 
@@ -243,7 +243,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task PrefixEnabledWithUnicodePrefixShoudNotErrorAsync()
+        public async Task PrefixEnabledWithUnicodePrefixShouldNotErrorAsync()
         {
             options.Extractor.ArgumentPrefix = "माणू";
 
@@ -264,7 +264,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task PrefixEnabledWithValidPrefixKeyOnlyShoudNotErrorAsync(string prefix)
+        public async Task PrefixEnabledWithValidPrefixKeyOnlyShouldNotErrorAsync(string prefix)
         {
             options.Extractor.ArgumentPrefix = prefix;
 
@@ -287,7 +287,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task PrefixEnabledWithValidPrefixKeyValueShoudNotErrorAsync(string prefix)
+        public async Task PrefixEnabledWithValidPrefixKeyValueShouldNotErrorAsync(string prefix)
         {
             options.Extractor.ArgumentPrefix = prefix;
 
@@ -311,7 +311,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task SamePrefixAndSeparatorShoudNotErrorAsync(string input)
+        public async Task SamePrefixAndSeparatorShouldNotErrorAsync(string input)
         {
             options.Extractor.ArgumentPrefix = input;
             options.Extractor.ArgumentSeparator = input;
@@ -332,7 +332,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("माणूस", "öö")]
         [DataRow("माणूस", "~")]
         [DataRow("-", "女性")]
-        public async Task ValidPrefixAndSepratorShoudNotErrorAsync(string prefix, string separator)
+        public async Task ValidPrefixAndSepratorShouldNotErrorAsync(string prefix, string separator)
         {
             options.Extractor.ArgumentPrefix = prefix;
             options.Extractor.ArgumentSeparator = separator;

@@ -11,7 +11,7 @@ using PerpetualIntelligence.Test.Services;
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     [TestClass]
-    public class ExtractorOptionsTests : OneImlxLogTest
+    public class ExtractorOptionsTests : LogTest
     {
         public ExtractorOptionsTests() : base(TestLogger.Create<ExtractorOptionsTests>())
         {

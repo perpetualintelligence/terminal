@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     [TestClass]
-    public class SeparatorCommandExtractorTests : OneImlxLogTest
+    public class SeparatorCommandExtractorTests : LogTest
     {
         public SeparatorCommandExtractorTests() : base(TestLogger.Create<SeparatorCommandExtractorTests>())
         {

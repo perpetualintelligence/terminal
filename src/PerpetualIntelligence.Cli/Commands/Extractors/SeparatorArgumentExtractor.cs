@@ -82,7 +82,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 else
                 {
                     // Trim the argument prefix
-                    argumentString = context.ArgumentString.TrimStartRecursive(options.Extractor.ArgumentPrefix);
+                    argumentString = context.ArgumentString.TrimStart(options.Extractor.ArgumentPrefix);
                 }
             }
 
@@ -99,7 +99,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             else
             {
                 argName = argumentString.Substring(0, sepIdx);
-                argValue = argumentString.TrimStartRecursive(argName).TrimStartRecursive(options.Extractor.ArgumentSeparator);
+                argValue = argumentString.TrimStart(argName).TrimStart(options.Extractor.ArgumentSeparator);
             }
 
             //string[] argSplit = argumentString.Split(options.Extractor.ArgumentSeparator);

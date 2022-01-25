@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     [TestClass]
-    public class IHostExtensionsTests : OneImlxLogTest
+    public class IHostExtensionsTests : LogTest
     {
         public IHostExtensionsTests() : base(TestLogger.Create<IHostExtensionsTests>())
         {

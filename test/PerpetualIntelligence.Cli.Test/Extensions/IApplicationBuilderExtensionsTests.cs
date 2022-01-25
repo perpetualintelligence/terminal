@@ -11,7 +11,7 @@ using PerpetualIntelligence.Test.Services;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     [TestClass]
-    public class IApplicationBuilderExtensionsTests : OneImlxLogTest
+    public class IApplicationBuilderExtensionsTests : LogTest
     {
         public IApplicationBuilderExtensionsTests() : base(TestLogger.Create<IApplicationBuilderExtensionsTests>())
         {

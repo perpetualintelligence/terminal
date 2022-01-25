@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     [TestClass]
-    public class CommandRouterTests : OneImlxLogTest
+    public class CommandRouterTests : LogTest
     {
         public CommandRouterTests() : base(TestLogger.Create<CommandRouterTests>())
         {
@@ -83,7 +83,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         }
 
         [TestMethod]
-        public async Task RouterShoudPassExtracterCommandToHandlerAsync()
+        public async Task RouterShouldPassExtracterCommandToHandlerAsync()
         {
             CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
             var result = await router.RouteAsync(routerContext);

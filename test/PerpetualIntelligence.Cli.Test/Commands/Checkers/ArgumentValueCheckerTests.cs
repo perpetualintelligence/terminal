@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     [TestClass]
-    public class ArgumentValueCheckerTests : OneImlxLogTest
+    public class ArgumentValueCheckerTests : LogTest
     {
         public ArgumentValueCheckerTests() : base(TestLogger.Create<ArgumentValueCheckerTests>())
         {
@@ -128,7 +128,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public void ValidationAttributeCheckFailShoudError()
+        public void ValidationAttributeCheckFailShouldError()
         {
         }
 

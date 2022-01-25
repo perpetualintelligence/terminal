@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     [TestClass]
-    public class CommandCheckerTests : OneImlxLogTest
+    public class CommandCheckerTests : LogTest
     {
         public CommandCheckerTests() : base(TestLogger.Create<CommandCheckerTests>())
         {

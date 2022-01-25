@@ -12,7 +12,7 @@ using System.Threading;
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     [TestClass]
-    public class HostingOptionsTests : OneImlxLogTest
+    public class HostingOptionsTests : LogTest
     {
         public HostingOptionsTests() : base(TestLogger.Create<HostingOptionsTests>())
         {

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     [TestClass]
-    public class DataAnnotationMapperTests : OneImlxLogTest
+    public class DataAnnotationMapperTests : LogTest
     {
         public DataAnnotationMapperTests() : base(TestLogger.Create<DataAnnotationMapperTests>())
         {
@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         [DataRow(DataType.Custom, typeof(ulong), null, nameof(UInt64))]
         [DataRow(DataType.Custom, typeof(float), null, nameof(Single))]
         [DataRow(DataType.Custom, typeof(double), null, nameof(Double))]
-        public async Task MapperShoudReturnCorrectMappingAsync(DataType dataType, Type systemType, Type valiationAttribute, string? customDataType)
+        public async Task MapperShouldReturnCorrectMappingAsync(DataType dataType, Type systemType, Type valiationAttribute, string? customDataType)
         {
             Argument? argument = null;
 
@@ -69,7 +69,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         }
 
         [TestMethod]
-        public async Task NullOrWhitespaceCustomDataTypeShoudErrorAsync()
+        public async Task NullOrWhitespaceCustomDataTypeShouldErrorAsync()
         {
             Argument test = new Argument("arg1", "val1", "  ");
             var result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(test));

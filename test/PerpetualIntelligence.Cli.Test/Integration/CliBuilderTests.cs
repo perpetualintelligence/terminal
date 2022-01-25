@@ -15,7 +15,7 @@ using System;
 namespace PerpetualIntelligence.Cli.Integration
 {
     [TestClass]
-    public class CliBuilderTests : OneImlxLogTest
+    public class CliBuilderTests : LogTest
     {
         public CliBuilderTests() : base(TestLogger.Create<CliBuilderTests>())
         {

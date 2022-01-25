@@ -21,7 +21,7 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     [TestClass]
-    public class IServiceCollectionExtensionsTests : OneImlxLogTest
+    public class IServiceCollectionExtensionsTests : LogTest
     {
         public IServiceCollectionExtensionsTests() : base(TestLogger.Create<IServiceCollectionExtensionsTests>())
         {

@@ -19,14 +19,14 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     [TestClass]
-    public class CommandHandlerTests : OneImlxLogTest
+    public class CommandHandlerTests : LogTest
     {
         public CommandHandlerTests() : base(TestLogger.Create<CommandHandlerTests>())
         {
         }
 
         [TestMethod]
-        public async Task CheckerConfiguredButNotAddedToServiceCollectionShoudErrorAsync()
+        public async Task CheckerConfiguredButNotAddedToServiceCollectionShouldErrorAsync()
         {
             // Mock checker configured
             command.Item1.Checker = typeof(MockChecker);
@@ -86,7 +86,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         }
 
         [TestMethod]
-        public async Task RunnerConfiguredButNotAddedToServiceCollectionShoudErrorAsync()
+        public async Task RunnerConfiguredButNotAddedToServiceCollectionShouldErrorAsync()
         {
             // Make sure checker pass so runner can fail. // No mock runner added to collection. Configure checker so
             // checker can pass
@@ -130,7 +130,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         }
 
         [TestMethod]
-        public async Task ValidCheckerAndRunnerShoudlAllowHandlerAsync()
+        public async Task ValidCheckerAndRunnerShouldlAllowHandlerAsync()
         {
             command.Item1.Checker = typeof(MockChecker);
             command.Item1.Runner = typeof(MockRunner);
