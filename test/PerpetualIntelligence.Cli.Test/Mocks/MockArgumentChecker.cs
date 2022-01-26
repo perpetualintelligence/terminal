@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         public Task<ArgumentCheckerResult> CheckAsync(ArgumentCheckerContext context)
         {
             Called = true;
-            return Task.FromResult(new ArgumentCheckerResult());
+            return Task.FromResult(new ArgumentCheckerResult(typeof(string)));
         }
     }
 }

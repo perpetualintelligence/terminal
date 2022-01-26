@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -64,7 +65,6 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
             }
 
             var result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(argument));
-            Assert.IsFalse(result.IsError);
             Assert.AreEqual(systemType, result.MappedType);
         }
 
@@ -72,30 +72,26 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         public async Task NullOrWhitespaceCustomDataTypeShouldErrorAsync()
         {
             Argument test = new Argument("arg1", "val1", "  ");
-            var result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(test));
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument custom data type is null or whitespace. argument=arg1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(test)), Errors.InvalidArgument, "The argument custom data type is null or whitespace. argument=arg1");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Argument test2 = new Argument("arg2", "val2", customDataType: null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(test2));
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument custom data type is null or whitespace. argument=arg2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(test2)), Errors.InvalidArgument, "The argument custom data type is null or whitespace. argument=arg2");
         }
 
         [TestMethod]
         public async Task UnsupportedCustomDataTypeShouldErrorAsync()
         {
             var argument = new Argument("arg1", "val1", "unsupported_custom");
-            var result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(argument));
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedArgument, "The argument custom data type is not supported. argument=arg1 custom_data_type=unsupported_custom");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(argument)), Errors.UnsupportedArgument, "The argument custom data type is not supported. argument=arg1 custom_data_type=unsupported_custom");
         }
 
         [TestMethod]
         public async Task UnsupportedDataTypeShouldErrorAsync()
         {
             var argument = new Argument("arg1", "val1", (DataType)int.MaxValue);
-            var result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(argument));
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(argument)), Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
         }
 
         protected override void OnTestInitialize()

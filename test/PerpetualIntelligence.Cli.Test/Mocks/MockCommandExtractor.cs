@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using PerpetualIntelligence.Cli.Commands.Extractors;
@@ -16,7 +17,9 @@ namespace PerpetualIntelligence.Cli.Mocks
         public Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context)
         {
             Called = true;
-            return Task.FromResult(new CommandExtractorResult());
+
+            var cIdt = new Commands.CommandIdentity("testid", "testname", "testname");
+            return Task.FromResult(new CommandExtractorResult(new Commands.Command(cIdt), cIdt));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         public Task<ArgumentDataTypeMapperResult> MapAsync(ArgumentDataTypeMapperContext context)
         {
             Called = true;
-            return Task.FromResult(new ArgumentDataTypeMapperResult());
+            return Task.FromResult(new ArgumentDataTypeMapperResult(typeof(string)));
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,9 +31,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             ArgumentIdentity identity = new("arg1", DataType.Text);
             Argument value = new("arg1", 23.69, DataType.Text);
 
-            ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value does not match the mapped type. argument=arg1 type=System.String data_type=Text value_type=Double value=23.69");
+            ArgumentCheckerContext context = new(identity, value);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value does not match the mapped type. argument=arg1 type=System.String data_type=Text value_type=Double value=23.69");
         }
 
         [TestMethod]
@@ -43,8 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Argument value = new("arg1", 23.69, (DataType)int.MaxValue);
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
         }
 
         [TestMethod]
@@ -54,8 +53,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Argument value = new("arg1", "test3", DataType.Text);
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=test3 additional_info=The field value must be one of the valid values.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=test3 additional_info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -67,8 +65,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value cannot be null. argument=arg1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value cannot be null. argument=arg1");
         }
 
         [TestMethod]
@@ -77,9 +74,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             ArgumentIdentity identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
             Argument value = new("arg1", "test2", DataType.Text);
 
-            ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
-            var result = await checker.CheckAsync(context);
-            Assert.IsFalse(result.IsError);
+            ArgumentCheckerContext context = new(identity, value);
+            ArgumentCheckerResult result = await checker.CheckAsync(context);
         }
 
         [TestMethod]
@@ -89,8 +85,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 additional_info=The Argument field is not a valid credit card number.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 additional_info=The Argument field is not a valid credit card number.");
         }
 
         //[TestMethod]
@@ -100,8 +95,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         //    Argument value = new("arg1", "-3663", DataType.Password);
 
         //    ArgumentValueCheckerContext context = new ArgumentValueCheckerContext(identity, value);
-        //    var result = await checker.CheckAsync(context);
-        //    TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 additional_info=The Argument field is not a valid credit card number.");
+        //    await TestHelper.AssertThrowsErrorExceptionAsync(checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 additional_info=The Argument field is not a valid credit card number.");
         //}
 
         //[TestMethod]
@@ -111,8 +105,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         //    Argument value = new("arg1", "-3663", DataType.Password);
 
         //    ArgumentValueCheckerContext context = new ArgumentValueCheckerContext(identity, value);
-        //    var result = await checker.CheckAsync(context);
-        //    TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 additional_info=The Argument field is not a valid credit card number.");
+        //    await TestHelper.AssertThrowsErrorExceptionAsync(checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 additional_info=The Argument field is not a valid credit card number.");
         //}
 
         [TestMethod]
@@ -123,7 +116,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
             var result = await checker.CheckAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.AreEqual(typeof(string), result.MappedType);
         }
 

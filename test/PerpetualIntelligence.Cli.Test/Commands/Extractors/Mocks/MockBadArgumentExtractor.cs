@@ -12,8 +12,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors.Mocks
     {
         public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
         {
-            // No error no argument
-            return Task.FromResult(new ArgumentExtractorResult { Argument = null });
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            return Task.FromResult(new ArgumentExtractorResult(null));
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
     }
 }

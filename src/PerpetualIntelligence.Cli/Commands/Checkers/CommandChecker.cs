@@ -1,14 +1,14 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
-using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Shared.Infrastructure;
+using PerpetualIntelligence.Shared.Exceptions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -62,8 +62,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     // Required argument is missing
                     if (argIdentity.IsRequired)
                     {
-                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The required argument is missing. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
-                        return Result.NewError<CommandCheckerResult>(Errors.MissingArgument, errorDesc);
+                        throw new ErrorException(Errors.MissingArgument, "The required argument is missing. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
                     }
                 }
                 else
@@ -71,23 +70,17 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     // Check obsolete
                     if (argIdentity.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteArgument.GetValueOrDefault())
                     {
-                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is obsolete. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
-                        return Result.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
+                        throw new ErrorException(Errors.InvalidArgument, "The argument is obsolete. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
                     }
 
                     // Check disabled
                     if (argIdentity.Disabled.GetValueOrDefault())
                     {
-                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument is disabled. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
-                        return Result.NewError<CommandCheckerResult>(Errors.InvalidArgument, errorDesc);
+                        throw new ErrorException(Errors.InvalidArgument, "The argument is disabled. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argIdentity.Id);
                     }
 
                     // Check arg value
-                    var dataTypeResult = await valueChecker.CheckAsync(new ArgumentCheckerContext(argIdentity, arg!));
-                    if (dataTypeResult.IsError)
-                    {
-                        return Result.NewError<CommandCheckerResult>(dataTypeResult);
-                    }
+                    await valueChecker.CheckAsync(new ArgumentCheckerContext(argIdentity, arg!));
                 }
             }
 

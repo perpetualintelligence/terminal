@@ -1,11 +1,12 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Shared.Infrastructure;
+using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
@@ -14,7 +15,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
     {
         public Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {
-            return Task.FromResult(Result.NewError<CommandCheckerResult>("test_checker_error", "test_checker_error_desc"));
+            throw new ErrorException("test_checker_error", "test_checker_error_desc");
         }
     }
 }

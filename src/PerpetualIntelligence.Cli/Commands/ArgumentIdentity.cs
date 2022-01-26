@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using System;
@@ -93,6 +94,15 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The argument data type.
         /// </summary>
         public DataType DataType { get; set; }
+
+        /// <summary>
+        /// The default argument value.
+        /// </summary>
+        /// <remarks>
+        /// This is not an actual value of an argument passed by the user or an app; instead, it is the default value
+        /// that an argument will have if a user or an app does not specify any value.
+        /// </remarks>
+        public object? DefaultValue { get; set; }
 
         /// <summary>
         /// The argument description.

@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initialize a new instance from the specified command identity.
         /// </summary>
+        /// <param name="commandIdentity">The command identity.</param>
         public Command(CommandIdentity commandIdentity)
         {
             Id = commandIdentity.Id;
@@ -36,11 +38,8 @@ namespace PerpetualIntelligence.Cli.Commands
                 Arguments = new Arguments();
                 foreach (var argument in commandIdentity.ArgumentIdentities)
                 {
-                    // FOMAC: We dont have access to argument values here !
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                    Argument arg = new Argument(argument, null);
+                    Argument arg = new(argument, argument.DefaultValue ?? new object());
                     Arguments.Add(arg);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
             }
         }

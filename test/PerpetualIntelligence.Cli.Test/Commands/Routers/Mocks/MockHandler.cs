@@ -1,11 +1,12 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Shared.Infrastructure;
+using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
@@ -18,9 +19,9 @@ namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
 
         public bool Called { get; set; }
 
-        public bool IsExplicitError { get; internal set; }
+        public CommandHandlerContext? ContextCalled { get; internal set; }
 
-        public CommandHandlerContext ContextCalled { get; internal set; }
+        public bool IsExplicitError { get; internal set; }
 
         public Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
         {
@@ -30,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
 
             if (IsExplicitError)
             {
-                return Task.FromResult(Result.NewError<CommandHandlerResult>("test_handler_error", "test_handler_error_desc"));
+                throw new ErrorException("test_handler_error", "test_handler_error_desc");
             }
             else
             {

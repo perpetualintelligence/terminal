@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Hosting;
@@ -9,7 +10,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Routers.Mocks;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
@@ -31,41 +31,32 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
 
             CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
 
-            var result = await router.RouteAsync(routerContext);
-
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "test_extractor_error", "test_extractor_error_desc");
             Assert.IsTrue(extractor.Called);
-            TestHelper.AssertOneImlxError(result, "test_extractor_error", "test_extractor_error_desc");
-
             Assert.IsFalse(handler.Called);
         }
 
         [TestMethod]
-        public async Task ExtractorNoErrorButNoExtractedCommandIdentityShouldNotRouteFurtherAsync()
+        public async Task ExtractorNoExtractedCommandIdentityShouldNotRouteFurtherAsync()
         {
             extractor.IsExplicitNoCommandIdenitity = true;
 
-            CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string");
 
-            var result = await router.RouteAsync(routerContext);
-
+            await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => router.RouteAsync(routerContext), "Value cannot be null. (Parameter 'commandIdentity')");
             Assert.IsTrue(extractor.Called);
-            TestHelper.AssertOneImlxError(result, Errors.ServerError, "The router failed to extract command identity. command_string=test_command_string extractor=PerpetualIntelligence.Cli.Commands.Routers.Mocks.MockExtractor");
-
             Assert.IsFalse(handler.Called);
         }
 
         [TestMethod]
-        public async Task ExtractorNoErrorButNoExtractedCommandShouldNotRouteFurtherAsync()
+        public async Task ExtractorNoExtractedCommandShouldNotRouteFurtherAsync()
         {
             extractor.IsExplicitNoCommand = true;
 
             CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
 
-            var result = await router.RouteAsync(routerContext);
-
+            await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => router.RouteAsync(routerContext), "Value cannot be null. (Parameter 'command')");
             Assert.IsTrue(extractor.Called);
-            TestHelper.AssertOneImlxError(result, Errors.ServerError, "The router failed to extract command. command_string=test_command_string extractor=PerpetualIntelligence.Cli.Commands.Routers.Mocks.MockExtractor");
-
             Assert.IsFalse(handler.Called);
         }
 
@@ -74,32 +65,16 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             handler.IsExplicitError = true;
 
-            CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string");
 
-            var result = await router.RouteAsync(routerContext);
-
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "test_handler_error", "test_handler_error_desc");
             Assert.IsTrue(handler.Called);
-            TestHelper.AssertOneImlxError(result, "test_handler_error", "test_handler_error_desc");
-        }
-
-        [TestMethod]
-        public async Task RouterShouldPassExtracterCommandToHandlerAsync()
-        {
-            CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
-            var result = await router.RouteAsync(routerContext);
-
-            Assert.AreEqual("test_id", handler.ContextCalled.CommandIdentity.Id);
-            Assert.AreEqual("test_name", handler.ContextCalled.CommandIdentity.Name);
-            Assert.AreEqual("test_prefix", handler.ContextCalled.CommandIdentity.Prefix);
-
-            Assert.AreEqual("test_id", handler.ContextCalled.Command.Id);
-            Assert.AreEqual("test_name", handler.ContextCalled.Command.Name);
         }
 
         [TestMethod]
         public async Task RouterShouldCallExtractorAsync()
         {
-            CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string");
             var result = await router.RouteAsync(routerContext);
             Assert.IsTrue(extractor.Called);
         }
@@ -107,19 +82,17 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         [TestMethod]
         public async Task RouterShouldCallHandlerAfterExtractorAsync()
         {
-            CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string");
             var result = await router.RouteAsync(routerContext); ;
 
             Assert.IsTrue(extractor.Called);
             Assert.IsTrue(handler.Called);
-
-            Assert.IsFalse(result.IsError);
         }
 
         [TestMethod]
         public async Task RouterShouldFindHandler()
         {
-            CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string");
             var result = await router.TryFindHandlerAsync(routerContext);
 
             Assert.IsFalse(result.IsError);
@@ -127,6 +100,21 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             Assert.IsInstanceOfType(result.Result, typeof(MockHandler));
             Assert.IsTrue(ReferenceEquals(handler, result.Result));
             Assert.IsFalse(handler.Called);
+        }
+
+        [TestMethod]
+        public async Task RouterShouldPassExtracterCommandToHandlerAsync()
+        {
+            CommandRouterContext routerContext = new("test_command_string");
+            var result = await router.RouteAsync(routerContext);
+
+            Assert.IsNotNull(handler.ContextCalled);
+            Assert.AreEqual("test_id", handler.ContextCalled.CommandIdentity.Id);
+            Assert.AreEqual("test_name", handler.ContextCalled.CommandIdentity.Name);
+            Assert.AreEqual("test_prefix", handler.ContextCalled.CommandIdentity.Prefix);
+
+            Assert.AreEqual("test_id", handler.ContextCalled.Command.Id);
+            Assert.AreEqual("test_name", handler.ContextCalled.Command.Name);
         }
 
         [TestMethod]

@@ -7,6 +7,7 @@
 
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading;
@@ -16,7 +17,7 @@ namespace PerpetualIntelligence.Cli.Mocks
 {
     public class MockCommandRouter : ICommandRouter
     {
-        public MockCommandRouter(int? routeDelay = null, CancellationTokenSource? cancelOnRouteCalled = null, Exception? exception = null, string? explicitError = null)
+        public MockCommandRouter(int? routeDelay = null, CancellationTokenSource? cancelOnRouteCalled = null, Exception? exception = null, Error? explicitError = null)
         {
             this.routeDelay = routeDelay;
             this.cancelOnRouteCalled = cancelOnRouteCalled;
@@ -58,10 +59,10 @@ namespace PerpetualIntelligence.Cli.Mocks
                 throw exception;
             }
 
-            // Explicit error
+            // Raise explicit error
             if (explicitError != null)
             {
-                return Result.NewError<CommandRouterResult>(explicitError);
+                throw new ErrorException(explicitError);
             }
 
             return new CommandRouterResult();
@@ -73,9 +74,9 @@ namespace PerpetualIntelligence.Cli.Mocks
             return Task.FromResult(new TryResult<ICommandHandler>(new MockCommandHandler()));
         }
 
+        private readonly CancellationTokenSource? cancelOnRouteCalled;
         private readonly Exception? exception;
-        private readonly string? explicitError;
-        private CancellationTokenSource? cancelOnRouteCalled;
-        private int? routeDelay;
+        private readonly Error? explicitError;
+        private readonly int? routeDelay;
     }
 }

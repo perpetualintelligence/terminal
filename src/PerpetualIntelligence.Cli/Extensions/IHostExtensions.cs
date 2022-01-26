@@ -14,6 +14,7 @@ using PerpetualIntelligence.Protocols.Abstractions;
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
+using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,7 +48,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 // Avoid block threads during cancellation and let the
                 // applicationLifetime.ApplicationStopping.IsCancellationRequested get synchronized so we can honor the
                 // app shutdown
-                await Task.Delay(200);
+                //await Task.Delay(200);
 
                 // Honor the cancellation request.
                 if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
@@ -98,17 +99,6 @@ namespace PerpetualIntelligence.Cli.Extensions
                         ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
                         logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. command_string={0}", commandString);
                     }
-                    else
-                    {
-                        // No timeout or exception but explicit error
-                        CommandRouterResult result = routeTask.Result;
-                        if (result.IsError)
-                        {
-                            CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                            ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
-                            logger.FormatAndLog(LogLevel.Error, options.Logging, "The request returned an error. error={0} error_description={1}", result.FirstErrorCode!, result.FirstErrorDescription!);
-                        }
-                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -124,7 +114,15 @@ namespace PerpetualIntelligence.Cli.Extensions
                     if (ex.InnerException is ErrorException ee)
                     {
                         // This is a legit error thrown by the system
-                        logger.FormatAndLog(Microsoft.Extensions.Logging.LogLevel.Error, options.Logging, ee.ErrorDescription, ee.Args);
+                        logger.FormatAndLog(Microsoft.Extensions.Logging.LogLevel.Error, options.Logging, ee.Error.ErrorDescription, ee.Error.Args ?? Array.Empty<object?>());
+                    }
+                    else if (ex.InnerException is MultiErrorException me)
+                    {
+                        foreach (Error err in me.Errors)
+                        {
+                            // This is a legit error thrown by the system
+                            logger.FormatAndLog(Microsoft.Extensions.Logging.LogLevel.Error, options.Logging, err.ErrorDescription, err.Args ?? Array.Empty<object?>());
+                        }
                     }
                     else
                     {

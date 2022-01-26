@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,6 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
@@ -59,35 +59,32 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Null command identity
             if (context.CommandIdentity == null)
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command identity is missing in the request. extractor={0}", GetType().FullName);
-                return Task.FromResult(Result.NewError<ArgumentExtractorResult>(Errors.InvalidRequest, errorDesc));
+                throw new ErrorException(Errors.InvalidRequest, "The command identity is missing in the request. extractor={0}", GetType().FullName);
             }
 
             // Null or whitespace
             if (string.IsNullOrWhiteSpace(context.ArgumentString))
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string is missing in the request. command_name={0} command_id={1} extractor={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, GetType().FullName);
-                return Task.FromResult(Result.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
+                throw new ErrorException(Errors.InvalidArgument, "The argument string is missing in the request. command_name={0} command_id={1} extractor={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, GetType().FullName);
             }
 
             // Check if an app requested a syntax prefix
             string argumentString = context.ArgumentString;
             if (options.Extractor.ArgumentPrefix != null)
             {
-                if (!context.ArgumentString.StartsWith(options.Extractor.ArgumentPrefix, System.StringComparison.Ordinal))
-                {
-                    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument string does not have a valid prefix. command_name={0} command_id={1} arg={2} prefix={3}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString, options.Extractor.ArgumentPrefix);
-                    return Task.FromResult(Result.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
-                }
-                else
+                if (context.ArgumentString.StartsWith(options.Extractor.ArgumentPrefix, System.StringComparison.Ordinal))
                 {
                     // Trim the argument prefix
                     argumentString = context.ArgumentString.TrimStart(options.Extractor.ArgumentPrefix);
                 }
+                else
+                {
+                    // Must start with argument prefix
+                    throw new ErrorException(Errors.InvalidArgument, "The argument string does not have a valid prefix. command_name={0} command_id={1} arg={2} prefix={3}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString, options.Extractor.ArgumentPrefix);
+                }
             }
 
             // Split by key-value separator
-            ArgumentExtractorResult result = new();
             int sepIdx = argumentString.IndexOf(options.Extractor.ArgumentSeparator, StringComparison.Ordinal);
             string argName;
             string? argValue = null;
@@ -102,6 +99,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 argValue = argumentString.TrimStart(argName).TrimStart(options.Extractor.ArgumentSeparator);
             }
 
+            // FOMAC
             //string[] argSplit = argumentString.Split(options.Extractor.ArgumentSeparator);
             //if (argSplit.Length > 2)
             //{
@@ -113,32 +111,25 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // The split key cannot be null or empty
             if (string.IsNullOrWhiteSpace(argName))
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument name is null or empty. command_name={0} command_id={1} arg={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString);
-                return Task.FromResult(Result.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
+                throw new ErrorException(Errors.InvalidArgument, "The argument name is null or empty. command_name={0} command_id={1} arg={2}", context.CommandIdentity.Name, context.CommandIdentity.Id, context.ArgumentString);
             }
 
             // Now find the argument by key or name
-            var argFindResult = TryFindAttributeByName(context.CommandIdentity, argName);
-            if (argFindResult.IsError)
-            {
-                return Task.FromResult(Result.NewError<ArgumentExtractorResult>(argFindResult));
-            }
+            ArgumentIdentity argFindResult = TryFindAttributeByName(context.CommandIdentity, argName);
 
             // Key only (treat it as a boolean) value=true
             if (argValue == null)
             {
-                result.Argument = new Argument(argFindResult.Result!, true);
+                return Task.FromResult(new ArgumentExtractorResult(new Argument(argFindResult, true)));
             }
             else
             {
                 // key-value TODO Trim all the prefix
-                result.Argument = new Argument(argFindResult.Result!, argValue);
+                return Task.FromResult(new ArgumentExtractorResult(new Argument(argFindResult, argValue)));
             }
-
-            return Task.FromResult(result);
         }
 
-        private TryResult<ArgumentIdentity> TryFindAttributeByName(CommandIdentity commandIdentity, string argName)
+        private ArgumentIdentity TryFindAttributeByName(CommandIdentity commandIdentity, string argName)
         {
             if (commandIdentity.ArgumentIdentities != null)
             {
@@ -147,24 +138,21 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     ArgumentIdentity? arg = commandIdentity.ArgumentIdentities.FindByName(argName);
                     if (arg == null)
                     {
-                        string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support the specified argument. command_name={0} command_id={1} argument={2}", commandIdentity.Name, commandIdentity.Id, argName);
-                        return Result.NewError<TryResult<ArgumentIdentity>>(Errors.UnsupportedArgument, errorDesc);
+                        throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. command_name={0} command_id={1} argument={2}", commandIdentity.Name, commandIdentity.Id, argName);
                     }
                     else
                     {
-                        return new TryResult<ArgumentIdentity>(arg);
+                        return arg;
                     }
                 }
                 catch (NotUniqueException)
                 {
-                    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support the same multiple arguments. command_name={0} command_id={1} argument={2}", commandIdentity.Name, commandIdentity.Id, argName);
-                    return Result.NewError<TryResult<ArgumentIdentity>>(Errors.UnsupportedArgument, errorDesc);
+                    throw new ErrorException(Errors.UnsupportedArgument, "The command does not support the same multiple arguments. command_name={0} command_id={1} argument={2}", commandIdentity.Name, commandIdentity.Id, argName);
                 }
             }
             else
             {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The command does not support any argument. command_name={0} command_id={1}", commandIdentity.Name, commandIdentity.Id);
-                return Result.NewError<TryResult<ArgumentIdentity>>(Errors.UnsupportedArgument, errorDesc);
+                throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any argument. command_name={0} command_id={1}", commandIdentity.Name, commandIdentity.Id);
             }
         }
 

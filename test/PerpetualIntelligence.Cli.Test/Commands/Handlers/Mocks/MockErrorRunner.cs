@@ -1,11 +1,12 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using PerpetualIntelligence.Cli.Commands.Runners;
-using PerpetualIntelligence.Shared.Infrastructure;
+using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
@@ -14,7 +15,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
     {
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
-            return Task.FromResult(Result.NewError<CommandRunnerResult>("test_runner_error", "test_runner_error_desc"));
+            throw new ErrorException("test_runner_error", "test_runner_error_desc");
         }
     }
 }

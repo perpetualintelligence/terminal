@@ -9,8 +9,6 @@ using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Protocols.Cli;
-using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
@@ -45,34 +43,12 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public virtual async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
             // Extract the command
-            CommandExtractorResult tryResult = await extrator.ExtractAsync(new CommandExtractorContext(context.CommandString));
-            if (tryResult.IsError)
-            {
-                return Result.NewError<CommandRouterResult>(tryResult);
-            }
-
-            // Must extract command identity
-            if (tryResult.CommandIdentity == null)
-            {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The router failed to extract command identity. command_string={0} extractor={1}", context.CommandString, extrator.GetType().FullName);
-                return Result.NewError<CommandRouterResult>(Errors.ServerError, errorDesc, context.CommandString);
-            }
-
-            // Must extract command
-            if (tryResult.Command == null)
-            {
-                string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The router failed to extract command. command_string={0} extractor={1}", context.CommandString, extrator.GetType().FullName);
-                return Result.NewError<CommandRouterResult>(Errors.ServerError, errorDesc, context.CommandString);
-            }
+            CommandExtractorResult extractorResult = await extrator.ExtractAsync(new CommandExtractorContext(context.CommandString));
 
             // Delegate to handler
             TryResult<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
-            CommandHandlerContext handlerContext = new(tryResult.CommandIdentity, tryResult.Command);
-            CommandHandlerResult handlerResult = await tryHandler.Result!.HandleAsync(handlerContext);
-            if (handlerResult.IsError)
-            {
-                return Result.NewError<CommandRouterResult>(handlerResult);
-            }
+            CommandHandlerContext handlerContext = new(extractorResult.CommandIdentity, extractorResult.Command);
+            await tryHandler.Result!.HandleAsync(handlerContext);
 
             return new CommandRouterResult();
         }

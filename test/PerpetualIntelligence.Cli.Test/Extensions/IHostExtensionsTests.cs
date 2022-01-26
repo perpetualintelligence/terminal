@@ -122,7 +122,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsync("test_title", null, tokenSource.Token);
 
             // The string writer will have both exception message and concatenated routing canceled message
-            Assert.AreEqual("The request returned an error. error=test_error error_description=(null)Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            Assert.AreEqual("test_error_description param1=test_param1 param2=test_param2. Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
@@ -355,12 +355,12 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
         }
 
-        private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
+        private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
 
             // Adding space at the end so that any msg are correctly appended.
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, explicitError: "test_error"));
+            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation. ")));
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
@@ -372,12 +372,12 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
         }
 
-        private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
+        private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
 
             // Adding space at the end so that any msg are correctly appended.
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation. ")));
+            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, new Shared.Infrastructure.Error("test_error", "test_error_description param1={0} param2={1}. ", "test_param1", "test_param2")));
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,

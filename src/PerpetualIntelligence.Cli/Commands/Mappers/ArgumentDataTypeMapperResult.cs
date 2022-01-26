@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using PerpetualIntelligence.Shared.Infrastructure;
@@ -12,11 +13,21 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// The argument data-type mapper result.
     /// </summary>
-    public class ArgumentDataTypeMapperResult : Result
+    public class ArgumentDataTypeMapperResult : ResultNoError
     {
+        /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        /// <param name="mappedType">The mapped type.</param>
+        /// <exception cref="ArgumentNullException">Null mapped type.</exception>
+        public ArgumentDataTypeMapperResult(Type mappedType)
+        {
+            MappedType = mappedType ?? throw new ArgumentNullException(nameof(mappedType));
+        }
+
         /// <summary>
         /// The mapped system type.
         /// </summary>
-        public Type? MappedType { get; set; }
+        public Type MappedType { get; }
     }
 }

@@ -15,6 +15,7 @@ using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores.InMemory;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Attributes.Validation;
+using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
@@ -35,19 +36,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task ArgumentPrefixCannotBeNullOrWhitespaceAsync()
         {
             options.Extractor.ArgumentPrefix = null;
-            var result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The argument prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The argument prefix cannot be null or whitespace.");
 
             options.Extractor.ArgumentPrefix = "";
-            result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The argument prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The argument prefix cannot be null or whitespace.");
 
             options.Extractor.ArgumentPrefix = "   ";
-            result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The argument prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The argument prefix cannot be null or whitespace.");
         }
 
         [DataTestMethod]
@@ -65,28 +60,22 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             options.Extractor.ArgumentSeparator = separator;
             options.Extractor.ArgumentPrefix = separator;
-            var result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The argument separator and argument prefix cannot be same. separator={separator}");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The argument separator and argument prefix cannot be same. separator={separator}");
         }
 
         [TestMethod]
         public async Task ArgumentSeparatorCannotBeNullOrWhitespaceAsync()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.ArgumentSeparator = null;
-            var result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             options.Extractor.ArgumentSeparator = "";
-            result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
 
             options.Extractor.ArgumentSeparator = "   ";
-            result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
         }
 
         [TestMethod]
@@ -94,12 +83,18 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1 -key1=value1 -key2=value2");
             var badExtractor = new SeparatorCommandExtractor(commands, new MockBadArgumentExtractor(), options, TestLogger.Create<SeparatorCommandExtractor>());
-            var result = await badExtractor.ExtractAsync(context);
-            Assert.IsTrue(result.IsError);
-            Assert.IsNotNull(result.Errors);
-            Assert.AreEqual(2, result.Errors.Length);
-            TestHelper.AssertOneImlxError(result.Errors[0], Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string=-key1=value1");
-            TestHelper.AssertOneImlxError(result.Errors[1], Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string=-key2=value2");
+
+            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
+                () => badExtractor.ExtractAsync(context),
+                2,
+                new[] {
+                    Error.Unexpected,
+                    Error.Unexpected
+                },
+                new[] {
+                    "The request resulted in an unexpected error. additonal_info=Value cannot be null. (Parameter 'argument')",
+                    "The request resulted in an unexpected error. additonal_info=Value cannot be null. (Parameter 'argument')"
+                });
         }
 
         [TestMethod]
@@ -107,8 +102,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1 -key1=value1 -key2=value2");
             var badExtractor = new SeparatorCommandExtractor(new MockBadCommandsIdentityStore(), argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
-            var result = await badExtractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command string did not return an error or match the command prefix. command_string=prefix1 -key1=value1 -key2=value2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => badExtractor.ExtractAsync(context), Errors.InvalidCommand, "The command string did not return an error or match the command prefix. command_string=prefix1 -key1=value1 -key2=value2");
         }
 
         [DataTestMethod]
@@ -123,9 +117,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = separator;
             options.Extractor.ArgumentPrefix = separator;
-            var result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The command separator and argument prefix cannot be same. separator={separator}");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The command separator and argument prefix cannot be same. separator={separator}");
         }
 
         [DataTestMethod]
@@ -140,9 +132,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = separator;
             options.Extractor.ArgumentSeparator = separator;
-            var result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The command separator and argument separator cannot be same. separator={separator}");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The command separator and argument separator cannot be same. separator={separator}");
         }
 
         [TestMethod]
@@ -150,9 +140,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.Separator = null;
-            var result = await extractor.ExtractAsync(new CommandExtractorContext("test"));
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidConfiguration, $"The command separator is null or not configured.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext("test")), Errors.InvalidConfiguration, $"The command separator is null or not configured.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
@@ -173,7 +161,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             CommandExtractorContext context = new CommandExtractorContext($"prefix1 {prefix}key1=Test{prefix}prefix{prefix}message {prefix}key2=nospacemessage {prefix}key6 {prefix}key10=Again{prefix}with{prefix}prefix");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(4, result.Command.Arguments.Count);
@@ -200,7 +187,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             CommandExtractorContext context = new CommandExtractorContext($"prefix1 -key1{separator}Test{separator}separator{separator}message -key2{separator}nosseparatormessage -key6 -key10{separator}Again{separator}with{separator}separator");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(4, result.Command.Arguments.Count);
@@ -227,7 +213,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             CommandExtractorContext context = new CommandExtractorContext($"prefix1{seperator}-key1=Test{seperator}space{seperator}message{seperator}-key2=nospacemessage{seperator}-key6{seperator}-key10=Again{seperator}with{seperator}space");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(4, result.Command.Arguments.Count);
@@ -245,14 +230,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
 
             CommandExtractorContext context = new CommandExtractorContext("pi auth invalid");
-            var result = await extractor.ExtractAsync(context);
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
 
             context = new CommandExtractorContext("pi auth invalid -key1=value1");
-            result = await extractor.ExtractAsync(context);
-            Assert.IsTrue(result.IsError);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
         }
 
         [TestMethod]
@@ -269,7 +250,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1 -key1=value1 -key2=value2");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("id1", result.CommandIdentity.Id);
             Assert.AreEqual("name1", result.CommandIdentity.Name);
@@ -281,7 +261,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("name2 -key1=value1 -key2=value2");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("id2", result.CommandIdentity.Id);
             Assert.AreEqual("name2", result.CommandIdentity.Name);
@@ -291,9 +270,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task PrefixMatchWithMultipleWordsShouldNotError()
         {
-            CommandExtractorContext context = new CommandExtractorContext("prefix3 sub3 name3 -key1=value1 -key2=value2");
+            CommandExtractorContext context = new("prefix3 sub3 name3 -key1=value1 -key2=value2");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("id3", result.CommandIdentity.Id);
             Assert.AreEqual("name3", result.CommandIdentity.Name);
@@ -303,34 +281,30 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task PrefixMismatchMultipleWordsShouldError()
         {
-            CommandExtractorContext context = new CommandExtractorContext("invalid_prefix3 sub3 name3 -key1=value1 -key2=value2");
-            var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix3 sub3 name3");
+            CommandExtractorContext context = new("invalid_prefix3 sub3 name3 -key1=value1 -key2=value2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix3 sub3 name3");
         }
 
         [TestMethod]
         public async Task PrefixMismatchShouldError()
         {
-            CommandExtractorContext context = new CommandExtractorContext("invalidprefix -key1=value1 -key2=value2");
-            var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalidprefix");
+            CommandExtractorContext context = new("invalidprefix -key1=value1 -key2=value2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalidprefix");
         }
 
         [TestMethod]
         public async Task TryMatchByPrefixShouldErrorIfNotFoundAsync()
         {
-            CommandExtractorContext context = new CommandExtractorContext("invalid prefix1");
-            var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid prefix1");
+            CommandExtractorContext context = new("invalid prefix1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid prefix1");
         }
 
         [TestMethod]
         public async Task TryMatchByPrefixWithInsufficientPharasesShouldErrorAsync()
         {
             // Missing name3
-            CommandExtractorContext context = new CommandExtractorContext("prefix3 sub3");
-            var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=prefix3 sub3");
+            CommandExtractorContext context = new("prefix3 sub3");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=prefix3 sub3");
         }
 
         [TestMethod]
@@ -338,7 +312,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix3 sub3 name3");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("id3", result.CommandIdentity.Id);
             Assert.AreEqual("name3", result.CommandIdentity.Name);
@@ -349,21 +322,28 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnsupportedArgumentsShouldErrorMultipleAsync()
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1 -invalid_key1=value1 -invalid_key2=value2 -invalid_key3=value3");
-            var result = await extractor.ExtractAsync(context);
-            Assert.IsTrue(result.IsError);
-            Assert.IsNotNull(result.Errors);
-            Assert.AreEqual(3, result.Errors.Length);
-            TestHelper.AssertOneImlxError(result.Errors[0], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key1");
-            TestHelper.AssertOneImlxError(result.Errors[1], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key2");
-            TestHelper.AssertOneImlxError(result.Errors[2], Errors.UnsupportedArgument, "The command does not support the specified argument. command_name=name1 command_id=id1 argument=invalid_key3");
+            await TestHelper.AssertThrowsMultiErrorExceptionAsync
+            (
+                () => extractor.ExtractAsync(context),
+                3,
+                new[] {
+                    Errors.UnsupportedArgument,
+                    Errors.UnsupportedArgument,
+                    Errors.UnsupportedArgument
+                },
+                new[] {
+                    "The argument is not supported. command_name=name1 command_id=id1 argument=invalid_key1",
+                    "The argument is not supported. command_name=name1 command_id=id1 argument=invalid_key2",
+                    "The argument is not supported. command_name=name1 command_id=id1 argument=invalid_key3"
+                }
+            );
         }
 
         [TestMethod]
         public async Task UnsupportedCommandShouldErrorAsync()
         {
             CommandExtractorContext context = new CommandExtractorContext("invalid_cmd");
-            var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_cmd");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_cmd");
         }
 
         [DataTestMethod]
@@ -380,7 +360,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             CommandExtractorContext context = new CommandExtractorContext($"name2{seperator}-key1=value1{seperator}-key2=value2{seperator}-key3=+1-2365985632{seperator}-key4=testmail@gmail.com{seperator}-key5=C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt{seperator}-key6{seperator}-key9=33.368");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
 
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("id2", result.CommandIdentity.Id);
@@ -423,7 +402,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
 
             // Args Supported
             Assert.IsNotNull(result.CommandIdentity);
@@ -444,42 +422,36 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             CommandExtractorContext context = new CommandExtractorContext("pi");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("orgid", result.CommandIdentity.Id);
             Assert.AreEqual("pi", result.CommandIdentity.Name);
 
             context = new CommandExtractorContext("pi auth");
             result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("orgid:authid", result.CommandIdentity.Id);
             Assert.AreEqual("auth", result.CommandIdentity.Name);
 
             context = new CommandExtractorContext("pi auth login");
             result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("orgid:authid:loginid", result.CommandIdentity.Id);
             Assert.AreEqual("login", result.CommandIdentity.Name);
 
             context = new CommandExtractorContext("pi auth slogin");
             result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("orgid:authid:sloginid", result.CommandIdentity.Id);
             Assert.AreEqual("slogin", result.CommandIdentity.Name);
 
             context = new CommandExtractorContext("pi auth slogin oidc");
             result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("orgid:authid:sloginid:oidc", result.CommandIdentity.Id);
             Assert.AreEqual("oidc", result.CommandIdentity.Name);
 
             context = new CommandExtractorContext("pi auth slogin oauth");
             result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.CommandIdentity);
             Assert.AreEqual("orgid:authid:sloginid:oauth", result.CommandIdentity.Id);
             Assert.AreEqual("oauth", result.CommandIdentity.Name);
@@ -490,7 +462,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix4_noargs");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Command);
             Assert.IsNull(result.Command.Arguments);
         }
@@ -499,8 +470,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task ValidCommandStringWithNoSeparatorShouldFailAsync()
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1-key1=value1-key2=value2");
-            var result = await extractor.ExtractAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
         }
 
         protected override void OnTestInitialize()

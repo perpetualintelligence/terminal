@@ -83,7 +83,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
             var command = commandIdentities.FirstOrDefault(e => prefix.Equals(e.Prefix));
             if (command == null)
             {
-                result.SetError(Errors.UnsupportedCommand, logger.FormatAndLog(LogLevel.Error, options.Logging, "The command prefix is not valid. prefix={0}", prefix));
+                result.SetError(new Error(Errors.UnsupportedCommand, "The command prefix is not valid. prefix={0}", prefix));
             }
             else
             {

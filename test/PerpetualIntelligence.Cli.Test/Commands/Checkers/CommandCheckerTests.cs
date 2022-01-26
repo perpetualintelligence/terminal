@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,9 +39,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 new Argument("key2", "value2", DataType.Text)
             };
 
-            CommandCheckerContext context = new CommandCheckerContext(identity, argsCommand);
+            CommandCheckerContext context = new(identity, argsCommand);
             var result = await checker.CheckAsync(context);
-            Assert.IsFalse(result.IsError);
         }
 
         [TestMethod]
@@ -59,8 +59,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             };
 
             CommandCheckerContext context = new(noArgsIdentity, argsCommand);
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument is disabled. command_name=name1 command_id=id1 argument=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument is disabled. command_name=name1 command_id=id1 argument=key1");
         }
 
         [TestMethod]
@@ -79,15 +78,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 new Argument("key1", "value1", DataType.Text)
             };
 
-            CommandCheckerContext context = new CommandCheckerContext(noArgsIdentity, argsCommand);
+            CommandCheckerContext context = new(noArgsIdentity, argsCommand);
             var result = await checker.CheckAsync(context);
-            Assert.IsFalse(result.IsError);
         }
 
         [TestMethod]
         public async Task InvalidValueValidShouldErrorAsync()
         {
-            CommandIdentity identity = new CommandIdentity("id1", "name1", "prefix1");
+            CommandIdentity identity = new("id1", "name1", "prefix1");
             identity.ArgumentIdentities = new ArgumentIdentities()
             {
                 new ArgumentIdentity("key1", DataType.Text)
@@ -99,9 +97,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 new Argument("key1", 36, DataType.Text)
             };
 
-            CommandCheckerContext context = new CommandCheckerContext(identity, argsCommand);
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument value does not match the mapped type. argument=key1 type=System.String data_type=Text value_type=Int32 value=36");
+            CommandCheckerContext context = new(identity, argsCommand);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value does not match the mapped type. argument=key1 type=System.String data_type=Text value_type=Int32 value=36");
         }
 
         [TestMethod]
@@ -114,44 +111,41 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 {Obsolete = true}
             };
 
-            Command argsCommand = new Command(noArgsIdentity);
+            Command argsCommand = new(noArgsIdentity);
             argsCommand.Arguments = new Arguments()
             {
                 new Argument("key1", "value1", DataType.Text)
             };
 
-            CommandCheckerContext context = new CommandCheckerContext(noArgsIdentity, argsCommand);
+            CommandCheckerContext context = new(noArgsIdentity, argsCommand);
 
             options.Checker.AllowObsoleteArgument = true;
             var result = await checker.CheckAsync(context);
-            Assert.IsFalse(result.IsError);
         }
 
         [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteNotAllowedShouldErrorAsync()
         {
-            CommandIdentity noArgsIdentity = new CommandIdentity("id1", "name1", "prefix1");
+            CommandIdentity noArgsIdentity = new("id1", "name1", "prefix1");
             noArgsIdentity.ArgumentIdentities = new ArgumentIdentities()
             {
                 new ArgumentIdentity("key1", DataType.Text)
                 {Obsolete = true}
             };
 
-            Command argsCommand = new Command(noArgsIdentity);
+            Command argsCommand = new(noArgsIdentity);
             argsCommand.Arguments = new Arguments()
             {
                 new Argument("key1", "value1", DataType.Text)
             };
 
-            CommandCheckerContext context = new CommandCheckerContext(noArgsIdentity, argsCommand);
+            CommandCheckerContext context = new(noArgsIdentity, argsCommand);
 
             options.Checker.AllowObsoleteArgument = null;
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument is obsolete. command_name=name1 command_id=id1 argument=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument is obsolete. command_name=name1 command_id=id1 argument=key1");
 
             options.Checker.AllowObsoleteArgument = false;
-            result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.InvalidArgument, "The argument is obsolete. command_name=name1 command_id=id1 argument=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument is obsolete. command_name=name1 command_id=id1 argument=key1");
         }
 
         [TestMethod]
@@ -169,9 +163,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 new Argument("key2", "value2", DataType.Text)
             };
 
-            CommandCheckerContext context = new CommandCheckerContext(identity, argsCommand);
-            var result = await checker.CheckAsync(context);
-            TestHelper.AssertOneImlxError(result, Errors.MissingArgument, "The required argument is missing. command_name=name1 command_id=id1 argument=key1");
+            CommandCheckerContext context = new(identity, argsCommand);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.MissingArgument, "The required argument is missing. command_name=name1 command_id=id1 argument=key1");
         }
 
         [TestMethod]
@@ -189,29 +182,27 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 new Argument("key1", "value1", DataType.Text)
             };
 
-            CommandCheckerContext context = new CommandCheckerContext(identity, argsCommand);
+            CommandCheckerContext context = new(identity, argsCommand);
             var result = await checker.CheckAsync(context);
-            Assert.IsFalse(result.IsError);
         }
 
         [TestMethod]
         public async Task ValueValidShouldNotErrorAsync()
         {
-            CommandIdentity identity = new CommandIdentity("id1", "name1", "prefix1");
+            CommandIdentity identity = new("id1", "name1", "prefix1");
             identity.ArgumentIdentities = new ArgumentIdentities()
             {
                 new ArgumentIdentity("key1", DataType.Text)
             };
 
-            Command argsCommand = new Command(identity);
+            Command argsCommand = new(identity);
             argsCommand.Arguments = new Arguments()
             {
                 new Argument("key1", "value1", DataType.Text)
             };
 
-            CommandCheckerContext context = new CommandCheckerContext(identity, argsCommand);
+            CommandCheckerContext context = new(identity, argsCommand);
             var result = await checker.CheckAsync(context);
-            Assert.IsFalse(result.IsError);
         }
 
         protected override void OnTestInitialize()
@@ -225,7 +216,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         private CommandIdentity NewCustomDataTypeCmdIdentity(string customDataType)
         {
-            CommandIdentity identity = new CommandIdentity("id1", "name1", "prefix1");
+            CommandIdentity identity = new("id1", "name1", "prefix1");
             identity.ArgumentIdentities = new ArgumentIdentities()
             {
                 new ArgumentIdentity("key1", customDataType)
@@ -235,14 +226,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         private Command NewDataTypeCmd(CommandIdentity Command, object value)
         {
-            Command cmd = new Command(Command);
+            Command cmd = new(Command);
             cmd.Arguments![0].Value = value;
             return cmd;
         }
 
         private CommandIdentity NewDataTypeCmdIdentity(DataType dataType)
         {
-            CommandIdentity identity = new CommandIdentity("id1", "name1", "prefix1");
+            CommandIdentity identity = new("id1", "name1", "prefix1");
             identity.ArgumentIdentities = new ArgumentIdentities()
             {
                 new ArgumentIdentity("key1", dataType)
