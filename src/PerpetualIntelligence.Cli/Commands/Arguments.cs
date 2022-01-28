@@ -1,44 +1,44 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
-using System.Collections.Generic;
+using System;
+using System.Collections.ObjectModel;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The <see cref="Argument"/> collection.
+    /// The ordered <see cref="Argument"/> keyed collection.
     /// </summary>
-    public sealed class Arguments : List<Argument>
+    /// <remarks>
+    /// The argument collection comparer is <see cref="StringComparer.Ordinal"/> and it determines whether two
+    /// <see cref="Argument.Id"/> strings are equal. Every argument in the collection must have unique id.
+    /// </remarks>
+    public sealed class Arguments : KeyedCollection<string, Argument>
     {
         /// <summary>
-        /// Returns a dictionary of argument name and <see cref="Argument"/>.
+        /// Initializes a new instance.
         /// </summary>
-        /// <returns><see cref="Dictionary{TKey, TValue}"/></returns>
-        public Dictionary<string, Argument> ToNameArgumentDisctionary()
+        public Arguments() : base(StringComparer.Ordinal)
         {
-            Dictionary<string, Argument> args = new();
-            foreach (var key in this)
-            {
-                args.Add(key.Id, key);
-            }
-            return args;
         }
 
         /// <summary>
-        /// Returns a dictionary of argument name and value.
+        /// Gets the argument value.
         /// </summary>
-        /// <returns><see cref="Dictionary{TKey, TValue}"/></returns>
-        public Dictionary<string, object> ToNameValueDictionary()
+        /// <typeparam name="TValue">The value type.</typeparam>
+        public TValue GetValue<TValue>(string argumentId)
         {
-            Dictionary<string, object> args = new();
-            foreach (var key in this)
-            {
-                args.Add(key.Id, key.Value);
-            }
-            return args;
+            return (TValue)this[argumentId].Value;
+        }
+
+        /// <inheritdoc/>
+        protected override string GetKeyForItem(Argument item)
+        {
+            return item.Id;
         }
     }
 }

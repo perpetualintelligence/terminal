@@ -13,21 +13,21 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors.Mocks
 {
     internal class MockBadCommandsIdentityStore : ICommandIdentityStore
     {
-        public Task<TryResult<CommandIdentity>> TryFindByIdAsync(string id)
+        public Task<TryResult<CommandDescriptor>> TryFindByIdAsync(string id)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<TryResult<CommandIdentity>> TryFindByNameAsync(string name)
+        public Task<TryResult<CommandDescriptor>> TryFindByNameAsync(string name)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<TryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix)
+        public Task<TryResult<CommandDescriptor>> TryFindByPrefixAsync(string prefix)
         {
             // No error and no result
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            return Task.FromResult(new TryResult<CommandIdentity>(result: null));
+            return Task.FromResult(new TryResult<CommandDescriptor>(result: null));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
     }

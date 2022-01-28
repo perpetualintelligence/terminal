@@ -68,9 +68,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 throw new ErrorException(Errors.InvalidArgument, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
             }
 
-            if (context.ArgumentIdentity.ValidationAttributes != null)
+            if (context.ArgumentDescriptor.ValidationAttributes != null)
             {
-                foreach (ValidationAttribute vAttr in context.ArgumentIdentity.ValidationAttributes)
+                foreach (ValidationAttribute vAttr in context.ArgumentDescriptor.ValidationAttributes)
                 {
                     try
                     {

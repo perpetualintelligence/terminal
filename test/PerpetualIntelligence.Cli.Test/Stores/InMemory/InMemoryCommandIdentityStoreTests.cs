@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
             cmdStore = new InMemoryCommandIdentityStore(cmds, options, TestLogger.Create<InMemoryCommandIdentityStore>());
         }
 
-        private IEnumerable<CommandIdentity> cmds = null!;
+        private IEnumerable<CommandDescriptor> cmds = null!;
         private InMemoryCommandIdentityStore cmdStore = null!;
         private CliOptions options = null!;
     }

@@ -55,12 +55,12 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandIdentityShouldCorrectlyInitialize()
         {
-            cliBuilder.AddCommandIdentity<MockCommandRunner, MockCommandChecker>(new CommandIdentity("id1", "name1", "prefix1"));
+            cliBuilder.AddCommandIdentity<MockCommandRunner, MockCommandChecker>(new CommandDescriptor("id1", "name1", "prefix1"));
 
-            var cmdDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandIdentity)));
+            var cmdDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             Assert.IsNotNull(cmdDescriptor);
             Assert.AreEqual(ServiceLifetime.Singleton, cmdDescriptor.Lifetime);
-            CommandIdentity? impIstance = (CommandIdentity?)cmdDescriptor.ImplementationInstance;
+            CommandDescriptor? impIstance = (CommandDescriptor?)cmdDescriptor.ImplementationInstance;
             Assert.IsNotNull(impIstance);
             Assert.AreEqual("id1", impIstance.Id);
             Assert.AreEqual("name1", impIstance.Name);

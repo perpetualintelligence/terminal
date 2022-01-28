@@ -6,6 +6,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
@@ -28,14 +29,16 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandStore">The command identity store.</param>
+        /// <param name="commandStore">The command descriptor store.</param>
         /// <param name="argumentExtractor">The argument extractor.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public SeparatorCommandExtractor(ICommandIdentityStore commandStore, IArgumentExtractor argumentExtractor, CliOptions options, ILogger<SeparatorCommandExtractor> logger)
+        /// <param name="argumentDefaultValueProvider">The optional argument default value provider.</param>
+        public SeparatorCommandExtractor(ICommandIdentityStore commandStore, IArgumentExtractor argumentExtractor, CliOptions options, ILogger<SeparatorCommandExtractor> logger, IArgumentDefaultValueProvider? argumentDefaultValueProvider = null)
         {
             this.commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
             this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
+            this.argumentDefaultValueProvider = argumentDefaultValueProvider;
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -47,12 +50,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             EnsureOptionsCompatibility();
 
             // Find the command identify by prefix
-            CommandIdentity commandIdentity = await MatchByPrefixAsync(context.CommandString);
+            CommandDescriptor commandDescriptor = await MatchByPrefixAsync(context.CommandString);
 
             // Extract the arguments. Arguments are optional for commands.
             Arguments? arguments = null;
-            int prefixEndIndex = context.CommandString.IndexOf(commandIdentity.Prefix, StringComparison.Ordinal);
-            string argString = context.CommandString.Remove(prefixEndIndex, commandIdentity.Prefix.Length);
+            int prefixEndIndex = context.CommandString.IndexOf(commandDescriptor.Prefix, StringComparison.Ordinal);
+            string argString = context.CommandString.Remove(prefixEndIndex, commandDescriptor.Prefix.Length);
             if (!string.IsNullOrWhiteSpace(argString))
             {
                 // Make sure there is a separator between the command prefix and arguments
@@ -61,15 +64,18 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", context.CommandString);
                 }
 
-                arguments = await ExtractArgumentsOrThrowAsync(commandIdentity, argString);
+                arguments = await ExtractArgumentsOrThrowAsync(commandDescriptor, argString);
             }
 
+
+
             // OK, return the extracted command object.
-            Command command = new(commandIdentity)
+            Command command = new(commandDescriptor)
             {
                 Arguments = arguments
             };
-            return new CommandExtractorResult(command, commandIdentity);
+
+            return new CommandExtractorResult(command, commandDescriptor);
         }
 
         private void EnsureOptionsCompatibility()
@@ -109,9 +115,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be null or whitespace.", options.Extractor.ArgumentPrefix);
             }
+
+            // Argument default value provider is missing
+            if (options.Extractor.ArgumentDefaultValue.GetValueOrDefault() && argumentDefaultValueProvider == null)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection.");
+            }
         }
 
-        private async Task<Arguments> ExtractArgumentsOrThrowAsync(CommandIdentity commandIdentity, string argString)
+        private async Task<Arguments> ExtractArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, string argString)
         {
             Arguments arguments = new();
 
@@ -124,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 string prefixArg = string.Concat(options.Extractor.ArgumentPrefix, arg);
 
                 // We capture all the argument extraction errors
-                TryResultError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync<ArgumentExtractorContext, ArgumentExtractorResult>(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(prefixArg, commandIdentity));
+                TryResultError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync<ArgumentExtractorContext, ArgumentExtractorResult>(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(prefixArg, commandDescriptor));
                 if (tryResult.Error != null)
                 {
                     errors.Add(tryResult.Error);
@@ -148,16 +160,33 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 throw new MultiErrorException(errors.ToArray());
             }
 
+            // Check for default arguments if enabled. Default values are added at the end if there is no explicit input
+            if (options.Extractor.ArgumentDefaultValue.GetValueOrDefault())
+            {
+                // TODO: Performance ArgumentDescriptor collection should be an ordered dictionary
+                ArgumentDefaultValueProviderResult defaultResult = await argumentDefaultValueProvider.ProvideAsync(new ArgumentDefaultValueProviderContext(commandDescriptor));
+                foreach(ArgumentDescriptor argumentDescriptor in defaultResult.DefaultValueArgumentDescriptors)
+                {
+                }
+
+                if(defaultResult.DefaultValueArgumentDescriptors.Count > 0)
+                {
+                    
+                }
+
+            }
+
+
             return arguments;
         }
 
         /// <summary>
-        /// Matches the command string and finds the <see cref="CommandIdentity"/>.
+        /// Matches the command string and finds the <see cref="CommandDescriptor"/>.
         /// </summary>
         /// <param name="commandString">The command string to match.</param>
         /// <returns></returns>
-        /// <exception cref="ErrorException">If command string did not match any command identity.</exception>
-        private async Task<CommandIdentity> MatchByPrefixAsync(string commandString)
+        /// <exception cref="ErrorException">If command string did not match any command descriptor.</exception>
+        private async Task<CommandDescriptor> MatchByPrefixAsync(string commandString)
         {
             string prefix = commandString;
 
@@ -187,6 +216,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return result.Result;
         }
 
+        private readonly IArgumentDefaultValueProvider? argumentDefaultValueProvider;
         private readonly IArgumentExtractor argumentExtractor;
         private readonly ICommandIdentityStore commandStore;
         private readonly ILogger<SeparatorCommandExtractor> logger;

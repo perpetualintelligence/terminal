@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Shared.Attributes;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -24,19 +25,19 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Initialize a new instance from the specified command identity.
+        /// Initialize a new instance from the specified command descriptor.
         /// </summary>
-        /// <param name="commandIdentity">The command identity.</param>
-        public Command(CommandIdentity commandIdentity)
+        /// <param name="commandDescriptor">The command descriptor.</param>
+        public Command(CommandDescriptor commandDescriptor)
         {
-            Id = commandIdentity.Id;
-            Name = commandIdentity.Name;
-            Description = commandIdentity.Description;
+            Id = commandDescriptor.Id;
+            Name = commandDescriptor.Name;
+            Description = commandDescriptor.Description;
 
-            if (commandIdentity.ArgumentIdentities != null)
+            if (commandDescriptor.ArgumentDescriptors != null)
             {
                 Arguments = new Arguments();
-                foreach (var argument in commandIdentity.ArgumentIdentities)
+                foreach (ArgumentDescriptor argument in commandDescriptor.ArgumentDescriptors)
                 {
                     Argument arg = new(argument, argument.DefaultValue ?? new object());
                     Arguments.Add(arg);
@@ -71,6 +72,41 @@ namespace PerpetualIntelligence.Cli.Commands
         [JsonPropertyName("properties")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Dictionary<string, object>? Properties { get; set; }
+
+        /// <summary>
+        /// Attempts to find an argument.
+        /// </summary>
+        /// <param name="id">The argument identifier.</param>
+        /// <param name="argument">The argument if found in the collection.</param>
+        /// <returns><c>true</c> if an argument exist in the collection, otherwise <c>false</c>.</returns>
+        [WriteUnitTest]
+        public bool TryGetArgument(string id, out Argument argument)
+        {
+            if (Arguments == null)
+            {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                argument = default;
+                return false;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            }
+
+#if NETSTANDARD2_1_OR_GREATER
+            return Arguments.TryGetValue(id, out argument);
+#else
+            if (Arguments.Contains(id))
+            {
+                argument = Arguments[id];
+                return true;
+            }
+            else
+            {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                argument = default;
+                return false;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            }
+#endif
+        }
 
         /// <summary>
         /// The command name.

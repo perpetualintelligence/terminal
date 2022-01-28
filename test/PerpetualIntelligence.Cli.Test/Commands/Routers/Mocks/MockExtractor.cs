@@ -35,12 +35,12 @@ namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
                 {
                     // No error but no command
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                    return Task.FromResult(new CommandExtractorResult(null, new CommandIdentity("test_id", "test_name", "test_prefix", null)));
+                    return Task.FromResult(new CommandExtractorResult(null, new CommandDescriptor("test_id", "test_name", "test_prefix", null)));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 else if (IsExplicitNoCommandIdenitity)
                 {
-                    // No error but no command identity
+                    // No error but no command descriptor
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                     return Task.FromResult(new CommandExtractorResult(new Command() { Id = "test_id", Name = "test_name" }, null));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -48,7 +48,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
                 else
                 {
                     // all ok
-                    return Task.FromResult(new CommandExtractorResult(new Command() { Id = "test_id", Name = "test_name" }, new CommandIdentity("test_id", "test_name", "test_prefix", null)));
+                    return Task.FromResult(new CommandExtractorResult(new Command() { Id = "test_id", Name = "test_name" }, new CommandDescriptor("test_id", "test_name", "test_prefix", null)));
                 }
             }
         }

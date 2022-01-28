@@ -18,12 +18,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="argumentIdentity">The argument identity.</param>
+        /// <param name="argumentDescriptor">The argument descriptor.</param>
         /// <param name="argument">The argument.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ArgumentCheckerContext(ArgumentIdentity argumentIdentity, Argument argument)
+        public ArgumentCheckerContext(ArgumentDescriptor argumentDescriptor, Argument argument)
         {
-            ArgumentIdentity = argumentIdentity ?? throw new ArgumentNullException(nameof(argumentIdentity));
+            ArgumentDescriptor = argumentDescriptor ?? throw new ArgumentNullException(nameof(argumentDescriptor));
             Argument = argument ?? throw new ArgumentNullException(nameof(argument));
         }
 
@@ -33,8 +33,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public Argument Argument { get; set; }
 
         /// <summary>
-        /// The argument identity.
+        /// The argument descriptor.
         /// </summary>
-        public ArgumentIdentity ArgumentIdentity { get; }
+        public ArgumentDescriptor ArgumentDescriptor { get; }
     }
 }

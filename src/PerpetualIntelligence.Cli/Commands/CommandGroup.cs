@@ -27,18 +27,18 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Initialize a new instance from the specified command identity.
+        /// Initialize a new instance from the specified command descriptor.
         /// </summary>
-        public CommandGroup(CommandIdentity commandIdentity, string[] commands)
+        public CommandGroup(CommandDescriptor commandDescriptor, string[] commands)
         {
-            Id = commandIdentity.Id;
-            Name = commandIdentity.Name;
-            Description = commandIdentity.Description;
+            Id = commandDescriptor.Id;
+            Name = commandDescriptor.Name;
+            Description = commandDescriptor.Description;
 
-            if (commandIdentity.ArgumentIdentities != null)
+            if (commandDescriptor.ArgumentDescriptors != null)
             {
                 Arguments = new Arguments();
-                foreach (var argument in commandIdentity.ArgumentIdentities)
+                foreach (ArgumentDescriptor argument in commandDescriptor.ArgumentDescriptors)
                 {
                     // FOMAC: We dont have access to argument values here !
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.

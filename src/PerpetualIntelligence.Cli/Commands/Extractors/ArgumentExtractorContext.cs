@@ -15,11 +15,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// Initialize a new instance.
         /// </summary>
         /// <param name="argumentString">The argument string.</param>
-        /// <param name="commandIdentity">The command identity.</param>
-        public ArgumentExtractorContext(string argumentString, CommandIdentity commandIdentity)
+        /// <param name="commandDescriptor">The command descriptor.</param>
+        public ArgumentExtractorContext(string argumentString, CommandDescriptor commandDescriptor)
         {
             ArgumentString = argumentString;
-            CommandIdentity = commandIdentity;
+            CommandDescriptor = commandDescriptor;
         }
 
         /// <summary>
@@ -28,8 +28,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public string ArgumentString { get; set; }
 
         /// <summary>
-        /// The command identity.
+        /// The command descriptor.
         /// </summary>
-        public CommandIdentity CommandIdentity { get; set; }
+        public CommandDescriptor CommandDescriptor { get; set; }
     }
 }

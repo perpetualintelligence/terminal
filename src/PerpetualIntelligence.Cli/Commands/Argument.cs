@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Commands
     /// </para>
     /// <para>
     /// The arguments can have same ids across multiple commands. Each <see cref="Command"/> has
-    /// <see cref="ArgumentIdentities"/> collection that contains arguments with unique ids.
+    /// <see cref="ArgumentDescriptors"/> collection that contains arguments with unique ids.
     /// </para>
     /// </remarks>
     /// <seealso cref="Command"/>
@@ -32,16 +32,16 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
-        /// <param name="argumentIdentity">The argument identity.</param>
+        /// <param name="argumentDescriptor">The argument descriptor.</param>
         /// <param name="value">The argument value.</param>
-        public Argument(ArgumentIdentity argumentIdentity, object value)
+        public Argument(ArgumentDescriptor argumentDescriptor, object value)
         {
-            Id = argumentIdentity.Id;
-            DataType = argumentIdentity.DataType;
-            CustomDataType = argumentIdentity.CustomDataType;
-            Description = argumentIdentity.Description;
+            Id = argumentDescriptor.Id;
+            DataType = argumentDescriptor.DataType;
+            CustomDataType = argumentDescriptor.CustomDataType;
+            Description = argumentDescriptor.Description;
             Value = value;
-            Properties = argumentIdentity.Properties;
+            Properties = argumentDescriptor.Properties;
         }
 
         /// <summary>

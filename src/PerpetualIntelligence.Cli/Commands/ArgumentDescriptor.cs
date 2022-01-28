@@ -13,15 +13,15 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// Defines identity of an <see cref="Argument"/>.
+    /// Describes an <see cref="Argument"/>.
     /// </summary>
     /// <remarks>
-    /// The <see cref="ArgumentIdentity"/> defines <see cref="Argument"/> identity, data type and data validation. The
+    /// The <see cref="ArgumentDescriptor"/> defines <see cref="Argument"/> identity, data type and data validation. The
     /// <see cref="Argument"/> is a runtime validated representation of an actual argument and its value passed by a
     /// user or an application.
     /// </remarks>
     /// <seealso cref="Argument"/>
-    public sealed class ArgumentIdentity
+    public sealed class ArgumentDescriptor
     {
         /// <summary>
         /// Initializes a new instance.
@@ -31,7 +31,8 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
         /// <param name="validationAttributes">The data validation attributes.</param>
-        public ArgumentIdentity(string id, DataType dataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null)
+        /// <param name="defaultValue">The argument default value.</param>
+        public ArgumentDescriptor(string id, DataType dataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null, object? defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -41,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Id = id;
             DataType = dataType;
             Description = description;
-
+            DefaultValue = defaultValue;
             if (validationAttributes != null)
             {
                 ValidationAttributes = new HashSet<ValidationAttribute>(validationAttributes);
@@ -61,7 +62,8 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
         /// <param name="validationAttributes">The data validation attributes.</param>
-        public ArgumentIdentity(string id, string customDataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null)
+        /// <param name="defaultValue">The argument default value.</param>
+        public ArgumentDescriptor(string id, string customDataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null, object? defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -72,7 +74,7 @@ namespace PerpetualIntelligence.Cli.Commands
             DataType = DataType.Custom;
             CustomDataType = customDataType;
             Description = description;
-
+            DefaultValue = defaultValue;
             if (validationAttributes != null)
             {
                 ValidationAttributes = new HashSet<ValidationAttribute>(validationAttributes);
@@ -96,7 +98,7 @@ namespace PerpetualIntelligence.Cli.Commands
         public DataType DataType { get; set; }
 
         /// <summary>
-        /// The default argument value.
+        /// The default argument value. <c>null</c> means that the argument does not support default value.
         /// </summary>
         /// <remarks>
         /// This is not an actual value of an argument passed by the user or an app; instead, it is the default value

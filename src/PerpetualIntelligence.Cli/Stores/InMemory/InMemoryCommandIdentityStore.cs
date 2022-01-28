@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         /// <param name="commandIdentities">The command identities.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public InMemoryCommandIdentityStore(IEnumerable<CommandIdentity> commandIdentities, CliOptions options, ILogger<InMemoryCommandIdentityStore> logger)
+        public InMemoryCommandIdentityStore(IEnumerable<CommandDescriptor> commandIdentities, CliOptions options, ILogger<InMemoryCommandIdentityStore> logger)
         {
             this.commandIdentities = commandIdentities ?? throw new ArgumentNullException(nameof(commandIdentities));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
@@ -38,9 +38,9 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<TryResult<CommandIdentity>> TryFindByIdAsync(string id)
+        public Task<TryResult<CommandDescriptor>> TryFindByIdAsync(string id)
         {
-            TryResult<CommandIdentity> result = new();
+            TryResult<CommandDescriptor> result = new();
 
             var command = commandIdentities.FirstOrDefault(e => id.Equals(e.Id));
             if (command == null)
@@ -57,9 +57,9 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<TryResult<CommandIdentity>> TryFindByNameAsync(string name)
+        public Task<TryResult<CommandDescriptor>> TryFindByNameAsync(string name)
         {
-            TryResult<CommandIdentity> result = new();
+            TryResult<CommandDescriptor> result = new();
 
             var command = commandIdentities.FirstOrDefault(e => name.Equals(e.Name));
             if (command == null)
@@ -76,9 +76,9 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<TryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix)
+        public Task<TryResult<CommandDescriptor>> TryFindByPrefixAsync(string prefix)
         {
-            TryResult<CommandIdentity> result = new();
+            TryResult<CommandDescriptor> result = new();
 
             var command = commandIdentities.FirstOrDefault(e => prefix.Equals(e.Prefix));
             if (command == null)
@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
             return Task.FromResult(result);
         }
 
-        private readonly IEnumerable<CommandIdentity> commandIdentities;
+        private readonly IEnumerable<CommandDescriptor> commandIdentities;
         private readonly ILogger<InMemoryCommandIdentityStore> logger;
         private readonly CliOptions options;
     }

@@ -13,6 +13,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class ExtractorOptions
     {
         /// <summary>
+        /// Determines whether the extractor support extracting default argument value. Defaults to <c>false</c>.
+        /// </summary>
+        public bool? ArgumentDefaultValue { get; set; } = false;
+
+        /// <summary>
         /// The argument prefix. Defaults to dash char <c>-</c>.
         /// </summary>
         public string? ArgumentPrefix { get; set; } = "-";

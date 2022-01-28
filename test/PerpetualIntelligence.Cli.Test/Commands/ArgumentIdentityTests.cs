@@ -16,19 +16,19 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void CustomDataTypeShouldSetDataType()
         {
-            ArgumentIdentity arg = new("name", "custom", required: true);
+            ArgumentDescriptor arg = new("name", "custom", required: true);
             Assert.AreEqual(DataType.Custom, arg.DataType);
         }
 
         [TestMethod]
         public void RequiredShouldSetRequiredDataAnnotatioNAttribute()
         {
-            ArgumentIdentity arg = new("name", "custom", required: true);
+            ArgumentDescriptor arg = new("name", "custom", required: true);
             Assert.IsNotNull(arg.ValidationAttributes);
             CollectionAssert.Contains(arg.ValidationAttributes.ToArray(), new RequiredAttribute());
             Assert.IsTrue(arg.IsRequired);
 
-            ArgumentIdentity arg2 = new("name", DataType.CreditCard, required: true);
+            ArgumentDescriptor arg2 = new("name", DataType.CreditCard, required: true);
             Assert.IsNotNull(arg2.ValidationAttributes);
             CollectionAssert.Contains(arg2.ValidationAttributes.ToArray(), new RequiredAttribute());
             Assert.IsTrue(arg2.IsRequired);

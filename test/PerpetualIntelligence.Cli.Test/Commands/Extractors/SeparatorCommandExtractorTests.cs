@@ -105,6 +105,28 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             await TestHelper.AssertThrowsErrorExceptionAsync(() => badExtractor.ExtractAsync(context), Errors.InvalidCommand, "The command string did not return an error or match the command prefix. command_string=prefix1 -key1=value1 -key2=value2");
         }
 
+        [TestMethod]
+        public async Task CommandDoesNotSupportArgsButUserPassedArgShouldErrorAsync()
+        {
+            CommandExtractorContext context = new($"prefix4_noargs -key1=hello -key2=mello -key3 -key4=36.69");
+
+            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
+               () => extractor.ExtractAsync(context),
+               4,
+               new[] {
+                    Errors.UnsupportedArgument,
+                    Errors.UnsupportedArgument,
+                    Errors.UnsupportedArgument,
+                    Errors.UnsupportedArgument
+               },
+               new[] {
+                    "The argument is not supported. command_name=name4 command_id=id4 argument=key1",
+                    "The argument is not supported. command_name=name4 command_id=id4 argument=key2",
+                    "The argument is not supported. command_name=name4 command_id=id4 argument=key3",
+                    "The argument is not supported. command_name=name4 command_id=id4 argument=key4"
+               });
+        }
+
         [DataTestMethod]
         [DataRow(" ")]
         [DataRow("~")]
@@ -250,10 +272,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1 -key1=value1 -key2=value2");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("id1", result.CommandIdentity.Id);
-            Assert.AreEqual("name1", result.CommandIdentity.Name);
-            Assert.AreEqual("prefix1", result.CommandIdentity.Prefix);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("id1", result.CommandDescriptor.Id);
+            Assert.AreEqual("name1", result.CommandDescriptor.Name);
+            Assert.AreEqual("prefix1", result.CommandDescriptor.Prefix);
         }
 
         [TestMethod]
@@ -261,10 +283,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("name2 -key1=value1 -key2=value2");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("id2", result.CommandIdentity.Id);
-            Assert.AreEqual("name2", result.CommandIdentity.Name);
-            Assert.AreEqual("name2", result.CommandIdentity.Prefix);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("id2", result.CommandDescriptor.Id);
+            Assert.AreEqual("name2", result.CommandDescriptor.Name);
+            Assert.AreEqual("name2", result.CommandDescriptor.Prefix);
         }
 
         [TestMethod]
@@ -272,10 +294,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new("prefix3 sub3 name3 -key1=value1 -key2=value2");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("id3", result.CommandIdentity.Id);
-            Assert.AreEqual("name3", result.CommandIdentity.Name);
-            Assert.AreEqual("prefix3 sub3 name3", result.CommandIdentity.Prefix);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("id3", result.CommandDescriptor.Id);
+            Assert.AreEqual("name3", result.CommandDescriptor.Name);
+            Assert.AreEqual("prefix3 sub3 name3", result.CommandDescriptor.Prefix);
         }
 
         [TestMethod]
@@ -312,10 +334,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix3 sub3 name3");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("id3", result.CommandIdentity.Id);
-            Assert.AreEqual("name3", result.CommandIdentity.Name);
-            Assert.AreEqual("prefix3 sub3 name3", result.CommandIdentity.Prefix);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("id3", result.CommandDescriptor.Id);
+            Assert.AreEqual("name3", result.CommandDescriptor.Name);
+            Assert.AreEqual("prefix3 sub3 name3", result.CommandDescriptor.Prefix);
         }
 
         [TestMethod]
@@ -361,25 +383,25 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandExtractorContext context = new CommandExtractorContext($"name2{seperator}-key1=value1{seperator}-key2=value2{seperator}-key3=+1-2365985632{seperator}-key4=testmail@gmail.com{seperator}-key5=C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt{seperator}-key6{seperator}-key9=33.368");
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("id2", result.CommandIdentity.Id);
-            Assert.AreEqual("name2", result.CommandIdentity.Name);
-            Assert.AreEqual("name2", result.CommandIdentity.Prefix);
-            Assert.AreEqual("desc2", result.CommandIdentity.Description);
-            Assert.AreEqual(typeof(CommandChecker), result.CommandIdentity.Checker);
-            Assert.AreEqual(typeof(CommandRunner), result.CommandIdentity.Runner);
-            Assert.IsNotNull(result.CommandIdentity.ArgumentIdentities);
-            Assert.AreEqual(10, result.CommandIdentity.ArgumentIdentities.Count);
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[0], "key1", DataType.Text, "Key1 value text");
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[1], "key2", DataType.Text, "Key2 value text", new ValidationAttribute[] { new RequiredAttribute() });
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[2], "key3", DataType.PhoneNumber, "Key3 value phone");
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[3], "key4", DataType.EmailAddress, "Key4 value email");
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[4], "key5", DataType.Url, "Key5 value url");
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[5], "key6", nameof(Boolean), "Key6 no value");
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[6], "key7", DataType.Currency, "Key7 value currency", new ValidationAttribute[] { new OneOfAttribute("INR", "USD", "EUR"), new RequiredAttribute() });
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[7], "key8", nameof(Int32), "Key8 value custom int");
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[8], "key9", nameof(Double), "Key9 value custom double", new ValidationAttribute[] { new RequiredAttribute(), new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) });
-            AssertArgumentIdentity(result.CommandIdentity.ArgumentIdentities[9], "key10", nameof(String), "Key10 value custom string", new ValidationAttribute[] { new RequiredAttribute() });
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("id2", result.CommandDescriptor.Id);
+            Assert.AreEqual("name2", result.CommandDescriptor.Name);
+            Assert.AreEqual("name2", result.CommandDescriptor.Prefix);
+            Assert.AreEqual("desc2", result.CommandDescriptor.Description);
+            Assert.AreEqual(typeof(CommandChecker), result.CommandDescriptor.Checker);
+            Assert.AreEqual(typeof(CommandRunner), result.CommandDescriptor.Runner);
+            Assert.IsNotNull(result.CommandDescriptor.ArgumentDescriptors);
+            Assert.AreEqual(10, result.CommandDescriptor.ArgumentDescriptors.Count);
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[0], "key1", DataType.Text, "Key1 value text");
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[1], "key2", DataType.Text, "Key2 value text", new ValidationAttribute[] { new RequiredAttribute() });
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[2], "key3", DataType.PhoneNumber, "Key3 value phone");
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[3], "key4", DataType.EmailAddress, "Key4 value email");
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[4], "key5", DataType.Url, "Key5 value url");
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[5], "key6", nameof(Boolean), "Key6 no value");
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new ValidationAttribute[] { new OneOfAttribute("INR", "USD", "EUR"), new RequiredAttribute() });
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[7], "key8", nameof(Int32), "Key8 value custom int");
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new ValidationAttribute[] { new RequiredAttribute(), new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) });
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[9], "key10", nameof(String), "Key10 value custom string", new ValidationAttribute[] { new RequiredAttribute() });
 
             // Supported arguments 10, user only passed 7
             Assert.IsNotNull(result.Command);
@@ -404,9 +426,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
 
             // Args Supported
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.IsNotNull(result.CommandIdentity.ArgumentIdentities);
-            Assert.AreEqual(10, result.CommandIdentity.ArgumentIdentities.Count);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.IsNotNull(result.CommandDescriptor.ArgumentDescriptors);
+            Assert.AreEqual(10, result.CommandDescriptor.ArgumentDescriptors.Count);
 
             // No Args Passed
             Assert.IsNotNull(result.Command);
@@ -422,39 +444,39 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             CommandExtractorContext context = new CommandExtractorContext("pi");
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("orgid", result.CommandIdentity.Id);
-            Assert.AreEqual("pi", result.CommandIdentity.Name);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("orgid", result.CommandDescriptor.Id);
+            Assert.AreEqual("pi", result.CommandDescriptor.Name);
 
             context = new CommandExtractorContext("pi auth");
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("orgid:authid", result.CommandIdentity.Id);
-            Assert.AreEqual("auth", result.CommandIdentity.Name);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("orgid:authid", result.CommandDescriptor.Id);
+            Assert.AreEqual("auth", result.CommandDescriptor.Name);
 
             context = new CommandExtractorContext("pi auth login");
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("orgid:authid:loginid", result.CommandIdentity.Id);
-            Assert.AreEqual("login", result.CommandIdentity.Name);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("orgid:authid:loginid", result.CommandDescriptor.Id);
+            Assert.AreEqual("login", result.CommandDescriptor.Name);
 
             context = new CommandExtractorContext("pi auth slogin");
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("orgid:authid:sloginid", result.CommandIdentity.Id);
-            Assert.AreEqual("slogin", result.CommandIdentity.Name);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("orgid:authid:sloginid", result.CommandDescriptor.Id);
+            Assert.AreEqual("slogin", result.CommandDescriptor.Name);
 
             context = new CommandExtractorContext("pi auth slogin oidc");
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("orgid:authid:sloginid:oidc", result.CommandIdentity.Id);
-            Assert.AreEqual("oidc", result.CommandIdentity.Name);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("orgid:authid:sloginid:oidc", result.CommandDescriptor.Id);
+            Assert.AreEqual("oidc", result.CommandDescriptor.Name);
 
             context = new CommandExtractorContext("pi auth slogin oauth");
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandIdentity);
-            Assert.AreEqual("orgid:authid:sloginid:oauth", result.CommandIdentity.Id);
-            Assert.AreEqual("oauth", result.CommandIdentity.Name);
+            Assert.IsNotNull(result.CommandDescriptor);
+            Assert.AreEqual("orgid:authid:sloginid:oauth", result.CommandDescriptor.Id);
+            Assert.AreEqual("oauth", result.CommandDescriptor.Name);
         }
 
         [TestMethod]
@@ -499,7 +521,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgumentIdentity(ArgumentIdentity arg, string name, DataType dataType, string? description = null, ValidationAttribute[]? supportedValues = null)
+        private void AssertArgumentIdentity(ArgumentDescriptor arg, string name, DataType dataType, string? description = null, ValidationAttribute[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
@@ -508,7 +530,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CollectionAssert.AreEquivalent(arg.ValidationAttributes?.ToArray(), supportedValues);
         }
 
-        private void AssertArgumentIdentity(ArgumentIdentity arg, string name, string customDataType, string? description = null, ValidationAttribute[]? supportedValues = null)
+        private void AssertArgumentIdentity(ArgumentDescriptor arg, string name, string customDataType, string? description = null, ValidationAttribute[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);

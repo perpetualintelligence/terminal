@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         {
             Called = true;
 
-            var cIdt = new Commands.CommandIdentity("testid", "testname", "testname");
+            var cIdt = new Commands.CommandDescriptor("testid", "testname", "testname");
             return Task.FromResult(new CommandExtractorResult(new Commands.Command(cIdt), cIdt));
         }
     }

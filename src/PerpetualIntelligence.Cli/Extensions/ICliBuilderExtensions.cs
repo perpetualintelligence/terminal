@@ -54,24 +54,24 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="CommandIdentity"/> to the service collection.
+        /// Adds the <see cref="CommandDescriptor"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="commandIdentity">The command identity.</param>
+        /// <param name="commandDescriptor">The command descriptor.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddCommandIdentity<TRunner, TChecker>(this ICliBuilder builder, CommandIdentity commandIdentity) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
+        public static ICliBuilder AddCommandIdentity<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
         {
-            if (commandIdentity.Runner != null && commandIdentity.Checker != null)
+            if (commandDescriptor.Runner != null && commandDescriptor.Checker != null)
             {
-                throw new InvalidOperationException("The command identity cannot specify runner or checker during explicit configuration.");
+                throw new InvalidOperationException("The command descriptor cannot specify runner or checker during explicit configuration.");
             }
 
-            // Add the command identity as a singleton. Set the runner and checker as transient. These are internal fields.
-            commandIdentity.Runner = typeof(TRunner);
-            commandIdentity.Checker = typeof(TChecker);
-            builder.Services.AddSingleton(commandIdentity);
+            // Add the command descriptor as a singleton. Set the runner and checker as transient. These are internal fields.
+            commandDescriptor.Runner = typeof(TRunner);
+            commandDescriptor.Checker = typeof(TChecker);
+            builder.Services.AddSingleton(commandDescriptor);
 
             // Add command runner
             builder.Services.AddTransient<TRunner>();
@@ -86,7 +86,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// Adds the <see cref="ICommandIdentityStore"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <typeparam name="TStore">The command identity store type.</typeparam>
+        /// <typeparam name="TStore">The command descriptor store type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
         public static ICliBuilder AddCommandIdentityStore<TStore>(this ICliBuilder builder) where TStore : class, ICommandIdentityStore
         {

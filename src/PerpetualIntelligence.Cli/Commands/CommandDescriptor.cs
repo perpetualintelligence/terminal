@@ -11,16 +11,16 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// Defines identity of a <see cref="Command"/>.
+    /// Describes a <see cref="Command"/>.
     /// </summary>
     /// <remarks>
-    /// The <see cref="CommandIdentity"/> defines <see cref="Command"/> identity and its <see cref="Argument"/>
-    /// identities. The <see cref="Command"/> is a runtime validated representation of an actual command and its
-    /// argument values passed by a user or an application.
+    /// The <see cref="CommandDescriptor"/> defines <see cref="Command"/> identity and its supported
+    /// <see cref="Argument"/> . The <see cref="Command"/> is a runtime validated representation of an actual command
+    /// and its argument values passed by a user or an application.
     /// </remarks>
     /// <seealso cref="Command"/>
-    /// <seealso cref="ArgumentIdentity"/>
-    public sealed class CommandIdentity
+    /// <seealso cref="ArgumentDescriptor"/>
+    public sealed class CommandDescriptor
     {
         /// <summary>
         /// Initializes a new instance.
@@ -28,12 +28,12 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="id">The command id.</param>
         /// <param name="name">The command name.</param>
         /// <param name="prefix">The command prefix to map the command string.</param>
-        /// <param name="argumentIdentities">The command argument identities.</param>
+        /// <param name="argumentDescriptors">The command argument descriptors.</param>
         /// <param name="description">The command description.</param>
         /// <param name="checker">The command checker.</param>
         /// <param name="runner">The command runner.</param>
         /// <param name="properties">The custom properties.</param>
-        public CommandIdentity(string id, string name, string prefix, ArgumentIdentities? argumentIdentities = null, string? description = null, Type? checker = null, Type? runner = null, Dictionary<string, object>? properties = null)
+        public CommandDescriptor(string id, string name, string prefix, ArgumentDescriptors? argumentDescriptors = null, string? description = null, Type? checker = null, Type? runner = null, Dictionary<string, object>? properties = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Name = name;
             Prefix = prefix;
             Description = description;
-            ArgumentIdentities = argumentIdentities;
+            ArgumentDescriptors = argumentDescriptors;
             Checker = checker;
             Runner = runner;
             Properties = properties;
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The command arguments identity.
         /// </summary>
-        public ArgumentIdentities? ArgumentIdentities { get; set; }
+        public ArgumentDescriptors? ArgumentDescriptors { get; set; }
 
         /// <summary>
         /// The command checker.
@@ -106,5 +106,39 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The command runner.
         /// </summary>
         public Type? Runner { get; set; }
+
+        /// <summary>
+        /// Attempts to find an argument descriptor.
+        /// </summary>
+        /// <param name="id">The argument descriptor identifier.</param>
+        /// <param name="argumentDescriptor">The argument descriptor if found.</param>
+        /// <returns><c>true</c> if an argument descriptor exist in the collection, otherwise <c>false</c>.</returns>
+        public bool TryGetArgumentDescriptor(string id, out ArgumentDescriptor argumentDescriptor)
+        {
+            if (ArgumentDescriptors == null)
+            {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                argumentDescriptor = default;
+                return false;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            }
+
+#if NETSTANDARD2_1_OR_GREATER
+            return ArgumentDescriptors.TryGetValue(id, out argumentDescriptor);
+#else
+            if (ArgumentDescriptors.Contains(id))
+            {
+                argumentDescriptor = ArgumentDescriptors[id];
+                return true;
+            }
+            else
+            {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                argumentDescriptor = default;
+                return false;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            }
+#endif
+        }
     }
 }

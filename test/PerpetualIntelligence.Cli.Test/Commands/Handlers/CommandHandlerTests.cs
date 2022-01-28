@@ -155,7 +155,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             arg2.AddTransient<MockNotCheckerOrRunner>();
         }
 
-        private Tuple<CommandIdentity, Command> command = null!;
+        private Tuple<CommandDescriptor, Command> command = null!;
         private CommandHandler handler = null!;
         private IHost host = null!;
         private CliOptions options = null!;

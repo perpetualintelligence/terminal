@@ -16,12 +16,12 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandIdentity">The command identity to handle.</param>
+        /// <param name="commandDescriptor">The command descriptor to handle.</param>
         /// <param name="command">The command handle.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public CommandHandlerContext(CommandIdentity commandIdentity, Command command)
+        public CommandHandlerContext(CommandDescriptor commandDescriptor, Command command)
         {
-            CommandIdentity = commandIdentity ?? throw new ArgumentNullException(nameof(commandIdentity));
+            CommandDescriptor = commandDescriptor ?? throw new ArgumentNullException(nameof(commandDescriptor));
             Command = command ?? throw new ArgumentNullException(nameof(command));
         }
 
@@ -31,8 +31,8 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         public Command Command { get; protected set; }
 
         /// <summary>
-        /// The command identity to handle.
+        /// The command descriptor to handle.
         /// </summary>
-        public CommandIdentity CommandIdentity { get; protected set; }
+        public CommandDescriptor CommandDescriptor { get; protected set; }
     }
 }

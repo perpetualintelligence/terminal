@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
 
             // Delegate to handler
             TryResult<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
-            CommandHandlerContext handlerContext = new(extractorResult.CommandIdentity, extractorResult.Command);
+            CommandHandlerContext handlerContext = new(extractorResult.CommandDescriptor, extractorResult.Command);
             await tryHandler.Result!.HandleAsync(handlerContext);
 
             return new CommandRouterResult();

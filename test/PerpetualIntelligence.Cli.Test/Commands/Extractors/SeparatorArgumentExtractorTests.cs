@@ -56,33 +56,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task CommandDoesNotSupportArgsButUserPassedArgShouldErrorAsync()
-        {
-            ArgumentExtractorContext context = new($"-key1=value", new CommandIdentity("no_args_cmd", "no_args_cmd_name", "no_args_cmd_name"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, "The command does not support any argument. command_name=no_args_cmd_name command_id=no_args_cmd");
-        }
-
-        [TestMethod]
         public async Task CommandSeparatorAsArgumentPrefixShouldErrorAsync()
         {
             // space is the command separator
             ArgumentExtractorContext context = new($" key=value", command.Item1);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, $"The argument string does not have a valid prefix. command_name=name1 command_id=id1 arg= key=value prefix=-");
-        }
-
-        [TestMethod]
-        public async Task CommandSupportArgsButHasSamsArgsShouldErrorAsync()
-        {
-            CommandIdentity sameArgsCmdIdentity = new("id1", "name1", "prefix1");
-            sameArgsCmdIdentity.ArgumentIdentities = new ArgumentIdentities()
-            {
-                new ArgumentIdentity("key1", System.ComponentModel.DataAnnotations.DataType.Text),
-                new ArgumentIdentity("key2", System.ComponentModel.DataAnnotations.DataType.Text),
-                new ArgumentIdentity("key1", System.ComponentModel.DataAnnotations.DataType.Text),
-            };
-
-            ArgumentExtractorContext context = new ArgumentExtractorContext($"-key1=value", sameArgsCmdIdentity);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, "The command does not support the same multiple arguments. command_name=name1 command_id=id1 argument=key1");
         }
 
         [TestMethod]
@@ -96,7 +74,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task EmptyAttributeNameAfterExtractShouldErrorAsync()
         {
             ArgumentExtractorContext context = new ArgumentExtractorContext($"-=value", command.Item1);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument name is null or empty. command_name=name1 command_id=id1 arg=-=value");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument id is null or empty. command_name=name1 command_id=id1 arg=-=value");
         }
 
         [TestMethod]
@@ -104,7 +82,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = null;
             ArgumentExtractorContext context = new($"=value", command.Item1);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument name is null or empty. command_name=name1 command_id=id1 arg==value");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument id is null or empty. command_name=name1 command_id=id1 arg==value");
         }
 
         [DataTestMethod]
@@ -147,7 +125,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             ArgumentExtractorContext context = new("test_arg_string", null);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidRequest, "The command identity is missing in the request. extractor=PerpetualIntelligence.Cli.Commands.Extractors.SeparatorArgumentExtractor");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidRequest, "The command descriptor is missing in the request. extractor=PerpetualIntelligence.Cli.Commands.Extractors.SeparatorArgumentExtractor");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
@@ -187,7 +165,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = null;
 
-            CommandIdentity cmd = new CommandIdentity("i1", "n1", "p1", new ArgumentIdentities() { new ArgumentIdentity($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text) });
+            CommandDescriptor cmd = new CommandDescriptor("i1", "n1", "p1", new ArgumentDescriptors() { new ArgumentDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text) });
             ArgumentExtractorContext context = new ArgumentExtractorContext($"{prefix}key=value", cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
@@ -229,7 +207,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = "माणू";
 
-            CommandIdentity cmd = new CommandIdentity("i1", "n1", "p1", new ArgumentIdentities() { new ArgumentIdentity($"समाणूसkey1", System.ComponentModel.DataAnnotations.DataType.Text) });
+            CommandDescriptor cmd = new CommandDescriptor("i1", "n1", "p1", new ArgumentDescriptors() { new ArgumentDescriptor($"समाणूसkey1", System.ComponentModel.DataAnnotations.DataType.Text) });
             ArgumentExtractorContext context = new ArgumentExtractorContext($"माणूमाणूमाणूमाणूसमाणूसkey1=value1", cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
@@ -249,7 +227,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = prefix;
 
-            CommandIdentity cmd = new("i1", "n1", "p1", new ArgumentIdentities() { new ArgumentIdentity("key", nameof(Boolean)) });
+            CommandDescriptor cmd = new("i1", "n1", "p1", new ArgumentDescriptors() { new ArgumentDescriptor("key", nameof(Boolean)) });
             ArgumentExtractorContext context = new ArgumentExtractorContext($"{prefix}key", cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
@@ -273,7 +251,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             DateTime dateTime = DateTime.UtcNow;
             string value = $"{dateTime.ToLongDateString()}_{dateTime.ToLongTimeString()}";
-            CommandIdentity cmd = new("i1", "n1", "p1", new ArgumentIdentities() { new ArgumentIdentity("key", System.ComponentModel.DataAnnotations.DataType.DateTime) });
+            CommandDescriptor cmd = new("i1", "n1", "p1", new ArgumentDescriptors() { new ArgumentDescriptor("key", System.ComponentModel.DataAnnotations.DataType.DateTime) });
             ArgumentExtractorContext context = new ArgumentExtractorContext($"{prefix}key={value}", cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
@@ -329,7 +307,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
         }
 
-        private Tuple<CommandIdentity, Command> command = null!;
+        private Tuple<CommandDescriptor, Command> command = null!;
         private SeparatorArgumentExtractor extractor = null!;
         private CliOptions options = null!;
     }

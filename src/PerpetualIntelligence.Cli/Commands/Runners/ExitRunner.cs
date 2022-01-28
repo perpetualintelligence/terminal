@@ -1,18 +1,18 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Defaults
+namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
     /// The <c>urn:oneimlx:cli:exit</c> command runner.

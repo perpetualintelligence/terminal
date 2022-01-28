@@ -17,27 +17,27 @@ namespace PerpetualIntelligence.Cli.Mocks
 {
     internal class MockCommands
     {
-        public static Tuple<CommandIdentity, Command> NewCommand(string id, string name, string prefix, string? desc = null, Type? checker = null, Type? runner = null, ArgumentIdentities? args = null)
+        public static Tuple<CommandDescriptor, Command> NewCommand(string id, string name, string prefix, string? desc = null, Type? checker = null, Type? runner = null, ArgumentDescriptors? args = null)
         {
-            var cmd1 = new CommandIdentity(id, name, prefix, args, desc, checker, runner);
-            return new Tuple<CommandIdentity, Command>(cmd1, new Command(cmd1));
+            var cmd1 = new CommandDescriptor(id, name, prefix, args, desc, checker, runner);
+            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1));
         }
 
-        public static ArgumentIdentities ArgumentIdentities = new()
+        public static ArgumentDescriptors ArgumentIdentities = new()
         {
-            new ArgumentIdentity("key1", DataType.Text, false, "Key1 value text"),
-            new ArgumentIdentity("key2", DataType.Text, true, "Key2 value text"),
-            new ArgumentIdentity("key3", DataType.PhoneNumber, false, "Key3 value phone"),
-            new ArgumentIdentity("key4", DataType.EmailAddress, false, "Key4 value email"),
-            new ArgumentIdentity("key5", DataType.Url, false, "Key5 value url"),
-            new ArgumentIdentity("key6", nameof(Boolean), false, "Key6 no value"),
-            new ArgumentIdentity("key7", DataType.Currency, true, "Key7 value currency", new[] { new OneOfAttribute("INR", "USD", "EUR") }),
-            new ArgumentIdentity("key8", nameof(Int32), false, "Key8 value custom int"),
-            new ArgumentIdentity("key9", nameof(Double), true, "Key9 value custom double", new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) }),
-            new ArgumentIdentity("key10", nameof(String), true, "Key10 value custom string")
+            new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text"),
+            new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
+            new ArgumentDescriptor("key3", DataType.PhoneNumber, false, "Key3 value phone"),
+            new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
+            new ArgumentDescriptor("key5", DataType.Url, false, "Key5 value url"),
+            new ArgumentDescriptor("key6", nameof(Boolean), false, "Key6 no value"),
+            new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency", new[] { new OneOfAttribute("INR", "USD", "EUR") }),
+            new ArgumentDescriptor("key8", nameof(Int32), false, "Key8 value custom int"),
+            new ArgumentDescriptor("key9", nameof(Double), true, "Key9 value custom double", new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) }),
+            new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string")
         };
 
-        public static List<CommandIdentity> Commands = new()
+        public static List<CommandDescriptor> Commands = new()
         {
             // Different name and prefix
             NewCommand("id1", "name1", "prefix1", "desc1", typeof(CommandChecker), typeof(CommandRunner), ArgumentIdentities).Item1,
@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             NewCommand("id4", "name4", "prefix4_noargs").Item1,
         };
 
-        public static List<CommandIdentity> GroupedCommands = new()
+        public static List<CommandDescriptor> GroupedCommands = new()
         {
             // Different name and prefix
             NewCommand("orgid", "pi", "pi", "the top org command group", typeof(CommandChecker), typeof(CommandRunner), ArgumentIdentities).Item1,

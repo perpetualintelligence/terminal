@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task CommandIdentityNoArgsShoutNotErrorAsync()
         {
-            CommandIdentity identity = new("id1", "name1", "prefix1");
+            CommandDescriptor identity = new("id1", "name1", "prefix1");
 
             // During integration extractor filters the command unsupported args
             Command argsCommand = new(identity);
@@ -46,10 +46,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task DisabledArgumentShouldErrorAsync()
         {
-            CommandIdentity noArgsIdentity = new("id1", "name1", "prefix1");
-            noArgsIdentity.ArgumentIdentities = new()
+            CommandDescriptor noArgsIdentity = new("id1", "name1", "prefix1");
+            noArgsIdentity.ArgumentDescriptors = new()
             {
-                new ArgumentIdentity("key1", DataType.Text) { Disabled = true }
+                new ArgumentDescriptor("key1", DataType.Text) { Disabled = true }
             };
 
             Command argsCommand = new(noArgsIdentity);
@@ -65,8 +65,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task EnabledArgumentShouldNotErrorAsync()
         {
-            CommandIdentity noArgsIdentity = new("id1", "name1", "prefix1");
-            noArgsIdentity.ArgumentIdentities = new()
+            CommandDescriptor noArgsIdentity = new("id1", "name1", "prefix1");
+            noArgsIdentity.ArgumentDescriptors = new()
             {
                 new("key1", DataType.Text)
                 { Disabled = false }
@@ -85,10 +85,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task InvalidValueValidShouldErrorAsync()
         {
-            CommandIdentity identity = new("id1", "name1", "prefix1");
-            identity.ArgumentIdentities = new ArgumentIdentities()
+            CommandDescriptor identity = new("id1", "name1", "prefix1");
+            identity.ArgumentDescriptors = new ArgumentDescriptors()
             {
-                new ArgumentIdentity("key1", DataType.Text)
+                new ArgumentDescriptor("key1", DataType.Text)
             };
 
             Command argsCommand = new Command(identity);
@@ -104,10 +104,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteAllowedShouldNotErrorAsync()
         {
-            CommandIdentity noArgsIdentity = new("id1", "name1", "prefix1");
-            noArgsIdentity.ArgumentIdentities = new ArgumentIdentities()
+            CommandDescriptor noArgsIdentity = new("id1", "name1", "prefix1");
+            noArgsIdentity.ArgumentDescriptors = new ArgumentDescriptors()
             {
-                new ArgumentIdentity("key1", DataType.Text)
+                new ArgumentDescriptor("key1", DataType.Text)
                 {Obsolete = true}
             };
 
@@ -126,10 +126,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteNotAllowedShouldErrorAsync()
         {
-            CommandIdentity noArgsIdentity = new("id1", "name1", "prefix1");
-            noArgsIdentity.ArgumentIdentities = new ArgumentIdentities()
+            CommandDescriptor noArgsIdentity = new("id1", "name1", "prefix1");
+            noArgsIdentity.ArgumentDescriptors = new ArgumentDescriptors()
             {
-                new ArgumentIdentity("key1", DataType.Text)
+                new ArgumentDescriptor("key1", DataType.Text)
                 {Obsolete = true}
             };
 
@@ -151,10 +151,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task RequiredArgumentMissingShouldErrorAsync()
         {
-            CommandIdentity identity = new CommandIdentity("id1", "name1", "prefix1");
-            identity.ArgumentIdentities = new ArgumentIdentities()
+            CommandDescriptor identity = new CommandDescriptor("id1", "name1", "prefix1");
+            identity.ArgumentDescriptors = new ArgumentDescriptors()
             {
-                new ArgumentIdentity("key1", DataType.Text, required:true)
+                new ArgumentDescriptor("key1", DataType.Text, required:true)
             };
 
             Command argsCommand = new Command(identity);
@@ -170,10 +170,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task RequiredArgumentPassedShouldNotErrorAsync()
         {
-            CommandIdentity identity = new CommandIdentity("id1", "name1", "prefix1");
-            identity.ArgumentIdentities = new ArgumentIdentities()
+            CommandDescriptor identity = new CommandDescriptor("id1", "name1", "prefix1");
+            identity.ArgumentDescriptors = new ArgumentDescriptors()
             {
-                new ArgumentIdentity("key1", DataType.Text, required:true)
+                new ArgumentDescriptor("key1", DataType.Text, required:true)
             };
 
             Command argsCommand = new Command(identity);
@@ -189,10 +189,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ValueValidShouldNotErrorAsync()
         {
-            CommandIdentity identity = new("id1", "name1", "prefix1");
-            identity.ArgumentIdentities = new ArgumentIdentities()
+            CommandDescriptor identity = new("id1", "name1", "prefix1");
+            identity.ArgumentDescriptors = new ArgumentDescriptors()
             {
-                new ArgumentIdentity("key1", DataType.Text)
+                new ArgumentDescriptor("key1", DataType.Text)
             };
 
             Command argsCommand = new(identity);
@@ -214,29 +214,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             commands = new InMemoryCommandIdentityStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
         }
 
-        private CommandIdentity NewCustomDataTypeCmdIdentity(string customDataType)
+        private CommandDescriptor NewCustomDataTypeCmdIdentity(string customDataType)
         {
-            CommandIdentity identity = new("id1", "name1", "prefix1");
-            identity.ArgumentIdentities = new ArgumentIdentities()
+            CommandDescriptor identity = new("id1", "name1", "prefix1");
+            identity.ArgumentDescriptors = new ArgumentDescriptors()
             {
-                new ArgumentIdentity("key1", customDataType)
-            };
-            return identity;
-        }
-
-        private Command NewDataTypeCmd(CommandIdentity Command, object value)
-        {
-            Command cmd = new(Command);
-            cmd.Arguments![0].Value = value;
-            return cmd;
-        }
-
-        private CommandIdentity NewDataTypeCmdIdentity(DataType dataType)
-        {
-            CommandIdentity identity = new("id1", "name1", "prefix1");
-            identity.ArgumentIdentities = new ArgumentIdentities()
-            {
-                new ArgumentIdentity("key1", dataType)
+                new ArgumentDescriptor("key1", customDataType)
             };
             return identity;
         }

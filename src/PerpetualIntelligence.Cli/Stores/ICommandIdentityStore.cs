@@ -12,25 +12,25 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Stores
 {
     /// <summary>
-    /// A store abstraction to lookup a <see cref="CommandIdentity"/>.
+    /// A store abstraction to lookup a <see cref="CommandDescriptor"/>.
     /// </summary>
     public interface ICommandIdentityStore
     {
         /// <summary>
-        /// Attempts to finds a <see cref="CommandIdentity"/> by its id.
+        /// Attempts to finds a <see cref="CommandDescriptor"/> by its id.
         /// </summary>
         /// <param name="id">The command id.</param>
-        public Task<TryResult<CommandIdentity>> TryFindByIdAsync(string id);
+        public Task<TryResult<CommandDescriptor>> TryFindByIdAsync(string id);
 
         /// <summary>
-        /// Attempts to find a a <see cref="CommandIdentity"/> by its name.
+        /// Attempts to find a a <see cref="CommandDescriptor"/> by its name.
         /// </summary>
         /// <param name="name">The command name.</param>
-        public Task<TryResult<CommandIdentity>> TryFindByNameAsync(string name);
+        public Task<TryResult<CommandDescriptor>> TryFindByNameAsync(string name);
 
         /// <summary>
-        /// Attempts to find a a <see cref="CommandIdentity"/> by its prefix.
+        /// Attempts to find a a <see cref="CommandDescriptor"/> by its prefix.
         /// </summary>
-        public Task<TryResult<CommandIdentity>> TryFindByPrefixAsync(string prefix);        
+        public Task<TryResult<CommandDescriptor>> TryFindByPrefixAsync(string prefix);        
     }
 }

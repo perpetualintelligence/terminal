@@ -18,11 +18,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// Initialize a new instance.
         /// </summary>
         /// <param name="command">The extracted command.</param>
-        /// <param name="commandIdentity">The extracted command identity.</param>
-        public CommandExtractorResult(Command command, CommandIdentity commandIdentity)
+        /// <param name="commandDescriptor">The extracted command descriptor.</param>
+        public CommandExtractorResult(Command command, CommandDescriptor commandDescriptor)
         {
             Command = command ?? throw new System.ArgumentNullException(nameof(command));
-            CommandIdentity = commandIdentity ?? throw new System.ArgumentNullException(nameof(commandIdentity));
+            CommandDescriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
         }
 
         /// <summary>
@@ -31,8 +31,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public Command Command { get; }
 
         /// <summary>
-        /// The extracted command identity.
+        /// The extracted command descriptor.
         /// </summary>
-        public CommandIdentity CommandIdentity { get; }
+        public CommandDescriptor CommandDescriptor { get; }
     }
 }
