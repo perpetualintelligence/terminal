@@ -134,7 +134,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
             host = hostBuilder.Build();
 
-            command = MockCommands.NewCommand("id1", "name1", "prefix1");
+            command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1");
             options = MockCliOptions.New();
             handler = new CommandHandler(host.Services, options, TestLogger.Create<CommandHandler>());
         }

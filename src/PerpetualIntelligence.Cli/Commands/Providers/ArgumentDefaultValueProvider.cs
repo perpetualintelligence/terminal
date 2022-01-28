@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com
 */
 
+using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Linq;
@@ -17,6 +19,17 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
     /// </summary>
     public class ArgumentDefaultValueProvider : IArgumentDefaultValueProvider
     {
+        /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        /// <param name="options">The configuration options.</param>
+        /// <param name="logger">The logger.</param>
+        public ArgumentDefaultValueProvider(CliOptions options, ILogger<ArgumentDefaultValueProvider> logger)
+        {
+            this.options = options;
+            this.logger = logger;
+        }
+
         /// <summary>
         /// Provides default values for all the command arguments.
         /// </summary>
@@ -32,5 +45,8 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
 
             return Task.FromResult(new ArgumentDefaultValueProviderResult(new ArgumentDescriptors(context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
         }
+
+        private ILogger<ArgumentDefaultValueProvider> logger;
+        private CliOptions options;
     }
 }

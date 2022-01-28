@@ -98,11 +98,11 @@ namespace PerpetualIntelligence.Cli.Commands
         public DataType DataType { get; set; }
 
         /// <summary>
-        /// The default argument value. <c>null</c> means that the argument does not support default value.
+        /// The default argument value. <c>null</c> means the argument does not support a default value.
         /// </summary>
         /// <remarks>
-        /// This is not an actual value of an argument passed by the user or an app; instead, it is the default value
-        /// that an argument will have if a user or an app does not specify any value.
+        /// If <see cref="DefaultValue"/> is set to a non <c>null</c> value, then the argument will have
+        /// <see cref="DefaultValue"/>, if a user or an app does not specify any value.
         /// </remarks>
         public object? DefaultValue { get; set; }
 

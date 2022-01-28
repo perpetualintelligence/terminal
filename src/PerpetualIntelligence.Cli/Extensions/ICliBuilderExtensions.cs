@@ -12,6 +12,7 @@ using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Mappers;
+using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Commands.Stores;
@@ -110,6 +111,29 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add argument extractor
             builder.Services.AddTransient<IArgumentExtractor, TArgument>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="ICommandExtractor"/>, <see cref="IArgumentExtractor"/> and
+        /// <see cref="IArgumentDefaultValueProvider"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TCommand">The command extractor type.</typeparam>
+        /// <typeparam name="TArgument">The argument extractor type.</typeparam>
+        /// <typeparam name="TDefaultProvider">The argument default value provider type.</typeparam>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddExtractor<TCommand, TArgument, TDefaultProvider>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TArgument : class, IArgumentExtractor where TDefaultProvider : class, IArgumentDefaultValueProvider
+        {
+            // Add command extractor
+            builder.Services.AddTransient<ICommandExtractor, TCommand>();
+
+            // Add argument extractor
+            builder.Services.AddTransient<IArgumentExtractor, TArgument>();
+
+            // Add argument default value provider
+            builder.Services.AddTransient<IArgumentDefaultValueProvider, TDefaultProvider>();
 
             return builder;
         }

@@ -8,6 +8,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Extractors.Mocks;
+using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -242,6 +243,82 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
             AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", true);
             AssertArgument(result.Command.Arguments[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}space");
+        }
+
+        [TestMethod]
+        public async Task DefaultValuesConfiguredButProviderNotConfiguredShouldThrow()
+        {
+            options.Extractor.ArgumentDefaultValue = true;
+
+            CommandExtractorContext context = new("prefix5_default");
+            SeparatorCommandExtractor noProviderExtrator = new(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>(), argumentDefaultValueProvider: null);
+
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type=PerpetualIntelligence.Cli.Commands.Providers.IArgumentDefaultValueProvider");
+        }
+
+        [TestMethod]
+        public async Task DefaultValuesConfiguredButUnspecifiedRequiredValuesShouldNotError()
+        {
+            options.Extractor.ArgumentDefaultValue = true;
+
+            // This is just extracting no checking
+            CommandExtractorContext context = new("prefix5_default");
+            var result = await extractor.ExtractAsync(context);
+
+            Assert.IsNotNull(result.Command.Arguments);
+            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.AreEqual("44444444444", result.Command.Arguments[0].Value);
+            Assert.AreEqual(false, result.Command.Arguments[1].Value);
+            Assert.AreEqual(25.36, result.Command.Arguments[2].Value);
+            Assert.AreEqual("mello default", result.Command.Arguments[3].Value);
+        }
+
+        [TestMethod]
+        public async Task DefaultValuesConfiguredButUnspecifiedRequiredValuesShouldNotOverrideUserValues()
+        {
+            options.Extractor.ArgumentDefaultValue = true;
+
+            // This is just extracting no checking
+            CommandExtractorContext context = new("prefix5_default -key6 -key10=user value");
+            var result = await extractor.ExtractAsync(context);
+
+            Assert.IsNotNull(result.Command.Arguments);
+            Assert.AreEqual(4, result.Command.Arguments.Count);
+
+            // Argument values are processed sequentially and default values are added at the end
+            // User values
+            Assert.AreEqual("key6", result.Command.Arguments[0].Id);
+            Assert.AreEqual(true, result.Command.Arguments[0].Value);
+            Assert.AreEqual("key10", result.Command.Arguments[1].Id);
+            Assert.AreEqual("user value", result.Command.Arguments[1].Value);
+
+            // Default value are added in the end
+            Assert.AreEqual("key3", result.Command.Arguments[2].Id);
+            Assert.AreEqual("44444444444", result.Command.Arguments[2].Value);
+            Assert.AreEqual("key9", result.Command.Arguments[3].Id);
+            Assert.AreEqual(25.36, result.Command.Arguments[3].Value);
+        }
+
+        [TestMethod]
+        public async Task DefaultValuesConfiguredButUnspecifiedRequiredValuesShouldNotPopulateIfDisabled()
+        {
+            options.Extractor.ArgumentDefaultValue = false;
+
+            // This is just extracting no checking
+            CommandExtractorContext context = new("prefix5_default");
+            var result = await extractor.ExtractAsync(context);
+
+            Assert.IsNull(result.Command.Arguments);
+        }
+
+        [TestMethod]
+        public async Task DefaultValuesDisabledButProviderNotConfiguredShouldNotThrow()
+        {
+            options.Extractor.ArgumentDefaultValue = false;
+
+            CommandExtractorContext context = new("prefix5_default");
+            SeparatorCommandExtractor noProviderExtrator = new(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>(), argumentDefaultValueProvider: null);
+            await noProviderExtrator.ExtractAsync(context);
         }
 
         [TestMethod]
@@ -500,7 +577,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options = MockCliOptions.New();
             commands = new InMemoryCommandIdentityStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
             argExtractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
-            extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
+            defualtProvider = new ArgumentDefaultValueProvider(options, TestLogger.Create<ArgumentDefaultValueProvider>());
+            extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>(), defualtProvider);
         }
 
         private void AssertArgument(Argument arg, string name, string customDataType, string description, object value)
@@ -541,6 +619,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private SeparatorArgumentExtractor argExtractor = null!;
         private ICommandIdentityStore commands = null!;
+        private IArgumentDefaultValueProvider defualtProvider = null!;
         private SeparatorCommandExtractor extractor = null!;
         private CliOptions options = null!;
     }

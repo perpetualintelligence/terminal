@@ -302,7 +302,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         protected override void OnTestInitialize()
         {
-            command = MockCommands.NewCommand("id1", "name1", "prefix1", "desc1", null, null, MockCommands.ArgumentIdentities);
+            command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", MockCommands.TestArgumentDescriptors, "desc1", null, null);
             options = MockCliOptions.New();
             extractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
         }

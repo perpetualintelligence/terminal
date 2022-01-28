@@ -53,21 +53,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor commandDescriptor = await MatchByPrefixAsync(context.CommandString);
 
             // Extract the arguments. Arguments are optional for commands.
-            Arguments? arguments = null;
-            int prefixEndIndex = context.CommandString.IndexOf(commandDescriptor.Prefix, StringComparison.Ordinal);
-            string argString = context.CommandString.Remove(prefixEndIndex, commandDescriptor.Prefix.Length);
-            if (!string.IsNullOrWhiteSpace(argString))
+            Arguments? arguments = await ExtractArgumentsOrThrowAsync(context, commandDescriptor);
+
+            // Process default argument. Check for default arguments if enabled. Default values are added at the end if
+            // there is no explicit input
+            if (options.Extractor.ArgumentDefaultValue.GetValueOrDefault())
             {
-                // Make sure there is a separator between the command prefix and arguments
-                if (!argString.StartsWith(options.Extractor.Separator, StringComparison.Ordinal))
-                {
-                    throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", context.CommandString);
-                }
-
-                arguments = await ExtractArgumentsOrThrowAsync(commandDescriptor, argString);
+                arguments = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, arguments);
             }
-
-
 
             // OK, return the extracted command object.
             Command command = new(commandDescriptor)
@@ -119,14 +112,28 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Argument default value provider is missing
             if (options.Extractor.ArgumentDefaultValue.GetValueOrDefault() && argumentDefaultValueProvider == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection.");
+                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IArgumentDefaultValueProvider).FullName);
             }
         }
 
-        private async Task<Arguments> ExtractArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, string argString)
+        private async Task<Arguments?> ExtractArgumentsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
         {
-            Arguments arguments = new();
+            int prefixEndIndex = context.CommandString.IndexOf(commandDescriptor.Prefix, StringComparison.Ordinal);
+            string argString = context.CommandString.Remove(prefixEndIndex, commandDescriptor.Prefix.Length);
+            if (!string.IsNullOrWhiteSpace(argString))
+            {
+                // Make sure there is a separator between the command prefix and arguments
+                if (!argString.StartsWith(options.Extractor.Separator, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", context.CommandString);
+                }
+            }
+            else
+            {
+                return null;
+            }
 
+            Arguments arguments = new();
             string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
             string[] args = argString.Split(new string[] { argSplit }, StringSplitOptions.RemoveEmptyEntries);
             List<Error> errors = new();
@@ -159,23 +166,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 throw new MultiErrorException(errors.ToArray());
             }
-
-            // Check for default arguments if enabled. Default values are added at the end if there is no explicit input
-            if (options.Extractor.ArgumentDefaultValue.GetValueOrDefault())
-            {
-                // TODO: Performance ArgumentDescriptor collection should be an ordered dictionary
-                ArgumentDefaultValueProviderResult defaultResult = await argumentDefaultValueProvider.ProvideAsync(new ArgumentDefaultValueProviderContext(commandDescriptor));
-                foreach(ArgumentDescriptor argumentDescriptor in defaultResult.DefaultValueArgumentDescriptors)
-                {
-                }
-
-                if(defaultResult.DefaultValueArgumentDescriptors.Count > 0)
-                {
-                    
-                }
-
-            }
-
 
             return arguments;
         }
@@ -214,6 +204,51 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             return result.Result;
+        }
+
+        private async Task<Arguments?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Arguments? userArguments)
+        {
+            // Sanity check
+            if (argumentDefaultValueProvider == null)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IArgumentDefaultValueProvider).FullName);
+            }
+
+            // Get default values. Make sure we take user inputs.
+            Arguments? finalArgs = userArguments;
+            ArgumentDefaultValueProviderResult defaultResult = await argumentDefaultValueProvider.ProvideAsync(new ArgumentDefaultValueProviderContext(commandDescriptor));
+            if (defaultResult.DefaultValueArgumentDescriptors != null && defaultResult.DefaultValueArgumentDescriptors.Count > 0)
+            {
+                // arguments can be null here, if the command string did not specify any arguments
+                if (finalArgs == null)
+                {
+                    finalArgs = new Arguments();
+                }
+
+                List<Error> errors = new();
+                foreach (ArgumentDescriptor argumentDescriptor in defaultResult.DefaultValueArgumentDescriptors)
+                {
+                    // Protect against bad implementation, catch all the errors
+                    if (argumentDescriptor.DefaultValue == null)
+                    {
+                        errors.Add(new Error(Errors.InvalidArgument, "The argument does not have a default value. argument={0}", argumentDescriptor.Id));
+                        continue;
+                    }
+
+                    // If user already specified the value then disregard the default value
+                    if (userArguments == null || !userArguments.Contains(argumentDescriptor.Id))
+                    {
+                        finalArgs.Add(new Argument(argumentDescriptor, argumentDescriptor.DefaultValue));
+                    }
+                }
+
+                if (errors.Count > 0)
+                {
+                    throw new MultiErrorException(errors);
+                }
+            }
+
+            return finalArgs;
         }
 
         private readonly IArgumentDefaultValueProvider? argumentDefaultValueProvider;

@@ -12,6 +12,7 @@ using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -102,6 +103,27 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
+        }
+
+        [TestMethod]
+        public void AddExtractorWithDefaultProviderShouldCorrectlyInitialize()
+        {
+            cliBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor, MockArgumentDefaultValueProvider>();
+
+            var cmd = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandExtractor)));
+            Assert.IsNotNull(cmd);
+            Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
+            Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
+
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentExtractor)));
+            Assert.IsNotNull(arg);
+            Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
+            Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
+
+            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentDefaultValueProvider)));
+            Assert.IsNotNull(def);
+            Assert.AreEqual(ServiceLifetime.Transient, def.Lifetime);
+            Assert.AreEqual(typeof(MockArgumentDefaultValueProvider), def.ImplementationType);
         }
 
         [TestMethod]
