@@ -84,15 +84,15 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ICommandIdentityStore"/> to the service collection.
+        /// Adds the <see cref="ICommandDescriptorStore"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command descriptor store type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddCommandIdentityStore<TStore>(this ICliBuilder builder) where TStore : class, ICommandIdentityStore
+        public static ICliBuilder AddCommandIdentityStore<TStore>(this ICliBuilder builder) where TStore : class, ICommandDescriptorStore
         {
             // Add command extractor
-            builder.Services.AddTransient<ICommandIdentityStore, TStore>();
+            builder.Services.AddTransient<ICommandDescriptorStore, TStore>();
 
             return builder;
         }

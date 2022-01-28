@@ -211,7 +211,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             mapper = new DataAnnotationsArgumentDataTypeMapper(options, TestLogger.Create<DataAnnotationsArgumentDataTypeMapper>());
             valueChecker = new ArgumentChecker(mapper, options, TestLogger.Create<ArgumentChecker>());
             checker = new CommandChecker(valueChecker, options, TestLogger.Create<CommandChecker>());
-            commands = new InMemoryCommandIdentityStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
+            commands = new InMemoryCommandDescriptorStore(MockCommands.Commands);
         }
 
         private CommandDescriptor NewCustomDataTypeCmdIdentity(string customDataType)
@@ -225,7 +225,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         private CommandChecker checker = null!;
-        private ICommandIdentityStore commands = null!;
+        private ICommandDescriptorStore commands = null!;
         private IArgumentDataTypeMapper mapper = null!;
         private CliOptions options = null!;
         private IArgumentChecker valueChecker = null!;

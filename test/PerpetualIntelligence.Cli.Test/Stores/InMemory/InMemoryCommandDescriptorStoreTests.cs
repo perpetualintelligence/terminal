@@ -7,7 +7,6 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Test;
@@ -18,9 +17,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Stores.InMemory
 {
     [TestClass]
-    public class InMemoryCommandIdentityStoreTests : LogTest
+    public class InMemoryCommandDescriptorStoreTests : LogTest
     {
-        public InMemoryCommandIdentityStoreTests() : base(TestLogger.Create<InMemoryCommandIdentityStoreTests>())
+        public InMemoryCommandDescriptorStoreTests() : base(TestLogger.Create<InMemoryCommandDescriptorStoreTests>())
         {
         }
 
@@ -28,14 +27,14 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         public async Task TryFindByIdShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByIdAsync("invalid_id");
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command id is not valid. id=invalid_id");
+            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command id is not valid. id=invalid_id");
         }
 
         [TestMethod]
         public async Task TryFindByIdShouldNotErrorIfFoundAsync()
         {
             var result = await cmdStore.TryFindByIdAsync("id1");
-            Assert.IsFalse(result.IsError);
+            Assert.IsNull(result.Error);
             Assert.IsNotNull(result.Result);
             Assert.AreEqual("id1", result.Result.Id);
             Assert.AreEqual("name1", result.Result.Name);
@@ -46,14 +45,14 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         public async Task TryFindByNameShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByNameAsync("invalid_name");
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command name is not valid. name=invalid_name");
+            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command name is not valid. name=invalid_name");
         }
 
         [TestMethod]
         public async Task TryFindByNameShouldNotErrorIfFoundAsync()
         {
             var result = await cmdStore.TryFindByNameAsync("name1");
-            Assert.IsFalse(result.IsError);
+            Assert.IsNull(result.Error);
             Assert.IsNotNull(result.Result);
             Assert.AreEqual("id1", result.Result.Id);
             Assert.AreEqual("name1", result.Result.Name);
@@ -64,14 +63,14 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         public async Task TryFindByPrefixShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByPrefixAsync("invalid_prefix");
-            TestHelper.AssertOneImlxError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix");
+            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix");
         }
 
         [TestMethod]
         public async Task TryFindByPrefixShouldNotErrorIfFoundAsync()
         {
             var result = await cmdStore.TryFindByPrefixAsync("prefix1");
-            Assert.IsFalse(result.IsError);
+            Assert.IsNull(result.Error);
             Assert.IsNotNull(result.Result);
             Assert.AreEqual("id1", result.Result.Id);
             Assert.AreEqual("name1", result.Result.Name);
@@ -81,12 +80,10 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         protected override void OnTestInitialize()
         {
             cmds = MockCommands.Commands;
-            options = MockCliOptions.New();
-            cmdStore = new InMemoryCommandIdentityStore(cmds, options, TestLogger.Create<InMemoryCommandIdentityStore>());
+            cmdStore = new InMemoryCommandDescriptorStore(cmds);
         }
 
         private IEnumerable<CommandDescriptor> cmds = null!;
-        private InMemoryCommandIdentityStore cmdStore = null!;
-        private CliOptions options = null!;
+        private InMemoryCommandDescriptorStore cmdStore = null!;
     }
 }

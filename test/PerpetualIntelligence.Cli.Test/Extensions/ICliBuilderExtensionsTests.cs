@@ -81,12 +81,12 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandIdentityStoreShouldCorrectlyInitialize()
         {
-            cliBuilder.AddCommandIdentityStore<MockCommandIdentityStore>();
+            cliBuilder.AddCommandIdentityStore<MockCommandDescriptorStore>();
 
-            var serviceDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandIdentityStore)));
+            var serviceDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandDescriptorStore)));
             Assert.IsNotNull(serviceDescriptor);
             Assert.AreEqual(ServiceLifetime.Transient, serviceDescriptor.Lifetime);
-            Assert.AreEqual(typeof(MockCommandIdentityStore), serviceDescriptor.ImplementationType);
+            Assert.AreEqual(typeof(MockCommandDescriptorStore), serviceDescriptor.ImplementationType);
         }
 
         [TestMethod]

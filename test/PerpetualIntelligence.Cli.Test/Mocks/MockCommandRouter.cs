@@ -68,10 +68,10 @@ namespace PerpetualIntelligence.Cli.Mocks
             return new CommandRouterResult();
         }
 
-        public Task<TryResult<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
+        public Task<TryResultOrErrors<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
         {
             FindCalled = true;
-            return Task.FromResult(new TryResult<ICommandHandler>(new MockCommandHandler()));
+            return Task.FromResult(new TryResultOrErrors<ICommandHandler>(new MockCommandHandler()));
         }
 
         private readonly CancellationTokenSource? cancelOnRouteCalled;

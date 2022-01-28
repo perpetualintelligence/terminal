@@ -61,7 +61,7 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// The command arguments identity.
+        /// The command argument descriptors.
         /// </summary>
         public ArgumentDescriptors? ArgumentDescriptors { get; set; }
 
@@ -82,7 +82,7 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Id { get; set; }
 
         /// <summary>
-        /// Determines if identity represents a command group.
+        /// Determines if the descriptor represents a command group.
         /// </summary>
         public bool IsGroup { get; set; }
 

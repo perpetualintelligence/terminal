@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="argumentDefaultValueProvider">The optional argument default value provider.</param>
-        public SeparatorCommandExtractor(ICommandIdentityStore commandStore, IArgumentExtractor argumentExtractor, CliOptions options, ILogger<SeparatorCommandExtractor> logger, IArgumentDefaultValueProvider? argumentDefaultValueProvider = null)
+        public SeparatorCommandExtractor(ICommandDescriptorStore commandStore, IArgumentExtractor argumentExtractor, CliOptions options, ILogger<SeparatorCommandExtractor> logger, IArgumentDefaultValueProvider? argumentDefaultValueProvider = null)
         {
             this.commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
             this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
@@ -143,7 +143,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 string prefixArg = string.Concat(options.Extractor.ArgumentPrefix, arg);
 
                 // We capture all the argument extraction errors
-                TryResultError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync<ArgumentExtractorContext, ArgumentExtractorResult>(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(prefixArg, commandDescriptor));
+                TryResultOrError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync<ArgumentExtractorContext, ArgumentExtractorResult>(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(prefixArg, commandDescriptor));
                 if (tryResult.Error != null)
                 {
                     errors.Add(tryResult.Error);
@@ -190,11 +190,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Make sure we trim the command separator. prefix from the previous step will most likely have a command
             // separator pi auth login -key=value
             prefix = prefix.TrimEnd(options.Extractor.Separator);
-
-            var result = await commandStore.TryFindByPrefixAsync(prefix);
-            if (result.IsError)
+            TryResultOrError<CommandDescriptor> result = await commandStore.TryFindByPrefixAsync(prefix);
+            if (result.Error != null)
             {
-                throw new ErrorException(result.FirstError);
+                throw new ErrorException(result.Error);
             }
 
             // Make sure we have the result to proceed. Protect bad custom implementations.
@@ -253,7 +252,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private readonly IArgumentDefaultValueProvider? argumentDefaultValueProvider;
         private readonly IArgumentExtractor argumentExtractor;
-        private readonly ICommandIdentityStore commandStore;
+        private readonly ICommandDescriptorStore commandStore;
         private readonly ILogger<SeparatorCommandExtractor> logger;
         private readonly CliOptions options;
     }

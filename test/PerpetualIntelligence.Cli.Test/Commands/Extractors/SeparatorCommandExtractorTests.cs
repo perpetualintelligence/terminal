@@ -99,14 +99,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task BadCustomCustomerIdentityStoreShouldErrorAsync()
-        {
-            CommandExtractorContext context = new CommandExtractorContext("prefix1 -key1=value1 -key2=value2");
-            var badExtractor = new SeparatorCommandExtractor(new MockBadCommandsIdentityStore(), argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => badExtractor.ExtractAsync(context), Errors.InvalidCommand, "The command string did not return an error or match the command prefix. command_string=prefix1 -key1=value1 -key2=value2");
-        }
-
-        [TestMethod]
         public async Task CommandDoesNotSupportArgsButUserPassedArgShouldErrorAsync()
         {
             CommandExtractorContext context = new($"prefix4_noargs -key1=hello -key2=mello -key3 -key4=36.69");
@@ -285,8 +277,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(4, result.Command.Arguments.Count);
 
-            // Argument values are processed sequentially and default values are added at the end
-            // User values
+            // Argument values are processed sequentially and default values are added at the end User values
             Assert.AreEqual("key6", result.Command.Arguments[0].Id);
             Assert.AreEqual(true, result.Command.Arguments[0].Value);
             Assert.AreEqual("key10", result.Command.Arguments[1].Id);
@@ -325,7 +316,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task InvalidCommandStringWithinCommandGroupShouldFailAsync()
         {
             // Reset commands
-            commands = new InMemoryCommandIdentityStore(MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
+            commands = new InMemoryCommandDescriptorStore(MockCommands.GroupedCommands);
             extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
 
             CommandExtractorContext context = new CommandExtractorContext("pi auth invalid");
@@ -516,7 +507,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task ValidCommandStringWithinCommandGroupShouldNotFailAsync()
         {
             // Reset commands
-            commands = new InMemoryCommandIdentityStore(MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
+            commands = new InMemoryCommandDescriptorStore(MockCommands.GroupedCommands);
             extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>());
 
             CommandExtractorContext context = new CommandExtractorContext("pi");
@@ -575,7 +566,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            commands = new InMemoryCommandIdentityStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandIdentityStore>());
+            commands = new InMemoryCommandDescriptorStore(MockCommands.Commands);
             argExtractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
             defualtProvider = new ArgumentDefaultValueProvider(options, TestLogger.Create<ArgumentDefaultValueProvider>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>(), defualtProvider);
@@ -618,7 +609,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         private SeparatorArgumentExtractor argExtractor = null!;
-        private ICommandIdentityStore commands = null!;
+        private ICommandDescriptorStore commands = null!;
         private IArgumentDefaultValueProvider defualtProvider = null!;
         private SeparatorCommandExtractor extractor = null!;
         private CliOptions options = null!;
