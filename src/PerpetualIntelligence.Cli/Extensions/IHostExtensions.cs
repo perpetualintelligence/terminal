@@ -37,12 +37,11 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="title">The command title to show in the console.</param>
         [WriteDocumentation("Add info about exception handling for ErrorException")]
-        public static async Task RunRouterAsync(this IHost host, string title, int? timeout, CancellationToken? cancellationToken)
+        public static Task RunRouterAsync(this IHost host, string title, int? timeout, CancellationToken? cancellationToken)
         {
             // Track the application lifetime so we can know whether cancellation is requested.
             IHostApplicationLifetime? applicationLifetime = host.Services.GetService<IHostApplicationLifetime>();
 
-            // FOMAC: check IHost.RunAsync to see how async is implemented
             while (true)
             {
                 // Avoid block threads during cancellation and let the
@@ -131,11 +130,8 @@ namespace PerpetualIntelligence.Cli.Extensions
                     }
                 }
             };
-        }
 
-        private static void RouterCancellationDelegate()
-        {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

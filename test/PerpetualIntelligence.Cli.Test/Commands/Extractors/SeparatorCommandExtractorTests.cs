@@ -238,6 +238,39 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
+        public async Task DefaultValueConfiguredCommandWithNoArgsShouldNotErrorAsync()
+        {
+            options.Extractor.ArgumentDefaultValue = true;
+
+            CommandExtractorContext context = new("prefix4_noargs");
+            var result = await extractor.ExtractAsync(context);
+
+            Assert.IsNull(result.Command.Arguments);
+        }
+
+        [TestMethod]
+        public async Task DefaultValueConfiguredCommandWithEmptyArgsShouldNotErrorAsync()
+        {
+            options.Extractor.ArgumentDefaultValue = true;
+
+            CommandExtractorContext context = new("prefix6_empty_args");
+            var result = await extractor.ExtractAsync(context);
+
+            Assert.IsNull(result.Command.Arguments);
+        }
+
+        [TestMethod]
+        public async Task DefaultValueNotConfiguredCommandWithNoArgsShouldNotErrorAsync()
+        {
+            options.Extractor.ArgumentDefaultValue = false;
+
+            CommandExtractorContext context = new("prefix4_noargs");
+            var result = await extractor.ExtractAsync(context);
+
+            Assert.IsNull(result.Command.Arguments);
+        }
+
+        [TestMethod]
         public async Task DefaultValuesConfiguredButProviderNotConfiguredShouldThrow()
         {
             options.Extractor.ArgumentDefaultValue = true;

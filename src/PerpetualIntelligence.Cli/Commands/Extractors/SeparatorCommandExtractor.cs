@@ -55,12 +55,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Extract the arguments. Arguments are optional for commands.
             Arguments? arguments = await ExtractArgumentsOrThrowAsync(context, commandDescriptor);
 
-            // Process default argument. Check for default arguments if enabled. Default values are added at the end if
-            // there is no explicit input
-            if (options.Extractor.ArgumentDefaultValue.GetValueOrDefault())
-            {
-                arguments = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, arguments);
-            }
+            // Process default argument.
+            arguments = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, arguments);
 
             // OK, return the extracted command object.
             Command command = new(commandDescriptor)
@@ -205,8 +201,25 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return result.Result;
         }
 
+        /// <summary>
+        /// Check for default arguments if enabled and merges then. Default values are added at the end if there is no
+        /// explicit user input.
+        /// </summary>
+        /// <param name="commandDescriptor"></param>
+        /// <param name="userArguments"></param>
+        /// <returns></returns>
+        /// <exception cref="ErrorException"></exception>
+        /// <exception cref="MultiErrorException"></exception>
         private async Task<Arguments?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Arguments? userArguments)
         {
+            // If default argument value is disabled or the command itself does not support any arguments then ignore
+            if (!options.Extractor.ArgumentDefaultValue.GetValueOrDefault()
+                || commandDescriptor.ArgumentDescriptors == null
+                || commandDescriptor.ArgumentDescriptors.Count == 0)
+            {
+                return userArguments;
+            }
+
             // Sanity check
             if (argumentDefaultValueProvider == null)
             {

@@ -69,6 +69,9 @@ namespace PerpetualIntelligence.Cli.Mocks
 
                 // Command with no default args
                 NewCommandDefinition("id5", "name5", "prefix5_default", TestDefaultArgumentDescriptors, "desc5", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Command with no default args
+                NewCommandDefinition("id5", "name5", "prefix6_empty_args", new(), "desc5", typeof(CommandChecker), typeof(CommandRunner)).Item1,
             };
 
             GroupedCommands = new()
