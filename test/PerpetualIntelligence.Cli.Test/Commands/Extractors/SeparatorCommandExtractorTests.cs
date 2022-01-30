@@ -346,7 +346,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task InvalidCommandStringWithinCommandGroupShouldFailAsync()
+        public async Task InvalidCommandStringWithinCommandGroupShouldErrorAsync()
         {
             // Reset commands
             commands = new InMemoryCommandDescriptorStore(MockCommands.GroupedCommands);
@@ -521,7 +521,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task ValidCommandStringWithArgumentsButNoArgumentsPassedShouldNotFail()
+        public async Task ValidCommandStringWithArgumentsButNoArgumentsPassedShouldNotError()
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1");
             var result = await extractor.ExtractAsync(context);
@@ -537,7 +537,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task ValidCommandStringWithinCommandGroupShouldNotFailAsync()
+        public async Task ValidCommandStringWithinCommandGroupShouldNotErrorAsync()
         {
             // Reset commands
             commands = new InMemoryCommandDescriptorStore(MockCommands.GroupedCommands);
@@ -590,7 +590,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task ValidCommandStringWithNoSeparatorShouldFailAsync()
+        public async Task ValidCommandStringWithNoSeparatorShouldErrorAsync()
         {
             CommandExtractorContext context = new CommandExtractorContext("prefix1-key1=value1-key2=value2");
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");

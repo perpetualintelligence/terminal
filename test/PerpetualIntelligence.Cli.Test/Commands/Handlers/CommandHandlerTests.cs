@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         }
 
         [TestMethod]
-        public async Task CheckerErrorShouldFailHandler()
+        public async Task CheckerErrorShouldErrorHandler()
         {
             command.Item1.Checker = typeof(MockErrorChecker);
 
@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         }
 
         [TestMethod]
-        public async Task RunnerErrorShouldFailHandler()
+        public async Task RunnerErrorShouldErrorHandler()
         {
             // Make sure checker pass so runner can fail
             command.Item1.Checker = typeof(MockChecker);

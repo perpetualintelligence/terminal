@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using PerpetualIntelligence.Shared.Attributes;
@@ -16,28 +17,43 @@ namespace PerpetualIntelligence.Cli.Services
     public static class ConsoleHelper
     {
         /// <summary>
-        /// Clears the written value.
+        /// Clears the written output for the specified position.
         /// </summary>
-        /// <param name="lastValue"></param>
-        public static void ClearValue(string lastValue)
+        /// <param name="clearPosition">The console clear position.</param>
+        public static void ClearOutput(ConsoleClearPosition clearPosition)
         {
-            if (string.IsNullOrWhiteSpace(lastValue))
+            if (clearPosition.Left < 5)
             {
-                throw new ArgumentException($"'{nameof(lastValue)}' cannot be null or whitespace.", nameof(lastValue));
+                throw new ArgumentException("The cursor left position cannot be less than 5.");
+            }
+
+            if (clearPosition.Top < 0)
+            {
+                throw new ArgumentException("The cursor top position cannot be negative.");
+            }
+
+            if (clearPosition.Length <= 0)
+            {
+                return;
             }
 
             // https://stackoverflow.com/questions/8946808/can-console-clear-be-used-to-only-clear-a-line-instead-of-whole-console/8946847
-            int leftCursor = Console.CursorLeft;
+            Console.SetCursorPosition(clearPosition.Left, clearPosition.Top);
+            Console.Write(new string(' ', clearPosition.Length));
+            Console.SetCursorPosition(clearPosition.Left, clearPosition.Top);
+        }
 
-            int overideLeft = leftCursor - lastValue.Length;
-            if (overideLeft < 0)
-            {
-                throw new InvalidOperationException("The override cursor position for last value is not valid.");
-            }
-
-            Console.SetCursorPosition(overideLeft, Console.CursorTop);
-            Console.Write(new string(' ', lastValue.Length));
-            Console.SetCursorPosition(overideLeft, Console.CursorTop);
+        /// <summary>
+        /// Gets the <see cref="ConsoleClearPosition"/> for the specified output length.
+        /// </summary>
+        /// <param name="length">The output length to clear.</param>
+        /// <returns>
+        /// <see cref="ConsoleClearPosition"/> object with <see cref="Console.CursorLeft"/>,
+        /// <see cref="Console.CursorTop"/> and specified length.
+        /// </returns>
+        public static ConsoleClearPosition GetClearPosition(int length)
+        {
+            return new ConsoleClearPosition() { Left = Console.CursorLeft, Top = Console.CursorTop, Length = length };
         }
 
         /// <summary>

@@ -91,7 +91,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö", "मा")]
         [DataRow("öö", "-")]
         [DataRow("माणूस", "#")]
-        public async Task InvalidArgumentValueSepratorShouldFailAsync(string valid, string invalid)
+        public async Task InvalidArgumentValueSepratorShouldErrorAsync(string valid, string invalid)
         {
             // Set the correct separator
             options.Extractor.ArgumentSeparator = valid;
