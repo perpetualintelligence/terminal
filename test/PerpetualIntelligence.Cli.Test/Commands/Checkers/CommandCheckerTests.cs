@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task CommandIdentityNoArgsShoutNotErrorAsync()
+        public async Task CommandDescriptorNoArgsShoutNotErrorAsync()
         {
             CommandDescriptor identity = new("id1", "name1", "prefix1");
 
@@ -211,7 +211,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             mapper = new DataAnnotationsArgumentDataTypeMapper(options, TestLogger.Create<DataAnnotationsArgumentDataTypeMapper>());
             valueChecker = new ArgumentChecker(mapper, options, TestLogger.Create<ArgumentChecker>());
             checker = new CommandChecker(valueChecker, options, TestLogger.Create<CommandChecker>());
-            commands = new InMemoryCommandDescriptorStore(MockCommands.Commands);
+            commands = new InMemoryCommandDescriptorStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
         }
 
         private CommandDescriptor NewCustomDataTypeCmdIdentity(string customDataType)

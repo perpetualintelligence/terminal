@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockArgumentDefaultValueProvider : IArgumentDefaultValueProvider
+    public class MockDefaultArgumentProvider : IDefaultArgumentProvider
     {
         public bool Called { get; set; }
 
-        public Task<ArgumentDefaultValueProviderResult> ProvideAsync(ArgumentDefaultValueProviderContext context)
+        public Task<DefaultArgumentProviderResult> ProvideAsync(DefaultArgumentProviderContext context)
         {
             Called = true;
-            return Task.FromResult(new ArgumentDefaultValueProviderResult(new Commands.ArgumentDescriptors()));
+            return Task.FromResult(new DefaultArgumentProviderResult(new Commands.ArgumentDescriptor("testid", System.ComponentModel.DataAnnotations.DataType.Text)));
         }
     }
 }

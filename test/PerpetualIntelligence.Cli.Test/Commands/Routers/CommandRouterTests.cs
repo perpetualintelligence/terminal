@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             extractor.IsExplicitError = true;
 
-            CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string");
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "test_extractor_error", "test_extractor_error_desc");
             Assert.IsTrue(extractor.Called);
@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         }
 
         [TestMethod]
-        public async Task ExtractorNoExtractedCommandIdentityShouldNotRouteFurtherAsync()
+        public async Task ExtractorNoExtractedCommandDescriptorShouldNotRouteFurtherAsync()
         {
             extractor.IsExplicitNoCommandIdenitity = true;
 
@@ -53,7 +53,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             extractor.IsExplicitNoCommand = true;
 
-            CommandRouterContext routerContext = new CommandRouterContext("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string");
 
             await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => router.RouteAsync(routerContext), "Value cannot be null. (Parameter 'command')");
             Assert.IsTrue(extractor.Called);

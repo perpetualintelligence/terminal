@@ -7,6 +7,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Test;
@@ -77,13 +78,93 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
             Assert.AreEqual("prefix1", result.Result.Prefix);
         }
 
+        [TestMethod]
+        public async Task TryMatchByPrefixGroupAndNestedOAuthWithDefaultArgValueShouldMatchExact()
+        {
+            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin defaultargvalue1");
+            Assert.IsNull(result.Error);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual("orgid:authid:sloginid", result.Result.Id);
+            Assert.AreEqual("slogin", result.Result.Name);
+            Assert.AreEqual("pi auth slogin", result.Result.Prefix); // Exact match
+
+            result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin oauth defaultargvalue2");
+            Assert.IsNull(result.Error);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual("orgid:authid:sloginid:oauth", result.Result.Id);
+            Assert.AreEqual("oauth", result.Result.Name);
+            Assert.AreEqual("pi auth slogin oauth", result.Result.Prefix); // Exact match
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixInvalidPrefixShouldError()
+        {
+            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi_invalid auth slogin");
+            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi_invalid auth slogin");
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixInvalidSubCommandPrefixShouldError()
+        {
+            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth loginid invalid_command");
+            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth loginid invalid_command");
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixNestedOAuthShouldMatchExact()
+        {
+            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin oauth");
+            Assert.IsNull(result.Error);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual("orgid:authid:sloginid:oauth", result.Result.Id);
+            Assert.AreEqual("oauth", result.Result.Name);
+            Assert.AreEqual("pi auth slogin oauth", result.Result.Prefix); // Exact match
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixNestedOidcShouldMatchExact()
+        {
+            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin oidc");
+            Assert.IsNull(result.Error);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual("orgid:authid:sloginid:oidc", result.Result.Id);
+            Assert.AreEqual("oidc", result.Result.Name);
+            Assert.AreEqual("pi auth slogin oidc", result.Result.Prefix); // Exact match
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixShouldMatchExact()
+        {
+            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin");
+            Assert.IsNull(result.Error);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual("orgid:authid:sloginid", result.Result.Id);
+            Assert.AreEqual("slogin", result.Result.Name);
+            Assert.AreEqual("pi auth slogin", result.Result.Prefix); // Exact match
+        }
+
+        [TestMethod]
+        public async Task TryMatchByPrefixValidTopGroupInvalidSubGroupValidShouldError()
+        {
+            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi invalid_auth slogin");
+            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi invalid_auth slogin");
+        }
+
         protected override void OnTestInitialize()
         {
+            options = MockCliOptions.New();
+
             cmds = MockCommands.Commands;
-            cmdStore = new InMemoryCommandDescriptorStore(cmds);
+            cmdStore = new InMemoryCommandDescriptorStore(cmds, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+
+            groupedCmds = MockCommands.GroupedCommands;
+            groupedCmdStore = new InMemoryCommandDescriptorStore(groupedCmds, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
         }
 
         private IEnumerable<CommandDescriptor> cmds = null!;
         private InMemoryCommandDescriptorStore cmdStore = null!;
+        private IEnumerable<CommandDescriptor> groupedCmds = null!;
+        private InMemoryCommandDescriptorStore groupedCmdStore = null!;
+        private CliOptions options = null!;
     }
 }

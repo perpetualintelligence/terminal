@@ -17,14 +17,14 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
     /// <summary>
     /// The default argument default value provider.
     /// </summary>
-    public class ArgumentDefaultValueProvider : IArgumentDefaultValueProvider
+    public class DefaultArgumentValueProvider : IDefaultArgumentValueProvider
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ArgumentDefaultValueProvider(CliOptions options, ILogger<ArgumentDefaultValueProvider> logger)
+        public DefaultArgumentValueProvider(CliOptions options, ILogger<DefaultArgumentValueProvider> logger)
         {
             this.options = options;
             this.logger = logger;
@@ -34,19 +34,19 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// Provides default values for all the command arguments.
         /// </summary>
         /// <param name="context">The argument default value provider context.</param>
-        /// <returns>The <see cref="ArgumentDefaultValueProviderResult"/> instance that contains the default values.</returns>
+        /// <returns>The <see cref="DefaultArgumentValueProviderResult"/> instance that contains the default values.</returns>
         /// <exception cref="ErrorException"></exception>
-        public Task<ArgumentDefaultValueProviderResult> ProvideAsync(ArgumentDefaultValueProviderContext context)
+        public Task<DefaultArgumentValueProviderResult> ProvideAsync(DefaultArgumentValueProviderContext context)
         {
             if (context.CommandDescriptor.ArgumentDescriptors == null || context.CommandDescriptor.ArgumentDescriptors.Count == 0)
             {
                 throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any arguments. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            return Task.FromResult(new ArgumentDefaultValueProviderResult(new ArgumentDescriptors(context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
+            return Task.FromResult(new DefaultArgumentValueProviderResult(new ArgumentDescriptors(context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
         }
 
-        private ILogger<ArgumentDefaultValueProvider> logger;
+        private ILogger<DefaultArgumentValueProvider> logger;
         private CliOptions options;
     }
 }

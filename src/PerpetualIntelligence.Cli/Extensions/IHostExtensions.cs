@@ -1,5 +1,5 @@
 /*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com
@@ -75,17 +75,17 @@ namespace PerpetualIntelligence.Cli.Extensions
                 Console.Write(title);
 
                 // Read the user input
-                string? commandString = Console.ReadLine();
+                string? raw = Console.ReadLine();
 
                 // Ignore empty commands
-                if (string.IsNullOrWhiteSpace(commandString))
+                if (string.IsNullOrWhiteSpace(raw))
                 {
                     // Wait for next command.
                     continue;
                 }
 
                 // Route the request.
-                CommandRouterContext context = new(commandString, cancellationToken);
+                CommandRouterContext context = new(raw, cancellationToken);
                 ICommandRouter router = host.Services.GetRequiredService<ICommandRouter>();
                 Task<CommandRouterResult> routeTask = router.RouteAsync(context);
 
@@ -96,14 +96,14 @@ namespace PerpetualIntelligence.Cli.Extensions
                     {
                         CliOptions options = host.Services.GetRequiredService<CliOptions>();
                         ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. command_string={0}", commandString);
+                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. command_string={0}", raw);
                     }
                 }
                 catch (OperationCanceledException)
                 {
                     CliOptions options = host.Services.GetRequiredService<CliOptions>();
                     ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
-                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. command_string={0}", commandString);
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. command_string={0}", raw);
                 }
                 catch (Exception ex)
                 {
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                     else
                     {
                         // Unexpected error.
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} additional_info={1}", commandString, ex.InnerException.Message);
+                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} additional_info={1}", raw, ex.InnerException.Message);
                     }
                 }
             };

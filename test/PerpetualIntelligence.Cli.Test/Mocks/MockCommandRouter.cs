@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             this.explicitError = explicitError;
         }
 
-        public string? CommandString { get; set; }
+        public string? RawCommandString { get; set; }
 
         public bool FindCalled { get; set; }
 
@@ -38,7 +38,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         {
             // Stats
             RouteCalled = true;
-            CommandString = context.CommandString;
+            RawCommandString = context.RawCommandString;
             RouteCounter += 1;
 
             // Add delay

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com
@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public virtual async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
             // Extract the command
-            CommandExtractorResult extractorResult = await extrator.ExtractAsync(new CommandExtractorContext(context.CommandString));
+            CommandExtractorResult extractorResult = await extrator.ExtractAsync(new CommandExtractorContext(new CommandString(context.RawCommandString)));
 
             // Delegate to handler
             TryResultOrErrors<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);

@@ -121,24 +121,25 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task NullCommandIdentityShouldErrorAsync()
+        public void NullCommandDescriptorShouldError()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            ArgumentExtractorContext context = new("test_arg_string", null);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidRequest, "The command descriptor is missing in the request. extractor=PerpetualIntelligence.Cli.Commands.Extractors.SeparatorArgumentExtractor");
+#pragma warning disable CA1806 // Do not ignore method results
+            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext("test_arg_string", null), "Value cannot be null. (Parameter 'commandDescriptor')");
+#pragma warning restore CA1806 // Do not ignore method results
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [TestMethod]
-        public async Task NullOrWhiteSpaceArgumentStringShouldErrorAsync()
+        public void NullOrWhiteSpaceArgumentStringShouldError()
         {
+#pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            ArgumentExtractorContext context = new ArgumentExtractorContext(null, command.Item1);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument string is missing in the request. command_name=name1 command_id=id1 extractor=PerpetualIntelligence.Cli.Commands.Extractors.SeparatorArgumentExtractor");
+            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext(null, command.Item1), "'argumentString' cannot be null or whitespace. (Parameter 'argumentString')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            context = new ArgumentExtractorContext("   ", command.Item1);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument string is missing in the request. command_name=name1 command_id=id1 extractor=PerpetualIntelligence.Cli.Commands.Extractors.SeparatorArgumentExtractor");
+            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext("   ", command.Item1), "'argumentString' cannot be null or whitespace. (Parameter 'argumentString')");
+#pragma warning restore CA1806 // Do not ignore method results
         }
 
         [TestMethod]

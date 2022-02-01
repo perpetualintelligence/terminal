@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Mocks
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            return null;
+            return new MockLoggerScope();
         }
 
         public bool IsEnabled(LogLevel logLevel)

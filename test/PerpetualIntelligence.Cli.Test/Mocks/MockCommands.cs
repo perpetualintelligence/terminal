@@ -72,6 +72,9 @@ namespace PerpetualIntelligence.Cli.Mocks
 
                 // Command with no default args
                 NewCommandDefinition("id5", "name5", "prefix6_empty_args", new(), "desc5", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Command with no default args
+                NewCommandDefinition("id5", "name5", "prefix6_empty_args", new(), "desc5", typeof(CommandChecker), typeof(CommandRunner)).Item1,
             };
 
             GroupedCommands = new()
@@ -86,19 +89,19 @@ namespace PerpetualIntelligence.Cli.Mocks
                 NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", TestArgumentDescriptors, "the login command within the auth group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", TestArgumentDescriptors, "the silent login command within the auth group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", TestArgumentDescriptors, "the silent login command within the auth group", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key2").Item1,
 
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", TestArgumentDescriptors, "the slient oidc login command within the slogin group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", TestArgumentDescriptors, "the slient oauth login command within the slogin group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", TestArgumentDescriptors, "the slient oauth login command within the slogin group", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
             };
         }
 
-        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, ArgumentDescriptors? args = null, string? desc = null, Type? checker = null, Type? runner = null)
+        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, ArgumentDescriptors? args = null, string? desc = null, Type? checker = null, Type? runner = null, string? defaultArg = null)
         {
-            var cmd1 = new CommandDescriptor(id, name, prefix, args, desc, checker, runner);
+            var cmd1 = new CommandDescriptor(id, name, prefix, args, desc, checker, runner, defaultArgument: defaultArg);
             return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1));
         }
 

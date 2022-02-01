@@ -5,6 +5,9 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Commands.Extractors;
+using PerpetualIntelligence.Protocols.Cli;
+using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 
@@ -33,7 +36,8 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="checker">The command checker.</param>
         /// <param name="runner">The command runner.</param>
         /// <param name="properties">The custom properties.</param>
-        public CommandDescriptor(string id, string name, string prefix, ArgumentDescriptors? argumentDescriptors = null, string? description = null, Type? checker = null, Type? runner = null, Dictionary<string, object>? properties = null)
+        /// <param name="defaultArgument">The default argument.</param>
+        public CommandDescriptor(string id, string name, string prefix, ArgumentDescriptors? argumentDescriptors = null, string? description = null, Type? checker = null, Type? runner = null, Dictionary<string, object>? properties = null, string? defaultArgument = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -58,6 +62,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Checker = checker;
             Runner = runner;
             Properties = properties;
+            DefaultArgument = defaultArgument;
         }
 
         /// <summary>
@@ -69,6 +74,20 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The command checker.
         /// </summary>
         public Type? Checker { get; set; }
+
+        /// <summary>
+        /// The default argument. <c>null</c> means the command does not support a default argument.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="DefaultArgument"/> is not the default argument value (see
+        /// <see cref="ArgumentDescriptor.DefaultValue"/>), it is the default argument identifier (see
+        /// <see cref="ArgumentDescriptor.Id"/>) whose value is populated automatically based on the
+        /// <see cref="CommandString"/>. If <see cref="DefaultArgument"/> is set to a non <c>null</c> value, then the
+        /// <see cref="ICommandExtractor"/> will attempt to extract the value from the <see cref="CommandString"/> and
+        /// put it in an <see cref="Argument"/> identified by <see cref="DefaultArgument"/>.
+        /// </remarks>
+        /// <seealso cref="ArgumentDescriptor.DefaultValue"/>
+        public string? DefaultArgument { get; set; }
 
         /// <summary>
         /// The command description.
@@ -108,12 +127,32 @@ namespace PerpetualIntelligence.Cli.Commands
         public Type? Runner { get; set; }
 
         /// <summary>
+        /// Gets an argument descriptor.
+        /// </summary>
+        /// <param name="argId">The argument descriptor identifier.</param>
+        /// <returns><see cref="ArgumentDescriptor"/> instance if found.</returns>
+        /// <exception cref="ErrorException">This exception is thrown if the argument does not exist.</exception>
+        /// <seealso cref="TryGetArgumentDescriptor(string, out ArgumentDescriptor)"/>
+        public ArgumentDescriptor GetArgumentDescriptor(string argId)
+        {
+            bool found = TryGetArgumentDescriptor(argId, out ArgumentDescriptor? arg);
+            if (found)
+            {
+                return arg;
+            }
+            else
+            {
+                throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. command_name={0} command_id={1} argument={2}", Name, Id, argId);
+            }
+        }
+
+        /// <summary>
         /// Attempts to find an argument descriptor.
         /// </summary>
-        /// <param name="id">The argument descriptor identifier.</param>
+        /// <param name="argId">The argument descriptor identifier.</param>
         /// <param name="argumentDescriptor">The argument descriptor if found.</param>
         /// <returns><c>true</c> if an argument descriptor exist in the collection, otherwise <c>false</c>.</returns>
-        public bool TryGetArgumentDescriptor(string id, out ArgumentDescriptor argumentDescriptor)
+        public bool TryGetArgumentDescriptor(string argId, out ArgumentDescriptor argumentDescriptor)
         {
             if (ArgumentDescriptors == null)
             {
@@ -124,11 +163,11 @@ namespace PerpetualIntelligence.Cli.Commands
             }
 
 #if NETSTANDARD2_1_OR_GREATER
-            return ArgumentDescriptors.TryGetValue(id, out argumentDescriptor);
+            return ArgumentDescriptors.TryGetValue(argId, out argumentDescriptor);
 #else
-            if (ArgumentDescriptors.Contains(id))
+            if (ArgumentDescriptors.Contains(argId))
             {
-                argumentDescriptor = ArgumentDescriptors[id];
+                argumentDescriptor = ArgumentDescriptors[argId];
                 return true;
             }
             else

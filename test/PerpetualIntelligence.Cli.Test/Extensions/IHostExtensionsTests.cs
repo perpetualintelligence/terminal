@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             Assert.IsTrue(mockCommandRouter.RouteCalled);
-            Assert.AreEqual("User has entered this command string", mockCommandRouter.CommandString);
+            Assert.AreEqual("User has entered this command string", mockCommandRouter.RawCommandString);
         }
 
         [TestMethod]
@@ -276,7 +276,8 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             if (stringWriter != null)
             {
-                stringWriter.Dispose();
+                // FOMAC: TODO: WHy is this disposed early ?
+                //stringWriter.Dispose();
             }
         }
 

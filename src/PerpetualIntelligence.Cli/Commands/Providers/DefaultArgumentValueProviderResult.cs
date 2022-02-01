@@ -12,13 +12,13 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
     /// <summary>
     /// The argument default value provider result.
     /// </summary>
-    public class ArgumentDefaultValueProviderResult : ResultNoError
+    public class DefaultArgumentValueProviderResult : ResultNoError
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="defaultValueArgumentDescriptors">The default value argument descriptors.</param>
-        public ArgumentDefaultValueProviderResult(ArgumentDescriptors defaultValueArgumentDescriptors)
+        public DefaultArgumentValueProviderResult(ArgumentDescriptors defaultValueArgumentDescriptors)
         {
             DefaultValueArgumentDescriptors = defaultValueArgumentDescriptors ?? throw new System.ArgumentNullException(nameof(defaultValueArgumentDescriptors));
         }

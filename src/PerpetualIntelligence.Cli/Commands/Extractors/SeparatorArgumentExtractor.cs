@@ -56,18 +56,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <inheritdoc/>
         public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
         {
-            // Null command descriptor
-            if (context.CommandDescriptor == null)
-            {
-                throw new ErrorException(Errors.InvalidRequest, "The command descriptor is missing in the request. extractor={0}", GetType().FullName);
-            }
-
-            // Null or whitespace
-            if (string.IsNullOrWhiteSpace(context.ArgumentString))
-            {
-                throw new ErrorException(Errors.InvalidArgument, "The argument string is missing in the request. command_name={0} command_id={1} extractor={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, GetType().FullName);
-            }
-
             // Check if an app requested a syntax prefix
             string argumentString = context.ArgumentString;
             if (options.Extractor.ArgumentPrefix != null)
@@ -115,7 +103,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Now find the argument by key or name
-            ArgumentDescriptor argFindResult = FindAttributeOrThrow(context.CommandDescriptor, argId);
+            ArgumentDescriptor argFindResult = context.CommandDescriptor.GetArgumentDescriptor(argId);
 
             // Key only (treat it as a boolean) value=true
             if (argValue == null)
@@ -126,19 +114,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 // key-value TODO Trim all the prefix
                 return Task.FromResult(new ArgumentExtractorResult(new Argument(argFindResult, argValue)));
-            }
-        }
-
-        private ArgumentDescriptor FindAttributeOrThrow(CommandDescriptor commandDescriptor, string argId)
-        {
-            bool found = commandDescriptor.TryGetArgumentDescriptor(argId, out ArgumentDescriptor? arg);
-            if (found)
-            {
-                return arg;
-            }
-            else
-            {
-                throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. command_name={0} command_id={1} argument={2}", commandDescriptor.Name, commandDescriptor.Id, argId);
             }
         }
 

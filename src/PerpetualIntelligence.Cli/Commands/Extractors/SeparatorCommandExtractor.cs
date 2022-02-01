@@ -33,12 +33,20 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="argumentExtractor">The argument extractor.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        /// <param name="argumentDefaultValueProvider">The optional argument default value provider.</param>
-        public SeparatorCommandExtractor(ICommandDescriptorStore commandStore, IArgumentExtractor argumentExtractor, CliOptions options, ILogger<SeparatorCommandExtractor> logger, IArgumentDefaultValueProvider? argumentDefaultValueProvider = null)
+        /// <param name="defaultArgumentProvider">The optional default argument provider.</param>
+        /// <param name="defaultArgumentValueProvider">The optional argument default value provider.</param>
+        public SeparatorCommandExtractor(
+            ICommandDescriptorStore commandStore,
+            IArgumentExtractor argumentExtractor,
+            CliOptions options,
+            ILogger<SeparatorCommandExtractor> logger,
+            IDefaultArgumentProvider? defaultArgumentProvider = null,
+            IDefaultArgumentValueProvider? defaultArgumentValueProvider = null)
         {
             this.commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
             this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
-            this.argumentDefaultValueProvider = argumentDefaultValueProvider;
+            this.defaultArgumentValueProvider = defaultArgumentValueProvider;
+            this.defaultArgumentProvider = defaultArgumentProvider;
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -105,23 +113,38 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be null or whitespace.", options.Extractor.ArgumentPrefix);
             }
 
-            // Argument default value provider is missing
-            if (options.Extractor.ArgumentDefaultValue.GetValueOrDefault() && argumentDefaultValueProvider == null)
+            // Command default argument provider is missing
+            if (options.Extractor.DefaultArgument.GetValueOrDefault() && defaultArgumentProvider == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IArgumentDefaultValueProvider).FullName);
+                throw new ErrorException(Errors.InvalidConfiguration, "The command default argument provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentProvider).FullName);
+            }
+
+            // Argument default value provider is missing
+            if (options.Extractor.DefaultArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
             }
         }
 
         private async Task<Arguments?> ExtractArgumentsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
         {
-            int prefixEndIndex = context.CommandString.IndexOf(commandDescriptor.Prefix, StringComparison.Ordinal);
-            string argString = context.CommandString.Remove(prefixEndIndex, commandDescriptor.Prefix.Length);
+            // Remove the prefix from the start so we can get the argument string.
+            string raw = context.CommandString.Raw;
+            string argString = raw.TrimStart(commandDescriptor.Prefix, StringComparison.Ordinal);
+
+            // Commands may not have arguments.
             if (!string.IsNullOrWhiteSpace(argString))
             {
+                // If arguments are passed make sure command supports arguments, exact arguments are checked later
+                if (commandDescriptor.ArgumentDescriptors == null || commandDescriptor.ArgumentDescriptors.Count == 0)
+                {
+                    throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any arguments. command_name={0} command_id={1}", commandDescriptor.Name, commandDescriptor.Id);
+                }
+
                 // Make sure there is a separator between the command prefix and arguments
                 if (!argString.StartsWith(options.Extractor.Separator, StringComparison.Ordinal))
                 {
-                    throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", context.CommandString);
+                    throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", raw);
                 }
             }
             else
@@ -129,17 +152,46 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 return null;
             }
 
-            Arguments arguments = new();
+            // If we are here it
+            // means arg starts with a separator
+
+
+            // Check if the command supports default argument. The default argument does not have standard argument
+            // syntax For e.g. If 'pi format ruc' command has 'i' as a default argument then the command string 'pi
+            // format ruc remove_underscore_and_capitalize' will be extracted as 'pi format ruc' and
+            // remove_underscore_and_capitalize will be added as a value of argument 'i'.
+            if (options.Extractor.DefaultArgument.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultArgument))
+            {
+                // Sanity check
+                if (defaultArgumentProvider == null)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The default argument provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
+                }
+
+                // Get the default argument
+                DefaultArgumentProviderResult defaultArgumentProviderResult = await defaultArgumentProvider.ProvideAsync(new DefaultArgumentProviderContext(commandDescriptor));
+
+                // Convert the arg string to standard format and let the IArgumentExtractor extract the argument and its
+                // value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
+                argString = $"{options.Extractor.Separator}{options.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{options.Extractor.ArgumentSeparator}{argString.TrimStart(options.Extractor.Separator)}";
+            }
+
+            // The argument split string. This string is used to split the arguments. This is to avoid splitting the
+            // argument value containing the separator. E.g. If space is the separator then the arg split format is ' -'
+            // -Key1=val with space -Key2=val2
+            // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
+            // split the arg string into 3 parts but there are only 2 args.
             string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
+
+            Arguments arguments = new();
             string[] args = argString.Split(new string[] { argSplit }, StringSplitOptions.RemoveEmptyEntries);
             List<Error> errors = new();
             foreach (string arg in args)
             {
-                // Restore the arg prefix for the extractor
                 string prefixArg = string.Concat(options.Extractor.ArgumentPrefix, arg);
 
                 // We capture all the argument extraction errors
-                TryResultOrError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync<ArgumentExtractorContext, ArgumentExtractorResult>(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(prefixArg, commandDescriptor));
+                TryResultOrError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(prefixArg, commandDescriptor));
                 if (tryResult.Error != null)
                 {
                     errors.Add(tryResult.Error);
@@ -149,7 +201,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Protect for bad custom implementation.
                     if (tryResult.Result == null)
                     {
-                        errors.Add(new Error(Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string={0}", arg));
+                        errors.Add(new Error(Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string={0}", prefixArg));
                     }
                     else
                     {
@@ -172,21 +224,24 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="commandString">The command string to match.</param>
         /// <returns></returns>
         /// <exception cref="ErrorException">If command string did not match any command descriptor.</exception>
-        private async Task<CommandDescriptor> MatchByPrefixAsync(string commandString)
+        private async Task<CommandDescriptor> MatchByPrefixAsync(CommandString commandString)
         {
-            string prefix = commandString;
+            string prefix = commandString.Raw;
 
-            // Find the prefix, prefix is the entire string till first argument.
-            int idx = commandString.IndexOf(options.Extractor.ArgumentPrefix, StringComparison.OrdinalIgnoreCase);
+            // Find the prefix. Prefix is the entire string till first argument or default argument value.
+            // But the default argument is specified after the command prefix followed by command separator.
+            // E.g. pi auth login {default_arg_value}. So it is difficult to determine the 
+            // not use argument prefix, it uses the c so its not possible to determine
+            int idx = prefix.IndexOf(options.Extractor.ArgumentPrefix, StringComparison.Ordinal);
             if (idx > 0)
             {
-                prefix = commandString.Substring(0, idx);
+                prefix = prefix.Substring(0, idx);
             }
 
             // Make sure we trim the command separator. prefix from the previous step will most likely have a command
             // separator pi auth login -key=value
             prefix = prefix.TrimEnd(options.Extractor.Separator);
-            TryResultOrError<CommandDescriptor> result = await commandStore.TryFindByPrefixAsync(prefix);
+            TryResultOrError<CommandDescriptor> result = await commandStore.TryMatchByPrefixAsync(prefix);
             if (result.Error != null)
             {
                 throw new ErrorException(result.Error);
@@ -213,7 +268,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private async Task<Arguments?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Arguments? userArguments)
         {
             // If default argument value is disabled or the command itself does not support any arguments then ignore
-            if (!options.Extractor.ArgumentDefaultValue.GetValueOrDefault()
+            if (!options.Extractor.DefaultArgumentValue.GetValueOrDefault()
                 || commandDescriptor.ArgumentDescriptors == null
                 || commandDescriptor.ArgumentDescriptors.Count == 0)
             {
@@ -221,14 +276,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Sanity check
-            if (argumentDefaultValueProvider == null)
+            if (defaultArgumentValueProvider == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IArgumentDefaultValueProvider).FullName);
+                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
             }
 
             // Get default values. Make sure we take user inputs.
             Arguments? finalArgs = userArguments;
-            ArgumentDefaultValueProviderResult defaultResult = await argumentDefaultValueProvider.ProvideAsync(new ArgumentDefaultValueProviderContext(commandDescriptor));
+            DefaultArgumentValueProviderResult defaultResult = await defaultArgumentValueProvider.ProvideAsync(new DefaultArgumentValueProviderContext(commandDescriptor));
             if (defaultResult.DefaultValueArgumentDescriptors != null && defaultResult.DefaultValueArgumentDescriptors.Count > 0)
             {
                 // arguments can be null here, if the command string did not specify any arguments
@@ -263,9 +318,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return finalArgs;
         }
 
-        private readonly IArgumentDefaultValueProvider? argumentDefaultValueProvider;
         private readonly IArgumentExtractor argumentExtractor;
         private readonly ICommandDescriptorStore commandStore;
+        private readonly IDefaultArgumentProvider? defaultArgumentProvider;
+        private readonly IDefaultArgumentValueProvider? defaultArgumentValueProvider;
         private readonly ILogger<SeparatorCommandExtractor> logger;
         private readonly CliOptions options;
     }

@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public void CommandExtractorResultNullCommandIdentityShouldThrow()
+        public void CommandExtractorResultNullCommandDescriptorShouldThrow()
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.

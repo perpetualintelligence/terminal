@@ -28,5 +28,10 @@ namespace PerpetualIntelligence.Cli.Mocks
         {
             throw new System.NotImplementedException();
         }
+
+        public Task<TryResultOrError<CommandDescriptor>> TryMatchByPrefixAsync(string prefix)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

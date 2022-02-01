@@ -13,11 +13,6 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class ExtractorOptions
     {
         /// <summary>
-        /// Determines whether the extractor support extracting default argument value. Defaults to <c>false</c>.
-        /// </summary>
-        public bool? ArgumentDefaultValue { get; set; } = false;
-
-        /// <summary>
         /// The argument prefix. Defaults to dash char <c>-</c>.
         /// </summary>
         public string? ArgumentPrefix { get; set; } = "-";
@@ -26,6 +21,16 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The argument value separator. Defaults to equals char <c>=</c>.
         /// </summary>
         public string ArgumentSeparator { get; set; } = "=";
+
+        /// <summary>
+        /// Determines whether the extractor support extracting default arguments. Defaults to <c>false</c>.
+        /// </summary>
+        public bool? DefaultArgument { get; set; } = false;
+
+        /// <summary>
+        /// Determines whether the extractor support extracting default argument values. Defaults to <c>false</c>.
+        /// </summary>
+        public bool? DefaultArgumentValue { get; set; } = false;
 
         /// <summary>
         /// The command string separator. Defaults to a single space char.

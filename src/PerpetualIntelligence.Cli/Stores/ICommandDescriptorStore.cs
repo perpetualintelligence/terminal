@@ -31,5 +31,10 @@ namespace PerpetualIntelligence.Cli.Commands.Stores
         /// Attempts to find a a <see cref="CommandDescriptor"/> by its prefix.
         /// </summary>
         public Task<TryResultOrError<CommandDescriptor>> TryFindByPrefixAsync(string prefix);
+
+        /// <summary>
+        /// Attempts to match a a <see cref="CommandDescriptor"/> by its prefix.
+        /// </summary>
+        public Task<TryResultOrError<CommandDescriptor>> TryMatchByPrefixAsync(string prefix);
     }
 }

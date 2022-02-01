@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 namespace PerpetualIntelligence.Cli.Commands.Extractors
@@ -18,8 +19,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="commandDescriptor">The command descriptor.</param>
         public ArgumentExtractorContext(string argumentString, CommandDescriptor commandDescriptor)
         {
+            if (string.IsNullOrWhiteSpace(argumentString))
+            {
+                throw new System.ArgumentException($"'{nameof(argumentString)}' cannot be null or whitespace.", nameof(argumentString));
+            }
+
             ArgumentString = argumentString;
-            CommandDescriptor = commandDescriptor;
+            CommandDescriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
         }
 
         /// <summary>
