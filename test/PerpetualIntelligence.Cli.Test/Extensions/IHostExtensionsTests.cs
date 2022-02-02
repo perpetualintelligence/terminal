@@ -276,8 +276,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             if (stringWriter != null)
             {
-                // FOMAC: TODO: WHy is this disposed early ?
-                //stringWriter.Dispose();
+                stringWriter.Dispose();
             }
         }
 

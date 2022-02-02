@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
     /// <summary>
     /// The command router context.
     /// </summary>
-    public class CommandRouterResult : ResultNoError
+    public class CommandRouterResult
     {
     }
 }

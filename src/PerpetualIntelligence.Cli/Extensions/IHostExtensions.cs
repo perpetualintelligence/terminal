@@ -1,5 +1,5 @@
 /*
-    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com
@@ -37,17 +37,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="title">The command title to show in the console.</param>
         [WriteDocumentation("Add info about exception handling for ErrorException")]
-        public static Task RunRouterAsync(this IHost host, string title, int? timeout, CancellationToken? cancellationToken)
+        public static async Task RunRouterAsync(this IHost host, string title, int? timeout, CancellationToken? cancellationToken)
         {
             // Track the application lifetime so we can know whether cancellation is requested.
             IHostApplicationLifetime? applicationLifetime = host.Services.GetService<IHostApplicationLifetime>();
 
             while (true)
             {
-                // Avoid block threads during cancellation and let the
+                //Avoid block threads during cancellation and let the
                 // applicationLifetime.ApplicationStopping.IsCancellationRequested get synchronized so we can honor the
                 // app shutdown
-                //await Task.Delay(200);
+                await Task.Delay(200);
 
                 // Honor the cancellation request.
                 if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
@@ -130,8 +130,6 @@ namespace PerpetualIntelligence.Cli.Extensions
                     }
                 }
             };
-
-            return Task.CompletedTask;
         }
     }
 }

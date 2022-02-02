@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// <summary>
     /// The command extractor result.
     /// </summary>
-    public class CommandExtractorResult : ResultNoError
+    public class CommandExtractorResult
     {
         /// <summary>
         /// Initialize a new instance.

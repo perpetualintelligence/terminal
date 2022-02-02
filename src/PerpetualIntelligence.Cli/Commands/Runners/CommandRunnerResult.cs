@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The command runner result.
     /// </summary>
-    public class CommandRunnerResult : ResultNoError
+    public class CommandRunnerResult
     {
     }
 }

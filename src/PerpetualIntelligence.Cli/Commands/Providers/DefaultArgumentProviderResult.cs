@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
     /// <summary>
     /// The argument default provider result.
     /// </summary>
-    public class DefaultArgumentProviderResult : ResultNoError
+    public class DefaultArgumentProviderResult
     {
         /// <summary>
         /// Initialize a new instance.

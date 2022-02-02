@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
     /// <summary>
     /// The command handler result.
     /// </summary>
-    public class CommandHandlerResult : ResultNoError
+    public class CommandHandlerResult
     {
     }
 }

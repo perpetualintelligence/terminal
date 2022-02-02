@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// The argument data-type mapper result.
     /// </summary>
-    public class ArgumentDataTypeMapperResult : ResultNoError
+    public class ArgumentDataTypeMapperResult
     {
         /// <summary>
         /// Initialize a new instance.
