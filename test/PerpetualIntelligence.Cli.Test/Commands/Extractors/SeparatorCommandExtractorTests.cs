@@ -35,6 +35,44 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
+        public async Task WithInStringCannotBeWhitespace()
+        {
+            // Make sure command separator is different so we can fail for argument separator below.
+            options.Extractor.StringWithIn = "   ";
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token cannot be whitespace.");
+        }
+
+        [TestMethod]
+        public async Task WithInStringCannotBeSameAsSeparator()
+        {
+            // Make sure command separator is different so we can fail for argument separator below.
+            options.Extractor.Separator = "^";
+            options.Extractor.StringWithIn = "^";
+
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token and separator cannot be same. with_in=^");
+        }
+
+        [TestMethod]
+        public async Task WithInStringCannotBeSameAsArgPrefix()
+        {
+            // Make sure command separator is different so we can fail for argument separator below.
+            options.Extractor.ArgumentPrefix = "^";
+            options.Extractor.StringWithIn = "^";
+
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token and argument prefix cannot be same. with_in=^");
+        }
+
+        [TestMethod]
+        public async Task WithInStringCannotBeSameAsArgSeparator()
+        {
+            // Make sure command separator is different so we can fail for argument separator below.
+            options.Extractor.ArgumentSeparator = "^";
+            options.Extractor.StringWithIn = "^";
+
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token and argument separator cannot be same. with_in=^");
+        }
+
+        [TestMethod]
         public async Task ArgumentPrefixCannotBeNullOrWhitespaceAsync()
         {
             options.Extractor.ArgumentPrefix = null;

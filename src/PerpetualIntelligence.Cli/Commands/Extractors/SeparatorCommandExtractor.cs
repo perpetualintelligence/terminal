@@ -123,7 +123,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // with_in cannot be same as ArgumentPrefix
             if (options.Extractor.Separator.Equals(options.Extractor.StringWithIn, StringComparison.Ordinal))
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator prefix cannot be same. with_in={0}", options.Extractor.StringWithIn);
+                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.StringWithIn);
             }
 
             // with_in cannot be same as ArgumentPrefix
