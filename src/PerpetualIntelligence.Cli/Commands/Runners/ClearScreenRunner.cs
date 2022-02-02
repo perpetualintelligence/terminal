@@ -8,16 +8,15 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Extensions;
-using System.Threading;
+using System;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
-    /// The exit command runner.
+    /// The clear screen command runner.
     /// </summary>
-    public class ExitRunner : CommandRunner
+    public class ClearScreenRunner : CommandRunner
     {
         /// <summary>
         /// Initializes a new instance.
@@ -25,22 +24,16 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// <param name="host">The host.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ExitRunner(IHost host, CliOptions options, ILogger<ExitRunner> logger) : base(options, logger)
+        public ClearScreenRunner(IHost host, CliOptions options, ILogger<ExitRunner> logger) : base(options, logger)
         {
             this.host = host;
         }
 
         /// <inheritdoc/>
-        public override async Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public override Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
-            // Confirm
-            string? answer = await context.Command.ReadAnswerAsync("Are you sure", "y", "n");
-            if (answer == "y" || answer == "Y")
-            {
-                await host.StopAsync(CancellationToken.None);
-            }
-
-            return new CommandRunnerResult();
+            Console.Clear();
+            return Task.FromResult(new CommandRunnerResult());
         }
 
         private readonly IHost host;
