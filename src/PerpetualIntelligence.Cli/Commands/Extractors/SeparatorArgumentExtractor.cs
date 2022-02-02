@@ -11,6 +11,7 @@ using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Extractors
@@ -83,18 +84,26 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
             else
             {
+                // key1=value
                 argId = argumentString.Substring(0, sepIdx);
-                argValue = argumentString.TrimStart(argId).TrimStart(options.Extractor.ArgumentSeparator);
-            }
+                argValue = argumentString.TrimStart($"{argId}{options.Extractor.ArgumentSeparator}");
 
-            // FOMAC
-            //string[] argSplit = argumentString.Split(options.Extractor.ArgumentSeparator);
-            //if (argSplit.Length > 2)
-            //{
-            //    // Invalid syntax
-            //    string errorDesc = logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument syntax is not valid. command_name={0} command_id={1} argument_string={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.ArgumentString);
-            //    return Task.FromResult(OneImlxResult.NewError<ArgumentExtractorResult>(Errors.InvalidArgument, errorDesc));
-            //}
+                // Check if we need to extract the value within a token
+                if (options.Extractor.StringWithIn != null)
+                {
+                    // - with_in -> "
+                    // - Pattern -> ^"(.*)$
+                    // - E.g. "text" or "test"message"
+                    // - Match the start and end so we can have with_in in between as well.
+                    Regex extractWithIn = new($"^{options.Extractor.StringWithIn}(.*){options.Extractor.StringWithIn}$");
+                    Match match = extractWithIn.Match(argValue);
+                    if (match.Success)
+                    {
+                        // (.*) captures the group so we can get the string with_in
+                        argValue = match.Groups[1].Value;
+                    }
+                }
+            }
 
             // The split key cannot be null or empty
             if (string.IsNullOrWhiteSpace(argId))

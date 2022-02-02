@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultArgumentProvider(CliOptions options, ILogger<DefaultArgumentValueProvider> logger)
+        public DefaultArgumentProvider(CliOptions options, ILogger<DefaultArgumentProvider> logger)
         {
             this.options = options;
             this.logger = logger;
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
             return Task.FromResult(new DefaultArgumentProviderResult(context.CommandDescriptor.GetArgumentDescriptor(context.CommandDescriptor.DefaultArgument)));
         }
 
-        private readonly ILogger<DefaultArgumentValueProvider> logger;
+        private readonly ILogger<DefaultArgumentProvider> logger;
         private readonly CliOptions options;
     }
 }

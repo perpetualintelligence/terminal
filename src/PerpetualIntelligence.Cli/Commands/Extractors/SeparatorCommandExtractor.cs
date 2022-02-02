@@ -16,6 +16,7 @@ using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Shared.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Extractors
@@ -113,6 +114,30 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be null or whitespace.", options.Extractor.ArgumentPrefix);
             }
 
+            // Argument prefix cannot be null, empty or whitespace
+            if (options.Extractor.StringWithIn != null && options.Extractor.StringWithIn.All(e => char.IsWhiteSpace(e)))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.StringWithIn);
+            }
+
+            // with_in cannot be same as ArgumentPrefix
+            if (options.Extractor.Separator.Equals(options.Extractor.StringWithIn, StringComparison.Ordinal))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator prefix cannot be same. with_in={0}", options.Extractor.StringWithIn);
+            }
+
+            // with_in cannot be same as ArgumentPrefix
+            if (options.Extractor.ArgumentPrefix.Equals(options.Extractor.StringWithIn, StringComparison.Ordinal))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument prefix cannot be same. with_in={0}", options.Extractor.StringWithIn);
+            }
+
+            // with_in cannot be same as ArgumentSeparator
+            if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.StringWithIn, StringComparison.Ordinal))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument separator cannot be same. with_in={0}", options.Extractor.StringWithIn);
+            }
+
             // Command default argument provider is missing
             if (options.Extractor.DefaultArgument.GetValueOrDefault() && defaultArgumentProvider == null)
             {
@@ -120,7 +145,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Argument default value provider is missing
-            if (options.Extractor.DefaultArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
+            if (options.Extractor.DefaulValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
             }
@@ -131,6 +156,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Remove the prefix from the start so we can get the argument string.
             string raw = context.CommandString.Raw;
             string argString = raw.TrimStart(commandDescriptor.Prefix, StringComparison.Ordinal);
+
+            // The argSplit string is used to split the arguments. This is to avoid splitting the argument value
+            // containing the separator. E.g. If space is the separator then the arg split format is ' -'
+            // -Key1=val with space -Key2=val2
+            // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
+            // split the arg string into 3 parts but there are only 2 args. May be the string should be in quotes ""
+            string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
 
             // Commands may not have arguments.
             if (!string.IsNullOrWhiteSpace(argString))
@@ -152,10 +184,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 return null;
             }
 
-            // If we are here it
-            // means arg starts with a separator
-
-
             // Check if the command supports default argument. The default argument does not have standard argument
             // syntax For e.g. If 'pi format ruc' command has 'i' as a default argument then the command string 'pi
             // format ruc remove_underscore_and_capitalize' will be extracted as 'pi format ruc' and
@@ -168,27 +196,42 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     throw new ErrorException(Errors.InvalidConfiguration, "The default argument provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
                 }
 
-                // Get the default argument
-                DefaultArgumentProviderResult defaultArgumentProviderResult = await defaultArgumentProvider.ProvideAsync(new DefaultArgumentProviderContext(commandDescriptor));
+                // Options and command supports the default argument, but is the default value provided by user ? If yes
+                // then add the default attribute
+                bool proccessDefaultArg = true;
+                string argStringDef = argString.TrimStart(options.Extractor.Separator, StringComparison.Ordinal);
+                if (argStringDef.StartsWith(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+                {
+                    // Default attribute value should be the first after command prefix User has explicitly passed an argument.
+                    proccessDefaultArg = false;
+                }
 
-                // Convert the arg string to standard format and let the IArgumentExtractor extract the argument and its
-                // value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
-                argString = $"{options.Extractor.Separator}{options.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{options.Extractor.ArgumentSeparator}{argString.TrimStart(options.Extractor.Separator)}";
+                if (proccessDefaultArg)
+                {
+                    // Get the default argument
+                    DefaultArgumentProviderResult defaultArgumentProviderResult = await defaultArgumentProvider.ProvideAsync(new DefaultArgumentProviderContext(commandDescriptor));
+
+                    // Convert the arg string to standard format and let the IArgumentExtractor extract the argument and
+                    // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
+                    argString = $"{options.Extractor.Separator}{options.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{options.Extractor.ArgumentSeparator}{argStringDef}";
+                }
             }
 
-            // The argument split string. This string is used to split the arguments. This is to avoid splitting the
-            // argument value containing the separator. E.g. If space is the separator then the arg split format is ' -'
-            // -Key1=val with space -Key2=val2
-            // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
-            // split the arg string into 3 parts but there are only 2 args.
-            string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
-
             Arguments arguments = new();
-            string[] args = argString.Split(new string[] { argSplit }, StringSplitOptions.RemoveEmptyEntries);
+            IEnumerable<string> args = argString.Split(new string[] { argSplit }, StringSplitOptions.None);
             List<Error> errors = new();
             foreach (string arg in args)
             {
-                string prefixArg = string.Concat(options.Extractor.ArgumentPrefix, arg);
+                string trimedArg = arg.TrimStart(options.Extractor.Separator).TrimEnd(options.Extractor.Separator);
+
+                // If the arg only has the separator then skip that. This will happen if the user uses multiple
+                // separators between arguments.
+                if (!trimedArg.Any())
+                {
+                    continue;
+                }
+
+                string prefixArg = string.Concat(options.Extractor.ArgumentPrefix, trimedArg);
 
                 // We capture all the argument extraction errors
                 TryResultOrError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(prefixArg, commandDescriptor));
@@ -205,7 +248,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     }
                     else
                     {
-                        arguments.Add(tryResult.Result.Argument);
+                        // Avoid dictionary duplicate key and give meaningful error
+                        if (arguments.Contains(tryResult.Result.Argument))
+                        {
+                            errors.Add(new Error(Errors.DuplicateArgument, "The argument is already added to the command. argument={0}", tryResult.Result.Argument.Id));
+                        }
+                        else
+                        {
+                            arguments.Add(tryResult.Result.Argument);
+                        }
                     }
                 }
             }
@@ -228,10 +279,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             string prefix = commandString.Raw;
 
-            // Find the prefix. Prefix is the entire string till first argument or default argument value.
-            // But the default argument is specified after the command prefix followed by command separator.
-            // E.g. pi auth login {default_arg_value}. So it is difficult to determine the 
-            // not use argument prefix, it uses the c so its not possible to determine
+            // Find the prefix. Prefix is the entire string till first argument or default argument value. But the
+            // default argument is specified after the command prefix followed by command separator. E.g. pi auth login
+            // {default_arg_value}. So it is difficult to determine the not use argument prefix, it uses the c so its
+            // not possible to determine
             int idx = prefix.IndexOf(options.Extractor.ArgumentPrefix, StringComparison.Ordinal);
             if (idx > 0)
             {
@@ -268,7 +319,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private async Task<Arguments?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Arguments? userArguments)
         {
             // If default argument value is disabled or the command itself does not support any arguments then ignore
-            if (!options.Extractor.DefaultArgumentValue.GetValueOrDefault()
+            if (!options.Extractor.DefaulValue.GetValueOrDefault()
                 || commandDescriptor.ArgumentDescriptors == null
                 || commandDescriptor.ArgumentDescriptors.Count == 0)
             {

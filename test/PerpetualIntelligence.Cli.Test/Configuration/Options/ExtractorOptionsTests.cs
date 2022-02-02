@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,7 +26,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             Assert.AreEqual("-", options.ArgumentPrefix);
             Assert.AreEqual("=", options.ArgumentSeparator);
             Assert.AreEqual(" ", options.Separator);
-            Assert.AreEqual(false, options.DefaultArgumentValue);
+            Assert.AreEqual(false, options.DefaulValue);
+            Assert.AreEqual(null, options.StringWithIn);
         }
     }
 }

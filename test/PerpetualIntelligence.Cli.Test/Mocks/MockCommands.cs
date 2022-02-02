@@ -53,6 +53,14 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string", defaultValue: "mello default")
             };
 
+            TestDefaultArgumentOneDefaultValueDescriptors = new()
+            {
+                new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value"),
+                new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
+                new ArgumentDescriptor("key3", DataType.PhoneNumber, false, "Key3 value phone"),
+                new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
+            };
+
             Commands = new()
             {
                 // Different name and prefix
@@ -67,14 +75,17 @@ namespace PerpetualIntelligence.Cli.Mocks
                 // Command with no args
                 NewCommandDefinition("id4", "name4", "prefix4_noargs").Item1,
 
-                // Command with no default args
+                // Command with no default arg
                 NewCommandDefinition("id5", "name5", "prefix5_default", TestDefaultArgumentDescriptors, "desc5", typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
-                // Command with no default args
-                NewCommandDefinition("id5", "name5", "prefix6_empty_args", new(), "desc5", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                // Command with no default arg
+                NewCommandDefinition("id6", "name6", "prefix6_empty_args", new(), "desc6", typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
-                // Command with no default args
-                NewCommandDefinition("id5", "name5", "prefix6_empty_args", new(), "desc5", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                // Command with default arg
+                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", TestDefaultArgumentDescriptors, "desc7", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
+
+                // Command with default arg
+                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", TestDefaultArgumentOneDefaultValueDescriptors, "desc8", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
             };
 
             GroupedCommands = new()
@@ -109,5 +120,6 @@ namespace PerpetualIntelligence.Cli.Mocks
         public static List<CommandDescriptor> GroupedCommands;
         public static ArgumentDescriptors TestArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentDescriptors;
+        public static ArgumentDescriptors TestDefaultArgumentOneDefaultValueDescriptors;
     }
 }

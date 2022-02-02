@@ -30,11 +30,16 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// <summary>
         /// Determines whether the extractor support extracting default argument values. Defaults to <c>false</c>.
         /// </summary>
-        public bool? DefaultArgumentValue { get; set; } = false;
+        public bool? DefaulValue { get; set; } = false;
 
         /// <summary>
         /// The command string separator. Defaults to a single space char.
         /// </summary>
         public string Separator { get; set; } = " ";
+
+        /// <summary>
+        /// Defines the token within which to extract a string value. Default to <c>null</c>.
+        /// </summary>
+        public string? StringWithIn = null;
     }
 }

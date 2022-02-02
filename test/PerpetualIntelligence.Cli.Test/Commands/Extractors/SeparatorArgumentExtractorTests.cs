@@ -294,11 +294,71 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = prefix;
             options.Extractor.ArgumentSeparator = separator;
 
-            ArgumentExtractorContext context = new ArgumentExtractorContext($"{prefix}key1{separator}value1", command.Item1);
+            ArgumentExtractorContext context = new($"{prefix}key1{separator}value1", command.Item1);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"key1", result.Argument.Id);
             Assert.AreEqual($"value1", result.Argument.Value);
+        }
+
+        [TestMethod]
+        [DataTestMethod]
+        [DataRow("\"")]
+        [DataRow("~")]
+        [DataRow("#")]
+        [DataRow("sp")]
+        [DataRow("öö")]
+        [DataRow("माणूस")]
+        [DataRow("女性")]
+        public async Task WithInConfiguredButNotUsedShouldExtractCorrectlyAsync(string withIn)
+        {
+            options.Extractor.StringWithIn = withIn;
+
+            ArgumentExtractorContext context = new($"-key1=test string with {withIn} in between and end but not at start {withIn}", command.Item1);
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Argument);
+            Assert.AreEqual($"key1", result.Argument.Id);
+            Assert.AreEqual($"test string with {withIn} in between and end but not at start {withIn}", result.Argument.Value);
+        }
+
+        [TestMethod]
+        [DataTestMethod]
+        [DataRow("\"")]
+        [DataRow("~")]
+        [DataRow("#")]
+        [DataRow("sp")]
+        [DataRow("öö")]
+        [DataRow("माणूस")]
+        [DataRow("女性")]
+        public async Task WithInConfiguredShouldExtractCorrectlyAsync(string withIn)
+        {
+            options.Extractor.StringWithIn = withIn;
+
+            ArgumentExtractorContext context = new($"-key1={withIn}test string with {withIn} in between {withIn}", command.Item1);
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Argument);
+            Assert.AreEqual($"key1", result.Argument.Id);
+            Assert.AreEqual($"test string with {withIn} in between ", result.Argument.Value);
+        }
+
+        [TestMethod]
+        [DataTestMethod]
+        [DataRow("\"")]
+        [DataRow("~")]
+        [DataRow("#")]
+        [DataRow("sp")]
+        [DataRow("öö")]
+        [DataRow("माणूस")]
+        [DataRow("女性")]
+        public async Task WithInNotConfiguredShouldNotExtractAsync(string withIn)
+        {
+            options.Extractor.StringWithIn = null;
+
+            ArgumentExtractorContext context = new($"-key1={withIn}test string with {withIn} in between {withIn}", command.Item1);
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Argument);
+            Assert.AreEqual($"key1", result.Argument.Id);
+            Assert.AreEqual($"{withIn}test string with {withIn} in between {withIn}", result.Argument.Value);
         }
 
         protected override void OnTestInitialize()
