@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             while (true)
             {
-                //Avoid block threads during cancellation and let the
+                // Avoid block threads during cancellation and let the
                 // applicationLifetime.ApplicationStopping.IsCancellationRequested get synchronized so we can honor the
                 // app shutdown
                 await Task.Delay(200);

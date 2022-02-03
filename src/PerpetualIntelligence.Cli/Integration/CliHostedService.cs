@@ -68,7 +68,7 @@ namespace PerpetualIntelligence.Cli.Integration
         /// </summary>
         protected virtual void OnStarted()
         {
-            Console.WriteLine("Server started.");
+            Console.WriteLine("Server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
             Console.WriteLine();
 
             // The console loop for routing commands.
