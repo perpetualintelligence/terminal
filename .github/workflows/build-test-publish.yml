@@ -27,7 +27,7 @@ on:
         - preview
         - rc
         - release
-        default: preview
+        default: alpha
       registry:
         type: choice
         description: 'The package registry'

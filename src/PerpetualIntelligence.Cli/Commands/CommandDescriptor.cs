@@ -10,6 +10,7 @@ using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
@@ -18,8 +19,8 @@ namespace PerpetualIntelligence.Cli.Commands
     /// </summary>
     /// <remarks>
     /// The <see cref="CommandDescriptor"/> defines <see cref="Command"/> identity and its supported
-    /// <see cref="Argument"/> . The <see cref="Command"/> is a runtime validated representation of an actual command
-    /// and its argument values passed by a user or an application.
+    /// <see cref="Argument"/>. The <see cref="Command"/> is a runtime validated representation of an actual command and
+    /// its argument values passed by a user or an application.
     /// </remarks>
     /// <seealso cref="Command"/>
     /// <seealso cref="ArgumentDescriptor"/>
@@ -129,7 +130,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Gets an argument descriptor.
         /// </summary>
-        /// <param name="argId">The argument descriptor identifier.</param>
+        /// <param name="argId">The argument descriptor identifier or its alias.</param>
         /// <returns><see cref="ArgumentDescriptor"/> instance if found.</returns>
         /// <exception cref="ErrorException">This exception is thrown if the argument does not exist.</exception>
         /// <seealso cref="TryGetArgumentDescriptor(string, out ArgumentDescriptor)"/>
@@ -143,6 +144,41 @@ namespace PerpetualIntelligence.Cli.Commands
             else
             {
                 throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. command_name={0} command_id={1} argument={2}", Name, Id, argId);
+            }
+        }
+
+        /// <summary>
+        /// Gets an argument descriptor by its id or an alias.
+        /// </summary>
+        /// <param name="argIdOrAlias">The argument descriptor identifier or its alias.</param>
+        /// <param name="alias"><c>true</c> to find the argument by alias, <c>false</c> to find by its identifier alone.</param>
+        /// <remarks>
+        /// We recommend to use <see cref="GetArgumentDescriptor(string)"/> to get an argument value. Using alias will
+        /// degrade the application's performance.
+        /// </remarks>
+        /// <returns><see cref="ArgumentDescriptor"/> instance if found.</returns>
+        /// <exception cref="ErrorException">This exception is thrown if the argument does not exist.</exception>
+        /// <seealso cref="TryGetArgumentDescriptor(string, out ArgumentDescriptor)"/>
+        public ArgumentDescriptor GetArgumentDescriptor(string argIdOrAlias, bool? alias)
+        {
+            bool found = TryGetArgumentDescriptor(argIdOrAlias, out ArgumentDescriptor? arg);
+            if (found)
+            {
+                return arg;
+            }
+            else
+            {
+                // If asked find the argument by alias
+                if (alias.GetValueOrDefault())
+                {
+                    arg = ArgumentDescriptors.FirstOrDefault(e => e.Alias != null && e.Alias.Equals(argIdOrAlias, StringComparison.Ordinal));
+                    if (arg != null)
+                    {
+                        return arg;
+                    }
+                }
+
+                throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. command_name={0} command_id={1} argument={2}", Name, Id, argIdOrAlias);
             }
         }
 

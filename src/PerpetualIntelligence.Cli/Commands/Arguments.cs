@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
@@ -27,12 +28,42 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Gets the argument value.
+        /// Gets the argument value by its id.
         /// </summary>
-        /// <typeparam name="TValue">The value type.</typeparam>
-        public TValue GetValue<TValue>(string argumentId)
+        /// <param name="argId">The argument identifier or the alias.</param>
+        public TValue GetValue<TValue>(string argId)
         {
-            return (TValue)this[argumentId].Value;
+            return (TValue)this[argId].Value;
+        }
+
+        /// <summary>
+        /// Gets the argument value by its id or alias.
+        /// </summary>
+        /// <param name="argIdOrAlias">The argument identifier or the alias.</param>
+        /// <param name="alias"><c>true</c> to find the argument by alias, <c>false</c> to find by its identifier.</param>
+        /// <typeparam name="TValue">The value type.</typeparam>
+        /// <remarks>
+        /// We recommend to use <see cref="GetValue{TValue}(string)"/> to get an argument value. Using alias will
+        /// degrade the application's performance.
+        /// </remarks>
+        public TValue GetValue<TValue>(string argIdOrAlias, bool? alias = false)
+        {
+            if (alias.GetValueOrDefault())
+            {
+                // if alias is true, we will still try and find with id first and then with alias
+                if (Contains(argIdOrAlias))
+                {
+                    return (TValue)this[argIdOrAlias].Value;
+                }
+                else
+                {
+                    return (TValue)this.Items.First(e => e.Alias != null && e.Alias.Equals(argIdOrAlias, StringComparison.Ordinal)).Value;
+                }
+            }
+            else
+            {
+                return (TValue)this[argIdOrAlias].Value;
+            }
         }
 
         /// <inheritdoc/>

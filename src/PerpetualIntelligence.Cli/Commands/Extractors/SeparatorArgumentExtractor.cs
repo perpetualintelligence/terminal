@@ -75,18 +75,18 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             // Split by key-value separator
             int sepIdx = argumentString.IndexOf(options.Extractor.ArgumentSeparator, StringComparison.Ordinal);
-            string argId;
+            string argIdOrAlias;
             string? argValue = null;
             if (sepIdx < 0)
             {
                 // Boolean (Non value arg)
-                argId = argumentString;
+                argIdOrAlias = argumentString;
             }
             else
             {
                 // key1=value
-                argId = argumentString.Substring(0, sepIdx);
-                argValue = argumentString.TrimStart($"{argId}{options.Extractor.ArgumentSeparator}");
+                argIdOrAlias = argumentString.Substring(0, sepIdx);
+                argValue = argumentString.TrimStart($"{argIdOrAlias}{options.Extractor.ArgumentSeparator}");
 
                 // Check if we need to extract the value within a token
                 if (options.Extractor.StringWithIn != null)
@@ -106,13 +106,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // The split key cannot be null or empty
-            if (string.IsNullOrWhiteSpace(argId))
+            if (string.IsNullOrWhiteSpace(argIdOrAlias))
             {
                 throw new ErrorException(Errors.InvalidArgument, "The argument id is null or empty. command_name={0} command_id={1} arg={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.ArgumentString);
             }
 
-            // Now find the argument by key or name
-            ArgumentDescriptor argFindResult = context.CommandDescriptor.GetArgumentDescriptor(argId);
+            // Now find the argument by id or alias
+            ArgumentDescriptor argFindResult = context.CommandDescriptor.GetArgumentDescriptor(argIdOrAlias, options.Extractor.ArgumentAlias.GetValueOrDefault());
 
             // Key only (treat it as a boolean) value=true
             if (argValue == null)

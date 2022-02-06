@@ -87,6 +87,17 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
+        /// The argument alias.
+        /// </summary>
+        /// <remarks>
+        /// The argument alias is unique within a command. Argument alias supports the legacy apps that identified a
+        /// command argument with an id and an alias string. For modern console apps, we recommend using just an
+        /// argument identifier. The core data model is optimized to work with argument id. In general, an app should
+        /// not identify the same argument with multiple strings. Using alias will degrade the performance.
+        /// </remarks>
+        public string? Alias { get; set; }
+
+        /// <summary>
         /// The argument custom data type.
         /// </summary>
         /// <remarks>This custom data type is used only if the <see cref="DataType"/> property is set to <see cref="DataType.Custom"/>.</remarks>

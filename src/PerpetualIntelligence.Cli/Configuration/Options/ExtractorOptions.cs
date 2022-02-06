@@ -13,6 +13,17 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class ExtractorOptions
     {
         /// <summary>
+        /// Determines whether the extractor support extracting the argument by alias. Defaults to <c>false</c>.
+        /// </summary>
+        /// <remarks>
+        /// Argument alias supports the legacy apps that identified a command argument with an id and an alias string.
+        /// For modern console apps, we recommend using just an argument identifier. The core data model is optimized to
+        /// work with argument id. In general, an app should not identify the same argument with multiple string. Using
+        /// alias will degrade the performance.
+        /// </remarks>
+        public bool? ArgumentAlias { get; set; } = false;
+
+        /// <summary>
         /// The argument prefix. Defaults to dash char <c>-</c>.
         /// </summary>
         public string? ArgumentPrefix { get; set; } = "-";
@@ -23,14 +34,14 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string ArgumentSeparator { get; set; } = "=";
 
         /// <summary>
+        /// Determines whether the extractor support extracting default argument values. Defaults to <c>false</c>.
+        /// </summary>
+        public bool? DefaulArgumentValue { get; set; } = false;
+
+        /// <summary>
         /// Determines whether the extractor support extracting default arguments. Defaults to <c>false</c>.
         /// </summary>
         public bool? DefaultArgument { get; set; } = false;
-
-        /// <summary>
-        /// Determines whether the extractor support extracting default argument values. Defaults to <c>false</c>.
-        /// </summary>
-        public bool? DefaulValue { get; set; } = false;
 
         /// <summary>
         /// The command string separator. Defaults to a single space char.

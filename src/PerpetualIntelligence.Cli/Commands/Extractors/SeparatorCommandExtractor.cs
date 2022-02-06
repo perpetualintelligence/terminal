@@ -145,7 +145,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Argument default value provider is missing
-            if (options.Extractor.DefaulValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
+            if (options.Extractor.DefaulArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
             }
@@ -319,7 +319,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private async Task<Arguments?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Arguments? userArguments)
         {
             // If default argument value is disabled or the command itself does not support any arguments then ignore
-            if (!options.Extractor.DefaulValue.GetValueOrDefault()
+            if (!options.Extractor.DefaulArgumentValue.GetValueOrDefault()
                 || commandDescriptor.ArgumentDescriptors == null
                 || commandDescriptor.ArgumentDescriptors.Count == 0)
             {

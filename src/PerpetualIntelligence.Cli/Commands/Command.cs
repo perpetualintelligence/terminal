@@ -5,7 +5,9 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Attributes;
+using PerpetualIntelligence.Shared.Exceptions;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -72,6 +74,44 @@ namespace PerpetualIntelligence.Cli.Commands
         [JsonPropertyName("properties")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Dictionary<string, object>? Properties { get; set; }
+
+        /// <summary>
+        /// Gets the optional argument value for the specified identifier.
+        /// </summary>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <returns>The optional argument value.</returns>
+        public TValue? GetOptionalArgumentValue<TValue>(string id)
+        {
+            if (Arguments == null)
+            {
+                return default;
+            }
+
+            if (Arguments.Contains(id))
+            {
+                return Arguments.GetValue<TValue>(id);
+            }
+            else
+            {
+                return default;
+            }
+        }
+
+        /// <summary>
+        /// Gets the required argument value for the specified identifier.
+        /// </summary>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <returns>The argument value.</returns>
+        /// <exception cref="ErrorException">If the argument is not supported.</exception>
+        public TValue GetRequiredArgumentValue<TValue>(string id)
+        {
+            if (Arguments == null)
+            {
+                throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. argument={0}", id);
+            }
+
+            return Arguments.GetValue<TValue>(id);
+        }
 
         /// <summary>
         /// Attempts to find an argument.

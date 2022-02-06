@@ -53,12 +53,20 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string", defaultValue: "mello default")
             };
 
-            TestDefaultArgumentOneDefaultValueDescriptors = new()
+            TestDefaultArgumentValueDescriptors = new()
             {
                 new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value"),
                 new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
                 new ArgumentDescriptor("key3", DataType.PhoneNumber, false, "Key3 value phone"),
                 new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
+            };
+
+            TestAliasArgumentDescriptors = new()
+            {
+                new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value") { Alias = "key1_alias" },
+                new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text") { },
+                new ArgumentDescriptor("key3", DataType.PhoneNumber, false, "Key3 value phone") { Alias = "key3_alias" },
+                new ArgumentDescriptor("key4", nameof(Double), false, "Key4 value number") { Alias = "key4_alias" },
             };
 
             Commands = new()
@@ -85,7 +93,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 NewCommandDefinition("id7", "name7", "prefix7_defaultarg", TestDefaultArgumentDescriptors, "desc7", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", TestDefaultArgumentOneDefaultValueDescriptors, "desc8", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
+                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", TestDefaultArgumentValueDescriptors, "desc8", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
             };
 
             GroupedCommands = new()
@@ -108,6 +116,18 @@ namespace PerpetualIntelligence.Cli.Mocks
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", TestArgumentDescriptors, "the slient oauth login command within the slogin group", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
             };
+
+            AliasCommands = new()
+            {
+                // Different name and prefix
+                NewCommandDefinition("orgid", "pi", "pi", TestAliasArgumentDescriptors, "the top org command group", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
+
+                // Same name and prefix with args
+                NewCommandDefinition("orgid:authid", "auth", "pi auth", TestAliasArgumentDescriptors, "the auth command group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Same name and prefix with args
+                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", TestAliasArgumentDescriptors, "the login command within the auth group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+            };
         }
 
         public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, ArgumentDescriptors? args = null, string? desc = null, Type? checker = null, Type? runner = null, string? defaultArg = null)
@@ -116,10 +136,12 @@ namespace PerpetualIntelligence.Cli.Mocks
             return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1));
         }
 
+        public static List<CommandDescriptor> AliasCommands;
         public static List<CommandDescriptor> Commands;
         public static List<CommandDescriptor> GroupedCommands;
+        public static ArgumentDescriptors TestAliasArgumentDescriptors;
         public static ArgumentDescriptors TestArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentDescriptors;
-        public static ArgumentDescriptors TestDefaultArgumentOneDefaultValueDescriptors;
+        public static ArgumentDescriptors TestDefaultArgumentValueDescriptors;
     }
 }

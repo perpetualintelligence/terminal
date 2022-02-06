@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using System;
@@ -42,6 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Description = argumentDescriptor.Description;
             Value = value;
             Properties = argumentDescriptor.Properties;
+            Alias = argumentDescriptor.Alias;
         }
 
         /// <summary>
@@ -70,6 +72,11 @@ namespace PerpetualIntelligence.Cli.Commands
             Value = value;
             DataType = dataType;
         }
+
+        /// <summary>
+        /// The argument alias.
+        /// </summary>
+        public string? Alias { get; }
 
         /// <summary>
         /// The argument custom data type.
