@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -99,8 +100,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Router will throw exception and then routing will get canceled
             await host.RunRouterAsync("test_title", null, tokenSource.Token);
 
-            // The string writer will have both exception message and concatenated routing canceled message
-            Assert.AreEqual("test_error_description. arg1=test1 arg2=test2 Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            // Check the published error
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
+            Assert.IsTrue(publisher.Called);
+            Assert.AreEqual("test_error_description. arg1=test1 arg2=test2", publisher.PublishedMessage);
+
+            // The string writer will have both routing canceled message
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
@@ -121,8 +127,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Router will throw exception and then routing will get canceled
             await host.RunRouterAsync("test_title", null, tokenSource.Token);
 
+            // Check the published error
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
+            Assert.IsTrue(publisher.Called);
+            Assert.AreEqual("explicit_error_description param1=test_param1 param2=test_param2.", publisher.PublishedMessage);
+
             // The string writer will have both exception message and concatenated routing canceled message
-            Assert.AreEqual("test_error_description param1=test_param1 param2=test_param2. Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
@@ -174,8 +185,12 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Router will throw exception and then routing will get canceled
             await host.RunRouterAsync("test_title", null, tokenSource.Token);
 
-            // The string writer will have both exception message and concatenated routing canceled message
-            Assert.AreEqual("The request failed. command_string=User has entered this command string additional_info=Test invalid operation. Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            // Check the published error
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
+            Assert.IsTrue(publisher.Called);
+            Assert.AreEqual("Test invalid operation.", publisher.PublishedMessage);
+
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
@@ -240,8 +255,12 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Route delay is set to 3000 and timeout is 2000
             await host.RunRouterAsync("test_title", 2000, tokenSource.Token);
 
-            // The string writer will have both timeout message and concatenated routing canceled message
-            Assert.AreEqual("The request timed out. command_string=User has entered this command string. Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            // Check the published error
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
+            Assert.IsTrue(publisher.Called);
+            Assert.AreEqual("The request timed out in 2000 milliseconds.", publisher.PublishedMessage);
+
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
         }
 
         [TestMethod]
@@ -333,17 +352,21 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Tells the logger to write to string writer so we can test it,
             stringWriter = new StringWriter();
-            var loggerFactory = new MockLoggerFactory();
-            loggerFactory.StringWriter = stringWriter;
+            var loggerFactory = new MockLoggerFactory
+            {
+                StringWriter = stringWriter
+            };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Exception publisher
+            arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());
         }
 
         private void ConfigureServicesErrorExceptionAndCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
 
-            // Adding space at the end so that any msg are correctly appended.
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new ErrorException("test_error_code", "test_error_description. arg1={0} arg2={1} ", "test1", "test2")));
+            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new ErrorException("test_error_code", "test_error_description. arg1={0} arg2={1}", "test1", "test2")));
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
@@ -353,6 +376,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 StringWriter = stringWriter
             };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Exception publisher
+            arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());
         }
 
         private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
@@ -360,7 +386,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             tokenSource = new CancellationTokenSource();
 
             // Adding space at the end so that any msg are correctly appended.
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation. ")));
+            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation.")));
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
@@ -370,6 +396,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 StringWriter = stringWriter
             };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Exception publisher
+            arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());
         }
 
         private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
@@ -377,7 +406,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             tokenSource = new CancellationTokenSource();
 
             // Adding space at the end so that any msg are correctly appended.
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, new Shared.Infrastructure.Error("test_error", "test_error_description param1={0} param2={1}. ", "test_param1", "test_param2")));
+            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, new Shared.Infrastructure.Error("explicit_error", "explicit_error_description param1={0} param2={1}.", "test_param1", "test_param2")));
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
@@ -387,6 +416,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 StringWriter = stringWriter
             };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Exception publisher
+            arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());
         }
 
         private void HostStopRequestCallback(object? state)

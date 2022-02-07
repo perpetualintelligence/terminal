@@ -13,6 +13,7 @@ using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Commands.Providers;
+using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Commands.Stores;
@@ -62,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddCommandDescriptor<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
+        public static ICliBuilder AddDescriptor<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
         {
             if (commandDescriptor.Runner != null && commandDescriptor.Checker != null)
             {
@@ -89,7 +90,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command descriptor store type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddCommandDescriptorStore<TStore>(this ICliBuilder builder) where TStore : class, ICommandDescriptorStore
+        public static ICliBuilder AddDescriptorStore<TStore>(this ICliBuilder builder) where TStore : class, ICommandDescriptorStore
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandDescriptorStore, TStore>();
@@ -163,6 +164,24 @@ namespace PerpetualIntelligence.Cli.Extensions
             builder.Services.AddTransient<IDefaultArgumentValueProvider, TDefaultArgumentValue>();
 
             return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="IErrorPublisher"/> and <see cref="IExceptionPublisher"/> to the service collection.
+        /// </summary>
+        /// <typeparam name="TError">The <see cref="IErrorPublisher"/> type.</typeparam>
+        /// <typeparam name="TException">The <see cref="IExceptionPublisher"/> type.</typeparam>
+        /// <param name="buider">The builder.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddPublisher<TError, TException>(this ICliBuilder buider) where TError : class, IErrorPublisher where TException : class, IExceptionPublisher
+        {
+            // Add error publisher
+            buider.Services.AddTransient<IErrorPublisher, TError>();
+
+            // Add exception publisher
+            buider.Services.AddTransient<IExceptionPublisher, TException>();
+
+            return buider;
         }
 
         /// <summary>

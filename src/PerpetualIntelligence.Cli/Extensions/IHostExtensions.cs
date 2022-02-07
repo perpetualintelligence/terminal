@@ -8,13 +8,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Abstractions;
 using PerpetualIntelligence.Shared.Attributes;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,40 +93,14 @@ namespace PerpetualIntelligence.Cli.Extensions
                     bool success = routeTask.Wait(timeout ?? Timeout.Infinite, cancellationToken ?? CancellationToken.None);
                     if (!success)
                     {
-                        CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                        ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request timed out. command_string={0}", raw);
+                        throw new TimeoutException($"The request timed out in {timeout} milliseconds.");
                     }
-                }
-                catch (OperationCanceledException)
-                {
-                    CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
-                    logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. command_string={0}", raw);
                 }
                 catch (Exception ex)
                 {
-                    CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
-
-                    if (ex.InnerException is ErrorException ee)
-                    {
-                        // This is a legit error thrown by the system
-                        logger.FormatAndLog(Microsoft.Extensions.Logging.LogLevel.Error, options.Logging, ee.Error.ErrorDescription, ee.Error.Args ?? Array.Empty<object?>());
-                    }
-                    else if (ex.InnerException is MultiErrorException me)
-                    {
-                        foreach (Error err in me.Errors)
-                        {
-                            // This is a legit error thrown by the system
-                            logger.FormatAndLog(Microsoft.Extensions.Logging.LogLevel.Error, options.Logging, err.ErrorDescription, err.Args ?? Array.Empty<object?>());
-                        }
-                    }
-                    else
-                    {
-                        // Unexpected error.
-                        logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} additional_info={1}", raw, ex.InnerException.Message);
-                    }
+                    IExceptionPublisher exceptionPublisher = host.Services.GetRequiredService<IExceptionPublisher>();
+                    ExceptionPublisherContext exContext = new(raw, ex.InnerException ?? ex);
+                    await exceptionPublisher.PublishAsync(exContext);
                 }
             };
         }

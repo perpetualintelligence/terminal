@@ -13,6 +13,7 @@ using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
+using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -56,7 +57,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandDescriptorShouldCorrectlyInitialize()
         {
-            cliBuilder.AddCommandDescriptor<MockCommandRunner, MockCommandChecker>(new CommandDescriptor("id1", "name1", "prefix1"));
+            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(new CommandDescriptor("id1", "name1", "prefix1"));
 
             var cmdDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             Assert.IsNotNull(cmdDescriptor);
@@ -81,7 +82,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandDescriptorStoreShouldCorrectlyInitialize()
         {
-            cliBuilder.AddCommandDescriptorStore<MockCommandDescriptorStore>();
+            cliBuilder.AddDescriptorStore<MockCommandDescriptorStore>();
 
             var serviceDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandDescriptorStore)));
             Assert.IsNotNull(serviceDescriptor);
@@ -150,6 +151,22 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsNotNull(defValue);
             Assert.AreEqual(ServiceLifetime.Transient, defValue.Lifetime);
             Assert.AreEqual(typeof(MockDefaultArgumentValueProvider), defValue.ImplementationType);
+        }
+
+        [TestMethod]
+        public void AddPublisherShouldCorrectlyInitialize()
+        {
+            cliBuilder.AddPublisher<MockErrorPublisher, MockExceptionPublisher>();
+
+            var err = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IErrorPublisher)));
+            Assert.IsNotNull(err);
+            Assert.AreEqual(ServiceLifetime.Transient, err.Lifetime);
+            Assert.AreEqual(typeof(MockErrorPublisher), err.ImplementationType);
+
+            var exe = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IExceptionPublisher)));
+            Assert.IsNotNull(exe);
+            Assert.AreEqual(ServiceLifetime.Transient, exe.Lifetime);
+            Assert.AreEqual(typeof(MockExceptionPublisher), exe.ImplementationType);
         }
 
         [TestMethod]
