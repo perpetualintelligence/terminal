@@ -78,8 +78,11 @@ namespace PerpetualIntelligence.Cli.Extensions
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             Assert.IsFalse(mockCommandRouter.RouteCalled);
 
-            Assert.IsNotNull(stringWriter);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorPublisher>();
+            Assert.IsTrue(errorPublisher.Called);
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
+            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
         }
 
         [TestMethod]
@@ -101,12 +104,15 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsync("test_title", null, tokenSource.Token);
 
             // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
-            Assert.IsTrue(publisher.Called);
-            Assert.AreEqual("test_error_description. arg1=test1 arg2=test2", publisher.PublishedMessage);
+            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
+            Assert.IsTrue(exPublisher.Called);
+            Assert.AreEqual("test_error_description. arg1=test1 arg2=test2", exPublisher.PublishedMessage);
 
-            // The string writer will have both routing canceled message
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorPublisher>();
+            Assert.IsTrue(errorPublisher.Called);
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
+            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
         }
 
         [TestMethod]
@@ -132,8 +138,11 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsTrue(publisher.Called);
             Assert.AreEqual("explicit_error_description param1=test_param1 param2=test_param2.", publisher.PublishedMessage);
 
-            // The string writer will have both exception message and concatenated routing canceled message
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorPublisher>();
+            Assert.IsTrue(errorPublisher.Called);
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
+            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
         }
 
         [TestMethod]
@@ -153,18 +162,21 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.StartAsync();
 
             // Issue a callback after 2 seconds.
-            Timer timer = new Timer(HostStopRequestCallback, host, 2000, Timeout.Infinite);
+            Timer timer = new(HostStopRequestCallback, host, 2000, Timeout.Infinite);
 
-            // Run the router for 2 seconds, the callback will stop the host.
-            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            // Run the router for 5 seconds, the callback will stop the host 2 seconds.
+            await host.RunRouterAsync("test_title", 5000, tokenSource.Token);
 
             // Till the timer callback cancel the route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             Assert.IsTrue(mockCommandRouter.RouteCalled);
 
-            // Many messages are logged but we are interested in ApplicationStopping event
-            Assert.IsNotNull(stringWriter);
-            Assert.IsTrue(stringWriter.ToString().EndsWith("Application is stopping, the routing is canceled."));
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorPublisher>();
+            Assert.IsTrue(errorPublisher.Called);
+            Assert.IsNotNull(errorPublisher.PublishedMessage);
+            Assert.AreEqual("Application is stopping, the routing is canceled.", errorPublisher.PublishedMessage);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(stringWriter.ToString()));
         }
 
         [TestMethod]
@@ -190,7 +202,12 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsTrue(publisher.Called);
             Assert.AreEqual("Test invalid operation.", publisher.PublishedMessage);
 
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorPublisher>();
+            Assert.IsTrue(errorPublisher.Called);
+            Assert.IsNotNull(errorPublisher.PublishedMessage);
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
+            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
         }
 
         [TestMethod]
@@ -260,7 +277,12 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsTrue(publisher.Called);
             Assert.AreEqual("The request timed out in 2000 milliseconds.", publisher.PublishedMessage);
 
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorPublisher>();
+            Assert.IsTrue(errorPublisher.Called);
+            Assert.IsNotNull(errorPublisher.PublishedMessage);
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
+            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
         }
 
         [TestMethod]
@@ -282,8 +304,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
             Assert.AreEqual("test_title", titleWriter.ToString());
 
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorPublisher>();
+            Assert.IsTrue(errorPublisher.Called);
+            Assert.IsNotNull(errorPublisher.PublishedMessage);
+            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
             Assert.IsNotNull(stringWriter);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", stringWriter.ToString());
+            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
         }
 
         protected override void OnTestCleanup()
@@ -316,6 +343,9 @@ namespace PerpetualIntelligence.Cli.Extensions
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Error publisher
+            arg2.AddSingleton<IErrorPublisher>(new MockErrorPublisher());
         }
 
         private void ConfigureServicesCancelOnRoute(IServiceCollection arg2)
@@ -329,6 +359,9 @@ namespace PerpetualIntelligence.Cli.Extensions
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Error publisher
+            arg2.AddSingleton<IErrorPublisher>(new MockErrorPublisher());
         }
 
         private void ConfigureServicesDefault(IServiceCollection arg2)
@@ -342,6 +375,9 @@ namespace PerpetualIntelligence.Cli.Extensions
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Error publisher
+            arg2.AddSingleton<IErrorPublisher>(new MockErrorPublisher());
         }
 
         private void ConfigureServicesDelayAndCancelOnRoute(IServiceCollection arg2)
@@ -357,6 +393,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 StringWriter = stringWriter
             };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Error publisher
+            arg2.AddSingleton<IErrorPublisher>(new MockErrorPublisher());
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());
@@ -376,6 +415,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 StringWriter = stringWriter
             };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Error publisher
+            arg2.AddSingleton<IErrorPublisher>(new MockErrorPublisher());
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());
@@ -397,6 +439,9 @@ namespace PerpetualIntelligence.Cli.Extensions
             };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
+            // Add Error publisher
+            arg2.AddSingleton<IErrorPublisher>(new MockErrorPublisher());
+
             // Add Exception publisher
             arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());
         }
@@ -416,6 +461,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 StringWriter = stringWriter
             };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+
+            // Add Error publisher
+            arg2.AddSingleton<IErrorPublisher>(new MockErrorPublisher());
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());

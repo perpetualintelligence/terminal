@@ -18,9 +18,18 @@ namespace PerpetualIntelligence.Cli.Commands.Publishers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="rawCommandString">The raw command string.</param>
         /// <param name="error">The error.</param>
-        public ErrorPublisherContext(string rawCommandString, Error error)
+        public ErrorPublisherContext(Error error)
+        {
+            Error = error;
+        }
+
+        /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        /// <param name="error">The error.</param>
+        /// <param name="rawCommandString">The raw command string.</param>
+        public ErrorPublisherContext(Error error, string rawCommandString)
         {
             RawCommandString = rawCommandString ?? throw new ArgumentNullException(nameof(rawCommandString));
             Error = error ?? throw new ArgumentNullException(nameof(error));
@@ -32,8 +41,8 @@ namespace PerpetualIntelligence.Cli.Commands.Publishers
         public Error Error { get; set; }
 
         /// <summary>
-        /// The command string.
+        /// The raw command string.
         /// </summary>
-        public string RawCommandString { get; set; }
+        public string? RawCommandString { get; set; }
     }
 }

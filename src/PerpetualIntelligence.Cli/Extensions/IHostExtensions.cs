@@ -7,13 +7,11 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Abstractions;
+using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Attributes;
-using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,9 +49,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 // Honor the cancellation request.
                 if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
                 {
-                    CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
-                    logger.FormatAndLog(LogLevel.Warning, options.Logging, "Received cancellation token, the routing is canceled.");
+                    IErrorPublisher errorPublisher = host.Services.GetRequiredService<IErrorPublisher>();
+                    ErrorPublisherContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
+                    await errorPublisher.PublishAsync(errContext);
 
                     // We are done, break the loop.
                     break;
@@ -62,9 +60,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 // Check if application is stopping
                 if (applicationLifetime != null && applicationLifetime.ApplicationStopping.IsCancellationRequested)
                 {
-                    CliOptions options = host.Services.GetRequiredService<CliOptions>();
-                    ILogger<ICommandRouter> logger = host.Services.GetRequiredService<ILogger<ICommandRouter>>();
-                    logger.FormatAndLog(LogLevel.Warning, options.Logging, "Application is stopping, the routing is canceled.");
+                    IErrorPublisher errorPublisher = host.Services.GetRequiredService<IErrorPublisher>();
+                    ErrorPublisherContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Application is stopping, the routing is canceled."));
+                    await errorPublisher.PublishAsync(errContext);
 
                     // We are done, break the loop.
                     break;
