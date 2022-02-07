@@ -93,9 +93,12 @@ namespace PerpetualIntelligence.Cli.Extensions
                     {
                         throw new TimeoutException($"The request timed out in {timeout} milliseconds.");
                     }
+
+                    // This means a success in command runner. Wait for the next command
                 }
                 catch (Exception ex)
                 {
+                    // Task.Wait bundles up any exception into Exception.InnerException
                     IExceptionPublisher exceptionPublisher = host.Services.GetRequiredService<IExceptionPublisher>();
                     ExceptionPublisherContext exContext = new(raw, ex.InnerException ?? ex);
                     await exceptionPublisher.PublishAsync(exContext);

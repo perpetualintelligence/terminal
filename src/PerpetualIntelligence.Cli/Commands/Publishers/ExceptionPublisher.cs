@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Cli.Commands.Publishers
         }
 
         /// <summary>
-        /// Publish the <see cref="Error"/> asynchronously
+        /// Publish the <see cref="Exception"/> asynchronously to the logger.
         /// </summary>
         /// <param name="context">The error to publish.</param>
         /// <returns>The string representation.</returns>
