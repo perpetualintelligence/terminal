@@ -11,7 +11,7 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Commands
 {
     [TestClass]
-    public class ArgumentIdentityTests
+    public class ArgumentDescriptorTests
     {
         [TestMethod]
         public void CustomDataTypeShouldSetDataType()

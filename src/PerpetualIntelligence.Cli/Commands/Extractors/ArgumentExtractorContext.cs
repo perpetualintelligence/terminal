@@ -17,7 +17,17 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// </summary>
         /// <param name="argumentString">The argument string.</param>
         /// <param name="commandDescriptor">The command descriptor.</param>
-        public ArgumentExtractorContext(string argumentString, CommandDescriptor commandDescriptor)
+        public ArgumentExtractorContext(string argumentString, CommandDescriptor commandDescriptor) : this(argumentString, isAlias: false, commandDescriptor)
+        {
+        }
+
+        /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        /// <param name="argumentString">The argument string.</param>
+        /// <param name="isAlias"><c>true</c> if the argument is identified by its alias, otherwise <c>false</c>.</param>
+        /// <param name="commandDescriptor">The command descriptor.</param>
+        public ArgumentExtractorContext(string argumentString, bool isAlias, CommandDescriptor commandDescriptor)
         {
             if (string.IsNullOrWhiteSpace(argumentString))
             {
@@ -25,6 +35,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             ArgumentString = argumentString;
+            IsAlias = isAlias;
             CommandDescriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
         }
 
@@ -37,5 +48,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// The command descriptor.
         /// </summary>
         public CommandDescriptor CommandDescriptor { get; set; }
+
+        /// <summary>
+        /// <c>true</c> if the argument is identified by its alias, otherwise <c>false</c>.
+        /// </summary>
+        public bool IsAlias { get; }
     }
 }

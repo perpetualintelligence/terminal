@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             Assert.AreEqual("=", options.ArgumentSeparator);
             Assert.AreEqual(" ", options.Separator);
             Assert.AreEqual(false, options.DefaulArgumentValue);
-            Assert.AreEqual(null, options.StringWithIn);
+            Assert.AreEqual(null, options.ArgumentValueWithIn);
         }
     }
 }

@@ -38,7 +38,61 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("pi", "orgid", "pi")]
         [DataRow("pi auth", "orgid:authid", "auth")]
         [DataRow("pi auth login", "orgid:authid:loginid", "login")]
-        public async Task AliasConfiguredValidCommandStringWithInvalidAliasShouldNotError(string prefix, string cmdId, string cmdName)
+        public async Task AliasConfiguredDifferentPrefixWithInvalidAliasShouldError(string prefix, string cmdId, string cmdName)
+        {
+            // Enable alias
+            options.Extractor.ArgumentAlias = true;
+            options.Extractor.ArgumentPrefix = "--";
+            options.Extractor.ArgumentAliasPrefix = "-";
+
+            // Reset commands
+            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
+
+            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_invalid_alias=value1 --key2=value2 -key3_alias=value3 --key4=25.36"));
+            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
+               () => extractor.ExtractAsync(context),
+               1,
+               new[] {
+                    Errors.UnsupportedArgument
+               },
+               new[] {
+                    $"The argument alias is not supported. alias=key1_invalid_alias",
+               });
+        }
+
+        [DataTestMethod]
+        [DataRow("pi", "orgid", "pi")]
+        [DataRow("pi auth", "orgid:authid", "auth")]
+        [DataRow("pi auth login", "orgid:authid:loginid", "login")]
+        public async Task AliasConfiguredDifferentPrefixWithInvalidArgShouldError(string prefix, string cmdId, string cmdName)
+        {
+            // Enable alias
+            options.Extractor.ArgumentAlias = true;
+            options.Extractor.ArgumentPrefix = "--";
+            options.Extractor.ArgumentAliasPrefix = "-";
+
+            // Reset commands
+            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
+
+            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 --key2=value2 -key3_alias=value3 --key4_invalid=25.36"));
+            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
+               () => extractor.ExtractAsync(context),
+               1,
+               new[] {
+                    Errors.UnsupportedArgument
+               },
+               new[] {
+                    $"The argument is not supported. argument=key4_invalid",
+               });
+        }
+
+        [DataTestMethod]
+        [DataRow("pi", "orgid", "pi")]
+        [DataRow("pi auth", "orgid:authid", "auth")]
+        [DataRow("pi auth login", "orgid:authid:loginid", "login")]
+        public async Task AliasConfiguredSamePrefixWithInvalidAliasShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
             options.Extractor.ArgumentAlias = true;
@@ -55,9 +109,33 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     Errors.UnsupportedArgument
                },
                new[] {
-                    $"The argument is not supported. command_name={cmdName} command_id={cmdId} argument=key1_invalid_alias",
+                    $"The argument or its alias is not supported. argument=key1_invalid_alias",
                });
+        }
 
+        [DataTestMethod]
+        [DataRow("pi", "orgid", "pi")]
+        [DataRow("pi auth", "orgid:authid", "auth")]
+        [DataRow("pi auth login", "orgid:authid:loginid", "login")]
+        public async Task AliasConfiguredSamePrefixWithInvalidArgShouldError(string prefix, string cmdId, string cmdName)
+        {
+            // Enable alias
+            options.Extractor.ArgumentAlias = true;
+
+            // Reset commands
+            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
+
+            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2_invalid=value2 -key3_alias=value3 -key4=25.36"));
+            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
+               () => extractor.ExtractAsync(context),
+               1,
+               new[] {
+                    Errors.UnsupportedArgument
+               },
+               new[] {
+                    $"The argument or its alias is not supported. argument=key2_invalid",
+               });
         }
 
         [DataTestMethod]
@@ -145,7 +223,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("pi", "orgid", "pi")]
         [DataRow("pi auth", "orgid:authid", "auth")]
         [DataRow("pi auth login", "orgid:authid:loginid", "login")]
-        public async Task AliasNotConfiguredValidCommandStringWithAliasShouldErrorAsync(string prefix, string cmdId, String cmdName)
+        public async Task AliasNotConfiguredWithAliasShouldErrorAsync(string prefix, string cmdId, String cmdName)
         {
             // Disable alias
             options.Extractor.ArgumentAlias = false;
@@ -164,8 +242,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     Errors.UnsupportedArgument
                 },
                 new[] {
-                    $"The argument is not supported. command_name={cmdName} command_id={cmdId} argument=key1_alias",
-                    $"The argument is not supported. command_name={cmdName} command_id={cmdId} argument=key3_alias"
+                    $"The argument is not supported. argument=key1_alias",
+                    $"The argument is not supported. argument=key3_alias"
                 });
         }
 
@@ -192,27 +270,22 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task ArgumentSeparatorAndArgumentPrefixCannotBeSameAsync(string separator)
         {
-            // Make sure command separator is different so we can fail for argument separator below.
-            options.Extractor.Separator = "-";
-
             options.Extractor.ArgumentSeparator = separator;
             options.Extractor.ArgumentPrefix = separator;
+
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The argument separator and argument prefix cannot be same. separator={separator}");
         }
 
         [TestMethod]
-        public async Task ArgumentSeparatorCannotBeNullOrWhitespaceAsync()
+        public async Task ArgumentSeparatorCannotBeNullOrEmptyAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.ArgumentSeparator = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, "The argument separator cannot be null or empty.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             options.Extractor.ArgumentSeparator = "";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
-
-            options.Extractor.ArgumentSeparator = "   ";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The argument separator cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, "The argument separator cannot be null or empty.");
         }
 
         [TestMethod]
@@ -265,20 +338,32 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandSeparatorAndArgumentSeparatorCannotBeSameAsync(string separator)
+        public async Task CommandSeparatorAndArgumentSeparatorCanBeSameAsync(string separator)
         {
             options.Extractor.Separator = separator;
             options.Extractor.ArgumentSeparator = separator;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The command separator and argument separator cannot be same. separator={separator}");
+
+            CommandExtractorContext context = new CommandExtractorContext(new CommandString($"prefix1{separator}-key1{separator}value1{separator}-key2{separator}value2{separator}-key6{separator}-key9{separator}26.36"));
+            var result = await extractor.ExtractAsync(context);
+
+            Assert.IsNotNull(result.Command.Arguments);
+            Assert.AreEqual(4, result.Command.Arguments.Count);
+            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1");
+            AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "value2");
+            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertArgument(result.Command.Arguments[3], "key9", nameof(Double), "Key9 value custom double", "26.36");
         }
 
         [TestMethod]
-        public async Task CommandSeparatorCannotBeNullAsync()
+        public async Task CommandSeparatorCannotBeNullOrEmptyAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.Separator = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The command separator is null or not configured.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, "The command separator cannot be null or empty.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            options.Extractor.Separator = "";
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, "The command separator cannot be null or empty.");
         }
 
         [DataTestMethod]
@@ -296,14 +381,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // -> prefix1 -key=Test-prefix-message -key2=nosprefixmessage -key3=again-with-prefix
             options.Extractor.ArgumentPrefix = prefix;
 
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString($"prefix1 {prefix}key1=Test{prefix}prefix{prefix}message {prefix}key2=nospacemessage {prefix}key6 {prefix}key10=Again{prefix}with{prefix}prefix"));
+            CommandExtractorContext context = new (new CommandString($"prefix1 {prefix}key1=Test{prefix}prefix{prefix}message {prefix}key2=nospacemessage {prefix}key6 {prefix}key10=Again{prefix}with{prefix}prefix"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(4, result.Command.Arguments.Count);
             AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", $"Test{prefix}prefix{prefix}message");
             AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
-            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", "True");
             AssertArgument(result.Command.Arguments[3], "key10", nameof(String), "Key10 value custom string", $"Again{prefix}with{prefix}prefix");
         }
 
@@ -329,7 +414,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(4, result.Command.Arguments.Count);
             AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", $"Test{separator}separator{separator}message");
             AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "nosseparatormessage");
-            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", "True");
             AssertArgument(result.Command.Arguments[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}separator");
         }
 
@@ -355,7 +440,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(4, result.Command.Arguments.Count);
             AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}space{seperator}message");
             AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
-            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", "True");
             AssertArgument(result.Command.Arguments[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}space");
         }
 
@@ -367,7 +452,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldAllowMultipleCommandSeparatorForArgumentsAndCommandSeparatorInArgumentValueAsync(string seperator)
+        public async Task CommandStringShouldAllowMultipleSeparatorForArgumentAndArgumentValueAsync(string seperator)
         {
             // E.g. if ' ' space is used as a command separator then the command string should allow multiple spaces in
             // the argument and spaces in argument values
@@ -381,7 +466,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(4, result.Command.Arguments.Count);
             AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}{seperator}space{seperator}{seperator}{seperator}{seperator}message");
             AssertArgument(result.Command.Arguments[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
-            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[2], "key6", nameof(Boolean), "Key6 no value", "True");
             AssertArgument(result.Command.Arguments[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}{seperator}space");
         }
 
@@ -406,24 +491,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task CommandSupportArgsButUserPassedMixedSupportedAndUnsupportedArgsShouldErrorAsync()
-        {
-            CommandExtractorContext context = new(new CommandString($"prefix1 -key1=hello -keyunsupported1 -key2=mello -key3 -key4=36.69 -keyunsupported2=value"));
-
-            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
-               () => extractor.ExtractAsync(context),
-               2,
-               new[] {
-                    Errors.UnsupportedArgument,
-                    Errors.UnsupportedArgument
-               },
-               new[] {
-                    "The argument is not supported. command_name=name1 command_id=id1 argument=keyunsupported1",
-                    "The argument is not supported. command_name=name1 command_id=id1 argument=keyunsupported2"
-               });
-        }
-
-        [TestMethod]
         [WriteDocumentation]
         public async Task DefaultArgumentConfiguredButProviderNotConfiguredShouldThrow()
         {
@@ -440,7 +507,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task DefaultArgumentShouldWorkCorrectlyWithItsValueAndWithInConfiguredAsync()
         {
             options.Extractor.DefaultArgument = true;
-            options.Extractor.StringWithIn = "\"";
+            options.Extractor.ArgumentValueWithIn = "\"";
 
             // No arg id
             CommandExtractorContext context = new(new CommandString("prefix7_defaultarg \"key1_value\""));
@@ -460,7 +527,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task DefaultArgumentShouldWorkCorrectlyWithItsValueAsync()
         {
             options.Extractor.DefaultArgument = true;
-            options.Extractor.StringWithIn = null;
+            options.Extractor.ArgumentValueWithIn = null;
 
             // value without arg id
             CommandExtractorContext context = new(new CommandString("prefix7_defaultarg key1_value"));
@@ -494,7 +561,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command.Arguments);
             Assert.AreEqual(2, result.Command.Arguments.Count);
             AssertArgument(result.Command.Arguments[0], "key2", DataType.Text, "Key2 value text", "hello");
-            AssertArgument(result.Command.Arguments[1], "key6", nameof(Boolean), "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[1], "key6", nameof(Boolean), "Key6 no value", "True");
         }
 
         [TestMethod]
@@ -577,7 +644,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             // Argument values are processed sequentially and default values are added at the end User values
             Assert.AreEqual("key6", result.Command.Arguments[0].Id);
-            Assert.AreEqual(true, result.Command.Arguments[0].Value);
+            Assert.AreEqual("True", result.Command.Arguments[0].Value);
             Assert.AreEqual("key10", result.Command.Arguments[1].Id);
             Assert.AreEqual("user value", result.Command.Arguments[1].Value);
 
@@ -655,6 +722,24 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             context = new CommandExtractorContext(new CommandString("pi auth invalid -key1=value1"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
+        }
+
+        [TestMethod]
+        public async Task MixedSupportedAndUnsupportedArgsShouldErrorAsync()
+        {
+            CommandExtractorContext context = new(new CommandString($"prefix1 -key1=hello -keyunsupported1 -key2=mello -key6 -key4=36.69 -keyunsupported2=value"));
+
+            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
+               () => extractor.ExtractAsync(context),
+               2,
+               new[] {
+                    Errors.UnsupportedArgument,
+                    Errors.UnsupportedArgument
+               },
+               new[] {
+                    "The argument is not supported. argument=keyunsupported1",
+                    "The argument is not supported. argument=keyunsupported2"
+               });
         }
 
         [TestMethod]
@@ -755,9 +840,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     Errors.UnsupportedArgument
                 },
                 new[] {
-                    "The argument is not supported. command_name=name1 command_id=id1 argument=invalid_key1",
-                    "The argument is not supported. command_name=name1 command_id=id1 argument=invalid_key2",
-                    "The argument is not supported. command_name=name1 command_id=id1 argument=invalid_key3"
+                    "The argument is not supported. argument=invalid_key1",
+                    "The argument is not supported. argument=invalid_key2",
+                    "The argument is not supported. argument=invalid_key3"
                 }
             );
         }
@@ -816,7 +901,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertArgument(result.Command.Arguments[2], "key3", DataType.PhoneNumber, "Key3 value phone", "+1-2365985632");
             AssertArgument(result.Command.Arguments[3], "key4", DataType.EmailAddress, "Key4 value email", "testmail@gmail.com");
             AssertArgument(result.Command.Arguments[4], "key5", DataType.Url, "Key5 value url", "C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt");
-            AssertArgument(result.Command.Arguments[5], "key6", "Boolean", "Key6 no value", true);
+            AssertArgument(result.Command.Arguments[5], "key6", "Boolean", "Key6 no value", "True");
             AssertArgument(result.Command.Arguments[6], "key9", "Double", "Key9 value custom double", "33.368");
         }
 
@@ -901,7 +986,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             // Make sure command separator is different so we can fail for argument separator below.
             options.Extractor.ArgumentPrefix = "^";
-            options.Extractor.StringWithIn = "^";
+            options.Extractor.ArgumentValueWithIn = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token and argument prefix cannot be same. with_in=^");
         }
@@ -911,7 +996,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             // Make sure command separator is different so we can fail for argument separator below.
             options.Extractor.ArgumentSeparator = "^";
-            options.Extractor.StringWithIn = "^";
+            options.Extractor.ArgumentValueWithIn = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token and argument separator cannot be same. with_in=^");
         }
@@ -921,7 +1006,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             // Make sure command separator is different so we can fail for argument separator below.
             options.Extractor.Separator = "^";
-            options.Extractor.StringWithIn = "^";
+            options.Extractor.ArgumentValueWithIn = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token and separator cannot be same. with_in=^");
         }
@@ -930,7 +1015,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task WithInStringCannotBeWhitespace()
         {
             // Make sure command separator is different so we can fail for argument separator below.
-            options.Extractor.StringWithIn = "   ";
+            options.Extractor.ArgumentValueWithIn = "   ";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token cannot be whitespace.");
         }
 

@@ -24,9 +24,16 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public bool? ArgumentAlias { get; set; } = false;
 
         /// <summary>
-        /// The argument prefix. Defaults to dash char <c>-</c>.
+        /// The argument alias prefix. Defaults to <c>-</c>.
         /// </summary>
-        public string? ArgumentPrefix { get; set; } = "-";
+        /// <remarks>The argument alias prefix cannot be <c>null</c> or whitespace.</remarks>
+        public string ArgumentAliasPrefix { get; set; } = "-";
+
+        /// <summary>
+        /// The argument prefix. Defaults to <c>-</c>.
+        /// </summary>
+        /// <remarks>The argument prefix cannot be <c>null</c> or whitespace.</remarks>
+        public string ArgumentPrefix { get; set; } = "-";
 
         /// <summary>
         /// The argument value separator. Defaults to equals char <c>=</c>.
@@ -49,8 +56,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string Separator { get; set; } = " ";
 
         /// <summary>
-        /// Defines the token within which to extract a string value. Default to <c>null</c>.
+        /// Defines the token within which to extract an argument value. Default to <c>null</c>.
         /// </summary>
-        public string? StringWithIn = null;
+        public string? ArgumentValueWithIn = null;
     }
 }

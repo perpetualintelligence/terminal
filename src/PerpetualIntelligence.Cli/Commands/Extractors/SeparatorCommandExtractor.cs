@@ -78,76 +78,107 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private void EnsureOptionsCompatibility()
         {
-            // Separator can be whitespace
-            if (options.Extractor.Separator == null)
+            // Separator
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The command separator is null or not configured.", options.Extractor.Separator);
+                // Separator can be null or empty
+                if (options.Extractor.Separator == null || options.Extractor.Separator == string.Empty)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator cannot be null or empty.", options.Extractor.Separator);
+                }
+
+                // Command separator and argument prefix cannot be same
+                if (options.Extractor.Separator.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument prefix cannot be same. separator={0}", options.Extractor.Separator);
+                }
+
+                // Command separator and argument alias prefix cannot be same
+                if (options.Extractor.Separator.Equals(options.Extractor.ArgumentAliasPrefix, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument alias prefix cannot be same. separator={0}", options.Extractor.Separator);
+                }
             }
 
-            // Command separator and argument separator cannot be same
-            if (options.Extractor.Separator.Equals(options.Extractor.ArgumentSeparator, StringComparison.Ordinal))
+            // Argument
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument separator cannot be same. separator={0}", options.Extractor.Separator);
+                // Argument separator can be null or empty
+                if (options.Extractor.ArgumentSeparator == null || options.Extractor.ArgumentSeparator == string.Empty)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator cannot be null or empty.", options.Extractor.Separator);
+                }
+
+                // Argument prefix cannot be null, empty or whitespace
+                if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentPrefix))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be null or whitespace.");
+                }
+
+                // Argument alias prefix cannot be null, empty or whitespace
+                if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentAliasPrefix))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot be null or whitespace.");
+                }
+
+                // Argument separator and argument prefix cannot be same
+                if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentSeparator);
+                }
+
+                // Argument separator and argument prefix cannot be same
+                if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.ArgumentAliasPrefix, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument alias prefix cannot be same. separator={0}", options.Extractor.ArgumentSeparator);
+                }
+
+                // - FOMAC confusing. Argument alias prefix can be same as argument prefix but it cannot start with
+                // argument prefix.
+                if (!options.Extractor.ArgumentAliasPrefix.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal) && options.Extractor.ArgumentAliasPrefix.StartsWith(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot start with argument prefix. prefix={0}", options.Extractor.ArgumentPrefix);
+                }
             }
 
-            // Command separator and argument prefix cannot be same
-            if (options.Extractor.Separator.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+            // String with in
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument prefix cannot be same. separator={0}", options.Extractor.Separator);
+                // Argument prefix cannot be null, empty or whitespace
+                if (options.Extractor.ArgumentValueWithIn != null && options.Extractor.ArgumentValueWithIn.All(e => char.IsWhiteSpace(e)))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.ArgumentValueWithIn);
+                }
+
+                // with_in cannot be same as ArgumentPrefix
+                if (options.Extractor.Separator.Equals(options.Extractor.ArgumentValueWithIn, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
+                }
+
+                // with_in cannot be same as ArgumentPrefix
+                if (options.Extractor.ArgumentPrefix.Equals(options.Extractor.ArgumentValueWithIn, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument prefix cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
+                }
+
+                // with_in cannot be same as ArgumentSeparator
+                if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.ArgumentValueWithIn, StringComparison.Ordinal))
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
+                }
             }
 
-            // Argument separator cannot be null, empty or whitespace
-            if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentSeparator))
+            // Default argument and values
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The argument separator cannot be null or whitespace.", options.Extractor.ArgumentSeparator);
-            }
+                // Command default argument provider is missing
+                if (options.Extractor.DefaultArgument.GetValueOrDefault() && defaultArgumentProvider == null)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The command default argument provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentProvider).FullName);
+                }
 
-            // Argument separator and argument prefix cannot be same
-            if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentSeparator);
-            }
-
-            // Argument prefix cannot be null, empty or whitespace
-            if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentPrefix))
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be null or whitespace.", options.Extractor.ArgumentPrefix);
-            }
-
-            // Argument prefix cannot be null, empty or whitespace
-            if (options.Extractor.StringWithIn != null && options.Extractor.StringWithIn.All(e => char.IsWhiteSpace(e)))
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.StringWithIn);
-            }
-
-            // with_in cannot be same as ArgumentPrefix
-            if (options.Extractor.Separator.Equals(options.Extractor.StringWithIn, StringComparison.Ordinal))
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.StringWithIn);
-            }
-
-            // with_in cannot be same as ArgumentPrefix
-            if (options.Extractor.ArgumentPrefix.Equals(options.Extractor.StringWithIn, StringComparison.Ordinal))
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument prefix cannot be same. with_in={0}", options.Extractor.StringWithIn);
-            }
-
-            // with_in cannot be same as ArgumentSeparator
-            if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.StringWithIn, StringComparison.Ordinal))
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument separator cannot be same. with_in={0}", options.Extractor.StringWithIn);
-            }
-
-            // Command default argument provider is missing
-            if (options.Extractor.DefaultArgument.GetValueOrDefault() && defaultArgumentProvider == null)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The command default argument provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentProvider).FullName);
-            }
-
-            // Argument default value provider is missing
-            if (options.Extractor.DefaulArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
+                // Argument default value provider is missing
+                if (options.Extractor.DefaulArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
+                }
             }
         }
 
@@ -156,13 +187,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Remove the prefix from the start so we can get the argument string.
             string raw = context.CommandString.Raw;
             string argString = raw.TrimStart(commandDescriptor.Prefix, StringComparison.Ordinal);
-
-            // The argSplit string is used to split the arguments. This is to avoid splitting the argument value
-            // containing the separator. E.g. If space is the separator then the arg split format is ' -'
-            // -Key1=val with space -Key2=val2
-            // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
-            // split the arg string into 3 parts but there are only 2 args. May be the string should be in quotes ""
-            string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
 
             // Commands may not have arguments.
             if (!string.IsNullOrWhiteSpace(argString))
@@ -217,24 +241,20 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
             }
 
-            Arguments arguments = new();
-            IEnumerable<string> args = argString.Split(new string[] { argSplit }, StringSplitOptions.None);
+            // The argSplit string is used to split the arguments. This is to avoid splitting the argument value
+            // containing the separator. If space is the separator and - is the argument prefix then the arg split
+            // format is " -"
+            // - E.g. -key1=val with space -key2=val2
+            // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
+            // split the arg string into 3 parts but there are only 2 args. May be the string should be in quotes ""
+            var mappedPrefixIndices = MapArgStringAliasPrefix(argString);
+
             List<Error> errors = new();
-            foreach (string arg in args)
+            Arguments arguments = new();
+            foreach (var argLocation in mappedPrefixIndices)
             {
-                string trimedArg = arg.TrimStart(options.Extractor.Separator).TrimEnd(options.Extractor.Separator);
-
-                // If the arg only has the separator then skip that. This will happen if the user uses multiple
-                // separators between arguments.
-                if (!trimedArg.Any())
-                {
-                    continue;
-                }
-
-                string prefixArg = string.Concat(options.Extractor.ArgumentPrefix, trimedArg);
-
                 // We capture all the argument extraction errors
-                TryResultOrError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(prefixArg, commandDescriptor));
+                TryResultOrError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(argLocation.ArgumentString, argLocation.IsAlias, commandDescriptor));
                 if (tryResult.Error != null)
                 {
                     errors.Add(tryResult.Error);
@@ -244,7 +264,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Protect for bad custom implementation.
                     if (tryResult.Result == null)
                     {
-                        errors.Add(new Error(Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string={0}", prefixArg));
+                        errors.Add(new Error(Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string={0}", argLocation.ArgumentString));
                     }
                     else
                     {
@@ -269,6 +289,79 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return arguments;
         }
 
+        private ArgumentPrefixLocations MapArgStringAliasPrefix(string argString)
+        {
+            string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
+            string argAliasSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix);
+
+            // First pass
+            int currentPos = 0;
+            bool currentIsAlias = false;
+            int nextIdx = 0;
+            ArgumentPrefixLocations locations = new();
+            while (true)
+            {
+                // No more matches so break. When the currentPos reaches the end then we have traversed the entire argString.
+                if (currentPos >= argString.Length)
+                {
+                    break;
+                }
+
+                // Initialize the iterators. For each iteration we assume that arg sub string is identifier by an
+                // identifier and not alias so the default value for isAlias is false.
+                int nextArgPos = 0;
+                int nextAliasPos = 0;
+                bool nextIsAlias = false;
+
+                // First pass
+                if (currentPos == 0)
+                {
+                    // First time we have to make multiple passes to determine whether the first is arg prefix or alias prefix
+                    nextArgPos = argString.IndexOf(argSplit, currentPos, StringComparison.Ordinal);
+                    nextAliasPos = argString.IndexOf(argAliasSplit, currentPos, StringComparison.Ordinal);
+
+                    // Since this is the first iteration the minimum can be 0
+                    nextIdx = Formatter.MinPositiveOrZero(nextArgPos, nextAliasPos);
+
+                    // If the min positive is the nextAliasPos then the next argument is identified by alias. If there
+                    // is a conflict we give preference to argument id not alias.
+                    currentIsAlias = nextIdx != nextArgPos;
+                }
+
+                // Get next positions
+                nextArgPos = argString.IndexOf(argSplit, nextIdx + 1, StringComparison.Ordinal);
+                nextAliasPos = argString.IndexOf(argAliasSplit, nextIdx + 1, StringComparison.Ordinal);
+
+                // We reached the end of positions for both, take the remaining string. This condition also help in
+                // breaking the loop since we have traversed the argString now !
+                if (nextArgPos < 0 && nextAliasPos < 0)
+                {
+                    nextIdx = argString.Length;
+                }
+                else
+                {
+                    // Min positive
+                    // TODO: Improve performance
+                    nextIdx = Formatter.MinPositiveOrZero(nextArgPos, nextAliasPos);
+
+                    // If the min positive is the nextAliasPos then the next argument is identified by alias. If there
+                    // is a conflict we give preference to argument id not alias.
+                    nextIsAlias = nextIdx != nextArgPos;
+                }
+
+                // Get the arg substring and record its position and alias
+                // NOTE: This is the current pos and current alias not the next.
+                string kvp = argString.Substring(currentPos, nextIdx - currentPos);
+                locations.Add(new ArgumentPrefixLocation(kvp, currentIsAlias, currentPos));
+
+                // Move next
+                currentPos = nextIdx;
+                currentIsAlias = nextIsAlias;
+            }
+
+            return locations;
+        }
+
         /// <summary>
         /// Matches the command string and finds the <see cref="CommandDescriptor"/>.
         /// </summary>
@@ -280,17 +373,22 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             string prefix = commandString.Raw;
 
             // Find the prefix. Prefix is the entire string till first argument or default argument value. But the
-            // default argument is specified after the command prefix followed by command separator. E.g. pi auth login
-            // {default_arg_value}. So it is difficult to determine the not use argument prefix, it uses the c so its
-            // not possible to determine
-            int idx = prefix.IndexOf(options.Extractor.ArgumentPrefix, StringComparison.Ordinal);
-            if (idx > 0)
+            // default argument is specified after the command prefix followed by command separator.
+            // - E.g. pi auth login {default_arg_value}.
+            int[] indices = new int[2];
+            indices[0] = prefix.IndexOf(options.Extractor.ArgumentPrefix, StringComparison.Ordinal);
+            indices[1] = prefix.IndexOf(options.Extractor.ArgumentAliasPrefix, StringComparison.Ordinal);
+            int minIndex = indices.Where(x => x > 0).DefaultIfEmpty().Min();
+            if (minIndex != 0)
             {
-                prefix = prefix.Substring(0, idx);
+                prefix = prefix.Substring(0, minIndex);
             }
 
-            // Make sure we trim the command separator. prefix from the previous step will most likely have a command
-            // separator pi auth login -key=value
+            // Make sure we trim the command separator. prefix from the previous step will most likely have a command separator
+            // - E.g. pi auth login -key=value -> "pi auth login "
+            //
+            // At this point the prefix may also have default argument value.
+            // - E.g. pi auth login default_value
             prefix = prefix.TrimEnd(options.Extractor.Separator);
             TryResultOrError<CommandDescriptor> result = await commandStore.TryMatchByPrefixAsync(prefix);
             if (result.Error != null)

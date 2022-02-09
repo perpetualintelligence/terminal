@@ -69,6 +69,22 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key4", nameof(Double), false, "Key4 value number") { Alias = "key4_alias" },
             };
 
+            TestOptionsDescriptors = new()
+            {
+                new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value") { Alias = "key1_alias" },
+                new ArgumentDescriptor("key2-er", DataType.Text, true, "Key2 value text", defaultValue: "key2 default value"),
+                new ArgumentDescriptor("key3-a-z-d", DataType.PhoneNumber, false, "Key3 value phone") { Alias = "k3"},
+                new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
+                new ArgumentDescriptor("key5", DataType.Url, false, "Key5 value url"),
+                new ArgumentDescriptor("key6-a-s-xx-s", nameof(Boolean), false, "Key6 no value"),
+                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency", new[] { new OneOfAttribute("INR", "USD", "EUR") }, defaultValue: "INR"),
+                new ArgumentDescriptor("key8", nameof(Int32), false, "Key8 value int"),
+                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 invalid default value", new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) }, defaultValue: 89568.36),
+                new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string") { Alias = "k10"},
+                new ArgumentDescriptor("key11", nameof(Boolean), true, "Key11 value boolean") { Alias = "k11" },
+                new ArgumentDescriptor("key12", nameof(Boolean), true, "Key12 value default boolean") { Alias = "k12", DefaultValue = true }
+            };
+
             Commands = new()
             {
                 // Different name and prefix
@@ -128,6 +144,27 @@ namespace PerpetualIntelligence.Cli.Mocks
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", TestAliasArgumentDescriptors, "the login command within the auth group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
             };
+
+            GroupedOptionsCommands = new()
+            {
+                // Different name and prefix
+                NewCommandDefinition("orgid", "pi", "pi", TestOptionsDescriptors, "top org cmd group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Same name and prefix with args
+                NewCommandDefinition("orgid:authid", "auth", "pi auth", TestOptionsDescriptors, "org auth cmd group", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Same name and prefix with args
+                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", TestOptionsDescriptors, "org auth login cmd", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Same name and prefix with args
+                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", TestOptionsDescriptors, "org auth slogin cmd", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key2").Item1,
+
+                // Same name and prefix with args
+                NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", TestOptionsDescriptors, "org auth slogin oidc cmd", typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Same name and prefix with args
+                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", TestOptionsDescriptors, "org auth slogin oauth cmd", typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
+            };
         }
 
         public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, ArgumentDescriptors? args = null, string? desc = null, Type? checker = null, Type? runner = null, string? defaultArg = null)
@@ -139,9 +176,11 @@ namespace PerpetualIntelligence.Cli.Mocks
         public static List<CommandDescriptor> AliasCommands;
         public static List<CommandDescriptor> Commands;
         public static List<CommandDescriptor> GroupedCommands;
+        public static List<CommandDescriptor> GroupedOptionsCommands;
         public static ArgumentDescriptors TestAliasArgumentDescriptors;
         public static ArgumentDescriptors TestArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentValueDescriptors;
+        public static ArgumentDescriptors TestOptionsDescriptors;
     }
 }
