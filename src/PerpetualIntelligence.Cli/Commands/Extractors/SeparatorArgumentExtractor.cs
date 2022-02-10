@@ -57,11 +57,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <inheritdoc/>
         public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
         {
-            string argumentString = context.ArgumentString;
+            string rawArgumentString = context.ArgumentString.Raw;
+            bool aliasPrefix = context.ArgumentString.AliasPrefix;
 
             // Extract the argument and value by default or custom patterns.
-            string argIdValueRegex = context.IsAlias ? ArgumentAliasValueRegexPattern : ArgumentIdValueRegexPattern;
-            Match argIdValueMatch = Regex.Match(argumentString, argIdValueRegex);
+            string argIdValueRegex = aliasPrefix ? ArgumentAliasValueRegexPattern : ArgumentIdValueRegexPattern;
+            Match argIdValueMatch = Regex.Match(rawArgumentString, argIdValueRegex);
             string? argIdOrAlias = null;
             string? argValue = null;
             string? argPrefix = null;
@@ -87,8 +88,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
             else
             {
-                string argIdOnlyRegex = context.IsAlias ? ArgumentAliasNoValueRegexPattern : ArgumentIdNoValueRegexPattern;
-                Match argIdOnlyMatch = Regex.Match(argumentString, argIdOnlyRegex);
+                string argIdOnlyRegex = aliasPrefix ? ArgumentAliasNoValueRegexPattern : ArgumentIdNoValueRegexPattern;
+                Match argIdOnlyMatch = Regex.Match(rawArgumentString, argIdOnlyRegex);
                 if (argIdOnlyMatch.Success)
                 {
                     argPrefix = argIdOnlyMatch.Groups[1].Value;
@@ -100,7 +101,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Not matched
             if (!matched)
             {
-                throw new ErrorException(Errors.InvalidArgument, "The argument string is not valid. argument_string={0}", argumentString);
+                throw new ErrorException(Errors.InvalidArgument, "The argument string is not valid. argument_string={0}", rawArgumentString);
             }
 
             // For error handling
@@ -138,7 +139,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 // If we are here then we can by precisely find by id or alias as the prefix are different. But we need
                 // to now see whether we should find by alias.
-                bool findByAlias = context.IsAlias && aliasEnabled;
+                bool findByAlias = aliasPrefix && aliasEnabled;
                 argDescriptor = context.CommandDescriptor.GetArgumentDescriptor(argIdOrAlias, findByAlias);
             }
 

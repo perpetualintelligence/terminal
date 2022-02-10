@@ -186,10 +186,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             // Remove the prefix from the start so we can get the argument string.
             string raw = context.CommandString.Raw;
-            string argString = raw.TrimStart(commandDescriptor.Prefix, StringComparison.Ordinal);
+            string rawArgString = raw.TrimStart(commandDescriptor.Prefix, StringComparison.Ordinal);
 
             // Commands may not have arguments.
-            if (!string.IsNullOrWhiteSpace(argString))
+            if (!string.IsNullOrWhiteSpace(rawArgString))
             {
                 // If arguments are passed make sure command supports arguments, exact arguments are checked later
                 if (commandDescriptor.ArgumentDescriptors == null || commandDescriptor.ArgumentDescriptors.Count == 0)
@@ -198,7 +198,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Make sure there is a separator between the command prefix and arguments
-                if (!argString.StartsWith(options.Extractor.Separator, StringComparison.Ordinal))
+                if (!rawArgString.StartsWith(options.Extractor.Separator, StringComparison.Ordinal))
                 {
                     throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", raw);
                 }
@@ -223,7 +223,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // Options and command supports the default argument, but is the default value provided by user ? If yes
                 // then add the default attribute
                 bool proccessDefaultArg = true;
-                string argStringDef = argString.TrimStart(options.Extractor.Separator, StringComparison.Ordinal);
+                string argStringDef = rawArgString.TrimStart(options.Extractor.Separator, StringComparison.Ordinal);
                 if (argStringDef.StartsWith(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
                 {
                     // Default attribute value should be the first after command prefix User has explicitly passed an argument.
@@ -237,7 +237,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
                     // Convert the arg string to standard format and let the IArgumentExtractor extract the argument and
                     // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
-                    argString = $"{options.Extractor.Separator}{options.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{options.Extractor.ArgumentSeparator}{argStringDef}";
+                    rawArgString = $"{options.Extractor.Separator}{options.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{options.Extractor.ArgumentSeparator}{argStringDef}";
                 }
             }
 
@@ -247,14 +247,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // - E.g. -key1=val with space -key2=val2
             // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
             // split the arg string into 3 parts but there are only 2 args. May be the string should be in quotes ""
-            var mappedPrefixIndices = MapArgStringAliasPrefix(argString);
+            var argumentStrings = ExtractArgumentStrings(rawArgString);
 
             List<Error> errors = new();
             Arguments arguments = new();
-            foreach (var argLocation in mappedPrefixIndices)
+            foreach (var argString in argumentStrings)
             {
                 // We capture all the argument extraction errors
-                TryResultOrError<ArgumentExtractorResult> tryResult = await Formatter.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(argLocation.ArgumentString, argLocation.IsAlias, commandDescriptor));
+                TryResultOrError<ArgumentExtractorResult> tryResult = await SharedHelper.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(argString, commandDescriptor));
                 if (tryResult.Error != null)
                 {
                     errors.Add(tryResult.Error);
@@ -264,7 +264,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Protect for bad custom implementation.
                     if (tryResult.Result == null)
                     {
-                        errors.Add(new Error(Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string={0}", argLocation.ArgumentString));
+                        errors.Add(new Error(Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string={0}", argString.Raw));
                     }
                     else
                     {
@@ -289,7 +289,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return arguments;
         }
 
-        private ArgumentPrefixLocations MapArgStringAliasPrefix(string argString)
+        private ArgumentStrings ExtractArgumentStrings(string raw)
         {
             string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
             string argAliasSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix);
@@ -298,30 +298,30 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             int currentPos = 0;
             bool currentIsAlias = false;
             int nextIdx = 0;
-            ArgumentPrefixLocations locations = new();
+            ArgumentStrings locations = new();
             while (true)
             {
                 // No more matches so break. When the currentPos reaches the end then we have traversed the entire argString.
-                if (currentPos >= argString.Length)
+                if (currentPos >= raw.Length)
                 {
                     break;
                 }
 
                 // Initialize the iterators. For each iteration we assume that arg sub string is identifier by an
                 // identifier and not alias so the default value for isAlias is false.
-                int nextArgPos = 0;
-                int nextAliasPos = 0;
+                int nextArgPos;
+                int nextAliasPos;
                 bool nextIsAlias = false;
 
                 // First pass
                 if (currentPos == 0)
                 {
                     // First time we have to make multiple passes to determine whether the first is arg prefix or alias prefix
-                    nextArgPos = argString.IndexOf(argSplit, currentPos, StringComparison.Ordinal);
-                    nextAliasPos = argString.IndexOf(argAliasSplit, currentPos, StringComparison.Ordinal);
+                    nextArgPos = raw.IndexOf(argSplit, currentPos, StringComparison.Ordinal);
+                    nextAliasPos = raw.IndexOf(argAliasSplit, currentPos, StringComparison.Ordinal);
 
                     // Since this is the first iteration the minimum can be 0
-                    nextIdx = Formatter.MinPositiveOrZero(nextArgPos, nextAliasPos);
+                    nextIdx = SharedHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
 
                     // If the min positive is the nextAliasPos then the next argument is identified by alias. If there
                     // is a conflict we give preference to argument id not alias.
@@ -329,20 +329,20 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Get next positions
-                nextArgPos = argString.IndexOf(argSplit, nextIdx + 1, StringComparison.Ordinal);
-                nextAliasPos = argString.IndexOf(argAliasSplit, nextIdx + 1, StringComparison.Ordinal);
+                nextArgPos = raw.IndexOf(argSplit, nextIdx + 1, StringComparison.Ordinal);
+                nextAliasPos = raw.IndexOf(argAliasSplit, nextIdx + 1, StringComparison.Ordinal);
 
                 // We reached the end of positions for both, take the remaining string. This condition also help in
                 // breaking the loop since we have traversed the argString now !
                 if (nextArgPos < 0 && nextAliasPos < 0)
                 {
-                    nextIdx = argString.Length;
+                    nextIdx = raw.Length;
                 }
                 else
                 {
                     // Min positive
                     // TODO: Improve performance
-                    nextIdx = Formatter.MinPositiveOrZero(nextArgPos, nextAliasPos);
+                    nextIdx = SharedHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
 
                     // If the min positive is the nextAliasPos then the next argument is identified by alias. If there
                     // is a conflict we give preference to argument id not alias.
@@ -351,8 +351,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
                 // Get the arg substring and record its position and alias
                 // NOTE: This is the current pos and current alias not the next.
-                string kvp = argString.Substring(currentPos, nextIdx - currentPos);
-                locations.Add(new ArgumentPrefixLocation(kvp, currentIsAlias, currentPos));
+                string kvp = raw.Substring(currentPos, nextIdx - currentPos);
+                locations.Add(new ArgumentString(kvp, currentIsAlias, currentPos));
 
                 // Move next
                 currentPos = nextIdx;
