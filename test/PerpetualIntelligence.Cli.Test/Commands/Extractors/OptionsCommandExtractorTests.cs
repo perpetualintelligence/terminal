@@ -6,11 +6,13 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores.InMemory;
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -154,7 +156,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.UnsupportedArgument },
-               new[] { "The argument alias is not supported. alias=key1" }
+               new[] { "The argument alias is not supported. argument=key1" }
            );
         }
 
@@ -292,12 +294,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.NewOptions();
+            stringComparer = new StringComparisonComparer(StringComparison.Ordinal);
             argExtractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
             commands = new InMemoryCommandDescriptorStore(MockCommands.GroupedOptionsCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             argExtractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
-            defaultArgValueProvider = new DefaultArgumentValueProvider(options, TestLogger.Create<DefaultArgumentValueProvider>());
+            defaultArgValueProvider = new DefaultArgumentValueProvider(stringComparer);
             defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
-            extractor = new SeparatorCommandExtractor(commands, argExtractor, options, TestLogger.Create<SeparatorCommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+            extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
         private void AssertArgument(Argument arg, string name, string customDataType, string description, object value, string? alias)
@@ -342,5 +345,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
         private SeparatorCommandExtractor extractor = null!;
         private CliOptions options = null!;
+        private IStringComparer stringComparer = null!;
     }
 }

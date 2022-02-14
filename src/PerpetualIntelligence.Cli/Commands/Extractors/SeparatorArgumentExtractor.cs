@@ -57,6 +57,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <inheritdoc/>
         public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
         {
+            // Sanity check
+            if (context.CommandDescriptor.ArgumentDescriptors == null)
+            {
+                throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any arguments. command_id={0} command_name{1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
+            }
+
             string rawArgumentString = context.ArgumentString.Raw;
             bool aliasPrefix = context.ArgumentString.AliasPrefix;
 
@@ -133,14 +139,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // If alias is not enabled then we should not be here as we can only find by id. If alias is enabled but
                 // the prefix are same then there is no way for us to find the arg precisely, so we first find by id
                 // then by it alias or throw.
-                argDescriptor = context.CommandDescriptor.GetArgumentDescriptorByIdOrAlias(argIdOrAlias);
+                argDescriptor = context.CommandDescriptor.ArgumentDescriptors[argIdOrAlias, true, true];
             }
             else
             {
                 // If we are here then we can by precisely find by id or alias as the prefix are different. But we need
                 // to now see whether we should find by alias.
                 bool findByAlias = aliasPrefix && aliasEnabled;
-                argDescriptor = context.CommandDescriptor.GetArgumentDescriptor(argIdOrAlias, findByAlias);
+                argDescriptor = context.CommandDescriptor.ArgumentDescriptors[argIdOrAlias, findByAlias];
             }
 
             // Key only (treat it as a boolean) value=true

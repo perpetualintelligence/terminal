@@ -5,8 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Linq;
@@ -22,12 +21,10 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="options">The configuration options.</param>
-        /// <param name="logger">The logger.</param>
-        public DefaultArgumentValueProvider(CliOptions options, ILogger<DefaultArgumentValueProvider> logger)
+        /// <param name="stringComparer">The string comparer.</param>
+        public DefaultArgumentValueProvider(IStringComparer stringComparer)
         {
-            this.options = options;
-            this.logger = logger;
+            this.stringComparer = stringComparer;
         }
 
         /// <summary>
@@ -43,10 +40,9 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
                 throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any arguments. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            return Task.FromResult(new DefaultArgumentValueProviderResult(new ArgumentDescriptors(context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
+            return Task.FromResult(new DefaultArgumentValueProviderResult(new ArgumentDescriptors(stringComparer, context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
         }
 
-        private ILogger<DefaultArgumentValueProvider> logger;
-        private CliOptions options;
+        private readonly IStringComparer stringComparer;
     }
 }

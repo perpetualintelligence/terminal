@@ -38,12 +38,12 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// <exception cref="ErrorException"></exception>
         public Task<DefaultArgumentProviderResult> ProvideAsync(DefaultArgumentProviderContext context)
         {
-            if (context.CommandDescriptor.DefaultArgument == null)
+            if (context.CommandDescriptor.ArgumentDescriptors == null || context.CommandDescriptor.DefaultArgument == null)
             {
                 throw new ErrorException(Errors.UnsupportedArgument, "The command does not support default argument. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            return Task.FromResult(new DefaultArgumentProviderResult(context.CommandDescriptor.GetArgumentDescriptor(context.CommandDescriptor.DefaultArgument)));
+            return Task.FromResult(new DefaultArgumentProviderResult(context.CommandDescriptor.ArgumentDescriptors[context.CommandDescriptor.DefaultArgument]));
         }
 
         private readonly ILogger<DefaultArgumentProvider> logger;

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
@@ -19,6 +20,7 @@ using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
@@ -31,6 +33,21 @@ namespace PerpetualIntelligence.Cli.Extensions
     {
         public ICliBuilderExtensionsTests() : base(TestLogger.Create<ICliBuilderExtensionsTests>())
         {
+        }
+
+        [TestMethod]
+        public void AddAddStringComparerShouldCorrectlyInitialize()
+        {
+            cliBuilder.AddStringComparer(StringComparison.Ordinal);
+
+            var comparer = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IStringComparer)));
+            Assert.IsNotNull(comparer);
+            Assert.AreEqual(ServiceLifetime.Transient, comparer.Lifetime);
+
+            // This registers a factory so we build to check the instance
+            var serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var instance = serviceProvider.GetService<IStringComparer>();
+            Assert.IsInstanceOfType(instance, typeof(StringComparisonComparer));
         }
 
         [TestMethod]
@@ -55,9 +72,19 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [TestMethod]
+        public void AddCommandDescriptorMultipleTimeShouldError()
+        {
+            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
+            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd);
+
+            // Again
+            TestHelper.AssertThrowsWithMessage<InvalidOperationException>(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd), "The command descriptor is already configured and added to the service collection.");
+        }
+
+        [TestMethod]
         public void AddCommandDescriptorShouldCorrectlyInitialize()
         {
-            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(new CommandDescriptor("id1", "name1", "prefix1"));
+            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(new CommandDescriptor("id1", "name1", "prefix1", "desc"));
 
             var cmdDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             Assert.IsNotNull(cmdDescriptor);

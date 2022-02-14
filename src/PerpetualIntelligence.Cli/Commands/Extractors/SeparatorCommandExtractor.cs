@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
@@ -32,6 +33,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// </summary>
         /// <param name="commandStore">The command descriptor store.</param>
         /// <param name="argumentExtractor">The argument extractor.</param>
+        /// <param name="stringComparer">The string comparer.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="defaultArgumentProvider">The optional default argument provider.</param>
@@ -39,6 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public SeparatorCommandExtractor(
             ICommandDescriptorStore commandStore,
             IArgumentExtractor argumentExtractor,
+            IStringComparer stringComparer,
             CliOptions options,
             ILogger<SeparatorCommandExtractor> logger,
             IDefaultArgumentProvider? defaultArgumentProvider = null,
@@ -46,6 +49,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             this.commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
             this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
+            this.stringComparer = stringComparer;
             this.defaultArgumentValueProvider = defaultArgumentValueProvider;
             this.defaultArgumentProvider = defaultArgumentProvider;
             this.options = options ?? throw new ArgumentNullException(nameof(options));
@@ -67,13 +71,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Process default argument.
             arguments = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, arguments);
 
-            // OK, return the extracted command object.
-            Command command = new(commandDescriptor)
-            {
-                Arguments = arguments
-            };
-
-            return new CommandExtractorResult(command, commandDescriptor);
+            return new CommandExtractorResult(new Command(commandDescriptor, arguments), commandDescriptor);
         }
 
         private void EnsureOptionsCompatibility()
@@ -250,7 +248,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var argumentStrings = ExtractArgumentStrings(rawArgString);
 
             List<Error> errors = new();
-            Arguments arguments = new();
+            Arguments arguments = new(stringComparer);
             foreach (var argString in argumentStrings)
             {
                 // We capture all the argument extraction errors
@@ -438,7 +436,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // arguments can be null here, if the command string did not specify any arguments
                 if (finalArgs == null)
                 {
-                    finalArgs = new Arguments();
+                    finalArgs = new Arguments(stringComparer);
                 }
 
                 List<Error> errors = new();
@@ -473,5 +471,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private readonly IDefaultArgumentValueProvider? defaultArgumentValueProvider;
         private readonly ILogger<SeparatorCommandExtractor> logger;
         private readonly CliOptions options;
+        private readonly IStringComparer stringComparer;
     }
 }

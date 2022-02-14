@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,9 +24,15 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public Arguments() : base(StringComparer.Ordinal)
+        public Arguments(IStringComparer stringComparer) : base(stringComparer)
         {
+            StringComparer = stringComparer;
         }
+
+        /// <summary>
+        /// The string comparer.
+        /// </summary>
+        public IStringComparer StringComparer { get; }
 
         /// <summary>
         /// Gets the argument value by its id.
@@ -57,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Commands
                 }
                 else
                 {
-                    return (TValue)this.Items.First(e => e.Alias != null && e.Alias.Equals(argIdOrAlias, StringComparison.Ordinal)).Value;
+                    return (TValue)Items.First(e => e.Alias != null && StringComparer.Equals(e.Alias, argIdOrAlias)).Value;
                 }
             }
             else

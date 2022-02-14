@@ -9,12 +9,11 @@ using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// A <c>cli</c> command.
+    /// An immutable <c>cli</c> command.
     /// </summary>
     /// <seealso cref="Argument"/>
     public sealed class Command
@@ -22,58 +21,69 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public Command()
+        /// <param name="id">The command id.</param>
+        /// <param name="name">The command name.</param>
+        /// <param name="description">The command description.</param>
+        /// <param name="arguments">The command arguments.</param>
+        /// <param name="properties">The command properties.</param>
+        public Command(string id, string name, string description, Arguments? arguments = null, Dictionary<string, object>? properties = null)
         {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new System.ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new System.ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
+            }
+
+            Id = id;
+            Name = name;
+            Description = description ?? throw new System.ArgumentNullException(nameof(description));
+            Arguments = arguments;
+            Properties = properties;
         }
 
         /// <summary>
-        /// Initialize a new instance from the specified command descriptor.
+        /// Initializes a new instance.
         /// </summary>
-        /// <param name="commandDescriptor">The command descriptor.</param>
-        public Command(CommandDescriptor commandDescriptor)
+        /// <param name="commandDescriptor"></param>
+        /// <param name="arguments"></param>
+        /// <param name="properties"></param>
+        public Command(CommandDescriptor commandDescriptor, Arguments? arguments = null, Dictionary<string, object>? properties = null)
         {
             Id = commandDescriptor.Id;
             Name = commandDescriptor.Name;
             Description = commandDescriptor.Description;
-
-            if (commandDescriptor.ArgumentDescriptors != null)
-            {
-                Arguments = new Arguments();
-                foreach (ArgumentDescriptor argument in commandDescriptor.ArgumentDescriptors)
-                {
-                    Argument arg = new(argument, argument.DefaultValue ?? new object());
-                    Arguments.Add(arg);
-                }
-            }
+            Arguments = arguments;
+            Properties = properties;
         }
 
         /// <summary>
         /// The command arguments.
         /// </summary>
-        [JsonPropertyName("arguments")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Arguments? Arguments { get; set; }
+        public Arguments? Arguments { get; }
 
         /// <summary>
         /// The command description.
         /// </summary>
-        [JsonPropertyName("description")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Description { get; set; }
+        public string? Description { get; }
 
         /// <summary>
         /// The command id unique.
         /// </summary>
-        [JsonPropertyName("id")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Id { get; set; }
+        public string? Id { get; }
+
+        /// <summary>
+        /// The command name.
+        /// </summary>
+        public string Name { get; }
 
         /// <summary>
         /// The command custom properties.
         /// </summary>
-        [JsonPropertyName("properties")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Dictionary<string, object>? Properties { get; set; }
+        public Dictionary<string, object>? Properties { get; }
 
         /// <summary>
         /// Gets the optional argument value for the specified identifier.
@@ -147,12 +157,5 @@ namespace PerpetualIntelligence.Cli.Commands
             }
 #endif
         }
-
-        /// <summary>
-        /// The command name.
-        /// </summary>
-        [JsonPropertyName("name")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Name;
     }
 }

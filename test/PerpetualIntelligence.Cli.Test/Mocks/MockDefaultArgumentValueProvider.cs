@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         public Task<DefaultArgumentValueProviderResult> ProvideAsync(DefaultArgumentValueProviderContext context)
         {
             Called = true;
-            return Task.FromResult(new DefaultArgumentValueProviderResult(new Commands.ArgumentDescriptors()));
+            return Task.FromResult(new DefaultArgumentValueProviderResult(new Commands.ArgumentDescriptors(new StringComparisonComparer(System.StringComparison.Ordinal))));
         }
     }
 }

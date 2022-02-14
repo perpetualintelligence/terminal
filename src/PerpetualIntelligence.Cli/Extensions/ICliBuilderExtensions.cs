@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Mappers;
@@ -19,6 +20,7 @@ using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using System;
 
 namespace PerpetualIntelligence.Cli.Extensions
@@ -67,7 +69,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             if (commandDescriptor.Runner != null && commandDescriptor.Checker != null)
             {
-                throw new InvalidOperationException("The command descriptor cannot specify runner or checker during explicit configuration.");
+                throw new InvalidOperationException("The command descriptor is already configured and added to the service collection.");
             }
 
             // Add the command descriptor as a singleton. Set the runner and checker as transient. These are internal fields.
@@ -197,6 +199,19 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Add command handler
             builder.Services.AddTransient<ICommandHandler, THandler>();
 
+            return builder;
+        }
+
+        /// <summary>
+        /// Add the <see cref="IStringComparer"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="stringComparison">The string comparison to use.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddStringComparer(this ICliBuilder builder, StringComparison stringComparison)
+        {
+            // Add string comparer
+            IServiceCollection serviceCollection = builder.Services.AddTransient<IStringComparer>(resolver => new StringComparisonComparer(stringComparison));
             return builder;
         }
     }

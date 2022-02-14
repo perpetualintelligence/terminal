@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using System.Threading.Tasks;
 
@@ -18,8 +19,8 @@ namespace PerpetualIntelligence.Cli.Mocks
         {
             Called = true;
 
-            var cIdt = new Commands.CommandDescriptor("testid", "testname", "testname");
-            return Task.FromResult(new CommandExtractorResult(new Commands.Command(cIdt), cIdt));
+            var cIdt = new Commands.CommandDescriptor("testid", "testname", "testname", "desc");
+            return Task.FromResult(new CommandExtractorResult(new Command("testid", "testname", "desc"), cIdt));
         }
     }
 }
