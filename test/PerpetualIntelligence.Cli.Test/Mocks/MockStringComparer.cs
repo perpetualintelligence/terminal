@@ -6,12 +6,15 @@
 */
 
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
     public class MockStringComparer : IStringComparer
     {
+        public StringComparison Comparison => StringComparison.Ordinal;
+
         public bool Equals(string? x, string? y)
         {
             return false;

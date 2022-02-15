@@ -35,6 +35,10 @@ namespace PerpetualIntelligence.Cli.Commands.Comparers
         /// </summary>
         /// <param name="comparison">The <see cref="StringComparison"/> to use.</param>
         /// <returns>A new <see cref="StringComparisonComparer"/> instance.</returns>
+        /// <remarks>
+        /// <see cref="New(StringComparison)"/> method is useful to create a new instance where dependency injection is
+        /// not available to inject the registered <see cref="IStringComparer"/>.
+        /// </remarks>
         public static IStringComparer New(StringComparison comparison)
         {
             return new StringComparisonComparer(comparison);
@@ -46,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Commands.Comparers
         /// <param name="x">The first string to compare.</param>
         /// <param name="y">The second string to compare.</param>
         /// <returns><c>true</c> if the two strings are equal; otherwise, <c>false</c>.</returns>
-        public bool Equals(string x, string y)
+        public bool Equals(string? x, string? y)
         {
             return string.Equals(x, y, Comparison);
         }
@@ -56,7 +60,7 @@ namespace PerpetualIntelligence.Cli.Commands.Comparers
         /// </summary>
         /// <param name="obj">The string.</param>
         /// <returns>The hash code.</returns>
-        public int GetHashCode(string obj)
+        public int GetHashCode(string? obj)
         {
             if (obj == null)
             {

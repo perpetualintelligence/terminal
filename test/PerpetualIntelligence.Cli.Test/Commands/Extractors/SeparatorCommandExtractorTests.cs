@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAliasPrefix = "-";
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_invalid_alias=value1 --key2=value2 -key3_alias=value3 --key4=25.36"));
@@ -74,7 +74,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAliasPrefix = "-";
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 --key2=value2 -key3_alias=value3 --key4_invalid=25.36"));
@@ -99,7 +99,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAlias = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_invalid_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAlias = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2_invalid=value2 -key3_alias=value3 -key4=25.36"));
@@ -149,7 +149,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAlias = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
@@ -177,7 +177,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.DefaulArgumentValue = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
 
             // key1 with alias key1_alias is default arg with default value key1 default value
@@ -203,7 +203,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.DefaultArgument = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), defaultArgProvider, null);
 
             // key1 with alias key1_alias is default arg for value1
@@ -230,7 +230,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAlias = false;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
@@ -715,7 +715,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task InvalidCommandStringWithinCommandGroupShouldErrorAsync()
         {
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString("pi auth invalid"));
@@ -926,7 +926,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task ValidCommandStringWithinCommandGroupShouldNotErrorAsync()
         {
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), null, null);
 
             CommandExtractorContext context = new CommandExtractorContext(new CommandString("pi"));
@@ -1023,9 +1023,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            commands = new InMemoryCommandDescriptorStore(MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            argExtractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
             stringComparer = new StringComparisonComparer(StringComparison.Ordinal);
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            argExtractor = new SeparatorArgumentExtractor(stringComparer, options, TestLogger.Create<SeparatorArgumentExtractor>());
             defaultArgValueProvider = new DefaultArgumentValueProvider(stringComparer);
             defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), defaultArgProvider, defaultArgValueProvider);

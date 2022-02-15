@@ -295,9 +295,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options = MockCliOptions.NewOptions();
             stringComparer = new StringComparisonComparer(StringComparison.Ordinal);
-            argExtractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
-            commands = new InMemoryCommandDescriptorStore(MockCommands.GroupedOptionsCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            argExtractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
+            argExtractor = new SeparatorArgumentExtractor(stringComparer, options, TestLogger.Create<SeparatorArgumentExtractor>());
+            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.GroupedOptionsCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            argExtractor = new SeparatorArgumentExtractor(stringComparer, options, TestLogger.Create<SeparatorArgumentExtractor>());
             defaultArgValueProvider = new DefaultArgumentValueProvider(stringComparer);
             defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
             extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), defaultArgProvider, defaultArgValueProvider);

@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -46,10 +47,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
+        /// <param name="stringComparer">The string comparer.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public SeparatorArgumentExtractor(CliOptions options, ILogger<SeparatorArgumentExtractor> logger)
+        public SeparatorArgumentExtractor(IStringComparer stringComparer, CliOptions options, ILogger<SeparatorArgumentExtractor> logger)
         {
+            this.stringComparer = stringComparer;
             this.options = options;
             this.logger = logger;
         }
@@ -118,15 +121,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Find by alias only if configured.
-            bool argAndAliasPrefixSame = options.Extractor.ArgumentPrefix.Equals(options.Extractor.ArgumentAliasPrefix, StringComparison.Ordinal);
+            bool argAndAliasPrefixSame = stringComparer.Equals(options.Extractor.ArgumentPrefix, options.Extractor.ArgumentAliasPrefix);
             bool aliasEnabled = options.Extractor.ArgumentAlias.GetValueOrDefault();
 
             // Compatibility check: If ArgumentAlias is not enabled and the prefix is used to identify by alias then
-            // this is an error. If ArgumentPrefix and ArgumentAliasPrefix are same then bypass the compatiblity check.
+            // this is an error. If ArgumentPrefix and ArgumentAliasPrefix are same then bypass the compatibility check.
             // find it.
             if (!argAndAliasPrefixSame && !aliasEnabled)
             {
-                if (options.Extractor.ArgumentAliasPrefix.Equals(argPrefix, StringComparison.Ordinal))
+                if (stringComparer.Equals(options.Extractor.ArgumentAliasPrefix, argPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument extraction by alias prefix is not configured. argument_string={0}", prefixArgValue);
                 }
@@ -153,7 +156,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             if (nameof(Boolean).Equals(argDescriptor.CustomDataType))
             {
                 // The value will not be white space because we have already removed all the separators.
-                string value = (argValue == null || argValue.Equals(string.Empty)) ? true.ToString() : argValue;
+                string value = (argValue == null || stringComparer.Equals(argValue, string.Empty)) ? true.ToString() : argValue;
                 return Task.FromResult(new ArgumentExtractorResult(new Argument(argDescriptor, value)));
             }
             else
@@ -258,6 +261,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         private readonly ILogger<SeparatorArgumentExtractor> logger;
+        private readonly IStringComparer stringComparer;
         private readonly CliOptions options;
     }
 }

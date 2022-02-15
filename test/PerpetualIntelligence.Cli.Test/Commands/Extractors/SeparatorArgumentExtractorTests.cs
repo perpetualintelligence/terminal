@@ -531,7 +531,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             stringComparer = new StringComparisonComparer(StringComparison.Ordinal);
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1", MockCommands.TestArgumentDescriptors, null, null);
             options = MockCliOptions.New();
-            extractor = new SeparatorArgumentExtractor(options, TestLogger.Create<SeparatorArgumentExtractor>());
+            extractor = new SeparatorArgumentExtractor(stringComparer, options, TestLogger.Create<SeparatorArgumentExtractor>());
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;

@@ -85,13 +85,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Command separator and argument prefix cannot be same
-                if (options.Extractor.Separator.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument prefix cannot be same. separator={0}", options.Extractor.Separator);
                 }
 
                 // Command separator and argument alias prefix cannot be same
-                if (options.Extractor.Separator.Equals(options.Extractor.ArgumentAliasPrefix, StringComparison.Ordinal))
+                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument alias prefix cannot be same. separator={0}", options.Extractor.Separator);
                 }
@@ -118,20 +118,20 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Argument separator and argument prefix cannot be same
-                if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+                if (stringComparer.Equals(options.Extractor.ArgumentSeparator, options.Extractor.ArgumentPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentSeparator);
                 }
 
                 // Argument separator and argument prefix cannot be same
-                if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.ArgumentAliasPrefix, StringComparison.Ordinal))
+                if (stringComparer.Equals(options.Extractor.ArgumentSeparator, options.Extractor.ArgumentAliasPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument alias prefix cannot be same. separator={0}", options.Extractor.ArgumentSeparator);
                 }
 
                 // - FOMAC confusing. Argument alias prefix can be same as argument prefix but it cannot start with
                 // argument prefix.
-                if (!options.Extractor.ArgumentAliasPrefix.Equals(options.Extractor.ArgumentPrefix, StringComparison.Ordinal) && options.Extractor.ArgumentAliasPrefix.StartsWith(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+                if (!stringComparer.Equals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentPrefix) && options.Extractor.ArgumentAliasPrefix.StartsWith(options.Extractor.ArgumentPrefix, stringComparer.Comparison))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot start with argument prefix. prefix={0}", options.Extractor.ArgumentPrefix);
                 }
@@ -146,19 +146,19 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // with_in cannot be same as ArgumentPrefix
-                if (options.Extractor.Separator.Equals(options.Extractor.ArgumentValueWithIn, StringComparison.Ordinal))
+                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentPrefix
-                if (options.Extractor.ArgumentPrefix.Equals(options.Extractor.ArgumentValueWithIn, StringComparison.Ordinal))
+                if (stringComparer.Equals(options.Extractor.ArgumentPrefix, options.Extractor.ArgumentValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument prefix cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentSeparator
-                if (options.Extractor.ArgumentSeparator.Equals(options.Extractor.ArgumentValueWithIn, StringComparison.Ordinal))
+                if (stringComparer.Equals(options.Extractor.ArgumentSeparator, options.Extractor.ArgumentValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
                 }
@@ -184,7 +184,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             // Remove the prefix from the start so we can get the argument string.
             string raw = context.CommandString.Raw;
-            string rawArgString = raw.TrimStart(commandDescriptor.Prefix, StringComparison.Ordinal);
+            string rawArgString = raw.TrimStart(commandDescriptor.Prefix, stringComparer.Comparison);
 
             // Commands may not have arguments.
             if (!string.IsNullOrWhiteSpace(rawArgString))
@@ -196,7 +196,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Make sure there is a separator between the command prefix and arguments
-                if (!rawArgString.StartsWith(options.Extractor.Separator, StringComparison.Ordinal))
+                if (!rawArgString.StartsWith(options.Extractor.Separator, stringComparer.Comparison))
                 {
                     throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", raw);
                 }
@@ -221,8 +221,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // Options and command supports the default argument, but is the default value provided by user ? If yes
                 // then add the default attribute
                 bool proccessDefaultArg = true;
-                string argStringDef = rawArgString.TrimStart(options.Extractor.Separator, StringComparison.Ordinal);
-                if (argStringDef.StartsWith(options.Extractor.ArgumentPrefix, StringComparison.Ordinal))
+                string argStringDef = rawArgString.TrimStart(options.Extractor.Separator, stringComparer.Comparison);
+                if (argStringDef.StartsWith(options.Extractor.ArgumentPrefix, stringComparer.Comparison))
                 {
                     // Default attribute value should be the first after command prefix User has explicitly passed an argument.
                     proccessDefaultArg = false;
@@ -315,8 +315,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 if (currentPos == 0)
                 {
                     // First time we have to make multiple passes to determine whether the first is arg prefix or alias prefix
-                    nextArgPos = raw.IndexOf(argSplit, currentPos, StringComparison.Ordinal);
-                    nextAliasPos = raw.IndexOf(argAliasSplit, currentPos, StringComparison.Ordinal);
+                    nextArgPos = raw.IndexOf(argSplit, currentPos, stringComparer.Comparison);
+                    nextAliasPos = raw.IndexOf(argAliasSplit, currentPos, stringComparer.Comparison);
 
                     // Since this is the first iteration the minimum can be 0
                     nextIdx = SharedHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
@@ -327,8 +327,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Get next positions
-                nextArgPos = raw.IndexOf(argSplit, nextIdx + 1, StringComparison.Ordinal);
-                nextAliasPos = raw.IndexOf(argAliasSplit, nextIdx + 1, StringComparison.Ordinal);
+                nextArgPos = raw.IndexOf(argSplit, nextIdx + 1, stringComparer.Comparison);
+                nextAliasPos = raw.IndexOf(argAliasSplit, nextIdx + 1, stringComparer.Comparison);
 
                 // We reached the end of positions for both, take the remaining string. This condition also help in
                 // breaking the loop since we have traversed the argString now !
@@ -374,8 +374,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // default argument is specified after the command prefix followed by command separator.
             // - E.g. pi auth login {default_arg_value}.
             int[] indices = new int[2];
-            indices[0] = prefix.IndexOf(options.Extractor.ArgumentPrefix, StringComparison.Ordinal);
-            indices[1] = prefix.IndexOf(options.Extractor.ArgumentAliasPrefix, StringComparison.Ordinal);
+            indices[0] = prefix.IndexOf(options.Extractor.ArgumentPrefix, stringComparer.Comparison);
+            indices[1] = prefix.IndexOf(options.Extractor.ArgumentAliasPrefix, stringComparer.Comparison);
             int minIndex = indices.Where(x => x > 0).DefaultIfEmpty().Min();
             if (minIndex != 0)
             {

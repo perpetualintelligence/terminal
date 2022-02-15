@@ -7,8 +7,10 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -153,12 +155,13 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
+            stringComparer = new StringComparisonComparer(System.StringComparison.Ordinal);
 
             cmds = MockCommands.Commands;
-            cmdStore = new InMemoryCommandDescriptorStore(cmds, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            cmdStore = new InMemoryCommandDescriptorStore(stringComparer, cmds, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
 
             groupedCmds = MockCommands.GroupedCommands;
-            groupedCmdStore = new InMemoryCommandDescriptorStore(groupedCmds, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            groupedCmdStore = new InMemoryCommandDescriptorStore(stringComparer, groupedCmds, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
         }
 
         private IEnumerable<CommandDescriptor> cmds = null!;
@@ -166,5 +169,6 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         private IEnumerable<CommandDescriptor> groupedCmds = null!;
         private InMemoryCommandDescriptorStore groupedCmdStore = null!;
         private CliOptions options = null!;
+        private IStringComparer stringComparer = null!;
     }
 }
