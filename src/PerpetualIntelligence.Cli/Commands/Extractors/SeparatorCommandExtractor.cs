@@ -387,7 +387,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             //
             // At this point the prefix may also have default argument value.
             // - E.g. pi auth login default_value
-            prefix = prefix.TrimEnd(options.Extractor.Separator);
+            prefix = prefix.TrimEnd(options.Extractor.Separator, stringComparer.Comparison);
             TryResultOrError<CommandDescriptor> result = await commandStore.TryMatchByPrefixAsync(prefix);
             if (result.Error != null)
             {
