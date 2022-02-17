@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
 {
-    internal class MockRunner : ICommandRunner
+    internal class MockCommandRunnerInner : ICommandRunner
     {
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {

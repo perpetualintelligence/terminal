@@ -20,7 +20,10 @@ using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
+using PerpetualIntelligence.Protocols.Cli;
+using PerpetualIntelligence.Shared.Exceptions;
 using System;
 
 namespace PerpetualIntelligence.Cli.Extensions
@@ -62,20 +65,31 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="commandDescriptor">The command descriptor.</param>
+        /// <param name="isGroup"><c>true</c> if the descriptor represents a command group; otherwise, <c>false</c>.</param>
+        /// <param name="isRoot"><c>true</c> if the descriptor represents a command root; otherwise, <c>false</c>.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddDescriptor<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
+        public static ICliBuilder AddDescriptor<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor, bool isGroup = false, bool isRoot = false) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
         {
-            if (commandDescriptor.Runner != null && commandDescriptor.Checker != null)
+            if (isRoot && !isGroup)
             {
-                throw new InvalidOperationException("The command descriptor is already configured and added to the service collection.");
+                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a command group. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
+            }
+
+            if (commandDescriptor._runner != null || commandDescriptor._checker != null)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection.");
             }
 
             // Add the command descriptor as a singleton. Set the runner and checker as transient. These are internal fields.
-            commandDescriptor.Runner = typeof(TRunner);
-            commandDescriptor.Checker = typeof(TChecker);
+            commandDescriptor._runner = typeof(TRunner);
+            commandDescriptor._checker = typeof(TChecker);
             builder.Services.AddSingleton(commandDescriptor);
+
+            // Root or group
+            commandDescriptor._isRoot = isRoot;
+            commandDescriptor._isGroup = isGroup;
 
             // Add command runner
             builder.Services.AddTransient<TRunner>();
@@ -169,21 +183,37 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
+        /// Adds a license to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddLicenseChecker(this ICliBuilder builder)
+        {
+            // Add license extractor as singleton
+            builder.Services.AddSingleton<ILicenseExtractor, LicenseExtractor>();
+
+            // Add license checker as singleton
+            builder.Services.AddSingleton<ILicenseChecker, LicenseChecker>();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the <see cref="IErrorPublisher"/> and <see cref="IExceptionPublisher"/> to the service collection.
         /// </summary>
         /// <typeparam name="TError">The <see cref="IErrorPublisher"/> type.</typeparam>
         /// <typeparam name="TException">The <see cref="IExceptionPublisher"/> type.</typeparam>
-        /// <param name="buider">The builder.</param>
+        /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddPublisher<TError, TException>(this ICliBuilder buider) where TError : class, IErrorPublisher where TException : class, IExceptionPublisher
+        public static ICliBuilder AddPublisher<TError, TException>(this ICliBuilder builder) where TError : class, IErrorPublisher where TException : class, IExceptionPublisher
         {
             // Add error publisher
-            buider.Services.AddTransient<IErrorPublisher, TError>();
+            builder.Services.AddTransient<IErrorPublisher, TError>();
 
             // Add exception publisher
-            buider.Services.AddTransient<IExceptionPublisher, TException>();
+            builder.Services.AddTransient<IExceptionPublisher, TException>();
 
-            return buider;
+            return builder;
         }
 
         /// <summary>

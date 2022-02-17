@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,12 +21,13 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         [TestMethod]
         public void CliOptionsShouldHaveCorrectDefaultValues()
         {
-            CliOptions options = new CliOptions();
+            CliOptions options = new ();
 
             Assert.IsNotNull(options.Checker);
             Assert.IsNotNull(options.Extractor);
             Assert.IsNotNull(options.Logging);
             Assert.IsNotNull(options.Hosting);
+            Assert.IsNotNull(options.Licensing);
         }
     }
 }

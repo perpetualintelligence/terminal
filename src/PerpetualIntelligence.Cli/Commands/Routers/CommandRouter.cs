@@ -1,38 +1,39 @@
 ﻿/*
-    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Licensing;
+using PerpetualIntelligence.Protocols.Cli;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     /// <summary>
-    /// The command router.
+    /// The default <see cref="ICommandRouter"/>.
     /// </summary>
-    public class CommandRouter : ICommandRouter
+    public sealed class CommandRouter : ICommandRouter
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="extractor">The command extractor.</param>
-        /// <param name="handler">The command handler.</param>
-        /// <param name="options">The configuration options.</param>
-        /// <param name="logger">The logger.</param>
-        public CommandRouter(ICommandExtractor extractor, ICommandHandler handler, CliOptions options, ILogger<CommandRouter> logger)
+        /// <param name="licenseExtractor">The license extractor.</param>
+        /// <param name="commandExtractor">The command extractor.</param>
+        /// <param name="commandHandler">The command handler.</param>
+        public CommandRouter(ILicenseExtractor licenseExtractor, ICommandExtractor commandExtractor, ICommandHandler commandHandler)
         {
-            this.extrator = extractor ?? throw new ArgumentNullException(nameof(extractor));
-            this.handler = handler ?? throw new ArgumentNullException(nameof(handler));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.commandExtractor = commandExtractor ?? throw new ArgumentNullException(nameof(commandExtractor));
+            this.licenseExtractor = licenseExtractor ?? throw new ArgumentNullException(nameof(licenseExtractor));
+            this.commandHandler = commandHandler ?? throw new ArgumentNullException(nameof(commandHandler));
         }
 
         /// <summary>
@@ -40,14 +41,17 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// </summary>
         /// <param name="context">The router context.</param>
         /// <returns>The <see cref="CommandRouterResult"/> instance.</returns>
-        public virtual async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
+        public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
+            // Extract the licenses
+            var licenses = await ExtractLicensesOrThrowAsync();
+
             // Extract the command
-            CommandExtractorResult extractorResult = await extrator.ExtractAsync(new CommandExtractorContext(new CommandString(context.RawCommandString)));
+            CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(new CommandString(context.RawCommandString)));
 
             // Delegate to handler
             TryResultOrErrors<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
-            CommandHandlerContext handlerContext = new(extractorResult.CommandDescriptor, extractorResult.Command);
+            CommandHandlerContext handlerContext = new(extractorResult.CommandDescriptor, extractorResult.Command, licenses);
             await tryHandler.Result!.HandleAsync(handlerContext);
 
             return new CommandRouterResult();
@@ -57,12 +61,28 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public Task<TryResultOrErrors<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
         {
             // Dummy for design. We will always find the handler as its checked in constructor.
-            return Task.FromResult(new TryResultOrErrors<ICommandHandler>(handler));
+            return Task.FromResult(new TryResultOrErrors<ICommandHandler>(commandHandler));
         }
 
-        private readonly ICommandExtractor extrator;
-        private readonly ICommandHandler handler;
-        private readonly ILogger<CommandRouter> logger;
-        private readonly CliOptions options;
+        private async Task<IEnumerable<Licensing.License>> ExtractLicensesOrThrowAsync()
+        {
+            var result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
+            if (!result.Licenses.Any())
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The license extractor did not find any valid license.");
+            }
+
+            // For now we only support 1 license
+            if (result.Licenses.Count() != 1)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The license extractor found multiple licenses.");
+            }
+
+            return result.Licenses;
+        }
+
+        private readonly ICommandExtractor commandExtractor;
+        private readonly ICommandHandler commandHandler;
+        private readonly ILicenseExtractor licenseExtractor;
     }
 }

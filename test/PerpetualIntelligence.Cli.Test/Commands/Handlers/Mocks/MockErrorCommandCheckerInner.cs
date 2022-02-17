@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
 {
-    internal class MockErrorChecker : ICommandChecker
+    internal class MockErrorCommandCheckerInner : ICommandChecker
     {
         public Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {

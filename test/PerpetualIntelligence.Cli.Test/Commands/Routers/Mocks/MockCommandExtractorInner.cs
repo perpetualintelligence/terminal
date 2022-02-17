@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
 {
-    internal class MockExtractor : ICommandExtractor
+    internal class MockCommandExtractorInner : ICommandExtractor
     {
         public bool Called { get; set; }
 

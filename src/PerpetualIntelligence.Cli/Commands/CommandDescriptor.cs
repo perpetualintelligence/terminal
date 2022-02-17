@@ -94,9 +94,14 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Id { get; }
 
         /// <summary>
-        /// Determines if the descriptor represents a command group.
+        /// Returns <c>true</c> if this descriptor represents a command group; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsGroup { get; }
+        public bool IsGroup => _isGroup;
+
+        /// <summary>
+        /// Returns <c>true</c> if this descriptor represents a command root; otherwise, <c>false</c>.
+        /// </summary>
+        public bool IsRoot => _isRoot;
 
         /// <summary>
         /// The command name.
@@ -148,16 +153,16 @@ namespace PerpetualIntelligence.Cli.Commands
 #endif
         }
 
-        /// <summary>
-        /// The command checker.
-        /// </summary>
         [InternalInfrastructure]
-        internal Type? Checker { get; set; }
+        internal Type? _checker { get; set; }
 
-        /// <summary>
-        /// The command runner.
-        /// </summary>
         [InternalInfrastructure]
-        internal Type? Runner { get; set; }
+        internal bool _isGroup { get; set; }
+
+        [InternalInfrastructure]
+        internal bool _isRoot { get; set; }
+
+        [InternalInfrastructure]
+        internal Type? _runner { get; set; }
     }
 }

@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The separator based argument extractor.
+    /// The default <see cref="IArgumentExtractor"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// <seealso cref="ExtractorOptions.ArgumentPrefix"/>
     /// <seealso cref="ExtractorOptions.ArgumentSeparator"/>
     [WriteDocumentation]
-    public class SeparatorArgumentExtractor : IArgumentExtractor
+    public class ArgumentExtractor : IArgumentExtractor
     {
         /// <summary>
         /// Initialize a new instance.
@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="stringComparer">The string comparer.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public SeparatorArgumentExtractor(IStringComparer stringComparer, CliOptions options, ILogger<SeparatorArgumentExtractor> logger)
+        public ArgumentExtractor(IStringComparer stringComparer, CliOptions options, ILogger<ArgumentExtractor> logger)
         {
             this.stringComparer = stringComparer;
             this.options = options;
@@ -260,8 +260,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
         }
 
-        private readonly ILogger<SeparatorArgumentExtractor> logger;
-        private readonly IStringComparer stringComparer;
+        private readonly ILogger<ArgumentExtractor> logger;
         private readonly CliOptions options;
+        private readonly IStringComparer stringComparer;
     }
 }

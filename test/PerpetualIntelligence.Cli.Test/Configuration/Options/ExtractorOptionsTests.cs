@@ -21,13 +21,17 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         [TestMethod]
         public void ExtractorOptionsShouldHaveCorrectDefaultValues()
         {
-            ExtractorOptions options = new ExtractorOptions();
+            ExtractorOptions options = new();
 
+            Assert.IsNull(options.ArgumentAlias);
+            Assert.AreEqual("-", options.ArgumentAliasPrefix);
             Assert.AreEqual("-", options.ArgumentPrefix);
             Assert.AreEqual("=", options.ArgumentSeparator);
+            Assert.IsNull(options.ArgumentValueWithIn);
+            Assert.AreEqual("^[A-Za-z0-9_-]*$", options.CommandIdRegexPattern);
+            Assert.IsNull(options.DefaulArgumentValue);
+            Assert.IsNull(options.DefaultArgument);
             Assert.AreEqual(" ", options.Separator);
-            Assert.AreEqual(false, options.DefaulArgumentValue);
-            Assert.AreEqual(null, options.ArgumentValueWithIn);
         }
     }
 }

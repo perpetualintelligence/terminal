@@ -18,15 +18,16 @@ using PerpetualIntelligence.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The separator based command extractor.
+    /// The default <see cref="ICommandExtractor"/>.
     /// </summary>
     /// <seealso cref="ExtractorOptions.Separator"/>
-    public class SeparatorCommandExtractor : ICommandExtractor
+    public class CommandExtractor : ICommandExtractor
     {
         /// <summary>
         /// Initialize a new instance.
@@ -38,12 +39,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="logger">The logger.</param>
         /// <param name="defaultArgumentProvider">The optional default argument provider.</param>
         /// <param name="defaultArgumentValueProvider">The optional argument default value provider.</param>
-        public SeparatorCommandExtractor(
+        public CommandExtractor(
             ICommandDescriptorStore commandStore,
             IArgumentExtractor argumentExtractor,
             IStringComparer stringComparer,
             CliOptions options,
-            ILogger<SeparatorCommandExtractor> logger,
+            ILogger<CommandExtractor> logger,
             IDefaultArgumentProvider? defaultArgumentProvider = null,
             IDefaultArgumentValueProvider? defaultArgumentValueProvider = null)
         {
@@ -400,6 +401,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 throw new ErrorException(Errors.InvalidCommand, "The command string did not return an error or match the command prefix. command_string={0}", commandString);
             }
 
+            // Make sure the command id is valid
+            if (!Regex.IsMatch(result.Result.Id, options.Extractor.CommandIdRegexPattern))
+            {
+                throw new ErrorException(Errors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, options.Extractor.CommandIdRegexPattern);
+            }
+
             return result.Result;
         }
 
@@ -469,7 +476,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private readonly ICommandDescriptorStore commandStore;
         private readonly IDefaultArgumentProvider? defaultArgumentProvider;
         private readonly IDefaultArgumentValueProvider? defaultArgumentValueProvider;
-        private readonly ILogger<SeparatorCommandExtractor> logger;
+        private readonly ILogger<CommandExtractor> logger;
         private readonly CliOptions options;
         private readonly IStringComparer stringComparer;
     }

@@ -13,6 +13,7 @@ using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -116,13 +117,25 @@ namespace PerpetualIntelligence.Cli.Extensions
             ICommandRouter? commandRouter = host.Services.GetService<ICommandRouter>();
             Assert.IsNotNull(commandRouter);
             Assert.IsInstanceOfType(commandRouter, typeof(CommandRouter));
-            Assert.IsFalse(ReferenceEquals(commandRouter, host.Services.GetService<ICommandRouter>()));
+            Assert.IsFalse(ReferenceEquals(commandRouter, host.Services.GetService<ICommandRouter>())); // Non singleton
 
             // Check ICommandRouter is added as a transient
             ICommandHandler? commandHandler = host.Services.GetService<ICommandHandler>();
             Assert.IsNotNull(commandHandler);
             Assert.IsInstanceOfType(commandHandler, typeof(CommandHandler));
             Assert.IsFalse(ReferenceEquals(commandHandler, host.Services.GetService<ICommandHandler>()));
+
+            // License checker is added as a singleton
+            ILicenseChecker? licenseChecker = host.Services.GetService<ILicenseChecker>();
+            Assert.IsNotNull(licenseChecker);
+            Assert.IsInstanceOfType(licenseChecker, typeof(LicenseChecker));
+            Assert.IsTrue(ReferenceEquals(licenseChecker, host.Services.GetService<ILicenseChecker>())); // Singleton
+
+            // License extractor is added as a singleton
+            ILicenseExtractor? licenseExtractor = host.Services.GetService<ILicenseExtractor>();
+            Assert.IsNotNull(licenseExtractor);
+            Assert.IsInstanceOfType(licenseExtractor, typeof(LicenseExtractor));
+            Assert.IsTrue(ReferenceEquals(licenseExtractor, host.Services.GetService<ILicenseExtractor>()));
         }
 
         private void SetupAction(CliOptions obj)

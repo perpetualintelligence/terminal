@@ -173,8 +173,8 @@ namespace PerpetualIntelligence.Cli.Mocks
             var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultArgument: defaultArg);
 
             // Internal set, in prod apps this will be set by DI Addxxx methods
-            cmd1.Checker = checker;
-            cmd1.Runner = runner;
+            cmd1._checker = checker;
+            cmd1._runner = runner;
 
             return new Tuple<CommandDescriptor, Command>(cmd1, new Command(id, name, desc));
         }

@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class ExtractorOptions
     {
         /// <summary>
-        /// Determines whether the extractor support extracting the argument by alias. Defaults to <c>false</c>.
+        /// Determines whether the extractor support extracting the argument by alias. Defaults to <c>null</c>.
         /// </summary>
         /// <remarks>
         /// Argument alias supports the legacy apps that identified a command argument with an id and an alias string.
@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// work with argument id. In general, an app should not identify the same argument with multiple string. Using
         /// alias will degrade the performance.
         /// </remarks>
-        public bool? ArgumentAlias { get; set; } = false;
+        public bool? ArgumentAlias { get; set; }
 
         /// <summary>
         /// The argument alias prefix. Defaults to <c>-</c>.
@@ -41,23 +41,28 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string ArgumentSeparator { get; set; } = "=";
 
         /// <summary>
-        /// Determines whether the extractor support extracting default argument values. Defaults to <c>false</c>.
+        /// Defines the token within which to extract an argument value. Default to <c>null</c>.
         /// </summary>
-        public bool? DefaulArgumentValue { get; set; } = false;
+        public string? ArgumentValueWithIn { get; set; } = null;
 
         /// <summary>
-        /// Determines whether the extractor support extracting default arguments. Defaults to <c>false</c>.
+        /// Defines the Regex pattern for command identifier. Defaults to <c>^[A-Za-z0-9_-]*$</c>.
         /// </summary>
-        public bool? DefaultArgument { get; set; } = false;
+        public string CommandIdRegexPattern { get; set; } = "^[A-Za-z0-9_-]*$";
+
+        /// <summary>
+        /// Determines whether the extractor support extracting default argument values. Defaults to <c>null</c>.
+        /// </summary>
+        public bool? DefaulArgumentValue { get; set; }
+
+        /// <summary>
+        /// Determines whether the extractor support extracting default arguments. Defaults to <c>null</c>.
+        /// </summary>
+        public bool? DefaultArgument { get; set; }
 
         /// <summary>
         /// The command string separator. Defaults to a single space char.
         /// </summary>
         public string Separator { get; set; } = " ";
-
-        /// <summary>
-        /// Defines the token within which to extract an argument value. Default to <c>null</c>.
-        /// </summary>
-        public string? ArgumentValueWithIn = null;
     }
 }

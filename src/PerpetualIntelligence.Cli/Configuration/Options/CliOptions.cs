@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
@@ -25,6 +26,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The hosting configuration options.
         /// </summary>
         public HostingOptions Hosting { get; set; } = new HostingOptions();
+
+        /// <summary>
+        /// The licensing configuration options.
+        /// </summary>
+        public LicensingOptions Licensing { get; set; } = new LicensingOptions();
 
         /// <summary>
         /// The logging configuration options.

@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
 {
-    internal class MockHandler : ICommandHandler
+    internal class MockCommandHandlerInner : ICommandHandler
     {
-        public MockHandler()
+        public MockCommandHandlerInner()
         {
         }
 

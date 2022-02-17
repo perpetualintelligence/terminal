@@ -22,7 +22,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             LoggingOptions options = new LoggingOptions();
 
-            Assert.AreEqual(null, options.RevealErrorArguments);
+            Assert.IsTrue(options.ObsureErrorArguments);
+            Assert.AreEqual("****", options.ObscureErrorArgumentString);
         }
     }
 }

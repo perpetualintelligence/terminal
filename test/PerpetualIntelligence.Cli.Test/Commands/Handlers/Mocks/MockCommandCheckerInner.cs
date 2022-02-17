@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
 {
-    internal class MockChecker : ICommandChecker
+    internal class MockCommandCheckerInner : ICommandChecker
     {
         public Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {

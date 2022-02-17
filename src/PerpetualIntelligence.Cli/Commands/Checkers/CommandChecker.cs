@@ -21,12 +21,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="dataTypeChecker">The argument data-type checker.</param>
+        /// <param name="argumentChecker">The argument checker.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandChecker(IArgumentChecker dataTypeChecker, CliOptions options, ILogger<CommandChecker> logger)
+        public CommandChecker(IArgumentChecker argumentChecker, CliOptions options, ILogger<CommandChecker> logger)
         {
-            this.valueChecker = dataTypeChecker;
+            this.argumentChecker = argumentChecker;
             this.options = options;
             this.logger = logger;
         }
@@ -34,8 +34,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <inheritdoc/>
         public virtual async Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {
-            // FOMAC: The default extractor will filter out unsupported arguments. So we don't check it here.
-
             // If the command itself do not support any arguments then there is nothing much to check. Extractor will
             // reject any unsupported attributes.
             if (context.CommandDescriptor.ArgumentDescriptors == null)
@@ -72,15 +70,15 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     }
 
                     // Check arg value
-                    await valueChecker.CheckAsync(new ArgumentCheckerContext(argDescriptor, arg!));
+                    await argumentChecker.CheckAsync(new ArgumentCheckerContext(argDescriptor, arg!));
                 }
             }
 
             return new CommandCheckerResult();
         }
 
+        private readonly IArgumentChecker argumentChecker;
         private readonly ILogger<CommandChecker> logger;
         private readonly CliOptions options;
-        private readonly IArgumentChecker valueChecker;
     }
 }

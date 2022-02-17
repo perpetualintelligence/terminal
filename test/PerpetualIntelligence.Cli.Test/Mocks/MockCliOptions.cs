@@ -17,13 +17,14 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 Logging = new LoggingOptions()
                 {
-                    RevealErrorArguments = true
+                    ObsureErrorArguments = false
                 },
                 Extractor = new ExtractorOptions()
                 {
                     ArgumentPrefix = "-",
                     ArgumentSeparator = "=",
                     Separator = " ",
+                    CommandIdRegexPattern = "^[A-Za-z0-9:]*$"
                 },
             };
         }
@@ -34,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 Logging = new LoggingOptions()
                 {
-                    RevealErrorArguments = true
+                    ObsureErrorArguments = false
                 },
                 Extractor = new ExtractorOptions()
                 {
@@ -44,6 +45,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                     ArgumentAliasPrefix = "-",
                     ArgumentSeparator = " ",
                     Separator = " ",
+                    CommandIdRegexPattern = "^[A-Za-z0-9:]*$"
                 },
             };
         }

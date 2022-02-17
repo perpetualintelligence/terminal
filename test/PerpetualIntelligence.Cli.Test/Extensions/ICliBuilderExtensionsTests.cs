@@ -21,6 +21,7 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
+using PerpetualIntelligence.Protocols.Cli;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
@@ -78,11 +79,11 @@ namespace PerpetualIntelligence.Cli.Extensions
             cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd);
 
             // Again
-            TestHelper.AssertThrowsWithMessage<InvalidOperationException>(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd), "The command descriptor is already configured and added to the service collection.");
+            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd), Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection.");
         }
 
         [TestMethod]
-        public void AddCommandDescriptorShouldCorrectlyInitialize()
+        public void AddCommandDescriptorShouldCorrectlyInitializeCheckerAndRunner()
         {
             cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(new CommandDescriptor("id1", "name1", "prefix1", "desc"));
 
@@ -94,8 +95,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual("id1", impIstance.Id);
             Assert.AreEqual("name1", impIstance.Name);
             Assert.AreEqual("prefix1", impIstance.Prefix);
-            Assert.AreEqual(typeof(MockCommandRunner), impIstance.Runner);
-            Assert.AreEqual(typeof(MockCommandChecker), impIstance.Checker);
+            Assert.AreEqual(typeof(MockCommandRunner), impIstance._runner);
+            Assert.AreEqual(typeof(MockCommandChecker), impIstance._checker);
+            Assert.IsFalse(impIstance.IsGroup);
+            Assert.IsFalse(impIstance.IsRoot);
 
             var cmdRunner = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(MockCommandRunner)));
             Assert.IsNotNull(cmdRunner);
@@ -115,6 +118,38 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsNotNull(serviceDescriptor);
             Assert.AreEqual(ServiceLifetime.Transient, serviceDescriptor.Lifetime);
             Assert.AreEqual(typeof(MockCommandDescriptorStore), serviceDescriptor.ImplementationType);
+        }
+
+        [TestMethod]
+        public void AddCommandDescriptorWithGroupAndNoRootShouldNotError()
+        {
+            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
+            Assert.IsFalse(cmd.IsGroup);
+            Assert.IsFalse(cmd.IsRoot);
+
+            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: false);
+            Assert.IsTrue(cmd.IsGroup);
+            Assert.IsFalse(cmd.IsRoot);
+        }
+
+        [TestMethod]
+        public void AddCommandDescriptorWithGroupAndRootShouldNotError()
+        {
+            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
+            Assert.IsFalse(cmd.IsGroup);
+            Assert.IsFalse(cmd.IsRoot);
+
+            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: true);
+            Assert.IsTrue(cmd.IsGroup);
+            Assert.IsTrue(cmd.IsRoot);
+        }
+
+        [TestMethod]
+        public void AddCommandDescriptorWithRootAndNoGroupShouldError()
+        {
+            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
+
+            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: false, isRoot: true), Errors.InvalidConfiguration, "The root command must also be a command group. command_id=id1 command_name=name1");
         }
 
         [TestMethod]

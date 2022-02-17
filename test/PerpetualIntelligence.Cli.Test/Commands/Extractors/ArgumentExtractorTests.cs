@@ -19,9 +19,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     [TestClass]
-    public class SeparatorArgumentExtractorTests : LogTest
+    public class ArgumentExtractorTests : LogTest
     {
-        public SeparatorArgumentExtractorTests() : base(TestLogger.Create<SeparatorArgumentExtractorTests>())
+        public ArgumentExtractorTests() : base(TestLogger.Create<ArgumentExtractorTests>())
         {
         }
 
@@ -531,11 +531,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             stringComparer = new StringComparisonComparer(StringComparison.Ordinal);
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1", MockCommands.TestArgumentDescriptors, null, null);
             options = MockCliOptions.New();
-            extractor = new SeparatorArgumentExtractor(stringComparer, options, TestLogger.Create<SeparatorArgumentExtractor>());
+            extractor = new ArgumentExtractor(stringComparer, options, TestLogger.Create<ArgumentExtractor>());
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;
-        private SeparatorArgumentExtractor extractor = null!;
+        private ArgumentExtractor extractor = null!;
         private CliOptions options = null!;
         private IStringComparer stringComparer = null!;
     }

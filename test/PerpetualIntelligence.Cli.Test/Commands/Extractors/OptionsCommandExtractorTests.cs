@@ -295,12 +295,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options = MockCliOptions.NewOptions();
             stringComparer = new StringComparisonComparer(StringComparison.Ordinal);
-            argExtractor = new SeparatorArgumentExtractor(stringComparer, options, TestLogger.Create<SeparatorArgumentExtractor>());
+            argExtractor = new ArgumentExtractor(stringComparer, options, TestLogger.Create<ArgumentExtractor>());
             commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.GroupedOptionsCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            argExtractor = new SeparatorArgumentExtractor(stringComparer, options, TestLogger.Create<SeparatorArgumentExtractor>());
+            argExtractor = new ArgumentExtractor(stringComparer, options, TestLogger.Create<ArgumentExtractor>());
             defaultArgValueProvider = new DefaultArgumentValueProvider(stringComparer);
             defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
-            extractor = new SeparatorCommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<SeparatorCommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
         private void AssertArgument(Argument arg, string name, string customDataType, string description, object value, string? alias)
@@ -339,11 +339,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
         }
 
-        private SeparatorArgumentExtractor argExtractor = null!;
+        private ArgumentExtractor argExtractor = null!;
         private ICommandDescriptorStore commands = null!;
         private IDefaultArgumentProvider defaultArgProvider = null!;
         private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
-        private SeparatorCommandExtractor extractor = null!;
+        private CommandExtractor extractor = null!;
         private CliOptions options = null!;
         private IStringComparer stringComparer = null!;
     }
