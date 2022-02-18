@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     [TestClass]
-    public class ArgumentValueCheckerTests : LogTest
+    public class ArgumentValueCheckerTests : InitializerTests
     {
         public ArgumentValueCheckerTests() : base(TestLogger.Create<ArgumentValueCheckerTests>())
         {

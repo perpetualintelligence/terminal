@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Stores.InMemory
 {
     [TestClass]
-    public class InMemoryCommandDescriptorStoreTests : LogTest
+    public class InMemoryCommandDescriptorStoreTests : InitializerTests
     {
         public InMemoryCommandDescriptorStoreTests() : base(TestLogger.Create<InMemoryCommandDescriptorStoreTests>())
         {

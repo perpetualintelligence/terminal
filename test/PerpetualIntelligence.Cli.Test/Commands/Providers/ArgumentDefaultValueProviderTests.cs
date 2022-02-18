@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Providers
 {
     [TestClass]
-    public class ArgumentDefaultValueProviderTests : LogTestWithLogger<ArgumentDefaultValueProviderTests>
+    public class ArgumentDefaultValueProviderTests : LoggerTests<ArgumentDefaultValueProviderTests>
     {
         [TestMethod]
         public async Task NullOrEmptyArgumentDescriptorsShouldThrowAsync()

@@ -12,7 +12,7 @@ using PerpetualIntelligence.Test.Services;
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     [TestClass]
-    public class LicensingOptionsTests : LogTest
+    public class LicensingOptionsTests : InitializerTests
     {
         public LicensingOptionsTests() : base(TestLogger.Create<LoggingOptionsTests>())
         {

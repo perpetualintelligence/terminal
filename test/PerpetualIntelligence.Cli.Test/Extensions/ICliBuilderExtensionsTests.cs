@@ -30,7 +30,7 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     [TestClass]
-    public class ICliBuilderExtensionsTests : LogTest
+    public class ICliBuilderExtensionsTests : InitializerTests
     {
         public ICliBuilderExtensionsTests() : base(TestLogger.Create<ICliBuilderExtensionsTests>())
         {

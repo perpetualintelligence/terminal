@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     [TestClass]
-    public class CommandCheckerTests : LogTest
+    public class CommandCheckerTests : InitializerTests
     {
         public CommandCheckerTests() : base(TestLogger.Create<CommandCheckerTests>())
         {

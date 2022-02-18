@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     [TestClass]
-    public class CommandHandlerTests : LogTest
+    public class CommandHandlerTests : InitializerTests
     {
         public CommandHandlerTests() : base(TestLogger.Create<CommandHandlerTests>())
         {

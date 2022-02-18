@@ -23,7 +23,7 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     [TestClass]
-    public class IServiceCollectionExtensionsTests : LogTest
+    public class IServiceCollectionExtensionsTests : InitializerTests
     {
         public IServiceCollectionExtensionsTests() : base(TestLogger.Create<IServiceCollectionExtensionsTests>())
         {

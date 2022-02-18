@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     [TestClass]
-    public class DataAnnotationMapperTests : LogTest
+    public class DataAnnotationMapperTests : InitializerTests
     {
         public DataAnnotationMapperTests() : base(TestLogger.Create<DataAnnotationMapperTests>())
         {

@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     [TestClass]
-    public class CommandRouterTests : LogTest
+    public class CommandRouterTests : InitializerTests
     {
         public CommandRouterTests() : base(TestLogger.Create<CommandRouterTests>())
         {

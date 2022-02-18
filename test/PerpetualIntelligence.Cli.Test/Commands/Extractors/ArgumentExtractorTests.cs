@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     [TestClass]
-    public class ArgumentExtractorTests : LogTest
+    public class ArgumentExtractorTests : InitializerTests
     {
         public ArgumentExtractorTests() : base(TestLogger.Create<ArgumentExtractorTests>())
         {

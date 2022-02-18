@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     [TestClass]
-    public class CommandExtractorTests : LogTest
+    public class CommandExtractorTests : InitializerTests
     {
         public CommandExtractorTests() : base(TestLogger.Create<CommandExtractorTests>())
         {
