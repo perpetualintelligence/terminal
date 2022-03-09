@@ -10,7 +10,7 @@ using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
-using PerpetualIntelligence.Protocols.Cli;
+
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Collections.Generic;

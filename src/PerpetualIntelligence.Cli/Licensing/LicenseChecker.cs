@@ -7,7 +7,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Protocols.Cli;
+
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

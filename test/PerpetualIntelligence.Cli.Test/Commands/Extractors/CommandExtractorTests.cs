@@ -15,7 +15,7 @@ using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores.InMemory;
-using PerpetualIntelligence.Protocols.Cli;
+
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Shared.Infrastructure;

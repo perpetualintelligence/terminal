@@ -7,7 +7,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Protocols.Cli;
+
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 

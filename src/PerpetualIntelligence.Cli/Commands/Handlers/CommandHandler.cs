@@ -11,7 +11,6 @@ using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Licensing;
-using PerpetualIntelligence.Protocols.Oidc;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Threading.Tasks;

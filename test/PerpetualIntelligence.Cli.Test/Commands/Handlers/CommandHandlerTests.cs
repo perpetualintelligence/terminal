@@ -12,7 +12,7 @@ using PerpetualIntelligence.Cli.Commands.Handlers.Mocks;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Protocols.Cli;
+
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;

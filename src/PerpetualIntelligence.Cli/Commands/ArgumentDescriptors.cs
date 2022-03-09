@@ -6,7 +6,7 @@
 */
 
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
-using PerpetualIntelligence.Protocols.Cli;
+
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;

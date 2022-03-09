@@ -11,7 +11,7 @@ using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
-using PerpetualIntelligence.Protocols.Cli;
+
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System.Collections.Generic;
