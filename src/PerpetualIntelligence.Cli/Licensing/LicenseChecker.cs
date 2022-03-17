@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context)
         {
             // Make sure we have valid licenses to check
-            await ExtractLicensesAsync();
+            SetupSoleLicense(context);
 
             if (context.CommandDescriptor == null)
             {
@@ -122,17 +122,15 @@ namespace PerpetualIntelligence.Cli.Licensing
             throw new System.NotImplementedException();
         }
 
-        private async Task ExtractLicensesAsync()
+        private void SetupSoleLicense(LicenseCheckerContext context)
         {
-            var result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
-
             // For now we only support 1 license
-            if (result.Licenses.Count() != 1)
+            if (context.Licenses.Count() != 1)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The license checker found multiple licenses. Please configure only 1 license");
             }
 
-            soleLicense = result.Licenses.First();
+            soleLicense = context.Licenses.First();
         }
 
         private readonly ILicenseExtractor licenseExtractor;
