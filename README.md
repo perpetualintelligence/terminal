@@ -1,7 +1,6 @@
-![Preview](https://img.shields.io/badge/release-preview-orange) 
-[![build-test-ci](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-ci.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-ci.yml)
-[![build-test-publish](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml)
-[![delete-package](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml)
+[![build-test-cross-manual](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml)
+[![build-test-cross-manual](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml)
+[![delete-packages](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml)
 
 ![macOS](https://img.shields.io/badge/macOS-Catalina%2010.15-blue?style=flat-square&logo=macos)
 ![ubuntu](https://img.shields.io/badge/linux-ubuntu--20.04-blue?style=flat-square&logo=ubuntu)
