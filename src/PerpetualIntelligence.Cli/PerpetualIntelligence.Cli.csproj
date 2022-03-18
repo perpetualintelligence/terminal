@@ -12,7 +12,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-        <Description>"pi-cli" is the most flexible cross-platform CLI framework within .NET Ecosystem for companies, services, frameworks, and tools.</Description>
+        <Description>"pi-cli" is the most flexible cross-platform CLI framework within .NET Ecosystem for companies, services, frameworks, and developer tools.</Description>
     </PropertyGroup>
 
     <ItemGroup>
