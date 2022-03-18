@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
     {
         public bool Called { get; set; }
 
-        public LicenseCheckerContext ContextCalled { get; set; }
+        public LicenseCheckerContext? ContextCalled { get; set; }
 
         public Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context)
         {

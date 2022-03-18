@@ -75,8 +75,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <exception cref="ErrorException"></exception>
         public Task<License[]> CheckCommandLimits(CommandDescriptor commandDescriptor)
         {
-            // If any license does not have a limit then that means the subject has mac root commands.
-            if (!soleLicense.RootCommandLimit.HasValue)
+            // If any license does not have a limit then that means the subject has max root commands.
+            if (!soleLicense!.RootCommandLimit.HasValue)
             {
                 return Task.FromResult(new[] { soleLicense });
             }
@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         private Task<License[]> CheckCommand(CommandDescriptor commandDescriptor)
         {
             // If any license does not have a limit then that means the subject has mac root commands.
-            if (!soleLicense.RootCommandLimit.HasValue)
+            if (!soleLicense!.RootCommandLimit.HasValue)
             {
                 return Task.FromResult(new[] { soleLicense });
             }
@@ -132,8 +132,6 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             soleLicense = context.Licenses.First();
         }
-
-        private readonly ILicenseExtractor licenseExtractor;
 
         /// <summary>
         /// There is no concurrent HashSet so we use ConcurrentDictionary and put the minimal value (byte) which has no

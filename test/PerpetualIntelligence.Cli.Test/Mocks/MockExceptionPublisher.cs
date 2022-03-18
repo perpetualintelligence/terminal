@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Mocks
     {
         public bool Called { get; set; }
 
-        public string PublishedMessage { get; set; }
+        public string? PublishedMessage { get; set; }
 
         public Task PublishAsync(ExceptionPublisherContext context)
         {

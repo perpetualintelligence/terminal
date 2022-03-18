@@ -251,7 +251,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task ArgumentPrefixCannotBeNullOrWhitespaceAsync()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.ArgumentPrefix = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The argument prefix cannot be null or whitespace.");
 
             options.Extractor.ArgumentPrefix = "";

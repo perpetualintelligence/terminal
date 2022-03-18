@@ -132,6 +132,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             var result = await handler.HandleAsync(commandContext);
 
             Assert.IsTrue(licenseChecker.Called);
+            Assert.IsNotNull(licenseChecker.ContextCalled);
             Assert.AreEqual(LicenseCheckerFeature.RootCommandLimit | LicenseCheckerFeature.CommandGroupLimit | LicenseCheckerFeature.CommandLimit, licenseChecker.ContextCalled.CheckFeature);
             Assert.AreEqual(command.Item1, licenseChecker.ContextCalled.CommandDescriptor);
             CollectionAssert.AreEqual(licenses.ToArray(), licenseChecker.ContextCalled.Licenses.ToArray());
