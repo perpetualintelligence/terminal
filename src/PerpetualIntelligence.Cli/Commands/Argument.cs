@@ -148,5 +148,14 @@ namespace PerpetualIntelligence.Cli.Commands
         {
             return Id.GetHashCode();
         }
+
+        /// <summary>
+        /// Changes the argument value to the specified type.
+        /// </summary>
+        /// <param name="type">The new type to use.</param>
+        internal void ChangeValueType(Type type)
+        {
+            Value = Convert.ChangeType(Value, type);
+        }
     }
 }

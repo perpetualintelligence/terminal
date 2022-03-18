@@ -50,8 +50,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             // Check argument data type and value type
             ArgumentDataTypeMapperResult mapperResult = await mapper.MapAsync(new ArgumentDataTypeMapperContext(context.Argument));
 
-            // Check value compatibility
-            return await CheckValueCompatibilityAsync(context, mapperResult);
+            // Check whether we need to check type
+            if (options.Checker.AllowStrictTypeChecking.GetValueOrDefault())
+            {
+                // Check value compatibility
+                return await StrictTypeCheckingAsync(context, mapperResult);
+            }
+
+            return new ArgumentCheckerResult(mapperResult.MappedType);
         }
 
         /// <summary>
@@ -60,11 +66,16 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="context"></param>
         /// <param name="mapperResult"></param>
         /// <returns></returns>
-        protected Task<ArgumentCheckerResult> CheckValueCompatibilityAsync(ArgumentCheckerContext context, ArgumentDataTypeMapperResult mapperResult)
+        protected Task<ArgumentCheckerResult> StrictTypeCheckingAsync(ArgumentCheckerContext context, ArgumentDataTypeMapperResult mapperResult)
         {
-            // Check the system type compatibility
-            if (!mapperResult.MappedType.IsAssignableFrom(context.Argument.Value.GetType()))
+            // Ensure strict value compatibility
+            try
             {
+                context.Argument.ChangeValueType(mapperResult.MappedType);
+            }
+            catch
+            {
+                // Meaningful error instead of format exception
                 throw new ErrorException(Errors.InvalidArgument, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
             }
 
@@ -79,7 +90,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     }
                     catch (Exception ex)
                     {
-                        throw new ErrorException(Errors.InvalidArgument, logger.FormatAndLog(LogLevel.Error, options.Logging, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Id, context.Argument.Value, ex.Message));
+                        throw new ErrorException(Errors.InvalidArgument, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
                     }
                 }
             }

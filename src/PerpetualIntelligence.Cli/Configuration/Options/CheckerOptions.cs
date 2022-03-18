@@ -15,5 +15,10 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// Determines whether the checker allows an obsolete argument.
         /// </summary>
         public bool? AllowObsoleteArgument { get; set; }
+
+        /// <summary>
+        /// Determines whether the checker allows strict type checking.
+        /// </summary>
+        public bool? AllowStrictTypeChecking { get; set; }
     }
 }

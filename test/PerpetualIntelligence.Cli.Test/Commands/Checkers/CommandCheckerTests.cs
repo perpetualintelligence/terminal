@@ -56,19 +56,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task InvalidValyeTypeShouldErrorAsync()
-        {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Text) }));
-
-            Arguments arguments = new(stringComparer);
-            arguments.Add(new Argument("key1", 36, DataType.Text));
-            Command argsCommand = new(descriptor, arguments);
-
-            CommandCheckerContext context = new(descriptor, argsCommand);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value does not match the mapped type. argument=key1 type=System.String data_type=Text value_type=Int32 value=36");
-        }
-
-        [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteAllowedShouldNotErrorAsync()
         {
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Text) { Obsolete = true } }));
@@ -125,6 +112,61 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             CommandCheckerContext context = new(descriptor, argsCommand);
             var result = await checker.CheckAsync(context);
+        }
+
+        [TestMethod]
+        public async Task StrictTypeCheckingDisabledInvalidValueTypeShouldNotErrorAsync()
+        {
+            options.Checker.AllowStrictTypeChecking = false;
+
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
+
+            Arguments arguments = new(stringComparer);
+            arguments.Add(new Argument("key1", "non-date", DataType.Date));
+            Command argsCommand = new(descriptor, arguments);
+
+            CommandCheckerContext context = new(descriptor, argsCommand);
+            CommandCheckerResult result = await checker.CheckAsync(context);
+
+            Assert.AreEqual("non-date", arguments[0].Value);
+        }
+
+        [TestMethod]
+        public async Task StrictTypeCheckingWithInvalidValueTypeShouldErrorAsync()
+        {
+            options.Checker.AllowStrictTypeChecking = true;
+
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
+
+            Arguments arguments = new(stringComparer);
+            arguments.Add(new Argument("key1", "non-date", DataType.Date));
+            Command argsCommand = new(descriptor, arguments);
+
+            CommandCheckerContext context = new(descriptor, argsCommand);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value does not match the mapped type. argument=key1 type=System.DateTime data_type=Date value_type=String value=non-date");
+        }
+
+        [TestMethod]
+        public async Task StrictTypeCheckingWithValidValueTypeShouldChangeTypeCorrectlyAsync()
+        {
+            options.Checker.AllowStrictTypeChecking = true;
+
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
+
+            Arguments arguments = new(stringComparer);
+            arguments.Add(new Argument("key1", "25-Mar-2021", DataType.Date));
+            Command argsCommand = new(descriptor, arguments);
+
+            object oldValue = arguments[0].Value;
+            Assert.IsInstanceOfType(oldValue, typeof(string));
+
+            // Value should pass and converted to date
+            CommandCheckerContext context = new(descriptor, argsCommand);
+            var result = await checker.CheckAsync(context);
+
+            object newValue = arguments[0].Value;
+            Assert.IsInstanceOfType(newValue, typeof(DateTime));
+            Assert.AreEqual(oldValue, ((DateTime)newValue).ToString("dd-MMM-yyyy"));
         }
 
         [TestMethod]
