@@ -5,8 +5,7 @@
 
 name: build-test-publish
 
-# 1 release at a time
-concurrency: cli
+concurrency: github-release
 
 # Manual trigger for deployment
 on:

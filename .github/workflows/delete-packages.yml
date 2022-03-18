@@ -6,6 +6,8 @@
 # Deletes the specified package name
 name: delete-packages
 
+concurrency: github-release
+
 # Controls when the workflow will run
 on:
   # Weekly automated run 10.30 PM UTC on Friday
