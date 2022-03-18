@@ -1,10 +1,7 @@
-#    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+#    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 #
-#    Licensed under the Apache License, Version 2.0.
-#    https://github.com/perpetualintelligence/terms/blob/main/LICENSE
-#
-#    Additional terms and policies.
-#    https://github.com/perpetualintelligence/terms/blob/main/policies.md
+#    For license, terms, and data policies, go to:
+#    https://terms.perpetualintelligence.com
 
 # Deletes the specified package name
 name: delete-packages
@@ -45,17 +42,37 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    # Define the default values for manual and CRON triggers
+    env:
+      PI_KEEP_MINIMUM_VERSIONS: 1
+      PI_DELETE_PACKAGES: All
+
     steps:
-      - name: ${{ github.event.inputs.package }}
-        if: ${{ github.event.inputs.package != 'All' }}
+
+      # Establish the values based on manual or cron trigger
+      - name: Keep minimum metadata
+        if: ${{ github.event.inputs.keep != '' }}
+        run: echo "PI_KEEP_MINIMUM_VERSIONS=${{ github.event.inputs.keep }}" >> $GITHUB_ENV
+        continue-on-error: false
+
+      # Establish the values based on manual or cron trigger
+      - name: Delete packages metadata
+        if: ${{ github.event.inputs.package != '' }}
+        run: echo "PI_DELETE_PACKAGES=${{ github.event.inputs.package }}" >> $GITHUB_ENV
+        continue-on-error: false
+
+      # Delete specific
+      - name: Delete ${{ env.PI_DELETE_PACKAGES }}
+        if: ${{ env.PI_DELETE_PACKAGES != 'All' }}
         uses: actions/delete-package-versions@v2       
         with:
-          package-name: ${{ github.event.inputs.package }}
-          min-versions-to-keep: ${{ github.event.inputs.keep }}  
-          
-      - name: PerpetualIntelligence.Cli
-        if: ${{ github.event.inputs.package == 'All' }}
+          package-name: ${{ env.PI_DELETE_PACKAGES }}
+          min-versions-to-keep: ${{ env.PI_KEEP_MINIMUM_VERSIONS }}
+      
+      # Delete PerpetualIntelligence.Shared
+      - name: Delete PerpetualIntelligence.Cli
+        if: ${{ env.PI_DELETE_PACKAGES == 'All' }}
         uses: actions/delete-package-versions@v2       
         with:
           package-name: PerpetualIntelligence.Cli
-          min-versions-to-keep: ${{ github.event.inputs.keep }}    
+          min-versions-to-keep: ${{ env.PI_KEEP_MINIMUM_VERSIONS }}

@@ -1,21 +1,13 @@
-#    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+#    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 #
-#    Licensed under the Apache License, Version 2.0.
-#    https://github.com/perpetualintelligence/terms/blob/main/LICENSE
-#
-#    Additional terms and policies.
-#    https://github.com/perpetualintelligence/terms/blob/main/policies.md
+#    For license, terms, and data policies, go to:
+#    https://terms.perpetualintelligence.com
 
-# This pipeline builds and tests the protocol projects. It does not publish any package.
-
-name: build-test-ci
+# This pipeline builds and tests the protocol projects on all supported platforms. It does not publish any package.
+name: build-test-cross-manual
 
 # Triggers
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on:  
   workflow_dispatch:
 
 jobs:

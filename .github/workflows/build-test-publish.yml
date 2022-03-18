@@ -1,21 +1,19 @@
-#    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+#    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 #
-#    Licensed under the Apache License, Version 2.0.
-#    https://github.com/perpetualintelligence/terms/blob/main/LICENSE
-#
-#    Additional terms and policies.
-#    https://github.com/perpetualintelligence/terms/blob/main/policies.md
-
-# This pipeline builds, tests and packs the protocol src projects. It does not publish any package.
+#    For license, terms, and data policies, go to:
+#    https://terms.perpetualintelligence.com
 
 name: build-test-publish
 
 # 1 release at a time
-# https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
-concurrency: github-release
+concurrency: cli
 
 # Manual trigger for deployment
 on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       suffix:
@@ -23,11 +21,10 @@ on:
         description: 'The package deployment suffix'
         required: true
         options:
-        - alpha
         - preview
         - rc
         - release
-        default: alpha
+        default: preview
       registry:
         type: choice
         description: 'The package registry'
@@ -48,10 +45,12 @@ jobs:
       PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
       PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
       PI_NUGET_PAT_ENV: ${{ secrets.PI_NUGET_API_KEY }}
+      PI_PUBLISH_REGISTRY: github
       PI_CI_REFERENCE: package
       
     steps:
 
+    # Checktout
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -73,11 +72,11 @@ jobs:
       run: echo "PI_BUILD_NUMBER=$(date +'%y%m%d')${{ github.run_number }}${{ github.run_attempt }}" >> $GITHUB_ENV
       continue-on-error: false
     
-    # Setup preview package versions
+    # Setup preview package versions based on trigger
     # Format: <package>.2.3.6-preview.2201032602
-    - name: Alpha metadata
-      if: ${{ github.event.inputs.suffix == 'alpha' }}
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}-alpha.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
+    - name: Default metadata (preview)
+      if: ${{ github.event.inputs.suffix == '' }}
+      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}-preview.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
       continue-on-error: false
     
     # Setup preview package versions
@@ -100,10 +99,17 @@ jobs:
       if: ${{ github.event.inputs.suffix == 'release' }}
       run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}" >> $GITHUB_ENV
       continue-on-error: false
+
+    # Setup publish registry (github or nuget)
+    # PI_PUBLISH_REGISTRY defaults to github
+    - name: Registry metadata
+      if: ${{ github.event.inputs.registry != '' }}
+      run: echo "PI_PUBLISH_REGISTRY=${{ github.event.inputs.registry }}" >> $GITHUB_ENV
+      continue-on-error: false
     
-    # Print all env
+    # Print all env and directory
     - name: Print
-      if: ${{ true }}  # Debug
+      if: ${{ false }}  # Debug
       run: |
         env
         ls -R
@@ -128,4 +134,4 @@ jobs:
         version: ${{ env.PI_CI_PACKAGE_VERSION }}
         ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
         nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
-        registry: ${{ github.event.inputs.registry }}
+        registry: ${{ env.PI_PUBLISH_REGISTRY }}
