@@ -18,13 +18,13 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string[]? LicenseKeys { get; set; }
 
         /// <summary>
-        /// The license key source. Defaults to <see cref="LicenseKeyType.PublicToken"/>.
+        /// The license key source. Defaults to <see cref="LicenseKeySource.JwsFile"/>.
         /// </summary>
-        public LicenseKeyType LicenseKeyType { get; set; } = LicenseKeyType.PublicToken;
+        public LicenseKeySource LicenseKeySource { get; set; } = LicenseKeySource.JwsFile;
 
         /// <summary>
-        /// The signing public key used to validate the <see cref="LicenseKeys"/> if <see cref="LicenseKeyType"/> is set
-        /// to <see cref="LicenseKeyType.Jws"/>.
+        /// The signing public key used to validate the <see cref="LicenseKeys"/> if <see cref="LicenseKeySource"/> is
+        /// set to <see cref="LicenseKeySource.JwsFile"/>.
         /// </summary>
         public string? SigningKey { get; set; }
     }

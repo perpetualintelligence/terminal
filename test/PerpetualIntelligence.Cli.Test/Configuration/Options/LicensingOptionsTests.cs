@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
 
             Assert.IsNull(options.LicenseKeys);
             Assert.IsNull(options.SigningKey);
-            Assert.AreEqual(LicenseKeyType.PublicToken, options.LicenseKeyType);
+            Assert.AreEqual(LicenseKeySource.JwsFile, options.LicenseKeySource);
         }
     }
 }
