@@ -14,8 +14,4 @@
     <ProjectReference Include="..\..\src\PerpetualIntelligence.Cli\PerpetualIntelligence.Cli.csproj" />
   </ItemGroup>
 
- <ItemGroup>
-   <Folder Include="Licensing\" />
- </ItemGroup>
-
 </Project>

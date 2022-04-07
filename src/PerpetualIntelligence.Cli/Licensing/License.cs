@@ -5,34 +5,40 @@
     https://terms.perpetualintelligence.com
 */
 
-using System.Security.Claims;
-
 namespace PerpetualIntelligence.Cli.Licensing
 {
     /// <summary>
     /// A <c>cli</c> license.
     /// </summary>
-    public sealed class License : Shared.Infrastructure.License
+    public sealed class License : System.ComponentModel.License
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="licenseKey">The license key.</param>
-        /// <param name="claimsPrincipal">The license claims principal.</param>
-        public License(string licenseKey, ClaimsPrincipal claimsPrincipal) : base(claimsPrincipal)
+        /// <param name="claims">The license claims.</param>
+        /// <param name="limits">The license limits.</param>
+        public License(string licenseKey, LicenseClaims claims, LicenseLimits limits)
         {
-            LicenseKey = licenseKey;
+            this.licenseKey = licenseKey;
+            Limits = limits;
+            Claims = claims;
         }
+
+        /// <summary>
+        /// The licensing claims.
+        /// </summary>
+        public LicenseClaims Claims { get; }
 
         /// <summary>
         /// The license key.
         /// </summary>
-        public override string LicenseKey { get; }
+        public override string LicenseKey => licenseKey;
 
         /// <summary>
-        /// The maximum root commands. Defaults to <c>null</c> and it means no limit.
+        /// The licensing limits.
         /// </summary>
-        public int? RootCommandLimit { get; internal set; }
+        public LicenseLimits Limits { get; }
 
         /// <summary>
         /// Disposes the license.
@@ -40,5 +46,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public override void Dispose()
         {
         }
+
+        private readonly string licenseKey;
     }
 }

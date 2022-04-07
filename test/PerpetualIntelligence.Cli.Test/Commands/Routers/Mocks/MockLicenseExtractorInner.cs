@@ -13,7 +13,16 @@ namespace PerpetualIntelligence.Cli.Mocks
 {
     public class MockLicenseExtractorInner : ILicenseExtractor
     {
+        public License[] MultipleLicenses { get; set; } = new[]
+        {
+            new License("testKey1", MockLicenses.TestClaims, MockLicenses.TestLimits),
+            new License("testKey2", MockLicenses.TestClaims, MockLicenses.TestLimits),
+            new License("testKey3", MockLicenses.TestClaims, MockLicenses.TestLimits)
+        };
+
         public bool NoLicense { get; set; }
+
+        public License[] SingleLicense { get; set; } = new[] { new License("testKey", MockLicenses.TestClaims, MockLicenses.TestLimits) };
 
         public bool UseMultiple { get; set; }
 
@@ -33,14 +42,5 @@ namespace PerpetualIntelligence.Cli.Mocks
                 return Task.FromResult(new LicenseExtractorResult(SingleLicense));
             }
         }
-
-        public License[] MultipleLicenses { get; set; } = new[]
-        {
-            new License("testKey1", MockClaimsPrincipal.NewEmpty()),
-            new License("testKey2", MockClaimsPrincipal.NewEmpty()),
-            new License("testKey3", MockClaimsPrincipal.NewEmpty())
-        };
-
-        public License[] SingleLicense { get; set; } = new[] { new License("testKey", MockClaimsPrincipal.NewEmpty()) };
     }
 }

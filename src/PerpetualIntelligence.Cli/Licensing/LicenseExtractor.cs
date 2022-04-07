@@ -12,7 +12,6 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -85,7 +84,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             var validateResult = handler.ValidateToken(licenseKey, parms);
             if (validateResult.IsValid)
             {
-                return new License(licenseKey, new ClaimsPrincipal(validateResult.ClaimsIdentity));
+                LicenseClaims claims = LicenseClaims.Create(validateResult.Claims);
+                LicenseLimits limits = LicenseLimits.Create(claims.Plan);
+                return new License(licenseKey, claims, limits);
             }
             else
             {

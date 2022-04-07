@@ -76,7 +76,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public Task<License[]> CheckCommandLimits(CommandDescriptor commandDescriptor)
         {
             // If any license does not have a limit then that means the subject has max root commands.
-            if (!soleLicense!.RootCommandLimit.HasValue)
+            if (!soleLicense.Limits.RootCommandLimit.HasValue)
             {
                 return Task.FromResult(new[] { soleLicense });
             }
@@ -85,20 +85,20 @@ namespace PerpetualIntelligence.Cli.Licensing
             // bump up the count and valid duplicate ids should not fail.
             _commandIds.TryAdd(commandDescriptor.Id, true);
 
-            int limit = soleLicense.RootCommandLimit.Value;
+            int limit = soleLicense.Limits.RootCommandLimit.Value;
             if (_commandIds.Count <= limit)
             {
                 // We have found a valid license within limit so reset the previous failed and return.
                 return Task.FromResult(new[] { soleLicense });
             }
 
-            throw new ErrorException(Errors.InvalidLicense, "The root command limit reached. max_limit={0} current={1}", soleLicense.RootCommandLimit, _commandIds.Count);
+            throw new ErrorException(Errors.InvalidLicense, "The root command limit reached. max_limit={0} current={1}", soleLicense.Limits.RootCommandLimit, _commandIds.Count);
         }
 
         private Task<License[]> CheckCommand(CommandDescriptor commandDescriptor)
         {
             // If any license does not have a limit then that means the subject has mac root commands.
-            if (!soleLicense!.RootCommandLimit.HasValue)
+            if (!soleLicense.Limits.RootCommandLimit.HasValue)
             {
                 return Task.FromResult(new[] { soleLicense });
             }
@@ -107,14 +107,14 @@ namespace PerpetualIntelligence.Cli.Licensing
             // bump up the count and valid duplicate ids should not fail.
             _commandIds.TryAdd(commandDescriptor.Id, true);
 
-            int limit = soleLicense.RootCommandLimit.Value;
+            int limit = soleLicense.Limits.RootCommandLimit.Value;
             if (_commandIds.Count <= limit)
             {
                 // We have found a valid license within limit so reset the previous failed and return.
                 return Task.FromResult(new[] { soleLicense });
             }
 
-            throw new ErrorException(Errors.InvalidLicense, "The root command limit reached. max_limit={0} current={1}", soleLicense.RootCommandLimit, _commandIds.Count);
+            throw new ErrorException(Errors.InvalidLicense, "The root command limit reached. max_limit={0} current={1}", soleLicense.Limits.RootCommandLimit, _commandIds.Count);
         }
 
         private Task<IEnumerable<License>> CheckCommandGroup(CommandDescriptor commandDescriptor)
@@ -140,6 +140,6 @@ namespace PerpetualIntelligence.Cli.Licensing
         private ConcurrentDictionary<string, bool> _commandIds = new();
 
         // Can be duplicate
-        private License? soleLicense = null;
+        private License soleLicense = null!;
     }
 }

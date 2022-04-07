@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli
         [TestMethod]
         public void AssertErrorsAreValid()
         {
-            TestHelper.AssertConstantCount(typeof(Errors), 11);
+            TestHelper.AssertConstantCount(typeof(Errors), 12);
 
             Assert.AreEqual("invalid_command", Errors.InvalidCommand);
             Assert.AreEqual("invalid_configuration", Errors.InvalidConfiguration);
@@ -27,6 +27,7 @@ namespace PerpetualIntelligence.Cli
             Assert.AreEqual("unsupported_command", Errors.UnsupportedCommand);
             Assert.AreEqual("server_error", Errors.ServerError);
             Assert.AreEqual("missing_argument", Errors.MissingArgument);
+            Assert.AreEqual("missing_claim", Errors.MissingClaim);
             Assert.AreEqual("request_canceled", Errors.RequestCanceled);
             Assert.AreEqual("invalid_license", Errors.InvalidLicense);
         }

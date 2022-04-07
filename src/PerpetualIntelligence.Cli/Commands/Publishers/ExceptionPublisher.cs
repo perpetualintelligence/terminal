@@ -40,13 +40,13 @@ namespace PerpetualIntelligence.Cli.Commands.Publishers
         {
             if (context.Exception is ErrorException ee)
             {
-                logger.FormatAndLog(Microsoft.Extensions.Logging.LogLevel.Error, options.Logging, ee.Error.ErrorDescription ?? "", ee.Error.Args ?? Array.Empty<object?>());
+                logger.FormatAndLog(LogLevel.Error, options.Logging, ee.Error.ErrorDescription ?? "", ee.Error.Args ?? Array.Empty<object?>());
             }
             else if (context.Exception is MultiErrorException me)
             {
                 foreach (Error err in me.Errors)
                 {
-                    logger.FormatAndLog(Microsoft.Extensions.Logging.LogLevel.Error, options.Logging, err.ErrorDescription ?? "", err.Args ?? Array.Empty<object?>());
+                    logger.FormatAndLog(LogLevel.Error, options.Logging, err.ErrorDescription ?? "", err.Args ?? Array.Empty<object?>());
                 }
             }
             else if (context.Exception is OperationCanceledException oe)

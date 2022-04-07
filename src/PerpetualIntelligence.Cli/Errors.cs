@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Cli
 {
     /// <summary>
-    /// The errors for the Perpetual Intelligence's <c>cli</c> protocol.
+    /// The errors for the Perpetual Intelligence's <c>cli</c> framework.
     /// </summary>
     public static class Errors
     {
@@ -46,6 +46,11 @@ namespace PerpetualIntelligence.Cli
         /// The argument is missing.
         /// </summary>
         public const string MissingArgument = "missing_argument";
+
+        /// <summary>
+        /// The claim is missing.
+        /// </summary>
+        public const string MissingClaim = "missing_claim";
 
         /// <summary>
         /// The request is canceled.
