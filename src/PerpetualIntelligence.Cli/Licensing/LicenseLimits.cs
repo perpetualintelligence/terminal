@@ -26,9 +26,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         public int? CommandGroupLimit { get; private set; }
 
         /// <summary>
-        /// Supports the command argument data type checks. Defaults to <c>false</c> or no data type checks.
+        /// Supports the command argument data type checks. Defaults to <c>null</c> or no data type checks.
         /// </summary>
-        public bool DataTypeChecks { get; private set; }
+        public string[]? DataTypeChecks { get; private set; }
 
         /// <summary>
         /// Supports the default arguments and default argument value. Defaults to <c>false</c> or no default arguments.
@@ -128,10 +128,10 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = 500,
                 RedistributionLimit = 0,
 
-                DataTypeChecks = false,
-                DefaultArguments = false,
+                DataTypeChecks = null,
                 StrictDataType = false,
-
+                DefaultArguments = false,
+                
                 UnicodeSupport = new[] { "standard" },
                 ErrorHandling = new[] { "standard" },
                 Stores = new[] { "in_memory" },
@@ -149,9 +149,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = 20000,
                 RedistributionLimit = 5000,
 
-                DataTypeChecks = true,
-                DefaultArguments = true,
+                DataTypeChecks = new[] { "standard", "custom" },
                 StrictDataType = true,
+                DefaultArguments = true,
 
                 UnicodeSupport = new[] { "standard" },
                 ErrorHandling = new[] { "standard", "custom" },
@@ -170,9 +170,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = 50000,
                 RedistributionLimit = 10000,
 
-                DataTypeChecks = true,
-                DefaultArguments = true,
+                DataTypeChecks = new[] { "standard", "custom" },
                 StrictDataType = true,
+                DefaultArguments = true,
 
                 UnicodeSupport = new[] { "standard" },
                 ErrorHandling = new[] { "standard", "custom" },
@@ -193,9 +193,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = null,
                 RedistributionLimit = null,
 
-                DataTypeChecks = true,
-                DefaultArguments = true,
+                DataTypeChecks = new[] { "standard", "custom" },
                 StrictDataType = true,
+                DefaultArguments = true,
 
                 UnicodeSupport = new[] { "standard" },
                 ErrorHandling = new[] { "standard", "custom" },
@@ -214,9 +214,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = 1000,
                 RedistributionLimit = 0,
 
-                DataTypeChecks = false,
-                DefaultArguments = false,
+                DataTypeChecks = null,
                 StrictDataType = false,
+                DefaultArguments = false,
 
                 UnicodeSupport = new[] { "standard" },
                 ErrorHandling = new[] { "standard" },
@@ -235,9 +235,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = 5000,
                 RedistributionLimit = 1000,
 
-                DataTypeChecks = true,
-                DefaultArguments = true,
+                DataTypeChecks = new[] { "standard" },
                 StrictDataType = true,
+                DefaultArguments = true,
 
                 UnicodeSupport = new[] { "standard" },
                 ErrorHandling = new[] { "standard" },

@@ -7,14 +7,15 @@
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
+
     /// <summary>
     /// The license key source.
     /// </summary>
     public enum LicenseKeySource
     {
         /// <summary>
-        /// A file containing the signed JWT or JWS (JSON Web Signature) with claims identifying the features.
+        /// A json file containing the signed JWT or JWS (JSON Web Signature) with claims identifying the features.
         /// </summary>
-        JwsFile = 0,
+        JsonFile = 0,
     }
 }

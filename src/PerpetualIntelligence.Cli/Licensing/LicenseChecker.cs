@@ -11,7 +11,6 @@ using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Licensing
@@ -34,87 +33,41 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <param name="context">The licensing context.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public async Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context)
+        public Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context)
         {
-            // Make sure we have valid licenses to check
-            SetupSoleLicense(context);
-
             if (context.CommandDescriptor == null)
             {
                 throw new ErrorException(Errors.InvalidLicense, "The command descriptor is missing in the request.");
             }
 
-            List<License> validLicenses = new();
-            if (context.CheckFeature.HasFlag(LicenseCheckerFeature.RootCommandLimit) && context.CommandDescriptor.IsRoot)
-            {
-                validLicenses.AddRange(await CheckCommandLimits(context.CommandDescriptor));
-            }
-
-            if (context.CheckFeature.HasFlag(LicenseCheckerFeature.CommandGroupLimit) && context.CommandDescriptor.IsGroup)
-            {
-                validLicenses.AddRange(await CheckCommandGroup(context.CommandDescriptor));
-            }
-
-            if (context.CheckFeature.HasFlag(LicenseCheckerFeature.CommandLimit))
-            {
-                validLicenses.AddRange(await CheckCommand(context.CommandDescriptor));
-            }
-
-            if (!validLicenses.Any())
-            {
-                throw new ErrorException(Errors.InvalidLicense, "The license check failed.");
-            }
-
-            return new LicenseCheckerResult(validLicenses.ToArray());
+            return Task.FromResult(new LicenseCheckerResult(context.License));
         }
 
         /// <summary>
         /// Checks the licensing context for root commands.
         /// </summary>
-        /// <param name="commandDescriptor">The root command descriptor.</param>
+        /// <param name="context">The root command descriptor.</param>
         /// <exception cref="ErrorException"></exception>
-        public Task<License[]> CheckCommandLimits(CommandDescriptor commandDescriptor)
+        public Task<License> CheckCommandLimits(LicenseCheckerContext context)
         {
             // If any license does not have a limit then that means the subject has max root commands.
-            if (!soleLicense.Limits.RootCommandLimit.HasValue)
+            if (!context.License.Limits.SubCommandLimit.HasValue)
             {
-                return Task.FromResult(new[] { soleLicense });
+                return Task.FromResult(context.License);
             }
 
             // Otherwise add command id and check the count. We add it first to ensure the duplicate command ids do not
             // bump up the count and valid duplicate ids should not fail.
-            _commandIds.TryAdd(commandDescriptor.Id, true);
+            _commandIds.TryAdd(context.CommandDescriptor.Id, true);
 
-            int limit = soleLicense.Limits.RootCommandLimit.Value;
+            long limit = context.License.Limits.SubCommandLimit.Value;
             if (_commandIds.Count <= limit)
             {
                 // We have found a valid license within limit so reset the previous failed and return.
-                return Task.FromResult(new[] { soleLicense });
+                return Task.FromResult(context.License);
             }
 
-            throw new ErrorException(Errors.InvalidLicense, "The root command limit reached. max_limit={0} current={1}", soleLicense.Limits.RootCommandLimit, _commandIds.Count);
-        }
-
-        private Task<License[]> CheckCommand(CommandDescriptor commandDescriptor)
-        {
-            // If any license does not have a limit then that means the subject has mac root commands.
-            if (!soleLicense.Limits.RootCommandLimit.HasValue)
-            {
-                return Task.FromResult(new[] { soleLicense });
-            }
-
-            // Otherwise add command id and check the count. We add it first to ensure the duplicate command ids do not
-            // bump up the count and valid duplicate ids should not fail.
-            _commandIds.TryAdd(commandDescriptor.Id, true);
-
-            int limit = soleLicense.Limits.RootCommandLimit.Value;
-            if (_commandIds.Count <= limit)
-            {
-                // We have found a valid license within limit so reset the previous failed and return.
-                return Task.FromResult(new[] { soleLicense });
-            }
-
-            throw new ErrorException(Errors.InvalidLicense, "The root command limit reached. max_limit={0} current={1}", soleLicense.Limits.RootCommandLimit, _commandIds.Count);
+            throw new ErrorException(Errors.InvalidLicense, "The root command limit reached. max_limit={0} current={1}", context.License.Limits.RootCommandLimit, _commandIds.Count);
         }
 
         private Task<IEnumerable<License>> CheckCommandGroup(CommandDescriptor commandDescriptor)
@@ -122,24 +75,10 @@ namespace PerpetualIntelligence.Cli.Licensing
             throw new System.NotImplementedException();
         }
 
-        private void SetupSoleLicense(LicenseCheckerContext context)
-        {
-            // For now we only support 1 license
-            if (context.Licenses.Count() != 1)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The license checker found multiple licenses. Please configure only 1 license");
-            }
-
-            soleLicense = context.Licenses.First();
-        }
-
         /// <summary>
-        /// There is no concurrent HashSet so we use ConcurrentDictionary and put the minimal value (byte) which has no
+        /// There is no concurrent HashSet so we use ConcurrentDictionary and put the minimal value (bit) which has no
         /// purpose for now. https://stackoverflow.com/questions/18922985/concurrent-hashsett-in-net-framework
         /// </summary>
         private ConcurrentDictionary<string, bool> _commandIds = new();
-
-        // Can be duplicate
-        private License soleLicense = null!;
     }
 }

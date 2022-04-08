@@ -26,9 +26,10 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(500);
             limits.RedistributionLimit.Should().Be(0);
 
-            limits.DataTypeChecks.Should().Be(false);
-            limits.DefaultArguments.Should().Be(false);
+            limits.DataTypeChecks.Should().BeNull();
             limits.StrictDataType.Should().Be(false);
+            limits.DefaultArguments.Should().Be(false);
+            
 
             limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
             limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard" });
@@ -47,10 +48,10 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(20000);
             limits.RedistributionLimit.Should().Be(5000);
 
-            limits.DataTypeChecks.Should().Be(true);
-            limits.DefaultArguments.Should().Be(true);
+            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "standard", "custom" });
             limits.StrictDataType.Should().Be(true);
-
+            limits.DefaultArguments.Should().Be(true);
+            
             limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
             limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard", "custom" });
             limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json", "custom" });
@@ -68,9 +69,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(50000);
             limits.RedistributionLimit.Should().Be(10000);
 
-            limits.DataTypeChecks.Should().Be(true);
-            limits.DefaultArguments.Should().Be(true);
+            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "standard", "custom" });
             limits.StrictDataType.Should().Be(true);
+            limits.DefaultArguments.Should().Be(true);
 
             limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
             limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard", "custom" });
@@ -89,9 +90,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(null);
             limits.RedistributionLimit.Should().Be(null);
 
-            limits.DataTypeChecks.Should().Be(true);
-            limits.DefaultArguments.Should().Be(true);
+            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "standard", "custom" });
             limits.StrictDataType.Should().Be(true);
+            limits.DefaultArguments.Should().Be(true);
 
             limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
             limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard", "custom" });
@@ -126,9 +127,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(1000);
             limits.RedistributionLimit.Should().Be(0);
 
-            limits.DataTypeChecks.Should().Be(false);
-            limits.DefaultArguments.Should().Be(false);
+            limits.DataTypeChecks.Should().BeNull();
             limits.StrictDataType.Should().Be(false);
+            limits.DefaultArguments.Should().Be(false);
 
             limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
             limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard" });
@@ -147,9 +148,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(5000);
             limits.RedistributionLimit.Should().Be(1000);
 
-            limits.DataTypeChecks.Should().Be(true);
-            limits.DefaultArguments.Should().Be(true);
+            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "standard" });
             limits.StrictDataType.Should().Be(true);
+            limits.DefaultArguments.Should().Be(true);
 
             limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
             limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard", });

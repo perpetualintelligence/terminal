@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-using System.Collections.Generic;
+using PerpetualIntelligence.Shared.Exceptions;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {
@@ -17,15 +17,15 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="licenses">The checked licensed.</param>
-        public LicenseExtractorResult(IEnumerable<License> licenses)
+        /// <param name="license">The extracted license.</param>
+        public LicenseExtractorResult(License license)
         {
-            Licenses = licenses ?? throw new System.ArgumentNullException(nameof(licenses));
+            License = license ?? throw new ErrorException(Errors.InvalidLicense, "The extracted license cannot be null.");
         }
 
         /// <summary>
         /// The valid licenses.
         /// </summary>
-        public IEnumerable<License> Licenses { get; }
+        public License License { get; }
     }
 }

@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Cli.Commands;
-using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {
@@ -18,17 +17,11 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public LicenseCheckerContext(LicenseCheckerFeature checkFeature, CommandDescriptor commandDescriptor, IEnumerable<License> licenses)
+        public LicenseCheckerContext(CommandDescriptor commandDescriptor, License license)
         {
-            CheckFeature = checkFeature;
             CommandDescriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
-            Licenses = licenses ?? throw new System.ArgumentNullException(nameof(licenses));
+            License = license ?? throw new System.ArgumentNullException(nameof(license));
         }
-
-        /// <summary>
-        /// Determines which feature to check.
-        /// </summary>
-        public LicenseCheckerFeature CheckFeature { get; set; }
 
         /// <summary>
         /// The command descriptor.
@@ -36,8 +29,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         public CommandDescriptor CommandDescriptor { get; }
 
         /// <summary>
-        /// The licenses to check.
+        /// The license to check.
         /// </summary>
-        public IEnumerable<License> Licenses { get; }
+        public License License { get; }
     }
 }

@@ -8,12 +8,8 @@
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Licensing;
-
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers
@@ -43,15 +39,15 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// <returns>The <see cref="CommandRouterResult"/> instance.</returns>
         public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
-            // Extract the licenses
-            var licenses = await ExtractLicensesOrThrowAsync();
+            // Extract the license
+            LicenseExtractorResult licExtractorResult = await licenseExtractor.ExtractAsync(new ());
 
             // Extract the command
             CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(new CommandString(context.RawCommandString)));
 
             // Delegate to handler
             TryResultOrErrors<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
-            CommandHandlerContext handlerContext = new(extractorResult.CommandDescriptor, extractorResult.Command, licenses);
+            CommandHandlerContext handlerContext = new(extractorResult.CommandDescriptor, extractorResult.Command, licExtractorResult.License);
             await tryHandler.Result!.HandleAsync(handlerContext);
 
             return new CommandRouterResult();
@@ -62,23 +58,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             // Dummy for design. We will always find the handler as its checked in constructor.
             return Task.FromResult(new TryResultOrErrors<ICommandHandler>(commandHandler));
-        }
-
-        private async Task<IEnumerable<Licensing.License>> ExtractLicensesOrThrowAsync()
-        {
-            var result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
-            if (!result.Licenses.Any())
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The license extractor did not find any valid license.");
-            }
-
-            // For now we only support 1 license
-            if (result.Licenses.Count() != 1)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The license extractor found multiple licenses.");
-            }
-
-            return result.Licenses;
         }
 
         private readonly ICommandExtractor commandExtractor;

@@ -5,10 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-
 using PerpetualIntelligence.Shared.Exceptions;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {
@@ -20,20 +17,20 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="licenses">The checked licenses.</param>
-        public LicenseCheckerResult(IEnumerable<License> licenses)
+        /// <param name="license">The checked license.</param>
+        public LicenseCheckerResult(License license)
         {
-            if (licenses == null || !licenses.Any())
+            if (license == null)
             {
-                throw new ErrorException(Errors.InvalidLicense, "The valid licenses cannot be null or empty.");
+                throw new ErrorException(Errors.InvalidLicense, "The license cannot be null.");
             }
 
-            Licenses = licenses;
+            License = license;
         }
 
         /// <summary>
-        /// The valid licenses.
+        /// The valid license.
         /// </summary>
-        public IEnumerable<License> Licenses { get; }
+        public License License { get; }
     }
 }

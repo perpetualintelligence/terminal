@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Licensing;
+
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     /// <summary>
@@ -13,19 +15,34 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class LicensingOptions
     {
         /// <summary>
-        /// The license keys.
+        /// The license check mode. Defaults to <see cref="LicenseCheckMode.Online"/>.
         /// </summary>
-        public string[]? LicenseKeys { get; set; }
+        public LicenseCheckMode CheckMode { get; set; } = LicenseCheckMode.Online;
 
         /// <summary>
-        /// The license key source. Defaults to <see cref="LicenseKeySource.JwsFile"/>.
+        /// The license consumer tenant id.
         /// </summary>
-        public LicenseKeySource LicenseKeySource { get; set; } = LicenseKeySource.JwsFile;
+        public string? ConsumerTenantId { get; set; }
 
         /// <summary>
-        /// The signing public key used to validate the <see cref="LicenseKeys"/> if <see cref="LicenseKeySource"/> is
-        /// set to <see cref="LicenseKeySource.JwsFile"/>.
+        /// The license key source. Defaults to <see cref="LicenseKeySource.JsonFile"/>.
         /// </summary>
-        public string? SigningKey { get; set; }
+        public LicenseKeySource KeySource { get; set; } = LicenseKeySource.JsonFile;
+
+        /// <summary>
+        /// The license key or the file containing license key.
+        /// </summary>
+        public string? LicenseKey { get; set; }
+
+        /// <summary>
+        /// The license provider tenant id.
+        /// </summary>
+        public string? ProviderTenantId { get; set; }
+
+        /// <summary>
+        /// The subject or a licensing context to check the license. Your subscription id or any other domain identifier
+        /// usually establishes your licensing context.
+        /// </summary>
+        public string? Subject { get; set; }
     }
 }

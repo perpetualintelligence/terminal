@@ -7,7 +7,6 @@
 
 using PerpetualIntelligence.Cli.Licensing;
 using System;
-using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
@@ -21,13 +20,13 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         /// </summary>
         /// <param name="commandDescriptor">The command descriptor to handle.</param>
         /// <param name="command">The command handle.</param>
-        /// <param name="licenses">The valid licenses.</param>
+        /// <param name="license">The extracted license.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public CommandHandlerContext(CommandDescriptor commandDescriptor, Command command, IEnumerable<License> licenses)
+        public CommandHandlerContext(CommandDescriptor commandDescriptor, Command command, License license)
         {
             CommandDescriptor = commandDescriptor ?? throw new ArgumentNullException(nameof(commandDescriptor));
             Command = command ?? throw new ArgumentNullException(nameof(command));
-            Licenses = licenses ?? throw new ArgumentNullException(nameof(licenses));
+            License = license ?? throw new ArgumentNullException(nameof(license));
         }
 
         /// <summary>
@@ -41,8 +40,8 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         public CommandDescriptor CommandDescriptor { get; protected set; }
 
         /// <summary>
-        /// The valid licenses.
+        /// The extracted licenses.
         /// </summary>
-        public IEnumerable<License> Licenses { get; protected set; }
+        public License License { get; protected set; }
     }
 }

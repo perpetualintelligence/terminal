@@ -33,23 +33,10 @@ namespace PerpetualIntelligence.Cli.Mocks
 
             TestLimits = LicenseLimits.Create(SaaSPlans.Community);
 
-            MixValidInvalidLicense = new[]
-            {
-                new License("testLicKey1",  TestClaims, TestLimits),
-                new License("invalidLicKey2", TestClaims, TestLimits),
-                new License("testLicKey3", TestClaims, TestLimits),
-                new License("invalidLicKey4", TestClaims, TestLimits)
-            };
-
-            SingleLicense = new[]
-            {
-                new License("testLicKey1", TestClaims, TestLimits)
-            };
+            TestLicense = new License("testLicKey1", TestClaims, TestLimits);
         }
 
-        public static IEnumerable<License> MixValidInvalidLicense = null!;
-
-        public static IEnumerable<License> SingleLicense = null!;
+        public static License TestLicense = null!;
 
         public static LicenseClaims TestClaims = null!;
 

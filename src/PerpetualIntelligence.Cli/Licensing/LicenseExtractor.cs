@@ -11,7 +11,6 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -37,24 +36,41 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
+        public async Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
         {
-            if (cliOptions.Licensing.LicenseKeys == null || cliOptions.Licensing.LicenseKeys.Length == 0)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The license keys are not configured with options. options={0}", typeof(LicensingOptions).FullName);
-            }
-
             // For singleton DI service we don't extract license keys once extracted.
-            if (licenses == null || licenses.Count == 0)
+            if (license == null)
             {
-                licenses = new List<License>();
-                foreach (string licKey in cliOptions.Licensing.LicenseKeys)
+                if (cliOptions.Licensing.KeySource == LicenseKeySource.JsonFile)
                 {
-                    licenses.Add(ExtractFromKey(licKey));
+                    license = await ExtractFromJsonAsync();
+                }
+                else
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The key source is not valid. {0}", cliOptions.Licensing.KeySource);
                 }
             }
 
-            return Task.FromResult(new LicenseExtractorResult(licenses));
+            return new LicenseExtractorResult(license);
+        }
+
+        private Task<License> ExtractFromJsonAsync()
+        {
+            // Missing key
+            if (string.IsNullOrWhiteSpace(cliOptions.Licensing.LicenseKey))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The license key is not configured, see licensing options. options={0}", typeof(LicensingOptions).FullName);
+            }
+
+            // Key not a file
+            if (System.IO.File.Exists(cliOptions.Licensing.LicenseKey))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The license key is not a valid json file path, see licensing options. options={0} key_source={1}", typeof(LicensingOptions).FullName, cliOptions.Licensing.KeySource);
+            }
+
+            // Not a valid Json
+
+            throw new NotImplementedException();
         }
 
         private License ExtractFromKey(string licenseKey)
@@ -95,6 +111,6 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         private readonly CliOptions cliOptions;
-        private List<License>? licenses;
+        private License? license;
     }
 }

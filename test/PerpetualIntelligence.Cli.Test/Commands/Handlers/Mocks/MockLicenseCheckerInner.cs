@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
         {
             Called = true;
             ContextCalled = context;
-            return Task.FromResult(new LicenseCheckerResult(context.Licenses));
+            return Task.FromResult(new LicenseCheckerResult(context.License));
         }
     }
 }

@@ -6,6 +6,7 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 
@@ -21,11 +22,13 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         [TestMethod]
         public void LicensingOptionsTestsShouldHaveCorrectDefaultValues()
         {
-            LicensingOptions options = new LicensingOptions();
+            LicensingOptions options = new ();
 
-            Assert.IsNull(options.LicenseKeys);
-            Assert.IsNull(options.SigningKey);
-            Assert.AreEqual(LicenseKeySource.JwsFile, options.LicenseKeySource);
+            Assert.AreEqual(LicenseCheckMode.Online, options.CheckMode);
+            Assert.IsNull(options.ConsumerTenantId);
+            Assert.AreEqual(LicenseKeySource.JsonFile, options.KeySource);
+            Assert.IsNull(options.ProviderTenantId);
+            Assert.IsNull(options.Subject);
         }
     }
 }

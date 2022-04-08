@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>());
             using var newhost = hostBuilder.Build();
 
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             var newHandler = new CommandHandler(newhost.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), Errors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockCommandCheckerInner");
         }
@@ -49,14 +49,14 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         {
             command.Item1._checker = typeof(MockErrorCommandCheckerInner);
 
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_checker_error", "test_checker_error_desc");
         }
 
         [TestMethod]
         public async Task CheckerNotConfiguredShouldError()
         {
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), Errors.ServerError, "The command checker is not configured. command_name=name1 command_id=id1");
         }
 
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Not a ICommandChecker
             command.Item1._checker = typeof(MockNotCheckerOrRunner);
 
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), Errors.ServerError, "The command checker is not valid. command_name=name1 command_id=id1 checker=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockNotCheckerOrRunner");
         }
 
@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Not a ICommandChecker
             command.Item1._runner = typeof(MockNotCheckerOrRunner);
 
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), Errors.ServerError, "The command runner is not valid. command_name=name1 command_id=id1 runner=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockNotCheckerOrRunner");
         }
 
@@ -96,7 +96,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             using var newhost = hostBuilder.Build();
             var newHandler = new CommandHandler(newhost.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), Errors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockCommandRunnerInner");
         }
 
@@ -108,7 +108,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             command.Item1._runner = typeof(MockErrorCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_runner_error", "test_runner_error_desc");
         }
 
@@ -118,7 +118,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Make sure checker pass so runner can fail
             command.Item1._checker = typeof(MockCommandCheckerInner);
 
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), Errors.ServerError, "The command runner is not configured. command_name=name1 command_id=id1");
         }
 
@@ -128,14 +128,13 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             command.Item1._checker = typeof(MockCommandCheckerInner);
             command.Item1._runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             var result = await handler.HandleAsync(commandContext);
 
             Assert.IsTrue(licenseChecker.Called);
             Assert.IsNotNull(licenseChecker.ContextCalled);
-            Assert.AreEqual(LicenseCheckerFeature.RootCommandLimit | LicenseCheckerFeature.CommandGroupLimit | LicenseCheckerFeature.CommandLimit, licenseChecker.ContextCalled.CheckFeature);
             Assert.AreEqual(command.Item1, licenseChecker.ContextCalled.CommandDescriptor);
-            CollectionAssert.AreEqual(licenses.ToArray(), licenseChecker.ContextCalled.Licenses.ToArray());
+            Assert.AreEqual(license, licenseChecker.ContextCalled.License);
         }
 
         [TestMethod]
@@ -144,7 +143,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             command.Item1._checker = typeof(MockCommandCheckerInner);
             command.Item1._runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item1, command.Item2, licenses);
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             var result = await handler.HandleAsync(commandContext);
         }
 
@@ -153,7 +152,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
             host = hostBuilder.Build();
 
-            licenses = MockLicenses.SingleLicense;
+            license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1");
             options = MockCliOptions.New();
@@ -180,7 +179,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         private CommandHandler handler = null!;
         private IHost host = null!;
         private MockLicenseCheckerInner licenseChecker = null!;
-        private IEnumerable<License> licenses = null!;
+        private License license = null!;
         private CliOptions options = null!;
     }
 }

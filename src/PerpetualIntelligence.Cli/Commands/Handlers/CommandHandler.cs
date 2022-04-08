@@ -36,8 +36,8 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         /// <inheritdoc/>
         public async Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
         {
-            // Find a valid and active license or throw
-            await FindValidLicenseOrThrowAsync(context);
+            // Check the license
+            await licenseChecker.CheckAsync(new LicenseCheckerContext(context.CommandDescriptor, context.License));
 
             // Find the checker and check the command
             ICommandChecker commandChecker = await FindCheckerOrThrowAsync(context);
@@ -99,15 +99,9 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             return Task.FromResult(runner);
         }
 
-        private Task FindValidLicenseOrThrowAsync(CommandHandlerContext context)
+        private Task<LicenseCheckerResult> FindValidLicenseOrThrowAsync(CommandHandlerContext context)
         {
-            LicenseCheckerContext licContext = new(
-                LicenseCheckerFeature.RootCommandLimit |
-                LicenseCheckerFeature.CommandGroupLimit |
-                LicenseCheckerFeature.CommandLimit,
-                context.CommandDescriptor,
-                context.Licenses);
-
+            LicenseCheckerContext licContext = new(context.CommandDescriptor, context.License);
             return licenseChecker.CheckAsync(licContext);
         }
 

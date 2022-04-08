@@ -13,7 +13,6 @@ using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers
@@ -91,24 +90,12 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         }
 
         [TestMethod]
-        public async Task RouterShouldErrorOnMultipleLicense()
-        {
-            licenseExtractor.UseMultiple = true;
-
-            CommandRouterContext routerContext = new("test_command_string");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "invalid_configuration", "The license extractor found multiple licenses.");
-
-            Assert.IsFalse(commandExtractor.Called);
-            Assert.IsFalse(commandHandler.Called);
-        }
-
-        [TestMethod]
         public async Task RouterShouldErrorOnNoLicense()
         {
             licenseExtractor.NoLicense = true;
 
             CommandRouterContext routerContext = new("test_command_string");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "invalid_configuration", "The license extractor did not find any valid license.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "invalid_license", "The extracted license cannot be null.");
 
             Assert.IsFalse(commandExtractor.Called);
             Assert.IsFalse(commandHandler.Called);
@@ -145,14 +132,13 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         [TestMethod]
         public async Task RouterShouldPassLicenseToHandler()
         {
-            licenseExtractor.UseMultiple = false;
             licenseExtractor.NoLicense = false;
 
             CommandRouterContext routerContext = new("test_command_string");
             var result = await router.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
-            CollectionAssert.AreEqual(licenseExtractor.SingleLicense, commandHandler.ContextCalled.Licenses.ToArray());
+            Assert.AreEqual(licenseExtractor.TestLicense, commandHandler.ContextCalled.License);
             Assert.IsTrue(commandExtractor.Called);
             Assert.IsTrue(commandHandler.Called);
         }
