@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 }
                 else
                 {
-                    clients.Add(name, new HttpClient() { BaseAddress = new System.Uri("http://localhost:7071/api/") });
+                    clients.Add(name, new HttpClient() { BaseAddress = new System.Uri("https://api.perpetualintelligence.com/security/") });
                 }
             }
 

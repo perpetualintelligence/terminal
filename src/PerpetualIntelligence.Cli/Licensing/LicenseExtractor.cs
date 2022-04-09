@@ -139,7 +139,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                     throw new ErrorException(Errors.InvalidLicense, "The license check failed. status_code={0} additional_info={1}", response.StatusCode, await response.Content.ReadAsStringAsync());
                 }
 
-                LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>( await response.Content.ReadAsStreamAsync());
+                LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>(await response.Content.ReadAsStreamAsync());
                 if (claims == null)
                 {
                     throw new ErrorException(Errors.InvalidLicense, "The license claims are invalid.");
@@ -152,11 +152,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
         private string GetBaseAddress()
         {
-#if DEBUG
-            return "http://localhost:7071/api/";
-#else
             return "https://api.perpetualintelligence.com/security/";
-#endif
         }
 
         private readonly CliOptions cliOptions;
