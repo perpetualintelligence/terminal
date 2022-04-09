@@ -2,4 +2,4 @@
 
 Use .NET Core, dependency injection, and options pattern to build a modern and secured CLI interface, configure your server, provide your self-hosting implementations for stores and host in an environment of your choice, e.g., Windows, Linux, Docker, Kubernetes, etc.
 
-Take your app or service to the command line with full Unicode support and build your front-end CLI in any language or your choice.
+Take your app or service to the command line with full Unicode support and build your CLI systems in any language or your choice.
