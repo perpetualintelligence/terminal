@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Protocols.Licensing.Models;
+
 namespace PerpetualIntelligence.Cli.Licensing
 {
     /// <summary>
@@ -18,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <param name="licenseKey">The license key.</param>
         /// <param name="claims">The license claims.</param>
         /// <param name="limits">The license limits.</param>
-        public License(string licenseKey, LicenseClaims claims, LicenseLimits limits)
+        public License(string licenseKey, LicenseClaimsModel claims, LicenseLimits limits)
         {
             this.licenseKey = licenseKey;
             Limits = limits;
@@ -28,7 +30,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// The licensing claims.
         /// </summary>
-        public LicenseClaims Claims { get; }
+        public LicenseClaimsModel Claims { get; }
 
         /// <summary>
         /// The license key.

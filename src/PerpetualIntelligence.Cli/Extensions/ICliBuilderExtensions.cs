@@ -22,9 +22,9 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
-
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
+using System.Net.Http;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
@@ -187,13 +187,37 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddLicenseChecker(this ICliBuilder builder)
+        public static ICliBuilder AddLicensing(this ICliBuilder builder)
         {
             // Add license extractor as singleton
             builder.Services.AddSingleton<ILicenseExtractor, LicenseExtractor>();
 
             // Add license checker as singleton
             builder.Services.AddSingleton<ILicenseChecker, LicenseChecker>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds a <see cref="IHttpClientFactory"/> to the service collection for online license checks.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="name">The HTTP client name.</param>
+        /// <param name="timeout">The HTTP client timeout.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <remarks>
+        /// The <see cref="AddLicensingClient(ICliBuilder, string, TimeSpan)"/> is required if you are using
+        /// <see cref="LicenseCheckMode.Online"/> check. Please set the <see cref="LicensingOptions.HttpClientName"/> to
+        /// match the name used to register this service.
+        /// </remarks>
+        public static ICliBuilder AddLicensingClient(this ICliBuilder builder, string name, TimeSpan timeout)
+        {
+            // Configure to call the security API
+            builder.Services.AddHttpClient(name, client =>
+            {
+                client.BaseAddress = new Uri("https://api.perpetualintelligence.com/security/");
+                client.Timeout = timeout;
+            });
 
             return builder;
         }

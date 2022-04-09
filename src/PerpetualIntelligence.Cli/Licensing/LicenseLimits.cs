@@ -41,6 +41,11 @@ namespace PerpetualIntelligence.Cli.Licensing
         public string[]? ErrorHandling { get; private set; }
 
         /// <summary>
+        /// The SaaS plan.
+        /// </summary>
+        public string? Plan { get; private set; }
+
+        /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistribution limit.
         /// </summary>
         public long? RedistributionLimit { get; private set; }
@@ -53,12 +58,12 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
         /// </summary>
-        public string[]? Stores { get; private set; }
+        public string[]? ServiceImplementations { get; private set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
         /// </summary>
-        public string[]? ServiceImplementations { get; private set; }
+        public string[]? Stores { get; private set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
@@ -81,6 +86,11 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <param name="saasPlan">The SaaS plan.</param>
         public static LicenseLimits Create(string saasPlan)
         {
+            if (string.IsNullOrEmpty(saasPlan))
+            {
+                throw new System.ArgumentException($"'{nameof(saasPlan)}' cannot be null or empty.", nameof(saasPlan));
+            }
+
             switch (saasPlan)
             {
                 case SaaSPlans.Community:
@@ -122,6 +132,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
+                Plan = SaaSPlans.Community,
                 RootCommandLimit = 1,
                 CommandGroupLimit = 5,
                 SubCommandLimit = 50,
@@ -131,7 +142,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DataTypeChecks = null,
                 StrictDataType = false,
                 DefaultArguments = false,
-                
+
                 UnicodeSupport = new[] { "standard" },
                 ErrorHandling = new[] { "standard" },
                 Stores = new[] { "in_memory" },
@@ -143,6 +154,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
+                Plan = SaaSPlans.Enterprise,
                 RootCommandLimit = 3,
                 CommandGroupLimit = 200,
                 SubCommandLimit = 2000,
@@ -164,6 +176,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
+                Plan = SaaSPlans.ISV,
                 RootCommandLimit = 5,
                 CommandGroupLimit = 500,
                 SubCommandLimit = 5000,
@@ -181,12 +194,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             };
         }
 
-
-
         private static LicenseLimits ForISVU()
         {
             return new()
             {
+                Plan = SaaSPlans.ISVU,
                 RootCommandLimit = null,
                 CommandGroupLimit = null,
                 SubCommandLimit = null,
@@ -208,6 +220,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
+                Plan = SaaSPlans.Micro,
                 RootCommandLimit = 1,
                 CommandGroupLimit = 10,
                 SubCommandLimit = 100,
@@ -229,6 +242,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
+                Plan = SaaSPlans.SMB,
                 RootCommandLimit = 1,
                 CommandGroupLimit = 50,
                 SubCommandLimit = 500,

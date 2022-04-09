@@ -5,13 +5,16 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
 using PerpetualIntelligence.Cli.Configuration.Options;
-
+using PerpetualIntelligence.Cli.Extensions;
+using PerpetualIntelligence.Cli.Licensing.Models;
+using PerpetualIntelligence.Protocols.Licensing.Models;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
-using System.Security.Cryptography;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Licensing
@@ -25,9 +28,11 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// Initialize a new instance.
         /// </summary>
         /// <param name="cliOptions">The configuration options.</param>
-        public LicenseExtractor(CliOptions cliOptions)
+        /// <param name="httpClientFactory">The optional HTTP client factory</param>
+        public LicenseExtractor(CliOptions cliOptions, IHttpClientFactory? httpClientFactory = null)
         {
             this.cliOptions = cliOptions;
+            this.httpClientFactory = httpClientFactory;
         }
 
         /// <summary>
@@ -47,70 +52,115 @@ namespace PerpetualIntelligence.Cli.Licensing
                 }
                 else
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The key source is not valid. {0}", cliOptions.Licensing.KeySource);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source={0}", cliOptions.Licensing.KeySource);
                 }
             }
 
             return new LicenseExtractorResult(license);
         }
 
-        private Task<License> ExtractFromJsonAsync()
+        /// <summary>
+        /// Should be called only for online check.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ErrorException"></exception>
+        private HttpClient EnsureHttpClient()
+        {
+            // Make sure the HTTP client is correctly configured.
+            if (httpClientFactory == null)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client factory is not configured, see cli builder extensions. service={0} check_mode={1}", nameof(ICliBuilderExtensions.AddLicensingClient), cliOptions.Licensing.CheckMode);
+            }
+
+            // Make sure the Http client name is setup
+            if (string.IsNullOrWhiteSpace(cliOptions.Licensing.HttpClientName))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. check_mode={0}", cliOptions.Licensing.CheckMode);
+            }
+
+            // Setup the HTTP client
+            HttpClient httpClient = httpClientFactory.CreateClient(cliOptions.Licensing.HttpClientName!);
+
+            // Make sure the base address is correct
+            if (httpClient.BaseAddress != new Uri(GetBaseAddress()))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client base address is not valid, see licensing options. check_mode={0} base_address={1}", cliOptions.Licensing.CheckMode, httpClient.BaseAddress);
+            }
+
+            return httpClient;
+        }
+
+        private async Task<License> ExtractFromJsonAsync()
         {
             // Missing key
             if (string.IsNullOrWhiteSpace(cliOptions.Licensing.LicenseKey))
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The license key is not configured, see licensing options. options={0}", typeof(LicensingOptions).FullName);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source={0}", cliOptions.Licensing.KeySource);
             }
 
             // Key not a file
-            if (System.IO.File.Exists(cliOptions.Licensing.LicenseKey))
+            if (!File.Exists(cliOptions.Licensing.LicenseKey))
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The license key is not a valid json file path, see licensing options. options={0} key_source={1}", typeof(LicensingOptions).FullName, cliOptions.Licensing.KeySource);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_source={0}", cliOptions.Licensing.KeySource);
             }
 
-            // Not a valid Json
+            // For now we only support the online check
+            if (cliOptions.Licensing.CheckMode != LicenseCheckMode.Online)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file check mode is not valid, see licensing options. check_mode={0}", cliOptions.Licensing.CheckMode);
+            }
 
-            throw new NotImplementedException();
+            // Read the json file
+            LicenseKeyJsonFileModel? model;
+            try
+            {
+                model = await JsonSerializer.DeserializeAsync<LicenseKeyJsonFileModel>(File.OpenRead(cliOptions.Licensing.LicenseKey));
+            }
+            catch (JsonException ex)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not valid, see licensing options. json_file={0} additional_info={1}", cliOptions.Licensing.LicenseKey, ex.Message);
+            }
+
+            // Make sure the model is valid Why ?
+            if (model == null)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", cliOptions.Licensing.LicenseKey);
+            }
+
+            // Setup the HTTP client
+            HttpClient httpClient = EnsureHttpClient();
+
+            // Check JWS signed assertion (JWS key)
+            var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            using (HttpResponseMessage response = await httpClient.PostAsync("licensing/b2bjwskeycheck", content))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ErrorException(Errors.InvalidLicense, "The license check failed. status_code={0} additional_info={1}", response.StatusCode, await response.Content.ReadAsStringAsync());
+                }
+
+                LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>( await response.Content.ReadAsStreamAsync());
+                if (claims == null)
+                {
+                    throw new ErrorException(Errors.InvalidLicense, "The license claims are invalid.");
+                }
+
+                LicenseLimits licenseLimits = LicenseLimits.Create(claims.Plan);
+                return new License(cliOptions.Licensing.LicenseKey!, claims, licenseLimits);
+            }
         }
 
-        private License ExtractFromKey(string licenseKey)
+        private string GetBaseAddress()
         {
-            JsonWebTokenHandler handler = new();
-
-            RSAParameters rsa = new()
-            {
-                Exponent = Convert.FromBase64String("AQAB"),
-                Modulus = Convert.FromBase64String(
-                    "pY85D8HC9MjdDQKwVM4wko/E4oTHWA7koXDvQ63B6BkClJCi4F922A3/3qnA1kWiK2N1cTFlbm5ThLbis+AxY68eP8qijQLrfnvukXY/c60Qr6brJmGCCqPdHHx5sUf8XAxPN/DzV75eHivrrzqgDwUXFlRLB16uVxCfIHD+o4thG5dlGfXpqa8pLGroVzhxQKkCmV7XE7aydakrziKZYzPUfjh5Y4PsH63LHpGym//J+bvJGeSZjFcu0UooAErCB2YbmpAALDzKzeIos+NL888IadqPqDvqoWdL46HE9K567xVRF3gYXR+3Xo19U2OjE30ls5SvFS0UZmWhe/GcAQ=="),
-            };
-
-            RsaSecurityKey securityKey = new(rsa)
-            {
-                KeyId = "urn:oneimlx:cli:skey:4766771d212d445db29e2d901f338c38"
-            };
-
-            TokenValidationParameters parms = new()
-            {
-                ValidIssuer = "https://perpetualintelligence.com",
-                ValidAudience = Protocols.Constants.CliUrn,
-                IssuerSigningKey = securityKey,
-                ValidateLifetime = false
-            };
-
-            var validateResult = handler.ValidateToken(licenseKey, parms);
-            if (validateResult.IsValid)
-            {
-                LicenseClaims claims = LicenseClaims.Create(validateResult.Claims);
-                LicenseLimits limits = LicenseLimits.Create(claims.Plan);
-                return new License(licenseKey, claims, limits);
-            }
-            else
-            {
-                throw new ErrorException(Errors.InvalidLicense, "The license key is not valid. additional_info={0}", validateResult.Exception.Message);
-            }
+#if DEBUG
+            return "http://localhost:7071/api/";
+#else
+            return "https://api.perpetualintelligence.com/security/";
+#endif
         }
 
         private readonly CliOptions cliOptions;
+        private readonly IHttpClientFactory? httpClientFactory;
         private License? license;
     }
 }

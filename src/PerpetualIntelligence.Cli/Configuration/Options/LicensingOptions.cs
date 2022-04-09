@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Cli.Licensing;
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
@@ -23,6 +24,12 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The license consumer tenant id.
         /// </summary>
         public string? ConsumerTenantId { get; set; }
+
+        /// <summary>
+        /// The HTTP client name for <see cref="LicenseCheckMode.Online"/> checks.
+        /// </summary>
+        /// <remarks>The name must match the <see cref="ICliBuilderExtensions.AddLicensingClient(Integration.ICliBuilder, string, System.TimeSpan)"/></remarks>
+        public string? HttpClientName { get; set; }
 
         /// <summary>
         /// The license key source. Defaults to <see cref="LicenseKeySource.JsonFile"/>.

@@ -30,6 +30,6 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// First check <see cref="Offline"/> then <see cref="Online"/>. This is not yet supported.
         /// </summary>
-        OfflineThenOnline = 2,
+        OfflineThenOnline = 3,
     }
 }

@@ -20,6 +20,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Community);
 
+            limits.Plan.Should().Be(SaaSPlans.Community);
+
             limits.RootCommandLimit.Should().Be(1);
             limits.CommandGroupLimit.Should().Be(5);
             limits.SubCommandLimit.Should().Be(50);
@@ -42,6 +44,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Enterprise);
 
+            limits.Plan.Should().Be(SaaSPlans.Enterprise);
+
             limits.RootCommandLimit.Should().Be(3);
             limits.CommandGroupLimit.Should().Be(200);
             limits.SubCommandLimit.Should().Be(2000);
@@ -63,6 +67,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             LicenseLimits limits = LicenseLimits.Create(SaaSPlans.ISV);
 
+            limits.Plan.Should().Be(SaaSPlans.ISV);
+
             limits.RootCommandLimit.Should().Be(5);
             limits.CommandGroupLimit.Should().Be(500);
             limits.SubCommandLimit.Should().Be(5000);
@@ -83,6 +89,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         public void ISVUEdition_ShouldSetLimitsCorrectly()
         {
             LicenseLimits limits = LicenseLimits.Create(SaaSPlans.ISVU);
+
+            limits.Plan.Should().Be(SaaSPlans.ISVU);
 
             limits.RootCommandLimit.Should().Be(null);
             limits.CommandGroupLimit.Should().Be(null);
@@ -121,6 +129,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Micro);
 
+            limits.Plan.Should().Be(SaaSPlans.Micro);
+
             limits.RootCommandLimit.Should().Be(1);
             limits.CommandGroupLimit.Should().Be(10);
             limits.SubCommandLimit.Should().Be(100);
@@ -141,6 +151,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         public void SMBEdition_ShouldSetLimitsCorrectly()
         {
             LicenseLimits limits = LicenseLimits.Create(SaaSPlans.SMB);
+
+            limits.Plan.Should().Be(SaaSPlans.SMB);
 
             limits.RootCommandLimit.Should().Be(1);
             limits.CommandGroupLimit.Should().Be(50);

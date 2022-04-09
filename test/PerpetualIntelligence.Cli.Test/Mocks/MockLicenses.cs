@@ -7,6 +7,7 @@
 
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Protocols.Licensing.Models;
 using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Cli.Mocks
@@ -15,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Mocks
     {
         static MockLicenses()
         {
-            TestClaims = LicenseClaims.Create(new Dictionary<string, object>()
+            TestClaims = LicenseClaimsModel.Create(new Dictionary<string, object>()
             {
                 {"name", "test_name" },
                 {"country", "test_country" },
@@ -36,10 +37,8 @@ namespace PerpetualIntelligence.Cli.Mocks
             TestLicense = new License("testLicKey1", TestClaims, TestLimits);
         }
 
+        public static LicenseClaimsModel TestClaims = null!;
         public static License TestLicense = null!;
-
-        public static LicenseClaims TestClaims = null!;
-
         public static LicenseLimits TestLimits = null!;
     }
 }

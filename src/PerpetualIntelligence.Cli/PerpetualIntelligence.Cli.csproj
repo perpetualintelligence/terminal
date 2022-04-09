@@ -16,10 +16,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.15.1" />
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.17.0" />
     </ItemGroup>
 
     <!--
