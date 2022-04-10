@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             Assert.AreEqual("=", options.ArgumentSeparator);
             Assert.IsNull(options.ArgumentValueWithIn);
             Assert.AreEqual("^[A-Za-z0-9_-]*$", options.CommandIdRegexPattern);
-            Assert.IsNull(options.DefaulArgumentValue);
+            Assert.IsNull(options.DefaultArgumentValue);
             Assert.IsNull(options.DefaultArgument);
             Assert.AreEqual(" ", options.Separator);
         }

@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task AdditionalSeparatorsShouldBeIgnored()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi     -key1_alias   value1  --key2-er  value2   --key6-a-s-xx-s --key9   25.36     -k12     "));
             var result = await extractor.ExtractAsync(context);
@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task AdditionalSeparatorsWithinValueShouldNotBeIgnored()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
             options.Extractor.ArgumentValueWithIn = "\"";
 
             CommandExtractorContext context = new(new CommandString("pi     -key1_alias \"  value1 \"  --key2-er  \"value2     \" --key6-a-s-xx-s --key9   25.36     -k12     "));
@@ -163,7 +163,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultArgumentValueConfiguredShouldExtractCorrectly()
         {
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s"));
             var result = await extractor.ExtractAsync(context);
@@ -183,7 +183,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultArgumentValueConfiguredShouldOverrideCorrectly()
         {
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
             var result = await extractor.ExtractAsync(context);
@@ -203,7 +203,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultArgumentValueNotConfiguredShouldExtractCorrectly()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
             var result = await extractor.ExtractAsync(context);
@@ -220,7 +220,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task MixedArgumentsAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 -k3 (551) 208 9779 --key6-a-s-xx-s --key9 25.36 -k10 value10 -k11 --key12"));
             var result = await extractor.ExtractAsync(context);
@@ -241,7 +241,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task MixedArgumentsInRandomOrderAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi -k11 -k3 (551) 208 9779 --key9 25.36 --key2-er value2 --key12 --key6-a-s-xx-s --key1 value1 -k10 value10"));
             var result = await extractor.ExtractAsync(context);
@@ -262,7 +262,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task MixedArgumentsInReverseAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi --key12 -k11 -k10 value10 --key9 25.36 --key6-a-s-xx-s -k3 (551) 208 9779 --key2-er value2 --key1 value1"));
             var result = await extractor.ExtractAsync(context);

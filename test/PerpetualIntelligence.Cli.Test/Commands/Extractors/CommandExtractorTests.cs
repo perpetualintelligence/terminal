@@ -174,7 +174,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Enable alias
             options.Extractor.ArgumentAlias = true;
             options.Extractor.DefaultArgument = true;
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             // Reset commands
             commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
@@ -588,7 +588,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task DefaultArgumentWithBothExplicitAndImplicitArgumentValueShouldError()
         {
             options.Extractor.DefaultArgument = true;
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix8_defaultarg_defaultvalue implitcit_default_value -key1=explicit_default_value"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -604,7 +604,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task DefaultArgumentWithDefaultValueNotSpecifiedShouldWorkCorrectly()
         {
             options.Extractor.DefaultArgument = true;
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             // No default arg, but it will be added because it has a default value
             CommandExtractorContext context = new(new CommandString("prefix8_defaultarg_defaultvalue"));
@@ -624,7 +624,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredButProviderNotConfiguredShouldThrow()
         {
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
             CommandExtractor noProviderExtrator = new(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
@@ -635,7 +635,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotError()
         {
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             // This is just extracting no checking
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
@@ -652,7 +652,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotOverrideUserValues()
         {
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             // This is just extracting no checking
             CommandExtractorContext context = new(new CommandString("prefix5_default -key6 -key10=user value"));
@@ -677,7 +677,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotPopulateIfDisabled()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
 
             // This is just extracting no checking
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
@@ -689,7 +689,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredCommandWithEmptyArgsShouldNotErrorAsync()
         {
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix6_empty_args"));
             var result = await extractor.ExtractAsync(context);
@@ -700,7 +700,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
-            options.Extractor.DefaulArgumentValue = true;
+            options.Extractor.DefaultArgumentValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);
@@ -711,7 +711,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueDisabledButProviderNotConfiguredShouldNotThrow()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
 
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
             CommandExtractor noProviderExtrator = new(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
@@ -721,7 +721,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueNotConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
-            options.Extractor.DefaulArgumentValue = false;
+            options.Extractor.DefaultArgumentValue = false;
 
             CommandExtractorContext context = new(new CommandString("prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);

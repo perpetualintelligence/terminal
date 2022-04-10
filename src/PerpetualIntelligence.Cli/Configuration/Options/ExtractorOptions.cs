@@ -53,7 +53,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// <summary>
         /// Determines whether the extractor support extracting default argument values. Defaults to <c>null</c>.
         /// </summary>
-        public bool? DefaulArgumentValue { get; set; }
+        public bool? DefaultArgumentValue { get; set; }
 
         /// <summary>
         /// Determines whether the extractor support extracting default arguments. Defaults to <c>null</c>.
