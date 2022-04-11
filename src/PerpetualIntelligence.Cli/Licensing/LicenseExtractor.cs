@@ -8,8 +8,11 @@
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Cli.Licensing.Models;
+using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Protocols.Licensing.Models;
 using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Extensions;
+using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -27,10 +30,12 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
+        /// <param name="licenseProviderResolver">The license provider resolver.</param>
         /// <param name="cliOptions">The configuration options.</param>
         /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(CliOptions cliOptions, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(ILicenseProviderResolver licenseProviderResolver, CliOptions cliOptions, IHttpClientFactory? httpClientFactory = null)
         {
+            this.licenseProviderResolver = licenseProviderResolver;
             this.cliOptions = cliOptions;
             this.httpClientFactory = httpClientFactory;
         }
@@ -80,13 +85,6 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // Setup the HTTP client
             HttpClient httpClient = httpClientFactory.CreateClient(cliOptions.Licensing.HttpClientName!);
-
-            // Make sure the base address is correct
-            if (httpClient.BaseAddress != new Uri(GetBaseAddress()))
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client base address is not valid, see licensing options. check_mode={0} base_address={1}", cliOptions.Licensing.CheckMode, httpClient.BaseAddress);
-            }
-
             return httpClient;
         }
 
@@ -105,16 +103,16 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // For now we only support the online check
-            if (cliOptions.Licensing.CheckMode != LicenseCheckMode.Online)
+            if (cliOptions.Licensing.CheckMode != SaaSCheckModes.Online)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file check mode is not valid, see licensing options. check_mode={0}", cliOptions.Licensing.CheckMode);
             }
 
             // Read the json file
-            LicenseKeyJsonFileModel? model;
+            LicenseKeyJsonFileModel? jsonFileModel;
             try
             {
-                model = await JsonSerializer.DeserializeAsync<LicenseKeyJsonFileModel>(File.OpenRead(cliOptions.Licensing.LicenseKey));
+                jsonFileModel = await JsonSerializer.DeserializeAsync<LicenseKeyJsonFileModel>(File.OpenRead(cliOptions.Licensing.LicenseKey));
             }
             catch (JsonException ex)
             {
@@ -122,7 +120,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Make sure the model is valid Why ?
-            if (model == null)
+            if (jsonFileModel == null)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", cliOptions.Licensing.LicenseKey);
             }
@@ -131,12 +129,24 @@ namespace PerpetualIntelligence.Cli.Licensing
             HttpClient httpClient = EnsureHttpClient();
 
             // Check JWS signed assertion (JWS key)
-            var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
-            using (HttpResponseMessage response = await httpClient.PostAsync("licensing/b2bjwskeycheck", content))
+            LicenseOnlineCheckModel checkModel = new ()
+            {
+                AuthorizedParty = jsonFileModel.AuthorizedParty,
+                ConsumerObjectId = jsonFileModel.ConsumerObjectId,
+                ConsumerTenantId = jsonFileModel.ConsumerTenantId,
+                Key = jsonFileModel.Key,
+                KeyType = jsonFileModel.KeyType,
+                ProviderTenantId = await licenseProviderResolver.ResolveAsync(jsonFileModel.ProviderId),
+                Subject = jsonFileModel.Subject,
+            };
+
+            var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
+            using (HttpResponseMessage response = await httpClient.PostAsync("licensing/b2bjwskeycheck", checkContent))
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new ErrorException(Errors.InvalidLicense, "The license check failed. status_code={0} additional_info={1}", response.StatusCode, await response.Content.ReadAsStringAsync());
+                    Error? error = await JsonSerializer.DeserializeAsync<Error>(await response.Content.ReadAsStreamAsync());
+                    throw new ErrorException(error!);
                 }
 
                 LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>(await response.Content.ReadAsStreamAsync());
@@ -145,18 +155,43 @@ namespace PerpetualIntelligence.Cli.Licensing
                     throw new ErrorException(Errors.InvalidLicense, "The license claims are invalid.");
                 }
 
-                LicenseLimits licenseLimits = LicenseLimits.Create(claims.Plan);
-                return new License(cliOptions.Licensing.LicenseKey!, claims, licenseLimits);
-            }
-        }
+                // Check consumer with licensing options.
+                if (claims.TenantId != cliOptions.Licensing.ConsumerTenantId)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", cliOptions.Licensing.ConsumerTenantId);
+                }
 
-        private string GetBaseAddress()
-        {
-            return "https://api.perpetualintelligence.com/security/";
+                // Check subject with licensing options.
+                if (claims.Subject != cliOptions.Licensing.Subject)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", cliOptions.Licensing.Subject);
+                }
+
+                // Make sure the acr contains the
+                string[] acrValues = claims.Acr.SplitBySpace();
+                if (acrValues.Length < 3)
+                {
+                    throw new ErrorException(Errors.InvalidLicense, "The acr values are not valid. acr={0}", claims.Acr);
+                }
+
+                string plan = acrValues[0];
+                string usage = acrValues[1];
+                string providerTenantId = acrValues[2];
+
+                // Make sure the provider tenant id matches
+                if (providerTenantId != cliOptions.Licensing.ProviderId)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", cliOptions.Licensing.ProviderId);
+                }
+
+                LicenseLimits licenseLimits = LicenseLimits.Create(plan);
+                return new License(providerTenantId, cliOptions.Licensing.CheckMode, plan, usage, cliOptions.Licensing.LicenseKey!, claims, licenseLimits);
+            }
         }
 
         private readonly CliOptions cliOptions;
         private readonly IHttpClientFactory? httpClientFactory;
+        private readonly ILicenseProviderResolver licenseProviderResolver;
         private License? license;
     }
 }

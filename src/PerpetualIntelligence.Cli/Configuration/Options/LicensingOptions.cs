@@ -7,6 +7,7 @@
 
 using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Cli.Licensing;
+using PerpetualIntelligence.Protocols.Licensing;
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
@@ -16,9 +17,9 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class LicensingOptions
     {
         /// <summary>
-        /// The license check mode. Defaults to <see cref="LicenseCheckMode.Online"/>.
+        /// The license check mode. Defaults to <see cref="SaaSCheckModes.Online"/>.
         /// </summary>
-        public LicenseCheckMode CheckMode { get; set; } = LicenseCheckMode.Online;
+        public string CheckMode { get; set; } = SaaSCheckModes.Online;
 
         /// <summary>
         /// The license consumer tenant id.
@@ -42,9 +43,9 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string? LicenseKey { get; set; }
 
         /// <summary>
-        /// The license provider tenant id.
+        /// The license SaaS provider id or the provider tenant id.
         /// </summary>
-        public string? ProviderTenantId { get; set; }
+        public string? ProviderId { get; set; }
 
         /// <summary>
         /// The subject or a licensing context to check the license. Your subscription id or any other domain identifier

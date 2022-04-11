@@ -46,10 +46,10 @@ namespace PerpetualIntelligence.Cli.Licensing.Models
         public string KeyType { get; set; } = null!;
 
         /// <summary>
-        /// The consumer tenant id.
+        /// The license provider id.
         /// </summary>
-        [JsonPropertyName("provider_tenant_id")]
-        public string ProviderTenantId { get; set; } = null!;
+        [JsonPropertyName("provider_id")]
+        public string ProviderId { get; set; } = null!;
 
         /// <summary>
         /// The subject. This is also the <c>sub</c> claim.
