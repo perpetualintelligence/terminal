@@ -7,7 +7,9 @@
 
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Licensing;
+using PerpetualIntelligence.Cli.Services;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
@@ -25,6 +27,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// <param name="licenseExtractor">The license extractor.</param>
         /// <param name="commandExtractor">The command extractor.</param>
         /// <param name="commandHandler">The command handler.</param>
+        /// <param name="cliOptions">The cli options.</param>
         public CommandRouter(ILicenseExtractor licenseExtractor, ICommandExtractor commandExtractor, ICommandHandler commandHandler)
         {
             this.commandExtractor = commandExtractor ?? throw new ArgumentNullException(nameof(commandExtractor));
@@ -40,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
             // Extract the license
-            LicenseExtractorResult licExtractorResult = await licenseExtractor.ExtractAsync(new ());
+            LicenseExtractorResult licExtractorResult = await licenseExtractor.ExtractAsync(new());
 
             // Extract the command
             CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(new CommandString(context.RawCommandString)));
