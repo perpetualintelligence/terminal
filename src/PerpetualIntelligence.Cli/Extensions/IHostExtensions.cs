@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Protocols.Abstractions;
+using PerpetualIntelligence.Cli.Configuration.Options;
 
 using PerpetualIntelligence.Shared.Attributes;
 using System;
@@ -27,17 +27,14 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// Returns a task that runs the <see cref="ICommandRouter"/> and blocks the calling thread till a cancellation request.
         /// </summary>
         /// <param name="host">The host.</param>
-        /// <param name="timeout">
-        /// The routing timeout in milliseconds. The timeout applies to the
-        /// <see cref="IRouter{TContext, TResult, THandler}.RouteAsync(TContext)"/> method.
-        /// </param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="title">The command title to show in the console.</param>
+        /// <param name="caret">The command caret to show in the console.</param>
         [WriteDocumentation("Add info about exception handling for ErrorException")]
-        public static async Task RunRouterAsync(this IHost host, string title, int? timeout, CancellationToken? cancellationToken)
+        public static async Task RunRouterAsync(this IHost host, string? caret = null, CancellationToken? cancellationToken = default)
         {
             // Track the application lifetime so we can know whether cancellation is requested.
-            IHostApplicationLifetime? applicationLifetime = host.Services.GetService<IHostApplicationLifetime>();
+            IHostApplicationLifetime applicationLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+            CliOptions cliOptions = host.Services.GetRequiredService<CliOptions>();
 
             while (true)
             {
@@ -58,18 +55,21 @@ namespace PerpetualIntelligence.Cli.Extensions
                 }
 
                 // Check if application is stopping
-                if (applicationLifetime != null && applicationLifetime.ApplicationStopping.IsCancellationRequested)
+                if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
                 {
                     IErrorPublisher errorPublisher = host.Services.GetRequiredService<IErrorPublisher>();
-                    ErrorPublisherContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Application is stopping, the routing is canceled."));
+                    ErrorPublisherContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
                     await errorPublisher.PublishAsync(errContext);
 
                     // We are done, break the loop.
                     break;
                 }
 
-                // Print the title
-                Console.Write(title);
+                // Print the caret
+                if (caret != null)
+                {
+                    Console.Write(caret);
+                }
 
                 // Read the user input
                 string? raw = Console.ReadLine();
@@ -88,10 +88,10 @@ namespace PerpetualIntelligence.Cli.Extensions
 
                 try
                 {
-                    bool success = routeTask.Wait(timeout ?? Timeout.Infinite, cancellationToken ?? CancellationToken.None);
+                    bool success = routeTask.Wait(cliOptions.Hosting.CommandRouterTimeout, cancellationToken ?? CancellationToken.None);
                     if (!success)
                     {
-                        throw new TimeoutException($"The request timed out in {timeout} milliseconds.");
+                        throw new TimeoutException($"The command router timed out in {cliOptions.Hosting.CommandRouterTimeout} milliseconds.");
                     }
 
                     // This means a success in command runner. Wait for the next command

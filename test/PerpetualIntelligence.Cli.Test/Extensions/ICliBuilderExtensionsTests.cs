@@ -218,7 +218,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddPublisherShouldCorrectlyInitialize()
         {
-            cliBuilder.AddPublisher<MockErrorPublisher, MockExceptionPublisher>();
+            cliBuilder.AddErrorPublisher<MockErrorPublisher, MockExceptionPublisher>();
 
             var err = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IErrorPublisher)));
             Assert.IsNotNull(err);

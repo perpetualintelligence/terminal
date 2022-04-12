@@ -8,7 +8,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Services;
 using PerpetualIntelligence.Protocols.Licensing;
@@ -39,9 +38,6 @@ namespace PerpetualIntelligence.Cli.Integration
             this.licenseExtractor = licenseExtractor;
             this.cliOptions = cliOptions;
             this.logger = logger;
-
-            // For canceling.
-            cancellationTokenSource = new CancellationTokenSource();
         }
 
         /// <summary>
@@ -69,12 +65,6 @@ namespace PerpetualIntelligence.Cli.Integration
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            // Send cancellation request to router
-            cancellationTokenSource.Cancel();
-
-            // Give time for router to end the loop.
-            Task.WaitAll(Task.Delay(1000));
-
             return Task.CompletedTask;
         }
 
@@ -84,26 +74,13 @@ namespace PerpetualIntelligence.Cli.Integration
         {
             Console.WriteLine("Server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
             Console.WriteLine();
-
-            // The console loop for routing commands.
-            logger.LogInformation("Starting command routing...");
-            host.RunRouterAsync("cmd > ", cliOptions.Hosting.CommandRouterTimeout, cancellationTokenSource.Token).GetAwaiter().GetResult();
-
-            // Closing comments
-            logger.LogWarning("Command routing stopped.");
-
-            Task.WaitAll(Task.Delay(500));
-
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Server stopped.");
-            Console.ResetColor();
         }
 
         /// <summary>
         /// </summary>
         protected virtual void OnStopped()
         {
+            ConsoleHelper.WriteLineColor(ConsoleColor.Red, "Server stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
         }
 
         /// <summary>
@@ -111,8 +88,6 @@ namespace PerpetualIntelligence.Cli.Integration
         protected virtual void OnStopping()
         {
             Console.WriteLine("Stopping server...");
-
-            Task.WaitAll(Task.Delay(500));
         }
 
         /// <summary>
@@ -126,7 +101,7 @@ namespace PerpetualIntelligence.Cli.Integration
             Console.WriteLine("https://terms.perpetualintelligence.com");
             Console.WriteLine("---------------------------------------------------------------------------------------------");
 
-            Console.WriteLine($"Starting server \"{Protocols.Constants.CliUrn}\" version={typeof(CliHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}...");
+            Console.WriteLine($"Starting server \"{Protocols.Constants.CliUrn}\" version={typeof(CliHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
             return Task.CompletedTask;
         }
 
@@ -138,18 +113,18 @@ namespace PerpetualIntelligence.Cli.Integration
         protected virtual Task PrintHostApplicationLicensingAsync(License license)
         {
             // Print the license information
-            ConsoleHelper.WriteLineColor($"Consumer={license.Claims.Name} ({license.Claims.TenantId})", ConsoleColor.Cyan);
-            ConsoleHelper.WriteLineColor($"Country={license.Claims.TenantCountry}", ConsoleColor.Cyan);
-            ConsoleHelper.WriteLineColor($"Subject={cliOptions.Licensing.Subject}", ConsoleColor.Cyan);
-            ConsoleHelper.WriteLineColor($"Key Source={cliOptions.Licensing.KeySource}", ConsoleColor.Cyan);
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"consumer={license.Claims.Name} ({license.Claims.TenantId})");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"country={license.Claims.TenantCountry}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"subject={cliOptions.Licensing.Subject}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_source={cliOptions.Licensing.KeySource}");
             if (cliOptions.Licensing.KeySource == LicenseKeySource.JsonFile)
             {
                 // Don't dump the key, just the lic file path
-                ConsoleHelper.WriteLineColor($"Key File={license.LicenseKey}", ConsoleColor.Cyan);
+                ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_file={license.LicenseKey}");
             }
-            ConsoleHelper.WriteLineColor($"Check={license.CheckMode}", ConsoleColor.Cyan);
-            ConsoleHelper.WriteLineColor($"Usage={license.Usage}", ConsoleColor.Cyan);
-            ConsoleHelper.WriteLineColor($"Edition={license.Plan}", ConsoleColor.Cyan);
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"check={license.CheckMode}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"edition={license.Plan}");
 
             return Task.CompletedTask;
         }
@@ -165,11 +140,11 @@ namespace PerpetualIntelligence.Cli.Integration
             {
                 if (license.Usage == SaaSUsages.Educational)
                 {
-                    ConsoleHelper.WriteLineColor("The community edition is free for educational purposes only. For commercial and non-educational use, you require a paid subscription.", ConsoleColor.Yellow);
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for educational purposes only. For commercial and non-educational use, you require a paid subscription.");
                 }
                 else if (license.Usage == SaaSUsages.RnD)
                 {
-                    ConsoleHelper.WriteLineColor("The community edition is free for RnD, test, and demo purposes only. For commercial or production use, you require a paid subscription.", ConsoleColor.Yellow);
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for RnD, test, and demo purposes only. For commercial or production use, you require a paid subscription.");
                 }
             }
 
@@ -188,7 +163,6 @@ namespace PerpetualIntelligence.Cli.Integration
             return Task.CompletedTask;
         }
 
-        private readonly CancellationTokenSource cancellationTokenSource;
         private readonly CliOptions cliOptions;
         private readonly IHost host;
         private readonly IHostApplicationLifetime hostApplicationLifetime;

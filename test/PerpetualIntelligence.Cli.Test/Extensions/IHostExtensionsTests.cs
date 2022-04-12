@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Test;
@@ -44,7 +45,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
             host = newhostBuilder.Build();
 
-            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = Timeout.Infinite;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             Assert.IsTrue(mockCommandRouter.RouteCalled);
@@ -72,7 +74,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Wait for more than 2.05 seconds so task is canceled
             await Task.Delay(2050);
 
-            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = Timeout.Infinite;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             // Canceled task so router will not be called.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -101,7 +104,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Router will throw exception and then routing will get canceled
-            await host.RunRouterAsync("test_title", null, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = Timeout.Infinite;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             // Check the published error
             MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
@@ -131,7 +135,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Router will throw exception and then routing will get canceled
-            await host.RunRouterAsync("test_title", null, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = Timeout.Infinite;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
@@ -165,7 +170,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             Timer timer = new(HostStopRequestCallback, host, 2000, Timeout.Infinite);
 
             // Run the router for 5 seconds, the callback will stop the host 2 seconds.
-            await host.RunRouterAsync("test_title", 5000, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = 5000;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             // Till the timer callback cancel the route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -195,7 +201,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Router will throw exception and then routing will get canceled
-            await host.RunRouterAsync("test_title", null, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = Timeout.Infinite;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
@@ -223,7 +230,8 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // We will run in a infinite loop due to empty input so break that after 2 seconds
             tokenSource.CancelAfter(2000);
-            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = Timeout.Infinite;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             Assert.IsFalse(mockCommandRouter.RouteCalled);
@@ -246,7 +254,8 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
             tokenSource.CancelAfter(3000);
-            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = Timeout.Infinite;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             // In 3 seconds the Route will be called miltiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -270,12 +279,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Route delay is set to 3000 and timeout is 2000
-            await host.RunRouterAsync("test_title", 2000, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = 2000;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionPublisher>();
             Assert.IsTrue(publisher.Called);
-            Assert.AreEqual("The request timed out in 2000 milliseconds.", publisher.PublishedMessage);
+            Assert.AreEqual("The command router timed out in 2000 milliseconds.", publisher.PublishedMessage);
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorPublisher>();
@@ -301,7 +311,8 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // cancel the token after 2 seconds so routing will be called and it will raise an exception
             tokenSource.CancelAfter(2000);
-            await host.RunRouterAsync("test_title", TimeSpan.MaxValue.Milliseconds, tokenSource.Token);
+            GetCliOptions(host).Hosting.CommandRouterTimeout = Timeout.Infinite;
+            await host.RunRouterAsync("test_title", tokenSource.Token);
             Assert.AreEqual("test_title", titleWriter.ToString());
 
             // Check output
@@ -467,6 +478,11 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionPublisher>(new MockExceptionPublisher());
+        }
+
+        private CliOptions GetCliOptions(IHost host)
+        {
+            return host.Services.GetRequiredService<CliOptions>();
         }
 
         private void HostStopRequestCallback(object? state)

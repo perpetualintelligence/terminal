@@ -115,6 +115,24 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
+        /// Adds the <see cref="IErrorPublisher"/> and <see cref="IExceptionPublisher"/> to the service collection.
+        /// </summary>
+        /// <typeparam name="TError">The <see cref="IErrorPublisher"/> type.</typeparam>
+        /// <typeparam name="TException">The <see cref="IExceptionPublisher"/> type.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddErrorPublisher<TError, TException>(this ICliBuilder builder) where TError : class, IErrorPublisher where TException : class, IExceptionPublisher
+        {
+            // Add error publisher
+            builder.Services.AddTransient<IErrorPublisher, TError>();
+
+            // Add exception publisher
+            builder.Services.AddTransient<IExceptionPublisher, TException>();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the <see cref="ICommandExtractor"/> and <see cref="IArgumentExtractor"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -183,7 +201,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds a license to the service collection.
+        /// Adds <c>pi-cli</c> licensing to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
@@ -202,7 +220,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds a <see cref="IHttpClientFactory"/> to the service collection for online license checks.
+        /// Adds a <see cref="IHttpClientFactory"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="name">The HTTP client name.</param>
@@ -221,24 +239,6 @@ namespace PerpetualIntelligence.Cli.Extensions
                 client.BaseAddress = new Uri("https://api.perpetualintelligence.com/security/");
                 client.Timeout = timeout;
             });
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the <see cref="IErrorPublisher"/> and <see cref="IExceptionPublisher"/> to the service collection.
-        /// </summary>
-        /// <typeparam name="TError">The <see cref="IErrorPublisher"/> type.</typeparam>
-        /// <typeparam name="TException">The <see cref="IExceptionPublisher"/> type.</typeparam>
-        /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddPublisher<TError, TException>(this ICliBuilder builder) where TError : class, IErrorPublisher where TException : class, IExceptionPublisher
-        {
-            // Add error publisher
-            builder.Services.AddTransient<IErrorPublisher, TError>();
-
-            // Add exception publisher
-            builder.Services.AddTransient<IExceptionPublisher, TException>();
 
             return builder;
         }
