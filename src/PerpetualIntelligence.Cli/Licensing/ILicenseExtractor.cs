@@ -6,13 +6,18 @@
 */
 
 using PerpetualIntelligence.Protocols.Abstractions;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {
     /// <summary>
-    /// An abstraction to extract the software <see cref="License"/> objects.
+    /// An abstraction to extract the software <see cref="License"/>.
     /// </summary>
     public interface ILicenseExtractor : IExtractor<LicenseExtractorContext, LicenseExtractorResult>
     {
+        /// <summary>
+        /// Gets the extracted license asynchronously.
+        /// </summary>
+        public Task<License?> GetLicenseAsync();
     }
 }

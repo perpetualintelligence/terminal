@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Licensing.Models;
 
 namespace PerpetualIntelligence.Cli.Licensing
@@ -21,15 +22,17 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <param name="checkMode">The license check mode.</param>
         /// <param name="plan">The license plan.</param>
         /// <param name="usage">The license usage.</param>
+        /// <param name="licenseKeySource"></param>
         /// <param name="licenseKey">The license key.</param>
         /// <param name="claims">The license claims.</param>
         /// <param name="limits">The license limits.</param>
-        public License(string providerTenantId, string checkMode, string plan, string usage, string licenseKey, LicenseClaimsModel claims, LicenseLimits limits)
+        public License(string providerTenantId, string checkMode, string plan, string usage, string licenseKeySource, string licenseKey, LicenseClaimsModel claims, LicenseLimits limits)
         {
-            ProviderTenantId = providerTenantId;
+            ProviderId = providerTenantId;
             CheckMode = checkMode;
             Plan = plan;
             Usage = usage;
+            LicenseKeySource = licenseKeySource;
             this.licenseKey = licenseKey;
             Limits = limits;
             Claims = claims;
@@ -51,6 +54,11 @@ namespace PerpetualIntelligence.Cli.Licensing
         public override string LicenseKey => licenseKey;
 
         /// <summary>
+        /// The license key source.
+        /// </summary>
+        public string LicenseKeySource { get; }
+
+        /// <summary>
         /// The license limits.
         /// </summary>
         public LicenseLimits Limits { get; }
@@ -63,7 +71,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// The license provider tenant id.
         /// </summary>
-        public string ProviderTenantId { get; }
+        public string ProviderId { get; }
 
         /// <summary>
         /// The license usage.

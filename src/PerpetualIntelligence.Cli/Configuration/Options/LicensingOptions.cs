@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Cli.Extensions;
-using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Protocols.Licensing;
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
@@ -27,15 +26,15 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string? ConsumerTenantId { get; set; }
 
         /// <summary>
-        /// The HTTP client name for <see cref="LicenseCheckMode.Online"/> checks.
+        /// The HTTP client name for <see cref="SaaSCheckModes.Online"/> checks.
         /// </summary>
         /// <remarks>The name must match the <see cref="ICliBuilderExtensions.AddLicensingClient(Integration.ICliBuilder, string, System.TimeSpan)"/></remarks>
         public string? HttpClientName { get; set; }
 
         /// <summary>
-        /// The license key source. Defaults to <see cref="LicenseKeySource.JsonFile"/>.
+        /// The license key source. Defaults to <see cref="SaaSKeySources.JsonFile"/>.
         /// </summary>
-        public LicenseKeySource KeySource { get; set; } = LicenseKeySource.JsonFile;
+        public string KeySource { get; set; } = SaaSKeySources.JsonFile;
 
         /// <summary>
         /// The license key or the file containing license key.

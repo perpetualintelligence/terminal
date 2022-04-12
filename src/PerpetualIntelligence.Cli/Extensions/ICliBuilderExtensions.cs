@@ -22,6 +22,7 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
+using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Net.Http;
@@ -228,7 +229,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
         /// <remarks>
         /// The <see cref="AddLicensingClient(ICliBuilder, string, TimeSpan)"/> is required if you are using
-        /// <see cref="LicenseCheckMode.Online"/> check. Please set the <see cref="LicensingOptions.HttpClientName"/> to
+        /// <see cref="SaaSCheckModes.Online"/> check. Please set the <see cref="LicensingOptions.HttpClientName"/> to
         /// match the name used to register this service.
         /// </remarks>
         public static ICliBuilder AddLicensingClient(this ICliBuilder builder, string name, TimeSpan timeout)

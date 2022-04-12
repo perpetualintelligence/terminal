@@ -6,11 +6,9 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
-using System;
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
@@ -29,7 +27,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             Assert.AreEqual(SaaSCheckModes.Online, options.CheckMode);
             Assert.IsNull(options.ConsumerTenantId);
             Assert.IsNull(options.HttpClientName);
-            Assert.AreEqual(LicenseKeySource.JsonFile, options.KeySource);
+            Assert.AreEqual(SaaSKeySources.JsonFile, options.KeySource);
             Assert.IsNull(options.LicenseKey);
             Assert.IsNull(options.ProviderId);
             Assert.IsNull(options.Subject);

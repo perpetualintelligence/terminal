@@ -5,12 +5,13 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Protocols.Licensing;
 using System.Text.Json.Serialization;
 
 namespace PerpetualIntelligence.Cli.Licensing.Models
 {
     /// <summary>
-    /// The <see cref="LicenseCheckMode.Online"/> check model.
+    /// The <see cref="SaaSCheckModes.Online"/> check model.
     /// </summary>
     public class LicenseOnlineCheckModel
     {

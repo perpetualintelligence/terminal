@@ -33,16 +33,16 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_InvalidKeyFilePath_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = "D:\\lic\\path_does_exist\\invalid.lic";
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_source=JsonFile");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_source=urn:oneimlx:lic:ksource:jsonfile");
         }
 
         [Fact]
         public async Task ExtractFromJsonAsync_NonJsonLic_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = nonJsonLicPath;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
 
             try
@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_NonOnlineMode_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
             cliOptions.Licensing.CheckMode = SaaSCheckModes.Offline;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file check mode is not valid, see licensing options. check_mode=urn:oneimlx:lic:saascmode:offline");
@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidConsumerTenant_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "invalid_consumer";
@@ -88,7 +88,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidProviderTenant_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
@@ -103,7 +103,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidSubject_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
@@ -117,7 +117,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientFactory_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The HTTP client factory is not configured, see cli builder extensions. service=AddLicensingClient check_mode=urn:oneimlx:lic:saascmode:online");
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientName_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
 
@@ -137,8 +137,12 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_ValidKey_ShouldContainClaimsAsync()
         {
+            // Before extract get should be null
+            License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            licenseFromGet.Should().BeNull();
+
             cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
@@ -153,10 +157,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
+            result.License.LicenseKeySource.Should().Be(SaaSKeySources.JsonFile);
             result.License.LicenseKey.Should().Be(jsonLicPath);
 
             // plan, mode and usage
-            result.License.ProviderTenantId.Should().Be("urn:oneimlx:lic:saaspvdr:pi");
+            result.License.ProviderId.Should().Be("urn:oneimlx:lic:saaspvdr:pi");
             result.License.CheckMode.Should().Be(SaaSCheckModes.Online);
             result.License.Plan.Should().Be("urn:oneimlx:lic:saasplan:community");
             result.License.Usage.Should().Be("urn:oneimlx:lic:saasusage:rnd");
@@ -180,21 +185,26 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // limits
             result.License.Limits.Plan.Should().Be("urn:oneimlx:lic:saasplan:community");
+
+            // After extract and Get should return the correct license
+            licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            licenseFromGet.Should().NotBeNull();
+            licenseFromGet.Should().BeSameAs(result.License);
         }
 
         [Fact]
         public async Task ExtractFromJsonAsync_WithNoLicenseKey_ShouldErrorAsync()
         {
             cliOptions.Licensing.LicenseKey = null;
-            cliOptions.Licensing.KeySource = LicenseKeySource.JsonFile;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source=JsonFile");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source=urn:oneimlx:lic:ksource:jsonfile");
         }
 
         [Fact]
         public async Task UnsupportedKeySource_ShouldErrorAsync()
         {
-            cliOptions.Licensing.KeySource = (LicenseKeySource)253;
+            cliOptions.Licensing.KeySource = "253";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source=253");
         }

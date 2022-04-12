@@ -13,7 +13,6 @@ using PerpetualIntelligence.Protocols.Licensing.Models;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -45,13 +44,12 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public async Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
         {
             // For singleton DI service we don't extract license keys once extracted.
             if (license == null)
             {
-                if (cliOptions.Licensing.KeySource == LicenseKeySource.JsonFile)
+                if (cliOptions.Licensing.KeySource == SaaSKeySources.JsonFile)
                 {
                     license = await ExtractFromJsonAsync();
                 }
@@ -62,6 +60,12 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             return new LicenseExtractorResult(license);
+        }
+
+        /// <inheritdoc/>
+        public Task<License?> GetLicenseAsync()
+        {
+            return Task.FromResult(license);
         }
 
         /// <summary>
@@ -129,7 +133,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             HttpClient httpClient = EnsureHttpClient();
 
             // Check JWS signed assertion (JWS key)
-            LicenseOnlineCheckModel checkModel = new ()
+            LicenseOnlineCheckModel checkModel = new()
             {
                 AuthorizedParty = jsonFileModel.AuthorizedParty,
                 ConsumerObjectId = jsonFileModel.ConsumerObjectId,
@@ -185,7 +189,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan);
-                return new License(providerTenantId, cliOptions.Licensing.CheckMode, plan, usage, cliOptions.Licensing.LicenseKey!, claims, licenseLimits);
+                return new License(providerTenantId, cliOptions.Licensing.CheckMode, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits);
             }
         }
 
