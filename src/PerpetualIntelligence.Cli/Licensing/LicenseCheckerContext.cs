@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Cli.Commands;
-
 namespace PerpetualIntelligence.Cli.Licensing
 {
     /// <summary>
@@ -17,16 +15,10 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public LicenseCheckerContext(CommandDescriptor commandDescriptor, License license)
+        public LicenseCheckerContext(License license)
         {
-            CommandDescriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
             License = license ?? throw new System.ArgumentNullException(nameof(license));
         }
-
-        /// <summary>
-        /// The command descriptor.
-        /// </summary>
-        public CommandDescriptor CommandDescriptor { get; }
 
         /// <summary>
         /// The license to check.

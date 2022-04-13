@@ -60,13 +60,13 @@ namespace PerpetualIntelligence.Cli.Services
         /// Writes the specified string with specified color to the standard output stream.
         /// </summary>
         /// <remarks>
-        /// <see cref="WriteColor(string, ConsoleColor)"/> resets the color after writing the string using
+        /// <see cref="WriteColor(ConsoleColor, string, object[])"/> resets the color after writing the string using
         /// <see cref="Console.ResetColor"/> method.
         /// </remarks>
-        public static void WriteColor(string value, ConsoleColor color)
+        public static void WriteColor(ConsoleColor color, string value, params object[] args)
         {
             Console.ForegroundColor = color;
-            Console.Write(value);
+            Console.Write(value, args);
             Console.ResetColor();
         }
 

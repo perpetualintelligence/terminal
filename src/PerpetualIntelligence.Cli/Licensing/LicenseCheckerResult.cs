@@ -29,8 +29,28 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         /// <summary>
+        /// The argument count.
+        /// </summary>
+        public long ArgumentCount { get; set; }
+
+        /// <summary>
+        /// The command group count.
+        /// </summary>
+        public long CommandGroupCount { get; set; }
+
+        /// <summary>
         /// The valid license.
         /// </summary>
         public License License { get; }
+
+        /// <summary>
+        /// The root command count.
+        /// </summary>
+        public long RootCommandCount { get; set; }
+
+        /// <summary>
+        /// The sub command count.
+        /// </summary>
+        public long SubCommandCount { get; set; }
     }
 }

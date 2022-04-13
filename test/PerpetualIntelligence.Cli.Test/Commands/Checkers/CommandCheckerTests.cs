@@ -117,7 +117,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabledInvalidValueTypeShouldNotErrorAsync()
         {
-            options.Checker.AllowStrictTypeChecking = false;
+            options.Checker.StrictTypeChecking = false;
 
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
 
@@ -134,7 +134,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingWithInvalidValueTypeShouldErrorAsync()
         {
-            options.Checker.AllowStrictTypeChecking = true;
+            options.Checker.StrictTypeChecking = true;
 
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
 
@@ -149,7 +149,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingWithValidValueTypeShouldChangeTypeCorrectlyAsync()
         {
-            options.Checker.AllowStrictTypeChecking = true;
+            options.Checker.StrictTypeChecking = true;
 
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
 

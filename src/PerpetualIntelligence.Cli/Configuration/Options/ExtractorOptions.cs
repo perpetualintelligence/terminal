@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// <summary>
         /// Defines the token within which to extract an argument value. Default to <c>null</c>.
         /// </summary>
-        public string? ArgumentValueWithIn { get; set; } = null;
+        public string? ArgumentValueWithIn { get; set; }
 
         /// <summary>
         /// Defines the Regex pattern for command identifier. Defaults to <c>^[A-Za-z0-9_-]*$</c>.
@@ -51,14 +51,14 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string CommandIdRegexPattern { get; set; } = "^[A-Za-z0-9_-]*$";
 
         /// <summary>
-        /// Determines whether the extractor support extracting default argument values. Defaults to <c>null</c>.
-        /// </summary>
-        public bool? DefaultArgumentValue { get; set; }
-
-        /// <summary>
         /// Determines whether the extractor support extracting default arguments. Defaults to <c>null</c>.
         /// </summary>
         public bool? DefaultArgument { get; set; }
+
+        /// <summary>
+        /// Determines whether the extractor support extracting default argument values. Defaults to <c>null</c>.
+        /// </summary>
+        public bool? DefaultArgumentValue { get; set; }
 
         /// <summary>
         /// The command string separator. Defaults to a single space char.

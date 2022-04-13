@@ -34,11 +34,11 @@ namespace PerpetualIntelligence.Cli.Mocks
 
             TestLimits = LicenseLimits.Create(SaaSPlans.Community);
 
-            TestLicense = new License("testProviderId", SaaSCheckModes.Online, SaaSPlans.Community, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testLicKey1", TestClaims, TestLimits);
+            TestLicense = new License("testProviderId1", SaaSCheckModes.Online, SaaSPlans.Community, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testLicKey1", TestClaims, TestLimits);            
         }
 
         public static LicenseClaimsModel TestClaims = null!;
-        public static License TestLicense = null!;
+        public static License TestLicense = null!;        
         public static LicenseLimits TestLimits = null!;
     }
 }

@@ -22,9 +22,10 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public LicRunner(ILicenseExtractor licenseExractor)
+        public LicRunner(ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
         {
             this.licenseExractor = licenseExractor;
+            this.licenseChecker = licenseChecker;
         }
 
         /// <inheritdoc/>
@@ -33,6 +34,8 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
             try
             {
                 LicenseExtractorResult licResult = await licenseExractor.ExtractAsync(new LicenseExtractorContext());
+                LicenseCheckerResult checkResult = await licenseChecker.CheckAsync(new LicenseCheckerContext(licResult.License));
+
                 License license = licResult.License;
 
                 {
@@ -82,11 +85,12 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Limits");
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "root_command_limit={0}", PrintNumber(license.Limits.RootCommandLimit));
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "command_group_limit={0}", PrintNumber(license.Limits.CommandGroupLimit));
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command_group_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument_limit={0}", PrintNumber(license.Limits.ArgumentLimit));
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "data_type_checks={0}", license.Limits.DataTypeChecks.JoinBySpace());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_arguments={0}", license.Limits.DefaultArguments.ToString());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_argument={0}", license.Limits.DefaultArgument.ToString());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_argument_value={0}", license.Limits.DefaultArgumentValue.ToString());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "unicode_support={0}", license.Limits.UnicodeSupport.JoinBySpace());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "error_handling={0}", license.Limits.ErrorHandling.JoinBySpace());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "stores={0}", license.Limits.Stores.JoinBySpace());
@@ -100,6 +104,15 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString());
                         }
                     }
+                }
+
+                {
+                    // Print Usage
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Usage");
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "root_command={0}", checkResult.RootCommandCount);
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "command_group={0}", checkResult.CommandGroupCount);
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command={0}", checkResult.SubCommandCount);
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument={0}", checkResult.ArgumentCount);
                 }
 
                 return new CommandRunnerResult();
@@ -122,6 +135,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
             }
         }
 
+        private readonly ILicenseChecker licenseChecker;
         private readonly ILicenseExtractor licenseExractor;
     }
 }

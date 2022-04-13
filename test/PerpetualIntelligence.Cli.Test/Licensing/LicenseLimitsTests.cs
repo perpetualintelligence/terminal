@@ -30,13 +30,13 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             limits.DataTypeChecks.Should().BeNull();
             limits.StrictDataType.Should().Be(false);
-            limits.DefaultArguments.Should().Be(false);
-            
+            limits.DefaultArgument.Should().Be(false);
+            limits.DefaultArgumentValue.Should().Be(false);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard" });
+            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default" });
             limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "standard" });
+            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default" });
         }
 
         [Fact]
@@ -52,14 +52,15 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(20000);
             limits.RedistributionLimit.Should().Be(5000);
 
-            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StrictDataType.Should().Be(true);
-            limits.DefaultArguments.Should().Be(true);
-            
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.DefaultArgument.Should().Be(true);
+            limits.DefaultArgumentValue.Should().Be(true);
+
+            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json", "custom" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default", "custom" });
         }
 
         [Fact]
@@ -75,14 +76,15 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(50000);
             limits.RedistributionLimit.Should().Be(10000);
 
-            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StrictDataType.Should().Be(true);
-            limits.DefaultArguments.Should().Be(true);
+            limits.DefaultArgument.Should().Be(true);
+            limits.DefaultArgumentValue.Should().Be(true);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json", "custom" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default", "custom" });
         }
 
         [Fact]
@@ -98,14 +100,15 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(null);
             limits.RedistributionLimit.Should().Be(null);
 
-            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StrictDataType.Should().Be(true);
-            limits.DefaultArguments.Should().Be(true);
+            limits.DefaultArgument.Should().Be(true);
+            limits.DefaultArgumentValue.Should().Be(true);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json", "custom" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "standard", "custom" });
+            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default", "custom" });
         }
 
 
@@ -138,13 +141,13 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.RedistributionLimit.Should().Be(0);
 
             limits.DataTypeChecks.Should().BeNull();
-            limits.StrictDataType.Should().Be(false);
-            limits.DefaultArguments.Should().Be(false);
+            limits.DefaultArgument.Should().Be(false);
+            limits.DefaultArgumentValue.Should().Be(false);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard" });
+            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default" });
             limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "standard" });
+            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default" });
         }
 
         [Fact]
@@ -160,14 +163,15 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ArgumentLimit.Should().Be(5000);
             limits.RedistributionLimit.Should().Be(1000);
 
-            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "standard" });
-            limits.StrictDataType.Should().Be(true);
-            limits.DefaultArguments.Should().Be(true);
+            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "default" });
+            limits.StrictDataType.Should().Be(false);
+            limits.DefaultArgument.Should().Be(true);
+            limits.DefaultArgumentValue.Should().Be(true);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "standard" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "standard", });
+            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default", });
             limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "standard" });
+            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default" });
         }
     }
 }

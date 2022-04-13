@@ -19,5 +19,25 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// no timeout.
         /// </summary>
         public int CommandRouterTimeout { get; set; } = 10000;
+
+        /// <summary>
+        /// Defines the hosting and routing error handling. Defaults to <c>default</c> error handling.
+        /// </summary>
+        public string ErrorHandling { get; set; } = "default";
+
+        /// <summary>
+        /// Defines the hosting and routing service implementation. Defaults to <c>default</c> service implementation.
+        /// </summary>
+        public string ServiceImplementation { get; set; } = "default";
+
+        /// <summary>
+        /// Defines the hosting and routing store. Defaults to <c>in_memory</c> store implementation.
+        /// </summary>
+        public string Store { get; set; } = "in_memory";
+
+        /// <summary>
+        /// Defines the hosting and routing service implementation. Defaults to <c>default</c> service implementation.
+        /// </summary>
+        public string UnicodeSupport { get; set; } = "default";
     }
 }

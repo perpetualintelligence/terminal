@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeChecking_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
-            options.Checker.AllowStrictTypeChecking = true;
+            options.Checker.StrictTypeChecking = true;
 
             // Value is double, but we can convert it so this should not error.
             ArgumentDescriptor identity = new("arg1", DataType.Text);
@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabled_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
-            options.Checker.AllowStrictTypeChecking = false;
+            options.Checker.StrictTypeChecking = false;
 
             // Value is double, strict checking is disabled so we will not convert it
             ArgumentDescriptor identity = new("arg1", DataType.Text);
@@ -84,7 +84,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabledNotSupportedValueShouldNotErrorAsync()
         {
-            options.Checker.AllowStrictTypeChecking = false;
+            options.Checker.StrictTypeChecking = false;
 
             ArgumentDescriptor identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
             Argument value = new("arg1", "test3", DataType.Text);
@@ -96,7 +96,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingNotSupportedValueShouldErrorAsync()
         {
-            options.Checker.AllowStrictTypeChecking = true;
+            options.Checker.StrictTypeChecking = true;
 
             ArgumentDescriptor identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
             Argument value = new("arg1", "test3", DataType.Text);
@@ -118,7 +118,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingSystemTypeMatchAndDataValidationFailShouldErrorAsync()
         {
-            options.Checker.AllowStrictTypeChecking = true;
+            options.Checker.StrictTypeChecking = true;
 
             ArgumentDescriptor identity = new("arg1", DataType.CreditCard, validationAttributes: new[] { new CreditCardAttribute() });
             Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);
@@ -130,7 +130,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabledSystemTypeMatchAndDataValidationFailShouldNotErrorAsync()
         {
-            options.Checker.AllowStrictTypeChecking = false;
+            options.Checker.StrictTypeChecking = false;
 
             ArgumentDescriptor identity = new("arg1", DataType.CreditCard, validationAttributes: new[] { new CreditCardAttribute() });
             Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);

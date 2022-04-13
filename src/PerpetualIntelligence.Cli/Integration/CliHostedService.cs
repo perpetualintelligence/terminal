@@ -11,6 +11,7 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Services;
 using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Reflection;
 using System.Threading;
@@ -29,13 +30,15 @@ namespace PerpetualIntelligence.Cli.Integration
         /// <param name="host">The host.</param>
         /// <param name="hostApplicationLifetime">The host application lifetime.</param>
         /// <param name="licenseExtractor">The license extractor.</param>
+        /// <param name="licenseChecker">The license checker.</param>
         /// <param name="cliOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CliHostedService(IHost host, IHostApplicationLifetime hostApplicationLifetime, ILicenseExtractor licenseExtractor, CliOptions cliOptions, ILogger<CliHostedService> logger)
+        public CliHostedService(IHost host, IHostApplicationLifetime hostApplicationLifetime, ILicenseExtractor licenseExtractor, ILicenseChecker licenseChecker, CliOptions cliOptions, ILogger<CliHostedService> logger)
         {
             this.host = host;
             this.hostApplicationLifetime = hostApplicationLifetime;
             this.licenseExtractor = licenseExtractor;
+            this.licenseChecker = licenseChecker;
             this.cliOptions = cliOptions;
             this.logger = logger;
         }
@@ -51,12 +54,25 @@ namespace PerpetualIntelligence.Cli.Integration
             await PrintHostApplicationHeaderAsync();
 
             // Register Application Lifetime events
-            await RegisterHostApplicationEventsAsync(hostApplicationLifetime);
+            await RegisterHostApplicationEventsAsync(hostApplicationLifetime);           
 
-            // License check, mandatory licensing will print the Community disclaimer.
-            LicenseExtractorResult result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
-            await PrintHostApplicationLicensingAsync(result.License);
-            await PrintHostApplicationMandatoryLicensingAsync(result.License);
+            try
+            {
+                // We catch the exception to avoid unhandeled fatal exception.
+                // License extraction
+                LicenseExtractorResult result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
+                await PrintHostApplicationLicensingAsync(result.License);
+
+                // Do license check
+                await licenseChecker.CheckAsync(new LicenseCheckerContext(result.License));
+
+                // Check, mandatory licensing will print the Community disclaimer.
+                await PrintHostApplicationMandatoryLicensingAsync(result.License);
+            }
+            catch (ErrorException ex)
+            {
+                ConsoleHelper.WriteLineColor(ConsoleColor.Red, $"invalid_license={ex.Error.FormatDescription()}");
+            }
         }
 
         /// <summary>
@@ -115,16 +131,16 @@ namespace PerpetualIntelligence.Cli.Integration
             // Print the license information
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"consumer={license.Claims.Name} ({license.Claims.TenantId})");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"country={license.Claims.TenantCountry}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"subject={cliOptions.Licensing.Subject}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"subject={cliOptions.Licensing.Subject}");            
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"check={license.CheckMode}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Green, $"edition={license.Plan}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_source={cliOptions.Licensing.KeySource}");
             if (license.LicenseKeySource == SaaSKeySources.JsonFile)
             {
                 // Don't dump the key, just the lic file path
                 ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_file={license.LicenseKey}");
             }
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"check={license.CheckMode}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"edition={license.Plan}");
 
             return Task.CompletedTask;
         }
@@ -167,6 +183,7 @@ namespace PerpetualIntelligence.Cli.Integration
         private readonly IHost host;
         private readonly IHostApplicationLifetime hostApplicationLifetime;
         private readonly ILicenseExtractor licenseExtractor;
+        private readonly ILicenseChecker licenseChecker;
         private readonly ILogger<CliHostedService> logger;
     }
 }

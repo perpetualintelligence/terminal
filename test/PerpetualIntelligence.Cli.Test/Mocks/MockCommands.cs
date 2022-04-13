@@ -166,15 +166,62 @@ namespace PerpetualIntelligence.Cli.Mocks
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "org auth slogin oauth cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
             };
+
+            LicensingCommands = new()
+            {
+                // Different name and prefix
+                NewCommandDefinition("root1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isRoot:true).Item1,
+
+                // Different name and prefix
+                NewCommandDefinition("root2", "name2", "prefix2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
+
+                // Different name and prefix
+                NewCommandDefinition("root3", "name3", "prefix3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
+
+                // Different name and prefix
+                NewCommandDefinition("grp1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isGroup: true).Item1,
+
+                // Different name and prefix
+                NewCommandDefinition("grp2", "name2", "prefix2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isGroup: true).Item1,
+
+                // Different name and prefix
+                NewCommandDefinition("grp3", "name3", "prefix3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isGroup: true).Item1,
+
+                // Different name and prefix
+                NewCommandDefinition("id1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Same name and prefix with args
+                NewCommandDefinition("id2", "name2", "name2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Multiple prefix names
+                NewCommandDefinition("id3", "name3", "prefix3 sub3 name3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Command with no args
+                NewCommandDefinition("id4", "name4", "prefix4_noargs", "desc4").Item1,
+
+                // Command with no default arg
+                NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Command with no default arg
+                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new StringComparisonComparer(StringComparison.Ordinal)), typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // Command with default arg
+                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
+
+                // Command with default arg
+                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultArgumentValueDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
+            };
         }
 
-        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, ArgumentDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null)
+        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, ArgumentDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false)
         {
             var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultArgument: defaultArg);
 
             // Internal set, in prod apps this will be set by DI Addxxx methods
             cmd1._checker = checker;
             cmd1._runner = runner;
+            cmd1._isGroup = isGroup.GetValueOrDefault();
+            cmd1._isRoot = isRoot.GetValueOrDefault();
 
             return new Tuple<CommandDescriptor, Command>(cmd1, new Command(id, name, desc));
         }
@@ -183,6 +230,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         public static List<CommandDescriptor> Commands;
         public static List<CommandDescriptor> GroupedCommands;
         public static List<CommandDescriptor> GroupedOptionsCommands;
+        public static List<CommandDescriptor> LicensingCommands;
         public static ArgumentDescriptors TestAliasArgumentDescriptors;
         public static ArgumentDescriptors TestArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentDescriptors;

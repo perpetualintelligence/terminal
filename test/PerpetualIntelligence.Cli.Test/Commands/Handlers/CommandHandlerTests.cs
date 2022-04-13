@@ -133,7 +133,6 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             Assert.IsTrue(licenseChecker.Called);
             Assert.IsNotNull(licenseChecker.ContextCalled);
-            Assert.AreEqual(command.Item1, licenseChecker.ContextCalled.CommandDescriptor);
             Assert.AreEqual(license, licenseChecker.ContextCalled.License);
         }
 

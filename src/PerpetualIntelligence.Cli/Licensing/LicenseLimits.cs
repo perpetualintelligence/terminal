@@ -18,67 +18,72 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// The maximum arguments or options. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public long? ArgumentLimit { get; private set; }
+        public long? ArgumentLimit { get; internal set; }
 
         /// <summary>
         /// The maximum command groups. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public int? CommandGroupLimit { get; private set; }
+        public int? CommandGroupLimit { get; internal set; }
 
         /// <summary>
         /// Supports the command argument data type checks. Defaults to <c>null</c> or no data type checks.
         /// </summary>
-        public string[]? DataTypeChecks { get; private set; }
+        public string[]? DataTypeChecks { get; internal set; }
 
         /// <summary>
-        /// Supports the default arguments and default argument value. Defaults to <c>false</c> or no default arguments.
+        /// Supports the default command argument. Defaults to <c>false</c> or no default arguments.
         /// </summary>
-        public bool DefaultArguments { get; private set; }
+        public bool DefaultArgument { get; internal set; }
+
+        /// <summary>
+        /// Supports the default argument value. Defaults to <c>false</c> or no default argument value.
+        /// </summary>
+        public bool DefaultArgumentValue { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public string[]? ErrorHandling { get; private set; }
+        public string[]? ErrorHandling { get; internal set; }
 
         /// <summary>
         /// The SaaS plan.
         /// </summary>
-        public string? Plan { get; private set; }
+        public string? Plan { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistribution limit.
         /// </summary>
-        public long? RedistributionLimit { get; private set; }
+        public long? RedistributionLimit { get; internal set; }
 
         /// <summary>
         /// The maximum root commands. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public int? RootCommandLimit { get; private set; }
+        public int? RootCommandLimit { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
         /// </summary>
-        public string[]? ServiceImplementations { get; private set; }
+        public string[]? ServiceImplementations { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
         /// </summary>
-        public string[]? Stores { get; private set; }
+        public string[]? Stores { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public bool StrictDataType { get; private set; }
+        public bool StrictDataType { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public long? SubCommandLimit { get; private set; }
+        public long? SubCommandLimit { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public string[]? UnicodeSupport { get; private set; }
+        public string[]? UnicodeSupport { get; internal set; }
 
         /// <summary>
         /// Creates a new instance of <see cref="LicenseLimits"/> based on the specified SaaS plan.
@@ -124,11 +129,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
         }
 
-        private LicenseLimits()
+        internal LicenseLimits()
         {
         }
 
-        private static LicenseLimits ForCommunity()
+        internal static LicenseLimits ForCommunity()
         {
             return new()
             {
@@ -141,16 +146,17 @@ namespace PerpetualIntelligence.Cli.Licensing
 
                 DataTypeChecks = null,
                 StrictDataType = false,
-                DefaultArguments = false,
+                DefaultArgument = false,
+                DefaultArgumentValue = false,
 
-                UnicodeSupport = new[] { "standard" },
-                ErrorHandling = new[] { "standard" },
+                UnicodeSupport = new[] { "default" },
+                ErrorHandling = new[] { "default" },
                 Stores = new[] { "in_memory" },
-                ServiceImplementations = new[] { "standard" }
+                ServiceImplementations = new[] { "default" }
             };
         }
 
-        private static LicenseLimits ForEnterprise()
+        internal static LicenseLimits ForEnterprise()
         {
             return new()
             {
@@ -161,18 +167,19 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = 20000,
                 RedistributionLimit = 5000,
 
-                DataTypeChecks = new[] { "standard", "custom" },
+                DataTypeChecks = new[] { "default", "custom" },
                 StrictDataType = true,
-                DefaultArguments = true,
+                DefaultArgument = true,
+                DefaultArgumentValue = true,
 
-                UnicodeSupport = new[] { "standard" },
-                ErrorHandling = new[] { "standard", "custom" },
+                UnicodeSupport = new[] { "default" },
+                ErrorHandling = new[] { "default", "custom" },
                 Stores = new[] { "in_memory", "json", "custom" },
-                ServiceImplementations = new[] { "standard", "custom" }
+                ServiceImplementations = new[] { "default", "custom" }
             };
         }
 
-        private static LicenseLimits ForISV()
+        internal static LicenseLimits ForISV()
         {
             return new()
             {
@@ -183,18 +190,19 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = 50000,
                 RedistributionLimit = 10000,
 
-                DataTypeChecks = new[] { "standard", "custom" },
+                DataTypeChecks = new[] { "default", "custom" },
                 StrictDataType = true,
-                DefaultArguments = true,
+                DefaultArgument = true,
+                DefaultArgumentValue = true,
 
-                UnicodeSupport = new[] { "standard" },
-                ErrorHandling = new[] { "standard", "custom" },
+                UnicodeSupport = new[] { "default" },
+                ErrorHandling = new[] { "default", "custom" },
                 Stores = new[] { "in_memory", "json", "custom" },
-                ServiceImplementations = new[] { "standard", "custom" }
+                ServiceImplementations = new[] { "default", "custom" }
             };
         }
 
-        private static LicenseLimits ForISVU()
+        internal static LicenseLimits ForISVU()
         {
             return new()
             {
@@ -205,18 +213,19 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = null,
                 RedistributionLimit = null,
 
-                DataTypeChecks = new[] { "standard", "custom" },
+                DataTypeChecks = new[] { "default", "custom" },
                 StrictDataType = true,
-                DefaultArguments = true,
+                DefaultArgument = true,
+                DefaultArgumentValue = true,
 
-                UnicodeSupport = new[] { "standard" },
-                ErrorHandling = new[] { "standard", "custom" },
+                UnicodeSupport = new[] { "default" },
+                ErrorHandling = new[] { "default", "custom" },
                 Stores = new[] { "in_memory", "json", "custom" },
-                ServiceImplementations = new[] { "standard", "custom" }
+                ServiceImplementations = new[] { "default", "custom" }
             };
         }
 
-        private static LicenseLimits ForMicro()
+        internal static LicenseLimits ForMicro()
         {
             return new()
             {
@@ -229,16 +238,17 @@ namespace PerpetualIntelligence.Cli.Licensing
 
                 DataTypeChecks = null,
                 StrictDataType = false,
-                DefaultArguments = false,
+                DefaultArgument = false,
+                DefaultArgumentValue = false,
 
-                UnicodeSupport = new[] { "standard" },
-                ErrorHandling = new[] { "standard" },
+                UnicodeSupport = new[] { "default" },
+                ErrorHandling = new[] { "default" },
                 Stores = new[] { "in_memory" },
-                ServiceImplementations = new[] { "standard" }
+                ServiceImplementations = new[] { "default" }
             };
         }
 
-        private static LicenseLimits ForSMB()
+        internal static LicenseLimits ForSMB()
         {
             return new()
             {
@@ -249,14 +259,15 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ArgumentLimit = 5000,
                 RedistributionLimit = 1000,
 
-                DataTypeChecks = new[] { "standard" },
-                StrictDataType = true,
-                DefaultArguments = true,
+                DataTypeChecks = new[] { "default" },
+                StrictDataType = false,
+                DefaultArgument = true,
+                DefaultArgumentValue = true,
 
-                UnicodeSupport = new[] { "standard" },
-                ErrorHandling = new[] { "standard" },
+                UnicodeSupport = new[] { "default" },
+                ErrorHandling = new[] { "default" },
                 Stores = new[] { "in_memory", "json" },
-                ServiceImplementations = new[] { "standard" }
+                ServiceImplementations = new[] { "default" }
             };
         }
     }

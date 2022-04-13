@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
@@ -17,8 +18,13 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public bool? AllowObsoleteArgument { get; set; }
 
         /// <summary>
+        /// Defines the checker data type checks. Defaults to <c>null</c> or no data type checks.
+        /// </summary>
+        public string? DataTypeCheck { get; set; }
+
+        /// <summary>
         /// Determines whether the checker allows strict type checking.
         /// </summary>
-        public bool? AllowStrictTypeChecking { get; set; }
+        public bool? StrictTypeChecking { get; set; }
     }
 }

@@ -1,7 +1,8 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,9 +21,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         [TestMethod]
         public void CheckerOptionsShouldHaveCorrectDefaultValues()
         {
-            CheckerOptions options = new CheckerOptions();
+            CheckerOptions options = new ();
 
             Assert.AreEqual(null, options.AllowObsoleteArgument);
+            Assert.AreEqual(null, options.StrictTypeChecking);
+            Assert.AreEqual(null, options.DataTypeCheck);
         }
     }
 }
