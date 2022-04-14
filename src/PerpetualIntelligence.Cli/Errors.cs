@@ -63,6 +63,11 @@ namespace PerpetualIntelligence.Cli
         public const string ServerError = "server_error";
 
         /// <summary>
+        /// The access is not authorized.
+        /// </summary>
+        public const string UnauthorizedAccess = "unauthorized_access";
+
+        /// <summary>
         /// The argument is not supported.
         /// </summary>
         public const string UnsupportedArgument = "unsupported_argument";

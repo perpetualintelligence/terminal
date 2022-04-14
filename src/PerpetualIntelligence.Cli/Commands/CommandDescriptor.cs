@@ -103,6 +103,12 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         public bool IsRoot => _isRoot;
 
+
+        /// <summary>
+        /// Returns <c>true</c> if this descriptor represents a protected command; otherwise, <c>false</c>.
+        /// </summary>
+        public bool IsProtected => _isProtected;
+
         /// <summary>
         /// The command name.
         /// </summary>
@@ -161,6 +167,9 @@ namespace PerpetualIntelligence.Cli.Commands
 
         [InternalInfrastructure]
         internal bool _isRoot { get; set; }
+
+        [InternalInfrastructure]
+        internal bool _isProtected { get; set; }
 
         [InternalInfrastructure]
         internal Type? _runner { get; set; }

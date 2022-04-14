@@ -19,6 +19,8 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Graph.Core" Version="2.0.8" />
+        <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="2.19.6" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.17.0" />
     </ItemGroup>
 

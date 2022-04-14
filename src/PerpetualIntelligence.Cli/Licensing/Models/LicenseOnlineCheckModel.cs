@@ -16,6 +16,12 @@ namespace PerpetualIntelligence.Cli.Licensing.Models
     public class LicenseOnlineCheckModel
     {
         /// <summary>
+        /// The Authorized application. This is also one of the <c>auth_apps</c> claim value.
+        /// </summary>
+        [JsonPropertyName("authorized_application")]
+        public string AuthorizedApplication { get; set; } = null!;
+
+        /// <summary>
         /// The Authorized party. This is also the <c>azp</c> claim.
         /// </summary>
         [JsonPropertyName("authorized_party")]

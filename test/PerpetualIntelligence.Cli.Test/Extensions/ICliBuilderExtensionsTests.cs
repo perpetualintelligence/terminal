@@ -126,22 +126,26 @@ namespace PerpetualIntelligence.Cli.Extensions
             var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
             Assert.IsFalse(cmd.IsGroup);
             Assert.IsFalse(cmd.IsRoot);
+            Assert.IsFalse(cmd.IsProtected);
 
             cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: false);
             Assert.IsTrue(cmd.IsGroup);
             Assert.IsFalse(cmd.IsRoot);
+            Assert.IsFalse(cmd.IsProtected);
         }
 
         [TestMethod]
-        public void AddCommandDescriptorWithGroupAndRootShouldNotError()
+        public void AddCommandDescriptorWithSpecialAnnotationsShouldNotError()
         {
             var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
             Assert.IsFalse(cmd.IsGroup);
             Assert.IsFalse(cmd.IsRoot);
+            Assert.IsFalse(cmd.IsProtected);
 
-            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: true);
+            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: true, isProtected:true);
             Assert.IsTrue(cmd.IsGroup);
             Assert.IsTrue(cmd.IsRoot);
+            Assert.IsTrue(cmd.IsProtected);
         }
 
         [TestMethod]

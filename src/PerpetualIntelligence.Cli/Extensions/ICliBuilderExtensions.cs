@@ -7,6 +7,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Graph;
+using PerpetualIntelligence.Cli.Authentication;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Comparers;
@@ -26,6 +28,7 @@ using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Net.Http;
+using System.Threading;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
@@ -49,6 +52,44 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
+        /// Adds authentication to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="name">The HTTP client name.</param>
+        /// <param name="baseAddress">The HTTP base address. Specify <c>null</c> for no specific well known base address.</param>
+        /// <param name="timeout">
+        /// The HTTP request timeout in milliseconds. Defaults to <c>2</c> minutes or <c>120000</c> milliseconds. We
+        /// recommend a timeout of at least a few minutes, to take into account cases where the user is prompted to
+        /// change password or perform 2FA.
+        /// </param>
+        /// <typeparam name="TProvider">The authentication provider.</typeparam>
+        /// <typeparam name="TAppFactory">The authentication application factory.</typeparam>
+        /// <typeparam name="TAppCache">The authentication application cache.</typeparam>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <remarks>
+        /// Use <see cref="ClientCrossPlatformNoTokenCache"/> if your application does not require token caching.
+        /// </remarks>
+        public static ICliBuilder AddAuthentication<TProvider, TAppFactory, TAppCache>(this ICliBuilder builder, string name, string? baseAddress = null, int? timeout = 120000) where TProvider : class, IAuthenticationProvider where TAppFactory : class, IMsalPublicClientApplicationFactory where TAppCache : class, IClientCrossPlatformTokenCache
+        {
+            builder.Services.AddSingleton<IAuthenticationProvider, TProvider>();
+
+            builder.Services.AddSingleton<IMsalPublicClientApplicationFactory, TAppFactory>();
+
+            builder.Services.AddSingleton<IClientCrossPlatformTokenCache, TAppCache>();
+
+            builder.Services.AddSingleton<AuthenticationDelegateHandler>();
+
+            // Configure to call the authority
+            builder.Services.AddHttpClient(name, client =>
+          {
+              client.BaseAddress = (baseAddress != null) ? new Uri(baseAddress) : null;
+              client.Timeout = (timeout == null) ? Timeout.InfiniteTimeSpan : TimeSpan.FromMilliseconds(timeout.GetValueOrDefault());
+          }).AddHttpMessageHandler<AuthenticationDelegateHandler>();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the <see cref="CliOptions"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -68,10 +109,11 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="commandDescriptor">The command descriptor.</param>
         /// <param name="isGroup"><c>true</c> if the descriptor represents a command group; otherwise, <c>false</c>.</param>
         /// <param name="isRoot"><c>true</c> if the descriptor represents a command root; otherwise, <c>false</c>.</param>
+        /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddDescriptor<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor, bool isGroup = false, bool isRoot = false) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
+        public static ICliBuilder AddDescriptor<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
         {
             if (isRoot && !isGroup)
             {
@@ -88,9 +130,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             commandDescriptor._checker = typeof(TChecker);
             builder.Services.AddSingleton(commandDescriptor);
 
-            // Root or group
+            // Special annotations
             commandDescriptor._isRoot = isRoot;
             commandDescriptor._isGroup = isGroup;
+            commandDescriptor._isProtected = isProtected;
 
             // Add command runner
             builder.Services.AddTransient<TRunner>();

@@ -24,6 +24,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             LicensingOptions options = new();
 
+            Assert.IsNull(options.AuthorizedApplicationId);
             Assert.AreEqual(SaaSCheckModes.Online, options.CheckMode);
             Assert.IsNull(options.ConsumerTenantId);
             Assert.IsNull(options.HttpClientName);

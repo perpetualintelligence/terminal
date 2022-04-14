@@ -17,12 +17,12 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The <c>lic</c> command displays the current licensing information.
     /// </summary>
-    public class LicRunner : ICommandRunner
+    public class LicInfoRunner : ICommandRunner
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public LicRunner(ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
+        public LicInfoRunner(ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
         {
             this.licenseExractor = licenseExractor;
             this.licenseChecker = licenseChecker;

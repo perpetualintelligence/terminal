@@ -94,6 +94,12 @@ namespace PerpetualIntelligence.Cli.Licensing
 
         private async Task<License> ExtractFromJsonAsync()
         {
+            // Missing app id
+            if (string.IsNullOrWhiteSpace(cliOptions.Licensing.AuthorizedApplicationId))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
+            }
+
             // Missing key
             if (string.IsNullOrWhiteSpace(cliOptions.Licensing.LicenseKey))
             {
@@ -135,6 +141,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseOnlineCheckModel checkModel = new()
             {
+                AuthorizedApplication = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = jsonFileModel.AuthorizedParty,
                 ConsumerObjectId = jsonFileModel.ConsumerObjectId,
                 ConsumerTenantId = jsonFileModel.ConsumerTenantId,
@@ -172,10 +179,10 @@ namespace PerpetualIntelligence.Cli.Licensing
                 }
 
                 // Make sure the acr contains the
-                string[] acrValues = claims.Acr.SplitBySpace();
+                string[] acrValues = claims.AcrValues.SplitBySpace();
                 if (acrValues.Length < 3)
                 {
-                    throw new ErrorException(Errors.InvalidLicense, "The acr values are not valid. acr={0}", claims.Acr);
+                    throw new ErrorException(Errors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
                 }
 
                 string plan = acrValues[0];

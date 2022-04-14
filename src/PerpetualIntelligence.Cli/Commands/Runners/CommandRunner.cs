@@ -16,6 +16,11 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// </summary>
     public abstract class CommandRunner : ICommandRunner
     {
+        /// <summary>
+        /// The configuration options.
+        /// </summary>
+        public CliOptions Options { get; }
+
         /// <inheritdoc/>
         public abstract Task<CommandRunnerResult> RunAsync(CommandRunnerContext context);
 
@@ -26,18 +31,13 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// <param name="logger">The logger.</param>
         protected CommandRunner(CliOptions options, ILogger logger)
         {
-            this.logger = logger;
-            this.options = options;
+            Options = options;
+            Logger = logger;
         }
 
         /// <summary>
-        /// The logger.
+        /// The command runner logger.
         /// </summary>
-        protected ILogger logger;
-
-        /// <summary>
-        /// The configuration options.
-        /// </summary>
-        protected CliOptions options;
+        protected ILogger Logger { get; }
     }
 }

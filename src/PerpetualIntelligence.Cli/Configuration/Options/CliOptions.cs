@@ -13,6 +13,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class CliOptions
     {
         /// <summary>
+        /// The authentication configuration options.
+        /// </summary>
+        public AuthenticationOptions Authentication { get; set; } = new AuthenticationOptions();
+
+        /// <summary>
         /// The checker configuration options.
         /// </summary>
         public CheckerOptions Checker { get; set; } = new CheckerOptions();
@@ -26,6 +31,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The hosting configuration options.
         /// </summary>
         public HostingOptions Hosting { get; set; } = new HostingOptions();
+
+        /// <summary>
+        /// The HTTP configuration options.
+        /// </summary>
+        public HttpOptions Http { get; set; } = new HttpOptions();
 
         /// <summary>
         /// The licensing configuration options.

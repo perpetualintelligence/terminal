@@ -21,13 +21,15 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         [TestMethod]
         public void CliOptionsShouldHaveCorrectDefaultValues()
         {
-            CliOptions options = new ();
+            CliOptions options = new();
 
+            Assert.IsNotNull(options.Authentication);
             Assert.IsNotNull(options.Checker);
             Assert.IsNotNull(options.Extractor);
             Assert.IsNotNull(options.Logging);
             Assert.IsNotNull(options.Hosting);
             Assert.IsNotNull(options.Licensing);
+            Assert.IsNotNull(options.Http);
         }
     }
 }

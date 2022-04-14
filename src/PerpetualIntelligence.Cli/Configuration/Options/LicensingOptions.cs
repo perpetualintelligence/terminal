@@ -16,6 +16,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class LicensingOptions
     {
         /// <summary>
+        /// The license authorized application id.
+        /// </summary>
+        public string? AuthorizedApplicationId { get; set; }
+
+        /// <summary>
         /// The license check mode. Defaults to <see cref="SaaSCheckModes.Online"/>.
         /// </summary>
         public string CheckMode { get; set; } = SaaSCheckModes.Online;
