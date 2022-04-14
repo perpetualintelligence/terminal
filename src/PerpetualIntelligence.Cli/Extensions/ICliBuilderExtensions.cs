@@ -65,11 +65,12 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TProvider">The authentication provider.</typeparam>
         /// <typeparam name="TAppFactory">The authentication application factory.</typeparam>
         /// <typeparam name="TAppCache">The authentication application cache.</typeparam>
+        /// <typeparam name="TDelegateHandler">The authentication application delegate handler.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
         /// <remarks>
         /// Use <see cref="ClientCrossPlatformNoTokenCache"/> if your application does not require token caching.
         /// </remarks>
-        public static ICliBuilder AddAuthentication<TProvider, TAppFactory, TAppCache>(this ICliBuilder builder, string name, string? baseAddress = null, int? timeout = 120000) where TProvider : class, IAuthenticationProvider where TAppFactory : class, IMsalPublicClientApplicationFactory where TAppCache : class, IClientCrossPlatformTokenCache
+        public static ICliBuilder AddAuthentication<TProvider, TAppFactory, TAppCache, TDelegateHandler>(this ICliBuilder builder, string name, string? baseAddress = null, int? timeout = 120000) where TProvider : class, IAuthenticationProvider where TAppFactory : class, IMsalPublicClientApplicationFactory where TAppCache : class, IClientCrossPlatformTokenCache where TDelegateHandler : DelegatingHandler
         {
             builder.Services.AddSingleton<IAuthenticationProvider, TProvider>();
 
@@ -77,14 +78,14 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             builder.Services.AddSingleton<IClientCrossPlatformTokenCache, TAppCache>();
 
-            builder.Services.AddSingleton<AuthenticationDelegateHandler>();
+            builder.Services.AddSingleton<TDelegateHandler>();
 
             // Configure to call the authority
             builder.Services.AddHttpClient(name, client =>
           {
               client.BaseAddress = (baseAddress != null) ? new Uri(baseAddress) : null;
               client.Timeout = (timeout == null) ? Timeout.InfiniteTimeSpan : TimeSpan.FromMilliseconds(timeout.GetValueOrDefault());
-          }).AddHttpMessageHandler<AuthenticationDelegateHandler>();
+          }).AddHttpMessageHandler<TDelegateHandler>();
 
             return builder;
         }

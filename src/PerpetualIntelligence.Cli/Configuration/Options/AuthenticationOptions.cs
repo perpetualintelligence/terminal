@@ -31,9 +31,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string? HttpClientName { get; set; }
 
         /// <summary>
-        /// The authentication redirect URI.
+        /// The authentication redirect URI. Defaults to <c>http://localhost</c>.
         /// </summary>
-        public string? RedirectUri { get; set; }
+        /// <seealso href="https://github.com/AzureAD/microsoft-authentication-extensions-for-dotnet/wiki/Cross-platform-Token-Cache"/>
+        /// <seealso href="https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-net-token-cache-serialization?tabs=desktop"/>
+        public string RedirectUri { get; set; } = "http://localhost";
 
         /// <summary>
         /// The authentication scopes.
@@ -44,5 +46,10 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The authentication tenant identifier.
         /// </summary>
         public string? TenantId { get; set; }
+
+        /// <summary>
+        /// Specifies if the public client application should used an embedded web browser or the system default browser.
+        /// </summary>
+        public bool? UseEmbeddedView { get; set; }
     }
 }

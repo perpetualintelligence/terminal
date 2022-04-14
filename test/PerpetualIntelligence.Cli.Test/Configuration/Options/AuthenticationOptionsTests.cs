@@ -27,7 +27,9 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             Assert.IsNull(options.ApplicationId);
             Assert.IsNull(options.TenantId);
             Assert.IsNull(options.HttpClientName);
+            Assert.AreEqual("http://localhost", options.RedirectUri);
             Assert.IsNull(options.Scopes);
+            Assert.IsFalse(options.UseEmbeddedView.GetValueOrDefault());
         }
     }
 }

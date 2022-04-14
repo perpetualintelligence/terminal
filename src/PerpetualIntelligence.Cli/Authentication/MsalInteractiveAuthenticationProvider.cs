@@ -63,6 +63,7 @@ namespace PerpetualIntelligence.Cli.Authentication
             catch (MsalUiRequiredException)
             {
                 result = await publicClientApplication.AcquireTokenInteractive(cliOptions.Authentication.Scopes)
+                                                      .WithUseEmbeddedWebView(cliOptions.Authentication.UseEmbeddedView.GetValueOrDefault())
                                                       .ExecuteAsync();
             }
 
