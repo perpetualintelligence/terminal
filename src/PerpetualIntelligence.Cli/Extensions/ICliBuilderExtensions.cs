@@ -78,7 +78,8 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             builder.Services.AddSingleton<IClientCrossPlatformTokenCache, TAppCache>();
 
-            builder.Services.AddSingleton<TDelegateHandler>();
+            // TDelegateHandler cannot be singleton.
+            builder.Services.AddScoped<TDelegateHandler>();
 
             // Configure to call the authority
             builder.Services.AddHttpClient(name, client =>
