@@ -117,7 +117,7 @@ namespace PerpetualIntelligence.Cli.Commands
         {
             if (Arguments == null)
             {
-                throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. argument={1}", id);
+                throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. argument={0}", id);
             }
 
             return Arguments.GetValue<TValue>(id);

@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd);
 
             // Again
-            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd), Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection.");
+            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd), Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection. command_id=id1 command_name=name1");
         }
 
         [TestMethod]

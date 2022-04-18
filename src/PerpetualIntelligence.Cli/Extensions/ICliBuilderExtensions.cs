@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             if (commandDescriptor._runner != null || commandDescriptor._checker != null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection.");
+                throw new ErrorException(Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
             }
 
             // Add the command descriptor as a singleton. Set the runner and checker as transient. These are internal fields.
