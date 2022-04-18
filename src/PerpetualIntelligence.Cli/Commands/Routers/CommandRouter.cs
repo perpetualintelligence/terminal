@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             Licensing.License? license = await licenseExtractor.GetLicenseAsync();
             if (license == null)
             {
-                throw new ErrorException(Errors.InvalidLicense, "The license is not yet extracted. Please ensure you use the CLI hosted service. service={0}", typeof(CliHostedService).FullName);
+                throw new ErrorException(Errors.InvalidLicense, "The license is not extracted or license is not valid. Please ensure you use the CLI hosted service. service={0}", typeof(CliHostedService).FullName);
             }
 
             // Extract the command

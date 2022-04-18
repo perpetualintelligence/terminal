@@ -10,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
-
 using PerpetualIntelligence.Shared.Attributes;
 using System;
 using System.Threading;
