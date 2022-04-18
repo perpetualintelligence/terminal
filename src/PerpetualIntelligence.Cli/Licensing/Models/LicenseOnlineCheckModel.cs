@@ -18,8 +18,8 @@ namespace PerpetualIntelligence.Cli.Licensing.Models
         /// <summary>
         /// The Authorized application. This is also one of the <c>auth_apps</c> claim value.
         /// </summary>
-        [JsonPropertyName("authorized_application")]
-        public string AuthorizedApplication { get; set; } = null!;
+        [JsonPropertyName("authorized_application_id")]
+        public string AuthorizedApplicationId { get; set; } = null!;
 
         /// <summary>
         /// The Authorized party. This is also the <c>azp</c> claim.
