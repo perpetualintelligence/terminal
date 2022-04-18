@@ -1,18 +1,12 @@
 [![build-test-cross-manual](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml)
-[![build-test-cross-manual](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml)
+[![build-test-publish](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml)
 [![delete-packages](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml)
 
 ![macOS](https://img.shields.io/badge/macOS-Catalina%2010.15-blue?style=flat-square&logo=macos)
 ![ubuntu](https://img.shields.io/badge/linux-ubuntu--20.04-blue?style=flat-square&logo=ubuntu)
 ![windows](https://img.shields.io/badge/windows-2019-blue?style=flat-square&logo=windows)
 
-> **Note:** This is an ***alpha*** release, not ready for production usage. It is also subject to design changes without any advance notice.
-
-# STOP
-
-> ***BEFORE MAKING THE REPO PUBLIC, UPDATE THE CICD PIPELINES TO USE THE ORGANIZATION SECRETS. CURRENTLY, WE DEFINE THEM IN THE cli REPO BECAUSE FREE TIER DOES NOT ALLOW ORG SECRETS FOR PRIVATE REPO.***
-> 
-> ***DELETE THE REPO SECRETS AND USE THE ORG SECRETS WHEN THIS REPO IS PUBLIC OR UPDATED TO PREMIUM.***
+> **Note:** This is a ***preview*** release. It is also subject to design changes without any advance notice.
 
 ## Introduction
 
@@ -24,9 +18,6 @@ We track the [issues and tasks](https://github.com/perpetualintelligence/cli/iss
 
 This project has adopted the code of conduct defined by the Contributor Covenant to clarify expected behavior in our community.
 See the [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_OF_CONDUCT.html).
-
-## Environment
-- [github-release](https://github.com/perpetualintelligence/cli/deployments/activity_log?environment=github-release): Tracks the release to publish the packages to [Nuget](https://www.nuget.org/profiles/perpetualintelligencellc) and [GitHub](https://github.com/orgs/perpetualintelligence/packages?repo_name=cli).
 
 ## Build
 
