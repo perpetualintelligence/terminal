@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = "D:\\lic\\path_does_exist\\invalid.lic";
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_source=urn:oneimlx:lic:ksource:jsonfile");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file=D:\\lic\\path_does_exist\\invalid.lic");
         }
 
         [Fact]

@@ -109,7 +109,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Key not a file
             if (!File.Exists(cliOptions.Licensing.LicenseKey))
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_source={0}", cliOptions.Licensing.KeySource);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file={0}", cliOptions.Licensing.LicenseKey);
             }
 
             // For now we only support the online check
