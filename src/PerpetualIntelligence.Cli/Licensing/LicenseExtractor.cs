@@ -152,7 +152,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             };
 
             var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
-            using (HttpResponseMessage response = await httpClient.PostAsync("licensing/b2bjwskeycheck", checkContent))
+            using (HttpResponseMessage response = await httpClient.PostAsync("licensing/check", checkContent))
             {
                 if (!response.IsSuccessStatusCode)
                 {
