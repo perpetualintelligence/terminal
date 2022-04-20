@@ -14,10 +14,16 @@
     <Import Project="Package.props" />
 
     <!-- 
-        Apache 2.0 License.
+        Perpetual Intelligence License without extension
+        https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-a-license-expression-or-a-license-file
+        https://github.com/NuGet/docs.microsoft.com-nuget/issues/1228
     -->
     <PropertyGroup>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\LICENSE" Pack="true" PackagePath=""/>
+    </ItemGroup>
 
 </Project>

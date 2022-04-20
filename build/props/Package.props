@@ -19,7 +19,7 @@
         <Authors>Perpetual Intelligence</Authors>
         <Company>Perpetual Intelligence L.L.C.</Company>
         <Product>pi-cli</Product>
-        <PackageProjectUrl>https://github.com/perpetualintelligence/cli</PackageProjectUrl>
+        <PackageProjectUrl>https://perpetualintelligence.com</PackageProjectUrl>
         <RepositoryUrl>https://github.com/perpetualintelligence/cli</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
