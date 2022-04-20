@@ -8,7 +8,18 @@
         <Configurations>Debug;Release</Configurations>
     </PropertyGroup>
 
-    <Import Project="..\..\build\props\PackageLicense.props" />
+    <!-- 
+        Perpetual Intelligence License without extension
+        https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-a-license-expression-or-a-license-file
+        https://github.com/NuGet/docs.microsoft.com-nuget/issues/1228
+    -->
+    <Import Project="..\..\build\props\Package.props" />
+    <PropertyGroup>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="..\LICENSE" Pack="true" PackagePath=""/>
+    </ItemGroup>
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
