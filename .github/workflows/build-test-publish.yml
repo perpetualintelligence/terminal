@@ -108,7 +108,7 @@ jobs:
     
     # Print all env and directory
     - name: Print
-      if: ${{ false }}  # Debug
+      if: ${{ true }}  # Debug
       run: |
         env
         ls -R
