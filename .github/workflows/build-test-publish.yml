@@ -53,6 +53,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    # Print directory
+    - name: Print
+      if: ${{ true }}  # Debug
+      run: ls -R
+      shell: bash
+
     # Read env    
     - name: Read Env
       run: cat .github/package_version.env >> $GITHUB_ENV                
