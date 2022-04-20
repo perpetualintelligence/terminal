@@ -253,7 +253,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             foreach (var argString in argumentStrings)
             {
                 // We capture all the argument extraction errors
-                TryResultOrError<ArgumentExtractorResult> tryResult = await SharedHelper.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(argString, commandDescriptor));
+                TryResultOrError<ArgumentExtractorResult> tryResult = await InfraHelper.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(argString, commandDescriptor));
                 if (tryResult.Error != null)
                 {
                     errors.Add(tryResult.Error);
@@ -320,7 +320,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     nextAliasPos = raw.IndexOf(argAliasSplit, currentPos, stringComparer.Comparison);
 
                     // Since this is the first iteration the minimum can be 0
-                    nextIdx = SharedHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
+                    nextIdx = InfraHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
 
                     // If the min positive is the nextAliasPos then the next argument is identified by alias. If there
                     // is a conflict we give preference to argument id not alias.
@@ -341,7 +341,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 {
                     // Min positive
                     // TODO: Improve performance
-                    nextIdx = SharedHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
+                    nextIdx = InfraHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
 
                     // If the min positive is the nextAliasPos then the next argument is identified by alias. If there
                     // is a conflict we give preference to argument id not alias.

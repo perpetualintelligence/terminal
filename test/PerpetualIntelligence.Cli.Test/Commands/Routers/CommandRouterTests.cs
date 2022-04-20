@@ -107,7 +107,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             CommandRouterContext routerContext = new("test_command_string");
             var result = await router.TryFindHandlerAsync(routerContext);
 
-            Assert.IsFalse(result.IsError);
+            Assert.IsNull(result.Error);
             Assert.IsNotNull(result.Result);
             Assert.IsInstanceOfType(result.Result, typeof(MockCommandHandlerInner));
             Assert.IsTrue(ReferenceEquals(commandHandler, result.Result));
