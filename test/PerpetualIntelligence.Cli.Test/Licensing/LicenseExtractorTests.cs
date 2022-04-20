@@ -53,7 +53,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.ProviderId = SaaSProviders.PerpetualIntelligence;
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.UnauthorizedAccess, "The application is not authorized. application_id=invalid_app");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.UnauthorizedAccess, "The application is not authorized. application_id=invalid_auth_app");
         }
 
         [Fact]
