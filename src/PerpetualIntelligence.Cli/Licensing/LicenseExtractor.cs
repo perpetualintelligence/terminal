@@ -141,7 +141,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseOnlineCheckModel checkModel = new()
             {
-                AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId,
+                AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = jsonFileModel.AuthorizedParty,
                 ConsumerObjectId = jsonFileModel.ConsumerObjectId,
                 ConsumerTenantId = jsonFileModel.ConsumerTenantId,
