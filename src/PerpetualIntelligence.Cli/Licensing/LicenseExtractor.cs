@@ -7,7 +7,6 @@
 
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Extensions;
-using PerpetualIntelligence.Cli.Licensing.Models;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Protocols.Licensing.Models;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -139,7 +138,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             HttpClient httpClient = EnsureHttpClient();
 
             // Check JWS signed assertion (JWS key)
-            LicenseOnlineCheckModel checkModel = new()
+            LicenseCheckModel checkModel = new()
             {
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = jsonFileModel.AuthorizedParty,
@@ -148,7 +147,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 Key = jsonFileModel.Key,
                 KeyType = jsonFileModel.KeyType,
                 ProviderTenantId = await licenseProviderResolver.ResolveAsync(jsonFileModel.ProviderId),
-                Subject = jsonFileModel.Subject,
+                Subject = jsonFileModel.Subject
             };
 
             var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
