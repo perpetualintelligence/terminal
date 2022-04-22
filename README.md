@@ -8,7 +8,7 @@
 
 > **Note:** This is a ***preview*** release. It is also subject to design changes without any advance notice.
 
-# Introduction
+# pi-cli
 "pi-cli" is the Perpetual Intelligence's cross-platform framework for building command-line systems or CLI applications in the .NET ecosystem. Create CLIs with a few flags or advanced CLIs with organization commands, command groups, and subcommands. "pi-cli" makes it easy to build CLIs for your company, service, or development and testing needs.
 
 Use .NET Core, dependency injection, and options pattern to build a modern and secured CLI applications, configure your server, provide your self-hosting implementations for stores and host in an environment of your choice, e.g., Windows, Linux, Docker, Kubernetes, etc.
