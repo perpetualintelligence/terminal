@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// An immutable <c>cli</c> command string.
+    /// An immutable <c>pi-cli</c> command string.
     /// </summary>
     public sealed class CommandString
     {

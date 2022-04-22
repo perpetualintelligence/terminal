@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Licensing
 {
     /// <summary>
-    /// The default <see cref="ILicenseChecker"/> for all <c>cli</c> features.
+    /// The default <see cref="ILicenseChecker"/> for all <c>pi-cli</c> features.
     /// </summary>
     public sealed class LicenseChecker : ILicenseChecker
     {

@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The default handler to handle a <c>cli</c> command request routed from a <see cref="CommandRouter"/>.
+    /// The default handler to handle a <c>pi-cli</c> command request routed from a <see cref="CommandRouter"/>.
     /// </summary>
     public sealed class CommandHandler : ICommandHandler
     {

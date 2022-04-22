@@ -11,7 +11,7 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Comparers
 {
     /// <summary>
-    /// The default <see cref="StringComparison"/> based <see cref="IStringComparer"/> to compare the <c>cli</c> command
+    /// The default <see cref="StringComparison"/> based <see cref="IStringComparer"/> to compare the <c>pi-cli</c> command
     /// strings, argument strings and argument values.
     /// </summary>
     public class StringComparisonComparer : IStringComparer

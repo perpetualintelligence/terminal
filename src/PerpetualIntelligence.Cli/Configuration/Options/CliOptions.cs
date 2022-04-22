@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     /// <summary>
-    /// The <c>cli</c> configuration options.
+    /// The <c>pi-cli</c> configuration options.
     /// </summary>
     public class CliOptions
     {

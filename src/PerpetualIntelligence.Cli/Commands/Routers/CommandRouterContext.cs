@@ -10,7 +10,7 @@ using System.Threading;
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     /// <summary>
-    /// The <c>cli</c> generic command router context.
+    /// The <c>pi-cli</c> generic command router context.
     /// </summary>
     public class CommandRouterContext
     {

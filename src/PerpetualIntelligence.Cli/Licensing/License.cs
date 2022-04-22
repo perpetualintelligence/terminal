@@ -10,7 +10,7 @@ using PerpetualIntelligence.Protocols.Licensing.Models;
 namespace PerpetualIntelligence.Cli.Licensing
 {
     /// <summary>
-    /// A <c>cli</c> license.
+    /// A <c>pi-cli</c> license.
     /// </summary>
     public sealed class License : System.ComponentModel.License
     {

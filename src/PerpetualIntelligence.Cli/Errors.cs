@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Cli
 {
     /// <summary>
-    /// The errors for the Perpetual Intelligence's <c>cli</c> framework.
+    /// The errors for the Perpetual Intelligence's <c>pi-cli</c> framework.
     /// </summary>
     public static class Errors
     {

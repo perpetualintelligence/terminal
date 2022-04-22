@@ -13,7 +13,7 @@ using System.Text.Json.Serialization;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// A <c>cli</c> command argument.
+    /// A <c>pi-cli</c> command argument.
     /// </summary>
     /// <remarks>
     /// <para>

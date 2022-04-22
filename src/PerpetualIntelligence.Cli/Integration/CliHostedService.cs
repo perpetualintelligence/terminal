@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Integration
 {
     /// <summary>
-    /// The <c>cli</c> hosted service to manage the application lifetime.
+    /// The <c>pi-cli</c> hosted service to manage the application lifetime.
     /// </summary>
     public class CliHostedService : IHostedService
     {

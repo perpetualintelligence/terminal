@@ -16,7 +16,7 @@ using System.Runtime.CompilerServices;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// An immutable <c>cli</c> command description.
+    /// Described or defines a <c>pi-cli</c> command.
     /// </summary>
     /// <remarks>
     /// The <see cref="CommandDescriptor"/> defines <see cref="Command"/> identity and its supported
@@ -99,15 +99,14 @@ namespace PerpetualIntelligence.Cli.Commands
         public bool IsGroup => _isGroup;
 
         /// <summary>
-        /// Returns <c>true</c> if this descriptor represents a command root; otherwise, <c>false</c>.
-        /// </summary>
-        public bool IsRoot => _isRoot;
-
-
-        /// <summary>
         /// Returns <c>true</c> if this descriptor represents a protected command; otherwise, <c>false</c>.
         /// </summary>
         public bool IsProtected => _isProtected;
+
+        /// <summary>
+        /// Returns <c>true</c> if this descriptor represents a command root; otherwise, <c>false</c>.
+        /// </summary>
+        public bool IsRoot => _isRoot;
 
         /// <summary>
         /// The command name.
@@ -166,10 +165,10 @@ namespace PerpetualIntelligence.Cli.Commands
         internal bool _isGroup { get; set; }
 
         [InternalInfrastructure]
-        internal bool _isRoot { get; set; }
+        internal bool _isProtected { get; set; }
 
         [InternalInfrastructure]
-        internal bool _isProtected { get; set; }
+        internal bool _isRoot { get; set; }
 
         [InternalInfrastructure]
         internal Type? _runner { get; set; }

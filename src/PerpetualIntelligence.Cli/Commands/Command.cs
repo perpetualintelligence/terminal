@@ -13,7 +13,7 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// An immutable <c>cli</c> command.
+    /// An immutable <c>pi-cli</c> command.
     /// </summary>
     /// <seealso cref="Argument"/>
     public sealed class Command

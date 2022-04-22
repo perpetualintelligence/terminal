@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Cli.Extensions
     public static class IServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the core <c>cli</c> services.
+        /// Adds the core <c>pi-cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="setupAction">The setup action.</param>
@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the core <c>cli</c> services.
+        /// Adds the core <c>pi-cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the core <c>cli</c> services.
+        /// Adds the core <c>pi-cli</c> services.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <returns>The configured <see cref="ICliBuilder"/> instance.</returns>
