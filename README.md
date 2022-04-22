@@ -27,5 +27,3 @@ See the [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_
 
 # Documentation
 The documentation and code samples are hosted in our [docs](https://github.com/perpetualintelligence/docs) repository.
-
-# Support
