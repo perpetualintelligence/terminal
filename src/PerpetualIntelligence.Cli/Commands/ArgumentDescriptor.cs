@@ -13,14 +13,12 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// Describes an <see cref="Argument"/>.
+    /// The <see cref="ArgumentDescriptor"/> class defines the command argument identity, data type, and data validation
+    /// behavior. We also refer to arguments as command options or command flags.
     /// </summary>
-    /// <remarks>
-    /// The <see cref="ArgumentDescriptor"/> defines <see cref="Argument"/> identity, data type and data validation. The
-    /// <see cref="Argument"/> is a runtime validated representation of an actual argument and its value passed by a
-    /// user or an application.
-    /// </remarks>
     /// <seealso cref="Argument"/>
+    /// <seealso cref="CommandString"/>
+    /// <seealso cref="CommandDescriptor"/>
     public sealed class ArgumentDescriptor
     {
         /// <summary>

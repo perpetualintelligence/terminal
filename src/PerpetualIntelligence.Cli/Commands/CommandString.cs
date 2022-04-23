@@ -5,16 +5,20 @@
     https://terms.perpetualintelligence.com
 */
 
+using System.Text.Json.Serialization;
+
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// An immutable <c>pi-cli</c> command string.
+    /// An immutable unicode textual form representing the command and its arguments or options that a user or an
+    /// application wants to execute.
     /// </summary>
     public sealed class CommandString
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
+        [JsonConstructor]
         public CommandString(string raw)
         {
             if (string.IsNullOrWhiteSpace(raw))
@@ -26,8 +30,9 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// The command raw string value.
+        /// The command string raw value.
         /// </summary>
+        [JsonPropertyName("raw")]
         public string Raw { get; }
     }
 }

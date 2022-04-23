@@ -6,6 +6,7 @@
 */
 
 using PerpetualIntelligence.Cli.Commands.Extractors;
+using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Shared.Attributes;
 using System;
 using System.Collections.Generic;
@@ -16,15 +17,13 @@ using System.Runtime.CompilerServices;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// Described or defines a <c>pi-cli</c> command.
+    /// The <see cref="CommandDescriptor"/> defines the command identity and its supported arguments that an end-user or
+    /// an application can use. You can also describe the command behavior, such as whether the command is a root,
+    /// grouped, or subcommand.
     /// </summary>
-    /// <remarks>
-    /// The <see cref="CommandDescriptor"/> defines <see cref="Command"/> identity and its supported
-    /// <see cref="Argument"/>. The <see cref="Command"/> is a runtime validated representation of an actual command and
-    /// its argument values passed by a user or an application.
-    /// </remarks>
     /// <seealso cref="Command"/>
     /// <seealso cref="ArgumentDescriptor"/>
+    /// <seealso cref="ICliBuilderExtensions.AddDescriptor{TRunner, TChecker}(Integration.ICliBuilder, CommandDescriptor, bool, bool, bool)"/>
     public sealed class CommandDescriptor
     {
         /// <summary>

@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Integration
 {
     /// <summary>
-    /// The <c>pi-cli</c> hosted service to manage the application lifetime.
+    /// The <c>pi-cli</c> hosted service to manage the application lifetime and terminal customization.
     /// </summary>
     public class CliHostedService : IHostedService
     {
@@ -44,22 +44,20 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         /// <summary>
-        /// Starts the cli hosted service.
+        /// Starts the <c>pi-cli</c> hosted service asynchronously.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            // Register Application Lifetime events
+            await RegisterHostApplicationEventsAsync(hostApplicationLifetime);
+
             // Print Header
             await PrintHostApplicationHeaderAsync();
 
-            // Register Application Lifetime events
-            await RegisterHostApplicationEventsAsync(hostApplicationLifetime);           
-
             try
             {
-                // We catch the exception to avoid unhandeled fatal exception.
-                // License extraction
+                // We catch the exception to avoid unhandeled fatal exception. License extraction
                 LicenseExtractorResult result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
                 await PrintHostApplicationLicensingAsync(result.License);
 
@@ -76,15 +74,16 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         /// <summary>
+        /// Stops the <c>pi-cli</c> hosted service asynchronously.
         /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
         /// <summary>
+        /// Triggered when the <c>pi-cli</c> application host has fully started.
         /// </summary>
         protected virtual void OnStarted()
         {
@@ -93,6 +92,8 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         /// <summary>
+        /// Triggered when the <c>pi-cli</c> application host has completed a graceful shutdown. The application will
+        /// not exit until all callbacks registered on this token have completed.
         /// </summary>
         protected virtual void OnStopped()
         {
@@ -100,6 +101,8 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         /// <summary>
+        /// Triggered when the <c>pi-cli</c> application host is starting a graceful shutdown. Shutdown will block until
+        /// all callbacks registered on this token have completed.
         /// </summary>
         protected virtual void OnStopping()
         {
@@ -131,7 +134,7 @@ namespace PerpetualIntelligence.Cli.Integration
             // Print the license information
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"consumer={license.Claims.Name} ({license.Claims.TenantId})");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"country={license.Claims.TenantCountry}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"subject={cliOptions.Licensing.Subject}");            
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"subject={cliOptions.Licensing.Subject}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"check={license.CheckMode}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Green, $"edition={license.Plan}");
@@ -146,11 +149,22 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         /// <summary>
+        /// Allows the application to register its custom <see cref="IHostApplicationLifetime"/> events.
+        /// </summary>
+        protected virtual Task RegisterHostApplicationEventsAsync(IHostApplicationLifetime hostApplicationLifetime)
+        {
+            hostApplicationLifetime.ApplicationStarted.Register(OnStarted);
+            hostApplicationLifetime.ApplicationStopping.Register(OnStopping);
+            hostApplicationLifetime.ApplicationStopped.Register(OnStopped);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// This method prints the mandatory licensing details. Applications cannot customize or change the mandatory
         /// licensing information, but they can print additional custom information with <see cref="PrintHostApplicationLicensingAsync(License)"/>.
         /// </summary>
         /// <param name="license">The extracted license.</param>
-        protected Task PrintHostApplicationMandatoryLicensingAsync(License license)
+        private Task PrintHostApplicationMandatoryLicensingAsync(License license)
         {
             if (license.Plan == SaaSPlans.Community)
             {
@@ -167,23 +181,11 @@ namespace PerpetualIntelligence.Cli.Integration
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Allows the application to register its custom <see cref="IHostApplicationLifetime"/> events.
-        /// </summary>
-        protected virtual Task RegisterHostApplicationEventsAsync(IHostApplicationLifetime hostApplicationLifetime)
-        {
-            // Print Header
-            hostApplicationLifetime.ApplicationStarted.Register(OnStarted);
-            hostApplicationLifetime.ApplicationStopping.Register(OnStopping);
-            hostApplicationLifetime.ApplicationStopped.Register(OnStopped);
-            return Task.CompletedTask;
-        }
-
         private readonly CliOptions cliOptions;
         private readonly IHost host;
         private readonly IHostApplicationLifetime hostApplicationLifetime;
-        private readonly ILicenseExtractor licenseExtractor;
         private readonly ILicenseChecker licenseChecker;
+        private readonly ILicenseExtractor licenseExtractor;
         private readonly ILogger<CliHostedService> logger;
     }
 }

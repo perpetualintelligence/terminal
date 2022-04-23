@@ -13,7 +13,8 @@ using System.Text.Json.Serialization;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// A <c>pi-cli</c> command argument.
+    /// The <see cref="Argument"/> class is a runtime validated representation of an actual command argument and its
+    /// value passed by a user or an application.
     /// </summary>
     /// <remarks>
     /// <para>

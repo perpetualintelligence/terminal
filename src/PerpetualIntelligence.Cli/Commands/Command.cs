@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com
 */
 
-
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Collections.Generic;
@@ -13,9 +12,14 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// An immutable <c>pi-cli</c> command.
+    /// An immutable <c>pi-cli</c> command. A command is a specific action or a set of actions that a user or an
+    /// application requests the underlying system to perform. It can be a simple action such as invoking a system
+    /// method or an OS command or representing a complex operation that calls a set of protected APIs over the internal
+    /// or external network. A command can virtually do anything in the context of your application or service.
     /// </summary>
+    /// <seealso cref="CommandDescriptor"/>
     /// <seealso cref="Argument"/>
+    /// <seealso cref="Arguments"/>
     public sealed class Command
     {
         /// <summary>
