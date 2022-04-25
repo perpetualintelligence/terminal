@@ -9,4 +9,4 @@ Use .NET Core, dependency injection, and options pattern to build a modern and s
 
 ***In short, if what you want to achieve is doable in the .NET ecosystem, it is possible with `pi-cli`.***
 
-For more information see our [documentation](https://docs.perpetualintelligence.com/articles/pi-cli/framework.html) or the GitHub [repo](https://github.com/perpetualintelligence/cli).
+For more information see our [documentation](http://localhost:8080/articles/pi-cli/intro.html) or the GitHub [repo](https://github.com/perpetualintelligence/cli).
