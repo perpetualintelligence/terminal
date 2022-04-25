@@ -34,4 +34,6 @@ The documentation and code samples are hosted in our [docs](https://github.com/p
 
 # License and Pricing
 
-> _**See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html) and [pricing](pricing.md) **_.
+**See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html) and [pricing](https://docs.perpetualintelligence.com/articles/pi-cli/pricing.html)**.
+
+> Our community edition is free for educational, research and development, and non-commercial usage. **You must have a commercial license to use the service in a non-educational or production environment.**
