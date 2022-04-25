@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions = MockCliOptions.New();
             commandDescriptors = MockCommands.LicensingCommands;
             licenseChecker = new LicenseChecker(commandDescriptors, cliOptions, TestLogger.Create<LicenseChecker>());
-            license = new License("testProviderId2", SaaSCheckModes.Offline, SaaSPlans.ISVU, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(SaaSPlans.ISVU));
+            license = new License("testProviderId2", SaaSCheckModes.Offline, SaaSPlans.ISVU, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(SaaSPlans.ISVU), LicensePrice.Create(SaaSPlans.ISVU));
         }
 
         [Fact]
@@ -124,23 +124,6 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         [Fact]
-        public async Task CheckAsync_UnicodeSupport_ShouldBehaveCorrectly()
-        {
-            cliOptions.Hosting.UnicodeSupport = "default";
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // Null not allowed
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            cliOptions.Hosting.UnicodeSupport = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support=");
-
-            // Invalid value should error
-            cliOptions.Hosting.UnicodeSupport = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support=test4");
-        }
-
-        [Fact]
         public async Task CheckAsync_ExceededArgumentLimit_ShouldError()
         {
             // Args 13
@@ -152,7 +135,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task CheckAsync_ExceededCommandGroupLimit_ShouldError()
         {
             // Command groups are 3
-            license.Limits.CommandGroupLimit = 2;
+            license.Limits.GroupedCommandLimit = 2;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The command group limit exceeded. max_limit=2 current=3");
         }
 
@@ -192,7 +175,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task CheckAsync_OptionsValid_ShouldBehaveCorrectly()
         {
             // Use Data check as example
-            license.Limits.DataTypeChecks = new[] { "test1", "test2", "test3" };
+            license.Limits.DataTypeHandlers = new[] { "test1", "test2", "test3" };
 
             // Bull option should not error
             cliOptions.Checker.DataTypeCheck = null;
@@ -207,7 +190,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check=test4");
 
             // Null limit options but configured option should error
-            license.Limits.DataTypeChecks = null;
+            license.Limits.DataTypeHandlers = null;
             cliOptions.Checker.DataTypeCheck = "test5";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check=test5");
         }
@@ -235,7 +218,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task CheckAsync_Store_ShouldBehaveCorrectly()
         {
-            cliOptions.Hosting.Store = "in_memory";
+            cliOptions.Hosting.Store = "in-memory";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             cliOptions.Hosting.Store = "json";
@@ -282,6 +265,23 @@ namespace PerpetualIntelligence.Cli.Licensing
             license.Limits.StrictDataType = true;
             cliOptions.Checker.StrictTypeChecking = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
+        }
+
+        [Fact]
+        public async Task CheckAsync_UnicodeSupport_ShouldBehaveCorrectly()
+        {
+            cliOptions.Hosting.UnicodeSupport = "default";
+            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
+
+            // Null not allowed
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            cliOptions.Hosting.UnicodeSupport = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support=");
+
+            // Invalid value should error
+            cliOptions.Hosting.UnicodeSupport = "test4";
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support=test4");
         }
 
         private CliOptions cliOptions;

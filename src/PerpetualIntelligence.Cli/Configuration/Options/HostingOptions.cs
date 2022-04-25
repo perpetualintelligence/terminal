@@ -31,9 +31,9 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string ServiceImplementation { get; set; } = "default";
 
         /// <summary>
-        /// Defines the hosting and routing store. Defaults to <c>in_memory</c> store implementation.
+        /// Defines the hosting and routing store. Defaults to <c>in-memory</c> store implementation.
         /// </summary>
-        public string Store { get; set; } = "in_memory";
+        public string Store { get; set; } = "in-memory";
 
         /// <summary>
         /// Defines the hosting and routing service implementation. Defaults to <c>default</c> service implementation.

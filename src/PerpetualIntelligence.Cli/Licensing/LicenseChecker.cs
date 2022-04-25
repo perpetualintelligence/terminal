@@ -71,9 +71,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Command group limit
-            if (commandGroupCount > context.License.Limits.CommandGroupLimit)
+            if (commandGroupCount > context.License.Limits.GroupedCommandLimit)
             {
-                throw new ErrorException(Errors.InvalidLicense, "The command group limit exceeded. max_limit={0} current={1}", context.License.Limits.CommandGroupLimit, commandGroupCount);
+                throw new ErrorException(Errors.InvalidLicense, "The command group limit exceeded. max_limit={0} current={1}", context.License.Limits.GroupedCommandLimit, commandGroupCount);
             }
 
             // Command group limit
@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseLimits limits = context.License.Limits;
 
             // Date Type checks
-            if (!OptionsValid(limits.DataTypeChecks, cliOptions.Checker.DataTypeCheck))
+            if (!OptionsValid(limits.DataTypeHandlers, cliOptions.Checker.DataTypeCheck))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check={0}", cliOptions.Checker.DataTypeCheck);
             }
@@ -119,13 +119,13 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Error handling
-            if (!OptionsValid(limits.ErrorHandling, cliOptions.Hosting.ErrorHandling, allowNullActual: false))
+            if (!OptionsValid(limits.ErrorHandlers, cliOptions.Hosting.ErrorHandling, allowNullActual: false))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured error handling is not allowed for your license edition. error_handling={0}", cliOptions.Hosting.ErrorHandling);
             }
 
             // Service implementation
-            if (!OptionsValid(limits.ServiceImplementations, cliOptions.Hosting.ServiceImplementation, allowNullActual: false))
+            if (!OptionsValid(limits.Services, cliOptions.Hosting.ServiceImplementation, allowNullActual: false))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured service implementation is not allowed for your license edition. service_implementation={0}", cliOptions.Hosting.ServiceImplementation);
             }
@@ -143,7 +143,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Unicode
-            if (!OptionsValid(limits.UnicodeSupport, cliOptions.Hosting.UnicodeSupport, allowNullActual: false))
+            if (!OptionsValid(limits.UnicodeHandlers, cliOptions.Hosting.UnicodeSupport, allowNullActual: false))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support={0}", cliOptions.Hosting.UnicodeSupport);
             }

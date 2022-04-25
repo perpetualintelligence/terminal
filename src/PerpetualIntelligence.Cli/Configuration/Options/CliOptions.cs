@@ -46,5 +46,10 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The logging configuration options.
         /// </summary>
         public LoggingOptions Logging { get; set; } = new LoggingOptions();
+
+        /// <summary>
+        /// The terminal configuration options.
+        /// </summary>
+        public TerminalOptions Terminal { get; set; } = new TerminalOptions();
     }
 }

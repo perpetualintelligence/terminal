@@ -22,21 +22,24 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             limits.Plan.Should().Be(SaaSPlans.Community);
 
-            limits.RootCommandLimit.Should().Be(1);
-            limits.CommandGroupLimit.Should().Be(5);
-            limits.SubCommandLimit.Should().Be(50);
-            limits.ArgumentLimit.Should().Be(500);
+            limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);
+            limits.RootCommandLimit.Should().Be(1);
+            limits.GroupedCommandLimit.Should().Be(5);
+            limits.SubCommandLimit.Should().Be(25);
+            limits.ArgumentLimit.Should().Be(500);
 
-            limits.DataTypeChecks.Should().BeNull();
-            limits.StrictDataType.Should().Be(false);
+            limits.ArgumentAlias.Should().Be(false);
             limits.DefaultArgument.Should().Be(false);
             limits.DefaultArgumentValue.Should().Be(false);
+            limits.StrictDataType.Should().Be(false);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default" });
-            limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default" });
+            limits.DataTypeHandlers.Should().BeNull();
+            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.Stores.Should().BeEquivalentTo(new string[] { "in-memory" });
+            limits.Services.Should().BeEquivalentTo(new string[] { "default" });
+            limits.Licensing.Should().BeEquivalentTo(new string[] { "online" });
         }
 
         [Fact]
@@ -46,71 +49,25 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             limits.Plan.Should().Be(SaaSPlans.Enterprise);
 
-            limits.RootCommandLimit.Should().Be(3);
-            limits.CommandGroupLimit.Should().Be(200);
-            limits.SubCommandLimit.Should().Be(2000);
-            limits.ArgumentLimit.Should().Be(20000);
+            limits.TerminalLimit.Should().Be(5);
             limits.RedistributionLimit.Should().Be(5000);
+            limits.RootCommandLimit.Should().Be(3);
+            limits.GroupedCommandLimit.Should().Be(20);
+            limits.SubCommandLimit.Should().Be(100);
+            limits.ArgumentLimit.Should().Be(2000);
 
-            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.StrictDataType.Should().Be(true);
+            limits.ArgumentAlias.Should().Be(true);
             limits.DefaultArgument.Should().Be(true);
             limits.DefaultArgumentValue.Should().Be(true);
-
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json", "custom" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default", "custom" });
-        }
-
-        [Fact]
-        public void ISVEdition_ShouldSetLimitsCorrectly()
-        {
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.ISV);
-
-            limits.Plan.Should().Be(SaaSPlans.ISV);
-
-            limits.RootCommandLimit.Should().Be(5);
-            limits.CommandGroupLimit.Should().Be(500);
-            limits.SubCommandLimit.Should().Be(5000);
-            limits.ArgumentLimit.Should().Be(50000);
-            limits.RedistributionLimit.Should().Be(10000);
-
-            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StrictDataType.Should().Be(true);
-            limits.DefaultArgument.Should().Be(true);
-            limits.DefaultArgumentValue.Should().Be(true);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json", "custom" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.Stores.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
+            limits.Services.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.Licensing.Should().BeEquivalentTo(new string[] { "online", "offline" });
         }
-
-        [Fact]
-        public void ISVUEdition_ShouldSetLimitsCorrectly()
-        {
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.ISVU);
-
-            limits.Plan.Should().Be(SaaSPlans.ISVU);
-
-            limits.RootCommandLimit.Should().Be(null);
-            limits.CommandGroupLimit.Should().Be(null);
-            limits.SubCommandLimit.Should().Be(null);
-            limits.ArgumentLimit.Should().Be(null);
-            limits.RedistributionLimit.Should().Be(null);
-
-            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.StrictDataType.Should().Be(true);
-            limits.DefaultArgument.Should().Be(true);
-            limits.DefaultArgumentValue.Should().Be(true);
-
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json", "custom" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default", "custom" });
-        }
-
 
         [Fact]
         public void InvalidEdition_ShouldError()
@@ -128,26 +85,84 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         [Fact]
+        public void ISVEdition_ShouldSetLimitsCorrectly()
+        {
+            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.ISV);
+
+            limits.Plan.Should().Be(SaaSPlans.ISV);
+
+            limits.TerminalLimit.Should().Be(25);
+            limits.RedistributionLimit.Should().Be(10000);
+            limits.RootCommandLimit.Should().Be(5);
+            limits.GroupedCommandLimit.Should().Be(50);
+            limits.SubCommandLimit.Should().Be(250);
+            limits.ArgumentLimit.Should().Be(5000);
+
+            limits.ArgumentAlias.Should().Be(true);
+            limits.DefaultArgument.Should().Be(true);
+            limits.DefaultArgumentValue.Should().Be(true);
+            limits.StrictDataType.Should().Be(true);
+
+            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.Stores.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
+            limits.Services.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.Licensing.Should().BeEquivalentTo(new string[] { "online", "offline", "byol" });
+        }
+
+        [Fact]
+        public void ISVUEdition_ShouldSetLimitsCorrectly()
+        {
+            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.ISVU);
+
+            limits.Plan.Should().Be(SaaSPlans.ISVU);
+
+            limits.TerminalLimit.Should().Be(null);
+            limits.RedistributionLimit.Should().Be(null);
+            limits.RootCommandLimit.Should().Be(null);
+            limits.GroupedCommandLimit.Should().Be(null);
+            limits.SubCommandLimit.Should().Be(null);
+            limits.ArgumentLimit.Should().Be(null);
+
+            limits.ArgumentAlias.Should().Be(true);
+            limits.DefaultArgument.Should().Be(true);
+            limits.DefaultArgumentValue.Should().Be(true);
+            limits.StrictDataType.Should().Be(true);
+
+            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.Stores.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
+            limits.Services.Should().BeEquivalentTo(new string[] { "default", "custom" });
+            limits.Licensing.Should().BeEquivalentTo(new string[] { "online", "offline", "byol" });
+        }
+
+        [Fact]
         public void MicroEdition_ShouldSetLimitsCorrectly()
         {
             LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Micro);
 
             limits.Plan.Should().Be(SaaSPlans.Micro);
 
-            limits.RootCommandLimit.Should().Be(1);
-            limits.CommandGroupLimit.Should().Be(10);
-            limits.SubCommandLimit.Should().Be(100);
-            limits.ArgumentLimit.Should().Be(1000);
+            limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);
+            limits.RootCommandLimit.Should().Be(1);
+            limits.GroupedCommandLimit.Should().Be(5);
+            limits.SubCommandLimit.Should().Be(25);
+            limits.ArgumentLimit.Should().Be(500);
 
-            limits.DataTypeChecks.Should().BeNull();
+            limits.ArgumentAlias.Should().Be(false);
             limits.DefaultArgument.Should().Be(false);
             limits.DefaultArgumentValue.Should().Be(false);
+            limits.StrictDataType.Should().Be(false);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default" });
-            limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default" });
+            limits.DataTypeHandlers.Should().BeNull();
+            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.Stores.Should().BeEquivalentTo(new string[] { "in-memory" });
+            limits.Services.Should().BeEquivalentTo(new string[] { "default" });
+            limits.Licensing.Should().BeEquivalentTo(new string[] { "online" });
         }
 
         [Fact]
@@ -157,21 +172,24 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             limits.Plan.Should().Be(SaaSPlans.SMB);
 
-            limits.RootCommandLimit.Should().Be(1);
-            limits.CommandGroupLimit.Should().Be(50);
-            limits.SubCommandLimit.Should().Be(500);
-            limits.ArgumentLimit.Should().Be(5000);
+            limits.TerminalLimit.Should().Be(3);
             limits.RedistributionLimit.Should().Be(1000);
+            limits.RootCommandLimit.Should().Be(1);
+            limits.GroupedCommandLimit.Should().Be(10);
+            limits.SubCommandLimit.Should().Be(50);
+            limits.ArgumentLimit.Should().Be(1000);
 
-            limits.DataTypeChecks.Should().BeEquivalentTo(new string[] { "default" });
-            limits.StrictDataType.Should().Be(false);
+            limits.ArgumentAlias.Should().Be(true);
             limits.DefaultArgument.Should().Be(true);
             limits.DefaultArgumentValue.Should().Be(true);
+            limits.StrictDataType.Should().Be(true);
 
-            limits.UnicodeSupport.Should().BeEquivalentTo(new string[] { "default" });
-            limits.ErrorHandling.Should().BeEquivalentTo(new string[] { "default", });
-            limits.Stores.Should().BeEquivalentTo(new string[] { "in_memory", "json" });
-            limits.ServiceImplementations.Should().BeEquivalentTo(new string[] { "default" });
+            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.Stores.Should().BeEquivalentTo(new string[] { "in-memory", "json" });
+            limits.Services.Should().BeEquivalentTo(new string[] { "default" });
+            limits.Licensing.Should().BeEquivalentTo(new string[] { "online" });
         }
     }
 }

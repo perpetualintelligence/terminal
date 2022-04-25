@@ -16,19 +16,19 @@ namespace PerpetualIntelligence.Cli.Licensing
     public sealed class LicenseLimits
     {
         /// <summary>
+        /// Supports the argument alias. Defaults to <c>false</c> or no argument alias.
+        /// </summary>
+        public bool ArgumentAlias { get; internal set; }
+
+        /// <summary>
         /// The maximum arguments or options. Defaults to <c>null</c> or no limit.
         /// </summary>
         public long? ArgumentLimit { get; internal set; }
 
         /// <summary>
-        /// The maximum command groups. Defaults to <c>null</c> or no limit.
-        /// </summary>
-        public int? CommandGroupLimit { get; internal set; }
-
-        /// <summary>
         /// Supports the command argument data type checks. Defaults to <c>null</c> or no data type checks.
         /// </summary>
-        public string[]? DataTypeChecks { get; internal set; }
+        public string[]? DataTypeHandlers { get; internal set; }
 
         /// <summary>
         /// Supports the default command argument. Defaults to <c>false</c> or no default arguments.
@@ -43,7 +43,17 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public string[]? ErrorHandling { get; internal set; }
+        public string[]? ErrorHandlers { get; internal set; }
+
+        /// <summary>
+        /// The maximum grouped commands. Defaults to <c>null</c> or no limit.
+        /// </summary>
+        public int? GroupedCommandLimit { get; internal set; }
+
+        /// <summary>
+        /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
+        /// </summary>
+        public string[]? Licensing { get; internal set; }
 
         /// <summary>
         /// The SaaS plan.
@@ -61,9 +71,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         public int? RootCommandLimit { get; internal set; }
 
         /// <summary>
-        /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
+        /// The service implantations.
         /// </summary>
-        public string[]? ServiceImplementations { get; internal set; }
+        public string[]? Services { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
@@ -81,9 +91,14 @@ namespace PerpetualIntelligence.Cli.Licensing
         public long? SubCommandLimit { get; internal set; }
 
         /// <summary>
+        /// The maximum terminals. Defaults to <c>null</c> or no limit.
+        /// </summary>
+        public int? TerminalLimit { get; internal set; }
+
+        /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public string[]? UnicodeSupport { get; internal set; }
+        public string[]? UnicodeHandlers { get; internal set; }
 
         /// <summary>
         /// Creates a new instance of <see cref="LicenseLimits"/> based on the specified SaaS plan.
@@ -138,21 +153,24 @@ namespace PerpetualIntelligence.Cli.Licensing
             return new()
             {
                 Plan = SaaSPlans.Community,
-                RootCommandLimit = 1,
-                CommandGroupLimit = 5,
-                SubCommandLimit = 50,
-                ArgumentLimit = 500,
+                TerminalLimit = 1,
                 RedistributionLimit = 0,
+                RootCommandLimit = 1,
+                GroupedCommandLimit = 5,
+                SubCommandLimit = 25,
+                ArgumentLimit = 500,
 
-                DataTypeChecks = null,
-                StrictDataType = false,
+                ArgumentAlias = false,
                 DefaultArgument = false,
                 DefaultArgumentValue = false,
+                StrictDataType = false,
 
-                UnicodeSupport = new[] { "default" },
-                ErrorHandling = new[] { "default" },
-                Stores = new[] { "in_memory" },
-                ServiceImplementations = new[] { "default" }
+                DataTypeHandlers = null,
+                UnicodeHandlers = new[] { "default" },
+                ErrorHandlers = new[] { "default" },
+                Stores = new[] { "in-memory" },
+                Services = new[] { "default" },
+                Licensing = new[] { "online" }
             };
         }
 
@@ -161,21 +179,24 @@ namespace PerpetualIntelligence.Cli.Licensing
             return new()
             {
                 Plan = SaaSPlans.Enterprise,
-                RootCommandLimit = 3,
-                CommandGroupLimit = 200,
-                SubCommandLimit = 2000,
-                ArgumentLimit = 20000,
+                TerminalLimit = 5,
                 RedistributionLimit = 5000,
+                RootCommandLimit = 3,
+                GroupedCommandLimit = 20,
+                SubCommandLimit = 100,
+                ArgumentLimit = 2000,
 
-                DataTypeChecks = new[] { "default", "custom" },
-                StrictDataType = true,
+                ArgumentAlias = true,
                 DefaultArgument = true,
                 DefaultArgumentValue = true,
+                StrictDataType = true,
 
-                UnicodeSupport = new[] { "default" },
-                ErrorHandling = new[] { "default", "custom" },
-                Stores = new[] { "in_memory", "json", "custom" },
-                ServiceImplementations = new[] { "default", "custom" }
+                DataTypeHandlers = new[] { "default", "custom" },
+                UnicodeHandlers = new[] { "default", "custom" },
+                ErrorHandlers = new[] { "default", "custom" },
+                Stores = new[] { "in-memory", "json", "custom" },
+                Services = new[] { "default", "custom" },
+                Licensing = new[] { "online", "offline" }
             };
         }
 
@@ -184,21 +205,24 @@ namespace PerpetualIntelligence.Cli.Licensing
             return new()
             {
                 Plan = SaaSPlans.ISV,
-                RootCommandLimit = 5,
-                CommandGroupLimit = 500,
-                SubCommandLimit = 5000,
-                ArgumentLimit = 50000,
+                TerminalLimit = 25,
                 RedistributionLimit = 10000,
+                RootCommandLimit = 5,
+                GroupedCommandLimit = 50,
+                SubCommandLimit = 250,
+                ArgumentLimit = 5000,
 
-                DataTypeChecks = new[] { "default", "custom" },
-                StrictDataType = true,
+                ArgumentAlias = true,
                 DefaultArgument = true,
                 DefaultArgumentValue = true,
+                StrictDataType = true,
 
-                UnicodeSupport = new[] { "default" },
-                ErrorHandling = new[] { "default", "custom" },
-                Stores = new[] { "in_memory", "json", "custom" },
-                ServiceImplementations = new[] { "default", "custom" }
+                DataTypeHandlers = new[] { "default", "custom" },
+                UnicodeHandlers = new[] { "default", "custom" },
+                ErrorHandlers = new[] { "default", "custom" },
+                Stores = new[] { "in-memory", "json", "custom" },
+                Services = new[] { "default", "custom" },
+                Licensing = new[] { "online", "offline", "byol" }
             };
         }
 
@@ -207,21 +231,24 @@ namespace PerpetualIntelligence.Cli.Licensing
             return new()
             {
                 Plan = SaaSPlans.ISVU,
+                TerminalLimit = null,
+                RedistributionLimit = null,
                 RootCommandLimit = null,
-                CommandGroupLimit = null,
+                GroupedCommandLimit = null,
                 SubCommandLimit = null,
                 ArgumentLimit = null,
-                RedistributionLimit = null,
 
-                DataTypeChecks = new[] { "default", "custom" },
-                StrictDataType = true,
+                ArgumentAlias = true,
                 DefaultArgument = true,
                 DefaultArgumentValue = true,
+                StrictDataType = true,
 
-                UnicodeSupport = new[] { "default" },
-                ErrorHandling = new[] { "default", "custom" },
-                Stores = new[] { "in_memory", "json", "custom" },
-                ServiceImplementations = new[] { "default", "custom" }
+                DataTypeHandlers = new[] { "default", "custom" },
+                UnicodeHandlers = new[] { "default", "custom" },
+                ErrorHandlers = new[] { "default", "custom" },
+                Stores = new[] { "in-memory", "json", "custom" },
+                Services = new[] { "default", "custom" },
+                Licensing = new[] { "online", "offline", "byol" }
             };
         }
 
@@ -230,21 +257,24 @@ namespace PerpetualIntelligence.Cli.Licensing
             return new()
             {
                 Plan = SaaSPlans.Micro,
-                RootCommandLimit = 1,
-                CommandGroupLimit = 10,
-                SubCommandLimit = 100,
-                ArgumentLimit = 1000,
+                TerminalLimit = 1,
                 RedistributionLimit = 0,
+                RootCommandLimit = 1,
+                GroupedCommandLimit = 5,
+                SubCommandLimit = 25,
+                ArgumentLimit = 500,
 
-                DataTypeChecks = null,
-                StrictDataType = false,
+                ArgumentAlias = false,
                 DefaultArgument = false,
                 DefaultArgumentValue = false,
+                StrictDataType = false,
 
-                UnicodeSupport = new[] { "default" },
-                ErrorHandling = new[] { "default" },
-                Stores = new[] { "in_memory" },
-                ServiceImplementations = new[] { "default" }
+                DataTypeHandlers = null,
+                UnicodeHandlers = new[] { "default" },
+                ErrorHandlers = new[] { "default" },
+                Stores = new[] { "in-memory" },
+                Services = new[] { "default" },
+                Licensing = new[] { "online" }
             };
         }
 
@@ -253,21 +283,24 @@ namespace PerpetualIntelligence.Cli.Licensing
             return new()
             {
                 Plan = SaaSPlans.SMB,
-                RootCommandLimit = 1,
-                CommandGroupLimit = 50,
-                SubCommandLimit = 500,
-                ArgumentLimit = 5000,
+                TerminalLimit = 3,
                 RedistributionLimit = 1000,
+                RootCommandLimit = 1,
+                GroupedCommandLimit = 10,
+                SubCommandLimit = 50,
+                ArgumentLimit = 1000,
 
-                DataTypeChecks = new[] { "default" },
-                StrictDataType = false,
+                ArgumentAlias = true,
                 DefaultArgument = true,
                 DefaultArgumentValue = true,
+                StrictDataType = true,
 
-                UnicodeSupport = new[] { "default" },
-                ErrorHandling = new[] { "default" },
-                Stores = new[] { "in_memory", "json" },
-                ServiceImplementations = new[] { "default" }
+                DataTypeHandlers = new[] { "default" },
+                UnicodeHandlers = new[] { "default" },
+                ErrorHandlers = new[] { "default" },
+                Stores = new[] { "in-memory", "json" },
+                Services = new[] { "default" },
+                Licensing = new[] { "online" }
             };
         }
     }

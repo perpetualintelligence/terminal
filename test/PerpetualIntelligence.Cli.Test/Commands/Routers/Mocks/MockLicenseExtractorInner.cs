@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Cli.Mocks
     {
         public bool NoLicense { get; set; }
 
-        public License TestLicense { get; set; } = new License("testProviderId", SaaSCheckModes.Online, SaaSPlans.Community, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits);
+        public License TestLicense { get; set; } = new License("testProviderId", SaaSCheckModes.Online, SaaSPlans.Community, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
         public Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
         {

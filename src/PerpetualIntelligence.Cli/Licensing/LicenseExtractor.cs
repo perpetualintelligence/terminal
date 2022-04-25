@@ -195,7 +195,8 @@ namespace PerpetualIntelligence.Cli.Licensing
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan);
-                return new License(providerTenantId, cliOptions.Licensing.CheckMode, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits);
+                LicensePrice licensePrice = LicensePrice.Create(plan);
+                return new License(providerTenantId, cliOptions.Licensing.CheckMode, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
             }
         }
 
