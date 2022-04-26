@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         /// </summary>
         /// <param name="context">The error to publish.</param>
         /// <returns>The string representation.</returns>
-        public Task PublishAsync(ErrorHandlerContext context)
+        public Task HandleAsync(ErrorHandlerContext context)
         {
             logger.FormatAndLog(LogLevel.Error, options.Logging, context.Error.ErrorDescription ?? context.Error.ErrorCode, context.Error.Args ?? Array.Empty<object?>());
             return Task.CompletedTask;

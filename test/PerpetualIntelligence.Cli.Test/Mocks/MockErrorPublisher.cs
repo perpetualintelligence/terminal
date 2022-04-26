@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Mocks
 
         public string? PublishedMessage { get; set; }
 
-        public Task PublishAsync(ErrorHandlerContext context)
+        public Task HandleAsync(ErrorHandlerContext context)
         {
             Called = true;
             PublishedMessage = context.Error.FormatDescription();

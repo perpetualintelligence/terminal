@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
     /// <summary>
     /// An abstraction to publish <see cref="Exception"/>.
     /// </summary>
-    public interface IExceptionHandler : IPublisherNoResult<ExceptionHandlerContext>
+    public interface IExceptionHandler : IHandlerNoResult<ExceptionHandlerContext>
     {
     }
 }

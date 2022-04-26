@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
     /// <summary>
     /// An abstraction to publish <see cref="Error"/>.
     /// </summary>
-    public interface IErrorHandler : IPublisherNoResult<ErrorHandlerContext>
+    public interface IErrorHandler : IHandlerNoResult<ErrorHandlerContext>
     {
     }
 }

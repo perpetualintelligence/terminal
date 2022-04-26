@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 {
                     IErrorHandler errorPublisher = host.Services.GetRequiredService<IErrorHandler>();
                     ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
-                    await errorPublisher.PublishAsync(errContext);
+                    await errorPublisher.HandleAsync(errContext);
 
                     // We are done, break the loop.
                     break;
@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                 {
                     IErrorHandler errorPublisher = host.Services.GetRequiredService<IErrorHandler>();
                     ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
-                    await errorPublisher.PublishAsync(errContext);
+                    await errorPublisher.HandleAsync(errContext);
 
                     // We are done, break the loop.
                     break;
@@ -100,7 +100,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                     // Task.Wait bundles up any exception into Exception.InnerException
                     IExceptionHandler exceptionPublisher = host.Services.GetRequiredService<IExceptionHandler>();
                     ExceptionHandlerContext exContext = new(raw, ex.InnerException ?? ex);
-                    await exceptionPublisher.PublishAsync(exContext);
+                    await exceptionPublisher.HandleAsync(exContext);
                 }
             };
         }

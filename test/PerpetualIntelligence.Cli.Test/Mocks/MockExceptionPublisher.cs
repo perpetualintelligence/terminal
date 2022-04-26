@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Mocks
 
         public string? PublishedMessage { get; set; }
 
-        public Task PublishAsync(ExceptionHandlerContext context)
+        public Task HandleAsync(ExceptionHandlerContext context)
         {
             Called = true;
             PublishedMessage = context.Exception.Message;

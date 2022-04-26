@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         /// </summary>
         /// <param name="context">The error to publish.</param>
         /// <returns>The string representation.</returns>
-        public Task PublishAsync(ExceptionHandlerContext context)
+        public Task HandleAsync(ExceptionHandlerContext context)
         {
             if (context.Exception is ErrorException ee)
             {
