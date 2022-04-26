@@ -16,13 +16,12 @@ using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
-using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Licensing;
+using PerpetualIntelligence.Cli.Stores;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -161,19 +160,19 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="IErrorPublisher"/> and <see cref="IExceptionPublisher"/> to the service collection.
+        /// Adds the <see cref="IErrorHandler"/> and <see cref="IExceptionHandler"/> to the service collection.
         /// </summary>
-        /// <typeparam name="TError">The <see cref="IErrorPublisher"/> type.</typeparam>
-        /// <typeparam name="TException">The <see cref="IExceptionPublisher"/> type.</typeparam>
+        /// <typeparam name="TError">The <see cref="IErrorHandler"/> type.</typeparam>
+        /// <typeparam name="TException">The <see cref="IExceptionHandler"/> type.</typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddErrorPublisher<TError, TException>(this ICliBuilder builder) where TError : class, IErrorPublisher where TException : class, IExceptionPublisher
+        public static ICliBuilder AddErrorPublisher<TError, TException>(this ICliBuilder builder) where TError : class, IErrorHandler where TException : class, IExceptionHandler
         {
             // Add error publisher
-            builder.Services.AddTransient<IErrorPublisher, TError>();
+            builder.Services.AddTransient<IErrorHandler, TError>();
 
             // Add exception publisher
-            builder.Services.AddTransient<IExceptionPublisher, TException>();
+            builder.Services.AddTransient<IExceptionHandler, TException>();
 
             return builder;
         }

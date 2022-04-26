@@ -33,11 +33,6 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public HostingOptions Hosting { get; set; } = new HostingOptions();
 
         /// <summary>
-        /// The HTTP configuration options.
-        /// </summary>
-        public HttpOptions Http { get; set; } = new HttpOptions();
-
-        /// <summary>
         /// The licensing configuration options.
         /// </summary>
         public LicensingOptions Licensing { get; set; } = new LicensingOptions();
@@ -46,6 +41,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The logging configuration options.
         /// </summary>
         public LoggingOptions Logging { get; set; } = new LoggingOptions();
+
+        /// <summary>
+        /// The router configuration options.
+        /// </summary>
+        public RouterOptions Router { get; set; } = new RouterOptions();
 
         /// <summary>
         /// The terminal configuration options.

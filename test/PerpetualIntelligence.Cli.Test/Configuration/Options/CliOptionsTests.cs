@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             Assert.IsNotNull(options.Logging);
             Assert.IsNotNull(options.Hosting);
             Assert.IsNotNull(options.Licensing);
-            Assert.IsNotNull(options.Http);
+            Assert.IsNotNull(options.Router);
         }
     }
 }

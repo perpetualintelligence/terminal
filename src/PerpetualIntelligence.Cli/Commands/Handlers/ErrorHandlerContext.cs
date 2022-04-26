@@ -8,18 +8,18 @@
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Publishers
+namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The <see cref="IExceptionPublisher"/> context.
+    /// The <see cref="IExceptionHandler"/> context.
     /// </summary>
-    public class ErrorPublisherContext
+    public class ErrorHandlerContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="error">The error.</param>
-        public ErrorPublisherContext(Error error)
+        public ErrorHandlerContext(Error error)
         {
             Error = error;
         }
@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Commands.Publishers
         /// </summary>
         /// <param name="error">The error.</param>
         /// <param name="rawCommandString">The raw command string.</param>
-        public ErrorPublisherContext(Error error, string rawCommandString)
+        public ErrorHandlerContext(Error error, string rawCommandString)
         {
             RawCommandString = rawCommandString ?? throw new ArgumentNullException(nameof(rawCommandString));
             Error = error ?? throw new ArgumentNullException(nameof(error));

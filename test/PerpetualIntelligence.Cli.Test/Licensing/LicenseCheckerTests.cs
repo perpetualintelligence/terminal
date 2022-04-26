@@ -30,18 +30,18 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task CheckAsync_DataTypeCheck_ShouldBehaveCorrectly()
         {
-            cliOptions.Checker.DataTypeCheck = "default";
+            cliOptions.Checker.DataTypeHandler = "default";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
-            cliOptions.Checker.DataTypeCheck = "custom";
+            cliOptions.Checker.DataTypeHandler = "custom";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Null allowed
-            cliOptions.Checker.DataTypeCheck = null;
+            cliOptions.Checker.DataTypeHandler = null;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Invalid value should error
-            cliOptions.Checker.DataTypeCheck = "test4";
+            cliOptions.Checker.DataTypeHandler = "test4";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check=test4");
         }
 
@@ -106,20 +106,20 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task CheckAsync_ErrorHandling_ShouldBehaveCorrectly()
         {
-            cliOptions.Hosting.ErrorHandling = "default";
+            cliOptions.Hosting.ErrorHandler = "default";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
-            cliOptions.Hosting.ErrorHandling = "custom";
+            cliOptions.Hosting.ErrorHandler = "custom";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Null not allowed
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            cliOptions.Hosting.ErrorHandling = null;
+            cliOptions.Hosting.ErrorHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured error handling is not allowed for your license edition. error_handling=");
 
             // Invalid value should error
-            cliOptions.Hosting.ErrorHandling = "test4";
+            cliOptions.Hosting.ErrorHandler = "test4";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured error handling is not allowed for your license edition. error_handling=test4");
         }
 
@@ -178,40 +178,40 @@ namespace PerpetualIntelligence.Cli.Licensing
             license.Limits.DataTypeHandlers = new[] { "test1", "test2", "test3" };
 
             // Bull option should not error
-            cliOptions.Checker.DataTypeCheck = null;
+            cliOptions.Checker.DataTypeHandler = null;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Valid value should not error
-            cliOptions.Checker.DataTypeCheck = "test2";
+            cliOptions.Checker.DataTypeHandler = "test2";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Invalid value should error
-            cliOptions.Checker.DataTypeCheck = "test4";
+            cliOptions.Checker.DataTypeHandler = "test4";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check=test4");
 
             // Null limit options but configured option should error
             license.Limits.DataTypeHandlers = null;
-            cliOptions.Checker.DataTypeCheck = "test5";
+            cliOptions.Checker.DataTypeHandler = "test5";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check=test5");
         }
 
         [Fact]
         public async Task CheckAsync_ServiceImplementation_ShouldBehaveCorrectly()
         {
-            cliOptions.Hosting.ServiceImplementation = "default";
+            cliOptions.Hosting.Service = "default";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
-            cliOptions.Hosting.ServiceImplementation = "custom";
+            cliOptions.Hosting.Service = "custom";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Null not allowed
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            cliOptions.Hosting.ServiceImplementation = null;
+            cliOptions.Hosting.Service = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured service implementation is not allowed for your license edition. service_implementation=");
 
             // Invalid value should error
-            cliOptions.Hosting.ServiceImplementation = "test4";
+            cliOptions.Hosting.Service = "test4";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured service implementation is not allowed for your license edition. service_implementation=test4");
         }
 
@@ -243,44 +243,44 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             // Error, not allowed but configured
             license.Limits.StrictDataType = false;
-            cliOptions.Checker.StrictTypeChecking = true;
+            cliOptions.Checker.StrictArgumentValueType = true;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured strict type checking is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.StrictDataType = false;
-            cliOptions.Checker.StrictTypeChecking = false;
+            cliOptions.Checker.StrictArgumentValueType = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, not allowed not configured
             license.Limits.StrictDataType = false;
-            cliOptions.Checker.StrictTypeChecking = null;
+            cliOptions.Checker.StrictArgumentValueType = null;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed not configured
             license.Limits.StrictDataType = true;
-            cliOptions.Checker.StrictTypeChecking = false;
+            cliOptions.Checker.StrictArgumentValueType = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed and configured
             license.Limits.StrictDataType = true;
-            cliOptions.Checker.StrictTypeChecking = true;
+            cliOptions.Checker.StrictArgumentValueType = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
         }
 
         [Fact]
         public async Task CheckAsync_UnicodeSupport_ShouldBehaveCorrectly()
         {
-            cliOptions.Hosting.UnicodeSupport = "default";
+            cliOptions.Hosting.UnicodeHandler = "default";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Null not allowed
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            cliOptions.Hosting.UnicodeSupport = null;
+            cliOptions.Hosting.UnicodeHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support=");
 
             // Invalid value should error
-            cliOptions.Hosting.UnicodeSupport = "test4";
+            cliOptions.Hosting.UnicodeHandler = "test4";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support=test4");
         }
 

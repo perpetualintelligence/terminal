@@ -6,14 +6,14 @@
 */
 
 using PerpetualIntelligence.Protocols.Abstractions;
-using System;
+using PerpetualIntelligence.Shared.Infrastructure;
 
-namespace PerpetualIntelligence.Cli.Commands.Publishers
+namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// An abstraction to publish <see cref="Exception"/>.
+    /// An abstraction to publish <see cref="Error"/>.
     /// </summary>
-    public interface IExceptionPublisher : IPublisherNoResult<ExceptionPublisherContext>
+    public interface IErrorHandler : IPublisherNoResult<ErrorHandlerContext>
     {
     }
 }

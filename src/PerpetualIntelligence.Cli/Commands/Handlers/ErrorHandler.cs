@@ -12,19 +12,19 @@ using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Publishers
+namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The default <see cref="IErrorPublisher"/> to publish an <see cref="Error"/>.
+    /// The default <see cref="IErrorHandler"/> to publish an <see cref="Error"/>.
     /// </summary>
-    public class ErrorPublisher : IErrorPublisher
+    public class ErrorHandler : IErrorHandler
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ErrorPublisher(CliOptions options, ILogger<ExceptionPublisher> logger)
+        public ErrorHandler(CliOptions options, ILogger<ExceptionHandler> logger)
         {
             this.options = options;
             this.logger = logger;
@@ -35,13 +35,13 @@ namespace PerpetualIntelligence.Cli.Commands.Publishers
         /// </summary>
         /// <param name="context">The error to publish.</param>
         /// <returns>The string representation.</returns>
-        public Task PublishAsync(ErrorPublisherContext context)
+        public Task PublishAsync(ErrorHandlerContext context)
         {
             logger.FormatAndLog(LogLevel.Error, options.Logging, context.Error.ErrorDescription ?? context.Error.ErrorCode, context.Error.Args ?? Array.Empty<object?>());
             return Task.CompletedTask;
         }
 
-        private ILogger<ExceptionPublisher> logger;
+        private ILogger<ExceptionHandler> logger;
         private CliOptions options;
     }
 }

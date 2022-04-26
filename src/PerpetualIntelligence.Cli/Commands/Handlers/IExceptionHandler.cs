@@ -5,14 +5,15 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
+using PerpetualIntelligence.Protocols.Abstractions;
+using System;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The command handler result.
+    /// An abstraction to publish <see cref="Exception"/>.
     /// </summary>
-    public class CommandHandlerResult
+    public interface IExceptionHandler : IPublisherNoResult<ExceptionHandlerContext>
     {
     }
 }

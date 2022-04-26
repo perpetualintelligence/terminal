@@ -11,9 +11,9 @@ using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Extractors.Mocks;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Runners;
-using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Cli.Stores;
 using PerpetualIntelligence.Cli.Stores.InMemory;
 
 using PerpetualIntelligence.Shared.Attributes;
@@ -273,7 +273,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task ArgumentSeparatorAndArgumentPrefixCannotBeSameAsync(string separator)
         {
-            options.Extractor.ArgumentSeparator = separator;
+            options.Extractor.ArgumentValueSeparator = separator;
             options.Extractor.ArgumentPrefix = separator;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The argument separator and argument prefix cannot be same. separator={separator}");
@@ -283,11 +283,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task ArgumentSeparatorCannotBeNullOrEmptyAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Extractor.ArgumentSeparator = null;
+            options.Extractor.ArgumentValueSeparator = null;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, "The argument separator cannot be null or empty.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            options.Extractor.ArgumentSeparator = "";
+            options.Extractor.ArgumentValueSeparator = "";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, "The argument separator cannot be null or empty.");
         }
 
@@ -324,14 +324,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task CommandIdRegexMismatchShouldErrorAsync(string prefix, string cmdId, String cmdName)
         {
             // Disallow :
-            options.Extractor.CommandIdRegexPattern = "^[A-Za-z0-9_-]*$";
+            options.Extractor.CommandIdRegex = "^[A-Za-z0-9_-]*$";
 
             // Reset commands
             commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
             extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1=value1 -key2=value2"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, $"The command identifier is not valid. command_id={cmdId} regex={options.Extractor.CommandIdRegexPattern}");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, $"The command identifier is not valid. command_id={cmdId} regex={options.Extractor.CommandIdRegex}");
         }
 
         [DataTestMethod]
@@ -360,7 +360,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task CommandSeparatorAndArgumentSeparatorCanBeSameAsync(string separator)
         {
             options.Extractor.Separator = separator;
-            options.Extractor.ArgumentSeparator = separator;
+            options.Extractor.ArgumentValueSeparator = separator;
 
             CommandExtractorContext context = new CommandExtractorContext(new CommandString($"prefix1{separator}-key1{separator}value1{separator}-key2{separator}value2{separator}-key6{separator}-key9{separator}26.36"));
             var result = await extractor.ExtractAsync(context);
@@ -424,7 +424,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
             // argument values
             // -> prefix1 -key=Test=separator=message -key2=nosseparatormessage -key3=again=with=separator
-            options.Extractor.ArgumentSeparator = separator;
+            options.Extractor.ArgumentValueSeparator = separator;
 
             CommandExtractorContext context = new CommandExtractorContext(new CommandString($"prefix1 -key1{separator}Test{separator}separator{separator}message -key2{separator}nosseparatormessage -key6 -key10{separator}Again{separator}with{separator}separator"));
             var result = await extractor.ExtractAsync(context);
@@ -1014,7 +1014,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task WithInStringCannotBeSameAsArgSeparator()
         {
             // Make sure command separator is different so we can fail for argument separator below.
-            options.Extractor.ArgumentSeparator = "^";
+            options.Extractor.ArgumentValueSeparator = "^";
             options.Extractor.ArgumentValueWithIn = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(new CommandExtractorContext(new CommandString("test"))), Errors.InvalidConfiguration, $"The string with_in token and argument separator cannot be same. with_in=^");

@@ -7,10 +7,9 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Stores;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
-
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
@@ -101,7 +100,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Argument
             {
                 // Argument separator can be null or empty
-                if (options.Extractor.ArgumentSeparator == null || options.Extractor.ArgumentSeparator == string.Empty)
+                if (options.Extractor.ArgumentValueSeparator == null || options.Extractor.ArgumentValueSeparator == string.Empty)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument separator cannot be null or empty.", options.Extractor.Separator);
                 }
@@ -119,15 +118,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Argument separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.ArgumentSeparator, options.Extractor.ArgumentPrefix))
+                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentPrefix))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentSeparator);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
                 }
 
                 // Argument separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.ArgumentSeparator, options.Extractor.ArgumentAliasPrefix))
+                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentAliasPrefix))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument alias prefix cannot be same. separator={0}", options.Extractor.ArgumentSeparator);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument alias prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
                 }
 
                 // - FOMAC confusing. Argument alias prefix can be same as argument prefix but it cannot start with
@@ -159,7 +158,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // with_in cannot be same as ArgumentSeparator
-                if (stringComparer.Equals(options.Extractor.ArgumentSeparator, options.Extractor.ArgumentValueWithIn))
+                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
                 }
@@ -236,7 +235,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
                     // Convert the arg string to standard format and let the IArgumentExtractor extract the argument and
                     // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
-                    rawArgString = $"{options.Extractor.Separator}{options.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{options.Extractor.ArgumentSeparator}{argStringDef}";
+                    rawArgString = $"{options.Extractor.Separator}{options.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{options.Extractor.ArgumentValueSeparator}{argStringDef}";
                 }
             }
 
@@ -402,9 +401,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Make sure the command id is valid
-            if (!Regex.IsMatch(result.Result.Id, options.Extractor.CommandIdRegexPattern))
+            if (!Regex.IsMatch(result.Result.Id, options.Extractor.CommandIdRegex))
             {
-                throw new ErrorException(Errors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, options.Extractor.CommandIdRegexPattern);
+                throw new ErrorException(Errors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, options.Extractor.CommandIdRegex);
             }
 
             return result.Result;

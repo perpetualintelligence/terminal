@@ -22,9 +22,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                 Extractor = new ExtractorOptions()
                 {
                     ArgumentPrefix = "-",
-                    ArgumentSeparator = "=",
+                    ArgumentValueSeparator = "=",
                     Separator = " ",
-                    CommandIdRegexPattern = "^[A-Za-z0-9:]*$"
+                    CommandIdRegex = "^[A-Za-z0-9:]*$"
                 },
             };
         }
@@ -43,9 +43,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                     ArgumentValueWithIn = "\"",
                     ArgumentPrefix = "--",
                     ArgumentAliasPrefix = "-",
-                    ArgumentSeparator = " ",
+                    ArgumentValueSeparator = " ",
                     Separator = " ",
-                    CommandIdRegexPattern = "^[A-Za-z0-9:]*$"
+                    CommandIdRegex = "^[A-Za-z0-9:]*$"
                 },
             };
         }

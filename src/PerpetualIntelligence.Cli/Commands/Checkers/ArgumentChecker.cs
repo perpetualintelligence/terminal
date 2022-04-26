@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             ArgumentDataTypeMapperResult mapperResult = await mapper.MapAsync(new ArgumentDataTypeMapperContext(context.Argument));
 
             // Check whether we need to check type
-            if (options.Checker.StrictTypeChecking.GetValueOrDefault())
+            if (options.Checker.StrictArgumentValueType.GetValueOrDefault())
             {
                 // Check value compatibility
                 return await StrictTypeCheckingAsync(context, mapperResult);

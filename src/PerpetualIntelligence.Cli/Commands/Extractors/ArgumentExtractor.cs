@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// <description>{arg} is an argument id. For e.g. <c>name</c></description>
     /// </item>
     /// <item>
-    /// <description><c>=</c> is an argument separator. You can configure it via <see cref="ExtractorOptions.ArgumentSeparator"/></description>
+    /// <description><c>=</c> is an argument separator. You can configure it via <see cref="ExtractorOptions.ArgumentValueSeparator"/></description>
     /// </item>
     /// <item>
     /// <description>{value} is an argument value. For e.g. <c>oneimlx</c></description>
@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// </para>
     /// </remarks>
     /// <seealso cref="ExtractorOptions.ArgumentPrefix"/>
-    /// <seealso cref="ExtractorOptions.ArgumentSeparator"/>
+    /// <seealso cref="ExtractorOptions.ArgumentValueSeparator"/>
     [WriteDocumentation]
     public class ArgumentExtractor : IArgumentExtractor
     {
@@ -114,7 +114,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // For error handling
-            string prefixArgValue = $"{argPrefix}{argIdOrAlias}{options.Extractor.ArgumentSeparator}{argValue}";
+            string prefixArgValue = $"{argPrefix}{argIdOrAlias}{options.Extractor.ArgumentValueSeparator}{argValue}";
             if (argIdOrAlias == null || string.IsNullOrWhiteSpace(argIdOrAlias))
             {
                 throw new ErrorException(Errors.InvalidArgument, "The argument identifier is null or empty. argument_string={0}", prefixArgValue);
@@ -223,7 +223,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             get
             {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentAliasPrefix})+(.+?){options.Extractor.ArgumentSeparator}+(.*?)[{options.Extractor.Separator}]*$";
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentAliasPrefix})+(.+?){options.Extractor.ArgumentValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
             }
         }
 
@@ -245,7 +245,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             get
             {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentPrefix})+(.+?){options.Extractor.ArgumentSeparator}+(.*?)[{options.Extractor.Separator}]*$";
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentPrefix})+(.+?){options.Extractor.ArgumentValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
             }
         }
 

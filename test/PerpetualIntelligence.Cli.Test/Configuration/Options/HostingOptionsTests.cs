@@ -19,11 +19,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         }
 
         [TestMethod]
-        public void LoggingOptionsShouldHaveCorrectDefaultValues()
+        public void HostingOptionsShouldHaveCorrectDefaultValues()
         {
-            HostingOptions options = new();
-
-            Assert.AreEqual(10000, options.CommandRouterTimeout);
         }
     }
 }

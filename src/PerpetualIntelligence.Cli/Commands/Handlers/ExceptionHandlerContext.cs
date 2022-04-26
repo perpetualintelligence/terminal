@@ -7,19 +7,19 @@
 
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Publishers
+namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The <see cref="IExceptionPublisher"/> context.
+    /// The <see cref="IExceptionHandler"/> context.
     /// </summary>
-    public class ExceptionPublisherContext
+    public class ExceptionHandlerContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="rawCommandString">The raw command string.</param>
         /// <param name="exception">The exception.</param>
-        public ExceptionPublisherContext(string rawCommandString, Exception exception)
+        public ExceptionHandlerContext(string rawCommandString, Exception exception)
         {
             RawCommandString = rawCommandString ?? throw new ArgumentNullException(nameof(rawCommandString));
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));

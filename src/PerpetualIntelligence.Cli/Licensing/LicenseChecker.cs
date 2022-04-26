@@ -101,9 +101,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseLimits limits = context.License.Limits;
 
             // Date Type checks
-            if (!OptionsValid(limits.DataTypeHandlers, cliOptions.Checker.DataTypeCheck))
+            if (!OptionsValid(limits.DataTypeHandlers, cliOptions.Checker.DataTypeHandler))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check={0}", cliOptions.Checker.DataTypeCheck);
+                throw new ErrorException(Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check={0}", cliOptions.Checker.DataTypeHandler);
             }
 
             // Default arguments
@@ -119,15 +119,15 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Error handling
-            if (!OptionsValid(limits.ErrorHandlers, cliOptions.Hosting.ErrorHandling, allowNullActual: false))
+            if (!OptionsValid(limits.ErrorHandlers, cliOptions.Hosting.ErrorHandler, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured error handling is not allowed for your license edition. error_handling={0}", cliOptions.Hosting.ErrorHandling);
+                throw new ErrorException(Errors.InvalidLicense, "The configured error handling is not allowed for your license edition. error_handling={0}", cliOptions.Hosting.ErrorHandler);
             }
 
             // Service implementation
-            if (!OptionsValid(limits.Services, cliOptions.Hosting.ServiceImplementation, allowNullActual: false))
+            if (!OptionsValid(limits.Services, cliOptions.Hosting.Service, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured service implementation is not allowed for your license edition. service_implementation={0}", cliOptions.Hosting.ServiceImplementation);
+                throw new ErrorException(Errors.InvalidLicense, "The configured service implementation is not allowed for your license edition. service_implementation={0}", cliOptions.Hosting.Service);
             }
 
             // Stores
@@ -137,15 +137,15 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Strict Data Type
-            if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictTypeChecking))
+            if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictArgumentValueType))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured strict type checking is not allowed for your license edition.");
             }
 
             // Unicode
-            if (!OptionsValid(limits.UnicodeHandlers, cliOptions.Hosting.UnicodeSupport, allowNullActual: false))
+            if (!OptionsValid(limits.UnicodeHandlers, cliOptions.Hosting.UnicodeHandler, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support={0}", cliOptions.Hosting.UnicodeSupport);
+                throw new ErrorException(Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support={0}", cliOptions.Hosting.UnicodeHandler);
             }
 
             return Task.CompletedTask;

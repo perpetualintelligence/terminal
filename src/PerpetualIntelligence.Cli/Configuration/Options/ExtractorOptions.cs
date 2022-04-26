@@ -8,61 +8,68 @@
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     /// <summary>
-    /// The extractor configuration option.
+    /// The <c>pi-cli</c> command and argument extraction options.
     /// </summary>
     public class ExtractorOptions
     {
         /// <summary>
-        /// Determines whether the extractor support extracting the argument by alias. Defaults to <c>null</c>.
+        /// Determines whether the extractor support extracting an argument by alias.
         /// </summary>
         /// <remarks>
-        /// Argument alias supports the legacy apps that identified a command argument with an id and an alias string.
-        /// For modern console apps, we recommend using just an argument identifier. The core data model is optimized to
-        /// work with argument id. In general, an app should not identify the same argument with multiple string. Using
-        /// alias will degrade the performance.
+        /// Argument alias supports the apps that identify a command argument with an id and an alias string. For modern
+        /// console apps, we recommend using just an argument identifier. We have optimized the core data model to work
+        /// with argument id. An app should not identify the same argument with multiple strings. Using an alias will
+        /// degrade the performance.
         /// </remarks>
         public bool? ArgumentAlias { get; set; }
 
         /// <summary>
-        /// The argument alias prefix. Defaults to <c>-</c>.
+        /// The argument alias prefix if <see cref="ArgumentAlias"/> is enabled. Defaults to <c>-</c>.
         /// </summary>
-        /// <remarks>The argument alias prefix cannot be <c>null</c> or whitespace.</remarks>
+        /// <remarks>The argument alias prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
         public string ArgumentAliasPrefix { get; set; } = "-";
 
         /// <summary>
         /// The argument prefix. Defaults to <c>-</c>.
         /// </summary>
-        /// <remarks>The argument prefix cannot be <c>null</c> or whitespace.</remarks>
+        /// <remarks>The argument prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
         public string ArgumentPrefix { get; set; } = "-";
 
         /// <summary>
-        /// The argument value separator. Defaults to equals char <c>=</c>.
+        /// The argument value separator. Defaults to <c>=</c>.
         /// </summary>
-        public string ArgumentSeparator { get; set; } = "=";
+        /// <remarks>The argument value separator must be a single Unicode character, and it can be a single whitespace.</remarks>
+        public string ArgumentValueSeparator { get; set; } = "=";
 
         /// <summary>
-        /// Defines the token within which to extract an argument value. Default to <c>null</c>.
+        /// An optional token within which to extract an argument value. Default to <c>null</c>.
         /// </summary>
+        /// <remarks>
+        /// The optional argument within token must be a single Unicode character. If set it cannot be <c>null</c> or whitespace.
+        /// </remarks>
         public string? ArgumentValueWithIn { get; set; }
 
         /// <summary>
-        /// Defines the Regex pattern for command identifier. Defaults to <c>^[A-Za-z0-9_-]*$</c>.
+        /// The Regex pattern for command identifier. Defaults to <c>^[A-Za-z0-9_-]*$</c>.
         /// </summary>
-        public string CommandIdRegexPattern { get; set; } = "^[A-Za-z0-9_-]*$";
+        public string CommandIdRegex { get; set; } = "^[A-Za-z0-9_-]*$";
 
         /// <summary>
-        /// Determines whether the extractor support extracting default arguments. Defaults to <c>null</c>.
+        /// Determines whether command supports default argument.
         /// </summary>
         public bool? DefaultArgument { get; set; }
 
         /// <summary>
-        /// Determines whether the extractor support extracting default argument values. Defaults to <c>null</c>.
+        /// Determines whether argument support default value.
         /// </summary>
         public bool? DefaultArgumentValue { get; set; }
 
         /// <summary>
-        /// The command string separator. Defaults to a single space char.
+        /// The command string separator. Defaults to a single whitespace.
         /// </summary>
+        /// <remarks>
+        /// The command string separator must be a single Unicode character, and it can be a whitespace character.
+        /// </remarks>
         public string Separator { get; set; } = " ";
     }
 }

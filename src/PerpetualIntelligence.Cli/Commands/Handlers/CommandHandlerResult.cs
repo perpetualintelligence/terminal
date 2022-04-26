@@ -5,12 +5,12 @@
     https://terms.perpetualintelligence.com
 */
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The HTTP configuration options.
+    /// The command handler result.
     /// </summary>
-    public class HttpOptions
+    public class CommandHandlerResult
     {
     }
 }

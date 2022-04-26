@@ -7,7 +7,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Cli.Commands.Publishers;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Shared.Attributes;
@@ -45,8 +45,8 @@ namespace PerpetualIntelligence.Cli.Extensions
                 // Honor the cancellation request.
                 if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
                 {
-                    IErrorPublisher errorPublisher = host.Services.GetRequiredService<IErrorPublisher>();
-                    ErrorPublisherContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
+                    IErrorHandler errorPublisher = host.Services.GetRequiredService<IErrorHandler>();
+                    ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
                     await errorPublisher.PublishAsync(errContext);
 
                     // We are done, break the loop.
@@ -56,8 +56,8 @@ namespace PerpetualIntelligence.Cli.Extensions
                 // Check if application is stopping
                 if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
                 {
-                    IErrorPublisher errorPublisher = host.Services.GetRequiredService<IErrorPublisher>();
-                    ErrorPublisherContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
+                    IErrorHandler errorPublisher = host.Services.GetRequiredService<IErrorHandler>();
+                    ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
                     await errorPublisher.PublishAsync(errContext);
 
                     // We are done, break the loop.
@@ -87,10 +87,10 @@ namespace PerpetualIntelligence.Cli.Extensions
 
                 try
                 {
-                    bool success = routeTask.Wait(cliOptions.Hosting.CommandRouterTimeout, cancellationToken ?? CancellationToken.None);
+                    bool success = routeTask.Wait(cliOptions.Router.Timeout, cancellationToken ?? CancellationToken.None);
                     if (!success)
                     {
-                        throw new TimeoutException($"The command router timed out in {cliOptions.Hosting.CommandRouterTimeout} milliseconds.");
+                        throw new TimeoutException($"The command router timed out in {cliOptions.Router.Timeout} milliseconds.");
                     }
 
                     // This means a success in command runner. Wait for the next command
@@ -98,8 +98,8 @@ namespace PerpetualIntelligence.Cli.Extensions
                 catch (Exception ex)
                 {
                     // Task.Wait bundles up any exception into Exception.InnerException
-                    IExceptionPublisher exceptionPublisher = host.Services.GetRequiredService<IExceptionPublisher>();
-                    ExceptionPublisherContext exContext = new(raw, ex.InnerException ?? ex);
+                    IExceptionHandler exceptionPublisher = host.Services.GetRequiredService<IExceptionHandler>();
+                    ExceptionHandlerContext exContext = new(raw, ex.InnerException ?? ex);
                     await exceptionPublisher.PublishAsync(exContext);
                 }
             };

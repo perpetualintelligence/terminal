@@ -5,18 +5,18 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Cli.Commands.Publishers;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockExceptionPublisher : IExceptionPublisher
+    public class MockExceptionPublisher : IExceptionHandler
     {
         public bool Called { get; set; }
 
         public string? PublishedMessage { get; set; }
 
-        public Task PublishAsync(ExceptionPublisherContext context)
+        public Task PublishAsync(ExceptionHandlerContext context)
         {
             Called = true;
             PublishedMessage = context.Exception.Message;

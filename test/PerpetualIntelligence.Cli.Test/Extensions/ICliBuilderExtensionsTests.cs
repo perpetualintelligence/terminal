@@ -14,12 +14,11 @@ using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Commands.Publishers;
 using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Commands.Stores;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Cli.Stores;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 
 using PerpetualIntelligence.Test;
@@ -135,6 +134,14 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [TestMethod]
+        public void AddCommandDescriptorWithRootAndNoGroupShouldError()
+        {
+            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
+
+            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: false, isRoot: true), Errors.InvalidConfiguration, "The root command must also be a command group. command_id=id1 command_name=name1");
+        }
+
+        [TestMethod]
         public void AddCommandDescriptorWithSpecialAnnotationsShouldNotError()
         {
             var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
@@ -142,18 +149,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsFalse(cmd.IsRoot);
             Assert.IsFalse(cmd.IsProtected);
 
-            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: true, isProtected:true);
+            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: true, isProtected: true);
             Assert.IsTrue(cmd.IsGroup);
             Assert.IsTrue(cmd.IsRoot);
             Assert.IsTrue(cmd.IsProtected);
-        }
-
-        [TestMethod]
-        public void AddCommandDescriptorWithRootAndNoGroupShouldError()
-        {
-            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
-
-            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: false, isRoot: true), Errors.InvalidConfiguration, "The root command must also be a command group. command_id=id1 command_name=name1");
         }
 
         [TestMethod]
@@ -224,12 +223,12 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             cliBuilder.AddErrorPublisher<MockErrorPublisher, MockExceptionPublisher>();
 
-            var err = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IErrorPublisher)));
+            var err = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IErrorHandler)));
             Assert.IsNotNull(err);
             Assert.AreEqual(ServiceLifetime.Transient, err.Lifetime);
             Assert.AreEqual(typeof(MockErrorPublisher), err.ImplementationType);
 
-            var exe = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IExceptionPublisher)));
+            var exe = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IExceptionHandler)));
             Assert.IsNotNull(exe);
             Assert.AreEqual(ServiceLifetime.Transient, exe.Lifetime);
             Assert.AreEqual(typeof(MockExceptionPublisher), exe.ImplementationType);

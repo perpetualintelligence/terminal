@@ -12,20 +12,18 @@ using PerpetualIntelligence.Test.Services;
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     [TestClass]
-    public class CheckerOptionsTests : InitializerTests
+    public class RouterOptionsTests : InitializerTests
     {
-        public CheckerOptionsTests() : base(TestLogger.Create<CheckerOptionsTests>())
+        public RouterOptionsTests() : base(TestLogger.Create<RouterOptionsTests>())
         {
         }
 
         [TestMethod]
-        public void CheckerOptionsShouldHaveCorrectDefaultValues()
+        public void RouterOptionsShouldHaveCorrectDefaultValues()
         {
-            CheckerOptions options = new ();
+            RouterOptions options = new();
 
-            Assert.AreEqual(null, options.AllowObsoleteArgument);
-            Assert.AreEqual(null, options.StrictArgumentValueType);
-            Assert.AreEqual(null, options.DataTypeHandler);
+            Assert.AreEqual(25000, options.Timeout);
         }
     }
 }

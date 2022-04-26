@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task ArgumentValueWithArgumentSeparatorShouldNotErrorAsync(string separator)
         {
-            options.Extractor.ArgumentSeparator = separator;
+            options.Extractor.ArgumentValueSeparator = separator;
 
             ArgumentExtractorContext context = new(new ArgumentString($"-key1{separator}value{separator}value2{separator}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -105,7 +105,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task InvalidArgumentValueSepratorShouldErrorAsync(string valid, string invalid)
         {
             // Set the correct separator
-            options.Extractor.ArgumentSeparator = valid;
+            options.Extractor.ArgumentValueSeparator = valid;
 
             // Arg string has incorrect separator Without the valid value separator the extractor will interpret as a
             // key only argument and that wil fail
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("माणू女性")]
         public async Task KeySeparatorValueShouldNotErrorAsync(string argSeparator)
         {
-            options.Extractor.ArgumentSeparator = argSeparator;
+            options.Extractor.ArgumentValueSeparator = argSeparator;
 
             ArgumentExtractorContext context = new(new ArgumentString($"-key1{argSeparator}value1"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -280,7 +280,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text) }));
             ArgumentExtractorContext context = new(new ArgumentString($"ईपक्षीरप्राणीप्रेम"), cmd);
@@ -295,7 +295,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", nameof(Boolean)) }));
             ArgumentExtractorContext context = new(new ArgumentString("ईपक्षी"), cmd);
@@ -310,7 +310,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text) }));
             ArgumentExtractorContext context = new(new ArgumentString("ईपक्षी"), cmd);
@@ -323,7 +323,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text) }));
             ArgumentExtractorContext context = new(new ArgumentString("ईपक्षीर"), cmd);
@@ -338,7 +338,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text) }));
             ArgumentExtractorContext context = new(new ArgumentString("रईपक्षीप्राणीप्रेम"), cmd);
@@ -351,7 +351,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text) }));
             ArgumentExtractorContext context = new(new ArgumentString("सईपक्षीरप्राणीप्रेम"), cmd);
@@ -366,7 +366,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
             options.Extractor.ArgumentValueWithIn = "बी";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text) }));
@@ -382,7 +382,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
             options.Extractor.ArgumentValueWithIn = "बी";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text) }));
@@ -398,7 +398,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.Separator = "स";
             options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentSeparator = "र";
+            options.Extractor.ArgumentValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(stringComparer, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text) }));
             ArgumentExtractorContext context = new(new ArgumentString("ससससससईईईईईईईईपक्षीरररररररररप्राणीप्रेमसससससस"), cmd);
