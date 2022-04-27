@@ -79,9 +79,9 @@ jobs:
     
     # Setup preview package versions based on trigger
     # Format: <package>.2.3.6-preview.2201032602
-    - name: Default metadata (preview)
+    - name: Default metadata (rc)
       if: ${{ github.event.inputs.suffix == '' }}
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}-preview.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
+      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}-rc.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
       continue-on-error: false
     
     # Setup preview package versions
