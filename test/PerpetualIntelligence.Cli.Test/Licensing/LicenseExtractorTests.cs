@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = null;
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
         }
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "invalid_auth_app";
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";            
@@ -72,7 +72,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
             cliOptions.Licensing.LicenseKey = nonJsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
 
             try
             {
@@ -91,14 +91,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Offline;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file check mode is not valid, see licensing options. check_mode=urn:oneimlx:lic:saascmode:offline");
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=offline");
 
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.OnlineThenOffline;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file check mode is not valid, see licensing options. check_mode=urn:oneimlx:lic:saascmode:onthenoff");
-
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.OfflineThenOnline;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file check mode is not valid, see licensing options. check_mode=urn:oneimlx:lic:saascmode:offthenon");
+            cliOptions.Handler.LicenseHandler = Handlers.BoylHandler;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=boyl");
         }
 
         [Fact]
@@ -106,7 +103,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "invalid_consumer";
             cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
@@ -120,7 +117,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
@@ -136,7 +133,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
@@ -151,7 +148,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "invalid_app";
@@ -167,9 +164,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The HTTP client factory is not configured, see cli builder extensions. service=AddLicensingClient check_mode=urn:oneimlx:lic:saascmode:online");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The HTTP client factory is not configured, see cli builder extensions. service=AddLicensingClient licensing_handler=online");
         }
 
         [Fact]
@@ -178,10 +175,10 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. check_mode=urn:oneimlx:lic:saascmode:online");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler=online");
         }
 
         [Fact]
@@ -193,7 +190,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Licensing.CheckMode = SaaSCheckModes.Online;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -213,7 +210,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // plan, mode and usage
             result.License.ProviderId.Should().Be("urn:oneimlx:lic:saaspvdr:pi");
-            result.License.CheckMode.Should().Be(SaaSCheckModes.Online);
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             result.License.Plan.Should().Be("urn:oneimlx:lic:saasplan:community");
             result.License.Usage.Should().Be("urn:oneimlx:lic:saasusage:rnd");
 

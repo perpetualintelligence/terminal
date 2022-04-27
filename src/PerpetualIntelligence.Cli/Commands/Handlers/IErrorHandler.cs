@@ -11,7 +11,7 @@ using PerpetualIntelligence.Shared.Infrastructure;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// An abstraction to publish <see cref="Error"/>.
+    /// An abstraction to handle <see cref="Error"/>.
     /// </summary>
     public interface IErrorHandler : IHandlerNoResult<ErrorHandlerContext>
     {

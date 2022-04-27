@@ -55,15 +55,24 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             return new LicenseCheckerResult(context.License)
             {
+                TerminalCount = terminalCount,
                 RootCommandCount = rootCommandCount,
                 CommandGroupCount = commandGroupCount,
-                ArgumentCount = argumentCount,
                 SubCommandCount = subCommandCount,
+                ArgumentCount = argumentCount,
             };
         }
 
         private Task<License> CheckLimitsAsync(LicenseCheckerContext context)
         {
+            // Terminal limit
+            if (terminalCount > context.License.Limits.TerminalLimit)
+            {
+                throw new ErrorException(Errors.InvalidLicense, "The terminal limit exceeded. max_limit={0} current={1}", context.License.Limits.TerminalLimit, terminalCount);
+            }
+
+            // Redistribution limit TODO, how do we check redistribution in a native bounded context
+
             // Root command limit
             if (rootCommandCount > context.License.Limits.RootCommandLimit)
             {
@@ -88,22 +97,21 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Errors.InvalidLicense, "The argument limit exceeded. max_limit={0} current={1}", context.License.Limits.ArgumentLimit, argumentCount);
             }
 
-            // Redistribution limit TODO, how do we check redistribution.
-
             // We have found a valid license within limit so reset the previous failed and return.
             return Task.FromResult(context.License);
         }
 
         private Task CheckOptionsAsync(LicenseCheckerContext context)
         {
-            // We drive all customization through options and the License sets the allowed options. So here we don't
-            // need to check the license plan, just check the options value with license value.
+            // Follow the pricing http://localhost:8080/articles/pi-cli/pricing.html We drive all customization through
+            // options and the License sets the allowed options. So here we don't need to check the license plan, just
+            // check the options value with license value.
             LicenseLimits limits = context.License.Limits;
 
-            // Date Type checks
-            if (!OptionsValid(limits.DataTypeHandlers, cliOptions.Checker.DataTypeHandler))
+            // Argument alias
+            if (!OptionsValid(limits.ArgumentAlias, cliOptions.Extractor.ArgumentAlias))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured data type check is not allowed for your license edition. data_type_check={0}", cliOptions.Checker.DataTypeHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured argument alias option is not allowed for your license edition.");
             }
 
             // Default arguments
@@ -118,34 +126,46 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Errors.InvalidLicense, "The configured default argument value option is not allowed for your license edition.");
             }
 
-            // Error handling
-            if (!OptionsValid(limits.ErrorHandlers, cliOptions.Hosting.ErrorHandler, allowNullActual: false))
-            {
-                throw new ErrorException(Errors.InvalidLicense, "The configured error handling is not allowed for your license edition. error_handling={0}", cliOptions.Hosting.ErrorHandler);
-            }
-
-            // Service implementation
-            if (!OptionsValid(limits.Services, cliOptions.Hosting.Service, allowNullActual: false))
-            {
-                throw new ErrorException(Errors.InvalidLicense, "The configured service implementation is not allowed for your license edition. service_implementation={0}", cliOptions.Hosting.Service);
-            }
-
-            // Stores
-            if (!OptionsValid(limits.Stores, cliOptions.Hosting.Store, allowNullActual: false))
-            {
-                throw new ErrorException(Errors.InvalidLicense, "The configured store is not allowed for your license edition. store={0}", cliOptions.Hosting.Store);
-            }
-
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictArgumentValueType))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured strict type checking is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured strict argument value type option is not allowed for your license edition.");
             }
 
-            // Unicode
-            if (!OptionsValid(limits.UnicodeHandlers, cliOptions.Hosting.UnicodeHandler, allowNullActual: false))
+            // Date Type handler, null allowed for data type handler.
+            if (!OptionsValid(limits.DataTypeHandlers, cliOptions.Handler.DataTypeHandler, allowNullActual: true))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured unicode support is not allowed for your license edition. unicode_support={0}", cliOptions.Hosting.UnicodeHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler={0}", cliOptions.Handler.DataTypeHandler);
+            }
+
+            // Unicode handler
+            if (!OptionsValid(limits.UnicodeHandlers, cliOptions.Handler.UnicodeHandler, allowNullActual: false))
+            {
+                throw new ErrorException(Errors.InvalidLicense, "The configured Unicode handler is not allowed for your license edition. unicode_handler={0}", cliOptions.Handler.UnicodeHandler);
+            }
+
+            // Error handler
+            if (!OptionsValid(limits.ErrorHandlers, cliOptions.Handler.ErrorHandler, allowNullActual: false))
+            {
+                throw new ErrorException(Errors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler={0}", cliOptions.Handler.ErrorHandler);
+            }
+
+            // Store handler
+            if (!OptionsValid(limits.StoreHandlers, cliOptions.Handler.StoreHandler, allowNullActual: false))
+            {
+                throw new ErrorException(Errors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler={0}", cliOptions.Handler.StoreHandler);
+            }
+
+            // Service handler
+            if (!OptionsValid(limits.ServiceHandlers, cliOptions.Handler.ServiceHandler, allowNullActual: false))
+            {
+                throw new ErrorException(Errors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler={0}", cliOptions.Handler.ServiceHandler);
+            }
+
+            // License handler
+            if (!OptionsValid(limits.LicenseHandlers, cliOptions.Handler.LicenseHandler, allowNullActual: false))
+            {
+                throw new ErrorException(Errors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler={0}", cliOptions.Handler.LicenseHandler);
             }
 
             return Task.CompletedTask;
@@ -161,6 +181,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 {
                     return;
                 }
+
+                // TODO, how do we sync terminal count across apps
+                terminalCount = 1;
 
                 foreach (CommandDescriptor cmd in commandDescriptors)
                 {
@@ -234,5 +257,6 @@ namespace PerpetualIntelligence.Cli.Licensing
         private object lockObject = new();
         private long rootCommandCount;
         private long subCommandCount;
+        private int terminalCount;
     }
 }

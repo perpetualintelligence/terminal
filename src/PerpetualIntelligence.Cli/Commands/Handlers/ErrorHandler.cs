@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The default <see cref="IErrorHandler"/> to publish an <see cref="Error"/>.
+    /// The default <see cref="IErrorHandler"/> to handle an <see cref="Error"/>.
     /// </summary>
     public class ErrorHandler : IErrorHandler
     {

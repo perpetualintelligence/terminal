@@ -135,7 +135,7 @@ namespace PerpetualIntelligence.Cli.Integration
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"consumer={license.Claims.Name} ({license.Claims.TenantId})");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"country={license.Claims.TenantCountry}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"subject={cliOptions.Licensing.Subject}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"check={license.CheckMode}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"handler={license.Handler}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Green, $"edition={license.Plan}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_source={cliOptions.Licensing.KeySource}");

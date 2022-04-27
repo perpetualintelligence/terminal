@@ -11,7 +11,7 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// An abstraction to publish <see cref="Exception"/>.
+    /// An abstraction to handle <see cref="Exception"/>.
     /// </summary>
     public interface IExceptionHandler : IHandlerNoResult<ExceptionHandlerContext>
     {

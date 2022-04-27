@@ -77,13 +77,13 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Make sure the HTTP client is correctly configured.
             if (httpClientFactory == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client factory is not configured, see cli builder extensions. service={0} check_mode={1}", nameof(ICliBuilderExtensions.AddLicensingClient), cliOptions.Licensing.CheckMode);
+                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client factory is not configured, see cli builder extensions. service={0} licensing_handler={1}", nameof(ICliBuilderExtensions.AddLicensingClient), cliOptions.Handler.LicenseHandler);
             }
 
             // Make sure the Http client name is setup
             if (string.IsNullOrWhiteSpace(cliOptions.Licensing.HttpClientName))
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. check_mode={0}", cliOptions.Licensing.CheckMode);
+                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
             }
 
             // Setup the HTTP client
@@ -112,9 +112,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // For now we only support the online check
-            if (cliOptions.Licensing.CheckMode != SaaSCheckModes.Online)
+            if (cliOptions.Handler.LicenseHandler != Handlers.OnlineHandler)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file check mode is not valid, see licensing options. check_mode={0}", cliOptions.Licensing.CheckMode);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
             }
 
             // Read the json file
@@ -196,7 +196,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan);
                 LicensePrice licensePrice = LicensePrice.Create(plan);
-                return new License(providerTenantId, cliOptions.Licensing.CheckMode, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+                return new License(providerTenantId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
             }
         }
 

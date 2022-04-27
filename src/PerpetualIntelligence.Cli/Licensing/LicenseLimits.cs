@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 
@@ -16,7 +17,7 @@ namespace PerpetualIntelligence.Cli.Licensing
     public sealed class LicenseLimits
     {
         /// <summary>
-        /// Supports the argument alias. Defaults to <c>false</c> or no argument alias.
+        /// Checks <see cref="ExtractorOptions.ArgumentAlias"/> option.
         /// </summary>
         public bool ArgumentAlias { get; internal set; }
 
@@ -53,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
         /// </summary>
-        public string[]? Licensing { get; internal set; }
+        public string[]? LicenseHandlers { get; internal set; }
 
         /// <summary>
         /// The SaaS plan.
@@ -73,12 +74,12 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// The service implantations.
         /// </summary>
-        public string[]? Services { get; internal set; }
+        public string[]? ServiceHandlers { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
         /// </summary>
-        public string[]? Stores { get; internal set; }
+        public string[]? StoreHandlers { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
@@ -168,9 +169,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DataTypeHandlers = null,
                 UnicodeHandlers = new[] { "default" },
                 ErrorHandlers = new[] { "default" },
-                Stores = new[] { "in-memory" },
-                Services = new[] { "default" },
-                Licensing = new[] { "online" }
+                StoreHandlers = new[] { "in-memory" },
+                ServiceHandlers = new[] { "default" },
+                LicenseHandlers = new[] { "online" }
             };
         }
 
@@ -194,9 +195,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DataTypeHandlers = new[] { "default", "custom" },
                 UnicodeHandlers = new[] { "default", "custom" },
                 ErrorHandlers = new[] { "default", "custom" },
-                Stores = new[] { "in-memory", "json", "custom" },
-                Services = new[] { "default", "custom" },
-                Licensing = new[] { "online", "offline" }
+                StoreHandlers = new[] { "in-memory", "json", "custom" },
+                ServiceHandlers = new[] { "default", "custom" },
+                LicenseHandlers = new[] { "online", "offline" }
             };
         }
 
@@ -220,9 +221,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DataTypeHandlers = new[] { "default", "custom" },
                 UnicodeHandlers = new[] { "default", "custom" },
                 ErrorHandlers = new[] { "default", "custom" },
-                Stores = new[] { "in-memory", "json", "custom" },
-                Services = new[] { "default", "custom" },
-                Licensing = new[] { "online", "offline", "byol" }
+                StoreHandlers = new[] { "in-memory", "json", "custom" },
+                ServiceHandlers = new[] { "default", "custom" },
+                LicenseHandlers = new[] { "online", "offline", "byol" }
             };
         }
 
@@ -246,9 +247,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DataTypeHandlers = new[] { "default", "custom" },
                 UnicodeHandlers = new[] { "default", "custom" },
                 ErrorHandlers = new[] { "default", "custom" },
-                Stores = new[] { "in-memory", "json", "custom" },
-                Services = new[] { "default", "custom" },
-                Licensing = new[] { "online", "offline", "byol" }
+                StoreHandlers = new[] { "in-memory", "json", "custom" },
+                ServiceHandlers = new[] { "default", "custom" },
+                LicenseHandlers = new[] { "online", "offline", "byol" }
             };
         }
 
@@ -272,9 +273,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DataTypeHandlers = null,
                 UnicodeHandlers = new[] { "default" },
                 ErrorHandlers = new[] { "default" },
-                Stores = new[] { "in-memory" },
-                Services = new[] { "default" },
-                Licensing = new[] { "online" }
+                StoreHandlers = new[] { "in-memory" },
+                ServiceHandlers = new[] { "default" },
+                LicenseHandlers = new[] { "online" }
             };
         }
 
@@ -298,9 +299,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DataTypeHandlers = new[] { "default" },
                 UnicodeHandlers = new[] { "default" },
                 ErrorHandlers = new[] { "default" },
-                Stores = new[] { "in-memory", "json" },
-                Services = new[] { "default" },
-                Licensing = new[] { "online" }
+                StoreHandlers = new[] { "in-memory", "json" },
+                ServiceHandlers = new[] { "default" },
+                LicenseHandlers = new[] { "online" }
             };
         }
     }

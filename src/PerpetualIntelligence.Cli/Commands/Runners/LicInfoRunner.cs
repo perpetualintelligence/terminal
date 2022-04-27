@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "License");
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "plan={0}", license.Plan);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "usage={0}", license.Usage);
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "check_mode={0}", license.CheckMode);
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "handler={0}", license.Handler);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "provider_id={0}", license.ProviderId);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "key_source={0}", license.LicenseKeySource);
 
@@ -96,9 +96,9 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "data_type_handlers={0}", license.Limits.DataTypeHandlers.JoinBySpace());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "unicode_handlers={0}", license.Limits.UnicodeHandlers.JoinBySpace());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "error_handlers={0}", license.Limits.ErrorHandlers.JoinBySpace());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "stores={0}", license.Limits.Stores.JoinBySpace());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "services={0}", license.Limits.Services.JoinBySpace());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "licensing={0}", license.Limits.Licensing.JoinBySpace());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "stores={0}", license.Limits.StoreHandlers.JoinBySpace());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "services={0}", license.Limits.ServiceHandlers.JoinBySpace());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "licensing={0}", license.Limits.LicenseHandlers.JoinBySpace());
 
                     if (license.Claims.Custom != null)
                     {

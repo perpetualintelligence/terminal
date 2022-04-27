@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// Initialize a new instance.
         /// </summary>
         /// <param name="providerTenantId">The license provider tenant id.</param>
-        /// <param name="checkMode">The license check mode.</param>
+        /// <param name="handler">The license handler.</param>
         /// <param name="plan">The license plan.</param>
         /// <param name="usage">The license usage.</param>
         /// <param name="licenseKeySource"></param>
@@ -26,10 +26,10 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <param name="claims">The license claims.</param>
         /// <param name="limits">The license limits.</param>
         /// <param name="price">The license price.</param>
-        public License(string providerTenantId, string checkMode, string plan, string usage, string licenseKeySource, string licenseKey, LicenseClaimsModel claims, LicenseLimits limits, LicensePrice price)
+        public License(string providerTenantId, string handler, string plan, string usage, string licenseKeySource, string licenseKey, LicenseClaimsModel claims, LicenseLimits limits, LicensePrice price)
         {
             ProviderId = providerTenantId;
-            CheckMode = checkMode;
+            Handler = handler;
             Plan = plan;
             Usage = usage;
             LicenseKeySource = licenseKeySource;
@@ -40,14 +40,14 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         /// <summary>
-        /// The license check mode.
-        /// </summary>
-        public string CheckMode { get; }
-
-        /// <summary>
         /// The license claims.
         /// </summary>
         public LicenseClaimsModel Claims { get; }
+
+        /// <summary>
+        /// The license handler.
+        /// </summary>
+        public string Handler { get; }
 
         /// <summary>
         /// The license key.

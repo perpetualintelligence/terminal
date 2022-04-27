@@ -24,8 +24,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             CheckerOptions options = new ();
 
             Assert.AreEqual(null, options.AllowObsoleteArgument);
-            Assert.AreEqual(null, options.StrictArgumentValueType);
-            Assert.AreEqual(null, options.DataTypeHandler);
+            Assert.AreEqual(null, options.StrictArgumentValueType);            
         }
     }
 }

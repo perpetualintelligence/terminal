@@ -24,11 +24,6 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public bool? AllowObsoleteArgument { get; set; }
 
         /// <summary>
-        /// Reserved for future.
-        /// </summary>
-        public string? DataTypeHandler { get; set; }
-
-        /// <summary>
         /// Determines whether the checker checks an argument value type. If this option is enabled, the checker will
         /// try to map an argument value to its corresponding .NET value type. If the mapping fails, the command will
         /// not run.

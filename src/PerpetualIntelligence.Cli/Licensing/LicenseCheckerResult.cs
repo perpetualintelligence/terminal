@@ -29,6 +29,11 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         /// <summary>
+        /// The terminal count.
+        /// </summary>
+        public long TerminalCount { get; set; }
+
+        /// <summary>
         /// The argument count.
         /// </summary>
         public long ArgumentCount { get; set; }

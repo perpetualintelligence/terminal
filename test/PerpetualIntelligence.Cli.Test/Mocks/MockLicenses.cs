@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             TestLimits = LicenseLimits.Create(SaaSPlans.Community);
             TestPrice = LicensePrice.Create(SaaSPlans.Community);
 
-            TestLicense = new License("testProviderId1", SaaSCheckModes.Online, SaaSPlans.Community, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testLicKey1", TestClaims, TestLimits, TestPrice);
+            TestLicense = new License("testProviderId1", Handlers.OfflineHandler, SaaSPlans.Community, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testLicKey1", TestClaims, TestLimits, TestPrice);
         }
 
         public static LicenseClaimsModel TestClaims = null!;

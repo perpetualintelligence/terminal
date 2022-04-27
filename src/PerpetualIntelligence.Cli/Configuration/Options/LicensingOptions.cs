@@ -21,17 +21,12 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string? AuthorizedApplicationId { get; set; }
 
         /// <summary>
-        /// The license check mode. Defaults to <see cref="SaaSCheckModes.Online"/>.
-        /// </summary>
-        public string CheckMode { get; set; } = SaaSCheckModes.Online;
-
-        /// <summary>
         /// The license consumer tenant id.
         /// </summary>
         public string? ConsumerTenantId { get; set; }
 
         /// <summary>
-        /// The HTTP client name for <see cref="SaaSCheckModes.Online"/> checks.
+        /// The HTTP client name for <see cref="Handlers.OnlineHandler"/> checks.
         /// </summary>
         /// <remarks>The name must match the <see cref="ICliBuilderExtensions.AddLicensingClient(Integration.ICliBuilder, string, System.TimeSpan)"/></remarks>
         public string? HttpClientName { get; set; }

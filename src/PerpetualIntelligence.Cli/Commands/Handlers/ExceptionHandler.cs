@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
-    /// The default <see cref="IExceptionHandler"/> to publish an <see cref="Exception"/>.
+    /// The default <see cref="IExceptionHandler"/> to handle an <see cref="Exception"/>.
     /// </summary>
     public class ExceptionHandler : IExceptionHandler
     {
