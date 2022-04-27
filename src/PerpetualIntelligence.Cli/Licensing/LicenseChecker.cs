@@ -141,7 +141,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Unicode handler
             if (!OptionsValid(limits.UnicodeHandlers, cliOptions.Handler.TextHandler, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured text handler is not allowed for your license edition.text_handler={0}", cliOptions.Handler.TextHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler={0}", cliOptions.Handler.TextHandler);
             }
 
             // Error handler

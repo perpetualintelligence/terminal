@@ -343,11 +343,11 @@ namespace PerpetualIntelligence.Cli.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             cliOptions.Handler.TextHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured Unicode handler is not allowed for your license edition. text_handler=");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler=");
 
             // Invalid value should error
             cliOptions.Handler.TextHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured Unicode handler is not allowed for your license edition. text_handler=test4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler=test4");
         }
 
         private CliOptions cliOptions;
