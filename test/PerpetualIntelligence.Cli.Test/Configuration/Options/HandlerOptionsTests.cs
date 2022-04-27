@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             options.LicenseHandler.Should().Be(Handlers.OnlineHandler);
             options.ServiceHandler.Should().Be(Handlers.DefaultHandler);
             options.StoreHandler.Should().Be(Handlers.InMemoryHandler);
-            options.UnicodeHandler.Should().Be(Handlers.DefaultHandler);
+            options.TextHandler.Should().Be(Handlers.UnicodeHandler);
         }
     }
 }

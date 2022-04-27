@@ -331,23 +331,23 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         [Fact]
-        public async Task CheckAsync_UnicodeHandler_ShouldBehaveCorrectly()
+        public async Task CheckAsync_TextHandler_ShouldBehaveCorrectly()
         {
-            cliOptions.Handler.UnicodeHandler = "default";
+            cliOptions.Handler.TextHandler = "unicode";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
-            cliOptions.Handler.UnicodeHandler = "custom";
+            cliOptions.Handler.TextHandler = "ascii";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Null not allowed
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            cliOptions.Handler.UnicodeHandler = null;
+            cliOptions.Handler.TextHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured Unicode handler is not allowed for your license edition. unicode_handler=");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured Unicode handler is not allowed for your license edition. text_handler=");
 
             // Invalid value should error
-            cliOptions.Handler.UnicodeHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured Unicode handler is not allowed for your license edition. unicode_handler=test4");
+            cliOptions.Handler.TextHandler = "test4";
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured Unicode handler is not allowed for your license edition. text_handler=test4");
         }
 
         private CliOptions cliOptions;

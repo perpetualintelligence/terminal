@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli
         [TestMethod]
         public void AssertHandlersAreValid()
         {
-            TestHelper.AssertConstantCount(typeof(Handlers), 7);
+            TestHelper.AssertConstantCount(typeof(Handlers), 9);
 
             Assert.AreEqual("boyl", Handlers.BoylHandler);
             Assert.AreEqual("custom", Handlers.CustomHandler);
@@ -25,6 +25,8 @@ namespace PerpetualIntelligence.Cli
             Assert.AreEqual("json", Handlers.JsonHandler);
             Assert.AreEqual("offline", Handlers.OfflineHandler);
             Assert.AreEqual("online", Handlers.OnlineHandler);
+            Assert.AreEqual("unicode", Handlers.UnicodeHandler);
+            Assert.AreEqual("ascii", Handlers.AsciiHandler);
         }
     }
 }

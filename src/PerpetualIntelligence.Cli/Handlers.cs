@@ -13,6 +13,11 @@ namespace PerpetualIntelligence.Cli
     public class Handlers
     {
         /// <summary>
+        /// The <c>ascii</c> handler.
+        /// </summary>
+        public const string AsciiHandler = "ascii";
+
+        /// <summary>
         /// The <c>boyl</c> handler.
         /// </summary>
         public const string BoylHandler = "boyl";
@@ -46,5 +51,10 @@ namespace PerpetualIntelligence.Cli
         /// The <c>boyl</c> handler.
         /// </summary>
         public const string OnlineHandler = "online";
+
+        /// <summary>
+        /// The <c>unicode</c> handler.
+        /// </summary>
+        public const string UnicodeHandler = "unicode";
     }
 }

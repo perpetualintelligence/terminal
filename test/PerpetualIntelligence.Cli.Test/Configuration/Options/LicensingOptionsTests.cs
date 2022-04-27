@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             Assert.IsNull(options.HttpClientName);
             Assert.AreEqual(SaaSKeySources.JsonFile, options.KeySource);
             Assert.IsNull(options.LicenseKey);
-            Assert.IsNull(options.ProviderId);
+            Assert.AreEqual(SaaSProviders.PerpetualIntelligence, options.ProviderId);
             Assert.IsNull(options.Subject);
         }
     }

@@ -13,10 +13,18 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     /// <summary>
     /// The licensing configuration options.
     /// </summary>
+    /// <remarks>
+    /// Please visit <see href="https://docs.perpetualintelligence.com/articles/pi-cli/licensing.html"/> to generate license keys and
+    /// access your identifiers.
+    /// <para>
+    /// You will require a valid license (community or commercial) and identifiers to set the licensing options. To use
+    /// our test license for quick onboarding and evaluation, please refer to <see href="https://docs.perpetualintelligence.com/articles/pi-cli/intro.html#demo-license"/>.
+    /// </para>
+    /// </remarks>
     public class LicensingOptions
     {
         /// <summary>
-        /// The license authorized application id.
+        /// The authorized application id. This is also the <c>auth_apps</c> claim from your license key.
         /// </summary>
         public string? AuthorizedApplicationId { get; set; }
 
@@ -26,9 +34,9 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string? ConsumerTenantId { get; set; }
 
         /// <summary>
-        /// The HTTP client name for <see cref="Handlers.OnlineHandler"/> checks.
+        /// The HTTP client name for online licensing handler.
         /// </summary>
-        /// <remarks>The name must match the <see cref="ICliBuilderExtensions.AddLicensingClient(Integration.ICliBuilder, string, System.TimeSpan)"/></remarks>
+        /// <remarks>The HTTP client name must match the name passed to <see cref="ICliBuilderExtensions.AddLicensingClient(Integration.ICliBuilder, string, System.TimeSpan)"/></remarks>
         public string? HttpClientName { get; set; }
 
         /// <summary>
@@ -39,12 +47,16 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// <summary>
         /// The license key or the file containing license key.
         /// </summary>
+        /// <remarks>
+        /// If <see cref="KeySource"/> is set to <see cref="SaaSKeySources.JsonFile"/>, then this option value must be a
+        /// valid JSON file path containing license key.
+        /// </remarks>
         public string? LicenseKey { get; set; }
 
         /// <summary>
-        /// The license SaaS provider id or the provider tenant id.
+        /// The license SaaS provider id or the provider tenant id. Defaults to <see cref="SaaSProviders.PerpetualIntelligence"/>
         /// </summary>
-        public string? ProviderId { get; set; }
+        public string? ProviderId { get; set; } = SaaSProviders.PerpetualIntelligence;
 
         /// <summary>
         /// The subject or a licensing context to check the license. Your subscription id or any other domain identifier

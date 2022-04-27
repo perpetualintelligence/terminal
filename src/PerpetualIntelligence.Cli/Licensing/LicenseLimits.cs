@@ -167,7 +167,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 StrictDataType = false,
 
                 DataTypeHandlers = null,
-                UnicodeHandlers = new[] { "default" },
+                UnicodeHandlers = new[] { "unicode", "ascii" },
                 ErrorHandlers = new[] { "default" },
                 StoreHandlers = new[] { "in-memory" },
                 ServiceHandlers = new[] { "default" },
@@ -193,7 +193,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { "default", "custom" },
-                UnicodeHandlers = new[] { "default", "custom" },
+                UnicodeHandlers = new[] { "unicode", "ascii" },
                 ErrorHandlers = new[] { "default", "custom" },
                 StoreHandlers = new[] { "in-memory", "json", "custom" },
                 ServiceHandlers = new[] { "default", "custom" },
@@ -219,7 +219,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { "default", "custom" },
-                UnicodeHandlers = new[] { "default", "custom" },
+                UnicodeHandlers = new[] { "unicode", "ascii" },
                 ErrorHandlers = new[] { "default", "custom" },
                 StoreHandlers = new[] { "in-memory", "json", "custom" },
                 ServiceHandlers = new[] { "default", "custom" },
@@ -245,7 +245,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { "default", "custom" },
-                UnicodeHandlers = new[] { "default", "custom" },
+                UnicodeHandlers = new[] { "unicode", "ascii" },
                 ErrorHandlers = new[] { "default", "custom" },
                 StoreHandlers = new[] { "in-memory", "json", "custom" },
                 ServiceHandlers = new[] { "default", "custom" },
@@ -271,7 +271,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 StrictDataType = false,
 
                 DataTypeHandlers = null,
-                UnicodeHandlers = new[] { "default" },
+                UnicodeHandlers = new[] { "unicode", "ascii" },
                 ErrorHandlers = new[] { "default" },
                 StoreHandlers = new[] { "in-memory" },
                 ServiceHandlers = new[] { "default" },
@@ -297,7 +297,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { "default" },
-                UnicodeHandlers = new[] { "default" },
+                UnicodeHandlers = new[] { "unicode", "ascii" },
                 ErrorHandlers = new[] { "default" },
                 StoreHandlers = new[] { "in-memory", "json" },
                 ServiceHandlers = new[] { "default" },
