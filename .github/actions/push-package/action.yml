@@ -25,6 +25,9 @@ inputs:
     description: 'The package registry (github or nuget)'
     default: github
     required: true
+  testLicJson:
+    description: 'The test license JSON'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -39,6 +42,8 @@ runs:
       if: ${{ inputs.skiptest == 'false' }}
       run: dotnet test ./test/${{ inputs.project }}.Test/${{ inputs.project }}.Test.csproj -c ${{ inputs.config }} --verbosity minimal    
       shell: bash
+      env:
+        PI_CLI_TEST_LIC: ${{ inputs.testLicJson }}
 
     # Pack
     - name: Pack
