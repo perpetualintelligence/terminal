@@ -28,11 +28,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "Environment variable PI_CLI_TEST_LIC with license key not found.");
             }
-            jsonLicPath = Path.Combine(AppContext.BaseDirectory, "TestInfra", $"{Guid.NewGuid()}.json");
+            jsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
             File.WriteAllText(jsonLicPath, jsonLic);
 
             string nonJson = "non json document";
-            nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, "TestInfra", $"{Guid.NewGuid()}.json");
+            nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
             File.WriteAllText(nonJsonLicPath, nonJson);
 
             cliOptions = MockCliOptions.New();
