@@ -94,11 +94,11 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_argument_value={0}", license.Limits.DefaultArgumentValue.ToString());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "data_type_handlers={0}", license.Limits.DataTypeHandlers.JoinBySpace());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "unicode_handlers={0}", license.Limits.UnicodeHandlers.JoinBySpace());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "test_handlers={0}", license.Limits.TextHandlers.JoinBySpace());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "error_handlers={0}", license.Limits.ErrorHandlers.JoinBySpace());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "stores={0}", license.Limits.StoreHandlers.JoinBySpace());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "services={0}", license.Limits.ServiceHandlers.JoinBySpace());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "licensing={0}", license.Limits.LicenseHandlers.JoinBySpace());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "store_handlers={0}", license.Limits.StoreHandlers.JoinBySpace());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "service_handlers={0}", license.Limits.ServiceHandlers.JoinBySpace());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "license_handlers={0}", license.Limits.LicenseHandlers.JoinBySpace());
 
                     if (license.Claims.Custom != null)
                     {

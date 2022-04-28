@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_InvalidKeyFilePath_ShouldErrorAsync()
         {
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = "D:\\lic\\path_does_exist\\invalid.lic";
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
@@ -69,7 +69,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_NonJsonLic_ShouldErrorAsync()
         {
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = nonJsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_NonOnlineMode_ShouldErrorAsync()
         {
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "invalid_consumer";
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id=invalid_consumer");
@@ -120,7 +120,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = "invalid_provider";
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
@@ -136,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "invalid_subject";
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
 
@@ -161,7 +161,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientFactory_ShouldErrorAsync()
         {
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
@@ -172,7 +172,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientName_ShouldErrorAsync()
         {
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = jsonLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
@@ -194,7 +194,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.ProviderId = SaaSProviders.PerpetualIntelligence;
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
 
@@ -211,11 +211,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             // plan, mode and usage
             result.License.ProviderId.Should().Be("urn:oneimlx:lic:saaspvdr:pi");
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            result.License.Plan.Should().Be("urn:oneimlx:lic:saasplan:community");
+            result.License.Plan.Should().Be("urn:oneimlx:lic:saasplan:isvu");
             result.License.Usage.Should().Be("urn:oneimlx:lic:saasusage:rnd");
 
             // claims
-            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:saasplan:community urn:oneimlx:lic:saasusage:rnd urn:oneimlx:lic:saaspvdr:pi");
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:saasplan:isvu urn:oneimlx:lic:saasusage:rnd urn:oneimlx:lic:saaspvdr:pi");
             result.License.Claims.Audience.Should().Be("https://login.microsoftonline.com/a8379958-ea19-4918-84dc-199bf012361e/v2.0");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:cli");
             result.License.Claims.TenantCountry.Should().Be("USA");
@@ -224,7 +224,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             result.License.Claims.IssuedAt.Should().NotBeNull();
             result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com/security/licensing");
             result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
-            result.License.Claims.Name.Should().Be("Perpetual Intelligence L.L.C.");
+            result.License.Claims.Name.Should().Be("Perpetual Intelligence L.L.C. - Test");
             result.License.Claims.NotBefore.Should().NotBeNull();
             result.License.Claims.ObjectId.Should().BeNull();
             result.License.Claims.ObjectCountry.Should().BeNull();
@@ -232,7 +232,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             result.License.Claims.TenantId.Should().Be("a8379958-ea19-4918-84dc-199bf012361e");
 
             // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:lic:saasplan:community");
+            result.License.Limits.Plan.Should().Be("urn:oneimlx:lic:saasplan:isvu");
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();
@@ -243,7 +243,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_WithNoLicenseKey_ShouldErrorAsync()
         {
-            cliOptions.Licensing.AuthorizedApplicationId = "eef87540-7ef9-45fd-a9f2-3b81134a2ade";
+            cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = null;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 

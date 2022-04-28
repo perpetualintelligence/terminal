@@ -170,11 +170,11 @@ namespace PerpetualIntelligence.Cli.Integration
             {
                 if (license.Usage == SaaSUsages.Educational)
                 {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for educational purposes only. For commercial and non-educational use, you require a paid subscription.");
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for educational purposes only. For non-educational or production use, you require a commercial license.");
                 }
                 else if (license.Usage == SaaSUsages.RnD)
                 {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for RnD, test, and demo purposes only. For commercial or production use, you require a paid subscription.");
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for RnD, test, and demo purposes only. For non-educational or production use, you require a commercial license.");
                 }
             }
 

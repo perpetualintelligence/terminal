@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.StrictDataType.Should().Be(false);
 
             limits.DataTypeHandlers.Should().BeNull();
-            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
@@ -104,7 +104,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
@@ -131,7 +131,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
@@ -158,7 +158,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.StrictDataType.Should().Be(false);
 
             limits.DataTypeHandlers.Should().BeNull();
-            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
@@ -185,7 +185,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.UnicodeHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
