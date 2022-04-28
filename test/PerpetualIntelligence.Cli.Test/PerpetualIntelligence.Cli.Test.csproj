@@ -14,13 +14,4 @@
     <ProjectReference Include="..\..\src\PerpetualIntelligence.Cli\PerpetualIntelligence.Cli.csproj" />
   </ItemGroup>
 
- <ItemGroup>
-   <None Update="TestInfra\test_lic_non_json.json">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-   </None>
-   <None Update="TestInfra\test_lic.json">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-   </None>
- </ItemGroup>
-
 </Project>

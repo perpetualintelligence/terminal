@@ -18,26 +18,39 @@ using Xunit;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {
-    public class LicenseExtractorTests
+    public class LicenseExtractorTests : IDisposable
     {
         public LicenseExtractorTests()
         {
+            // Read the lic file from Github secrets
+            string? jsonLic = Environment.GetEnvironmentVariable("PI_CLI_TEST_LIC");
+            if (string.IsNullOrWhiteSpace(jsonLic))
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "Environment variable PI_CLI_TEST_LIC with license key not found.");
+            }
+            jsonLicPath = Path.Combine(AppContext.BaseDirectory, "TestInfra", $"{Guid.NewGuid()}.json");
+            File.WriteAllText(jsonLicPath, jsonLic);
+
+            string nonJson = "non json document";
+            nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, "TestInfra", $"{Guid.NewGuid()}.json");
+            File.WriteAllText(nonJsonLicPath, nonJson);
+
             cliOptions = MockCliOptions.New();
             licenseProviderResolver = new LicenseProviderResolver();
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions);
-            jsonLicPath = Path.Combine(AppContext.BaseDirectory, "TestInfra", "test_lic.json");
-            nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, "TestInfra", "test_lic_non_json.json");
         }
 
-        [Fact]
-        public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
+        public void Dispose()
         {
-            cliOptions.Licensing.AuthorizedApplicationId = null;
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
+            if (File.Exists(jsonLicPath))
+            {
+                File.Delete(jsonLicPath);
+            }
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
+            if (File.Exists(nonJsonLicPath))
+            {
+                File.Delete(nonJsonLicPath);
+            }
         }
 
         [Fact]
@@ -49,7 +62,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";            
+            cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = SaaSProviders.PerpetualIntelligence;
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
 
@@ -64,6 +77,17 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file=D:\\lic\\path_does_exist\\invalid.lic");
+        }
+
+        [Fact]
+        public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
+        {
+            cliOptions.Licensing.AuthorizedApplicationId = null;
+            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
+
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
         }
 
         [Fact]
@@ -96,6 +120,21 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             cliOptions.Handler.LicenseHandler = Handlers.BoylHandler;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=boyl");
+        }
+
+        [Fact]
+        public async Task ExtractFromJsonAsync_OnlineMode_InvalidApplicationId_ShouldErrorAsync()
+        {
+            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
+            cliOptions.Licensing.HttpClientName = "test_client";
+            cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
+            cliOptions.Licensing.AuthorizedApplicationId = "invalid_app";
+            cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
+            licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
+
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), "unauthorized_access", "The application is not authorized. application_id=invalid_app");
         }
 
         [Fact]
@@ -141,21 +180,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject=invalid_subject");
-        }
-
-        [Fact]
-        public async Task ExtractFromJsonAsync_OnlineMode_InvalidApplicationId_ShouldErrorAsync()
-        {
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
-            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Licensing.HttpClientName = "test_client";
-            cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            cliOptions.Licensing.AuthorizedApplicationId = "invalid_app";
-            cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
-
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), "unauthorized_access", "The application is not authorized. application_id=invalid_app");
         }
 
         [Fact]
@@ -260,8 +284,8 @@ namespace PerpetualIntelligence.Cli.Licensing
 
         private CliOptions cliOptions;
         private string jsonLicPath;
-        private ILicenseProviderResolver licenseProviderResolver;
         private ILicenseExtractor licenseExtractor;
+        private ILicenseProviderResolver licenseProviderResolver;
         private string nonJsonLicPath;
     }
 }

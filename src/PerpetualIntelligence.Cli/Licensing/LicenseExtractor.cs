@@ -121,7 +121,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseKeyJsonFileModel? jsonFileModel;
             try
             {
-                jsonFileModel = await JsonSerializer.DeserializeAsync<LicenseKeyJsonFileModel>(File.OpenRead(cliOptions.Licensing.LicenseKey));
+                // Make sure the lic stream is disposed to avoid locking.
+                using (Stream licStream = File.OpenRead(cliOptions.Licensing.LicenseKey))
+                {
+                    jsonFileModel = await JsonSerializer.DeserializeAsync<LicenseKeyJsonFileModel>(licStream);
+                }
             }
             catch (JsonException ex)
             {
