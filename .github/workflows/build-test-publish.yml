@@ -140,3 +140,4 @@ jobs:
         ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
         nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
         registry: ${{ env.PI_PUBLISH_REGISTRY }}
+        testLicJson: ${{ env.PI_GITHUB_TEST_LIC }}
