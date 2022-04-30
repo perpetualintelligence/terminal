@@ -280,7 +280,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Configure to call the security API
             builder.Services.AddHttpClient(name, client =>
             {
-                client.BaseAddress = new Uri("https://api.perpetualintelligence.com/security/");
+                client.BaseAddress = new Uri("https://api.perpetualintelligence.com/");
                 client.Timeout = timeout;
             });
 

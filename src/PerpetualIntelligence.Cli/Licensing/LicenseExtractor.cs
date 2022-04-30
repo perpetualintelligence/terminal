@@ -154,7 +154,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             };
 
             var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
-            using (HttpResponseMessage response = await httpClient.PostAsync("licensing/check", checkContent))
+            using (HttpResponseMessage response = await httpClient.PostAsync("public/checklicense", checkContent))
             {
                 if (!response.IsSuccessStatusCode)
                 {
