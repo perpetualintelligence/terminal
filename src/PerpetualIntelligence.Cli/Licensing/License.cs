@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Protocols.Licensing.Models;
+using PerpetualIntelligence.Protocols.Licensing;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {

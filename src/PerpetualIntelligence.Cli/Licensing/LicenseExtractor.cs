@@ -8,7 +8,6 @@
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Protocols.Licensing;
-using PerpetualIntelligence.Protocols.Licensing.Models;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;

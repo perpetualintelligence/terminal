@@ -7,7 +7,6 @@
 
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Protocols.Licensing;
-using PerpetualIntelligence.Protocols.Licensing.Models;
 using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Cli.Mocks
