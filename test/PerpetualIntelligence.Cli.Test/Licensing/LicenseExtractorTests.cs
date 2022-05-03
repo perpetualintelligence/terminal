@@ -148,7 +148,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Licensing.HttpClientName = "test_client";
+            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = SaaSProviders.PerpetualIntelligence;
@@ -249,7 +249,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = demoLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Licensing.HttpClientName = "localhost";
+            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = DemoIdentifiers.PiCliDemoConsumerTenantId;
             cliOptions.Licensing.Subject = DemoIdentifiers.PiCliDemoSubject;
             cliOptions.Licensing.AuthorizedApplicationId = DemoIdentifiers.PiCliDemoAuthorizedApplicationId;
@@ -336,7 +336,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Licensing.HttpClientName = "test_client";
+            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "invalid_app";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -351,7 +351,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Licensing.HttpClientName = "test_client";
+            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "invalid_consumer";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
@@ -365,7 +365,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Licensing.HttpClientName = "test_client";
+            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -381,7 +381,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Licensing.HttpClientName = "test_client";
+            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "invalid_subject";
@@ -398,7 +398,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The HTTP client factory is not configured, see cli builder extensions. service=AddLicensingClient licensing_handler=online");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The IHttpClientFactory is not configured. licensing_handler=online");
         }
 
         [Fact]
@@ -423,7 +423,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Licensing.HttpClientName = "test_client";
+            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
@@ -526,5 +526,6 @@ namespace PerpetualIntelligence.Cli.Licensing
         private ILicenseProviderResolver licenseProviderResolver;
         private string nonJsonLicPath;
         private string testLicPath;
+        private string httpClientName = "prod";
     }
 }

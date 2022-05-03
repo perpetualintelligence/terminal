@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Protocols.Licensing;
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
@@ -14,11 +13,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     /// The licensing configuration options.
     /// </summary>
     /// <remarks>
-    /// Please visit <see href="https://docs.perpetualintelligence.com/articles/pi-cli/licensing.html"/> to generate license keys and
-    /// access your identifiers.
+    /// Please visit <see href="https://docs.perpetualintelligence.com/articles/pi-cli/licensing.html"/> to generate
+    /// license keys and access your identifiers.
     /// <para>
     /// You will require a valid license (community or commercial) and identifiers to set the licensing options. To use
-    /// our test license for quick onboarding and evaluation, please refer to <see href="https://docs.perpetualintelligence.com/articles/pi-cli/intro.html#demo-license"/>.
+    /// our test license for quick onboarding and evaluation, please refer to <see href="https://docs.perpetualintelligence.com/articles/pi-demo/intro.html"/>.
     /// </para>
     /// </remarks>
     public class LicensingOptions
@@ -32,12 +31,6 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The license consumer tenant id.
         /// </summary>
         public string? ConsumerTenantId { get; set; }
-
-        /// <summary>
-        /// The HTTP client name for online licensing handler.
-        /// </summary>
-        /// <remarks>The HTTP client name must match the name passed to <see cref="ICliBuilderExtensions.AddLicensingClient(Integration.ICliBuilder, string, System.TimeSpan)"/></remarks>
-        public string? HttpClientName { get; set; }
 
         /// <summary>
         /// The license key source. Defaults to <see cref="SaaSKeySources.JsonFile"/>.

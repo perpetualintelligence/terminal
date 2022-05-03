@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Protocols.Authorization;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -74,20 +73,19 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <exception cref="ErrorException"></exception>
         private HttpClient EnsureHttpClient()
         {
-            // Make sure the HTTP client is correctly configured.
             if (httpClientFactory == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client factory is not configured, see cli builder extensions. service={0} licensing_handler={1}", nameof(ICliBuilderExtensions.AddLicensingClient), cliOptions.Handler.LicenseHandler);
+                throw new ErrorException(Errors.InvalidConfiguration, "The IHttpClientFactory is not configured. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
             }
 
-            // Make sure the Http client name is setup
-            if (string.IsNullOrWhiteSpace(cliOptions.Licensing.HttpClientName))
+            // Make sure the HTTP client name is setup
+            if (cliOptions.Http.HttpClientName == null)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
             }
 
             // Setup the HTTP client
-            HttpClient httpClient = httpClientFactory.CreateClient(cliOptions.Licensing.HttpClientName!);
+            HttpClient httpClient = httpClientFactory.CreateClient(cliOptions.Http.HttpClientName);
             return httpClient;
         }
 

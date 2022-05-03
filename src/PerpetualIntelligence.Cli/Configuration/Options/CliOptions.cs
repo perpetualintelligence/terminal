@@ -33,6 +33,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public HandlerOptions Handler { get; set; } = new HandlerOptions();
 
         /// <summary>
+        /// The HTTP configuration options.
+        /// </summary>
+        public HttpOptions Http { get; set; } = new HttpOptions();
+
+        /// <summary>
         /// The licensing configuration options.
         /// </summary>
         public LicensingOptions Licensing { get; set; } = new LicensingOptions();

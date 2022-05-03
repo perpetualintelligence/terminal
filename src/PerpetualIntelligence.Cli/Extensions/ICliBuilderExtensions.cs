@@ -264,30 +264,6 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds a <see cref="IHttpClientFactory"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="name">The HTTP client name.</param>
-        /// <param name="timeout">The HTTP client timeout.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        /// <remarks>
-        /// The <see cref="AddLicensingClient(ICliBuilder, string, TimeSpan)"/> is required if you are using
-        /// <see cref="Handlers.OnlineHandler"/> check. Please set the <see cref="LicensingOptions.HttpClientName"/> to
-        /// match the name used to register this service.
-        /// </remarks>
-        public static ICliBuilder AddLicensingClient(this ICliBuilder builder, string name, TimeSpan timeout)
-        {
-            // Configure to call the security API
-            builder.Services.AddHttpClient(name, client =>
-            {
-                client.BaseAddress = new Uri("https://api.perpetualintelligence.com/");
-                client.Timeout = timeout;
-            });
-
-            return builder;
-        }
-
-        /// <summary>
         /// Adds the <see cref="ICommandRouter"/> and <see cref="ICommandHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>

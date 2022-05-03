@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 
@@ -18,21 +19,25 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 if (name == "invalid_based_address")
                 {
-                    clients.Add(name, new HttpClient() { BaseAddress = new System.Uri("https://api.someone.com/") });
+                    clients.Add(name, new HttpClient() { BaseAddress = new Uri("https://api.someone.com/") });
                 }
-                else if(name == "localhost")
+                else if (name == "localhost")
                 {
-                    clients.Add(name, new HttpClient() { BaseAddress = new System.Uri("http://localhost:7071/api/") });
+                    clients.Add(name, new HttpClient() { BaseAddress = new Uri("http://localhost:7071/api/") });
+                }
+                else if (name == "prod")
+                {
+                    clients.Add(name, new HttpClient() { BaseAddress = new Uri("https://api.perpetualintelligence.com/") });
                 }
                 else
                 {
-                    clients.Add(name, new HttpClient() { BaseAddress = new System.Uri("https://api.perpetualintelligence.com/") });
+                    throw new InvalidOperationException("Invalid HTTP client name");
                 }
             }
 
             return clients[name];
         }
 
-        private Dictionary<string, HttpClient> clients = new Dictionary<string, HttpClient>();
+        private Dictionary<string, HttpClient> clients = new();
     }
 }
