@@ -7,6 +7,7 @@
 
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Extensions;
+using PerpetualIntelligence.Protocols.Authorization;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
@@ -143,6 +144,8 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseCheckModel checkModel = new()
             {
+                Issuer = Protocols.Constants.Issuer,
+                Audience = MsalEndpoints.TenantAuthority(jsonFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = jsonFileModel.AuthorizedParty,
                 ConsumerObjectId = jsonFileModel.ConsumerObjectId,
@@ -153,8 +156,9 @@ namespace PerpetualIntelligence.Cli.Licensing
                 Subject = jsonFileModel.Subject
             };
 
+            // Make sure we use the full base address
             var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
-            using (HttpResponseMessage response = await httpClient.PostAsync("public/checklicense", checkContent))
+            using (HttpResponseMessage response = await httpClient.PostAsync("https://api.perpetualintelligence.com/public/checklicense", checkContent))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -197,8 +201,8 @@ namespace PerpetualIntelligence.Cli.Licensing
                     throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", cliOptions.Licensing.ProviderId);
                 }
 
-                LicenseLimits licenseLimits = LicenseLimits.Create(plan);
-                LicensePrice licensePrice = LicensePrice.Create(plan);
+                LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
+                LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
                 return new License(providerTenantId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
             }
         }

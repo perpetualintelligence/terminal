@@ -7,6 +7,8 @@
 
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
+using System;
+using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {
@@ -39,7 +41,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// Creates a new instance of <see cref="LicenseLimits"/> based on the specified SaaS plan.
         /// </summary>
         /// <param name="saasPlan">The SaaS plan.</param>
-        public static LicensePrice Create(string saasPlan)
+        /// <param name="customClaims">The custom claims.</param>
+        public static LicensePrice Create(string saasPlan, IDictionary<string, object>? customClaims = null)
         {
             if (string.IsNullOrEmpty(saasPlan))
             {
@@ -71,6 +74,15 @@ namespace PerpetualIntelligence.Cli.Licensing
                 case SaaSPlans.ISVU:
                     {
                         return new LicensePrice("USD", 1219, 13109, saasPlan);
+                    }
+                case SaaSPlans.Custom:
+                    {
+                        if (customClaims == null)
+                        {
+                            throw new ErrorException(Errors.InvalidLicense, "The pricing for the custom SaaS plan requires a custom claims. saas_plan={0}", saasPlan);
+                        }
+
+                        return new LicensePrice(customClaims["currency"].ToString(), Convert.ToDouble(customClaims["monthly_price"]), Convert.ToDouble(customClaims["yearly_price"]), saasPlan);
                     }
                 default:
                     {

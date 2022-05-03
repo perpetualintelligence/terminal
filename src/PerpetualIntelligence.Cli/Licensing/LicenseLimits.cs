@@ -5,13 +5,12 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.IdentityModel.JsonWebTokens;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
-using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {
@@ -109,8 +108,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// Creates a new instance of <see cref="LicenseLimits"/> based on the specified SaaS plan.
         /// </summary>
         /// <param name="saasPlan">The SaaS plan.</param>
-        /// <param name="claimsToken">The token containing custom claims. Only used if SaaS plan is custom.</param>
-        public static LicenseLimits Create(string saasPlan, string? claimsToken = null)
+        /// <param name="customClaims">The custom claims. Only used if SaaS plan is custom.</param>
+        public static LicenseLimits Create(string saasPlan, IDictionary<string, object>? customClaims = null)
         {
             if (string.IsNullOrEmpty(saasPlan))
             {
@@ -145,18 +144,52 @@ namespace PerpetualIntelligence.Cli.Licensing
                     }
                 case SaaSPlans.Custom:
                     {
-                        if (claimsToken == null)
+                        if (customClaims == null)
                         {
-                            throw new ErrorException(Errors.InvalidLicense, "The licensing for the custom SaaS plan requires a claims token. saas_plan={0}", saasPlan);
+                            throw new ErrorException(Errors.InvalidLicense, "The licensing for the custom SaaS plan requires a custom claims. saas_plan={0}", saasPlan);
                         }
 
-                        return ForCustom(claimsToken);
+                        return ForCustom(customClaims);
                     }
                 default:
                     {
                         throw new ErrorException(Errors.InvalidLicense, "The licensing for the SaaS plan is not supported. saas_plan={0}", saasPlan);
                     }
             }
+        }
+
+        /// <summary>
+        /// Gets the demo claims.
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<string, object> DemoClaims()
+        {
+            Dictionary<string, object> claims = new();
+
+            claims.Add("terminal_limit", 1);
+            claims.Add("redistribution_limit", 0);
+            claims.Add("root_command_limit", 1);
+            claims.Add("grouped_command_limit", 2);
+            claims.Add("sub_command_limit", 10);
+            claims.Add("argument_limit", 100);
+
+            claims.Add("argument_alias", true);
+            claims.Add("default_argument", true);
+            claims.Add("default_argument_value", true);
+            claims.Add("strict_data_type", true);
+
+            claims.Add("data_type_handlers", "default");
+            claims.Add("text_handlers", "unicode");
+            claims.Add("error_handlers", "default");
+            claims.Add("store_handlers", "in-memory");
+            claims.Add("service_handlers", "default");
+            claims.Add("license_handlers", "online");
+
+            claims.Add("currency", "USD");
+            claims.Add("monthly_price", 0.0);
+            claims.Add("yearly_price", 0.0);
+
+            return claims;
         }
 
         internal LicenseLimits()
@@ -189,36 +222,31 @@ namespace PerpetualIntelligence.Cli.Licensing
             };
         }
 
-        internal static LicenseLimits ForCustom(string claimsToken)
+        internal static LicenseLimits ForCustom(IDictionary<string, object> customClaims)
         {
-            JsonWebTokenHandler jwtHandler = new();
-            JsonWebToken result = jwtHandler.ReadJsonWebToken(claimsToken);
-
-            // To-do, verify the claims token signature with a public key, Use OpenId Connect jws_uri
-
             LicenseLimits limits = new()
             {
                 Plan = SaaSPlans.Custom
             };
 
-            limits.TerminalLimit = TryGetCustomClaim<int>(result, "terminal_limit");
-            limits.RedistributionLimit = TryGetCustomClaim<int>(result, "redistribution_limit");
-            limits.RootCommandLimit = TryGetCustomClaim<int>(result, "root_command_limit");
-            limits.GroupedCommandLimit = TryGetCustomClaim<int>(result, "grouped_command_limit");
-            limits.SubCommandLimit = TryGetCustomClaim<int>(result, "sub_command_limit");
-            limits.ArgumentLimit = TryGetCustomClaim<int>(result, "argument_limit");
+            limits.TerminalLimit = Convert.ToInt16(customClaims["terminal_limit"]);
+            limits.RedistributionLimit = Convert.ToInt16(customClaims["redistribution_limit"]);
+            limits.RootCommandLimit = Convert.ToInt16(customClaims["root_command_limit"]);
+            limits.GroupedCommandLimit = Convert.ToInt16(customClaims["grouped_command_limit"]);
+            limits.SubCommandLimit = Convert.ToInt16(customClaims["sub_command_limit"]);
+            limits.ArgumentLimit = Convert.ToInt16(customClaims["argument_limit"]);
 
-            limits.ArgumentAlias = TryGetCustomClaim<bool>(result, "argument_alias");
-            limits.DefaultArgument = TryGetCustomClaim<bool>(result, "default_argument");
-            limits.DefaultArgumentValue = TryGetCustomClaim<bool>(result, "default_argument_value");
-            limits.StrictDataType = TryGetCustomClaim<bool>(result, "strict_data_type");
+            limits.ArgumentAlias = Convert.ToBoolean(customClaims["argument_alias"]);
+            limits.DefaultArgument = Convert.ToBoolean(customClaims["default_argument"]);
+            limits.DefaultArgumentValue = Convert.ToBoolean(customClaims["default_argument_value"]);
+            limits.StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]);
 
-            limits.DataTypeHandlers = TryGetCustomClaim<string>(result, "data_type_handlers").SplitBySpace();
-            limits.TextHandlers = TryGetCustomClaim<string>(result, "text_handlers").SplitBySpace();
-            limits.ErrorHandlers = TryGetCustomClaim<string>(result, "error_handlers").SplitBySpace();
-            limits.StoreHandlers = TryGetCustomClaim<string>(result, "store_handlers").SplitBySpace();
-            limits.ServiceHandlers = TryGetCustomClaim<string>(result, "service_handlers").SplitBySpace();
-            limits.LicenseHandlers = TryGetCustomClaim<string>(result, "license_handlers").SplitBySpace();
+            limits.DataTypeHandlers = customClaims["data_type_handlers"].ToString().SplitBySpace();
+            limits.TextHandlers = customClaims["text_handlers"].ToString().SplitBySpace();
+            limits.ErrorHandlers = customClaims["error_handlers"].ToString().SplitBySpace();
+            limits.StoreHandlers = customClaims["store_handlers"].ToString().SplitBySpace();
+            limits.ServiceHandlers = customClaims["service_handlers"].ToString().SplitBySpace();
+            limits.LicenseHandlers = customClaims["license_handlers"].ToString().SplitBySpace();
 
             return limits;
         }
@@ -351,17 +379,6 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ServiceHandlers = new[] { "default" },
                 LicenseHandlers = new[] { "online" }
             };
-        }
-
-        private static TValue TryGetCustomClaim<TValue>(JsonWebToken token, string claim)
-        {
-            if (token.TryGetClaim(claim, out Claim tokenClaim))
-            {
-                object valueByType = Convert.ChangeType(tokenClaim.Value, typeof(TValue));
-                return (TValue)valueByType;
-            }
-
-            throw new ErrorException(Errors.InvalidLicense, "The claim is missing in the custom plan. claim={0}", claim);
         }
     }
 }

@@ -9,6 +9,7 @@ using FluentAssertions;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace PerpetualIntelligence.Cli.Licensing
@@ -40,6 +41,89 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
+        }
+
+        [Fact]
+        public void CustomEdition_NoCustomClaimsShouldThrow()
+        {
+            Test.Services.TestHelper.AssertThrowsErrorException(() => LicenseLimits.Create(SaaSPlans.Custom), "invalid_license", "The licensing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:saasplan:custom");
+        }
+
+        [Fact]
+        public void CustomEdition_ShouldSetLimitsCorrectly()
+        {
+            Dictionary<string, object> claims = new();
+            claims.Add("terminal_limit", 1);
+            claims.Add("redistribution_limit", 2);
+            claims.Add("root_command_limit", 3);
+            claims.Add("grouped_command_limit", 4);
+            claims.Add("sub_command_limit", 5);
+            claims.Add("argument_limit", 6);
+
+            claims.Add("argument_alias", true);
+            claims.Add("default_argument", false);
+            claims.Add("default_argument_value", true);
+            claims.Add("strict_data_type", false);
+
+            claims.Add("data_type_handlers", "");
+            claims.Add("text_handlers", "t1");
+            claims.Add("error_handlers", "e1 e2 e3");
+            claims.Add("store_handlers", "st1 st2");
+            claims.Add("service_handlers", "s1 s2 s3");
+            claims.Add("license_handlers", "l1");
+
+            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Custom, claims);
+            limits.Plan.Should().Be(SaaSPlans.Custom);
+
+            limits.TerminalLimit.Should().Be(1);
+            limits.RedistributionLimit.Should().Be(2);
+            limits.RootCommandLimit.Should().Be(3);
+            limits.GroupedCommandLimit.Should().Be(4);
+            limits.SubCommandLimit.Should().Be(5);
+            limits.ArgumentLimit.Should().Be(6);
+
+            limits.ArgumentAlias.Should().Be(true);
+            limits.DefaultArgument.Should().Be(false);
+            limits.DefaultArgumentValue.Should().Be(true);
+            limits.StrictDataType.Should().Be(false);
+
+            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "t1" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "e1", "e2", "e3" });
+            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "st1", "st2" });
+            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "s1", "s2", "s3" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "l1" });
+        }
+
+        [Fact]
+        public void DemoClaims_ShouldSetClaimsCorrectly()
+        {
+            var demoClaims = LicenseLimits.DemoClaims();
+
+            demoClaims.Should().HaveCount(19);
+
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("terminal_limit", 1));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 10));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("argument_limit", 100));
+
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("argument_alias", true));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("default_argument", true));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("default_argument_value", true));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
+
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode"));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online"));
+
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("currency", "USD"));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("monthly_price", 0.0));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("yearly_price", 0.0));
         }
 
         [Fact]
@@ -190,6 +274,47 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
+        }
+
+        [Fact]
+        public void StandardEdition_ShouldIgnoreClaims()
+        {
+            Dictionary<string, object> expected = new()
+            {
+                { "terminal_limit", 25332343 },
+                { "redistribution_limit", 36523211212212 },
+                { "text_handlers", new[] { "new1", "new2" } }
+            };
+
+            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Community, expected);
+            limits.TerminalLimit.Should().NotBe(25332343);
+            limits.RedistributionLimit.Should().NotBe(36523211212212);
+            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+
+            limits = LicenseLimits.Create(SaaSPlans.Micro, expected);
+            limits.TerminalLimit.Should().NotBe(25332343);
+            limits.RedistributionLimit.Should().NotBe(36523211212212);
+            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+
+            limits = LicenseLimits.Create(SaaSPlans.SMB, expected);
+            limits.TerminalLimit.Should().NotBe(25332343);
+            limits.RedistributionLimit.Should().NotBe(36523211212212);
+            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+
+            limits = LicenseLimits.Create(SaaSPlans.Enterprise, expected);
+            limits.TerminalLimit.Should().NotBe(25332343);
+            limits.RedistributionLimit.Should().NotBe(36523211212212);
+            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+
+            limits = LicenseLimits.Create(SaaSPlans.ISV, expected);
+            limits.TerminalLimit.Should().NotBe(25332343);
+            limits.RedistributionLimit.Should().NotBe(36523211212212);
+            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+
+            limits = LicenseLimits.Create(SaaSPlans.ISVU, expected);
+            limits.TerminalLimit.Should().NotBe(25332343);
+            limits.RedistributionLimit.Should().NotBe(36523211212212);
+            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
         }
     }
 }

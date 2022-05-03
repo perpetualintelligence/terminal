@@ -8,11 +8,18 @@
 using FluentAssertions;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Protocols.Authorization;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Json;
 using PerpetualIntelligence.Test.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,13 +30,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public LicenseExtractorTests()
         {
             // Read the lic file from Github secrets
-            string? jsonLic = Environment.GetEnvironmentVariable("PI_CLI_TEST_LIC");
-            if (string.IsNullOrWhiteSpace(jsonLic))
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "Environment variable PI_CLI_TEST_LIC with license key not found.");
-            }
-            jsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
-            File.WriteAllText(jsonLicPath, jsonLic);
+            testLicPath = GetJsonLicenseFIleForLocalHostGithubSecretForCICD("PI_CLI_TEST_LIC");
 
             string nonJson = "non json document";
             nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
@@ -40,16 +41,103 @@ namespace PerpetualIntelligence.Cli.Licensing
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions);
         }
 
+        [Fact]
+        public void CustomAndStandardClaims_ShouldSerializerCorrectly()
+        {
+            LicenseProvisioningModel model = new()
+            {
+                AcrValues = new[] { "acr1", "acr2", "acr3", "custom" },
+                Audience = "https://login.someone.com/hello-mello-jello/v2.0",
+                AuthorizedApplicationIds = new[] { "app1", "app2" },
+                AuthorizedParty = "authp1",
+                ConsumerTenantCountry = "USA",
+                ConsumerTenantId = "csmr1",
+                ConsumerTenantName = "csmr name",
+                Custom = LicenseLimits.DemoClaims(),
+                ExpiresIn = 365,
+                Issuer = "https://api.someone.com",
+                Operation = "delete",
+                ProviderTenantId = "pvdr1",
+                PublisherTenantId = "pbsr1",
+                Subject = "sub1"
+            };
+
+            string json = JsonSerializer.Serialize(model);
+
+            LicenseProvisioningModel? fromJson = JsonSerializer.Deserialize<LicenseProvisioningModel>(json);
+            fromJson.Should().NotBeNull();
+            fromJson.Should().NotBeSameAs(model);
+
+            fromJson!.AcrValues.Should().BeEquivalentTo(new[] { "acr1", "acr2", "acr3", "custom" });
+            fromJson.Audience.Should().Be("https://login.someone.com/hello-mello-jello/v2.0");
+            fromJson.AuthorizedApplicationIds.Should().BeEquivalentTo(new[] { "app1", "app2" });
+            fromJson.AuthorizedParty.Should().Be("authp1");
+            fromJson.ConsumerTenantCountry.Should().Be("USA");
+            fromJson.ConsumerTenantId.Should().Be("csmr1");
+            fromJson.ConsumerTenantName.Should().Be("csmr name");
+            fromJson.ExpiresIn.Should().Be(365);
+            fromJson.Issuer.Should().Be("https://api.someone.com");
+            fromJson.Operation.Should().Be("delete");
+            fromJson.ProviderTenantId.Should().Be("pvdr1");
+            fromJson.PublisherTenantId.Should().Be("pbsr1");
+            fromJson.Subject.Should().Be("sub1");
+
+            // custom claims
+            fromJson.Custom.Should().HaveCount(19);
+
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("terminal_limit", 1));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 10));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("argument_limit", 100));
+
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("argument_alias", true));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("default_argument", true));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("default_argument_value", true));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
+
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode"));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online"));
+
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("currency", "USD"));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("monthly_price", 0.0));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("yearly_price", 0.0));
+        }
+
+        [Fact]
+        public void CustomClaims_ShouldBeDecoratedWith_JsonConverterAttribute()
+        {
+            typeof(LicenseClaimsModel).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
+            typeof(LicenseProvisioningModel).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
+        }
+
+        [Fact]
+        public void CustomClaims_ShouldNotBeDecoratedWith_JsonExtensionDataAttribute()
+        {
+            typeof(LicenseClaimsModel).GetProperty("Custom").Should().NotBeDecoratedWith<JsonExtensionDataAttribute>();
+            typeof(LicenseProvisioningModel).GetProperty("Custom").Should().NotBeDecoratedWith<JsonExtensionDataAttribute>();
+        }
+
         public void Dispose()
         {
-            if (File.Exists(jsonLicPath))
+            if (File.Exists(testLicPath))
             {
-                File.Delete(jsonLicPath);
+                File.Delete(testLicPath);
             }
 
             if (File.Exists(nonJsonLicPath))
             {
                 File.Delete(nonJsonLicPath);
+            }
+
+            if (demoLicPath != null && File.Exists(demoLicPath))
+            {
+                File.Delete(demoLicPath);
             }
         }
 
@@ -57,7 +145,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_InvalidAuthApp_ShouldErrorAsync()
         {
             cliOptions.Licensing.AuthorizedApplicationId = "invalid_auth_app";
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
@@ -83,7 +171,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
         {
             cliOptions.Licensing.AuthorizedApplicationId = null;
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
 
@@ -112,7 +200,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_NonOnlineMode_ShouldErrorAsync()
         {
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
 
             cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
@@ -122,10 +210,130 @@ namespace PerpetualIntelligence.Cli.Licensing
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=boyl");
         }
 
+        [Theory]
+        [InlineData("primary_key")]
+        [InlineData("secondary_key")]
+        public async Task ExtractFromJsonAsync_OnlineMode_DemoKey_ShouldContainClaimsAsync(string keyType)
+        {
+            MockHttpClientFactory mockHttpClientFactory = new MockHttpClientFactory();
+            HttpClient httpClient = mockHttpClientFactory.CreateClient("prod");
+            using (HttpResponseMessage response = await httpClient.GetAsync("public/demolicense"))
+            {
+                response.Should().BeSuccessful();
+
+                LicenseKeysModel? licenseKeysModel = await response.Content.ReadFromJsonAsync<LicenseKeysModel>();
+                licenseKeysModel.Should().NotBeNull();
+
+                LicenseKeyJsonFileModel demoFile = new()
+                {
+                    AuthorizedParty = licenseKeysModel!.AuthorizedParty,
+                    ConsumerTenantId = licenseKeysModel.ConsumerTenantId,
+                    ExpiresIn = licenseKeysModel.ExpiresIn,
+                    Key = keyType == "primary_key" ? licenseKeysModel.PrimaryKey : licenseKeysModel.SecondaryKey,
+                    KeyType = keyType,
+                    ProviderId = licenseKeysModel.ProviderTenantId,
+                    Subject = licenseKeysModel.Subject,
+                };
+
+                demoLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
+                File.WriteAllText(demoLicPath, JsonSerializer.Serialize(demoFile));
+            }
+
+            // Ensure we have demo license
+            File.Exists(demoLicPath).Should().BeTrue();
+
+            // Before extract get should be null
+            License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            licenseFromGet.Should().BeNull();
+
+            cliOptions.Licensing.LicenseKey = demoLicPath;
+            cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
+            cliOptions.Licensing.HttpClientName = "localhost";
+            cliOptions.Licensing.ConsumerTenantId = DemoIdentifiers.PiCliDemoConsumerTenantId;
+            cliOptions.Licensing.Subject = DemoIdentifiers.PiCliDemoSubject;
+            cliOptions.Licensing.AuthorizedApplicationId = DemoIdentifiers.PiCliDemoAuthorizedApplicationId;
+            cliOptions.Licensing.ProviderId = SaaSProviders.PerpetualIntelligence;
+            licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
+
+            var result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
+            result.License.Should().NotBeNull();
+            result.License.Claims.Should().NotBeNull();
+            result.License.Limits.Should().NotBeNull();
+            result.License.LicenseKey.Should().NotBeNull();
+
+            // license key
+            result.License.LicenseKeySource.Should().Be(SaaSKeySources.JsonFile);
+            result.License.LicenseKey.Should().Be(demoLicPath);
+
+            // plan, mode and usage
+            result.License.ProviderId.Should().Be("urn:oneimlx:lic:saaspvdr:pi");
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
+            result.License.Plan.Should().Be("urn:oneimlx:lic:saasplan:custom");
+            result.License.Usage.Should().Be("urn:oneimlx:lic:saasusage:rnd");
+
+            // claims
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:saasplan:custom urn:oneimlx:lic:saasusage:rnd urn:oneimlx:lic:saaspvdr:pi");
+            result.License.Claims.Audience.Should().Be(MsalEndpoints.TenantAuthority(DemoIdentifiers.PiCliDemoConsumerTenantId));
+            result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:cli");
+            result.License.Claims.TenantCountry.Should().Be("USA");
+            result.License.Claims.Custom.Should().NotBeNull();
+            result.License.Claims.Expiry.Should().NotBeNull();
+            result.License.Claims.IssuedAt.Should().NotBeNull();
+            result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com");
+            result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
+            result.License.Claims.Name.Should().Be(DemoIdentifiers.PiCliDemoConsumerTenantName);
+            result.License.Claims.NotBefore.Should().NotBeNull();
+            result.License.Claims.ObjectId.Should().BeNull();
+            result.License.Claims.ObjectCountry.Should().BeNull();
+            result.License.Claims.Subject.Should().Be(DemoIdentifiers.PiCliDemoSubject);
+            result.License.Claims.TenantId.Should().Be(DemoIdentifiers.PiCliDemoConsumerTenantId);
+
+            // custom claims
+            result.License.Claims.Custom.Should().HaveCount(19);
+
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("terminal_limit", 1));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 10));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("argument_limit", 100));
+
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("argument_alias", true));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("default_argument", true));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("default_argument_value", true));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
+
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode"));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online"));
+
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("currency", "USD"));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("monthly_price", 0.0));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("yearly_price", 0.0));
+
+            // limits
+            result.License.Limits.Plan.Should().Be("urn:oneimlx:lic:saasplan:custom");
+
+            // Price
+            result.License.Price.Plan.Should().Be("urn:oneimlx:lic:saasplan:custom");
+            result.License.Price.Currency.Should().Be("USD");
+            result.License.Price.Monthly.Should().Be(0.0);
+            result.License.Price.Yearly.Should().Be(0.0);
+
+            // After extract and Get should return the correct license
+            licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            licenseFromGet.Should().NotBeNull();
+            licenseFromGet.Should().BeSameAs(result.License);
+        }
+
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidApplicationId_ShouldErrorAsync()
         {
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
@@ -140,7 +348,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidConsumerTenant_ShouldErrorAsync()
         {
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
@@ -154,7 +362,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidProviderTenant_ShouldErrorAsync()
         {
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
@@ -170,7 +378,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidSubject_ShouldErrorAsync()
         {
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
@@ -186,7 +394,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientFactory_ShouldErrorAsync()
         {
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
 
@@ -197,7 +405,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientName_ShouldErrorAsync()
         {
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             licenseExtractor = new LicenseExtractor(licenseProviderResolver, cliOptions, new MockHttpClientFactory());
@@ -212,7 +420,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
             licenseFromGet.Should().BeNull();
 
-            cliOptions.Licensing.LicenseKey = jsonLicPath;
+            cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = SaaSKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
             cliOptions.Licensing.HttpClientName = "test_client";
@@ -230,7 +438,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // license key
             result.License.LicenseKeySource.Should().Be(SaaSKeySources.JsonFile);
-            result.License.LicenseKey.Should().Be(jsonLicPath);
+            result.License.LicenseKey.Should().Be(testLicPath);
 
             // plan, mode and usage
             result.License.ProviderId.Should().Be("urn:oneimlx:lic:saaspvdr:pi");
@@ -246,7 +454,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             result.License.Claims.Custom.Should().BeNull();
             result.License.Claims.Expiry.Should().NotBeNull();
             result.License.Claims.IssuedAt.Should().NotBeNull();
-            result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com/security/licensing");
+            result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com");
             result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
             result.License.Claims.Name.Should().Be("Perpetual Intelligence L.L.C. - Test");
             result.License.Claims.NotBefore.Should().NotBeNull();
@@ -255,8 +463,17 @@ namespace PerpetualIntelligence.Cli.Licensing
             result.License.Claims.Subject.Should().Be("68d230be-cf83-49a6-c83f-42949fb40f46"); // Test Microsoft SaaS subscription
             result.License.Claims.TenantId.Should().Be("a8379958-ea19-4918-84dc-199bf012361e");
 
+            // no custom claims
+            result.License.Claims.Custom.Should().BeNull();
+
             // limits
             result.License.Limits.Plan.Should().Be("urn:oneimlx:lic:saasplan:isvu");
+
+            // Price
+            result.License.Price.Plan.Should().Be("urn:oneimlx:lic:saasplan:isvu");
+            result.License.Price.Currency.Should().Be("USD");
+            result.License.Price.Monthly.Should().Be(1219.0);
+            result.License.Price.Yearly.Should().Be(13109.0);
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();
@@ -282,10 +499,32 @@ namespace PerpetualIntelligence.Cli.Licensing
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source=253");
         }
 
+        private string GetJsonLicenseFIleForLocalHostGithubSecretForCICD(string env)
+        {
+            // The demo json is too long for system env, so we use path for system env and json for github
+            string? fileOrJson = Environment.GetEnvironmentVariable(env);
+
+            if (fileOrJson == null)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
+            }
+
+            string json = fileOrJson;
+            if (File.Exists(fileOrJson))
+            {
+                json = File.ReadAllText(fileOrJson);
+            }
+
+            string tempJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
+            File.WriteAllText(tempJsonLicPath, json);
+            return tempJsonLicPath;
+        }
+
         private CliOptions cliOptions;
-        private string jsonLicPath;
+        private string? demoLicPath;
         private ILicenseExtractor licenseExtractor;
         private ILicenseProviderResolver licenseProviderResolver;
         private string nonJsonLicPath;
+        private string testLicPath;
     }
 }

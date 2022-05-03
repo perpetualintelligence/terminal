@@ -18,7 +18,11 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 if (name == "invalid_based_address")
                 {
-                    clients.Add(name, new HttpClient() { BaseAddress = new System.Uri("https://api.perpetualintelligence.com/") });
+                    clients.Add(name, new HttpClient() { BaseAddress = new System.Uri("https://api.someone.com/") });
+                }
+                else if(name == "localhost")
+                {
+                    clients.Add(name, new HttpClient() { BaseAddress = new System.Uri("http://localhost:7071/api/") });
                 }
                 else
                 {
