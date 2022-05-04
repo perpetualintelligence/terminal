@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     /// Please visit <see href="https://docs.perpetualintelligence.com/articles/pi-cli/licensing.html"/> to generate
     /// license keys and access your identifiers.
     /// <para>
-    /// You will require a valid license (community or commercial) and identifiers to set the licensing options. To use
+    /// You will require a valid community or commercial license and identifiers to set the licensing options. To use
     /// our test license for quick onboarding and evaluation, please refer to <see href="https://docs.perpetualintelligence.com/articles/pi-demo/intro.html"/>.
     /// </para>
     /// </remarks>

@@ -15,11 +15,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class HttpOptions
     {
         /// <summary>
-        /// The <see cref="HttpClient"/> logical name.
+        /// The logical name to create and configure <see cref="HttpClient"/> instance.
         /// </summary>
         /// <remarks>
-        /// <c>pi-cli</c> uses <see cref="IHttpClientFactory.CreateClient(string)"/> with the configured name to create
-        /// an instance of <see cref="HttpClient"/>.
+        /// <c>pi-cli</c> framework uses <see cref="IHttpClientFactory.CreateClient(string)"/> and the configured name
+        /// to create an instance of <see cref="HttpClient"/>.
         /// </remarks>
         public string? HttpClientName { get; set; }
     }
