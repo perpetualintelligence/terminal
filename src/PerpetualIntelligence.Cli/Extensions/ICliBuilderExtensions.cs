@@ -165,7 +165,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TException">The <see cref="IExceptionHandler"/> type.</typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddErrorPublisher<TError, TException>(this ICliBuilder builder) where TError : class, IErrorHandler where TException : class, IExceptionHandler
+        public static ICliBuilder AddErrorHandler<TError, TException>(this ICliBuilder builder) where TError : class, IErrorHandler where TException : class, IExceptionHandler
         {
             // Add error publisher
             builder.Services.AddTransient<IErrorHandler, TError>();

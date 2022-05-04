@@ -170,7 +170,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             claims.Add("redistribution_limit", 0);
             claims.Add("root_command_limit", 1);
             claims.Add("grouped_command_limit", 2);
-            claims.Add("sub_command_limit", 10);
+            claims.Add("sub_command_limit", 15);
             claims.Add("argument_limit", 100);
 
             claims.Add("argument_alias", true);
