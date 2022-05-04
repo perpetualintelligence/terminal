@@ -177,6 +177,13 @@ namespace PerpetualIntelligence.Cli.Integration
                     ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for RnD, test, and demo purposes only. For non-educational or production use, you require a commercial license.");
                 }
             }
+            else if(license.Plan == SaaSPlans.Custom)
+            {
+                if(license.Usage == SaaSUsages.RnD)
+                {
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "You are using a demo license. It is free for RnD, test, and demo purposes only. For non-educational or production use, you require a commercial license.");
+                }
+            }
 
             return Task.CompletedTask;
         }
