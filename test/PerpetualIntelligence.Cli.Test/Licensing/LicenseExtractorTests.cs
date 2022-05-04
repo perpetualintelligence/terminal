@@ -296,7 +296,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));
             result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
             result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 10));
+            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 15));
             result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("argument_limit", 100));
 
             result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("argument_alias", true));

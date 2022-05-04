@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             demoClaims.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 15);
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 15));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("argument_limit", 100));
 
             demoClaims.Should().Contain(new KeyValuePair<string, object>("argument_alias", true));
