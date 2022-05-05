@@ -22,8 +22,6 @@ namespace PerpetualIntelligence.Cli.Integration.Mocks
 
         public ValueTuple<int, bool> CheckAppConfigCalled { get; set; }
 
-        public ValueTuple<int, bool> CheckMandatoryAppConfigCalled { get; set; }
-
         public bool OnStartedCalled { get; set; }
 
         public bool OnStoppedCalled { get; set; }
@@ -37,12 +35,6 @@ namespace PerpetualIntelligence.Cli.Integration.Mocks
         public ValueTuple<int, bool> PrintMandatoryLicCalled { get; set; }
 
         public ValueTuple<int, bool> RegisterEventsCalled { get; set; }
-
-        internal override Task CheckHostApplicationMandatoryConfigurationAsync(CliOptions options)
-        {
-            CheckMandatoryAppConfigCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
-            return Task.CompletedTask;
-        }
 
         internal override Task PrintHostApplicationMandatoryLicensingAsync(License license)
         {

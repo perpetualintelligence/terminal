@@ -25,6 +25,29 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
+        public async Task MapperFailureShouldErrorAsync()
+        {
+            // Any failure, we just want to test that mapper failure is correclty returned
+            ArgumentDescriptor identity = new("arg1", (DataType)int.MaxValue);
+            Argument value = new("arg1", 23.69, (DataType)int.MaxValue);
+
+            ArgumentCheckerContext context = new(identity, value);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
+        }
+
+        [TestMethod]
+        public async Task NullArgumentValueShouldErrorAsync()
+        {
+            ArgumentDescriptor identity = new("arg1", DataType.Text);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Argument value = new("arg1", null, DataType.Text);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            ArgumentCheckerContext context = new(identity, value);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value cannot be null. argument=arg1");
+        }
+
+        [TestMethod]
         public async Task StrictTypeChecking_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
             options.Checker.StrictArgumentValueType = true;
@@ -59,29 +82,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task MapperFailureShouldErrorAsync()
-        {
-            // Any failure, we just want to test that mapper failure is correclty returned
-            ArgumentDescriptor identity = new("arg1", (DataType)int.MaxValue);
-            Argument value = new("arg1", 23.69, (DataType)int.MaxValue);
-
-            ArgumentCheckerContext context = new (identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
-        }
-
-        [TestMethod]
-        public async Task NullArgumentValueShouldErrorAsync()
-        {
-            ArgumentDescriptor identity = new("arg1", DataType.Text);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Argument value = new("arg1", null, DataType.Text);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-
-            ArgumentCheckerContext context = new (identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value cannot be null. argument=arg1");
-        }
-
-        [TestMethod]
         public async Task StrictTypeCheckingDisabledNotSupportedValueShouldNotErrorAsync()
         {
             options.Checker.StrictArgumentValueType = false;
@@ -90,6 +90,18 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Argument value = new("arg1", "test3", DataType.Text);
 
             ArgumentCheckerContext context = new(identity, value);
+            await checker.CheckAsync(context);
+        }
+
+        [TestMethod]
+        public async Task StrictTypeCheckingDisabledSystemTypeMatchAndDataValidationFailShouldNotErrorAsync()
+        {
+            options.Checker.StrictArgumentValueType = false;
+
+            ArgumentDescriptor identity = new("arg1", DataType.CreditCard, validationAttributes: new[] { new CreditCardAttribute() });
+            Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);
+
+            ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
             await checker.CheckAsync(context);
         }
 
@@ -106,16 +118,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task SupportedValueShouldNotErrorAsync()
-        {
-            ArgumentDescriptor identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
-            Argument value = new("arg1", "test2", DataType.Text);
-
-            ArgumentCheckerContext context = new(identity, value);
-            ArgumentCheckerResult result = await checker.CheckAsync(context);
-        }
-
-        [TestMethod]
         public async Task StrictTypeCheckingSystemTypeMatchAndDataValidationFailShouldErrorAsync()
         {
             options.Checker.StrictArgumentValueType = true;
@@ -128,15 +130,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task StrictTypeCheckingDisabledSystemTypeMatchAndDataValidationFailShouldNotErrorAsync()
+        public async Task SupportedValueShouldNotErrorAsync()
         {
-            options.Checker.StrictArgumentValueType = false;
+            ArgumentDescriptor identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
+            Argument value = new("arg1", "test2", DataType.Text);
 
-            ArgumentDescriptor identity = new("arg1", DataType.CreditCard, validationAttributes: new[] { new CreditCardAttribute() });
-            Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);
-
-            ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
-            await checker.CheckAsync(context);
+            ArgumentCheckerContext context = new(identity, value);
+            ArgumentCheckerResult result = await checker.CheckAsync(context);
         }
 
         [TestMethod]

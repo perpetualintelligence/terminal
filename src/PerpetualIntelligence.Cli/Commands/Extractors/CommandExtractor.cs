@@ -59,9 +59,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <inheritdoc/>
         public async Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context)
         {
-            // Ensure that extractor options are compatible.
-            EnsureOptionsCompatibility();
-
             // Find the command identify by prefix
             CommandDescriptor commandDescriptor = await MatchByPrefixAsync(context.CommandString);
 
@@ -74,111 +71,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return new CommandExtractorResult(new Command(commandDescriptor, arguments), commandDescriptor);
         }
 
-        private void EnsureOptionsCompatibility()
-        {
-            // Separator
-            {
-                // Separator can be null or empty
-                if (options.Extractor.Separator == null || options.Extractor.Separator == string.Empty)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator cannot be null or empty.", options.Extractor.Separator);
-                }
 
-                // Command separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument prefix cannot be same. separator={0}", options.Extractor.Separator);
-                }
-
-                // Command separator and argument alias prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument alias prefix cannot be same. separator={0}", options.Extractor.Separator);
-                }
-            }
-
-            // Argument
-            {
-                // Argument separator can be null or empty
-                if (options.Extractor.ArgumentValueSeparator == null || options.Extractor.ArgumentValueSeparator == string.Empty)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator cannot be null or empty.", options.Extractor.Separator);
-                }
-
-                // Argument prefix cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be null or whitespace.");
-                }
-
-                // Argument alias prefix cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentAliasPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot be null or whitespace.");
-                }
-
-                // Argument separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
-                }
-
-                // Argument separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentAliasPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument alias prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
-                }
-
-                // - FOMAC confusing. Argument alias prefix can be same as argument prefix but it cannot start with
-                // argument prefix.
-                if (!stringComparer.Equals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentPrefix) && options.Extractor.ArgumentAliasPrefix.StartsWith(options.Extractor.ArgumentPrefix, stringComparer.Comparison))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot start with argument prefix. prefix={0}", options.Extractor.ArgumentPrefix);
-                }
-            }
-
-            // String with in
-            {
-                // Argument prefix cannot be null, empty or whitespace
-                if (options.Extractor.ArgumentValueWithIn != null && options.Extractor.ArgumentValueWithIn.All(e => char.IsWhiteSpace(e)))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.ArgumentValueWithIn);
-                }
-
-                // with_in cannot be same as ArgumentPrefix
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentValueWithIn))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
-                }
-
-                // with_in cannot be same as ArgumentPrefix
-                if (stringComparer.Equals(options.Extractor.ArgumentPrefix, options.Extractor.ArgumentValueWithIn))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument prefix cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
-                }
-
-                // with_in cannot be same as ArgumentSeparator
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentValueWithIn))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
-                }
-            }
-
-            // Default argument and values
-            {
-                // Command default argument provider is missing
-                if (options.Extractor.DefaultArgument.GetValueOrDefault() && defaultArgumentProvider == null)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command default argument provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentProvider).FullName);
-                }
-
-                // Argument default value provider is missing
-                if (options.Extractor.DefaultArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
-                }
-            }
-        }
 
         private async Task<Arguments?> ExtractArgumentsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
         {

@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration.Mocks;
 using PerpetualIntelligence.Cli.Licensing;
@@ -32,17 +33,20 @@ namespace PerpetualIntelligence.Cli.Integration
     public class CliHostedServiceTests : IDisposable
     {
         public CliHostedServiceTests()
-        {           
+        {
             cancellationTokenSource = new();
             cancellationToken = cancellationTokenSource.Token;
 
             CliOptions cliOptions = MockCliOptions.NewOptions();
             mockLicenseExtractor = new();
             mockLicenseChecker = new();
+            mockOptionsChecker = new();
 
-            hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services => {
-                services.AddSingleton <ILicenseExtractor> (mockLicenseExtractor);
+            hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services =>
+            {
+                services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
+                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
                 services.AddSingleton<IStringComparer>(new MockStringComparer());
             });
             host = hostBuilder.Start();
@@ -232,7 +236,7 @@ namespace PerpetualIntelligence.Cli.Integration
             mockCustomCliHostedService.PrintHostLicCalled.Item2.Should().BeFalse();
             mockLicenseChecker.CheckLicenseCalled.Item2.Should().BeFalse();
             mockCustomCliHostedService.PrintMandatoryLicCalled.Item2.Should().BeFalse();
-            mockCustomCliHostedService.CheckMandatoryAppConfigCalled.Item2.Should().BeFalse();
+            mockOptionsChecker.CheckOptionsCalled.Item2.Should().BeFalse();
             mockCustomCliHostedService.CheckAppConfigCalled.Item2.Should().BeFalse();
         }
 
@@ -273,9 +277,9 @@ namespace PerpetualIntelligence.Cli.Integration
             mockCustomCliHostedService.PrintMandatoryLicCalled.Item2.Should().BeTrue();
 
             // #7 call
-            mockCustomCliHostedService.CheckMandatoryAppConfigCalled.Should().NotBeNull();
-            mockCustomCliHostedService.CheckMandatoryAppConfigCalled.Item1.Should().Be(7);
-            mockCustomCliHostedService.CheckMandatoryAppConfigCalled.Item2.Should().BeTrue();
+            mockOptionsChecker.CheckOptionsCalled.Should().NotBeNull();
+            mockOptionsChecker.CheckOptionsCalled.Item1.Should().Be(7);
+            mockOptionsChecker.CheckOptionsCalled.Item2.Should().BeTrue();
 
             // #8 call
             mockCustomCliHostedService.CheckAppConfigCalled.Should().NotBeNull();
@@ -320,10 +324,9 @@ namespace PerpetualIntelligence.Cli.Integration
             hostApplicationLifetime.StopApplication();
             mockCliEventsHostedService.OnStoppingCalled.Should().BeTrue();
 
-            // TODO OnStopped not called, check with dotnet team
+            // TODO: OnStopped not called, check with dotnet team
             //mockCliEventsHostedService.OnStoppedCalled.Should().BeTrue();
         }
-
 
         private MockCliEventsHostedService CreateEventsHostedService(IServiceProvider arg)
         {
@@ -339,6 +342,7 @@ namespace PerpetualIntelligence.Cli.Integration
         private MockCliCustomHostedService mockCustomCliHostedService;
         private MockLicenseChecker mockLicenseChecker;
         private MockLicenseExtractor mockLicenseExtractor;
+        private MockOptionsChecker mockOptionsChecker;
         private StringWriter? stringWriter = null!;
     }
 }

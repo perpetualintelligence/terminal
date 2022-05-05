@@ -99,6 +99,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Add options.
             builder.Services.AddOptions();
             builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<CliOptions>>().Value);
+
+            // Add options checker
+            builder.Services.AddSingleton<IOptionsChecker, OptionsChecker>();
+
             return builder;
         }
 

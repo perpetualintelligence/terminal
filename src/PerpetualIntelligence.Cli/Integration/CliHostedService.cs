@@ -8,15 +8,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Commands.Providers;
+using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Services;
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,13 +34,9 @@ namespace PerpetualIntelligence.Cli.Integration
         /// <param name="logger">The logger.</param>
         public CliHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<CliHostedService> logger)
         {
-            this.host = serviceProvider.GetRequiredService<IHost>();
             this.hostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
-            this.licenseExtractor = serviceProvider.GetRequiredService<ILicenseExtractor>();
-            this.licenseChecker = serviceProvider.GetRequiredService<ILicenseChecker>();
             this.serviceProvider = serviceProvider;
             this.cliOptions = cliOptions;
-            this.stringComparer = serviceProvider.GetRequiredService<IStringComparer>();
             this.logger = logger;
         }
 
@@ -64,13 +58,13 @@ namespace PerpetualIntelligence.Cli.Integration
                 await PrintHostApplicationHeaderAsync();
 
                 // Extract license
-                LicenseExtractorResult result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
+                LicenseExtractorResult result = await ExtractLicenseAsync();
 
                 // We have extracted the license, print lic info
                 await PrintHostApplicationLicensingAsync(result.License);
 
                 // Do license check
-                await licenseChecker.CheckAsync(new LicenseCheckerContext(result.License));
+                await CheckLicenseAsync(result);
 
                 // Print mandatory licensing for community and demo license
                 await PrintHostApplicationMandatoryLicensingAsync(result.License);
@@ -92,17 +86,6 @@ namespace PerpetualIntelligence.Cli.Integration
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// This method check the mandatory configuration options. Applications cannot customize or change the mandatory
-        /// configuration options, but they can perform additional configuration checi with
-        /// </summary>
-        /// <param name="options">The configuration options.</param>
-        /// <returns></returns>
-        internal virtual Task CheckHostApplicationMandatoryConfigurationAsync(CliOptions options)
         {
             return Task.CompletedTask;
         }
@@ -137,118 +120,11 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         /// <summary>
-        /// This method check the mandatory configuration options. Applications cannot customize or change the mandatory
-        /// configuration options, but they can perform additional configuration checi with
+        /// Allows the host application to perform the custom configuration option checks.
         /// </summary>
         /// <returns></returns>
         protected virtual Task CheckHostApplicationConfigurationAsync(CliOptions options)
         {
-            // Separator
-            {
-                // Separator can be null or empty
-                if (options.Extractor.Separator == null || options.Extractor.Separator == string.Empty)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator cannot be null or empty.", options.Extractor.Separator);
-                }
-
-                // Command separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument prefix cannot be same. separator={0}", options.Extractor.Separator);
-                }
-
-                // Command separator and argument alias prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument alias prefix cannot be same. separator={0}", options.Extractor.Separator);
-                }
-            }
-
-            // Argument
-            {
-                // Argument separator can be null or empty
-                if (options.Extractor.ArgumentValueSeparator == null || options.Extractor.ArgumentValueSeparator == string.Empty)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator cannot be null or empty.", options.Extractor.Separator);
-                }
-
-                // Argument prefix cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be null or whitespace.");
-                }
-
-                // Argument alias prefix cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentAliasPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot be null or whitespace.");
-                }
-
-                // Argument separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
-                }
-
-                // Argument separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentAliasPrefix))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument alias prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
-                }
-
-                // - FOMAC confusing. Argument alias prefix can be same as argument prefix but it cannot start with
-                // argument prefix.
-                if (!stringComparer.Equals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentPrefix) && options.Extractor.ArgumentAliasPrefix.StartsWith(options.Extractor.ArgumentPrefix, stringComparer.Comparison))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot start with argument prefix. prefix={0}", options.Extractor.ArgumentPrefix);
-                }
-            }
-
-            // String with in
-            {
-                // Argument prefix cannot be null, empty or whitespace
-                if (options.Extractor.ArgumentValueWithIn != null && options.Extractor.ArgumentValueWithIn.All(e => char.IsWhiteSpace(e)))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.ArgumentValueWithIn);
-                }
-
-                // with_in cannot be same as ArgumentPrefix
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentValueWithIn))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
-                }
-
-                // with_in cannot be same as ArgumentPrefix
-                if (stringComparer.Equals(options.Extractor.ArgumentPrefix, options.Extractor.ArgumentValueWithIn))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument prefix cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
-                }
-
-                // with_in cannot be same as ArgumentSeparator
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentValueWithIn))
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
-                }
-            }
-
-            // Default argument and values
-            {
-                IDefaultArgumentProvider? defaultArgumentProvider = serviceProvider.GetService<IDefaultArgumentProvider>();
-                IDefaultArgumentValueProvider? defaultArgumentValueProvider = serviceProvider.GetService<IDefaultArgumentValueProvider>();
-
-                // Command default argument provider is missing
-                if (options.Extractor.DefaultArgument.GetValueOrDefault() && defaultArgumentProvider == null)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command default argument provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentProvider).FullName);
-                }
-
-                // Argument default value provider is missing
-                if (options.Extractor.DefaultArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
-                }
-            }
-
             return Task.CompletedTask;
         }
 
@@ -329,13 +205,34 @@ namespace PerpetualIntelligence.Cli.Integration
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// This method check the mandatory configuration options. Applications cannot customize or change the mandatory
+        /// configuration options, but they can perform additional configuration checks with <see cref="CheckHostApplicationConfigurationAsync(CliOptions)"/>.
+        /// </summary>
+        /// <param name="options">The configuration options.</param>
+        /// <returns></returns>
+        private async Task CheckHostApplicationMandatoryConfigurationAsync(CliOptions options)
+        {
+            IOptionsChecker optionsChecker = serviceProvider.GetRequiredService<IOptionsChecker>();
+            await optionsChecker.CheckAsync(options);
+        }
+
+        private async Task CheckLicenseAsync(LicenseExtractorResult result)
+        {
+            ILicenseChecker licenseChecker = serviceProvider.GetRequiredService<ILicenseChecker>();
+            await licenseChecker.CheckAsync(new LicenseCheckerContext(result.License));
+        }
+
+        private async Task<LicenseExtractorResult> ExtractLicenseAsync()
+        {
+            ILicenseExtractor licenseExtractor = serviceProvider.GetRequiredService<ILicenseExtractor>();
+            LicenseExtractorResult result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
+            return result;
+        }
+
         private readonly CliOptions cliOptions;
-        private readonly IHost host;
         private readonly IHostApplicationLifetime hostApplicationLifetime;
-        private readonly ILicenseChecker licenseChecker;
-        private readonly ILicenseExtractor licenseExtractor;
         private readonly ILogger<CliHostedService> logger;
         private readonly IServiceProvider serviceProvider;
-        private readonly IStringComparer stringComparer;
     }
 }
