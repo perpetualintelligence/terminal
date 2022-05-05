@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("#")]
         [DataRow("sp")]
         [DataRow("öö")]
-        [DataRow("माणूस")]
+        [DataRow("माणू")]
         [DataRow("女性")]
         public async Task ArgumentAliasPrefixCannotStartWithArgumentPrefix(string prefix)
         {
@@ -106,6 +106,37 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument separator and argument alias prefix cannot be same. separator={separator}");
         }
+
+        [DataTestMethod]
+        [DataRow("@@@@")]
+        [DataRow("~~~~")]
+        [DataRow("####")]
+        [DataRow("sp----")]
+        [DataRow("öööö")]
+        [DataRow("माणूसस")]
+        [DataRow("女性女性")]
+        [DataRow("-女माö")]
+        public async Task ArgumentPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
+        {
+            options.Extractor.ArgumentPrefix = prefix;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument prefix cannot be more than 3 Unicode characters. argument_prefix={prefix}");
+        }
+
+        [DataTestMethod]
+        [DataRow("@@@@")]
+        [DataRow("~~~~")]
+        [DataRow("####")]
+        [DataRow("sp----")]
+        [DataRow("öööö")]
+        [DataRow("माणूसस")]
+        [DataRow("女性女性")]
+        [DataRow("-女माö")]
+        public async Task ArgumentAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
+        {
+            options.Extractor.ArgumentAliasPrefix = prefix;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={prefix}");
+        }
+
 
         [DataTestMethod]
         [DataRow("@")]

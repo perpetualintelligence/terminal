@@ -11,6 +11,7 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -78,10 +79,24 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be null or whitespace.");
                 }
 
+                // Argument prefix cannot be more than 3 Unicode characters
+                StringInfo argPrefixInfo = new (options.Extractor.ArgumentPrefix);
+                if (argPrefixInfo.LengthInTextElements > 3)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be more than 3 Unicode characters. argument_prefix={0}", options.Extractor.ArgumentPrefix);
+                }
+
                 // Argument alias prefix cannot be null, empty or whitespace
                 if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentAliasPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot be null or whitespace.");
+                }
+
+                // Argument prefix cannot be more than 3 Unicode characters
+                StringInfo argAliasPrefixInfo = new (options.Extractor.ArgumentAliasPrefix);
+                if (argAliasPrefixInfo.LengthInTextElements > 3)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={0}", options.Extractor.ArgumentAliasPrefix);
                 }
 
                 // Argument separator and argument prefix cannot be same
