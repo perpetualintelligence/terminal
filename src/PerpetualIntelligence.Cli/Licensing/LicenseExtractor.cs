@@ -27,12 +27,10 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="licenseProviderResolver">The license provider resolver.</param>
         /// <param name="cliOptions">The configuration options.</param>
         /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(ILicenseProviderResolver licenseProviderResolver, CliOptions cliOptions, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(CliOptions cliOptions, IHttpClientFactory? httpClientFactory = null)
         {
-            this.licenseProviderResolver = licenseProviderResolver;
             this.cliOptions = cliOptions;
             this.httpClientFactory = httpClientFactory;
         }
@@ -150,7 +148,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ConsumerTenantId = jsonFileModel.ConsumerTenantId,
                 Key = jsonFileModel.Key,
                 KeyType = jsonFileModel.KeyType,
-                ProviderTenantId = await licenseProviderResolver.ResolveAsync(jsonFileModel.ProviderId),
+                ProviderId = jsonFileModel.ProviderId,
                 Subject = jsonFileModel.Subject
             };
 
@@ -191,23 +189,22 @@ namespace PerpetualIntelligence.Cli.Licensing
 
                 string plan = acrValues[0];
                 string usage = acrValues[1];
-                string providerTenantId = acrValues[2];
+                string providerId = acrValues[2];
 
                 // Make sure the provider tenant id matches
-                if (providerTenantId != cliOptions.Licensing.ProviderId)
+                if (providerId != cliOptions.Licensing.ProviderId)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", cliOptions.Licensing.ProviderId);
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
                 LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
-                return new License(providerTenantId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+                return new License(providerId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
             }
         }
 
         private readonly CliOptions cliOptions;
         private readonly IHttpClientFactory? httpClientFactory;
-        private readonly ILicenseProviderResolver licenseProviderResolver;
         private License? license;
     }
 }

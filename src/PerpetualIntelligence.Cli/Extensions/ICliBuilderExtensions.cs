@@ -261,9 +261,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Add license checker as singleton
             builder.Services.AddSingleton<ILicenseChecker, LicenseChecker>();
 
-            // Add license provider resolver as singleton
-            builder.Services.AddSingleton<ILicenseProviderResolver, LicenseProviderResolver>();
-
             return builder;
         }
 
