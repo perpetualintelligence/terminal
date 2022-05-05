@@ -11,7 +11,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration.Mocks;
+using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
@@ -30,21 +32,25 @@ namespace PerpetualIntelligence.Cli.Integration
     public class CliHostedServiceTests : IDisposable
     {
         public CliHostedServiceTests()
-        {
-            hostBuilder = Host.CreateDefaultBuilder();
-            host = hostBuilder.Start();
-
+        {           
             cancellationTokenSource = new();
             cancellationToken = cancellationTokenSource.Token;
 
             CliOptions cliOptions = MockCliOptions.NewOptions();
             mockLicenseExtractor = new();
             mockLicenseChecker = new();
-            hostApplicationLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
 
-            defaultCliHostedService = new CliHostedService(host, hostApplicationLifetime, mockLicenseExtractor, mockLicenseChecker, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
-            mockCustomCliHostedService = new MockCliCustomHostedService(host, hostApplicationLifetime, mockLicenseExtractor, mockLicenseChecker, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
-            mockCliEventsHostedService = new MockCliEventsHostedService(host, hostApplicationLifetime, mockLicenseExtractor, mockLicenseChecker, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
+            hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services => {
+                services.AddSingleton <ILicenseExtractor> (mockLicenseExtractor);
+                services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
+                services.AddSingleton<IStringComparer>(new MockStringComparer());
+            });
+            host = hostBuilder.Start();
+
+            // Different hosted services to test behaviors
+            defaultCliHostedService = new CliHostedService(host.Services, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
+            mockCustomCliHostedService = new MockCliCustomHostedService(host.Services, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
+            mockCliEventsHostedService = new MockCliEventsHostedService(host.Services, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
         }
 
         public void Dispose()
@@ -142,6 +148,25 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         [Fact]
+        public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
+        {
+            stringWriter = new StringWriter();
+            Console.SetOut(stringWriter);
+
+            Licensing.License community = new Licensing.License("testp", "testh", SaaSPlans.Community, SaaSUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+
+            // use reflection to call
+            MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
+            printLic.Invoke(defaultCliHostedService, new[] { community });
+
+            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
+            printedHeaders.Should().HaveCount(2);
+            printedHeaders[0].Should().Be("Your community license plan is free for RnD, test, and demo purposes. For production use, you require a commercial license.");
+            printedHeaders[1].Should().Be("");
+        }
+
+        [Fact]
         public void StartAsync_Default_ShouldPrint_OnStarted()
         {
             stringWriter = new StringWriter();
@@ -157,23 +182,6 @@ namespace PerpetualIntelligence.Cli.Integration
             printedHeaders[0].Should().StartWith("Server started on");
             printedHeaders[1].Should().Be("");
             printedHeaders[2].Should().Be("");
-        }
-
-        [Fact]
-        public void StartAsync_Default_ShouldPrint_OnStopping()
-        {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
-            // use reflection to call
-            MethodInfo? print = defaultCliHostedService.GetType().GetMethod("OnStopping", BindingFlags.Instance | BindingFlags.NonPublic);
-            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(print);
-            print.Invoke(defaultCliHostedService, null);
-
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Stopping server...");
-            printedHeaders[1].Should().Be("");
         }
 
         [Fact]
@@ -193,23 +201,20 @@ namespace PerpetualIntelligence.Cli.Integration
             printedHeaders[1].Should().Be("");
         }
 
-
         [Fact]
-        public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
+        public void StartAsync_Default_ShouldPrint_OnStopping()
         {
             stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
 
-            Licensing.License community = new Licensing.License("testp", "testh", SaaSPlans.Community, SaaSUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
-
             // use reflection to call
-            MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
-            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
-            printLic.Invoke(defaultCliHostedService, new[] { community });
+            MethodInfo? print = defaultCliHostedService.GetType().GetMethod("OnStopping", BindingFlags.Instance | BindingFlags.NonPublic);
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(print);
+            print.Invoke(defaultCliHostedService, null);
 
             string[] printedHeaders = stringWriter.ToString().SplitByNewline();
             printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Your community license plan is free for RnD, test, and demo purposes. For production use, you require a commercial license.");
+            printedHeaders[0].Should().Be("Stopping server...");
             printedHeaders[1].Should().Be("");
         }
 
@@ -296,10 +301,13 @@ namespace PerpetualIntelligence.Cli.Integration
         [Fact]
         public async Task StartAsync_ShouldRegister_AppEventsAsync()
         {
+            IHostApplicationLifetime hostApplicationLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+
             // Create a host builder with mock event hosted service
             hostBuilder = Host.CreateDefaultBuilder();
             hostBuilder.ConfigureServices(services =>
             {
+                // Make sure we use the instance created for test
                 services.AddHostedService(CreateEventsHostedService);
             });
 
@@ -316,6 +324,7 @@ namespace PerpetualIntelligence.Cli.Integration
             //mockCliEventsHostedService.OnStoppedCalled.Should().BeTrue();
         }
 
+
         private MockCliEventsHostedService CreateEventsHostedService(IServiceProvider arg)
         {
             return mockCliEventsHostedService;
@@ -325,7 +334,6 @@ namespace PerpetualIntelligence.Cli.Integration
         private CancellationTokenSource cancellationTokenSource;
         private CliHostedService defaultCliHostedService;
         private IHost host;
-        private IHostApplicationLifetime hostApplicationLifetime;
         private IHostBuilder hostBuilder;
         private MockCliEventsHostedService mockCliEventsHostedService;
         private MockCliCustomHostedService mockCustomCliHostedService;

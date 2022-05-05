@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Integration.Mocks
 {
     public class MockCliCustomHostedService : CliHostedService
     {
-        public MockCliCustomHostedService(IHost host, IHostApplicationLifetime hostApplicationLifetime, ILicenseExtractor licenseExtractor, ILicenseChecker licenseChecker, CliOptions cliOptions, ILogger<CliHostedService> logger) : base(host, hostApplicationLifetime, licenseExtractor, licenseChecker, cliOptions, logger)
+        public MockCliCustomHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<CliHostedService> logger) : base(serviceProvider, cliOptions, logger)
         {
         }
 

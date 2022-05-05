@@ -5,16 +5,15 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Licensing;
+using System;
 
 namespace PerpetualIntelligence.Cli.Integration.Mocks
 {
     public class MockCliEventsHostedService : CliHostedService
     {
-        public MockCliEventsHostedService(IHost host, IHostApplicationLifetime hostApplicationLifetime, ILicenseExtractor licenseExtractor, ILicenseChecker licenseChecker, CliOptions cliOptions, ILogger<CliHostedService> logger) : base(host, hostApplicationLifetime, licenseExtractor, licenseChecker, cliOptions, logger)
+        public MockCliEventsHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<CliHostedService> logger) : base(serviceProvider, cliOptions, logger)
         {
         }
 
