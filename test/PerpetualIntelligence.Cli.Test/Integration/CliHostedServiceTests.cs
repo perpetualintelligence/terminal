@@ -142,6 +142,59 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         [Fact]
+        public void StartAsync_Default_ShouldPrint_OnStarted()
+        {
+            stringWriter = new StringWriter();
+            Console.SetOut(stringWriter);
+
+            // use reflection to call
+            MethodInfo? print = defaultCliHostedService.GetType().GetMethod("OnStarted", BindingFlags.Instance | BindingFlags.NonPublic);
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(print);
+            print.Invoke(defaultCliHostedService, null);
+
+            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
+            printedHeaders.Should().HaveCount(3);
+            printedHeaders[0].Should().StartWith("Server started on");
+            printedHeaders[1].Should().Be("");
+            printedHeaders[2].Should().Be("");
+        }
+
+        [Fact]
+        public void StartAsync_Default_ShouldPrint_OnStopping()
+        {
+            stringWriter = new StringWriter();
+            Console.SetOut(stringWriter);
+
+            // use reflection to call
+            MethodInfo? print = defaultCliHostedService.GetType().GetMethod("OnStopping", BindingFlags.Instance | BindingFlags.NonPublic);
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(print);
+            print.Invoke(defaultCliHostedService, null);
+
+            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
+            printedHeaders.Should().HaveCount(2);
+            printedHeaders[0].Should().Be("Stopping server...");
+            printedHeaders[1].Should().Be("");
+        }
+
+        [Fact]
+        public void StartAsync_Default_ShouldPrint_OnStopped()
+        {
+            stringWriter = new StringWriter();
+            Console.SetOut(stringWriter);
+
+            // use reflection to call
+            MethodInfo? print = defaultCliHostedService.GetType().GetMethod("OnStopped", BindingFlags.Instance | BindingFlags.NonPublic);
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(print);
+            print.Invoke(defaultCliHostedService, null);
+
+            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
+            printedHeaders.Should().HaveCount(2);
+            printedHeaders[0].Should().StartWith("Server stopped on");
+            printedHeaders[1].Should().Be("");
+        }
+
+
+        [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
         {
             stringWriter = new StringWriter();
