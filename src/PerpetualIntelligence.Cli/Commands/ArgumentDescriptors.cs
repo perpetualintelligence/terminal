@@ -18,11 +18,6 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// The ordered <see cref="ArgumentDescriptor"/> collection.
     /// </summary>
-    /// <remarks>
-    /// The argument descriptor collection comparer is <see cref="StringComparer.Ordinal"/> and it determines whether
-    /// two <see cref="ArgumentDescriptor.Id"/> strings are equal. Every argument descriptor in the collection must have
-    /// unique id.
-    /// </remarks>
     public sealed class ArgumentDescriptors : KeyedCollection<string, ArgumentDescriptor>
     {
         /// <summary>
@@ -173,7 +168,11 @@ namespace PerpetualIntelligence.Cli.Commands
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns the key from the specified <see cref="ArgumentDescriptor"/>.
+        /// </summary>
+        /// <param name="item">The <see cref="ArgumentDescriptor"/> instance.</param>
+        /// <returns>The key.</returns>
         protected override string GetKeyForItem(ArgumentDescriptor item)
         {
             return item.Id;

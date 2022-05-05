@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Protocols.Abstractions.Comparers;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -15,10 +14,6 @@ namespace PerpetualIntelligence.Cli.Commands
     /// <summary>
     /// The ordered <see cref="Argument"/> keyed collection.
     /// </summary>
-    /// <remarks>
-    /// The argument collection comparer is <see cref="StringComparer.Ordinal"/> and it determines whether two
-    /// <see cref="Argument.Id"/> strings are equal. Every argument in the collection must have unique id.
-    /// </remarks>
     public sealed class Arguments : KeyedCollection<string, Argument>
     {
         /// <summary>
@@ -73,7 +68,11 @@ namespace PerpetualIntelligence.Cli.Commands
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns the key from the specified <see cref="Argument"/>.
+        /// </summary>
+        /// <param name="item">The <see cref="Argument"/> instance.</param>
+        /// <returns>The key.</returns>
         protected override string GetKeyForItem(Argument item)
         {
             return item.Id;

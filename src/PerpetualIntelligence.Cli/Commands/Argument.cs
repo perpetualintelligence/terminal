@@ -119,32 +119,53 @@ namespace PerpetualIntelligence.Cli.Commands
         [JsonPropertyName("value")]
         public object Value { get; set; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current argument is not equal to another argument.
+        /// </summary>
+        /// <param name="left">The left argument.</param>
+        /// <param name="right">The right argument.</param>
+        /// <returns><c>true</c> if the current argument is not equal to the other argument; otherwise, false.</returns>
         public static bool operator !=(Argument? left, Argument? right)
         {
             return !(left == right);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current argument is equal to another argument.
+        /// </summary>
+        /// <param name="left">The left argument.</param>
+        /// <param name="right">The right argument.</param>
+        /// <returns><c>true</c> if the current argument is equal to the other argument; otherwise, false.</returns>
         public static bool operator ==(Argument? left, Argument? right)
         {
             return EqualityComparer<Argument?>.Default.Equals(left, right);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current argument is equal to another argument.
+        /// </summary>
+        /// <param name="obj">The other argument.</param>
+        /// <returns><c>true</c> if the current argument is equal to the other argument; otherwise, false.</returns>
         public override bool Equals(object? obj)
         {
             return Equals(obj as Argument);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current argument is equal to another argument.
+        /// </summary>
+        /// <param name="other">The other argument.</param>
+        /// <returns><c>true</c> if the current argument is equal to the other argument; otherwise, false.</returns>
         public bool Equals(Argument? other)
         {
             return other != null &&
                    Id == other.Id;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns the hash code for this argument.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return Id.GetHashCode();

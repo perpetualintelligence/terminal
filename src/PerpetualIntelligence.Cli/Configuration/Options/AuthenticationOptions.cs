@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Cli.Extensions;
-
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     /// <summary>
@@ -27,7 +25,6 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// <summary>
         /// The HTTP client name.
         /// </summary>
-        /// <remarks>The name must match the <see cref="ICliBuilderExtensions.AddAuthentication{TProvider, TAppFactory, TAppCache, TDelegateHandler}(Integration.ICliBuilder, string, string?, int?)"/></remarks>
         public string? HttpClientName { get; set; }
 
         /// <summary>
