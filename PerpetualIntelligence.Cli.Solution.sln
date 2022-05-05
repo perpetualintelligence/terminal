@@ -18,6 +18,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli.Test", "test\PerpetualIntelligence.Cli.Test\PerpetualIntelligence.Cli.Test.csproj", "{041FD485-C19C-4207-86F1-98802F048900}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli.Authentication", "src\PerpetualIntelligence.Cli.Authentication\PerpetualIntelligence.Cli.Authentication.csproj", "{4804D521-6F48-486D-B608-7EDD6CEF1F35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerpetualIntelligence.Cli.Authentication.Tests", "test\PerpetualIntelligence.Cli.Authentication.Tests\PerpetualIntelligence.Cli.Authentication.Tests.csproj", "{095BC082-EB26-4BBF-A017-8DEB9B76991C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +36,14 @@ Global
 		{041FD485-C19C-4207-86F1-98802F048900}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{041FD485-C19C-4207-86F1-98802F048900}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{041FD485-C19C-4207-86F1-98802F048900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4804D521-6F48-486D-B608-7EDD6CEF1F35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4804D521-6F48-486D-B608-7EDD6CEF1F35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4804D521-6F48-486D-B608-7EDD6CEF1F35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4804D521-6F48-486D-B608-7EDD6CEF1F35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{095BC082-EB26-4BBF-A017-8DEB9B76991C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{095BC082-EB26-4BBF-A017-8DEB9B76991C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{095BC082-EB26-4BBF-A017-8DEB9B76991C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{095BC082-EB26-4BBF-A017-8DEB9B76991C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +51,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F6DADEF3-E913-49CB-ADC4-EB177535BA68} = {9BD50919-76C1-424C-BD98-F870E6DE8903}
 		{041FD485-C19C-4207-86F1-98802F048900} = {E3A2F609-5E85-4740-8899-6A2B777BE31B}
+		{4804D521-6F48-486D-B608-7EDD6CEF1F35} = {9BD50919-76C1-424C-BD98-F870E6DE8903}
+		{095BC082-EB26-4BBF-A017-8DEB9B76991C} = {E3A2F609-5E85-4740-8899-6A2B777BE31B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FB18F489-0BCB-4389-AE92-18E7DBEA4818}

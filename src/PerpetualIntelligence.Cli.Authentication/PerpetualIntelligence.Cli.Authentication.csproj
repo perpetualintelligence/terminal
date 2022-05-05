@@ -7,13 +7,12 @@
         <Description>
             The flexible cross-platform framework for modern CLI terminals. Use microservices architecture principles, dependency injection, and options pattern to build modern and secured CLI applications similar to Github CLI, .NET CLI, Stripe CLI, or CLI terminals with custom formats. Take your app or service to the command line with Unicode support and develop CLI terminals in any language. Configure your server, provide your self-hosting implementations for stores, and host in an environment of your choice, e.g., Windows, Linux, macOS, Docker, Kubernetes, etc.
         </Description>
-        <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos github dotnet oneimlx unicode saas paas pi-cli</PackageTags>
+        <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos github dotnet oneimlx unicode saas paas pi-cli oauth openid-connect oidc</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />        
+        <PackageReference Include="Microsoft.Graph.Core" Version="2.0.8" />
+        <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="2.20.0" />
     </ItemGroup>
 
     <!--
@@ -22,14 +21,13 @@
     <Choose>
         <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
-                <ProjectReference Include="..\..\..\protocols\src\PerpetualIntelligence.Protocols\PerpetualIntelligence.Protocols.csproj" />
+                <ProjectReference Include="..\PerpetualIntelligence.Cli\PerpetualIntelligence.Cli.csproj" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="PerpetualIntelligence.Protocols" Version="$(PI_PROTOCOLS_PACKAGE_VERSION)" />
+                <PackageReference Include="PerpetualIntelligence.Cli" Version="$(PI_CI_PACKAGE_VERSION)" />
             </ItemGroup>
         </Otherwise>
     </Choose>
-
 </Project>
