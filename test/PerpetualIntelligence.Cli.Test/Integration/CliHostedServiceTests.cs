@@ -226,6 +226,21 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         [Fact]
+        public async Task StartAsync_ShouldHandleErrorExceptionCorrectly()
+        {
+            stringWriter = new StringWriter();
+            Console.SetOut(stringWriter);
+
+            mockLicenseExtractor.ThrowError = true;
+            await defaultCliHostedService.StartAsync(cancellationToken);
+
+            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
+
+            // Last is a new line
+            printedHeaders[printedHeaders.Length - 2].Should().Be("test_error=test description. arg1=val1 arg2=val2");
+        }
+
+        [Fact]
         public async Task StartAsync_ShouldRegister_AppEventsAsync()
         {
             // Create a host builder with mock event hosted service

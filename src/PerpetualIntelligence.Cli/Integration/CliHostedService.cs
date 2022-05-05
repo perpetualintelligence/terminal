@@ -51,15 +51,16 @@ namespace PerpetualIntelligence.Cli.Integration
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Register Application Lifetime events
-            await RegisterHostApplicationEventsAsync(hostApplicationLifetime);
-
-            // Print Header
-            await PrintHostApplicationHeaderAsync();
-
+            // We catch the exception to avoid unhandeled fatal exception
             try
             {
-                // We catch the exception to avoid unhandeled fatal exception during license extraction
+                // Register Application Lifetime events
+                await RegisterHostApplicationEventsAsync(hostApplicationLifetime);
+
+                // Print Header
+                await PrintHostApplicationHeaderAsync();
+
+                // Extract license
                 LicenseExtractorResult result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
 
                 // We have extracted the license, print lic info
