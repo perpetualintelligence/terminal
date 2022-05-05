@@ -1,12 +1,12 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved
-    https://perpetualintelligence.com
-    https://api.perpetualintelligence.com
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com
 */
 
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.IO;
 
 namespace PerpetualIntelligence.Cli.Mocks
@@ -17,7 +17,6 @@ namespace PerpetualIntelligence.Cli.Mocks
 
         public void AddProvider(ILoggerProvider provider)
         {
-            throw new NotImplementedException();
         }
 
         public ILogger CreateLogger(string categoryName)
@@ -29,7 +28,6 @@ namespace PerpetualIntelligence.Cli.Mocks
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
     }
 }

@@ -49,6 +49,8 @@ namespace PerpetualIntelligence.Cli.Integration
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Register Application Lifetime events
             await RegisterHostApplicationEventsAsync(hostApplicationLifetime);
 
@@ -57,19 +59,27 @@ namespace PerpetualIntelligence.Cli.Integration
 
             try
             {
-                // We catch the exception to avoid unhandeled fatal exception. License extraction
+                // We catch the exception to avoid unhandeled fatal exception during license extraction
                 LicenseExtractorResult result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
+
+                // We have extracted the license, print lic info
                 await PrintHostApplicationLicensingAsync(result.License);
 
                 // Do license check
                 await licenseChecker.CheckAsync(new LicenseCheckerContext(result.License));
 
-                // Check, mandatory licensing will print the Community disclaimer.
+                // Print mandatory licensing for community and demo license
                 await PrintHostApplicationMandatoryLicensingAsync(result.License);
+
+                // Do mandatory configuration check
+                await CheckHostApplicationMandatoryConfigurationAsync(cliOptions);
+
+                // Do custom configuration check
+                await CheckHostApplicationConfigurationAsync(cliOptions);
             }
             catch (ErrorException ex)
             {
-                ConsoleHelper.WriteLineColor(ConsoleColor.Red, $"invalid_license={ex.Error.FormatDescription()}");
+                ConsoleHelper.WriteLineColor(ConsoleColor.Red, $"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
             }
         }
 
@@ -78,6 +88,56 @@ namespace PerpetualIntelligence.Cli.Integration
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// This method check the mandatory configuration options. Applications cannot customize or change the mandatory
+        /// configuration options, but they can perform additional configuration checi with
+        /// </summary>
+        /// <param name="options">The configuration options.</param>
+        /// <returns></returns>
+        internal virtual Task CheckHostApplicationMandatoryConfigurationAsync(CliOptions options)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// This method prints the mandatory licensing details. Applications cannot customize or change the mandatory
+        /// licensing information, but they can print additional custom information with <see cref="PrintHostApplicationLicensingAsync(License)"/>.
+        /// </summary>
+        /// <param name="license">The extracted license.</param>
+        internal virtual Task PrintHostApplicationMandatoryLicensingAsync(License license)
+        {
+            if (license.Plan == SaaSPlans.Community)
+            {
+                if (license.Usage == SaaSUsages.Educational)
+                {
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your community license plan is free for educational purposes. For non-educational or production use, you require a commercial license.");
+                }
+                else if (license.Usage == SaaSUsages.RnD)
+                {
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your community license plan is free for RnD, test, and demo purposes. For production use, you require a commercial license.");
+                }
+            }
+            else if (license.Plan == SaaSPlans.Custom)
+            {
+                if (license.Usage == SaaSUsages.RnD)
+                {
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your demo license is free for RnD, test and evaluation purposes. For production use, you require a commercial license.");
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// This method check the mandatory configuration options. Applications cannot customize or change the mandatory
+        /// configuration options, but they can perform additional configuration checi with
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Task CheckHostApplicationConfigurationAsync(CliOptions options)
         {
             return Task.CompletedTask;
         }
@@ -135,9 +195,9 @@ namespace PerpetualIntelligence.Cli.Integration
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"consumer={license.Claims.Name} ({license.Claims.TenantId})");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"country={license.Claims.TenantCountry}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"subject={cliOptions.Licensing.Subject}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"handler={license.Handler}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"license_handler={license.Handler}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Green, $"edition={license.Plan}");
+            ConsoleHelper.WriteLineColor(ConsoleColor.Green, $"plan={license.Plan}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_source={cliOptions.Licensing.KeySource}");
             if (license.LicenseKeySource == SaaSKeySources.JsonFile)
             {
@@ -156,35 +216,6 @@ namespace PerpetualIntelligence.Cli.Integration
             hostApplicationLifetime.ApplicationStarted.Register(OnStarted);
             hostApplicationLifetime.ApplicationStopping.Register(OnStopping);
             hostApplicationLifetime.ApplicationStopped.Register(OnStopped);
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// This method prints the mandatory licensing details. Applications cannot customize or change the mandatory
-        /// licensing information, but they can print additional custom information with <see cref="PrintHostApplicationLicensingAsync(License)"/>.
-        /// </summary>
-        /// <param name="license">The extracted license.</param>
-        private Task PrintHostApplicationMandatoryLicensingAsync(License license)
-        {
-            if (license.Plan == SaaSPlans.Community)
-            {
-                if (license.Usage == SaaSUsages.Educational)
-                {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for educational purposes only. For non-educational or production use, you require a commercial license.");
-                }
-                else if (license.Usage == SaaSUsages.RnD)
-                {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "The community edition is free for RnD, test, and demo purposes only. For non-educational or production use, you require a commercial license.");
-                }
-            }
-            else if(license.Plan == SaaSPlans.Custom)
-            {
-                if(license.Usage == SaaSUsages.RnD)
-                {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "You are using a demo license. It is free for RnD, test, and demo purposes only. For non-educational or production use, you require a commercial license.");
-                }
-            }
-
             return Task.CompletedTask;
         }
 
