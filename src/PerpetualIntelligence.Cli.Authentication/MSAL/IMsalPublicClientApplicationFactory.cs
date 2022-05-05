@@ -8,7 +8,7 @@
 using Microsoft.Identity.Client;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Authentication
+namespace PerpetualIntelligence.Cli.Authentication.Msal
 {
     /// <summary>
     /// An abstraction to create <see cref="IClientApplicationBase"/>.

@@ -7,7 +7,7 @@
 
 using Microsoft.Identity.Client;
 
-namespace PerpetualIntelligence.Cli.Authentication
+namespace PerpetualIntelligence.Cli.Authentication.Msal
 {
     /// <summary>
     /// The <see cref="IMsalPublicClientApplicationFactory"/> result.

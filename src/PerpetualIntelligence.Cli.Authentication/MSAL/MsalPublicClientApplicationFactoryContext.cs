@@ -8,7 +8,7 @@
 using PerpetualIntelligence.Cli.Configuration.Options;
 using System;
 
-namespace PerpetualIntelligence.Cli.Authentication
+namespace PerpetualIntelligence.Cli.Authentication.Msal
 {
     /// <summary>
     /// The <see cref="IMsalPublicClientApplicationFactory"/> context.

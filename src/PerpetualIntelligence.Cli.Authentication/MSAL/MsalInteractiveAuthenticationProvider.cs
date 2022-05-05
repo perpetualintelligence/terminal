@@ -13,7 +13,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Authentication
+namespace PerpetualIntelligence.Cli.Authentication.Msal
 {
     /// <summary>
     /// The <c>MSAL</c> authentication provider.
