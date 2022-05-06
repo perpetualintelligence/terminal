@@ -6,12 +6,11 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -42,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <exception cref="NotImplementedException"></exception>
         public Task CheckAsync(CliOptions options)
         {
-            IStringComparer stringComparer = serviceProvider.GetRequiredService<IStringComparer>();
+            ITextHandler textHandler = serviceProvider.GetRequiredService<ITextHandler>();
 
             // Separator
             {
@@ -53,13 +52,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 }
 
                 // Command separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentPrefix))
+                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.ArgumentPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument prefix cannot be same. separator={0}", options.Extractor.Separator);
                 }
 
                 // Command separator and argument alias prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix))
+                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The command separator and argument alias prefix cannot be same. separator={0}", options.Extractor.Separator);
                 }
@@ -80,8 +79,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 }
 
                 // Argument prefix cannot be more than 3 Unicode characters
-                StringInfo argPrefixInfo = new (options.Extractor.ArgumentPrefix);
-                if (argPrefixInfo.LengthInTextElements > 3)
+                if (textHandler.TextLength(options.Extractor.ArgumentPrefix) > 3)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument prefix cannot be more than 3 Unicode characters. argument_prefix={0}", options.Extractor.ArgumentPrefix);
                 }
@@ -93,27 +91,26 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 }
 
                 // Argument prefix cannot be more than 3 Unicode characters
-                StringInfo argAliasPrefixInfo = new (options.Extractor.ArgumentAliasPrefix);
-                if (argAliasPrefixInfo.LengthInTextElements > 3)
+                if (textHandler.TextLength(options.Extractor.ArgumentAliasPrefix) > 3)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={0}", options.Extractor.ArgumentAliasPrefix);
                 }
 
                 // Argument separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentPrefix))
+                if (textHandler.TextEquals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
                 }
 
                 // Argument separator and argument prefix cannot be same
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentAliasPrefix))
+                if (textHandler.TextEquals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentAliasPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument separator and argument alias prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
                 }
 
                 // - FOMAC confusing. Argument alias prefix can be same as argument prefix but it cannot start with
                 // argument prefix.
-                if (!stringComparer.Equals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentPrefix) && options.Extractor.ArgumentAliasPrefix.StartsWith(options.Extractor.ArgumentPrefix, stringComparer.Comparison))
+                if (!textHandler.TextEquals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentPrefix) && options.Extractor.ArgumentAliasPrefix.StartsWith(options.Extractor.ArgumentPrefix, textHandler.Comparison))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The argument alias prefix cannot start with argument prefix. prefix={0}", options.Extractor.ArgumentPrefix);
                 }
@@ -128,25 +125,25 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 }
 
                 // with_in cannot be same as ArgumentPrefix
-                if (stringComparer.Equals(options.Extractor.Separator, options.Extractor.ArgumentValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.ArgumentValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentPrefix
-                if (stringComparer.Equals(options.Extractor.ArgumentPrefix, options.Extractor.ArgumentValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.ArgumentPrefix, options.Extractor.ArgumentValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument prefix cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentAliasPrefix
-                if (stringComparer.Equals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument alias prefix cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentSeparator
-                if (stringComparer.Equals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and argument separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
                 }

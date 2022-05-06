@@ -8,14 +8,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores;
 using PerpetualIntelligence.Cli.Stores.InMemory;
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
@@ -28,19 +27,19 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public OptionsCheckerTests()
         {
             options = MockCliOptions.New();
-            stringComparer = new StringComparisonComparer(System.StringComparison.OrdinalIgnoreCase);
+            textHandler = new UnicodeTextHandler();
 
             hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {
-                services.AddSingleton<IStringComparer>(stringComparer);
+                services.AddSingleton<ITextHandler>(textHandler);
                 services.AddSingleton(options);
             });
             host = hostBuilder.Start();
 
             optionsChecker = new OptionsChecker(host.Services);
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            argExtractor = new ArgumentExtractor(stringComparer, options, TestLogger.Create<ArgumentExtractor>());
-            defaultArgValueProvider = new DefaultArgumentValueProvider(stringComparer);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
+            defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
             defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
         }
 
@@ -75,6 +74,21 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument alias prefix cannot start with argument prefix. prefix={prefix}");
         }
 
+        [DataTestMethod]
+        [DataRow("@@@@")]
+        [DataRow("~~~~")]
+        [DataRow("####")]
+        [DataRow("sp----")]
+        [DataRow("öööö")]
+        [DataRow("माणूसस")]
+        [DataRow("女性女性")]
+        [DataRow("-女माö")]
+        public async Task ArgumentAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
+        {
+            options.Extractor.ArgumentAliasPrefix = prefix;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={prefix}");
+        }
+
         [TestMethod]
         public async Task ArgumentPrefixCannotBeNullOrWhitespaceAsync()
         {
@@ -88,23 +102,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             options.Extractor.ArgumentPrefix = "   ";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument prefix cannot be null or whitespace.");
-        }
-
-        [DataTestMethod]
-        [DataRow("@")]
-        [DataRow("~")]
-        [DataRow("#")]
-        [DataRow("sp")]
-        [DataRow("öö")]
-        [DataRow("माणूस")]
-        [DataRow("女性")]
-        public async Task ArgumentSeparatorAndArgumentAliasPrefixCannotBeSameAsync(string separator)
-        {
-            options.Extractor.ArgumentValueSeparator = separator;
-            options.Extractor.ArgumentPrefix = ":";
-            options.Extractor.ArgumentAliasPrefix = separator;
-
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument separator and argument alias prefix cannot be same. separator={separator}");
         }
 
         [DataTestMethod]
@@ -123,20 +120,21 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [DataTestMethod]
-        [DataRow("@@@@")]
-        [DataRow("~~~~")]
-        [DataRow("####")]
-        [DataRow("sp----")]
-        [DataRow("öööö")]
-        [DataRow("माणूसस")]
-        [DataRow("女性女性")]
-        [DataRow("-女माö")]
-        public async Task ArgumentAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
+        [DataRow("@")]
+        [DataRow("~")]
+        [DataRow("#")]
+        [DataRow("sp")]
+        [DataRow("öö")]
+        [DataRow("माणूस")]
+        [DataRow("女性")]
+        public async Task ArgumentSeparatorAndArgumentAliasPrefixCannotBeSameAsync(string separator)
         {
-            options.Extractor.ArgumentAliasPrefix = prefix;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={prefix}");
-        }
+            options.Extractor.ArgumentValueSeparator = separator;
+            options.Extractor.ArgumentPrefix = ":";
+            options.Extractor.ArgumentAliasPrefix = separator;
 
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The argument separator and argument alias prefix cannot be same. separator={separator}");
+        }
 
         [DataTestMethod]
         [DataRow("@")]
@@ -215,16 +213,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task WithInStringCannotBeSameAsArgPrefix()
-        {
-            // Make sure command separator is different so we can fail for argument separator below.
-            options.Extractor.ArgumentPrefix = "^";
-            options.Extractor.ArgumentValueWithIn = "^";
-
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token and argument prefix cannot be same. with_in=^");
-        }
-
-        [TestMethod]
         public async Task WithInStringCannotBeSameAsArgAliasPrefix()
         {
             // Make sure command separator is different so we can fail for argument separator below.
@@ -233,6 +221,16 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             options.Extractor.ArgumentAliasPrefix = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token and argument alias prefix cannot be same. with_in=^");
+        }
+
+        [TestMethod]
+        public async Task WithInStringCannotBeSameAsArgPrefix()
+        {
+            // Make sure command separator is different so we can fail for argument separator below.
+            options.Extractor.ArgumentPrefix = "^";
+            options.Extractor.ArgumentValueWithIn = "^";
+
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token and argument prefix cannot be same. with_in=^");
         }
 
         [TestMethod]
@@ -271,6 +269,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         private IHostBuilder hostBuilder;
         private CliOptions options;
         private IOptionsChecker optionsChecker;
-        private IStringComparer stringComparer;
+        private ITextHandler textHandler;
     }
 }

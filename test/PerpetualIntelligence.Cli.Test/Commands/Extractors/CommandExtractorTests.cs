@@ -7,8 +7,8 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Extractors.Mocks;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -47,8 +47,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAliasPrefix = "-";
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_invalid_alias=value1 --key2=value2 -key3_alias=value3 --key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -74,8 +74,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAliasPrefix = "-";
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 --key2=value2 -key3_alias=value3 --key4_invalid=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -99,8 +99,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAlias = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_invalid_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -124,8 +124,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAlias = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2_invalid=value2 -key3_alias=value3 -key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -149,8 +149,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAlias = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             var result = await extractor.ExtractAsync(context);
@@ -177,8 +177,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.DefaultArgumentValue = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
 
             // key1 with alias key1_alias is default arg with default value key1 default value
             CommandExtractorContext context = new(new CommandString($"{prefix} -key2=value2 -key3_alias=value3 -key4=25.36"));
@@ -203,8 +203,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.DefaultArgument = true;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, null);
 
             // key1 with alias key1_alias is default arg for value1
             CommandExtractorContext context = new(new CommandString($"{prefix} value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
@@ -230,8 +230,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentAlias = false;
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
 
@@ -252,7 +252,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task BadCustomArgExtractorShouldErrorAsync()
         {
             CommandExtractorContext context = new CommandExtractorContext(new CommandString("prefix1 -key1=value1 -key2=value2"));
-            var badExtractor = new CommandExtractor(commands, new MockBadArgumentExtractor(), stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            var badExtractor = new CommandExtractor(commands, new MockBadArgumentExtractor(), textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                 () => badExtractor.ExtractAsync(context),
@@ -284,8 +284,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.CommandIdRegex = "^[A-Za-z0-9_-]*$";
 
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.AliasCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString($"{prefix} -key1=value1 -key2=value2"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, $"The command identifier is not valid. command_id={cmdId} regex={options.Extractor.CommandIdRegex}");
@@ -545,7 +545,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.DefaultArgumentValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
-            CommandExtractor noProviderExtrator = new(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type=PerpetualIntelligence.Cli.Commands.Providers.IDefaultArgumentValueProvider");
         }
@@ -632,7 +632,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.DefaultArgumentValue = false;
 
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
-            CommandExtractor noProviderExtrator = new(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
             await noProviderExtrator.ExtractAsync(context);
         }
 
@@ -651,8 +651,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task InvalidCommandStringWithinCommandGroupShouldErrorAsync()
         {
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandString("pi auth invalid"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
@@ -862,8 +862,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task ValidCommandStringWithinCommandGroupShouldNotErrorAsync()
         {
             // Reset commands
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), null, null);
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.GroupedCommands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new CommandExtractorContext(new CommandString("pi"));
             var result = await extractor.ExtractAsync(context);
@@ -921,12 +921,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            stringComparer = new StringComparisonComparer(StringComparison.Ordinal);
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
-            argExtractor = new ArgumentExtractor(stringComparer, options, TestLogger.Create<ArgumentExtractor>());
-            defaultArgValueProvider = new DefaultArgumentValueProvider(stringComparer);
+            textHandler = new UnicodeTextHandler();
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
+            defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
             defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
-            extractor = new CommandExtractor(commands, argExtractor, stringComparer, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
         private void AssertArgument(Argument arg, string name, string customDataType, string description, object value)
@@ -971,6 +971,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
         private CommandExtractor extractor = null!;
         private CliOptions options = null!;
-        private StringComparisonComparer stringComparer = null!;
+        private ITextHandler textHandler = null!;
     }
 }

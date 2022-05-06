@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Commands.Comparers;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Shared.Attributes.Validation;
 using System;
@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         /// </summary>
         static MockCommands()
         {
-            TestArgumentDescriptors = new(new StringComparisonComparer(StringComparison.Ordinal))
+            TestArgumentDescriptors = new(new UnicodeTextHandler())
             {
                 new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text"),
                 new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string")
             };
 
-            TestDefaultArgumentDescriptors = new(new StringComparisonComparer(StringComparison.Ordinal))
+            TestDefaultArgumentDescriptors = new(new UnicodeTextHandler())
             {
                 new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text"),
                 new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string", defaultValue: "mello default")
             };
 
-            TestDefaultArgumentValueDescriptors = new(new StringComparisonComparer(StringComparison.Ordinal))
+            TestDefaultArgumentValueDescriptors = new(new UnicodeTextHandler())
             {
                 new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value"),
                 new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
             };
 
-            TestAliasArgumentDescriptors = new(new StringComparisonComparer(StringComparison.Ordinal))
+            TestAliasArgumentDescriptors = new(new UnicodeTextHandler())
             {
                 new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value") { Alias = "key1_alias" },
                 new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text") { },
@@ -70,7 +70,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key4", nameof(Double), false, "Key4 value number") { Alias = "key4_alias" },
             };
 
-            TestOptionsDescriptors = new(new StringComparisonComparer(StringComparison.Ordinal))
+            TestOptionsDescriptors = new(new UnicodeTextHandler())
             {
                 new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value") { Alias = "key1_alias" },
                 new ArgumentDescriptor("key2-er", DataType.Text, true, "Key2 value text", defaultValue: "key2 default value"),
@@ -104,7 +104,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new StringComparisonComparer(StringComparison.Ordinal)), typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Command with default arg
                 NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
@@ -170,7 +170,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             LicensingCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("root1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isRoot:true).Item1,
+                NewCommandDefinition("root1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
 
                 // Different name and prefix
                 NewCommandDefinition("root2", "name2", "prefix2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
@@ -203,7 +203,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new StringComparisonComparer(StringComparison.Ordinal)), typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Command with default arg
                 NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,

@@ -5,8 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
-
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -23,9 +22,9 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initializes a new instance with the specified argument descriptors.
         /// </summary>
-        /// <param name="stringComparer">The string comparer.</param>
+        /// <param name="textHandler">The text handler.</param>
         /// <param name="collection">The argument descriptors.</param>
-        public ArgumentDescriptors(IStringComparer stringComparer, IEnumerable<ArgumentDescriptor> collection) : this(stringComparer)
+        public ArgumentDescriptors(ITextHandler textHandler, IEnumerable<ArgumentDescriptor> collection) : this(textHandler)
         {
             foreach (ArgumentDescriptor argumentDescriptor in collection)
             {
@@ -36,15 +35,15 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public ArgumentDescriptors(IStringComparer stringComparer) : base(stringComparer)
+        public ArgumentDescriptors(ITextHandler textHandler) : base(textHandler.EqualityComparer())
         {
-            StringComparer = stringComparer ?? throw new ArgumentNullException(nameof(stringComparer));
+            TextHandler = textHandler ?? throw new ArgumentNullException(nameof(textHandler));
         }
 
         /// <summary>
-        /// The string comparer.
+        /// The text handler.
         /// </summary>
-        public IStringComparer StringComparer { get; }
+        public ITextHandler TextHandler { get; }
 
         /// <summary>
         /// Gets or sets an <see cref="ArgumentDescriptor"/> instance at the specified index.
@@ -132,7 +131,7 @@ namespace PerpetualIntelligence.Cli.Commands
                         else
                         {
                             // Then by alias, if this throws we are ok. Nothing to check further.
-                            return this.First(e => e.Alias != null && StringComparer.Equals(e.Alias, idOrAlias));
+                            return this.First(e => e.Alias != null && TextHandler.TextEquals(e.Alias, idOrAlias));
                         }
                     }
                     else
@@ -140,7 +139,7 @@ namespace PerpetualIntelligence.Cli.Commands
                         // Id or alias
                         if (alias.GetValueOrDefault())
                         {
-                            return this.First(e => e.Alias != null && StringComparer.Equals(e.Alias, idOrAlias));
+                            return this.First(e => e.Alias != null && TextHandler.TextEquals(e.Alias, idOrAlias));
                         }
                         else
                         {

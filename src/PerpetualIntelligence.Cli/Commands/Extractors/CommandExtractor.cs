@@ -6,10 +6,10 @@
 */
 
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Stores;
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// </summary>
         /// <param name="commandStore">The command descriptor store.</param>
         /// <param name="argumentExtractor">The argument extractor.</param>
-        /// <param name="stringComparer">The string comparer.</param>
+        /// <param name="textHandler">The text handler.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="defaultArgumentProvider">The optional default argument provider.</param>
@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public CommandExtractor(
             ICommandDescriptorStore commandStore,
             IArgumentExtractor argumentExtractor,
-            IStringComparer stringComparer,
+            ITextHandler textHandler,
             CliOptions options,
             ILogger<CommandExtractor> logger,
             IDefaultArgumentProvider? defaultArgumentProvider = null,
@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             this.commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
             this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
-            this.stringComparer = stringComparer;
+            this.textHandler = textHandler;
             this.defaultArgumentValueProvider = defaultArgumentValueProvider;
             this.defaultArgumentProvider = defaultArgumentProvider;
             this.options = options ?? throw new ArgumentNullException(nameof(options));
@@ -71,13 +71,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return new CommandExtractorResult(new Command(commandDescriptor, arguments), commandDescriptor);
         }
 
-
-
         private async Task<Arguments?> ExtractArgumentsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
         {
             // Remove the prefix from the start so we can get the argument string.
             string raw = context.CommandString.Raw;
-            string rawArgString = raw.TrimStart(commandDescriptor.Prefix, stringComparer.Comparison);
+            string rawArgString = raw.TrimStart(commandDescriptor.Prefix, textHandler.Comparison);
 
             // Commands may not have arguments.
             if (!string.IsNullOrWhiteSpace(rawArgString))
@@ -89,7 +87,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Make sure there is a separator between the command prefix and arguments
-                if (!rawArgString.StartsWith(options.Extractor.Separator, stringComparer.Comparison))
+                if (!rawArgString.StartsWith(options.Extractor.Separator, textHandler.Comparison))
                 {
                     throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", raw);
                 }
@@ -114,8 +112,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // Options and command supports the default argument, but is the default value provided by user ? If yes
                 // then add the default attribute
                 bool proccessDefaultArg = true;
-                string argStringDef = rawArgString.TrimStart(options.Extractor.Separator, stringComparer.Comparison);
-                if (argStringDef.StartsWith(options.Extractor.ArgumentPrefix, stringComparer.Comparison))
+                string argStringDef = rawArgString.TrimStart(options.Extractor.Separator, textHandler.Comparison);
+                if (argStringDef.StartsWith(options.Extractor.ArgumentPrefix, textHandler.Comparison))
                 {
                     // Default attribute value should be the first after command prefix User has explicitly passed an argument.
                     proccessDefaultArg = false;
@@ -141,7 +139,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var argumentStrings = ExtractArgumentStrings(rawArgString);
 
             List<Error> errors = new();
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             foreach (var argString in argumentStrings)
             {
                 // We capture all the argument extraction errors
@@ -208,8 +206,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 if (currentPos == 0)
                 {
                     // First time we have to make multiple passes to determine whether the first is arg prefix or alias prefix
-                    nextArgPos = raw.IndexOf(argSplit, currentPos, stringComparer.Comparison);
-                    nextAliasPos = raw.IndexOf(argAliasSplit, currentPos, stringComparer.Comparison);
+                    nextArgPos = raw.IndexOf(argSplit, currentPos, textHandler.Comparison);
+                    nextAliasPos = raw.IndexOf(argAliasSplit, currentPos, textHandler.Comparison);
 
                     // Since this is the first iteration the minimum can be 0
                     nextIdx = InfraHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
@@ -220,8 +218,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 // Get next positions
-                nextArgPos = raw.IndexOf(argSplit, nextIdx + 1, stringComparer.Comparison);
-                nextAliasPos = raw.IndexOf(argAliasSplit, nextIdx + 1, stringComparer.Comparison);
+                nextArgPos = raw.IndexOf(argSplit, nextIdx + 1, textHandler.Comparison);
+                nextAliasPos = raw.IndexOf(argAliasSplit, nextIdx + 1, textHandler.Comparison);
 
                 // We reached the end of positions for both, take the remaining string. This condition also help in
                 // breaking the loop since we have traversed the argString now !
@@ -267,8 +265,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // default argument is specified after the command prefix followed by command separator.
             // - E.g. pi auth login {default_arg_value}.
             int[] indices = new int[2];
-            indices[0] = prefix.IndexOf(options.Extractor.ArgumentPrefix, stringComparer.Comparison);
-            indices[1] = prefix.IndexOf(options.Extractor.ArgumentAliasPrefix, stringComparer.Comparison);
+            indices[0] = prefix.IndexOf(options.Extractor.ArgumentPrefix, textHandler.Comparison);
+            indices[1] = prefix.IndexOf(options.Extractor.ArgumentAliasPrefix, textHandler.Comparison);
             int minIndex = indices.Where(x => x > 0).DefaultIfEmpty().Min();
             if (minIndex != 0)
             {
@@ -280,7 +278,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             //
             // At this point the prefix may also have default argument value.
             // - E.g. pi auth login default_value
-            prefix = prefix.TrimEnd(options.Extractor.Separator, stringComparer.Comparison);
+            prefix = prefix.TrimEnd(options.Extractor.Separator, textHandler.Comparison);
             TryResultOrError<CommandDescriptor> result = await commandStore.TryMatchByPrefixAsync(prefix);
             if (result.Error != null)
             {
@@ -335,7 +333,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // arguments can be null here, if the command string did not specify any arguments
                 if (finalArgs == null)
                 {
-                    finalArgs = new Arguments(stringComparer);
+                    finalArgs = new Arguments(textHandler);
                 }
 
                 List<Error> errors = new();
@@ -370,6 +368,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private readonly IDefaultArgumentValueProvider? defaultArgumentValueProvider;
         private readonly ILogger<CommandExtractor> logger;
         private readonly CliOptions options;
-        private readonly IStringComparer stringComparer;
+        private readonly ITextHandler textHandler;
     }
 }

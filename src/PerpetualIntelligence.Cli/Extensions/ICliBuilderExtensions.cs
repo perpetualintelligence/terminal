@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Mappers;
@@ -20,9 +19,7 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Stores;
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Shared.Exceptions;
-using System;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
@@ -237,15 +234,14 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Add the <see cref="IStringComparer"/> to the service collection.
+        /// Adds the <see cref="ITextHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="stringComparison">The string comparison to use.</param>
+        /// <typeparam name="TTextHandler">The text handler.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddStringComparer(this ICliBuilder builder, StringComparison stringComparison)
+        public static ICliBuilder AddTextHandler<TTextHandler>(this ICliBuilder builder) where TTextHandler : class, ITextHandler
         {
-            // Add string comparer
-            IServiceCollection serviceCollection = builder.Services.AddTransient<IStringComparer>(resolver => new StringComparisonComparer(stringComparison));
+            IServiceCollection serviceCollection = builder.Services.AddTransient<ITextHandler, TTextHandler>();
             return builder;
         }
     }

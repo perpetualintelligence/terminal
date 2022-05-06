@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Linq;
@@ -21,10 +21,10 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="stringComparer">The string comparer.</param>
-        public DefaultArgumentValueProvider(IStringComparer stringComparer)
+        /// <param name="textHandler">The text handler.</param>
+        public DefaultArgumentValueProvider(ITextHandler textHandler)
         {
-            this.stringComparer = stringComparer;
+            this.textHandler = textHandler;
         }
 
         /// <summary>
@@ -40,9 +40,9 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
                 throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any arguments. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            return Task.FromResult(new DefaultArgumentValueProviderResult(new ArgumentDescriptors(stringComparer, context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
+            return Task.FromResult(new DefaultArgumentValueProviderResult(new ArgumentDescriptors(textHandler, context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
         }
 
-        private readonly IStringComparer stringComparer;
+        private readonly ITextHandler textHandler;
     }
 }

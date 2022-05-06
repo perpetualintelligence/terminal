@@ -10,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Commands.Comparers;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
@@ -19,7 +18,6 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores;
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -36,18 +34,18 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [TestMethod]
-        public void AddAddStringComparerShouldCorrectlyInitialize()
+        public void AddTextHandlerShouldCorrectlyInitialize()
         {
-            cliBuilder.AddStringComparer(StringComparison.Ordinal);
+            cliBuilder.AddTextHandler<UnicodeTextHandler>();
 
-            var comparer = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IStringComparer)));
+            var comparer = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITextHandler)));
             Assert.IsNotNull(comparer);
             Assert.AreEqual(ServiceLifetime.Transient, comparer.Lifetime);
 
             // This registers a factory so we build to check the instance
             var serviceProvider = cliBuilder.Services.BuildServiceProvider();
-            var instance = serviceProvider.GetService<IStringComparer>();
-            Assert.IsInstanceOfType(instance, typeof(StringComparisonComparer));
+            var instance = serviceProvider.GetService<ITextHandler>();
+            Assert.IsInstanceOfType(instance, typeof(UnicodeTextHandler));
         }
 
         [TestMethod]

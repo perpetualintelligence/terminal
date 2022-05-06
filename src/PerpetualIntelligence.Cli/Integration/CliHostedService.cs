@@ -120,7 +120,7 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         /// <summary>
-        /// Allows the host application to perform the custom configuration option checks.
+        /// Allows the host application to perform additional configuration option checks.
         /// </summary>
         /// <returns></returns>
         protected virtual Task CheckHostApplicationConfigurationAsync(CliOptions options)

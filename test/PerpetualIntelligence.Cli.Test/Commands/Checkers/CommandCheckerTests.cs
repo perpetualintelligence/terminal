@@ -6,13 +6,12 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands.Comparers;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores;
 using PerpetualIntelligence.Cli.Stores.InMemory;
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -32,9 +31,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task DisabledArgumentShouldErrorAsync()
         {
-            CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Text) { Disabled = true } }));
+            CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text) { Disabled = true } }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", "value1", DataType.Text));
             Command argsCommand = new(disabledArgsDescriptor, arguments);
 
@@ -45,9 +44,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task EnabledArgumentShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Text) { Disabled = false } }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text) { Disabled = false } }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", "value1", DataType.Text));
             Command argsCommand = new(descriptor, arguments);
 
@@ -58,9 +57,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteAllowedShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Text) { Obsolete = true } }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text) { Obsolete = true } }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", "value1", DataType.Text));
             Command argsCommand = new(descriptor, arguments);
 
@@ -73,9 +72,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteNotAllowedShouldErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Text) { Obsolete = true } }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text) { Obsolete = true } }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", "value1", DataType.Text));
             Command argsCommand = new(descriptor, arguments);
 
@@ -91,9 +90,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task RequiredArgumentMissingShouldErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Text, required: true) }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text, required: true) }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key2", "value2", DataType.Text));
             Command argsCommand = new("id1", "name1", "desc1", arguments);
 
@@ -104,9 +103,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task RequiredArgumentPassedShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Text, required: true) }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text, required: true) }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", "value1", DataType.Text));
             Command argsCommand = new(descriptor, arguments);
 
@@ -119,9 +118,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = false;
 
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", "non-date", DataType.Date));
             Command argsCommand = new(descriptor, arguments);
 
@@ -136,9 +135,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = true;
 
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", "non-date", DataType.Date));
             Command argsCommand = new(descriptor, arguments);
 
@@ -151,9 +150,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = true;
 
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Date) }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", "25-Mar-2021", DataType.Date));
             Command argsCommand = new(descriptor, arguments);
 
@@ -172,9 +171,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ValueValidCustomDataTypeShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", nameof(Double)) }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", nameof(Double)) }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", 25.36, nameof(Double)));
             Command argsCommand = new(descriptor, arguments);
 
@@ -185,9 +184,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ValueValidShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(stringComparer, new[] { new ArgumentDescriptor("key1", DataType.DateTime) }));
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.DateTime) }));
 
-            Arguments arguments = new(stringComparer);
+            Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key1", DateTime.Now, DataType.DateTime));
             Command argsCommand = new(descriptor, arguments);
 
@@ -198,18 +197,18 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            stringComparer = new StringComparisonComparer(System.StringComparison.Ordinal);
+            textHandler = new UnicodeTextHandler();
             mapper = new DataAnnotationsArgumentDataTypeMapper(options, TestLogger.Create<DataAnnotationsArgumentDataTypeMapper>());
             valueChecker = new ArgumentChecker(mapper, options, TestLogger.Create<ArgumentChecker>());
             checker = new CommandChecker(valueChecker, options, TestLogger.Create<CommandChecker>());
-            commands = new InMemoryCommandDescriptorStore(stringComparer, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
         }
 
         private CommandChecker checker = null!;
         private ICommandDescriptorStore commands = null!;
         private IArgumentDataTypeMapper mapper = null!;
         private CliOptions options = null!;
-        private IStringComparer stringComparer = null!;
+        private ITextHandler textHandler = null!;
         private IArgumentChecker valueChecker = null!;
     }
 }

@@ -10,11 +10,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration.Mocks;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Protocols.Abstractions.Comparers;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Integration
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
                 services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
-                services.AddSingleton<IStringComparer>(new MockStringComparer());
+                services.AddSingleton<ITextHandler, UnicodeTextHandler>();
             });
             host = hostBuilder.Start();
 
