@@ -29,11 +29,11 @@ We track the [issues and tasks](https://github.com/perpetualintelligence/cli/iss
 This project has adopted the code of conduct defined by the Contributor Covenant to clarify expected behavior in our community.
 See the [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_OF_CONDUCT.html).
 
-# Documentation
-The documentation and code samples are hosted in our [docs](https://github.com/perpetualintelligence/docs) repository.
-
 # License and Pricing
 
 **See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html) and [pricing](https://docs.perpetualintelligence.com/articles/pi-cli/pricing.html)**.
 
 > Our community edition is free for educational, research and development, and non-commercial usage. **You must have a commercial license to use the service in a non-educational or production environment.**
+
+# Documentation
+The documentation and code samples are hosted in our [docs](https://github.com/perpetualintelligence/docs) repository.
