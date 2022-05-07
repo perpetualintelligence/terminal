@@ -1,8 +1,8 @@
+## **The most flexible cross-platform framework for modern CLI terminals.**
+
 [![build-test-cross-manual](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml)
 [![build-test-publish](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml)
 [![delete-packages](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml)
-
-## **The most flexible cross-platform framework for modern CLI terminals.**
 
 ![macOS](https://img.shields.io/badge/macOS-grey?style=flat-square&logo=macos)
 ![ubuntu](https://img.shields.io/badge/ubuntu-grey?style=flat-square&logo=ubuntu)
