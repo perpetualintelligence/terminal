@@ -2,11 +2,11 @@
 [![build-test-publish](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml)
 [![delete-packages](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml)
 
+# **The most flexible cross-platform framework for modern CLI terminals.**
+
 ![macOS](https://img.shields.io/badge/macOS-grey?style=flat-square&logo=macos)
 ![ubuntu](https://img.shields.io/badge/ubuntu-grey?style=flat-square&logo=ubuntu)
 ![windows](https://img.shields.io/badge/windows-grey?style=flat-square&logo=windows)
-
-> **Note:** This is a ***preview*** release. It is also subject to design changes without any advance notice.
 
 # pi-cli
 `pi-cli` is the cross-platform developer framework for building all your CLI terminals or command-line systems in the .NET ecosystem. The framework makes it easy to build CLIs for your company, product, service, SaaS, or development and testing needs. Enterprises can create CLIs with few flags or advanced complex CLIs with organization commands, grouped commands, subcommands, arguments, and options.
