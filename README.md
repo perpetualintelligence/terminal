@@ -9,7 +9,7 @@
 ![windows](https://img.shields.io/badge/windows-grey?style=flat-square&logo=windows)
 
 # pi-cli
-`pi-cli` is the most cross-platform developer framework for building all your CLI terminals or command-line systems in the .NET ecosystem. The framework makes it easy to build CLIs for your company, product, service, SaaS, or development and testing needs. Enterprises can create CLIs with few flags or advanced complex CLIs with organization commands, grouped commands, subcommands, arguments, and options.
+`pi-cli` is the most flexible cross-platform framework for building all your CLI terminals or command-line systems in the .NET ecosystem. The framework makes it easy to build CLIs for your company, product, service, SaaS, or development and testing needs. Enterprises can create CLIs with few flags or advanced complex CLIs with organization commands, grouped commands, subcommands, arguments, and options.
 
 > ***Take your app or service to the command line with Unicode support and build your front-end CLI in any language.***
 
