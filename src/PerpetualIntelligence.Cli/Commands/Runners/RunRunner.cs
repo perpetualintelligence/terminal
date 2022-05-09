@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
-    /// The <c>run</c> command runner.
+    /// Runs an OS command. This runner will be available in a future release. It does not perform any action right now.
+    /// For more information on roadmap, <see href="https://docs.perpetualintelligence.com/articles/pi-cli/roadmap.html"/>
     /// </summary>
     public class RunRunner : CommandRunner
     {
