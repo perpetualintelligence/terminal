@@ -1,5 +1,5 @@
 ﻿# pi-cli
-`pi-cli` is the flexible cross-platform developer framework for building modern CLI terminals. The framework makes it easy to build CLIs for your company, product, service, SaaS, or development and testing needs. Enterprises can create CLIs with few flags or advanced complex CLIs with organization commands, grouped commands, subcommands, arguments, and options.
+**The most flexible cross-platform developer framework for building modern CLI terminals.** The framework makes it easy to build CLIs for your company, product, service, SaaS, or development and testing needs. Enterprises can create CLIs with few flags or advanced complex CLIs with organization commands, grouped commands, subcommands, arguments, and options.
 
 ***Take your app or service to the command line with Unicode support and build CLI terminals in any language.***
 
