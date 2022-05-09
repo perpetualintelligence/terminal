@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
     {
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
-            return Task.FromResult(new CommandRunnerResult());
+            return Task.FromResult<CommandRunnerResult>(new MockCommandRunnerInnerResult());
         }
     }
 }

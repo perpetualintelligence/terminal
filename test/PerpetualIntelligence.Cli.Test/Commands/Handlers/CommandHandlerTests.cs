@@ -16,8 +16,6 @@ using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers
@@ -58,6 +56,32 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         {
             CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), Errors.ServerError, "The command checker is not configured. command_name=name1 command_id=id1");
+        }
+
+        [TestMethod]
+        public async Task HandlerShouldProcessTheResultCorrectlyAsync()
+        {
+            command.Item1._checker = typeof(MockCommandCheckerInner);
+            command.Item1._runner = typeof(MockCommandRunnerInner);
+
+            // MockCommandRunnerInnerResult.ResultProcessed and MockCommandRunnerInnerResult.ResultDisposed are static
+            // because result is not part of DI, its instance is created by the framework.
+            try
+            {
+                Assert.IsFalse(MockCommandRunnerInnerResult.ResultProcessed);
+                Assert.IsFalse(MockCommandRunnerInnerResult.ResultDisposed);
+
+                CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
+                var result = await handler.HandleAsync(commandContext);
+
+                Assert.IsTrue(MockCommandRunnerInnerResult.ResultProcessed);
+                Assert.IsTrue(MockCommandRunnerInnerResult.ResultDisposed);
+            }
+            finally
+            {
+                MockCommandRunnerInnerResult.ResultProcessed = false;
+                MockCommandRunnerInnerResult.ResultDisposed = false;
+            }
         }
 
         [TestMethod]
@@ -177,8 +201,8 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         private Tuple<CommandDescriptor, Command> command = null!;
         private CommandHandler handler = null!;
         private IHost host = null!;
-        private MockLicenseCheckerInner licenseChecker = null!;
         private License license = null!;
+        private MockLicenseCheckerInner licenseChecker = null!;
         private CliOptions options = null!;
     }
 }

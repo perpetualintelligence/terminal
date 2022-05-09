@@ -5,14 +5,36 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
     /// The command runner result.
     /// </summary>
-    public class CommandRunnerResult
+    public class CommandRunnerResult : ICommandRunnerResult
     {
+        /// <summary>
+        /// Creates a default runner result that does not perform any additional processing.
+        /// </summary>
+        public static CommandRunnerResult NoProcessing => new();
+
+        /// <summary>
+        /// Disposes the managed resources.
+        /// </summary>
+        public virtual ValueTask DisposeAsync()
+        {
+            return new ValueTask();
+        }
+
+        /// <summary>
+        /// Processes the runner result asynchronously.
+        /// </summary>
+        /// <param name="context">The runner result context.</param>
+        /// <returns>An asynchronous task.</returns>
+        public virtual Task ProcessAsync(CommandRunnerResultProcessorContext context)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

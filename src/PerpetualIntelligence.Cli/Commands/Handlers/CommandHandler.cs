@@ -45,7 +45,15 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             // Find the runner and run the command
             ICommandRunner commandRunner = await FindRunnerOrThrowAsync(context);
-            await commandRunner.RunAsync(new CommandRunnerContext(context.Command));
+            CommandRunnerContext runnerContext = new(context.Command);
+            ICommandRunnerResult runnerResult = await commandRunner.RunAsync(runnerContext);
+
+            // Process the result
+            CommandRunnerResultProcessorContext resultProcessorContext = new(runnerContext);
+            await runnerResult.ProcessAsync(resultProcessorContext);
+
+            // Dispose the result's managed resources
+            await runnerResult.DisposeAsync();
 
             // Return the result to process it further.
             return new CommandHandlerResult();
