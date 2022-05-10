@@ -156,16 +156,16 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
             textHandler = new UnicodeTextHandler();
 
             cmds = MockCommands.Commands;
-            cmdStore = new InMemoryCommandDescriptorStore(textHandler, cmds, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            cmdStore = new InMemoryCommandStore(textHandler, cmds, options, TestLogger.Create<InMemoryCommandStore>());
 
             groupedCmds = MockCommands.GroupedCommands;
-            groupedCmdStore = new InMemoryCommandDescriptorStore(textHandler, groupedCmds, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            groupedCmdStore = new InMemoryCommandStore(textHandler, groupedCmds, options, TestLogger.Create<InMemoryCommandStore>());
         }
 
         private IEnumerable<CommandDescriptor> cmds = null!;
-        private InMemoryCommandDescriptorStore cmdStore = null!;
+        private InMemoryCommandStore cmdStore = null!;
         private IEnumerable<CommandDescriptor> groupedCmds = null!;
-        private InMemoryCommandDescriptorStore groupedCmdStore = null!;
+        private InMemoryCommandStore groupedCmdStore = null!;
         private CliOptions options = null!;
         private ITextHandler textHandler = null!;
     }

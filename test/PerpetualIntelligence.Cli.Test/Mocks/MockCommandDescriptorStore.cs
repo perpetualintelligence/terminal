@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockCommandDescriptorStore : ICommandDescriptorStore
+    public class MockCommandDescriptorStore : ICommandStoreHandler
     {
         public Task<TryResultOrError<CommandDescriptor>> TryFindByIdAsync(string id)
         {

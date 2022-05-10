@@ -102,20 +102,6 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ICommandDescriptorStore"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <typeparam name="TStore">The command descriptor store type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddDescriptorStore<TStore>(this ICliBuilder builder) where TStore : class, ICommandDescriptorStore
-        {
-            // Add command extractor
-            builder.Services.AddTransient<ICommandDescriptorStore, TStore>();
-
-            return builder;
-        }
-
-        /// <summary>
         /// Adds the <see cref="IErrorHandler"/> and <see cref="IExceptionHandler"/> to the service collection.
         /// </summary>
         /// <typeparam name="TError">The <see cref="IErrorHandler"/> type.</typeparam>
@@ -202,11 +188,11 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds <c>pi-cli</c> licensing to the service collection.
+        /// Adds <c>pi-cli</c> license handler to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddLicensing(this ICliBuilder builder)
+        public static ICliBuilder AddLicenseHandler(this ICliBuilder builder)
         {
             // Add license extractor as singleton
             builder.Services.AddSingleton<ILicenseExtractor, LicenseExtractor>();
@@ -229,6 +215,20 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add command handler
             builder.Services.AddTransient<ICommandHandler, THandler>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="ICommandStoreHandler"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TStore">The command descriptor store type.</typeparam>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddStoreHandler<TStore>(this ICliBuilder builder) where TStore : class, ICommandStoreHandler
+        {
+            // Add command extractor
+            builder.Services.AddTransient<ICommandStoreHandler, TStore>();
 
             return builder;
         }

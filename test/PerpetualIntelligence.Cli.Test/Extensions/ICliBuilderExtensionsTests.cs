@@ -109,9 +109,9 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandDescriptorStoreShouldCorrectlyInitialize()
         {
-            cliBuilder.AddDescriptorStore<MockCommandDescriptorStore>();
+            cliBuilder.AddStoreHandler<MockCommandDescriptorStore>();
 
-            var serviceDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandDescriptorStore)));
+            var serviceDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandStoreHandler)));
             Assert.IsNotNull(serviceDescriptor);
             Assert.AreEqual(ServiceLifetime.Transient, serviceDescriptor.Lifetime);
             Assert.AreEqual(typeof(MockCommandDescriptorStore), serviceDescriptor.ImplementationType);

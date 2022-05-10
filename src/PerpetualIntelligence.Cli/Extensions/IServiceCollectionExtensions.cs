@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             return services.AddCliBuilder()
                 .AddCliOptions()
                 .AddRouter<CommandRouter, CommandHandler>()
-                .AddLicensing();
+                .AddLicenseHandler();
         }
 
         /// <summary>

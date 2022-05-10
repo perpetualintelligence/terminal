@@ -201,11 +201,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             mapper = new DataAnnotationsArgumentDataTypeMapper(options, TestLogger.Create<DataAnnotationsArgumentDataTypeMapper>());
             valueChecker = new ArgumentChecker(mapper, options, TestLogger.Create<ArgumentChecker>());
             checker = new CommandChecker(valueChecker, options, TestLogger.Create<CommandChecker>());
-            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandStore>());
         }
 
         private CommandChecker checker = null!;
-        private ICommandDescriptorStore commands = null!;
+        private ICommandStoreHandler commands = null!;
         private IArgumentDataTypeMapper mapper = null!;
         private CliOptions options = null!;
         private ITextHandler textHandler = null!;

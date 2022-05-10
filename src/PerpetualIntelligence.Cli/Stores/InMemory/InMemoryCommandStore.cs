@@ -19,9 +19,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Stores.InMemory
 {
     /// <summary>
-    /// The default in-memory <see cref="ICommandDescriptorStore"/>.
+    /// The default in-memory <see cref="ICommandStoreHandler"/>.
     /// </summary>
-    public class InMemoryCommandDescriptorStore : ICommandDescriptorStore
+    public class InMemoryCommandStore : ICommandStoreHandler
     {
         /// <summary>
         /// Initialize a new instance.
@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         /// <param name="commandDescriptors">The command identities.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public InMemoryCommandDescriptorStore(ITextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors, CliOptions options, ILogger<InMemoryCommandDescriptorStore> logger)
+        public InMemoryCommandStore(ITextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors, CliOptions options, ILogger<InMemoryCommandStore> logger)
         {
             this.textHandler = textHandler;
             this.commandDescriptors = commandDescriptors ?? throw new ArgumentNullException(nameof(commandDescriptors));
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
         }
 
         private readonly IEnumerable<CommandDescriptor> commandDescriptors;
-        private readonly ILogger<InMemoryCommandDescriptorStore> logger;
+        private readonly ILogger<InMemoryCommandStore> logger;
         private readonly CliOptions options;
         private readonly ITextHandler textHandler;
     }

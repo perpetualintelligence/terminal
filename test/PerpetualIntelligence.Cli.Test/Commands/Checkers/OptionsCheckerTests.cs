@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             host = hostBuilder.Start();
 
             optionsChecker = new OptionsChecker(host.Services);
-            commands = new InMemoryCommandDescriptorStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandDescriptorStore>());
+            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandStore>());
             argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
             defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
             defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
@@ -262,7 +262,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         private ArgumentExtractor argExtractor;
-        private ICommandDescriptorStore commands;
+        private ICommandStoreHandler commands;
         private IDefaultArgumentProvider defaultArgProvider = null!;
         private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
         private IHost host;

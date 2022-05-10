@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandStore">The command descriptor store.</param>
+        /// <param name="commandStoreHandler">The command store handler.</param>
         /// <param name="argumentExtractor">The argument extractor.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="options">The configuration options.</param>
@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="defaultArgumentProvider">The optional default argument provider.</param>
         /// <param name="defaultArgumentValueProvider">The optional argument default value provider.</param>
         public CommandExtractor(
-            ICommandDescriptorStore commandStore,
+            ICommandStoreHandler commandStoreHandler,
             IArgumentExtractor argumentExtractor,
             ITextHandler textHandler,
             CliOptions options,
@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             IDefaultArgumentProvider? defaultArgumentProvider = null,
             IDefaultArgumentValueProvider? defaultArgumentValueProvider = null)
         {
-            this.commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
+            this.commandStore = commandStoreHandler ?? throw new ArgumentNullException(nameof(commandStoreHandler));
             this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
             this.textHandler = textHandler;
             this.defaultArgumentValueProvider = defaultArgumentValueProvider;
@@ -363,7 +363,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         private readonly IArgumentExtractor argumentExtractor;
-        private readonly ICommandDescriptorStore commandStore;
+        private readonly ICommandStoreHandler commandStore;
         private readonly IDefaultArgumentProvider? defaultArgumentProvider;
         private readonly IDefaultArgumentValueProvider? defaultArgumentValueProvider;
         private readonly ILogger<CommandExtractor> logger;

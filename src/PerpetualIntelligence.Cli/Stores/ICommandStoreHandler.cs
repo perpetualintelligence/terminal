@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Stores
 {
     /// <summary>
-    /// A store abstraction to lookup a <see cref="CommandDescriptor"/>.
+    /// A store handler to lookup a <see cref="CommandDescriptor"/>.
     /// </summary>
-    public interface ICommandDescriptorStore
+    public interface ICommandStoreHandler
     {
         /// <summary>
         /// Attempts to finds a <see cref="CommandDescriptor"/> by its id.
