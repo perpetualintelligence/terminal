@@ -15,7 +15,7 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Licensing
 {
     /// <summary>
-    /// Defines the licensing limits based on the <see cref="SaaSPlans"/>.
+    /// Defines the licensing limits based on the <see cref="LicensePlans"/>.
     /// </summary>
     public sealed class LicenseLimits
     {
@@ -118,31 +118,31 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             switch (saasPlan)
             {
-                case SaaSPlans.Community:
+                case LicensePlans.Community:
                     {
                         return ForCommunity();
                     }
-                case SaaSPlans.Micro:
+                case LicensePlans.Micro:
                     {
                         return ForMicro();
                     }
-                case SaaSPlans.SMB:
+                case LicensePlans.SMB:
                     {
                         return ForSMB();
                     }
-                case SaaSPlans.Enterprise:
+                case LicensePlans.Enterprise:
                     {
                         return ForEnterprise();
                     }
-                case SaaSPlans.ISV:
+                case LicensePlans.ISV:
                     {
                         return ForISV();
                     }
-                case SaaSPlans.ISVU:
+                case LicensePlans.ISVU:
                     {
                         return ForISVU();
                     }
-                case SaaSPlans.Custom:
+                case LicensePlans.Custom:
                     {
                         if (customClaims == null)
                         {
@@ -200,7 +200,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
-                Plan = SaaSPlans.Community,
+                Plan = LicensePlans.Community,
                 TerminalLimit = 1,
                 RedistributionLimit = 0,
                 RootCommandLimit = 1,
@@ -226,7 +226,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             LicenseLimits limits = new()
             {
-                Plan = SaaSPlans.Custom
+                Plan = LicensePlans.Custom
             };
 
             limits.TerminalLimit = Convert.ToInt16(customClaims["terminal_limit"]);
@@ -255,7 +255,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
-                Plan = SaaSPlans.Enterprise,
+                Plan = LicensePlans.Enterprise,
                 TerminalLimit = 5,
                 RedistributionLimit = 5000,
                 RootCommandLimit = 3,
@@ -281,7 +281,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
-                Plan = SaaSPlans.ISV,
+                Plan = LicensePlans.ISV,
                 TerminalLimit = 25,
                 RedistributionLimit = 10000,
                 RootCommandLimit = 5,
@@ -307,7 +307,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
-                Plan = SaaSPlans.ISVU,
+                Plan = LicensePlans.ISVU,
                 TerminalLimit = null,
                 RedistributionLimit = null,
                 RootCommandLimit = null,
@@ -333,7 +333,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
-                Plan = SaaSPlans.Micro,
+                Plan = LicensePlans.Micro,
                 TerminalLimit = 1,
                 RedistributionLimit = 0,
                 RootCommandLimit = 1,
@@ -359,7 +359,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             return new()
             {
-                Plan = SaaSPlans.SMB,
+                Plan = LicensePlans.SMB,
                 TerminalLimit = 3,
                 RedistributionLimit = 1000,
                 RootCommandLimit = 1,

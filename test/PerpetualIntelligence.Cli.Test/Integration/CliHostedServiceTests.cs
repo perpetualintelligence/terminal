@@ -106,8 +106,8 @@ namespace PerpetualIntelligence.Cli.Integration
             printedHeaders[1].Should().Be("country=");
             printedHeaders[2].Should().Be("subject=");
             printedHeaders[3].Should().Be("license_handler=offline");
-            printedHeaders[4].Should().Be("usage=urn:oneimlx:lic:saasusage:rnd");
-            printedHeaders[5].Should().Be("plan=urn:oneimlx:lic:saasplan:community");
+            printedHeaders[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
+            printedHeaders[5].Should().Be("plan=urn:oneimlx:lic:plan:community");
             printedHeaders[6].Should().Be("key_source=urn:oneimlx:lic:ksource:jsonfile");
             printedHeaders[7].Should().Be("key_file=testLicKey1");
             printedHeaders[8].Should().Be("");
@@ -119,7 +119,7 @@ namespace PerpetualIntelligence.Cli.Integration
             stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
 
-            Licensing.License community = new Licensing.License("testp", "testh", SaaSPlans.Custom, SaaSUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -128,7 +128,7 @@ namespace PerpetualIntelligence.Cli.Integration
 
             string[] printedHeaders = stringWriter.ToString().SplitByNewline();
             printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Your demo license is free for RnD, test and evaluation purposes. For production use, you require a commercial license.");
+            printedHeaders[0].Should().Be("Your demo license is free for RnD, test and evaluation purposes. For production environment, you require a commercial license.");
             printedHeaders[1].Should().Be("");
         }
 
@@ -138,7 +138,7 @@ namespace PerpetualIntelligence.Cli.Integration
             stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
 
-            Licensing.License community = new Licensing.License("testp", "testh", SaaSPlans.Community, SaaSUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Community, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -147,7 +147,7 @@ namespace PerpetualIntelligence.Cli.Integration
 
             string[] printedHeaders = stringWriter.ToString().SplitByNewline();
             printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Your community license plan is free for educational purposes. For non-educational or production use, you require a commercial license.");
+            printedHeaders[0].Should().Be("Your community license plan is free for educational purposes. For non-educational or production environment, you require a commercial license.");
             printedHeaders[1].Should().Be("");
         }
 
@@ -157,7 +157,7 @@ namespace PerpetualIntelligence.Cli.Integration
             stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
 
-            Licensing.License community = new Licensing.License("testp", "testh", SaaSPlans.Community, SaaSUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Community, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -166,7 +166,7 @@ namespace PerpetualIntelligence.Cli.Integration
 
             string[] printedHeaders = stringWriter.ToString().SplitByNewline();
             printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Your community license plan is free for RnD, test, and demo purposes. For production use, you require a commercial license.");
+            printedHeaders[0].Should().Be("Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
             printedHeaders[1].Should().Be("");
         }
 

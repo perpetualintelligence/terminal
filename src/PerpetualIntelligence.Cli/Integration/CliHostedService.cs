@@ -97,22 +97,22 @@ namespace PerpetualIntelligence.Cli.Integration
         /// <param name="license">The extracted license.</param>
         internal virtual Task PrintHostApplicationMandatoryLicensingAsync(License license)
         {
-            if (license.Plan == SaaSPlans.Community)
+            if (license.Plan == LicensePlans.Community)
             {
-                if (license.Usage == SaaSUsages.Educational)
+                if (license.Usage == LicenseUsages.Educational)
                 {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your community license plan is free for educational purposes. For non-educational or production use, you require a commercial license.");
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your community license plan is free for educational purposes. For non-educational or production environment, you require a commercial license.");
                 }
-                else if (license.Usage == SaaSUsages.RnD)
+                else if (license.Usage == LicenseUsages.RnD)
                 {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your community license plan is free for RnD, test, and demo purposes. For production use, you require a commercial license.");
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
                 }
             }
-            else if (license.Plan == SaaSPlans.Custom)
+            else if (license.Plan == LicensePlans.Custom)
             {
-                if (license.Usage == SaaSUsages.RnD)
+                if (license.Usage == LicenseUsages.RnD)
                 {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your demo license is free for RnD, test and evaluation purposes. For production use, you require a commercial license.");
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your demo license is free for RnD, test and evaluation purposes. For production environment, you require a commercial license.");
                 }
             }
 
@@ -185,7 +185,7 @@ namespace PerpetualIntelligence.Cli.Integration
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Green, $"plan={license.Plan}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_source={cliOptions.Licensing.KeySource}");
-            if (license.LicenseKeySource == SaaSKeySources.JsonFile)
+            if (license.LicenseKeySource == LicenseKeySources.JsonFile)
             {
                 // Don't dump the key, just the lic file path
                 ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_file={license.LicenseKey}");

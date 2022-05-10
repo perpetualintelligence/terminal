@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // For singleton DI service we don't extract license keys once extracted.
             if (license == null)
             {
-                if (cliOptions.Licensing.KeySource == SaaSKeySources.JsonFile)
+                if (cliOptions.Licensing.KeySource == LicenseKeySources.JsonFile)
                 {
                     license = await ExtractFromJsonAsync();
                 }

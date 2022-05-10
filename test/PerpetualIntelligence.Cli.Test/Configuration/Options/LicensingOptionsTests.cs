@@ -26,9 +26,9 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
 
             Assert.IsNull(options.AuthorizedApplicationId);
             Assert.IsNull(options.ConsumerTenantId);
-            Assert.AreEqual(SaaSKeySources.JsonFile, options.KeySource);
+            Assert.AreEqual(LicenseKeySources.JsonFile, options.KeySource);
             Assert.IsNull(options.LicenseKey);
-            Assert.AreEqual(SaaSProviders.PerpetualIntelligence, options.ProviderId);
+            Assert.AreEqual(LicenseProviders.PerpetualIntelligence, options.ProviderId);
             Assert.IsNull(options.Subject);
         }
     }

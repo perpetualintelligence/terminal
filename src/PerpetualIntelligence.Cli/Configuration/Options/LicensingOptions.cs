@@ -33,23 +33,23 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string? ConsumerTenantId { get; set; }
 
         /// <summary>
-        /// The license key source. Defaults to <see cref="SaaSKeySources.JsonFile"/>.
+        /// The license key source. Defaults to <see cref="LicenseKeySources.JsonFile"/>.
         /// </summary>
-        public string KeySource { get; set; } = SaaSKeySources.JsonFile;
+        public string KeySource { get; set; } = LicenseKeySources.JsonFile;
 
         /// <summary>
         /// The license key or the file containing license key.
         /// </summary>
         /// <remarks>
-        /// If <see cref="KeySource"/> is set to <see cref="SaaSKeySources.JsonFile"/>, then this option value must be a
+        /// If <see cref="KeySource"/> is set to <see cref="LicenseKeySources.JsonFile"/>, then this option value must be a
         /// valid JSON file path containing license key.
         /// </remarks>
         public string? LicenseKey { get; set; }
 
         /// <summary>
-        /// The license SaaS provider id or the provider tenant id. Defaults to <see cref="SaaSProviders.PerpetualIntelligence"/>
+        /// The license SaaS provider id or the provider tenant id. Defaults to <see cref="LicenseProviders.PerpetualIntelligence"/>
         /// </summary>
-        public string? ProviderId { get; set; } = SaaSProviders.PerpetualIntelligence;
+        public string? ProviderId { get; set; } = LicenseProviders.PerpetualIntelligence;
 
         /// <summary>
         /// The subject or a licensing context to check the license. Your subscription id or any other domain identifier

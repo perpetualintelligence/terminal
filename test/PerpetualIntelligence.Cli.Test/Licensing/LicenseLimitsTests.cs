@@ -19,9 +19,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void CommunityEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Community);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Community);
 
-            limits.Plan.Should().Be(SaaSPlans.Community);
+            limits.Plan.Should().Be(LicensePlans.Community);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void CustomEdition_NoCustomClaimsShouldThrow()
         {
-            Test.Services.TestHelper.AssertThrowsErrorException(() => LicenseLimits.Create(SaaSPlans.Custom), "invalid_license", "The licensing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:saasplan:custom");
+            Test.Services.TestHelper.AssertThrowsErrorException(() => LicenseLimits.Create(LicensePlans.Custom), "invalid_license", "The licensing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:plan:custom");
         }
 
         [Fact]
@@ -72,8 +72,8 @@ namespace PerpetualIntelligence.Cli.Licensing
             claims.Add("service_handlers", "s1 s2 s3");
             claims.Add("license_handlers", "l1");
 
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Custom, claims);
-            limits.Plan.Should().Be(SaaSPlans.Custom);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Custom, claims);
+            limits.Plan.Should().Be(LicensePlans.Custom);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(2);
@@ -129,9 +129,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void EnterpriseEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Enterprise);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Enterprise);
 
-            limits.Plan.Should().Be(SaaSPlans.Enterprise);
+            limits.Plan.Should().Be(LicensePlans.Enterprise);
 
             limits.TerminalLimit.Should().Be(5);
             limits.RedistributionLimit.Should().Be(5000);
@@ -171,9 +171,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void ISVEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.ISV);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.ISV);
 
-            limits.Plan.Should().Be(SaaSPlans.ISV);
+            limits.Plan.Should().Be(LicensePlans.ISV);
 
             limits.TerminalLimit.Should().Be(25);
             limits.RedistributionLimit.Should().Be(10000);
@@ -198,9 +198,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void ISVUEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.ISVU);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.ISVU);
 
-            limits.Plan.Should().Be(SaaSPlans.ISVU);
+            limits.Plan.Should().Be(LicensePlans.ISVU);
 
             limits.TerminalLimit.Should().Be(null);
             limits.RedistributionLimit.Should().Be(null);
@@ -225,9 +225,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void MicroEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Micro);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Micro);
 
-            limits.Plan.Should().Be(SaaSPlans.Micro);
+            limits.Plan.Should().Be(LicensePlans.Micro);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);
@@ -252,9 +252,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void SMBEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.SMB);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.SMB);
 
-            limits.Plan.Should().Be(SaaSPlans.SMB);
+            limits.Plan.Should().Be(LicensePlans.SMB);
 
             limits.TerminalLimit.Should().Be(3);
             limits.RedistributionLimit.Should().Be(1000);
@@ -286,32 +286,32 @@ namespace PerpetualIntelligence.Cli.Licensing
                 { "text_handlers", new[] { "new1", "new2" } }
             };
 
-            LicenseLimits limits = LicenseLimits.Create(SaaSPlans.Community, expected);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Community, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(SaaSPlans.Micro, expected);
+            limits = LicenseLimits.Create(LicensePlans.Micro, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(SaaSPlans.SMB, expected);
+            limits = LicenseLimits.Create(LicensePlans.SMB, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(SaaSPlans.Enterprise, expected);
+            limits = LicenseLimits.Create(LicensePlans.Enterprise, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(SaaSPlans.ISV, expected);
+            limits = LicenseLimits.Create(LicensePlans.ISV, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(SaaSPlans.ISVU, expected);
+            limits = LicenseLimits.Create(LicensePlans.ISVU, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });

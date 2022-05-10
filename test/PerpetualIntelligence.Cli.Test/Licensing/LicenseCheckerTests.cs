@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions = MockCliOptions.New();
             commandDescriptors = MockCommands.LicensingCommands;
             licenseChecker = new LicenseChecker(commandDescriptors, cliOptions, TestLogger.Create<LicenseChecker>());
-            license = new License("testProviderId2", Handlers.OnlineHandler,  SaaSPlans.ISVU, SaaSUsages.RnD, SaaSKeySources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(SaaSPlans.ISVU), LicensePrice.Create(SaaSPlans.ISVU));
+            license = new License("testProviderId2", Handlers.OnlineHandler,  LicensePlans.ISVU, LicenseUsages.RnD, LicenseKeySources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(LicensePlans.ISVU), LicensePrice.Create(LicensePlans.ISVU));
         }
 
         [Fact]

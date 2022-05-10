@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "provider_id={0}", license.ProviderId);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "key_source={0}", license.LicenseKeySource);
 
-                    if (license.LicenseKeySource == SaaSKeySources.JsonFile)
+                    if (license.LicenseKeySource == LicenseKeySources.JsonFile)
                     {
                         // Only display key file path
                         ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "key_file={0}", license.LicenseKey);
