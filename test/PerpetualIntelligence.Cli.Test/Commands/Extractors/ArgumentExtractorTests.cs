@@ -42,6 +42,16 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidConfiguration, $"The argument extraction by alias prefix is not configured. argument_string={aliasPrefix}key1=value1");
         }
 
+        [TestMethod]
+        public void ArgumentExtractor_RegexPatterns_ShouldBeValid()
+        {
+            Assert.AreEqual("^[ ]*(-)+(.+?)[ ]*$", extractor.ArgumentAliasNoValueRegexPattern);
+            Assert.AreEqual("^[ ]*(-)+(.+?)=+(.*?)[ ]*$", extractor.ArgumentAliasValueRegexPattern);
+            Assert.AreEqual("^[ ]*(-)+(.+?)[ ]*$", extractor.ArgumentIdNoValueRegexPattern);
+            Assert.AreEqual("^[ ]*(-)+(.+?)=+(.*?)[ ]*$", extractor.ArgumentIdValueRegexPattern);
+            Assert.AreEqual("^(.*)$", extractor.ArgumentValueWithinRegexPattern);
+        }
+
         [DataTestMethod]
         [DataRow("ü")]
         [DataRow(":")]

@@ -57,6 +57,96 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             this.logger = logger;
         }
 
+        /// <summary>
+        /// Gets the REGEX pattern to match the argument alias with no value.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Lets assume that you have configured <see cref="ExtractorOptions.Separator"/> as a single whitespace string
+        /// ' ', and <see cref="ExtractorOptions.ArgumentAliasPrefix"/> as a single dash character string '-'.
+        /// </para>
+        /// <para>
+        /// The default implementation for <see cref="ArgumentAliasNoValueRegexPattern"/> will match using the following criteria:
+        /// </para>
+        /// <list type="number">
+        /// <item>
+        /// <term>'^ *(-)+(.+)$'</term>
+        /// <description>Default example REGEX pattern</description>
+        /// </item>
+        /// <item>
+        /// <term>'^'</term>
+        /// <description>Matches the beginning of the string</description>
+        /// </item>
+        /// <item>
+        /// <term>' *'</term>
+        /// <description>Matches 0 or more <see cref="ExtractorOptions.Separator"/></description>
+        /// </item>
+        /// <item>
+        /// <term>'(-)+'</term>
+        /// <description>Create a new capture group and matches 1 or more <see cref="ExtractorOptions.ArgumentAliasPrefix"/></description>
+        /// </item>
+        /// <item>
+        /// <term>'(.+?)'</term>
+        /// <description>Create a new capture group and matches characters (1 or more) except line breaks</description>
+        /// </item>
+        /// <item>
+        /// <term>'$'</term>
+        /// <description>Matches the end of the string</description>
+        /// </item>
+        /// </list>
+        /// </remarks>
+        public virtual string ArgumentAliasNoValueRegexPattern
+        {
+            get
+            {
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentAliasPrefix})+(.+?)[{options.Extractor.Separator}]*$";
+            }
+        }
+
+        /// <summary>
+        /// Gets the REGEX pattern to match the argument id and value using <see cref="ExtractorOptions.ArgumentPrefix"/>.
+        /// </summary>
+        public virtual string ArgumentAliasValueRegexPattern
+        {
+            get
+            {
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentAliasPrefix})+(.+?){options.Extractor.ArgumentValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
+            }
+        }
+
+        /// <summary>
+        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
+        /// </summary>
+        public virtual string ArgumentIdNoValueRegexPattern
+        {
+            get
+            {
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentPrefix})+(.+?)[{options.Extractor.Separator}]*$";
+            }
+        }
+
+        /// <summary>
+        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
+        /// </summary>
+        public virtual string ArgumentIdValueRegexPattern
+        {
+            get
+            {
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentPrefix})+(.+?){options.Extractor.ArgumentValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
+            }
+        }
+
+        /// <summary>
+        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentValueWithIn"/>.
+        /// </summary>
+        public virtual string ArgumentValueWithinRegexPattern
+        {
+            get
+            {
+                return $"^{options.Extractor.ArgumentValueWithIn}(.*){options.Extractor.ArgumentValueWithIn}$";
+            }
+        }
+
         /// <inheritdoc/>
         public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
         {
@@ -167,96 +257,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 return Task.FromResult(new ArgumentExtractorResult(new Argument(argDescriptor, argValue)));
-            }
-        }
-
-        /// <summary>
-        /// Gets the REGEX pattern to match the argument alias with no value.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Lets assume that you have configured <see cref="ExtractorOptions.Separator"/> as a single whitespace string
-        /// ' ', and <see cref="ExtractorOptions.ArgumentAliasPrefix"/> as a single dash character string '-'.
-        /// </para>
-        /// <para>
-        /// The default implementation for <see cref="ArgumentAliasNoValueRegexPattern"/> will match using the following criteria:
-        /// </para>
-        /// <list type="number">
-        /// <item>
-        /// <term>'^ *(-)+(.+)$'</term>
-        /// <description>Default example REGEX pattern</description>
-        /// </item>
-        /// <item>
-        /// <term>'^'</term>
-        /// <description>Matches the beginning of the string</description>
-        /// </item>
-        /// <item>
-        /// <term>' *'</term>
-        /// <description>Matches 0 or more <see cref="ExtractorOptions.Separator"/></description>
-        /// </item>
-        /// <item>
-        /// <term>'(-)+'</term>
-        /// <description>Create a new capture group and matches 1 or more <see cref="ExtractorOptions.ArgumentAliasPrefix"/></description>
-        /// </item>
-        /// <item>
-        /// <term>'(.+?)'</term>
-        /// <description>Create a new capture group and matches characters (1 or more) except line breaks</description>
-        /// </item>
-        /// <item>
-        /// <term>'$'</term>
-        /// <description>Matches the end of the string</description>
-        /// </item>
-        /// </list>
-        /// </remarks>
-        protected virtual string ArgumentAliasNoValueRegexPattern
-        {
-            get
-            {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentAliasPrefix})+(.+?)[{options.Extractor.Separator}]*$";
-            }
-        }
-
-        /// <summary>
-        /// Gets the REGEX pattern to match the argument id and value using <see cref="ExtractorOptions.ArgumentPrefix"/>.
-        /// </summary>
-        protected virtual string ArgumentAliasValueRegexPattern
-        {
-            get
-            {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentAliasPrefix})+(.+?){options.Extractor.ArgumentValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
-            }
-        }
-
-        /// <summary>
-        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
-        /// </summary>
-        protected virtual string ArgumentIdNoValueRegexPattern
-        {
-            get
-            {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentPrefix})+(.+?)[{options.Extractor.Separator}]*$";
-            }
-        }
-
-        /// <summary>
-        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
-        /// </summary>
-        protected virtual string ArgumentIdValueRegexPattern
-        {
-            get
-            {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentPrefix})+(.+?){options.Extractor.ArgumentValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
-            }
-        }
-
-        /// <summary>
-        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentValueWithIn"/>.
-        /// </summary>
-        protected virtual string ArgumentValueWithinRegexPattern
-        {
-            get
-            {
-                return $"^{options.Extractor.ArgumentValueWithIn}(.*){options.Extractor.ArgumentValueWithIn}$";
             }
         }
 
