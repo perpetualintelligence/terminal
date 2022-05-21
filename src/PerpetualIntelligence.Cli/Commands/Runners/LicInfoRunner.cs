@@ -113,7 +113,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     // Print Usage
                     ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Usage");
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "root_command={0}", checkResult.RootCommandCount);
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "command_group={0}", checkResult.CommandGroupCount);
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "grouped_command={0}", checkResult.CommandGroupCount);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command={0}", checkResult.SubCommandCount);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument={0}", checkResult.ArgumentCount);
                 }
