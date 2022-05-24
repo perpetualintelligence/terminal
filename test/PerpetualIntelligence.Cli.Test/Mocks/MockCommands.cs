@@ -86,6 +86,14 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key12", nameof(Boolean), true, "Key12 value default boolean") { Alias = "k12", DefaultValue = true }
             };
 
+            TestUnicodeArgumentDescriptors = new(new UnicodeTextHandler())
+            {
+                new ArgumentDescriptor("एक", DataType.Text, false, "पहला तर्क", defaultValue: "डिफ़ॉल्ट मान") { Alias = "एकहै" },
+                new ArgumentDescriptor("दो", nameof(Boolean), true, "दूसरा तर्क") { },
+                new ArgumentDescriptor("तीन", DataType.PhoneNumber, false, "तीसरा तर्क") { Alias = "तीनहै" },
+                new ArgumentDescriptor("चार", nameof(Double), false, "चौथा तर्क") { Alias = "चारहै" },
+            };
+
             Commands = new()
             {
                 // Different name and prefix
@@ -211,6 +219,21 @@ namespace PerpetualIntelligence.Cli.Mocks
                 // Command with default arg
                 NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultArgumentValueDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
             };
+
+            UnicodeCommands = new()
+            {
+                // Root command
+                NewCommandDefinition("uc1", "यूनिकोड", "यूनिकोड", "यूनिकोड रूट कमांड", null, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
+
+                // Grouped command
+                NewCommandDefinition("uc2", "परीक्षण", "यूनिकोड परीक्षण", "यूनिकोड समूहीकृत कमांड", null, typeof(CommandChecker), typeof(CommandRunner), isGroup: true).Item1,
+
+                // Subcommand
+                NewCommandDefinition("uc3", "प्रिंट", "यूनिकोड परीक्षण प्रिंट", "प्रिंट कमांड", TestUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // subcommand with default argument
+                NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "एक").Item1,
+            };
         }
 
         public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, ArgumentDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false)
@@ -231,10 +254,12 @@ namespace PerpetualIntelligence.Cli.Mocks
         public static List<CommandDescriptor> GroupedCommands;
         public static List<CommandDescriptor> GroupedOptionsCommands;
         public static List<CommandDescriptor> LicensingCommands;
+        public static List<CommandDescriptor> UnicodeCommands;
         public static ArgumentDescriptors TestAliasArgumentDescriptors;
         public static ArgumentDescriptors TestArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentValueDescriptors;
         public static ArgumentDescriptors TestOptionsDescriptors;
+        public static ArgumentDescriptors TestUnicodeArgumentDescriptors;
     }
 }

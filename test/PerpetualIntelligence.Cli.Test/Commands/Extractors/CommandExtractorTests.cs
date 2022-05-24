@@ -815,13 +815,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(typeof(CommandRunner), result.CommandDescriptor._runner);
             Assert.IsNotNull(result.CommandDescriptor.ArgumentDescriptors);
             Assert.AreEqual(10, result.CommandDescriptor.ArgumentDescriptors.Count);
-            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[0], "key1", DataType.Text, "Key1 value text");
-            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[1], "key2", DataType.Text, "Key2 value text", new ValidationAttribute[] { new RequiredAttribute() });
-            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[2], "key3", DataType.PhoneNumber, "Key3 value phone");
-            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[3], "key4", DataType.EmailAddress, "Key4 value email");
-            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[4], "key5", DataType.Url, "Key5 value url");
+            AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[0], "key1", DataType.Text, "Key1 value text");
+            AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[1], "key2", DataType.Text, "Key2 value text", new ValidationAttribute[] { new RequiredAttribute() });
+            AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[2], "key3", DataType.PhoneNumber, "Key3 value phone");
+            AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[3], "key4", DataType.EmailAddress, "Key4 value email");
+            AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[4], "key5", DataType.Url, "Key5 value url");
             AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[5], "key6", nameof(Boolean), "Key6 no value");
-            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new ValidationAttribute[] { new OneOfAttribute("INR", "USD", "EUR"), new RequiredAttribute() });
+            AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new ValidationAttribute[] { new OneOfAttribute("INR", "USD", "EUR"), new RequiredAttribute() });
             AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[7], "key8", nameof(Int32), "Key8 value custom int");
             AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new ValidationAttribute[] { new RequiredAttribute(), new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) });
             AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[9], "key10", nameof(String), "Key10 value custom string", new ValidationAttribute[] { new RequiredAttribute() });
@@ -947,7 +947,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgumentIdentity(ArgumentDescriptor arg, string name, DataType dataType, string? description = null, ValidationAttribute[]? supportedValues = null)
+        private void AssertArgumentDescriptor(ArgumentDescriptor arg, string name, DataType dataType, string? description = null, ValidationAttribute[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
