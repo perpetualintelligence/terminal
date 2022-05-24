@@ -14,19 +14,20 @@
 
 > ***Take your app, service, or tool to the command line with Unicode support and build CLI terminals in any user language.***
 
-- Configure your CLI terminal using microservices-based architecture principles, Dependency Injection(DI services), and options pattern.
-- Use ready-to-use default handlers or provide custom implementations to handle terminal UX, command parsing, error handling, command validations, storage and type checking.
-- Provide self-hosting implementations for stores and host in an environment of your choice, e.g., Windows, Linux, macOS, Docker, Kubernetes, etc. 
+- Build and configure your CLI terminal using microservices-based architecture principles, Dependency Injection(DI services), and options pattern.
+- Use ready-to-use default handlers or provide custom implementations to handle terminal UX, command parsing, error handling, command validations, storage, and type checking.
+- Provide self-hosting implementations for stores and hosts in an environment of your choice, e.g., Windows, Linux, macOS, Docker, Kubernetes, etc. 
 - Build deployment agnostic CLI terminals with all dependencies, test them in local environments and deploy the production terminals on-premise, cloud (public, private, or government), or hybrid.
-- Collaborate in an open source environment, troubleshoot issues, and provide your feedback on the features and documentation
-- Use [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) for quick onboarding, testing and evaluating read-to-use samples on GitHub, no account needed.
+- Enable enterprise-grade secured CLI applications for your products and services similar to [Github CLI](https://cli.github.com/), [.NET CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/), [Stripe CLI](https://stripe.com/docs/stripe-cli) or CLI terminals with custom formats.
+- Collaborate in an open-source environment, troubleshoot issues, and provide your feedback on the features and documentation
+- Use [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) for quick onboarding, testing, and evaluating ready-to-use samples on GitHub. No account is needed.
 
-The framework handles the entire CLI infrastructure, so your focus is on building modern CLI apps and services.  Our ready-to-use templates and sample tutorials will get you started in no time. The software license and pricing model is flexible and fits all, whether you are a community member, solo entrepreneur, small-medium business, large enterprise, or a service vendor.
+The framework handles the entire CLI infrastructure, so your focus is on building modern CLI apps and services. Our [ready-to-use templates](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/pi-cli) and [sample tutorials](https://github.com/perpetualintelligence/docs/tree/main/samples/tutorials/pi-cli) will get you started in no time. The software license and pricing model is flexible and fits all, whether you are a community member, solo entrepreneur, small-medium business, large enterprise, or a service vendor.
 
 > ***In short, if what you want to achieve is doable in the .NET ecosystem, it is possible with `pi-cli`.***
 
 # Repo
-This repository contains the source and test for `pi-cli` framework. We build the following NuGet packages from this repository.
+This repository contains the source and test for the `pi-cli` framework. We build the following NuGet packages from this repository.
 
 [![Nuget](https://img.shields.io/nuget/vpre/PerpetualIntelligence.Cli?label=PerpetualIntelligence.Cli)](https://www.nuget.org/packages/PerpetualIntelligence.Cli)
 
@@ -39,7 +40,7 @@ See the [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_
 
 **See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html) and [pricing](https://www.perpetualintelligence.com/products/picli#pricing)**.
 
-Use our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) feature for quick onboarding, evaluation, and testing our sample code base on GitHub. We recommend creating an account to generate a license for your specific use case. Our community edition is free for educational, research and development, and non-commercial use.
+Use our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) feature for quick onboarding, evaluation, and testing of our sample code based on GitHub. Our community edition is free for educational, research and development, and non-commercial use. We recommend creating an account to generate a license for your specific use case.
 
 > **You need a commercial license for non-educational or production environments.**
 
