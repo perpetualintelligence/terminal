@@ -19,7 +19,7 @@
 - Provide self-hosting implementations for stores and host in an environment of your choice, e.g., Windows, Linux, macOS, Docker, Kubernetes, etc. 
 - Build deployment agnostic CLI terminals with all dependencies, test them in local environments and deploy the production terminals on-premise, cloud (public, private, or government), or hybrid.
 - Collaborate in an open source environment, troubleshoot issues, and provide your feedback on the features and documentation
-- Use demo license for quick onboarding, testing and evaluating read-to-use samples on GitHub, no account needed.
+- Use [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) for quick onboarding, testing and evaluating read-to-use samples on GitHub, no account needed.
 
 The framework handles the entire CLI infrastructure, so your focus is on building modern CLI apps and services.  Our ready-to-use templates and sample tutorials will get you started in no time. The software license and pricing model is flexible and fits all, whether you are a community member, solo entrepreneur, small-medium business, large enterprise, or a service vendor.
 
