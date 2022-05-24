@@ -40,7 +40,7 @@ See the [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_
 
 **See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html) and [pricing](https://www.perpetualintelligence.com/products/picli#pricing)**.
 
-Use our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) feature for quick onboarding, evaluation, and testing of our sample code based on GitHub. Our community edition is free for educational, research and development, and non-commercial use. We recommend creating an account to generate a license for your specific use case.
+Our community edition is free for educational, research and development, and non-commercial use. We recommend creating an account to generate a license for your specific use case.
 
 > **You need a commercial license for non-educational or production environments.**
 
