@@ -38,7 +38,7 @@ See the [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_
 
 # License and Pricing
 
-**See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html) and [pricing](https://docs.perpetualintelligence.com/articles/pi-cli#pricing.html)**.
+**See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html) and [pricing]([https://docs.perpetualintelligence.com/articles/pi-cli#pricing.html](https://www.perpetualintelligence.com/products/picli#pricing))**.
 
 Use our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) feature for quick onboarding, evaluation, and testing our sample code base on GitHub. We recommend creating an account to generate a license for your specific use case. Our community edition is free for educational, research and development, and non-commercial use.
 
