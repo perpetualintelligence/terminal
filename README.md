@@ -1,4 +1,4 @@
-[cli]
+![terminal](terminal.png)
 
 # Open. Modular. Flexible. Cross-Platform
 
