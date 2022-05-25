@@ -18,7 +18,7 @@
 - Use default handlers or provide custom implementations to handle terminal UX, command parsing, error handling, command validations, storage, and type checking.
 - Provide self-hosting implementations for stores and hosts in an environment of your choice, e.g., Windows, Linux, macOS, Docker, Kubernetes, etc. 
 - Build deployment agnostic CLI terminals with all dependencies, test them in local environments and deploy the production terminals on-premise, cloud (public, private, or government), or hybrid.
-- Enable enterprise-grade secured CLI applications for your products and services similar to [Github CLI](https://cli.github.com/), [.NET CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/), [Stripe CLI](https://stripe.com/docs/stripe-cli) or CLI terminals with custom formats.
+- Enable enterprise-grade secured CLI applications for your products and services similar to [GitHub CLI](https://cli.github.com/), [.NET CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/), [Stripe CLI](https://stripe.com/docs/stripe-cli) or CLI terminals with custom formats.
 - Collaborate in an open-source environment, troubleshoot issues, and provide your feedback on the features and documentation
 - Use [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) for quick onboarding, testing, and evaluating ready-to-use samples on GitHub. No account is needed.
 
