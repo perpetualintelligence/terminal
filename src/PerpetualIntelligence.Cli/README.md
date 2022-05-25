@@ -1,4 +1,4 @@
-﻿# Open. Modular. Flexible. Cross-Platform
+# Open. Modular. Flexible. Cross-Platform. CLI Framework.
 
 ![macOS](https://img.shields.io/badge/macOS-grey?style=flat-square&logo=macos)
 ![ubuntu](https://img.shields.io/badge/ubuntu-grey?style=flat-square&logo=ubuntu)
