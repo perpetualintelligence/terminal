@@ -86,12 +86,20 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key12", nameof(Boolean), true, "Key12 value default boolean") { Alias = "k12", DefaultValue = true }
             };
 
-            TestUnicodeArgumentDescriptors = new(new UnicodeTextHandler())
+            TestHindiUnicodeArgumentDescriptors = new(new UnicodeTextHandler())
             {
                 new ArgumentDescriptor("एक", DataType.Text, false, "पहला तर्क", defaultValue: "डिफ़ॉल्ट मान") { Alias = "एकहै" },
                 new ArgumentDescriptor("दो", nameof(Boolean), true, "दूसरा तर्क") { },
-                new ArgumentDescriptor("तीन", DataType.PhoneNumber, false, "तीसरा तर्क") { Alias = "तीनहै" },
+                new ArgumentDescriptor("तीन", DataType.Text, false, "तीसरा तर्क") { Alias = "तीनहै" },
                 new ArgumentDescriptor("चार", nameof(Double), false, "चौथा तर्क") { Alias = "चारहै" },
+            };
+
+            TestChineseUnicodeArgumentDescriptors = new(new UnicodeTextHandler())
+            {
+                new ArgumentDescriptor("第一的", DataType.Text, false, "第一個命令參數", defaultValue: "默認值") { Alias = "第一" },
+                new ArgumentDescriptor("第二", nameof(Boolean), true, "第二個命令參數") { },
+                new ArgumentDescriptor("第三", DataType.Text, false, "第三個命令參數"),
+                new ArgumentDescriptor("第四", nameof(Double), false, "第四個命令參數")
             };
 
             Commands = new()
@@ -222,6 +230,7 @@ namespace PerpetualIntelligence.Cli.Mocks
 
             UnicodeCommands = new()
             {
+                // --- Hindi ---
                 // Root command
                 NewCommandDefinition("uc1", "यूनिकोड", "यूनिकोड", "यूनिकोड रूट कमांड", null, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
 
@@ -229,10 +238,23 @@ namespace PerpetualIntelligence.Cli.Mocks
                 NewCommandDefinition("uc2", "परीक्षण", "यूनिकोड परीक्षण", "यूनिकोड समूहीकृत कमांड", null, typeof(CommandChecker), typeof(CommandRunner), isGroup: true).Item1,
 
                 // Subcommand
-                NewCommandDefinition("uc3", "प्रिंट", "यूनिकोड परीक्षण प्रिंट", "प्रिंट कमांड", TestUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                NewCommandDefinition("uc3", "प्रिंट", "यूनिकोड परीक्षण प्रिंट", "प्रिंट कमांड", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // subcommand with default argument
-                NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "एक").Item1,
+                NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "एक").Item1,
+
+                // --- Chinese ---
+                // Root command
+                NewCommandDefinition("uc5", "統一碼", "統一碼", "示例根命令描述", null, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
+
+                // Grouped command
+                NewCommandDefinition("uc6", "測試", "統一碼 測試", "示例分組命令", null, typeof(CommandChecker), typeof(CommandRunner), isGroup: true).Item1,
+
+                // Subcommand
+                NewCommandDefinition("uc7", "打印", "統一碼 測試 打印", "測試命令", TestChineseUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+
+                // subcommand with default argument
+                NewCommandDefinition("uc8", "備用", "統一碼 測試 備用", "替代描述", TestChineseUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "第一的").Item1,
             };
         }
 
@@ -257,9 +279,10 @@ namespace PerpetualIntelligence.Cli.Mocks
         public static List<CommandDescriptor> UnicodeCommands;
         public static ArgumentDescriptors TestAliasArgumentDescriptors;
         public static ArgumentDescriptors TestArgumentDescriptors;
+        public static ArgumentDescriptors TestChineseUnicodeArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentDescriptors;
         public static ArgumentDescriptors TestDefaultArgumentValueDescriptors;
+        public static ArgumentDescriptors TestHindiUnicodeArgumentDescriptors;
         public static ArgumentDescriptors TestOptionsDescriptors;
-        public static ArgumentDescriptors TestUnicodeArgumentDescriptors;
     }
 }

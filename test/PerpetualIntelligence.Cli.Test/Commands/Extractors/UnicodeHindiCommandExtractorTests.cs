@@ -21,9 +21,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     [TestClass]
-    public class UnicodeCommandExtractorTests : InitializerTests
+    public class UnicodeHindiCommandExtractorTests : InitializerTests
     {
-        public UnicodeCommandExtractorTests() : base(TestLogger.Create<CommandExtractorTests>())
+        public UnicodeHindiCommandExtractorTests() : base(TestLogger.Create<CommandExtractorTests>())
         {
         }
 
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             AssertArgument(result.Command.Arguments[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
             AssertArgument(result.Command.Arguments[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Arguments[2], "तीन", DataType.PhoneNumber, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertArgument(result.Command.Arguments[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
             AssertArgument(result.Command.Arguments[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
@@ -110,7 +110,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             AssertArgument(result.Command.Arguments[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
             AssertArgument(result.Command.Arguments[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Arguments[2], "तीन", DataType.PhoneNumber, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertArgument(result.Command.Arguments[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
             AssertArgument(result.Command.Arguments[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
@@ -136,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             
             AssertArgument(result.Command.Arguments[0], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Arguments[1], "तीन", DataType.PhoneNumber, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertArgument(result.Command.Arguments[1], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
             AssertArgument(result.Command.Arguments[2], "चार", nameof(Double), "चौथा तर्क", "253.36");
 
             // Default added at the end
