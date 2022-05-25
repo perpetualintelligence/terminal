@@ -27,7 +27,7 @@ The framework handles the entire CLI infrastructure, so your focus is on buildin
 
 Our community edition is free for educational, research and development, and non-commercial use. We recommend creating an account to generate a license for your specific use case.
 
-> **You need a commercial license for non-educational or production environments.**
+> ***You need a commercial license for non-educational or production environments.***
 
 ## Documentation
 The documentation and code samples are hosted in our [docs](https://github.com/perpetualintelligence/docs) repository.
