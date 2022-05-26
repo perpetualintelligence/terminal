@@ -10,7 +10,7 @@
 [![build-test-publish](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml)
 [![delete-packages](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml)
 
-`pi-cli` is most the flexible cross-platform framework for building modern CLI terminals for your company, product, service, SaaS, development, and testing needs. Users, customers, and enterprises across engineering, manufacturing, technology, artificial intelligence, machine learning, finance, media, creative design, etc., can create simple CLI apps with few flags or advanced CLIs with roots, groups, sub-commands, arguments, and options.
+`pi-cli` is the most flexible cross-platform framework for building modern CLI terminals for your company, product, service, SaaS, development, and testing needs. Users, customers, and enterprises across engineering, manufacturing, technology, artificial intelligence, machine learning, finance, media, creative design, etc., can create simple CLI apps with few flags or advanced CLIs with roots, groups, sub-commands, arguments, and options.
 
 > ***Take your app, service, or tool to the command line with Unicode support and build CLI terminals in any user language.***
 
