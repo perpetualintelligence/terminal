@@ -1,11 +1,11 @@
-# Open. Modular. Flexible. Cross-Platform. CLI Framework.
+# Open. Flexible. Cross-Platform. CLI Framework.
 
 ![macOS](https://img.shields.io/badge/macOS-grey?style=flat-square&logo=macos)
 ![ubuntu](https://img.shields.io/badge/ubuntu-grey?style=flat-square&logo=ubuntu)
 ![windows](https://img.shields.io/badge/windows-grey?style=flat-square&logo=windows)
 
 ## The most flexible cross-platform framework for modern CLI terminals.
-`pi-cli` is the most flexible cross-platform framework for building modern CLI terminals for your company, product, service, SaaS, development, and testing needs. Users, customers, and enterprises across engineering, manufacturing, technology, artificial intelligence, machine learning, finance, media, creative design, etc., can create simple CLI apps with few flags or advanced CLIs with roots, groups, sub-commands, arguments, and options.
+`pi-cli` is the most flexible cross-platform framework for building modern CLI terminals for your company, product, service, SaaS, development, and testing needs. Users, customers, and enterprises across engineering, manufacturing, technology, digital industries, digital twins, artificial intelligence, machine learning, finance, media, creative design, etc., can create CLI apps with few flags or advanced CLIs with roots, groups, sub-commands, arguments, and options.
 
 > ***Take your app, service, or tool to the command line with Unicode support and build CLI terminals in any user language.***
 
@@ -25,7 +25,7 @@ The framework handles the entire CLI infrastructure, so your focus is on buildin
 
 **See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html) and [pricing](https://www.perpetualintelligence.com/products/picli#pricing)**.
 
-Our community edition is free for educational, research and development, and non-commercial use. We recommend creating an account to generate a license for your specific use case.
+Our community edition is free for educational, research, and non-production use. We recommend creating an account to generate a license for your specific use case.
 
 > ***You need a commercial license for non-educational or production environments.***
 
