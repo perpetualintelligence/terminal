@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public long ArgumentCount { get; set; }
 
         /// <summary>
-        /// The command group count.
+        /// The grouped command count.
         /// </summary>
         public long CommandGroupCount { get; set; }
 

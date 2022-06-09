@@ -132,10 +132,10 @@ namespace PerpetualIntelligence.Cli.Mocks
             GroupedCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "the top org command group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth command group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
@@ -153,10 +153,10 @@ namespace PerpetualIntelligence.Cli.Mocks
             AliasCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "the top org command group", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
+                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "key1").Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth command group", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
+                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,
 
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner)).Item1,

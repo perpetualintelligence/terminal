@@ -136,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
 
-            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: false, isRoot: true), Errors.InvalidConfiguration, "The root command must also be a command group. command_id=id1 command_name=name1");
+            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: false, isRoot: true), Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id=id1 command_name=name1");
         }
 
         [TestMethod]

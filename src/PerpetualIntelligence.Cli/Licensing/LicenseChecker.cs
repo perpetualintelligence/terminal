@@ -79,13 +79,13 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Errors.InvalidLicense, "The root command limit exceeded. max_limit={0} current={1}", context.License.Limits.RootCommandLimit, rootCommandCount);
             }
 
-            // Command group limit
+            // grouped command limit
             if (commandGroupCount > context.License.Limits.GroupedCommandLimit)
             {
-                throw new ErrorException(Errors.InvalidLicense, "The command group limit exceeded. max_limit={0} current={1}", context.License.Limits.GroupedCommandLimit, commandGroupCount);
+                throw new ErrorException(Errors.InvalidLicense, "The grouped command limit exceeded. max_limit={0} current={1}", context.License.Limits.GroupedCommandLimit, commandGroupCount);
             }
 
-            // Command group limit
+            // grouped command limit
             if (subCommandCount > context.License.Limits.SubCommandLimit)
             {
                 throw new ErrorException(Errors.InvalidLicense, "The sub command limit exceeded. max_limit={0} current={1}", context.License.Limits.SubCommandLimit, subCommandCount);

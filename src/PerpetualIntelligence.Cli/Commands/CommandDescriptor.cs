@@ -89,11 +89,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The command id.
         /// </summary>
-        /// <remarks>The command id is unique across all command group.</remarks>
+        /// <remarks>The command id is unique across all commands.</remarks>
         public string Id { get; }
 
         /// <summary>
-        /// Returns <c>true</c> if this descriptor represents a command group; otherwise, <c>false</c>.
+        /// Returns <c>true</c> if this descriptor represents a grouped command; otherwise, <c>false</c>.
         /// </summary>
         public bool IsGroup => _isGroup;
 
@@ -103,14 +103,14 @@ namespace PerpetualIntelligence.Cli.Commands
         public bool IsProtected => _isProtected;
 
         /// <summary>
-        /// Returns <c>true</c> if this descriptor represents a command root; otherwise, <c>false</c>.
+        /// Returns <c>true</c> if this descriptor represents a root command; otherwise, <c>false</c>.
         /// </summary>
         public bool IsRoot => _isRoot;
 
         /// <summary>
         /// The command name.
         /// </summary>
-        /// <remarks>The command name is unique within a command group.</remarks>
+        /// <remarks>The command name is unique within a grouped command.</remarks>
         public string Name { get; }
 
         /// <summary>

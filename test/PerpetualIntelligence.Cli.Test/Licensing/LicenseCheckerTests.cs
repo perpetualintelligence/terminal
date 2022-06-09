@@ -164,9 +164,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task CheckAsync_ExceededCommandGroupLimit_ShouldError()
         {
-            // Command groups are 3
+            // grouped commands are 3
             license.Limits.GroupedCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The command group limit exceeded. max_limit=2 current=3");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The grouped command limit exceeded. max_limit=2 current=3");
         }
 
         [Fact]

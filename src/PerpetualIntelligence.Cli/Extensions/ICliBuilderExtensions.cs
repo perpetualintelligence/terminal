@@ -64,8 +64,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="commandDescriptor">The command descriptor.</param>
-        /// <param name="isGroup"><c>true</c> if the descriptor represents a command group; otherwise, <c>false</c>.</param>
-        /// <param name="isRoot"><c>true</c> if the descriptor represents a command root; otherwise, <c>false</c>.</param>
+        /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
+        /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
         /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
@@ -74,7 +74,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             if (isRoot && !isGroup)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a command group. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
+                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
             }
 
             if (commandDescriptor._runner != null || commandDescriptor._checker != null)
