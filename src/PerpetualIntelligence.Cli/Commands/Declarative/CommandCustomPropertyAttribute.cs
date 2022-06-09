@@ -31,11 +31,11 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// The property key.
         /// </summary>
-        public string Key { get; set; }
+        public string Key { get; }
 
         /// <summary>
         /// The property value.
         /// </summary>
-        public object Value { get; set; }
+        public object Value { get; }
     }
 }

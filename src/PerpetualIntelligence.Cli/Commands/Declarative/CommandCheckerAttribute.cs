@@ -27,6 +27,6 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// The command checker type.
         /// </summary>
-        public Type Checker { get; set; }
+        public Type Checker { get; }
     }
 }

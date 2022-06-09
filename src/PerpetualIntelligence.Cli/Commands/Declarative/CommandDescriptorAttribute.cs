@@ -23,8 +23,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <param name="name">The command name.</param>
         /// <param name="prefix">The command prefix to map the command string.</param>
         /// <param name="description">The command description.</param>
-        /// <param name="defaultArgument">The default argument.</param>
-        public CommandDescriptorAttribute(string id, string name, string prefix, string description, string? defaultArgument = null)
+        public CommandDescriptorAttribute(string id, string name, string prefix, string description)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -50,7 +49,6 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             Name = name;
             Prefix = prefix;
             Description = description;
-            DefaultArgument = defaultArgument;
         }
 
         /// <summary>
@@ -65,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// put it in an <see cref="Argument"/> identified by <see cref="DefaultArgument"/>.
         /// </remarks>
         /// <seealso cref="ArgumentDescriptor.DefaultValue"/>
-        public string? DefaultArgument { get; }
+        public string? DefaultArgument { get; set; }
 
         /// <summary>
         /// The command description.
@@ -81,17 +79,17 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// <c>true</c> if this descriptor represents a grouped command; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsGroup { get; }
+        public bool IsGroup { get; set; }
 
         /// <summary>
         /// Returns <c>true</c> if this descriptor represents a protected command; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsProtected { get; }
+        public bool IsProtected { get; set; }
 
         /// <summary>
         /// Returns <c>true</c> if this descriptor represents a root command; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsRoot { get; }
+        public bool IsRoot { get; set; }
 
         /// <summary>
         /// The command name.

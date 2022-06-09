@@ -58,12 +58,12 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// The argument custom data type.
         /// </summary>
         /// <remarks>This custom data type is used only if the <see cref="DataType"/> property is set to <see cref="DataType.Custom"/>.</remarks>
-        public string? CustomDataType { get; set; }
+        public string? CustomDataType { get; }
 
         /// <summary>
         /// The argument data type.
         /// </summary>
-        public DataType DataType { get; set; }
+        public DataType DataType { get; }
 
         /// <summary>
         /// The default argument value. <c>null</c> means the argument does not support a default value.
@@ -78,7 +78,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// The argument description.
         /// </summary>
         /// <remarks>The argument id is unique across all commands.</remarks>
-        public string Description { get; set; }
+        public string Description { get; }
 
         /// <summary>
         /// Determines whether the argument is disabled
@@ -89,7 +89,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// The argument id.
         /// </summary>
         /// <remarks>The argument id is unique within a command.</remarks>
-        public string Id { get; set; }
+        public string Id { get; }
 
         /// <summary>
         /// Determines whether the argument is obsolete.

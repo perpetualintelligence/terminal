@@ -27,12 +27,12 @@ namespace PerpetualIntelligence.Cli.Commands
             ArgumentDescriptor arg = new("name", "custom", required: true);
             Assert.IsNotNull(arg.ValidationAttributes);
             CollectionAssert.Contains(arg.ValidationAttributes.ToArray(), new RequiredAttribute());
-            Assert.IsTrue(arg.IsRequired);
+            Assert.IsTrue(arg.Required);
 
             ArgumentDescriptor arg2 = new("name", DataType.CreditCard, required: true);
             Assert.IsNotNull(arg2.ValidationAttributes);
             CollectionAssert.Contains(arg2.ValidationAttributes.ToArray(), new RequiredAttribute());
-            Assert.IsTrue(arg2.IsRequired);
+            Assert.IsTrue(arg2.Required);
         }
     }
 }

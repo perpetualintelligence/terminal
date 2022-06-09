@@ -135,7 +135,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Determines is the argument is required.
         /// </summary>
-        public bool IsRequired
+        public bool Required
         {
             get
             {

@@ -27,6 +27,6 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// The command runner type.
         /// </summary>
-        public Type Runner { get; set; }
+        public Type Runner { get; }
     }
 }

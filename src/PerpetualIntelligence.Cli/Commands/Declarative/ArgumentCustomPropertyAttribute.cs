@@ -25,9 +25,19 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <param name="value">The custom property value.</param>
         public ArgumentCustomPropertyAttribute(string argId, string key, object value)
         {
+            if (string.IsNullOrWhiteSpace(argId))
+            {
+                throw new ArgumentException($"'{nameof(argId)}' cannot be null or whitespace.", nameof(argId));
+            }
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentException($"'{nameof(key)}' cannot be null or whitespace.", nameof(key));
+            }
+
             ArgId = argId;
             Key = key;
-            Value = value;
+            Value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
@@ -38,11 +48,11 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// The custom property key.
         /// </summary>
-        public string Key { get; set; }
+        public string Key { get; }
 
         /// <summary>
         /// The custom property value.
         /// </summary>
-        public object Value { get; set; }
+        public object Value { get; }
     }
 }

@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// The validation attribute arguments.
         /// </summary>
-        public object? ValidationArgs { get; }
+        public object[]? ValidationArgs { get; }
 
         /// <summary>
         /// The argument validation attribute.
