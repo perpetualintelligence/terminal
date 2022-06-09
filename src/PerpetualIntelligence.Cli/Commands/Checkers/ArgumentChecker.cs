@@ -8,9 +8,7 @@
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Configuration.Options;
-
 using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;

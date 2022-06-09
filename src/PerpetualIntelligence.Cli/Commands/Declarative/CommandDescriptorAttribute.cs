@@ -11,10 +11,10 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Declarative
 {
     /// <summary>
-    /// Declares the command descriptor for a command runner.
+    /// Declares a <see cref="CommandDescriptor"/> for a command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class CommandDescriptorAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public sealed class CommandDescriptorAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance.

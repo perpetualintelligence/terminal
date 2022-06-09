@@ -91,7 +91,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The argument alias is unique within a command. Argument alias supports the legacy apps that identified a
         /// command argument with an id and an alias string. For modern console apps, we recommend using just an
         /// argument identifier. The core data model is optimized to work with argument id. In general, an app should
-        /// not identify the same argument with multiple strings. Using alias will degrade the performance.
+        /// not identify the same argument with multiple strings.
         /// </remarks>
         public string? Alias { get; set; }
 
