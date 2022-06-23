@@ -22,17 +22,20 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         [TestMethod]
-        public void RequiredShouldSetRequiredDataAnnotatioNAttribute()
+        public void RequiredExplicitlySetShouldNotSetDataAnnotationRequiredAttribute()
         {
             ArgumentDescriptor arg = new("name", "custom", required: true);
+            Assert.IsNull(arg.ValidationAttributes);
+            Assert.IsTrue(arg.Required);
+        }
+
+        [TestMethod]
+        public void RequiredShouldBeSetWithDataAnnotationRequiredAttribute()
+        {
+            ArgumentDescriptor arg = new("name", "custom", required: false) { ValidationAttributes = new[] { new RequiredAttribute() } };
             Assert.IsNotNull(arg.ValidationAttributes);
             CollectionAssert.Contains(arg.ValidationAttributes.ToArray(), new RequiredAttribute());
             Assert.IsTrue(arg.Required);
-
-            ArgumentDescriptor arg2 = new("name", DataType.CreditCard, required: true);
-            Assert.IsNotNull(arg2.ValidationAttributes);
-            CollectionAssert.Contains(arg2.ValidationAttributes.ToArray(), new RequiredAttribute());
-            Assert.IsTrue(arg2.Required);
         }
     }
 }

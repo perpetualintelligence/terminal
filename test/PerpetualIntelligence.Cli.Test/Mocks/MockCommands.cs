@@ -34,9 +34,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
                 new ArgumentDescriptor("key5", DataType.Url, false, "Key5 value url"),
                 new ArgumentDescriptor("key6", nameof(Boolean), false, "Key6 no value"),
-                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency", new[] { new OneOfAttribute("INR", "USD", "EUR") }),
+                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency") { ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
                 new ArgumentDescriptor("key8", nameof(Int32), false, "Key8 value custom int"),
-                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 value custom double", new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) }),
+                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 value custom double") {ValidationAttributes = new ValidationAttribute[] { new RequiredAttribute(), new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
                 new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string")
             };
 
@@ -48,9 +48,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
                 new ArgumentDescriptor("key5", DataType.Url, false, "Key5 value url"),
                 new ArgumentDescriptor("key6", nameof(Boolean), false, "Key6 no value", defaultValue: false),
-                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency", new[] { new OneOfAttribute("INR", "USD", "EUR") }),
+                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency") {ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
                 new ArgumentDescriptor("key8", nameof(Int32), false, "Key8 value custom int"),
-                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 value custom double", new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) }, defaultValue: 25.36),
+                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 value custom double", defaultValue: 25.36) { ValidationAttributes = new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
                 new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string", defaultValue: "mello default")
             };
 
@@ -78,9 +78,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
                 new ArgumentDescriptor("key5", DataType.Url, false, "Key5 value url"),
                 new ArgumentDescriptor("key6-a-s-xx-s", nameof(Boolean), false, "Key6 no value"),
-                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency", new[] { new OneOfAttribute("INR", "USD", "EUR") }, defaultValue: "INR"),
+                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency", defaultValue: "INR") { ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
                 new ArgumentDescriptor("key8", nameof(Int32), false, "Key8 value int"),
-                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 invalid default value", new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) }, defaultValue: 89568.36),
+                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 invalid default value", defaultValue: 89568.36) {ValidationAttributes = new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
                 new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string") { Alias = "k10" },
                 new ArgumentDescriptor("key11", nameof(Boolean), true, "Key11 value boolean") { Alias = "k11" },
                 new ArgumentDescriptor("key12", nameof(Boolean), true, "Key12 value default boolean") { Alias = "k12", DefaultValue = true }
@@ -230,8 +230,7 @@ namespace PerpetualIntelligence.Cli.Mocks
 
             UnicodeCommands = new()
             {
-                // --- Hindi ---
-                // Root command
+                // --- Hindi --- Root command
                 NewCommandDefinition("uc1", "यूनिकोड", "यूनिकोड", "यूनिकोड रूट कमांड", null, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
 
                 // Grouped command
@@ -243,8 +242,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 // subcommand with default argument
                 NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner), defaultArg: "एक").Item1,
 
-                // --- Chinese ---
-                // Root command
+                // --- Chinese --- Root command
                 NewCommandDefinition("uc5", "統一碼", "統一碼", "示例根命令描述", null, typeof(CommandChecker), typeof(CommandRunner), isRoot: true).Item1,
 
                 // Grouped command
@@ -276,7 +274,6 @@ namespace PerpetualIntelligence.Cli.Mocks
         public static List<CommandDescriptor> GroupedCommands;
         public static List<CommandDescriptor> GroupedOptionsCommands;
         public static List<CommandDescriptor> LicensingCommands;
-        public static List<CommandDescriptor> UnicodeCommands;
         public static ArgumentDescriptors TestAliasArgumentDescriptors;
         public static ArgumentDescriptors TestArgumentDescriptors;
         public static ArgumentDescriptors TestChineseUnicodeArgumentDescriptors;
@@ -284,5 +281,6 @@ namespace PerpetualIntelligence.Cli.Mocks
         public static ArgumentDescriptors TestDefaultArgumentValueDescriptors;
         public static ArgumentDescriptors TestHindiUnicodeArgumentDescriptors;
         public static ArgumentDescriptors TestOptionsDescriptors;
+        public static List<CommandDescriptor> UnicodeCommands;
     }
 }

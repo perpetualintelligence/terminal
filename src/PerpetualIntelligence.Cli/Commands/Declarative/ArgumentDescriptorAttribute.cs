@@ -83,7 +83,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// Determines whether the argument is disabled
         /// </summary>
-        public bool? Disabled { get; set; }
+        public bool Disabled { get; set; }
 
         /// <summary>
         /// The argument id.
@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// Determines whether the argument is obsolete.
         /// </summary>
-        public bool? Obsolete { get; set; }
+        public bool Obsolete { get; set; }
 
         /// <summary>
         /// Determines is the argument is required.

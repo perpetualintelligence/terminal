@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     /// Declares an <see cref="ArgumentDescriptor"/> custom property.
     /// </summary>
     /// <remarks>Each custom property must have a unique key within an argument.</remarks>
-    /// <seealso cref="ArgumentDescriptor.Properties"/>
+    /// <seealso cref="ArgumentDescriptor.CustomProperties"/>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class ArgumentCustomPropertyAttribute : Attribute
     {

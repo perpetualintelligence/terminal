@@ -33,10 +33,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="name">The command name.</param>
         /// <param name="prefix">The command prefix to map the command string.</param>
         /// <param name="description">The command description.</param>
-        /// <param name="argumentDescriptors">The command argument descriptors.</param>
-        /// <param name="properties">The custom properties.</param>
+        /// <param name="argumentDescriptors">The argument descriptors.</param>
+        /// <param name="customProperties">The custom properties.</param>
         /// <param name="defaultArgument">The default argument.</param>
-        public CommandDescriptor(string id, string name, string prefix, string description, ArgumentDescriptors? argumentDescriptors = null, Dictionary<string, object>? properties = null, string? defaultArgument = null)
+        /// <param name="tags">The tags to find a command.</param>
+        public CommandDescriptor(string id, string name, string prefix, string description, ArgumentDescriptors? argumentDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultArgument = null, string[]? tags = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -58,14 +59,20 @@ namespace PerpetualIntelligence.Cli.Commands
             Prefix = prefix;
             Description = description;
             ArgumentDescriptors = argumentDescriptors;
-            Properties = properties;
+            CustomProperties = customProperties;
             DefaultArgument = defaultArgument;
+            Tags = tags;
         }
 
         /// <summary>
         /// The command argument descriptors.
         /// </summary>
         public ArgumentDescriptors? ArgumentDescriptors { get; }
+
+        /// <summary>
+        /// The custom properties.
+        /// </summary>
+        public Dictionary<string, object>? CustomProperties { get; }
 
         /// <summary>
         /// The default argument. <c>null</c> means the command does not support a default argument.
@@ -119,9 +126,9 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Prefix { get; }
 
         /// <summary>
-        /// The custom properties.
+        /// The tags to find the command.
         /// </summary>
-        public Dictionary<string, object>? Properties { get; }
+        public string[]? Tags { get; }
 
         /// <summary>
         /// Attempts to find an argument descriptor.

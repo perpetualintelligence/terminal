@@ -28,9 +28,8 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="dataType">The argument data type.</param>
         /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
-        /// <param name="validationAttributes">The data validation attributes.</param>
         /// <param name="defaultValue">The argument default value.</param>
-        public ArgumentDescriptor(string id, DataType dataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null, object? defaultValue = null)
+        public ArgumentDescriptor(string id, DataType dataType, bool required = false, string? description = null, object? defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -41,15 +40,7 @@ namespace PerpetualIntelligence.Cli.Commands
             DataType = dataType;
             Description = description;
             DefaultValue = defaultValue;
-            if (validationAttributes != null)
-            {
-                ValidationAttributes = new HashSet<ValidationAttribute>(validationAttributes);
-            }
-
-            if (required)
-            {
-                SetRequired();
-            }
+            Required = required;
         }
 
         /// <summary>
@@ -59,9 +50,8 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="customDataType">The argument custom data type.</param>
         /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
-        /// <param name="validationAttributes">The data validation attributes.</param>
         /// <param name="defaultValue">The argument default value.</param>
-        public ArgumentDescriptor(string id, string customDataType, bool required = false, string? description = null, ValidationAttribute[]? validationAttributes = null, object? defaultValue = null)
+        public ArgumentDescriptor(string id, string customDataType, bool required = false, string? description = null, object? defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -73,15 +63,7 @@ namespace PerpetualIntelligence.Cli.Commands
             CustomDataType = customDataType;
             Description = description;
             DefaultValue = defaultValue;
-            if (validationAttributes != null)
-            {
-                ValidationAttributes = new HashSet<ValidationAttribute>(validationAttributes);
-            }
-
-            if (required)
-            {
-                SetRequired();
-            }
+            Required = required;
         }
 
         /// <summary>
@@ -100,6 +82,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <remarks>This custom data type is used only if the <see cref="DataType"/> property is set to <see cref="DataType.Custom"/>.</remarks>
         public string? CustomDataType { get; set; }
+
+        /// <summary>
+        /// The custom properties.
+        /// </summary>
+        public Dictionary<string, object>? CustomProperties { get; set; }
 
         /// <summary>
         /// The argument data type.
@@ -133,51 +120,46 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Id { get; set; }
 
         /// <summary>
-        /// Determines is the argument is required.
-        /// </summary>
-        public bool Required
-        {
-            get
-            {
-                if (ValidationAttributes == null)
-                {
-                    return false;
-                }
-
-                return ValidationAttributes.Contains(new RequiredAttribute());
-            }
-        }
-
-        /// <summary>
         /// Determines whether the argument is obsolete.
         /// </summary>
         public bool? Obsolete { get; set; }
 
         /// <summary>
-        /// The custom properties.
+        /// Determines is the argument is required.
         /// </summary>
-        public Dictionary<string, object>? Properties { get; set; }
+        public bool? Required { get; set; }
 
         /// <summary>
         /// The data annotation validation attributes to check the argument value.
         /// </summary>
-        public IEnumerable<ValidationAttribute>? ValidationAttributes { get; set; }
+        public IEnumerable<ValidationAttribute>? ValidationAttributes
+        {
+            get
+            {
+                return validationAttributes;
+            }
+
+            set
+            {
+                validationAttributes = value;
+                SetValidationRequired();
+            }
+        }
 
         /// <summary>
         /// Sets the argument as required.
         /// </summary>
-        private void SetRequired()
+        private void SetValidationRequired()
         {
-            if (ValidationAttributes == null)
+            if (validationAttributes != null)
             {
-                ValidationAttributes = new HashSet<ValidationAttribute>() { new RequiredAttribute() };
-            }
-            else
-            {
-                List<ValidationAttribute> attributes = new(ValidationAttributes);
-                attributes.Add(new RequiredAttribute());
-                ValidationAttributes = attributes;
+                if (validationAttributes.Contains(new RequiredAttribute()))
+                {
+                    Required = true;
+                }
             }
         }
+
+        private IEnumerable<ValidationAttribute>? validationAttributes;
     }
 }

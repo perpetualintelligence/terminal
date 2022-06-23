@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 if (!containsArg)
                 {
                     // Required argument is missing
-                    if (argDescriptor.Required)
+                    if (argDescriptor.Required.GetValueOrDefault())
                     {
                         throw new ErrorException(Errors.MissingArgument, "The required argument is missing. command_name={0} command_id={1} argument={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
                     }

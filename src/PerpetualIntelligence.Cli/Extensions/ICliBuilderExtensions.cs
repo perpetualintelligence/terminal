@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Declarative;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Mappers;
@@ -20,6 +21,11 @@ using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Stores;
 using PerpetualIntelligence.Shared.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
@@ -60,6 +66,43 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
+        /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="assemblyType">The type whose assembly to inspect and read all the declarative targets.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <remarks>
+        /// The <see cref="AddDeclarativeAssembly(ICliBuilder, Type)"/> reads the target assembly and inspects all the
+        /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
+        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ICliBuilder, Type)"/>.
+        /// </remarks>
+        public static ICliBuilder AddDeclarativeAssembly(this ICliBuilder builder, Type assemblyType)
+        {
+            IEnumerable<Type> declarativeTypes = assemblyType.Assembly.GetTypes()
+                .Where(e => e.IsAssignableFrom(typeof(IDeclarativeTarget)) && e.IsClass);
+
+            foreach (Type type in declarativeTypes)
+            {
+                AddDeclarativeTarget(builder, type);
+            }
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds a <see cref="IDeclarativeTarget"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>
+        /// The <see cref="AddDeclarativeTarget{TDeclarativeTarget}(ICliBuilder)"/> inspects the declarative target type
+        /// using reflection.
+        /// </returns>
+        public static ICliBuilder AddDeclarativeTarget<TDeclarativeTarget>(this ICliBuilder builder) where TDeclarativeTarget : IDeclarativeTarget
+        {
+            return AddDeclarativeTarget(builder, typeof(TDeclarativeTarget));
+        }
+
+        /// <summary>
         /// Adds the <see cref="CommandDescriptor"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -72,33 +115,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
         public static ICliBuilder AddDescriptor<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
         {
-            if (isRoot && !isGroup)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
-            }
-
-            if (commandDescriptor._runner != null || commandDescriptor._checker != null)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
-            }
-
-            // Add the command descriptor as a singleton. Set the runner and checker as transient. These are internal fields.
-            commandDescriptor._runner = typeof(TRunner);
-            commandDescriptor._checker = typeof(TChecker);
-            builder.Services.AddSingleton(commandDescriptor);
-
-            // Special annotations
-            commandDescriptor._isRoot = isRoot;
-            commandDescriptor._isGroup = isGroup;
-            commandDescriptor._isProtected = isProtected;
-
-            // Add command runner
-            builder.Services.AddTransient<TRunner>();
-
-            // Add command checker
-            builder.Services.AddTransient<TChecker>();
-
-            return builder;
+            return AddDescriptor(builder, typeof(TRunner), typeof(TChecker), commandDescriptor, isGroup, isRoot, isProtected);
         }
 
         /// <summary>
@@ -241,7 +258,153 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
         public static ICliBuilder AddTextHandler<TTextHandler>(this ICliBuilder builder) where TTextHandler : class, ITextHandler
         {
-            IServiceCollection serviceCollection = builder.Services.AddTransient<ITextHandler, TTextHandler>();
+            builder.Services.AddTransient<ITextHandler, TTextHandler>();
+            return builder;
+        }
+
+        private static ICliBuilder AddDeclarativeTarget(this ICliBuilder builder, Type declarativeTarget)
+        {
+            // Command descriptor
+            CommandDescriptorAttribute cmdAttr = declarativeTarget.GetCustomAttribute<CommandDescriptorAttribute>(false);
+            if (cmdAttr == null)
+            {
+                throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define command descriptor.");
+            }
+
+            // Command Runner
+            CommandRunnerAttribute cmdRunner = declarativeTarget.GetCustomAttribute<CommandRunnerAttribute>(false);
+            if (cmdRunner == null)
+            {
+                throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define command runner.");
+            }
+
+            // Command checker
+            CommandCheckerAttribute cmdChecker = declarativeTarget.GetCustomAttribute<CommandCheckerAttribute>(false);
+            if (cmdChecker == null)
+            {
+                throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define command checker.");
+            }
+
+            // Text handler
+            TextHandlerAttribute textHandlerAttribute = declarativeTarget.GetCustomAttribute<TextHandlerAttribute>(false);
+            if (textHandlerAttribute == null)
+            {
+                throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define text handler.");
+            }
+            ITextHandler textHandler = (ITextHandler)Activator.CreateInstance(textHandlerAttribute.TestHandler);
+
+            // Optional
+            IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<ArgumentDescriptorAttribute>(false);
+            IEnumerable<ArgumentValidationAttribute> argVdls = declarativeTarget.GetCustomAttributes<ArgumentValidationAttribute>(false);
+            IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeTarget.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
+            IEnumerable<ArgumentCustomPropertyAttribute> argPropAttrs = declarativeTarget.GetCustomAttributes<ArgumentCustomPropertyAttribute>(false);
+
+            // Arguments Descriptors
+            List<ArgumentDescriptor> argDescs = new();
+            foreach (ArgumentDescriptorAttribute argAttr in argAttrs)
+            {
+                ArgumentDescriptor desc;
+                if (argAttr.DataType == DataType.Custom)
+                {
+                    desc = new ArgumentDescriptor(argAttr.Id, DataType.Custom, argAttr.Required, argAttr.Description, defaultValue: argAttr.DefaultValue);
+                }
+                else
+                {
+                    desc = new ArgumentDescriptor(argAttr.Id, argAttr.DataType, argAttr.Required, argAttr.Description, defaultValue: argAttr.DefaultValue);
+                }
+
+                // Argument validation attribute
+                List<ValidationAttribute>? validationAttributes = null;
+                if (argVdls.Any())
+                {
+                    validationAttributes = new List<ValidationAttribute>();
+                    argVdls.All(e =>
+                    {
+                        if (e.ArgId.Equals(argAttr.Id))
+                        {
+                            ValidationAttribute validationAttr = (ValidationAttribute)Activator.CreateInstance(e.ValidationAttribute, e.ValidationArgs);
+                            validationAttributes.Add(validationAttr);
+                        }
+                        return true;
+                    });
+                    desc.ValidationAttributes = validationAttributes.Count == 0 ? null : validationAttributes;
+                }
+
+                // Argument custom properties
+                Dictionary<string, object>? argCustomProps = null;
+                if (argPropAttrs.Any())
+                {
+                    argCustomProps = new Dictionary<string, object>();
+                    argPropAttrs.All(e =>
+                    {
+                        if (e.ArgId.Equals(argAttr.Id))
+                        {
+                            argCustomProps.Add(e.Key, e.Value);
+                        }
+                        return true;
+                    });
+                }
+                desc.CustomProperties = argCustomProps;
+
+                desc.Obsolete = argAttr.Obsolete ? argAttr.Obsolete : null;
+                desc.Disabled = argAttr.Disabled ? argAttr.Disabled : null;
+                desc.Alias = argAttr.Alias;
+                desc.CustomDataType = argAttr.CustomDataType;
+
+                argDescs.Add(desc);
+            }
+            ArgumentDescriptors argumentDescriptors = new(textHandler, argDescs);
+
+            // Command custom properties
+            Dictionary<string, object>? cmdCustomProps = null;
+            if (cmdPropAttrs.Any())
+            {
+                cmdCustomProps = new Dictionary<string, object>();
+                cmdPropAttrs.All(e =>
+                {
+                    cmdCustomProps.Add(e.Key, e.Value);
+                    return true;
+                });
+            }
+
+            // Tags
+            CommandTagsAttribute tagsAttr = declarativeTarget.GetCustomAttribute<CommandTagsAttribute>(false);
+
+            // Command descriptor
+            CommandDescriptor cmdDesc = new(cmdAttr.Id, cmdAttr.Name, cmdAttr.Prefix, cmdAttr.Description, argumentDescriptors, cmdCustomProps, cmdAttr.DefaultArgument, tagsAttr?.Tags);
+
+            // Add descriptor to service collection.
+            return AddDescriptor(builder, cmdRunner.Runner, cmdChecker.Checker, cmdDesc, cmdAttr.IsGroup, cmdAttr.IsRoot, cmdAttr.IsProtected);
+        }
+
+        private static ICliBuilder AddDescriptor(ICliBuilder builder, Type runner, Type checker, CommandDescriptor commandDescriptor, bool isGroup, bool isRoot, bool isProtected)
+        {
+            if (isRoot && !isGroup)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
+            }
+
+            if (commandDescriptor._runner != null || commandDescriptor._checker != null)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
+            }
+
+            // Add the command descriptor as a singleton. Set the runner and checker as transient. These are internal fields.
+            commandDescriptor._runner = runner;
+            commandDescriptor._checker = checker;
+            builder.Services.AddSingleton(commandDescriptor);
+
+            // Special annotations
+            commandDescriptor._isRoot = isRoot;
+            commandDescriptor._isGroup = isGroup;
+            commandDescriptor._isProtected = isProtected;
+
+            // Add command runner
+            builder.Services.AddTransient(runner);
+
+            // Add command checker
+            builder.Services.AddTransient(checker);
+
             return builder;
         }
     }

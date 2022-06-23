@@ -29,8 +29,8 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="name">The command name.</param>
         /// <param name="description">The command description.</param>
         /// <param name="arguments">The command arguments.</param>
-        /// <param name="properties">The command properties.</param>
-        public Command(string id, string name, string description, Arguments? arguments = null, Dictionary<string, object>? properties = null)
+        /// <param name="customProperties">The custom command properties.</param>
+        public Command(string id, string name, string description, Arguments? arguments = null, Dictionary<string, object>? customProperties = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Name = name;
             Description = description ?? throw new System.ArgumentNullException(nameof(description));
             Arguments = arguments;
-            Properties = properties;
+            CustomProperties = customProperties;
         }
 
         /// <summary>
@@ -61,13 +61,18 @@ namespace PerpetualIntelligence.Cli.Commands
             Name = commandDescriptor.Name;
             Description = commandDescriptor.Description;
             Arguments = arguments;
-            Properties = properties;
+            CustomProperties = properties;
         }
 
         /// <summary>
         /// The command arguments.
         /// </summary>
         public Arguments? Arguments { get; }
+
+        /// <summary>
+        /// The command custom properties.
+        /// </summary>
+        public Dictionary<string, object>? CustomProperties { get; }
 
         /// <summary>
         /// The command description.
@@ -83,11 +88,6 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The command name.
         /// </summary>
         public string Name { get; }
-
-        /// <summary>
-        /// The command custom properties.
-        /// </summary>
-        public Dictionary<string, object>? Properties { get; }
 
         /// <summary>
         /// Gets the optional argument value for the specified identifier.

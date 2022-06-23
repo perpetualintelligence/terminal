@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     /// Declares a <see cref="CommandDescriptor"/> custom property.
     /// </summary>
     /// <remarks>Each custom property must have a unique key within a command.</remarks>
-    /// <seealso cref="CommandDescriptor.Properties"/>
+    /// <seealso cref="CommandDescriptor.CustomProperties"/>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class CommandCustomPropertyAttribute : Attribute
     {

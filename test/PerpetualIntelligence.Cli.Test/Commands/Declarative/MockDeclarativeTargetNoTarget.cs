@@ -11,11 +11,12 @@ using System.ComponentModel.DataAnnotations;
 namespace PerpetualIntelligence.Cli.Commands.Declarative
 {
     [CommandDescriptor("id1", "name", "test grp cmd", "description")]
+    [CommandRunner(typeof(MockCommandRunner))]
+    [CommandChecker(typeof(MockCommandChecker))]
+    [CommandTags("tag1", "tag2", "tag3")]
     [CommandCustomProperty("key1", "value1")]
     [CommandCustomProperty("key2", "value2")]
     [CommandCustomProperty("key3", "value3")]
-    [CommandRunner(typeof(MockCommandRunner))]
-    [CommandChecker(typeof(MockCommandChecker))]
     [ArgumentDescriptor("arg1", DataType.Text, "test arg desc1")]
     [ArgumentCustomProperty("arg1", "key1", "value1")]
     [ArgumentCustomProperty("arg1", "key2", "value2")]
@@ -26,7 +27,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     [ArgumentCustomProperty("arg2", "key2", "value2")]
     [ArgumentDescriptor("ar3", DataType.Text, "test arg desc3")]
     [ArgumentValidation("arg3", typeof(RangeAttribute), 25, 40)]
-    public class MockDeclarativeTarget : IDeclarativeTarget
+    public class MockDeclarativeTargetNoTarget : IDeclarativeTarget
     {
     }
 }

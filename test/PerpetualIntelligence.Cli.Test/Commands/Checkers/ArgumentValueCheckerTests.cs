@@ -86,7 +86,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = false;
 
-            ArgumentDescriptor identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
+            ArgumentDescriptor identity = new("arg1", DataType.Text) { ValidationAttributes = new[] { new OneOfAttribute("test1", "test2") } };
             Argument value = new("arg1", "test3", DataType.Text);
 
             ArgumentCheckerContext context = new(identity, value);
@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = false;
 
-            ArgumentDescriptor identity = new("arg1", DataType.CreditCard, validationAttributes: new[] { new CreditCardAttribute() });
+            ArgumentDescriptor identity = new("arg1", DataType.CreditCard) { ValidationAttributes = new[] { new CreditCardAttribute() } };
             Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
@@ -110,7 +110,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = true;
 
-            ArgumentDescriptor identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
+            ArgumentDescriptor identity = new("arg1", DataType.Text) { ValidationAttributes = new[] { new OneOfAttribute("test1", "test2") } };
             Argument value = new("arg1", "test3", DataType.Text);
 
             ArgumentCheckerContext context = new(identity, value);
@@ -122,7 +122,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = true;
 
-            ArgumentDescriptor identity = new("arg1", DataType.CreditCard, validationAttributes: new[] { new CreditCardAttribute() });
+            ArgumentDescriptor identity = new("arg1", DataType.CreditCard) { ValidationAttributes = new[] { new CreditCardAttribute() } };
             Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
@@ -132,7 +132,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task SupportedValueShouldNotErrorAsync()
         {
-            ArgumentDescriptor identity = new("arg1", DataType.Text, validationAttributes: new[] { new OneOfAttribute("test1", "test2") });
+            ArgumentDescriptor identity = new("arg1", DataType.Text) { ValidationAttributes = new[] { new OneOfAttribute("test1", "test2") } };
             Argument value = new("arg1", "test2", DataType.Text);
 
             ArgumentCheckerContext context = new(identity, value);

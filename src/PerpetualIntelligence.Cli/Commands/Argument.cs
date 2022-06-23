@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands
             CustomDataType = argumentDescriptor.CustomDataType;
             Description = argumentDescriptor.Description;
             Value = value;
-            Properties = argumentDescriptor.Properties;
+            Properties = argumentDescriptor.CustomProperties;
             Alias = argumentDescriptor.Alias;
         }
 

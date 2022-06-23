@@ -33,6 +33,11 @@ namespace PerpetualIntelligence.Cli
         public const string InvalidConfiguration = "invalid_configuration";
 
         /// <summary>
+        /// The configuration is not valid.
+        /// </summary>
+        public const string InvalidDeclaration = "invalid_declaration";
+
+        /// <summary>
         /// The license is not valid.
         /// </summary>
         public const string InvalidLicense = "invalid_license";
