@@ -5,38 +5,32 @@
     https://terms.perpetualintelligence.com
 */
 
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
 using System;
+using Xunit;
 
 namespace PerpetualIntelligence.Cli.Integration
 {
-    [TestClass]
-    public class CliBuilderTests : InitializerTests
+    public class CliBuilderTests
     {
-        public CliBuilderTests() : base(TestLogger.Create<CliBuilderTests>())
-        {
-        }
-
-        [TestMethod]
-        public void CliBuilderShouldReturnIserviceCollection()
-        {
-            CliBuilder cliBuilder = new(serviceCollection);
-            Assert.AreEqual(serviceCollection, cliBuilder.Services);
-        }
-
-        protected override void OnTestCleanup()
-        {
-            host.Dispose();
-        }
-
-        protected override void OnTestInitialize()
+        public CliBuilderTests()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
+        }
+
+        [Fact]
+        public void CliBuilder_ShouldReturn_Same_IServiceCollection()
+        {
+            CliBuilder cliBuilder = new(serviceCollection);
+            cliBuilder.Services.Should().BeSameAs(serviceCollection);
+        }
+
+        ~CliBuilderTests()
+        {
+            host.Dispose();
         }
 
         private void ConfigureServicesDelegate(IServiceCollection arg2)
