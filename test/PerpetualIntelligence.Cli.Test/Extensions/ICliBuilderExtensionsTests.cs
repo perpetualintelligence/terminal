@@ -77,8 +77,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual("id1", impIstance.Id);
             Assert.AreEqual("name1", impIstance.Name);
             Assert.AreEqual("prefix1", impIstance.Prefix);
-            Assert.AreEqual(typeof(MockCommandRunner), impIstance._runner);
-            Assert.AreEqual(typeof(MockCommandChecker), impIstance._checker);
+            Assert.AreEqual(typeof(MockCommandRunner), impIstance.Runner);
+            Assert.AreEqual(typeof(MockCommandChecker), impIstance.Checker);
             Assert.IsFalse(impIstance.IsGroup);
             Assert.IsFalse(impIstance.IsRoot);
 

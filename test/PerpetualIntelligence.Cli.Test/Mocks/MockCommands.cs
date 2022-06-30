@@ -258,13 +258,14 @@ namespace PerpetualIntelligence.Cli.Mocks
 
         public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, ArgumentDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false)
         {
-            var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultArgument: defaultArg);
-
-            // Internal set, in prod apps this will be set by DI Addxxx methods
-            cmd1._checker = checker;
-            cmd1._runner = runner;
-            cmd1._isGroup = isGroup.GetValueOrDefault();
-            cmd1._isRoot = isRoot.GetValueOrDefault();
+            var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultArgument: defaultArg)
+            {
+                // Internal set, in prod apps this will be set by DI Addxxx methods
+                Checker = checker,
+                Runner = runner,
+                IsGroup = isGroup.GetValueOrDefault(),
+                IsRoot = isRoot.GetValueOrDefault()
+            };
 
             return new Tuple<CommandDescriptor, Command>(cmd1, new Command(id, name, desc));
         }

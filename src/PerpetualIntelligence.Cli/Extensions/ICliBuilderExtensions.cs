@@ -421,20 +421,20 @@ namespace PerpetualIntelligence.Cli.Extensions
                 throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
             }
 
-            if (commandDescriptor._runner != null || commandDescriptor._checker != null)
+            if (commandDescriptor.Runner != null || commandDescriptor.Checker != null)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
             }
 
             // Add the command descriptor as a singleton. Set the runner and checker as transient. These are internal fields.
-            commandDescriptor._runner = runner;
-            commandDescriptor._checker = checker;
+            commandDescriptor.Runner = runner;
+            commandDescriptor.Checker = checker;
             builder.Services.AddSingleton(commandDescriptor);
 
             // Special annotations
-            commandDescriptor._isRoot = isRoot;
-            commandDescriptor._isGroup = isGroup;
-            commandDescriptor._isProtected = isProtected;
+            commandDescriptor.IsRoot = isRoot;
+            commandDescriptor.IsGroup = isGroup;
+            commandDescriptor.IsProtected = isProtected;
 
             // Add command runner
             builder.Services.AddTransient(runner);

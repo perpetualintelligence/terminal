@@ -7,7 +7,6 @@
 
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Extensions;
-using PerpetualIntelligence.Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -67,12 +66,17 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The command argument descriptors.
         /// </summary>
-        public ArgumentDescriptors? ArgumentDescriptors { get; }
+        public ArgumentDescriptors? ArgumentDescriptors { get; internal set; }
+
+        /// <summary>
+        /// The command checker.
+        /// </summary>
+        public Type? Checker { get; internal set; }
 
         /// <summary>
         /// The custom properties.
         /// </summary>
-        public Dictionary<string, object>? CustomProperties { get; }
+        public Dictionary<string, object>? CustomProperties { get; internal set; }
 
         /// <summary>
         /// The default argument. <c>null</c> means the command does not support a default argument.
@@ -86,7 +90,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// put it in an <see cref="Argument"/> identified by <see cref="DefaultArgument"/>.
         /// </remarks>
         /// <seealso cref="ArgumentDescriptor.DefaultValue"/>
-        public string? DefaultArgument { get; }
+        public string? DefaultArgument { get; internal set; }
 
         /// <summary>
         /// The command description.
@@ -102,17 +106,17 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Returns <c>true</c> if this descriptor represents a grouped command; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsGroup => _isGroup;
+        public bool IsGroup { get; internal set; }
 
         /// <summary>
         /// Returns <c>true</c> if this descriptor represents a protected command; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsProtected => _isProtected;
+        public bool IsProtected { get; internal set; }
 
         /// <summary>
         /// Returns <c>true</c> if this descriptor represents a root command; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsRoot => _isRoot;
+        public bool IsRoot { get; internal set; }
 
         /// <summary>
         /// The command name.
@@ -126,9 +130,14 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Prefix { get; }
 
         /// <summary>
+        /// The command runner.
+        /// </summary>
+        public Type? Runner { get; internal set; }
+
+        /// <summary>
         /// The tags to find the command.
         /// </summary>
-        public string[]? Tags { get; }
+        public string[]? Tags { get; internal set; }
 
         /// <summary>
         /// Attempts to find an argument descriptor.
@@ -163,20 +172,5 @@ namespace PerpetualIntelligence.Cli.Commands
             }
 #endif
         }
-
-        [InternalInfrastructure]
-        internal Type? _checker { get; set; }
-
-        [InternalInfrastructure]
-        internal bool _isGroup { get; set; }
-
-        [InternalInfrastructure]
-        internal bool _isProtected { get; set; }
-
-        [InternalInfrastructure]
-        internal bool _isRoot { get; set; }
-
-        [InternalInfrastructure]
-        internal Type? _runner { get; set; }
     }
 }
