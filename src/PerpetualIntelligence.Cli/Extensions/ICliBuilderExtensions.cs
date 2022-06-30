@@ -66,6 +66,43 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
+        /// Adds a new <see cref="ICommandBuilder"/> to the service collection. To build and add the
+        /// <see cref="CommandDescriptor"/>, you must use <see cref="ICommandBuilder.Build"/> at the end of command configuration.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="id">The command id.</param>
+        /// <param name="name">The command name.</param>
+        /// <param name="prefix">The command string prefix.</param>
+        /// <param name="description">The command description.</param>
+        /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
+        /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
+        /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
+        /// <typeparam name="TRunner">The command runner type.</typeparam>
+        /// <typeparam name="TChecker">The command checker type.</typeparam>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
+        public static ICommandBuilder AddCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TChecker : ICommandChecker where TRunner : ICommandRunner
+        {
+            if (isRoot && !isGroup)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
+            }
+
+            CommandDescriptor cmd = new(id, name, prefix, description)
+            {
+                _checker = typeof(TChecker),
+                _runner = typeof(TRunner),
+                _isGroup = isGroup,
+                _isProtected = isProtected,
+                _isRoot = isRoot
+            };
+
+            ICommandBuilder commandBuilder = new CommandBuilder(builder);
+            commandBuilder.Services.AddSingleton(cmd);
+            return commandBuilder;
+        }
+
+        /// <summary>
         /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>

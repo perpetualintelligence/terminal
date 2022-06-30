@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Integration
     /// <summary>
     /// The default <see cref="ICliBuilder"/>.
     /// </summary>
-    public class CliBuilder : ICliBuilder
+    public sealed class CliBuilder : ICliBuilder
     {
         /// <summary>
         /// Initializes a new instance.

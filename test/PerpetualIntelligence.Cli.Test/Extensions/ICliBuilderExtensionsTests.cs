@@ -34,21 +34,6 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [TestMethod]
-        public void AddTextHandlerShouldCorrectlyInitialize()
-        {
-            cliBuilder.AddTextHandler<UnicodeTextHandler>();
-
-            var comparer = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITextHandler)));
-            Assert.IsNotNull(comparer);
-            Assert.AreEqual(ServiceLifetime.Transient, comparer.Lifetime);
-
-            // This registers a factory so we build to check the instance
-            var serviceProvider = cliBuilder.Services.BuildServiceProvider();
-            var instance = serviceProvider.GetService<ITextHandler>();
-            Assert.IsInstanceOfType(instance, typeof(UnicodeTextHandler));
-        }
-
-        [TestMethod]
         public void AddArgumentCheckerShouldCorrectlyInitialize()
         {
             cliBuilder.AddArgumentChecker<MockArgumentMapper, MockArgumentChecker>();
@@ -154,6 +139,68 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [TestMethod]
+        public void AddCommandShouldCorrectlyInitialize()
+        {
+            ICommandBuilder commandBuilder = cliBuilder.AddCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1");
+
+            // AddCommand does not add ICommandBuilder to service collection.
+            var servicesCmdBuilder = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));
+            Assert.IsNull(servicesCmdBuilder);
+
+            // Command builder creates a new local service collection
+            Assert.AreNotEqual(cliBuilder.Services, commandBuilder.Services);
+
+            // Lifetime of command builder service
+            var serviceDescriptor = commandBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            Assert.IsNotNull(serviceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
+
+            // Check the instance
+            var serviceProvider = commandBuilder.Services.BuildServiceProvider();
+            var instance = serviceProvider.GetRequiredService<CommandDescriptor>();
+            Assert.AreEqual("id1", instance.Id);
+            Assert.AreEqual("name1", instance.Name);
+            Assert.AreEqual("prefix1", instance.Prefix);
+            Assert.AreEqual("description1", instance.Description);
+            Assert.AreEqual(typeof(MockCommandChecker), instance._checker);
+            Assert.AreEqual(typeof(MockCommandRunner), instance._runner);
+            Assert.IsFalse(instance.IsGroup);
+            Assert.IsFalse(instance.IsRoot);
+            Assert.IsFalse(instance.IsProtected);
+        }
+
+        [TestMethod]
+        public void AddCommandSpecialAnnotationsShouldCorrectlyInitialize()
+        {
+            ICommandBuilder commandBuilder = cliBuilder.AddCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1", isGroup: true, isRoot: true, isProtected: true);
+
+            // AddCommand does not add ICommandBuilder to service collection.
+            var servicesCmdBuilder = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));
+            Assert.IsNull(servicesCmdBuilder);
+
+            // Command builder creates a new local service collection
+            Assert.AreNotEqual(cliBuilder.Services, commandBuilder.Services);
+
+            // Lifetime of command builder service
+            var serviceDescriptor = commandBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            Assert.IsNotNull(serviceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
+
+            // Check the instance
+            var serviceProvider = commandBuilder.Services.BuildServiceProvider();
+            var instance = serviceProvider.GetRequiredService<CommandDescriptor>();
+            Assert.AreEqual("id1", instance.Id);
+            Assert.AreEqual("name1", instance.Name);
+            Assert.AreEqual("prefix1", instance.Prefix);
+            Assert.AreEqual("description1", instance.Description);
+            Assert.AreEqual(typeof(MockCommandChecker), instance._checker);
+            Assert.AreEqual(typeof(MockCommandRunner), instance._runner);
+            Assert.IsTrue(instance.IsGroup);
+            Assert.IsTrue(instance.IsRoot);
+            Assert.IsTrue(instance.IsProtected);
+        }
+
+        [TestMethod]
         public void AddExtractorShouldCorrectlyInitialize()
         {
             cliBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor>();
@@ -246,6 +293,21 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.IsNotNull(handler);
             Assert.AreEqual(ServiceLifetime.Transient, handler.Lifetime);
             Assert.AreEqual(typeof(MockCommandHandler), handler.ImplementationType);
+        }
+
+        [TestMethod]
+        public void AddTextHandlerShouldCorrectlyInitialize()
+        {
+            cliBuilder.AddTextHandler<UnicodeTextHandler>();
+
+            var comparer = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITextHandler)));
+            Assert.IsNotNull(comparer);
+            Assert.AreEqual(ServiceLifetime.Transient, comparer.Lifetime);
+
+            // This registers a factory so we build to check the instance
+            var serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var instance = serviceProvider.GetService<ITextHandler>();
+            Assert.IsInstanceOfType(instance, typeof(UnicodeTextHandler));
         }
 
         protected override void OnTestInitialize()
