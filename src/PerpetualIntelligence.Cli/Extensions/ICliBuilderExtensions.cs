@@ -90,11 +90,11 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             CommandDescriptor cmd = new(id, name, prefix, description)
             {
-                _checker = typeof(TChecker),
-                _runner = typeof(TRunner),
-                _isGroup = isGroup,
-                _isProtected = isProtected,
-                _isRoot = isRoot
+                Checker = typeof(TChecker),
+                Runner = typeof(TRunner),
+                IsGroup = isGroup,
+                IsProtected = isProtected,
+                IsRoot = isRoot
             };
 
             ICommandBuilder commandBuilder = new CommandBuilder(builder);
