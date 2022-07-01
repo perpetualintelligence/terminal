@@ -26,10 +26,10 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <param name="id">The argument id.</param>
         /// <param name="dataType">The argument data type.</param>
-        /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
+        /// <param name="required">The argument is required.</param>
         /// <param name="defaultValue">The argument default value.</param>
-        public ArgumentDescriptor(string id, DataType dataType, bool required = false, string? description = null, object? defaultValue = null)
+        public ArgumentDescriptor(string id, DataType dataType, string description, bool? required = null, object? defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -48,10 +48,10 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <param name="id">The argument id.</param>
         /// <param name="customDataType">The argument custom data type.</param>
-        /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
+        /// <param name="required">The argument is required.</param>
         /// <param name="defaultValue">The argument default value.</param>
-        public ArgumentDescriptor(string id, string customDataType, bool required = false, string? description = null, object? defaultValue = null)
+        public ArgumentDescriptor(string id, string customDataType, string description, bool? required = null, object? defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
