@@ -27,9 +27,9 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="description">The argument description.</param>
         /// <param name="defaultValue">The argument default value.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, DataType dataType, bool required = false, string? description = null, object? defaultValue = null)
+        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, DataType dataType, string description, bool? required = null, object? defaultValue = null)
         {
-            ArgumentDescriptor argument = new(id, dataType, required, description, defaultValue);
+            ArgumentDescriptor argument = new(id, dataType, description, required, defaultValue);
             builder.Services.AddSingleton(argument);
             return builder;
         }
@@ -40,13 +40,13 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="id">The argument id.</param>
         /// <param name="customDataType">The argument custom data type.</param>
-        /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
+        /// <param name="required">The argument is required.</param>
         /// <param name="defaultValue">The argument default value.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, string customDataType, bool required = false, string? description = null, object? defaultValue = null)
+        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, string customDataType, string description, bool? required = null, object? defaultValue = null)
         {
-            ArgumentDescriptor argument = new(id, customDataType, required, description, defaultValue);
+            ArgumentDescriptor argument = new(id, customDataType, description, required, defaultValue);
             builder.Services.AddSingleton(argument);
             return builder;
         }

@@ -17,14 +17,14 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void CustomDataTypeShouldSetDataType()
         {
-            ArgumentDescriptor arg = new("name", "custom", required: true);
+            ArgumentDescriptor arg = new("name", "custom", "test desc", required: true);
             Assert.AreEqual(DataType.Custom, arg.DataType);
         }
 
         [TestMethod]
         public void RequiredExplicitlySetShouldNotSetDataAnnotationRequiredAttribute()
         {
-            ArgumentDescriptor arg = new("name", "custom", required: true);
+            ArgumentDescriptor arg = new("name", "custom", "test desc", required: true);
             Assert.IsNull(arg.ValidationAttributes);
             Assert.IsTrue(arg.Required);
         }
@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void RequiredShouldBeSetWithDataAnnotationRequiredAttribute()
         {
-            ArgumentDescriptor arg = new("name", "custom", required: false) { ValidationAttributes = new[] { new RequiredAttribute() } };
+            ArgumentDescriptor arg = new("name", "custom", "test desc", required: false) { ValidationAttributes = new[] { new RequiredAttribute() } };
             Assert.IsNotNull(arg.ValidationAttributes);
             CollectionAssert.Contains(arg.ValidationAttributes.ToArray(), new RequiredAttribute());
             Assert.IsTrue(arg.Required);

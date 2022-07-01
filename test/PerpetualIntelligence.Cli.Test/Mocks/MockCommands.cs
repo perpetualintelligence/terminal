@@ -28,78 +28,78 @@ namespace PerpetualIntelligence.Cli.Mocks
         {
             TestArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text"),
-                new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
-                new ArgumentDescriptor("key3", DataType.PhoneNumber, false, "Key3 value phone"),
-                new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
-                new ArgumentDescriptor("key5", DataType.Url, false, "Key5 value url"),
-                new ArgumentDescriptor("key6", nameof(Boolean), false, "Key6 no value"),
-                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency") { ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
-                new ArgumentDescriptor("key8", nameof(Int32), false, "Key8 value custom int"),
-                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 value custom double") {ValidationAttributes = new ValidationAttribute[] { new RequiredAttribute(), new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
-                new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string")
+                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false),
+                new ArgumentDescriptor("key2", DataType.Text, "Key2 value text", true),
+                new ArgumentDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
+                new ArgumentDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
+                new ArgumentDescriptor("key5", DataType.Url, "Key5 value url", false),
+                new ArgumentDescriptor("key6", nameof(Boolean), "Key6 no value", false),
+                new ArgumentDescriptor("key7", DataType.Currency, "Key7 value currency", true) { ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
+                new ArgumentDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
+                new ArgumentDescriptor("key9", nameof(Double), "Key9 value custom double", true) {ValidationAttributes = new ValidationAttribute[] { new RequiredAttribute(), new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
+                new ArgumentDescriptor("key10", nameof(String), "Key10 value custom string", true)
             };
 
             TestDefaultArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text"),
-                new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
-                new ArgumentDescriptor("key3", DataType.PhoneNumber, false, "Key3 value phone", defaultValue: "44444444444"),
-                new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
-                new ArgumentDescriptor("key5", DataType.Url, false, "Key5 value url"),
-                new ArgumentDescriptor("key6", nameof(Boolean), false, "Key6 no value", defaultValue: false),
-                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency") {ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
-                new ArgumentDescriptor("key8", nameof(Int32), false, "Key8 value custom int"),
-                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 value custom double", defaultValue: 25.36) { ValidationAttributes = new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
-                new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string", defaultValue: "mello default")
+                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false),
+                new ArgumentDescriptor("key2", DataType.Text, "Key2 value text", true),
+                new ArgumentDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false, defaultValue: "44444444444"),
+                new ArgumentDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
+                new ArgumentDescriptor("key5", DataType.Url, "Key5 value url", false),
+                new ArgumentDescriptor("key6", nameof(Boolean), "Key6 no value", false, defaultValue: false),
+                new ArgumentDescriptor("key7", DataType.Currency, "Key7 value currency", true) {ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
+                new ArgumentDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
+                new ArgumentDescriptor("key9", nameof(Double), "Key9 value custom double", true, defaultValue: 25.36) { ValidationAttributes = new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
+                new ArgumentDescriptor("key10", nameof(String), "Key10 value custom string", true, defaultValue: "mello default")
             };
 
             TestDefaultArgumentValueDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value"),
-                new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text"),
-                new ArgumentDescriptor("key3", DataType.PhoneNumber, false, "Key3 value phone"),
-                new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
+                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value"),
+                new ArgumentDescriptor("key2", DataType.Text, "Key2 value text", true),
+                new ArgumentDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
+                new ArgumentDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
             };
 
             TestAliasArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value") { Alias = "key1_alias" },
-                new ArgumentDescriptor("key2", DataType.Text, true, "Key2 value text") { },
-                new ArgumentDescriptor("key3", DataType.PhoneNumber, false, "Key3 value phone") { Alias = "key3_alias" },
-                new ArgumentDescriptor("key4", nameof(Double), false, "Key4 value number") { Alias = "key4_alias" },
+                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
+                new ArgumentDescriptor("key2", DataType.Text, "Key2 value text", true) { },
+                new ArgumentDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "key3_alias" },
+                new ArgumentDescriptor("key4", nameof(Double), "Key4 value number", false) { Alias = "key4_alias" },
             };
 
             TestOptionsDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, false, "Key1 value text", defaultValue: "key1 default value") { Alias = "key1_alias" },
-                new ArgumentDescriptor("key2-er", DataType.Text, true, "Key2 value text", defaultValue: "key2 default value"),
-                new ArgumentDescriptor("key3-a-z-d", DataType.PhoneNumber, false, "Key3 value phone") { Alias = "k3" },
-                new ArgumentDescriptor("key4", DataType.EmailAddress, false, "Key4 value email"),
-                new ArgumentDescriptor("key5", DataType.Url, false, "Key5 value url"),
-                new ArgumentDescriptor("key6-a-s-xx-s", nameof(Boolean), false, "Key6 no value"),
-                new ArgumentDescriptor("key7", DataType.Currency, true, "Key7 value currency", defaultValue: "INR") { ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
-                new ArgumentDescriptor("key8", nameof(Int32), false, "Key8 value int"),
-                new ArgumentDescriptor("key9", nameof(Double), true, "Key9 invalid default value", defaultValue: 89568.36) {ValidationAttributes = new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
-                new ArgumentDescriptor("key10", nameof(String), true, "Key10 value custom string") { Alias = "k10" },
-                new ArgumentDescriptor("key11", nameof(Boolean), true, "Key11 value boolean") { Alias = "k11" },
-                new ArgumentDescriptor("key12", nameof(Boolean), true, "Key12 value default boolean") { Alias = "k12", DefaultValue = true }
+                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
+                new ArgumentDescriptor("key2-er", DataType.Text, "Key2 value text", true, defaultValue: "key2 default value"),
+                new ArgumentDescriptor("key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "k3" },
+                new ArgumentDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
+                new ArgumentDescriptor("key5", DataType.Url, "Key5 value url", false),
+                new ArgumentDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", false),
+                new ArgumentDescriptor("key7", DataType.Currency, "Key7 value currency", true, defaultValue: "INR") { ValidationAttributes = new[] { new OneOfAttribute("INR", "USD", "EUR") } },
+                new ArgumentDescriptor("key8", nameof(Int32), "Key8 value int", false),
+                new ArgumentDescriptor("key9", nameof(Double), "Key9 invalid default value", true, defaultValue: 89568.36) {ValidationAttributes = new[] { new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) } },
+                new ArgumentDescriptor("key10", nameof(String), "Key10 value custom string", true) { Alias = "k10" },
+                new ArgumentDescriptor("key11", nameof(Boolean), "Key11 value boolean", true) { Alias = "k11" },
+                new ArgumentDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true) { Alias = "k12", DefaultValue = true }
             };
 
             TestHindiUnicodeArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("एक", DataType.Text, false, "पहला तर्क", defaultValue: "डिफ़ॉल्ट मान") { Alias = "एकहै" },
-                new ArgumentDescriptor("दो", nameof(Boolean), true, "दूसरा तर्क") { },
-                new ArgumentDescriptor("तीन", DataType.Text, false, "तीसरा तर्क") { Alias = "तीनहै" },
-                new ArgumentDescriptor("चार", nameof(Double), false, "चौथा तर्क") { Alias = "चारहै" },
+                new ArgumentDescriptor("एक", DataType.Text, "पहला तर्क", false, defaultValue: "डिफ़ॉल्ट मान") { Alias = "एकहै" },
+                new ArgumentDescriptor("दो", nameof(Boolean), "दूसरा तर्क", true) { },
+                new ArgumentDescriptor("तीन", DataType.Text, "तीसरा तर्क", false) { Alias = "तीनहै" },
+                new ArgumentDescriptor("चार", nameof(Double), "चौथा तर्क", false) { Alias = "चारहै" },
             };
 
             TestChineseUnicodeArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("第一的", DataType.Text, false, "第一個命令參數", defaultValue: "默認值") { Alias = "第一" },
-                new ArgumentDescriptor("第二", nameof(Boolean), true, "第二個命令參數") { },
-                new ArgumentDescriptor("第三", DataType.Text, false, "第三個命令參數"),
-                new ArgumentDescriptor("第四", nameof(Double), false, "第四個命令參數")
+                new ArgumentDescriptor("第一的", DataType.Text, "第一個命令參數", false, defaultValue: "默認值") { Alias = "第一" },
+                new ArgumentDescriptor("第二", nameof(Boolean), "第二個命令參數", true) { },
+                new ArgumentDescriptor("第三", DataType.Text, "第三個命令參數", false),
+                new ArgumentDescriptor("第四", nameof(Double), "第四個命令參數", false)
             };
 
             Commands = new()

@@ -343,11 +343,11 @@ namespace PerpetualIntelligence.Cli.Extensions
                 ArgumentDescriptor desc;
                 if (argAttr.DataType == DataType.Custom)
                 {
-                    desc = new ArgumentDescriptor(argAttr.Id, DataType.Custom, argAttr.Required, argAttr.Description, defaultValue: argAttr.DefaultValue);
+                    desc = new ArgumentDescriptor(argAttr.Id, DataType.Custom, argAttr.Description, argAttr.Required, defaultValue: argAttr.DefaultValue);
                 }
                 else
                 {
-                    desc = new ArgumentDescriptor(argAttr.Id, argAttr.DataType, argAttr.Required, argAttr.Description, defaultValue: argAttr.DefaultValue);
+                    desc = new ArgumentDescriptor(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Required, defaultValue: argAttr.DefaultValue);
                 }
 
                 // Argument validation attribute
