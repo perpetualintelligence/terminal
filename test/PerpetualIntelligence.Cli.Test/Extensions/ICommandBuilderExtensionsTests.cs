@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [Fact]
         public void AddArgument_Adds_Correctly()
         {
-            commandBuilder.AddArgument("arg1", DataType.CreditCard, "description1", required: true, 4444444444444444);
+            commandBuilder.AddArgument("arg1", DataType.CreditCard, "description1", required: true, defaultValue: 4444444444444444);
 
             ServiceDescriptor serviceDescriptor = commandBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);

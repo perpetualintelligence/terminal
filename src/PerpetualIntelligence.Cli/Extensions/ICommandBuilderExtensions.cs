@@ -23,13 +23,16 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="id">The argument id.</param>
         /// <param name="dataType">The argument data type.</param>
-        /// <param name="required">The argument is required.</param>
         /// <param name="description">The argument description.</param>
+        /// <param name="alias">The argument alias.</param>
         /// <param name="defaultValue">The argument default value.</param>
+        /// <param name="required">The argument is required.</param>
+        /// <param name="disabled">The argument is disabled.</param>
+        /// <param name="obsolete">The argument is obsolete.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, DataType dataType, string description, bool? required = null, object? defaultValue = null)
+        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
-            ArgumentDescriptor argument = new(id, dataType, description, required, defaultValue);
+            ArgumentDescriptor argument = new(id, dataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
             builder.Services.AddSingleton(argument);
             return builder;
         }
@@ -41,12 +44,15 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="id">The argument id.</param>
         /// <param name="customDataType">The argument custom data type.</param>
         /// <param name="description">The argument description.</param>
-        /// <param name="required">The argument is required.</param>
+        /// <param name="alias">The argument alias.</param>
         /// <param name="defaultValue">The argument default value.</param>
+        /// <param name="required">The argument is required.</param>
+        /// <param name="disabled">The argument is disabled.</param>
+        /// <param name="obsolete">The argument is obsolete.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, string customDataType, string description, bool? required = null, object? defaultValue = null)
+        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
-            ArgumentDescriptor argument = new(id, customDataType, description, required, defaultValue);
+            ArgumentDescriptor argument = new(id, customDataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
             builder.Services.AddSingleton(argument);
             return builder;
         }
