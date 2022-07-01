@@ -811,8 +811,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("name2", result.CommandDescriptor.Name);
             Assert.AreEqual("name2", result.CommandDescriptor.Prefix);
             Assert.AreEqual("desc2", result.CommandDescriptor.Description);
-            Assert.AreEqual(typeof(CommandChecker), result.CommandDescriptor._checker);
-            Assert.AreEqual(typeof(CommandRunner), result.CommandDescriptor._runner);
+            Assert.AreEqual(typeof(CommandChecker), result.CommandDescriptor.Checker);
+            Assert.AreEqual(typeof(CommandRunner), result.CommandDescriptor.Runner);
             Assert.IsNotNull(result.CommandDescriptor.ArgumentDescriptors);
             Assert.AreEqual(10, result.CommandDescriptor.ArgumentDescriptors.Count);
             AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[0], "key1", DataType.Text, "Key1 value text");

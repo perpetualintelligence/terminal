@@ -77,8 +77,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual("id1", impIstance.Id);
             Assert.AreEqual("name1", impIstance.Name);
             Assert.AreEqual("prefix1", impIstance.Prefix);
-            Assert.AreEqual(typeof(MockCommandRunner), impIstance._runner);
-            Assert.AreEqual(typeof(MockCommandChecker), impIstance._checker);
+            Assert.AreEqual(typeof(MockCommandRunner), impIstance.Runner);
+            Assert.AreEqual(typeof(MockCommandChecker), impIstance.Checker);
             Assert.IsFalse(impIstance.IsGroup);
             Assert.IsFalse(impIstance.IsRoot);
 
@@ -162,8 +162,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual("name1", instance.Name);
             Assert.AreEqual("prefix1", instance.Prefix);
             Assert.AreEqual("description1", instance.Description);
-            Assert.AreEqual(typeof(MockCommandChecker), instance._checker);
-            Assert.AreEqual(typeof(MockCommandRunner), instance._runner);
+            Assert.AreEqual(typeof(MockCommandChecker), instance.Checker);
+            Assert.AreEqual(typeof(MockCommandRunner), instance.Runner);
             Assert.IsFalse(instance.IsGroup);
             Assert.IsFalse(instance.IsRoot);
             Assert.IsFalse(instance.IsProtected);
@@ -193,8 +193,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual("name1", instance.Name);
             Assert.AreEqual("prefix1", instance.Prefix);
             Assert.AreEqual("description1", instance.Description);
-            Assert.AreEqual(typeof(MockCommandChecker), instance._checker);
-            Assert.AreEqual(typeof(MockCommandRunner), instance._runner);
+            Assert.AreEqual(typeof(MockCommandChecker), instance.Checker);
+            Assert.AreEqual(typeof(MockCommandRunner), instance.Runner);
             Assert.IsTrue(instance.IsGroup);
             Assert.IsTrue(instance.IsRoot);
             Assert.IsTrue(instance.IsProtected);

@@ -62,22 +62,22 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         private Task<ICommandChecker> FindCheckerOrThrowAsync(CommandHandlerContext context)
         {
             // No checker configured.
-            if (context.CommandDescriptor._checker == null)
+            if (context.CommandDescriptor.Checker == null)
             {
                 throw new ErrorException(Errors.ServerError, "The command checker is not configured. command_name={0} command_id={1}", context.CommandDescriptor.Name, context.CommandDescriptor.Id);
             }
 
             // Not added to service collection
-            object? checkerObj = services.GetService(context.CommandDescriptor._checker);
+            object? checkerObj = services.GetService(context.CommandDescriptor.Checker);
             if (checkerObj == null)
             {
-                throw new ErrorException(Errors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor._checker.FullName);
+                throw new ErrorException(Errors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Checker.FullName);
             }
 
             // Invalid checker configured
             if (checkerObj is not ICommandChecker checker)
             {
-                throw new ErrorException(Errors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor._checker.FullName);
+                throw new ErrorException(Errors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Checker.FullName);
             }
 
             return Task.FromResult(checker);
@@ -86,22 +86,22 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         private Task<ICommandRunner> FindRunnerOrThrowAsync(CommandHandlerContext context)
         {
             // No runner configured.
-            if (context.CommandDescriptor._runner == null)
+            if (context.CommandDescriptor.Runner == null)
             {
                 throw new ErrorException(Errors.ServerError, "The command runner is not configured. command_name={0} command_id={1}", context.CommandDescriptor.Name, context.CommandDescriptor.Id);
             }
 
             // Not added to service collection
-            object? runnerObj = services.GetService(context.CommandDescriptor._runner);
+            object? runnerObj = services.GetService(context.CommandDescriptor.Runner);
             if (runnerObj == null)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor._runner.FullName);
+                throw new ErrorException(Errors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Runner.FullName);
             }
 
             // Invalid runner configured
             if (runnerObj is not ICommandRunner runner)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner is not valid. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor._runner.FullName);
+                throw new ErrorException(Errors.ServerError, "The command runner is not valid. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Runner.FullName);
             }
 
             return Task.FromResult(runner);
