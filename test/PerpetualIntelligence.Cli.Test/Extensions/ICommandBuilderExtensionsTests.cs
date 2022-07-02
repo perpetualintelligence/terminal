@@ -35,20 +35,51 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [Fact]
-        public void AddArgument_Adds_Correctly()
+        public void AddArgument_Adds_Std_DataType_Correctly()
         {
-            commandBuilder.AddArgument("arg1", DataType.CreditCard, "description1", required: true, defaultValue: 4444444444444444);
+            IArgumentBuilder argumentBuilder = commandBuilder.AddArgument("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", defaultValue: 4444555544445555, required: true, disabled: false, obsolete: true);
 
-            ServiceDescriptor serviceDescriptor = commandBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
+            // Argument builder, command builder have different service collections.
+            argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
+
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 
             ArgumentDescriptor argument = (ArgumentDescriptor)serviceDescriptor.ImplementationInstance!;
             argument.Id.Should().Be("arg1");
             argument.DataType.Should().Be(DataType.CreditCard);
-            argument.Required.Should().Be(true);
+            argument.CustomDataType.Should().BeNull();
             argument.Description.Should().Be("description1");
-            argument.DefaultValue.Should().Be(4444444444444444);
+            argument.Alias.Should().Be("arg-alias1");
+            argument.DefaultValue.Should().Be(4444555544445555);
+            argument.Required.Should().BeTrue();
+            argument.Disabled.Should().BeFalse();
+            argument.Obsolete.Should().BeTrue();
+        }
+
+        [Fact]
+        public void AddArgument_Adds_Custom_DataType_Correctly()
+        {
+            IArgumentBuilder argumentBuilder = commandBuilder.AddArgument("arg1", "custom-dt", "description1", alias: null, defaultValue: null, required: false, disabled: true, obsolete: false);
+
+            // Argument builder, command builder have different service collections.
+            argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
+
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
+            serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
+            serviceDescriptor.ImplementationType.Should().BeNull();
+
+            ArgumentDescriptor argument = (ArgumentDescriptor)serviceDescriptor.ImplementationInstance!;
+            argument.Id.Should().Be("arg1");
+            argument.DataType.Should().Be(DataType.Custom);
+            argument.CustomDataType.Should().Be("custom-dt");
+            argument.Description.Should().Be("description1");
+            argument.Alias.Should().BeNull();
+            argument.DefaultValue.Should().BeNull();
+            argument.Required.Should().BeFalse();
+            argument.Disabled.Should().BeTrue();
+            argument.Obsolete.Should().BeFalse();
         }
 
         private ICliBuilder cliBuilder = null!;

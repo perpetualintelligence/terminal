@@ -13,15 +13,15 @@ namespace PerpetualIntelligence.Cli.Integration
     /// <summary>
     /// The default <see cref="ICommandBuilder"/>.
     /// </summary>
-    public sealed class CommandBuilder : ICommandBuilder
+    public sealed class ArgumentBuilder : IArgumentBuilder
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="cliBuilder">The <see cref="ICliBuilder"/>.</param>
-        public CommandBuilder(ICliBuilder cliBuilder)
+        /// <param name="commandBuilder">The <see cref="ICommandBuilder"/>.</param>
+        public ArgumentBuilder(ICommandBuilder commandBuilder)
         {
-            this.cliBuilder = cliBuilder;
+            this.commandBuilder = commandBuilder;
             Services = new ServiceCollection();
         }
 
@@ -31,16 +31,15 @@ namespace PerpetualIntelligence.Cli.Integration
         public IServiceCollection Services { get; }
 
         /// <summary>
-        /// Builds a <see cref="CommandDescriptor"/> and adds it to the service collection.
+        /// Builds an <see cref="ArgumentDescriptor"/> and adds it to the service collection.
         /// </summary>
         /// <returns></returns>
-        public ICliBuilder Build()
+        public ICommandBuilder Build()
         {
-            ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
-            cliBuilder.Services.AddSingleton(localSeviceProvider.GetRequiredService<CommandDescriptor>());
-            return cliBuilder;
+            // Does nothing for now.
+            return commandBuilder;
         }
 
-        private readonly ICliBuilder cliBuilder;
+        private readonly ICommandBuilder commandBuilder;
     }
 }

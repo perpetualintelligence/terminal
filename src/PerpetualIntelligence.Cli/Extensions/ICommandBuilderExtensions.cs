@@ -30,11 +30,12 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="disabled">The argument is disabled.</param>
         /// <param name="obsolete">The argument is obsolete.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        public static IArgumentBuilder AddArgument(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
             ArgumentDescriptor argument = new(id, dataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
-            builder.Services.AddSingleton(argument);
-            return builder;
+            ArgumentBuilder argumentBuilder = new(builder);
+            argumentBuilder.Services.AddSingleton(argument);
+            return argumentBuilder;
         }
 
         /// <summary>
@@ -50,11 +51,12 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="disabled">The argument is disabled.</param>
         /// <param name="obsolete">The argument is obsolete.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder AddArgument(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        public static IArgumentBuilder AddArgument(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
             ArgumentDescriptor argument = new(id, customDataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
-            builder.Services.AddSingleton(argument);
-            return builder;
+            ArgumentBuilder argumentBuilder = new(builder);
+            argumentBuilder.Services.AddSingleton(argument);
+            return argumentBuilder;
         }
     }
 }
