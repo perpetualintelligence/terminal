@@ -7,6 +7,10 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Cli.Commands.Handlers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PerpetualIntelligence.Cli.Integration
 {
@@ -34,10 +38,45 @@ namespace PerpetualIntelligence.Cli.Integration
         /// Builds a <see cref="CommandDescriptor"/> and adds it to the service collection.
         /// </summary>
         /// <returns></returns>
-        public ICliBuilder Build()
+        public ICliBuilder Add()
         {
+            // Add the command descriptor from local to the global cli builder.
             ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
-            cliBuilder.Services.AddSingleton(localSeviceProvider.GetRequiredService<CommandDescriptor>());
+            CommandDescriptor commandDescriptor = localSeviceProvider.GetRequiredService<CommandDescriptor>();
+
+            // Arguments
+            IEnumerable<ArgumentDescriptor> argumentDescriptors = localSeviceProvider.GetServices<ArgumentDescriptor>();
+            if (argumentDescriptors.Any())
+            {
+                // FOMAC MUST UnicodeTextHandler is hard coded
+                commandDescriptor.ArgumentDescriptors = new ArgumentDescriptors(new UnicodeTextHandler(), argumentDescriptors);
+            }
+
+            // Custom Properties
+            IEnumerable<Tuple<string, object>> customProps = localSeviceProvider.GetServices<Tuple<string, object>>();
+            if (customProps.Any())
+            {
+                commandDescriptor.CustomProperties = new Dictionary<string, object>();
+                customProps.All(e =>
+                {
+                    commandDescriptor.CustomProperties.Add(e.Item1, e.Item2);
+                    return true;
+                });
+            }
+
+            // Tags
+            string[]? tags = localSeviceProvider.GetService<string[]>();
+            if (tags != null && tags.Any())
+            {
+                commandDescriptor.Tags = tags.ToArray();
+            }
+
+            // Make sure the command runner and checker TODO this may add duplicate types
+            cliBuilder.Services.AddTransient(commandDescriptor.Checker);
+            cliBuilder.Services.AddTransient(commandDescriptor.Runner);
+
+            cliBuilder.Services.AddSingleton(commandDescriptor);
+
             return cliBuilder;
         }
 

@@ -141,20 +141,20 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseCheckModel checkModel = new()
             {
                 Issuer = Protocols.Constants.Issuer,
-                Audience = MsalEndpoints.TenantAuthority(jsonFileModel.ConsumerTenantId),
+                Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", jsonFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = jsonFileModel.AuthorizedParty,
                 ConsumerObjectId = jsonFileModel.ConsumerObjectId,
                 ConsumerTenantId = jsonFileModel.ConsumerTenantId,
                 Key = jsonFileModel.Key,
                 KeyType = jsonFileModel.KeyType,
-                ProviderId = jsonFileModel.ProviderId,
+                BrokerId = jsonFileModel.BrokerId,
                 Subject = jsonFileModel.Subject
             };
 
             // Make sure we use the full base address
             var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
-            using (HttpResponseMessage response = await httpClient.PostAsync("https://api.perpetualintelligence.com/public/checklicense", checkContent))
+            using (HttpResponseMessage response = await httpClient.PostAsync(checkLicUrl, checkContent))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -206,5 +206,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         private readonly CliOptions cliOptions;
         private readonly IHttpClientFactory? httpClientFactory;
         private License? license;
+        private string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
+        //private string checkLicUrl = "http://localhost:7071/api/public/checklicense";
     }
 }

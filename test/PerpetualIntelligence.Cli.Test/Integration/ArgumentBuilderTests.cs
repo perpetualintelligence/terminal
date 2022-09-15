@@ -32,10 +32,10 @@ namespace PerpetualIntelligence.Cli.Integration
         public void Build_Returns_Same_CommandBuilder()
         {
             CliBuilder cliBuilder = new(serviceCollection);
-            ICommandBuilder commandBuilder = cliBuilder.AddCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
 
-            ArgumentBuilder argumentBuilder = new ArgumentBuilder(commandBuilder);
-            ICommandBuilder cmdBuilderFromArgBuilder = argumentBuilder.Build();
+            ArgumentBuilder argumentBuilder = new (commandBuilder);
+            ICommandBuilder cmdBuilderFromArgBuilder = argumentBuilder.Add();
             commandBuilder.Should().BeSameAs(cmdBuilderFromArgBuilder);
         }
 

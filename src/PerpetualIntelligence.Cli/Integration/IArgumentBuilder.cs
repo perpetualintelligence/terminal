@@ -21,9 +21,9 @@ namespace PerpetualIntelligence.Cli.Integration
         IServiceCollection Services { get; }
 
         /// <summary>
-        /// Builds an <see cref="ArgumentDescriptor"/> and adds it to the service collection.
+        /// Builds a new <see cref="ArgumentDescriptor"/> and add it to the service collection.
         /// </summary>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        ICommandBuilder Build();
+        ICommandBuilder Add();
     }
 }

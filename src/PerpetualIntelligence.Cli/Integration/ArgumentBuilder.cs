@@ -7,6 +7,10 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace PerpetualIntelligence.Cli.Integration
 {
@@ -34,8 +38,34 @@ namespace PerpetualIntelligence.Cli.Integration
         /// Builds an <see cref="ArgumentDescriptor"/> and adds it to the service collection.
         /// </summary>
         /// <returns></returns>
-        public ICommandBuilder Build()
+        public ICommandBuilder Add()
         {
+            ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
+            ArgumentDescriptor? argumentDescriptor = localSeviceProvider.GetService<ArgumentDescriptor>();
+            if (argumentDescriptor != null)
+            {
+                // Custom Properties
+                IEnumerable<Tuple<string, object>> customProps = localSeviceProvider.GetServices<Tuple<string, object>>();
+                if (customProps.Any())
+                {
+                    argumentDescriptor.CustomProperties = new Dictionary<string, object>();
+                    customProps.All(e =>
+                    {
+                        argumentDescriptor.CustomProperties.Add(e.Item1, e.Item2);
+                        return true;
+                    });
+                }
+
+                // Validation Attribute
+                IEnumerable<ValidationAttribute> attributes = localSeviceProvider.GetServices<ValidationAttribute>();
+                if(attributes.Any())
+                {
+                    argumentDescriptor.ValidationAttributes = attributes;
+                }
+
+                commandBuilder.Services.AddSingleton(argumentDescriptor);
+            }
+
             // Does nothing for now.
             return commandBuilder;
         }

@@ -34,10 +34,10 @@ namespace PerpetualIntelligence.Cli.Integration
             serviceDescriptor.Should().BeNull();
 
             // Add command to local
-            ICommandBuilder commandBuilder = cliBuilder.AddCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
 
             // Build
-            ICliBuilder cliBuilderFromCommandBuilder = commandBuilder.Build();
+            ICliBuilder cliBuilderFromCommandBuilder = commandBuilder.Add();
             cliBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
 
             // Build adds to global
@@ -55,8 +55,8 @@ namespace PerpetualIntelligence.Cli.Integration
         public void Build_Returns_Same_CliBuilder()
         {
             CliBuilder cliBuilder = new(serviceCollection);
-            ICommandBuilder commandBuilder = cliBuilder.AddCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
-            ICliBuilder cliBuilderFromCommandBuilder = commandBuilder.Build();
+            ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            ICliBuilder cliBuilderFromCommandBuilder = commandBuilder.Add();
             cliBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
         }
 

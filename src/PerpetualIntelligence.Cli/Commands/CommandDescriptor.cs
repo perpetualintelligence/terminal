@@ -22,7 +22,6 @@ namespace PerpetualIntelligence.Cli.Commands
     /// </summary>
     /// <seealso cref="Command"/>
     /// <seealso cref="ArgumentDescriptor"/>
-    /// <seealso cref="ICliBuilderExtensions.AddDescriptor{TRunner, TChecker}(Integration.ICliBuilder, CommandDescriptor, bool, bool, bool)"/>
     public sealed class CommandDescriptor
     {
         /// <summary>

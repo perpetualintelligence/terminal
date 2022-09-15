@@ -44,8 +44,8 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[0].Description.Should().Be("test arg desc1");
             argDescs[0].CustomDataType.Should().BeNull();
             argDescs[0].Required.Should().BeFalse();
-            argDescs[0].Obsolete.Should().BeNull();
-            argDescs[0].Disabled.Should().BeNull();
+            argDescs[0].Obsolete.Should().BeFalse();
+            argDescs[0].Disabled.Should().BeFalse();
             argDescs[0].Alias.Should().BeNull();
             argDescs[0].CustomProperties.Should().NotBeNull();
             argDescs[0].CustomProperties!.Keys.Should().Equal(new string[] { "a1Key1", "a1Key2", "a1Key3" });
@@ -58,13 +58,14 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[1].Description.Should().Be("test arg desc2");
             argDescs[1].CustomDataType.Should().BeNull();
             argDescs[1].Required.Should().BeTrue();
-            argDescs[1].Obsolete.Should().BeNull();
+            argDescs[1].Obsolete.Should().BeFalse();
             argDescs[1].Disabled.Should().BeTrue();
             argDescs[1].Alias.Should().Be("arg2_alias");
             argDescs[1].CustomProperties.Should().NotBeNull();
             argDescs[1].CustomProperties!.Keys.Should().Equal(new string[] { "a2Key1", "a2Key2" });
             argDescs[1].CustomProperties!.Values.Should().Equal(new string[] { "a2Value1", "a2Value2" });
             argDescs[1].ValidationAttributes.Should().NotBeNull();
+            argDescs[1].ValidationAttributes.Should().HaveCount(1);
             argDescs[1].ValidationAttributes!.First().Should().BeOfType<RequiredAttribute>();
             argDescs[1].DefaultValue.Should().Be(1111111111);
 
@@ -74,10 +75,11 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[2].CustomDataType.Should().Be(nameof(System.Double));
             argDescs[2].Required.Should().BeTrue();
             argDescs[2].Obsolete.Should().BeTrue();
-            argDescs[2].Disabled.Should().BeNull();
+            argDescs[2].Disabled.Should().BeFalse();
             argDescs[2].Alias.Should().BeNull();
-            argDescs[2].CustomProperties.Should().NotBeNull();
+            argDescs[2].CustomProperties.Should().BeNull();
             argDescs[2].ValidationAttributes.Should().NotBeNull();
+            argDescs[2].ValidationAttributes.Should().HaveCount(1);
             argDescs[2].ValidationAttributes!.First().Should().BeOfType<RangeAttribute>();
             argDescs[2].DefaultValue.Should().BeNull();
         }
