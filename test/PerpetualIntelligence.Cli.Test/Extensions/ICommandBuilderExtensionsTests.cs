@@ -35,30 +35,6 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [Fact]
-        public void AddArgument_Adds_Std_DataType_Correctly()
-        {
-            IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", defaultValue: 4444555544445555, required: true, disabled: false, obsolete: true);
-
-            // Argument builder, command builder have different service collections.
-            argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
-
-            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
-            serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
-            serviceDescriptor.ImplementationType.Should().BeNull();
-
-            ArgumentDescriptor argument = (ArgumentDescriptor)serviceDescriptor.ImplementationInstance!;
-            argument.Id.Should().Be("arg1");
-            argument.DataType.Should().Be(DataType.CreditCard);
-            argument.CustomDataType.Should().BeNull();
-            argument.Description.Should().Be("description1");
-            argument.Alias.Should().Be("arg-alias1");
-            argument.DefaultValue.Should().Be(4444555544445555);
-            argument.Required.Should().BeTrue();
-            argument.Disabled.Should().BeFalse();
-            argument.Obsolete.Should().BeTrue();
-        }
-
-        [Fact]
         public void AddArgument_Adds_Custom_DataType_Correctly()
         {
             IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", "custom-dt", "description1", alias: null, defaultValue: null, required: false, disabled: true, obsolete: false);
@@ -80,6 +56,30 @@ namespace PerpetualIntelligence.Cli.Extensions
             argument.Required.Should().BeFalse();
             argument.Disabled.Should().BeTrue();
             argument.Obsolete.Should().BeFalse();
+        }
+
+        [Fact]
+        public void AddArgument_Adds_Std_DataType_Correctly()
+        {
+            IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", defaultValue: 4444555544445555, required: true, disabled: false, obsolete: true);
+
+            // Argument builder, command builder have different service collections.
+            argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
+
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
+            serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
+            serviceDescriptor.ImplementationType.Should().BeNull();
+
+            ArgumentDescriptor argument = (ArgumentDescriptor)serviceDescriptor.ImplementationInstance!;
+            argument.Id.Should().Be("arg1");
+            argument.DataType.Should().Be(DataType.CreditCard);
+            argument.CustomDataType.Should().BeNull();
+            argument.Description.Should().Be("description1");
+            argument.Alias.Should().Be("arg-alias1");
+            argument.DefaultValue.Should().Be(4444555544445555);
+            argument.Required.Should().BeTrue();
+            argument.Disabled.Should().BeFalse();
+            argument.Obsolete.Should().BeTrue();
         }
 
         private ICliBuilder cliBuilder = null!;

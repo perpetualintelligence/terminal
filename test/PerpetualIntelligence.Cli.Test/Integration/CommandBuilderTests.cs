@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Integration
         public void NewBuilder_Returns_New_IServiceCollection()
         {
             CliBuilder cliBuilder = new(serviceCollection);
-            CommandBuilder commandBuilder = new CommandBuilder(cliBuilder);
+            CommandBuilder commandBuilder = new(cliBuilder);
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
         }
 
@@ -78,7 +78,7 @@ namespace PerpetualIntelligence.Cli.Integration
             serviceCollection = arg2;
         }
 
-        private IHost host = null!;
+        private readonly IHost host = null!;
         private IServiceCollection serviceCollection = null!;
     }
 }

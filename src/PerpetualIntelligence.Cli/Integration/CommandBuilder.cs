@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.Cli.Integration
                 commandDescriptor.Tags = tags.ToArray();
             }
 
-            // Make sure the command runner and checker TODO this may add duplicate types
+            // Make sure the command runner and checker are added. TODO this may add duplicate types
             cliBuilder.Services.AddTransient(commandDescriptor.Checker);
             cliBuilder.Services.AddTransient(commandDescriptor.Runner);
 

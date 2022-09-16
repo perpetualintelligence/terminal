@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Integration
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="services">The services.</param>
+        /// <param name="services">The global service collection.</param>
         /// <exception cref="ArgumentNullException">services</exception>
         public CliBuilder(IServiceCollection services)
         {
@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Cli.Integration
         }
 
         /// <summary>
-        /// The service collection.
+        /// The global service collection.
         /// </summary>
         public IServiceCollection Services { get; }
     }

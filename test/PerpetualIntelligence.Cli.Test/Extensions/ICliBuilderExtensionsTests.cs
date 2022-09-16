@@ -112,7 +112,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: true, isRoot: false).Add();
 
-            IServiceProvider serviceProvider =  cliBuilder.Services.BuildServiceProvider();
+            IServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
             CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
 
             Assert.AreEqual("id1", cmd.Id);
