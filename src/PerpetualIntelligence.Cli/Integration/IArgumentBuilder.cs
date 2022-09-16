@@ -11,9 +11,9 @@ using PerpetualIntelligence.Cli.Commands;
 namespace PerpetualIntelligence.Cli.Integration
 {
     /// <summary>
-    /// An abstraction of <c>pi-cli</c> command builder.
+    /// An abstraction of <c>pi-cli</c> argument builder.
     /// </summary>
-    public interface ICommandBuilder
+    public interface IArgumentBuilder
     {
         /// <summary>
         /// The service collection.
@@ -21,9 +21,9 @@ namespace PerpetualIntelligence.Cli.Integration
         IServiceCollection Services { get; }
 
         /// <summary>
-        /// Build a new <see cref="CommandDescriptor"/> and add it to the service collection.
+        /// Builds a new <see cref="ArgumentDescriptor"/> and add it to the service collection.
         /// </summary>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        ICliBuilder Add();
+        /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
+        ICommandBuilder Add();
     }
 }

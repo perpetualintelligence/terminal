@@ -6,6 +6,7 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 
 namespace PerpetualIntelligence.Cli.Integration
 {
@@ -15,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Integration
     public interface ICliBuilder
     {
         /// <summary>
-        /// The service collection.
+        /// The global service collection.
         /// </summary>
         IServiceCollection Services { get; }
     }

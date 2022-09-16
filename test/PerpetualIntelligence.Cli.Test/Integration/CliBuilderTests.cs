@@ -38,7 +38,7 @@ namespace PerpetualIntelligence.Cli.Integration
             serviceCollection = arg2;
         }
 
-        private IHost host = null!;
+        private readonly IHost host = null!;
         private IServiceCollection serviceCollection = null!;
     }
 }

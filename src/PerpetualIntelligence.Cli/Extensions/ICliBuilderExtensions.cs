@@ -66,43 +66,6 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds a new <see cref="ICommandBuilder"/> to the service collection. To build and add the
-        /// <see cref="CommandDescriptor"/>, you must use <see cref="ICommandBuilder.Build"/> at the end of command configuration.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="id">The command id.</param>
-        /// <param name="name">The command name.</param>
-        /// <param name="prefix">The command string prefix.</param>
-        /// <param name="description">The command description.</param>
-        /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
-        /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
-        /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
-        /// <typeparam name="TRunner">The command runner type.</typeparam>
-        /// <typeparam name="TChecker">The command checker type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder AddCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TChecker : ICommandChecker where TRunner : ICommandRunner
-        {
-            if (isRoot && !isGroup)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
-            }
-
-            CommandDescriptor cmd = new(id, name, prefix, description)
-            {
-                Checker = typeof(TChecker),
-                Runner = typeof(TRunner),
-                IsGroup = isGroup,
-                IsProtected = isProtected,
-                IsRoot = isRoot
-            };
-
-            ICommandBuilder commandBuilder = new CommandBuilder(builder);
-            commandBuilder.Services.AddSingleton(cmd);
-            return commandBuilder;
-        }
-
-        /// <summary>
         /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -137,22 +100,6 @@ namespace PerpetualIntelligence.Cli.Extensions
         public static ICliBuilder AddDeclarativeTarget<TDeclarativeTarget>(this ICliBuilder builder) where TDeclarativeTarget : IDeclarativeTarget
         {
             return AddDeclarativeTarget(builder, typeof(TDeclarativeTarget));
-        }
-
-        /// <summary>
-        /// Adds the <see cref="CommandDescriptor"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="commandDescriptor">The command descriptor.</param>
-        /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
-        /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
-        /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
-        /// <typeparam name="TRunner">The command runner type.</typeparam>
-        /// <typeparam name="TChecker">The command checker type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddDescriptor<TRunner, TChecker>(this ICliBuilder builder, CommandDescriptor commandDescriptor, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TRunner : class, ICommandRunner where TChecker : class, ICommandChecker
-        {
-            return AddDescriptor(builder, typeof(TRunner), typeof(TChecker), commandDescriptor, isGroup, isRoot, isProtected);
         }
 
         /// <summary>
@@ -299,6 +246,27 @@ namespace PerpetualIntelligence.Cli.Extensions
             return builder;
         }
 
+        /// <summary>
+        /// Starts a new <see cref="ICommandBuilder"/> definition. Applications must call the
+        /// <see cref="ICommandBuilder.Add"/> method to add the <see cref="CommandDescriptor"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="id">The command id.</param>
+        /// <param name="name">The command name.</param>
+        /// <param name="prefix">The command string prefix.</param>
+        /// <param name="description">The command description.</param>
+        /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
+        /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
+        /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
+        /// <typeparam name="TRunner">The command runner type.</typeparam>
+        /// <typeparam name="TChecker">The command checker type.</typeparam>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
+        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TChecker : ICommandChecker where TRunner : ICommandRunner
+        {
+            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected);
+        }
+
         private static ICliBuilder AddDeclarativeTarget(this ICliBuilder builder, Type declarativeTarget)
         {
             // Command descriptor
@@ -322,6 +290,9 @@ namespace PerpetualIntelligence.Cli.Extensions
                 throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define command checker.");
             }
 
+            // Establish command builder Default argument not set ?
+            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Prefix, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.IsGroup, cmdAttr.IsRoot, cmdAttr.IsProtected);
+
             // Text handler
             TextHandlerAttribute textHandlerAttribute = declarativeTarget.GetCustomAttribute<TextHandlerAttribute>(false);
             if (textHandlerAttribute == null)
@@ -337,17 +308,16 @@ namespace PerpetualIntelligence.Cli.Extensions
             IEnumerable<ArgumentCustomPropertyAttribute> argPropAttrs = declarativeTarget.GetCustomAttributes<ArgumentCustomPropertyAttribute>(false);
 
             // Arguments Descriptors
-            List<ArgumentDescriptor> argDescs = new();
             foreach (ArgumentDescriptorAttribute argAttr in argAttrs)
             {
-                ArgumentDescriptor desc;
-                if (argAttr.DataType == DataType.Custom)
+                IArgumentBuilder argumentBuilder;
+                if (argAttr.CustomDataType != null)
                 {
-                    desc = new ArgumentDescriptor(argAttr.Id, DataType.Custom, argAttr.Description, argAttr.Required, defaultValue: argAttr.DefaultValue);
+                    argumentBuilder = commandBuilder.DefineArgument(argAttr.Id, argAttr.CustomDataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
                 }
                 else
                 {
-                    desc = new ArgumentDescriptor(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Required, defaultValue: argAttr.DefaultValue);
+                    argumentBuilder = commandBuilder.DefineArgument(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
                 }
 
                 // Argument validation attribute
@@ -359,12 +329,10 @@ namespace PerpetualIntelligence.Cli.Extensions
                     {
                         if (e.ArgId.Equals(argAttr.Id))
                         {
-                            ValidationAttribute validationAttr = (ValidationAttribute)Activator.CreateInstance(e.ValidationAttribute, e.ValidationArgs);
-                            validationAttributes.Add(validationAttr);
+                            argumentBuilder.ValidationAttribute(e.ValidationAttribute, e.ValidationArgs);
                         }
                         return true;
                     });
-                    desc.ValidationAttributes = validationAttributes.Count == 0 ? null : validationAttributes;
                 }
 
                 // Argument custom properties
@@ -376,21 +344,15 @@ namespace PerpetualIntelligence.Cli.Extensions
                     {
                         if (e.ArgId.Equals(argAttr.Id))
                         {
-                            argCustomProps.Add(e.Key, e.Value);
+                            argumentBuilder.CustomProperty(e.Key, e.Value);
                         }
                         return true;
                     });
                 }
-                desc.CustomProperties = argCustomProps;
 
-                desc.Obsolete = argAttr.Obsolete ? argAttr.Obsolete : null;
-                desc.Disabled = argAttr.Disabled ? argAttr.Disabled : null;
-                desc.Alias = argAttr.Alias;
-                desc.CustomDataType = argAttr.CustomDataType;
-
-                argDescs.Add(desc);
+                // Add an argument descriptor.
+                argumentBuilder.Add();
             }
-            ArgumentDescriptors argumentDescriptors = new(textHandler, argDescs);
 
             // Command custom properties
             Dictionary<string, object>? cmdCustomProps = null;
@@ -399,50 +361,40 @@ namespace PerpetualIntelligence.Cli.Extensions
                 cmdCustomProps = new Dictionary<string, object>();
                 cmdPropAttrs.All(e =>
                 {
-                    cmdCustomProps.Add(e.Key, e.Value);
+                    commandBuilder.CustomProperty(e.Key, e.Value);
                     return true;
                 });
             }
 
             // Tags
             CommandTagsAttribute tagsAttr = declarativeTarget.GetCustomAttribute<CommandTagsAttribute>(false);
+            if(tagsAttr != null)
+            {
+                commandBuilder.Tags(tagsAttr.Tags);
+            }
 
-            // Command descriptor
-            CommandDescriptor cmdDesc = new(cmdAttr.Id, cmdAttr.Name, cmdAttr.Prefix, cmdAttr.Description, argumentDescriptors, cmdCustomProps, cmdAttr.DefaultArgument, tagsAttr?.Tags);
-
-            // Add descriptor to service collection.
-            return AddDescriptor(builder, cmdRunner.Runner, cmdChecker.Checker, cmdDesc, cmdAttr.IsGroup, cmdAttr.IsRoot, cmdAttr.IsProtected);
+            return commandBuilder.Add();
         }
 
-        private static ICliBuilder AddDescriptor(ICliBuilder builder, Type runner, Type checker, CommandDescriptor commandDescriptor, bool isGroup, bool isRoot, bool isProtected)
+        private static ICommandBuilder DefineCommand(this ICliBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false)
         {
             if (isRoot && !isGroup)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
+                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
             }
 
-            if (commandDescriptor.Runner != null || commandDescriptor.Checker != null)
+            CommandDescriptor cmd = new(id, name, prefix, description)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection. command_id={0} command_name={1}", commandDescriptor.Id, commandDescriptor.Name);
-            }
+                Checker = checker,
+                Runner = runner,
+                IsGroup = isGroup,
+                IsProtected = isProtected,
+                IsRoot = isRoot
+            };
 
-            // Add the command descriptor as a singleton. Set the runner and checker as transient. These are internal fields.
-            commandDescriptor.Runner = runner;
-            commandDescriptor.Checker = checker;
-            builder.Services.AddSingleton(commandDescriptor);
-
-            // Special annotations
-            commandDescriptor.IsRoot = isRoot;
-            commandDescriptor.IsGroup = isGroup;
-            commandDescriptor.IsProtected = isProtected;
-
-            // Add command runner
-            builder.Services.AddTransient(runner);
-
-            // Add command checker
-            builder.Services.AddTransient(checker);
-
-            return builder;
+            ICommandBuilder commandBuilder = new CommandBuilder(builder);
+            commandBuilder.Services.AddSingleton(cmd);
+            return commandBuilder;
         }
     }
 }

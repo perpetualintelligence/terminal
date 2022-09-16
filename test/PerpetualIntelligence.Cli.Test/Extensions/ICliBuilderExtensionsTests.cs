@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -55,19 +56,23 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [TestMethod]
-        public void AddCommandDescriptorMultipleTimeShouldError()
+        public void AddCommandDescriptorMultipleTimeShouldNotError()
         {
-            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
-            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd);
+            cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc").Add();
+            cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc").Add();
 
-            // Again
-            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd), Errors.InvalidConfiguration, "The command descriptor is already configured and added to the service collection. command_id=id1 command_name=name1");
+            var sp = cliBuilder.Services.BuildServiceProvider();
+            var cmds = sp.GetServices<CommandDescriptor>();
+            cmds.Count().Should().Be(2);
+
+            cmds.First().Id.Equals("id1");
+            cmds.Last().Id.Equals("id1");
         }
 
         [TestMethod]
         public void AddCommandDescriptorShouldCorrectlyInitializeCheckerAndRunner()
         {
-            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(new CommandDescriptor("id1", "name1", "prefix1", "desc"));
+            cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc").Add();
 
             var cmdDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             Assert.IsNotNull(cmdDescriptor);
@@ -105,12 +110,12 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandDescriptorWithGroupAndNoRootShouldNotError()
         {
-            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
-            Assert.IsFalse(cmd.IsGroup);
-            Assert.IsFalse(cmd.IsRoot);
-            Assert.IsFalse(cmd.IsProtected);
+            cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: true, isRoot: false).Add();
 
-            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: false);
+            IServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
+
+            Assert.AreEqual("id1", cmd.Id);
             Assert.IsTrue(cmd.IsGroup);
             Assert.IsFalse(cmd.IsRoot);
             Assert.IsFalse(cmd.IsProtected);
@@ -119,20 +124,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandDescriptorWithRootAndNoGroupShouldError()
         {
-            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
-
-            TestHelper.AssertThrowsErrorException(() => cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: false, isRoot: true), Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id=id1 command_name=name1");
+            TestHelper.AssertThrowsErrorException(() => cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: false, isRoot: true).Add(), Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id=id1 command_name=name1");
         }
 
         [TestMethod]
         public void AddCommandDescriptorWithSpecialAnnotationsShouldNotError()
         {
-            var cmd = new CommandDescriptor("id1", "name1", "prefix1", "desc");
-            Assert.IsFalse(cmd.IsGroup);
-            Assert.IsFalse(cmd.IsRoot);
-            Assert.IsFalse(cmd.IsProtected);
+            cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: true, isRoot: true, isProtected: true).Add();
 
-            cliBuilder.AddDescriptor<MockCommandRunner, MockCommandChecker>(cmd, isGroup: true, isRoot: true, isProtected: true);
+            IServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
+
             Assert.IsTrue(cmd.IsGroup);
             Assert.IsTrue(cmd.IsRoot);
             Assert.IsTrue(cmd.IsProtected);
@@ -141,7 +143,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandShouldCorrectlyInitialize()
         {
-            ICommandBuilder commandBuilder = cliBuilder.AddCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1");
+            ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1");
 
             // AddCommand does not add ICommandBuilder to service collection.
             var servicesCmdBuilder = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));
@@ -172,7 +174,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddCommandSpecialAnnotationsShouldCorrectlyInitialize()
         {
-            ICommandBuilder commandBuilder = cliBuilder.AddCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1", isGroup: true, isRoot: true, isProtected: true);
+            ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1", isGroup: true, isRoot: true, isProtected: true);
 
             // AddCommand does not add ICommandBuilder to service collection.
             var servicesCmdBuilder = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));

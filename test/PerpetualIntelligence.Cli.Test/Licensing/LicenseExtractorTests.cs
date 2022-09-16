@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 ExpiresIn = 365,
                 Issuer = "https://api.someone.com",
                 Operation = "delete",
-                ProviderTenantId = "pvdr1",
+                BrokerTenantId = "pvdr1",
                 PublisherTenantId = "pbsr1",
                 Subject = "sub1"
             };
@@ -77,7 +77,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             fromJson.ExpiresIn.Should().Be(365);
             fromJson.Issuer.Should().Be("https://api.someone.com");
             fromJson.Operation.Should().Be("delete");
-            fromJson.ProviderTenantId.Should().Be("pvdr1");
+            fromJson.BrokerTenantId.Should().Be("pvdr1");
             fromJson.PublisherTenantId.Should().Be("pbsr1");
             fromJson.Subject.Should().Be("sub1");
 
@@ -230,7 +230,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                     ExpiresIn = licenseKeysModel.ExpiresIn,
                     Key = keyType == "primary_key" ? licenseKeysModel.PrimaryKey : licenseKeysModel.SecondaryKey,
                     KeyType = keyType,
-                    ProviderId = licenseKeysModel.ProviderTenantId,
+                    BrokerId = licenseKeysModel.BrokerTenantId,
                     Subject = licenseKeysModel.Subject,
                 };
 
@@ -273,7 +273,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // claims
             result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:custom urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
-            result.License.Claims.Audience.Should().Be(MsalEndpoints.TenantAuthority(DemoIdentifiers.PiCliDemoConsumerTenantId));
+            result.License.Claims.Audience.Should().Be(MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", DemoIdentifiers.PiCliDemoConsumerTenantId));
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:cli");
             result.License.Claims.TenantCountry.Should().Be("GLOBAL");
             result.License.Claims.Custom.Should().NotBeNull();
@@ -447,7 +447,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // claims
             result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:isvu urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
-            result.License.Claims.Audience.Should().Be("https://login.microsoftonline.com/a8379958-ea19-4918-84dc-199bf012361e/v2.0");
+            result.License.Claims.Audience.Should().Be("https://perpetualintelligenceb2c.b2clogin.com/a8379958-ea19-4918-84dc-199bf012361e/v2.0/");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:cli");
             result.License.Claims.TenantCountry.Should().Be("USA");
             result.License.Claims.Custom.Should().BeNull();

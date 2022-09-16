@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {
-                services.AddSingleton<ITextHandler>(textHandler);
+                services.AddSingleton(textHandler);
                 services.AddSingleton(options);
             });
             host = hostBuilder.Start();
@@ -261,14 +261,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token cannot be whitespace.");
         }
 
-        private ArgumentExtractor argExtractor;
-        private ICommandStoreHandler commands;
-        private IDefaultArgumentProvider defaultArgProvider = null!;
-        private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
-        private IHost host;
-        private IHostBuilder hostBuilder;
-        private CliOptions options;
-        private IOptionsChecker optionsChecker;
-        private ITextHandler textHandler;
+        private readonly ArgumentExtractor argExtractor;
+        private readonly ICommandStoreHandler commands;
+        private readonly IDefaultArgumentProvider defaultArgProvider = null!;
+        private readonly IDefaultArgumentValueProvider defaultArgValueProvider = null!;
+        private readonly IHost host;
+        private readonly IHostBuilder hostBuilder;
+        private readonly CliOptions options;
+        private readonly IOptionsChecker optionsChecker;
+        private readonly ITextHandler textHandler;
     }
 }
