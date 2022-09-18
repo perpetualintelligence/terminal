@@ -5,7 +5,9 @@
     https://terms.perpetualintelligence.com
 */
 
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Protocols.Authorization;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -28,10 +30,12 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// Initialize a new instance.
         /// </summary>
         /// <param name="cliOptions">The configuration options.</param>
+        /// <param name="logger">The logger.</param>
         /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(CliOptions cliOptions, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(CliOptions cliOptions, ILogger<CliHostedService> logger, IHttpClientFactory? httpClientFactory = null)
         {
             this.cliOptions = cliOptions;
+            this.logger = logger;
             this.httpClientFactory = httpClientFactory;
         }
 
@@ -62,6 +66,27 @@ namespace PerpetualIntelligence.Cli.Licensing
         public Task<License?> GetLicenseAsync()
         {
             return Task.FromResult(license);
+        }
+
+        private async Task<HttpResponseMessage> CheckLicenseAsync(LicenseCheckModel checkModel)
+        {
+            // Setup the HTTP client
+            HttpClient httpClient = EnsureHttpClient();
+
+            // Primary and Secondary endpoints E.g. during certificate renewal the primary endpoints may fail so we fall
+            // back to secondary endpoints.
+            HttpResponseMessage httpResponseMessage;
+            var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
+            try
+            {
+                httpResponseMessage = await httpClient.PostAsync(checkLicUrl, checkContent);
+            }
+            catch (HttpRequestException)
+            {
+                logger.LogWarning("The primary endpoint is not healthy. We are falling back to the secondary endpoint. Please contact the support team if you continue to see this warning after 24 hours.");
+                httpResponseMessage = await httpClient.PostAsync(fallbackCheckLicUrl, checkContent);
+            }
+            return httpResponseMessage;
         }
 
         /// <summary>
@@ -134,9 +159,6 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", cliOptions.Licensing.LicenseKey);
             }
 
-            // Setup the HTTP client
-            HttpClient httpClient = EnsureHttpClient();
-
             // Check JWS signed assertion (JWS key)
             LicenseCheckModel checkModel = new()
             {
@@ -153,8 +175,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             };
 
             // Make sure we use the full base address
-            var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
-            using (HttpResponseMessage response = await httpClient.PostAsync(checkLicUrl, checkContent))
+            using (HttpResponseMessage response = await CheckLicenseAsync(checkModel))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -203,10 +224,13 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
         }
 
+        private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
         private readonly CliOptions cliOptions;
+        private readonly ILogger<CliHostedService> logger;
+        private readonly string fallbackCheckLicUrl = "https://piapim.azure-api.net/public/checklicense";
         private readonly IHttpClientFactory? httpClientFactory;
         private License? license;
-        private string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
-        //private string checkLicUrl = "http://localhost:7071/api/public/checklicense";
+
+        //private readonly string checkLicUrl = "http://localhost:7071/api/public/checklicense";
     }
 }

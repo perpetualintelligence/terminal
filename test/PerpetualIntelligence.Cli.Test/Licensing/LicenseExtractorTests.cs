@@ -214,9 +214,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [InlineData("secondary_key")]
         public async Task ExtractFromJsonAsync_OnlineMode_DemoKey_ShouldContainClaimsAsync(string keyType)
         {
-            MockHttpClientFactory mockHttpClientFactory = new MockHttpClientFactory();
-            HttpClient httpClient = mockHttpClientFactory.CreateClient("prod");
-            using (HttpResponseMessage response = await httpClient.GetAsync("public/demolicense"))
+            using (HttpResponseMessage response = await GetDemoLicenseAsync())
             {
                 response.Should().BeSuccessful();
 
@@ -496,6 +494,23 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.KeySource = "253";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source=253");
+        }
+
+        private async Task<HttpResponseMessage> GetDemoLicenseAsync()
+        {
+            MockHttpClientFactory mockHttpClientFactory = new();
+            HttpResponseMessage httpResponseMessage;
+            try
+            {
+                HttpClient httpClient = mockHttpClientFactory.CreateClient("prod");
+                httpResponseMessage = await httpClient.GetAsync("public/demolicense");
+            }
+            catch (HttpRequestException)
+            {
+                HttpClient httpClient = mockHttpClientFactory.CreateClient("prod_fallback");
+                httpResponseMessage = await httpClient.GetAsync("public/demolicense");
+            }
+            return httpResponseMessage;
         }
 
         private string GetJsonLicenseFIleForLocalHostGithubSecretForCICD(string env)
