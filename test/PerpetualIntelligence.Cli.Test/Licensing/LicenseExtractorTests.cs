@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Protocols.Authorization;
@@ -37,7 +38,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             File.WriteAllText(nonJsonLicPath, nonJson);
 
             cliOptions = MockCliOptions.New();
-            licenseExtractor = new LicenseExtractor(cliOptions);
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
         }
 
         [Fact]
@@ -124,6 +125,8 @@ namespace PerpetualIntelligence.Cli.Licensing
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
+
             if (File.Exists(testLicPath))
             {
                 File.Delete(testLicPath);
@@ -151,7 +154,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
-            licenseExtractor = new LicenseExtractor(cliOptions, new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.UnauthorizedAccess, "The application is not authorized. application_id=invalid_auth_app");
         }
@@ -251,7 +254,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.Subject = DemoIdentifiers.PiCliDemoSubject;
             cliOptions.Licensing.AuthorizedApplicationId = DemoIdentifiers.PiCliDemoAuthorizedApplicationId;
             cliOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
-            licenseExtractor = new LicenseExtractor(cliOptions, new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
             result.License.Should().NotBeNull();
@@ -337,7 +340,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "invalid_app";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            licenseExtractor = new LicenseExtractor(cliOptions, new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), "unauthorized_access", "The application is not authorized. application_id=invalid_app");
         }
@@ -351,7 +354,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "invalid_consumer";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
-            licenseExtractor = new LicenseExtractor(cliOptions, new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id=invalid_consumer");
         }
@@ -367,7 +370,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = "invalid_provider";
-            licenseExtractor = new LicenseExtractor(cliOptions, new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id=invalid_provider");
         }
@@ -382,7 +385,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "invalid_subject";
-            licenseExtractor = new LicenseExtractor(cliOptions, new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject=invalid_subject");
         }
@@ -405,7 +408,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseKeySources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            licenseExtractor = new LicenseExtractor(cliOptions, new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler=online");
         }
@@ -425,7 +428,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
-            licenseExtractor = new LicenseExtractor(cliOptions, new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
             result.License.Should().NotBeNull();
@@ -496,7 +499,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source=253");
         }
 
-        private async Task<HttpResponseMessage> GetDemoLicenseAsync()
+        private static async Task<HttpResponseMessage> GetDemoLicenseAsync()
         {
             MockHttpClientFactory mockHttpClientFactory = new();
             HttpResponseMessage httpResponseMessage;
@@ -513,7 +516,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             return httpResponseMessage;
         }
 
-        private string GetJsonLicenseFIleForLocalHostGithubSecretForCICD(string env)
+        private static string GetJsonLicenseFIleForLocalHostGithubSecretForCICD(string env)
         {
             // The demo json is too long for system env, so we use path for system env and json for github
             string? fileOrJson = Environment.GetEnvironmentVariable(env);
@@ -534,11 +537,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             return tempJsonLicPath;
         }
 
-        private CliOptions cliOptions;
+        private readonly CliOptions cliOptions;
         private string? demoLicPath;
-        private string httpClientName = "prod";
+        private readonly string httpClientName = "prod";
         private ILicenseExtractor licenseExtractor;
-        private string nonJsonLicPath;
-        private string testLicPath;
+        private readonly string nonJsonLicPath;
+        private readonly string testLicPath;
     }
 }

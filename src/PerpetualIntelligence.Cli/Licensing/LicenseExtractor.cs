@@ -7,7 +7,6 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Protocols.Authorization;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -32,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <param name="cliOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(CliOptions cliOptions, ILogger<CliHostedService> logger, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(CliOptions cliOptions, ILogger<LicenseExtractor> logger, IHttpClientFactory? httpClientFactory = null)
         {
             this.cliOptions = cliOptions;
             this.logger = logger;
@@ -226,9 +225,9 @@ namespace PerpetualIntelligence.Cli.Licensing
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
         private readonly CliOptions cliOptions;
-        private readonly ILogger<CliHostedService> logger;
         private readonly string fallbackCheckLicUrl = "https://piapim.azure-api.net/public/checklicense";
         private readonly IHttpClientFactory? httpClientFactory;
+        private readonly ILogger<LicenseExtractor> logger;
         private License? license;
 
         //private readonly string checkLicUrl = "http://localhost:7071/api/public/checklicense";
