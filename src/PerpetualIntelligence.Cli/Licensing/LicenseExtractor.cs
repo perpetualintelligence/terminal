@@ -5,7 +5,9 @@
     https://terms.perpetualintelligence.com
 */
 
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Protocols.Authorization;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -28,10 +30,12 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// Initialize a new instance.
         /// </summary>
         /// <param name="cliOptions">The configuration options.</param>
+        /// <param name="logger">The logger.</param>
         /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(CliOptions cliOptions, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(CliOptions cliOptions, ILogger<CliHostedService> logger, IHttpClientFactory? httpClientFactory = null)
         {
             this.cliOptions = cliOptions;
+            this.logger = logger;
             this.httpClientFactory = httpClientFactory;
         }
 
@@ -79,6 +83,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
             catch (HttpRequestException)
             {
+                logger.LogWarning("The primary endpoint is not healthy. We are falling back to the secondary endpoint. Please contact the support team if you continue to see this warning after 24 hours.");
                 httpResponseMessage = await httpClient.PostAsync(fallbackCheckLicUrl, checkContent);
             }
             return httpResponseMessage;
@@ -221,6 +226,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
         private readonly CliOptions cliOptions;
+        private readonly ILogger<CliHostedService> logger;
         private readonly string fallbackCheckLicUrl = "https://piapim.azure-api.net/public/checklicense";
         private readonly IHttpClientFactory? httpClientFactory;
         private License? license;
