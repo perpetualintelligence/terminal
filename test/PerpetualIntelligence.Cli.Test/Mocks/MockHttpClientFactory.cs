@@ -29,6 +29,10 @@ namespace PerpetualIntelligence.Cli.Mocks
                 {
                     clients.Add(name, new HttpClient() { BaseAddress = new Uri("https://api.perpetualintelligence.com/") });
                 }
+                else if (name == "prod_fallback")
+                {
+                    clients.Add(name, new HttpClient() { BaseAddress = new Uri("https://piapim.azure-api.net/") });
+                }
                 else
                 {
                     throw new InvalidOperationException("Invalid HTTP client name");
