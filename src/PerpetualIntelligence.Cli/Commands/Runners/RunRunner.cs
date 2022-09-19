@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public RunRunner(CliOptions options, ILogger logger) : base(options, logger)
+        public RunRunner(CliOptions options, ILogger<RunRunner> logger) : base(options, logger)
         {
         }
 
