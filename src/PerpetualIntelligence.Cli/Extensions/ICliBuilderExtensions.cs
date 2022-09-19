@@ -258,13 +258,14 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
         /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
         /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
+        /// <param name="defaultArgument">The default argument.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TChecker : ICommandChecker where TRunner : ICommandRunner
+        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultArgument = null) where TChecker : ICommandChecker where TRunner : ICommandRunner
         {
-            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected);
+            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected, defaultArgument);
         }
 
         private static ICliBuilder AddDeclarativeTarget(this ICliBuilder builder, Type declarativeTarget)
@@ -376,20 +377,20 @@ namespace PerpetualIntelligence.Cli.Extensions
             return commandBuilder.Add();
         }
 
-        private static ICommandBuilder DefineCommand(this ICliBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false)
+        private static ICommandBuilder DefineCommand(this ICliBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultArgument = null)
         {
             if (isRoot && !isGroup)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
             }
 
-            CommandDescriptor cmd = new(id, name, prefix, description)
+            CommandDescriptor cmd = new(id, name, prefix, description, defaultArgument: defaultArgument)
             {
                 Checker = checker,
                 Runner = runner,
                 IsGroup = isGroup,
                 IsProtected = isProtected,
-                IsRoot = isRoot
+                IsRoot = isRoot,
             };
 
             ICommandBuilder commandBuilder = new CommandBuilder(builder);
