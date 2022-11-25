@@ -13,7 +13,7 @@ on:
 jobs:
   ubunto:   
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     
     # Environment Variables
     env:     
@@ -59,7 +59,7 @@ jobs:
       
   macos:   
     runs-on: macos-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     
     # Environment Variables
     env:     
@@ -105,7 +105,7 @@ jobs:
       
   windows:   
     runs-on: windows-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     
     # Environment Variables
     env:     
