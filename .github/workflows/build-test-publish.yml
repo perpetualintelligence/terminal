@@ -52,7 +52,7 @@ jobs:
 
     # Checktout
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # Print directory
     - name: Print
@@ -124,11 +124,11 @@ jobs:
     
     # Setup .Net with global.json
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       
     # Setup Nuget
     - name: Setup NuGet.exe
-      uses: NuGet/setup-nuget@v1.0.5
+      uses: NuGet/setup-nuget@v1
       with:
         nuget-version: latest
 

@@ -27,7 +27,7 @@ jobs:
 
     # Checkout
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # Read env    
     - name: Read Env
@@ -43,7 +43,7 @@ jobs:
     
     # Setup .Net with global.json
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       
     # Restore dependencies
     - name: Restore
@@ -73,7 +73,7 @@ jobs:
 
     # Checkout
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # Read env    
     - name: Read Env
@@ -89,7 +89,7 @@ jobs:
       
     # Setup .Net with global.json
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       
     # Restore dependencies
     - name: Restore
@@ -119,7 +119,7 @@ jobs:
     
     # Checkout
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # Read env    
     - name: Read Env
@@ -135,7 +135,7 @@ jobs:
     
     # Setup .Net with global.json
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       
     # Restore dependencies
     - name: Restore
