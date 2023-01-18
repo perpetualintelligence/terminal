@@ -1,13 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup Label="Globals">
-		<SccProjectName>SAK</SccProjectName>
-		<SccProvider>SAK</SccProvider>
-		<SccAuxPath>SAK</SccAuxPath>
-		<SccLocalPath>SAK</SccLocalPath>
-		<Configurations>Debug;Release</Configurations>
-	</PropertyGroup>
-
   <Import Project="..\..\build\props\Test.props" />
 
  <ItemGroup>
