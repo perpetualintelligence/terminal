@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli
     /// accomplish and automate tasks on a computer without using a graphical user interface. If a CLI terminal supports
     /// user interaction, the UX is the terminal.
     /// </summary>
-    public class Terminal
+    public sealed class Terminal
     {
         /// <summary>
         /// The authorized application id for this terminal.
