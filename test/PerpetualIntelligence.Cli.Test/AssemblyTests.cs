@@ -5,22 +5,21 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test.Services;
+using Xunit;
 
 namespace PerpetualIntelligence.Cli
 {
-    [TestClass]
     public class AssemblyTests
     {
-        [TestMethod]
+        [Fact]
         public void TypesNamespaceTest()
         {
             TestHelper.AssertNamespace(typeof(Errors).Assembly, "PerpetualIntelligence.Cli");
         }
 
-        [TestMethod]
-        public void TypesTypesLocationTest()
+        [Fact]
+        public void TypesLocationTest()
         {
             TestHelper.AssertAssemblyTypesLocation(typeof(Errors).Assembly);
         }
