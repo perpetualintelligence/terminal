@@ -43,8 +43,6 @@ See the [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_
 
 **See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html) and [pricing](https://www.perpetualintelligence.com/products/picli#pricing)**.
 
-Our community edition is free for educational, research, and non-production use. We recommend creating an account to generate a license for your specific use case.
-
 > ***You need a commercial license for non-educational or production environments.***
 
 # Documentation
