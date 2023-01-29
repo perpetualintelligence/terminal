@@ -95,7 +95,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             licenseExtractor.NoLicense = true;
 
             CommandRouterContext routerContext = new("test_command_string");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "invalid_license", "The license is not extracted or license is not valid. Please ensure you use the CLI hosted service. service=PerpetualIntelligence.Cli.Integration.CliHostedService");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "invalid_license", "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
             Assert.IsFalse(commandExtractor.Called);
             Assert.IsFalse(commandHandler.Called);
