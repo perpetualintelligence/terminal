@@ -565,11 +565,18 @@ namespace PerpetualIntelligence.Cli.Extensions
 
         public Task InitializeAsync()
         {
+            originalWriter = Console.Out;
+            originalReader = Console.In;
+
             return Task.CompletedTask;
         }
 
         public Task DisposeAsync()
         {
+            // Reset console.
+            Console.SetOut(originalWriter);
+            Console.SetIn(originalReader);
+
             if (host != null)
             {
                 host.Dispose();
@@ -602,6 +609,8 @@ namespace PerpetualIntelligence.Cli.Extensions
 
         private IHost host = null!;
         private Socket listnerSocket = null!;
+        private TextWriter originalWriter = null!;
+        private TextReader originalReader = null!;
         private StringWriter stringWriter = null!;
         private CancellationTokenSource tokenSource = null!;
     }

@@ -5,36 +5,36 @@
     https://terms.perpetualintelligence.com
 */
 
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
-    [TestClass]
-    public class IHostExtensionsRunAsTerminalTests : InitializerTests
+    [Collection("Sequential")]
+    public class IHostExtensionsRunAsTerminalTests : IAsyncLifetime
     {
-        public IHostExtensionsRunAsTerminalTests() : base(TestLogger.Create<IHostExtensionsRunAsTerminalTests>())
+        public IHostExtensionsRunAsTerminalTests()
         {
+            stringWriter = new StringWriter();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldAskForUserInputAsync()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
             // This mocks the command string entered by the user
@@ -49,15 +49,14 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsTrue(mockCommandRouter.RouteCalled);
-            Assert.AreEqual("User has entered this command string", mockCommandRouter.RawCommandString);
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+            mockCommandRouter.RawCommandString.Should().Be("User has entered this command string");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldCancelOnRequestAsync()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
             // This mocks the command string entered by the user
@@ -79,20 +78,19 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Canceled task so router will not be called.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsFalse(mockCommandRouter.RouteCalled);
+            mockCommandRouter.RouteCalled.Should().BeFalse();
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            stringWriter.ToString().Should().BeNullOrWhiteSpace();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldHandleErrorExceptionCorrectlyAsync()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
             // This mocks the command string entered by the user
@@ -105,25 +103,24 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
+            await host.RunRouterAsTerminalAsync(">", tokenSource.Token);
 
             // Check the published error
             MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            Assert.IsTrue(exPublisher.Called);
-            Assert.AreEqual("test_error_description. arg1=test1 arg2=test2", exPublisher.PublishedMessage);
+            exPublisher.Called.Should().BeTrue();
+            exPublisher.PublishedMessage.Should().Be("test_error_description. arg1=test1 arg2=test2");
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            new string(stringWriter.ToString().Distinct().ToArray()).Should().Be(">");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldHandleExplictErrorCorrectlyAsync()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
             // This mocks the command string entered by the user
@@ -136,25 +133,24 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
+            await host.RunRouterAsTerminalAsync(">", tokenSource.Token);
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            Assert.IsTrue(publisher.Called);
-            Assert.AreEqual("explicit_error_description param1=test_param1 param2=test_param2.", publisher.PublishedMessage);
+            publisher.Called.Should().BeTrue();
+            publisher.PublishedMessage.Should().Be("explicit_error_description param1=test_param1 param2=test_param2.");
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            new string(stringWriter.ToString().Distinct().ToArray()).Should().Be(">");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldHandleHostStopCorrectlyAsync()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
             // This mocks the command string entered by the user
@@ -175,21 +171,20 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Till the timer callback cancel the route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsTrue(mockCommandRouter.RouteCalled);
+            mockCommandRouter.RouteCalled.Should().BeTrue();
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.IsNotNull(errorPublisher.PublishedMessage);
-            Assert.AreEqual("Application is stopping, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().NotBeNull();
+            errorPublisher.PublishedMessage.Should().Be("Application is stopping, the routing is canceled.");
+            stringWriter.ToString().Should().NotBeNullOrWhiteSpace();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldHandleRouteExceptionCorrectlyAsync()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
             // This mocks the command string entered by the user
@@ -202,26 +197,25 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
+            await host.RunRouterAsTerminalAsync(">$", tokenSource.Token);
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            Assert.IsTrue(publisher.Called);
-            Assert.AreEqual("Test invalid operation.", publisher.PublishedMessage);
+            publisher.Called.Should().BeTrue();
+            publisher.PublishedMessage.Should().Be("Test invalid operation.");
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.IsNotNull(errorPublisher.PublishedMessage);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().NotBeNull();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            new string(stringWriter.ToString().Distinct().ToArray()).Should().Be(">$");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldIgnoreEmptyInputAsync()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
             // This mocks the empty command string entered by the user
@@ -234,10 +228,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsFalse(mockCommandRouter.RouteCalled);
+            mockCommandRouter.RouteCalled.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldRunIdefinatelyTillCancelAsync()
         {
             // Mock Console read and write
@@ -257,17 +251,16 @@ namespace PerpetualIntelligence.Cli.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
 
-            // In 3 seconds the Route will be called miltiple times.
+            // In 3 seconds the Route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsTrue(mockCommandRouter.RouteCalled);
-            Assert.IsTrue(mockCommandRouter.RouteCounter > 10, $"This route counter {mockCommandRouter.RouteCounter} is just a guess, it should be called indefinately till cancelled.");
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+            mockCommandRouter.RouteCounter.Should().BeGreaterThan(10, $"This route counter {mockCommandRouter.RouteCounter} is just a guess, it should be called indefinitely till canceled.");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalShouldTimeOutCorrectlyAsync()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
             // This mocks the command string entered by the user
@@ -280,22 +273,22 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Route delay is set to 3000 and timeout is 2000
             GetCliOptions(host).Router.Timeout = 2000;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
+            await host.RunRouterAsTerminalAsync("$", tokenSource.Token);
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            Assert.IsTrue(publisher.Called);
-            Assert.AreEqual("The command router timed out in 2000 milliseconds.", publisher.PublishedMessage);
+            publisher.Called.Should().BeTrue();
+            publisher.PublishedMessage.Should().Be("The command router timed out in 2000 milliseconds.");
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.IsNotNull(errorPublisher.PublishedMessage);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().NotBeNull();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            new string(stringWriter.ToString().Distinct().ToArray()).Should().Be("$");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunRouterAsTerminalTitleShouldBeSetCorrectlyAsync()
         {
             // Mock Console read and write
@@ -313,34 +306,15 @@ namespace PerpetualIntelligence.Cli.Extensions
             tokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
-            Assert.AreEqual("test_title", titleWriter.ToString());
+            titleWriter.ToString().Should().Be("test_title");
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.IsNotNull(errorPublisher.PublishedMessage);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsNotNull(stringWriter);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
-        }
-
-        protected override void OnTestCleanup()
-        {
-            if (host != null)
-            {
-                host.Dispose();
-            }
-
-            if (stringWriter != null)
-            {
-                stringWriter.Dispose();
-            }
-        }
-
-        protected override void OnTestInitialize()
-        {
-            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = hostBuilder.Build();
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().NotBeNull();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            stringWriter.Should().NotBeNull();
+            stringWriter.ToString().Should().BeNullOrWhiteSpace();
         }
 
         private void ConfigureServicesCancelledRoute(IServiceCollection arg2)
@@ -350,7 +324,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
@@ -366,7 +339,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
@@ -382,7 +354,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
@@ -398,7 +369,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory
             {
                 StringWriter = stringWriter
@@ -420,7 +390,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory
             {
                 StringWriter = stringWriter
@@ -443,7 +412,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory
             {
                 StringWriter = stringWriter
@@ -466,7 +434,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory
             {
                 StringWriter = stringWriter
@@ -488,12 +455,44 @@ namespace PerpetualIntelligence.Cli.Extensions
         private void HostStopRequestCallback(object? state)
         {
             IHost? host = state as IHost;
-            Assert.IsNotNull(host);
-            host.StopAsync().GetAwaiter().GetResult();
+            host.Should().NotBeNull();
+            host!.StopAsync().GetAwaiter().GetResult();
+        }
+
+        public Task InitializeAsync()
+        {
+            originalWriter = Console.Out;
+            originalReader = Console.In;
+
+            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = hostBuilder.Build();
+
+            return Task.CompletedTask;
+        }
+
+        public Task DisposeAsync()
+        {
+            // Reset console.
+            Console.SetOut(originalWriter);
+            Console.SetIn(originalReader);
+
+            if (host != null)
+            {
+                host.Dispose();
+            }
+
+            if (stringWriter != null)
+            {
+                stringWriter.Dispose();
+            }
+
+            return Task.CompletedTask;
         }
 
         private IHost host = null!;
-        private StringWriter? stringWriter = null!;
+        private StringWriter stringWriter;
+        private TextWriter originalWriter = null!;
+        private TextReader originalReader = null!;
         private CancellationTokenSource tokenSource = null!;
     }
 }
