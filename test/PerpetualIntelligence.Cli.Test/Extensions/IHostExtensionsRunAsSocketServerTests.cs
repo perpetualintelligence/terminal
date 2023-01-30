@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com
 */
 
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -18,329 +18,385 @@ using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PerpetualIntelligence.Cli.Extensions
 {
-    [TestClass]
-    public class IHostExtensionsRunAsSocketServerTests : InitializerTests
+    [Collection("Sequential")]
+    public class IHostExtensionsRunAsSocketServerTests : InitializerTests, IAsyncLifetime
     {
         public IHostExtensionsRunAsSocketServerTests() : base(TestLogger.Create<IHostExtensionsRunAsSocketServerTests>())
         {
+            stringWriter = new StringWriter();
         }
 
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldAskForUserInputAsync()
+        [Fact]
+        public void ShouldContinuteInfiniteLoopIfNotCancelled()
         {
-            // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
-            Console.SetOut(stringWriter);
-
-            // This mocks the command string entered by the user
-            using var input = new StringReader("User has entered this command string");
-            Console.SetIn(input);
-
-            // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
-
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
-
-            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsTrue(mockCommandRouter.RouteCalled);
-            Assert.AreEqual("User has entered this command string", mockCommandRouter.RawCommandString);
-        }
-
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldCancelOnRequestAsync()
-        {
-            // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
-            Console.SetOut(stringWriter);
-
-            // This mocks the command string entered by the user
-            using var input = new StringReader("does not matter");
-            Console.SetIn(input);
-
-            // Cancel on route
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
-
-            // send cancellation after 2 seconds
-            tokenSource.CancelAfter(2000);
-
-            // Wait for more than 2.05 seconds so task is canceled
-            await Task.Delay(2050);
-
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
-
-            // Canceled task so router will not be called.
-            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsFalse(mockCommandRouter.RouteCalled);
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
-        }
-
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldHandleErrorExceptionCorrectlyAsync()
-        {
-            // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
-            Console.SetOut(stringWriter);
-
-            // This mocks the command string entered by the user
-            using var input = new StringReader("User has entered this command string");
-            Console.SetIn(input);
-
-            // Cancel on first route and set delay so we can timeout and break the routing loop.
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesErrorExceptionAndCancelOnRoute);
-            host = newhostBuilder.Build();
-
-            // Router will throw exception and then routing will get canceled
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
-
-            // Check the published error
-            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            Assert.IsTrue(exPublisher.Called);
-            Assert.AreEqual("test_error_description. arg1=test1 arg2=test2", exPublisher.PublishedMessage);
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
-        }
-
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldHandleExplictErrorCorrectlyAsync()
-        {
-            // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
-            Console.SetOut(stringWriter);
-
-            // This mocks the command string entered by the user
-            using var input = new StringReader("User has entered this command string");
-            Console.SetIn(input);
-
-            // Cancel on first route and set delay so we can timeout and break the routing loop.
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExplicitErrorAndCancelOnRoute);
-            host = newhostBuilder.Build();
-
-            // Router will throw exception and then routing will get canceled
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
-
-            // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            Assert.IsTrue(publisher.Called);
-            Assert.AreEqual("explicit_error_description param1=test_param1 param2=test_param2.", publisher.PublishedMessage);
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
-        }
-
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldHandleHostStopCorrectlyAsync()
-        {
-            // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
-            Console.SetOut(stringWriter);
-
-            // This mocks the command string entered by the user
-            using var input = new StringReader("does not matter");
-            Console.SetIn(input);
-
-            // Cancel on route
+            // Cancel on first route so we can test socket disposed we will go in infinite loop
             var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
             host = newhostBuilder.Build();
-            await host.StartAsync();
 
-            // Issue a callback after 2 seconds.
-            Timer timer = new(HostStopRequestCallback, host, 2000, Timeout.Infinite);
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
 
-            // Run the router for 5 seconds, the callback will stop the host 2 seconds.
-            GetCliOptions(host).Router.Timeout = 5000;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
+            // 5 sec timeour but not complete
+            complete.Should().BeFalse();
+        }
 
-            // Till the timer callback cancel the route will be called multiple times.
-            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsTrue(mockCommandRouter.RouteCalled);
+        [Fact]
+        public void ShouldBreakInfiniteLoopIfCancelled()
+        {
+            // Cancel on first route so we can test socket disposed we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newhostBuilder.Build();
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
+
+            // complete within 5 sec timeour
+            complete.Should().BeTrue();
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.IsNotNull(errorPublisher.PublishedMessage);
-            Assert.AreEqual("Application is stopping, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            stringWriter.ToString().Should().BeNullOrWhiteSpace();
         }
 
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldHandleRouteExceptionCorrectlyAsync()
+        [Fact]
+        public void RouterShouldBeCalled()
         {
-            // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
-            Console.SetOut(stringWriter);
+            // Cancel on first route so we can test socket disposed we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
 
-            // This mocks the command string entered by the user
-            using var input = new StringReader("User has entered this command string");
-            Console.SetIn(input);
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
+            complete.Should().BeFalse();
 
-            // Cancel on first route and set delay so we can timeout and break the routing loop.
+            // Verify router called
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+            mockCommandRouter.RawCommandStrings.Should().ContainSingle("Test message from sender");
+
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
+            errorPublisher.Called.Should().BeFalse();
+        }
+
+        [Fact]
+        public void ShouldDisposeLisetnerSocketIfCancelled()
+        {
+            // Cancel on first route so we can test socket disposed we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newhostBuilder.Build();
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
+            complete.Should().BeTrue();
+
+            // Make sure listener is closed
+            EnsureSocketDisposed(listnerSocket);
+
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            stringWriter.ToString().Should().BeNullOrWhiteSpace();
+        }
+
+        [Fact]
+        public void ShouldDisposeLisetnerSocketIfException()
+        {
+            // Exception is thrown and the routing is canceled
             var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExceptionAndCancelOnRoute);
             host = newhostBuilder.Build();
 
-            // Router will throw exception and then routing will get canceled
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
+            complete.Should().BeTrue();
+
+            // Make sure listener is closed
+            EnsureSocketDisposed(listnerSocket);
 
             // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            Assert.IsTrue(publisher.Called);
-            Assert.AreEqual("Test invalid operation.", publisher.PublishedMessage);
+            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            exPublisher.Called.Should().BeTrue();
+            exPublisher.PublishedMessage.Should().Be("Test invalid operation.");
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.IsNotNull(errorPublisher.PublishedMessage);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            stringWriter.ToString().Should().BeNullOrWhiteSpace();
         }
 
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldIgnoreEmptyInputAsync()
+        [Fact]
+        public void ShouldDisposeLisetnerSocketIfErrorException()
         {
-            // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
-            Console.SetOut(stringWriter);
+            // Exception is thrown and the routing is canceled
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesErrorExceptionAndCancelOnRoute);
+            host = newhostBuilder.Build();
 
-            // This mocks the empty command string entered by the user
-            using var input = new StringReader("   ");
-            Console.SetIn(input);
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
+            complete.Should().BeTrue();
 
-            // We will run in a infinite loop due to empty input so break that after 2 seconds
-            tokenSource.CancelAfter(2000);
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
+            // Make sure listener is closed
+            EnsureSocketDisposed(listnerSocket);
 
-            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsFalse(mockCommandRouter.RouteCalled);
+            // Check the published error
+            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            exPublisher.Called.Should().BeTrue();
+            exPublisher.PublishedMessage.Should().Be("test_error_description. arg1=test1 arg2=test2");
+
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            stringWriter.ToString().Should().BeNullOrWhiteSpace();
         }
 
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldRunIdefinatelyTillCancelAsync()
+        [Fact]
+        public void ShouldNotDisposeLisetnerSocketTillCancelled()
         {
-            // Mock Console read and write
-            using var output = new StringWriter();
-            Console.SetOut(output);
-
-            // Mock the multiple lines here so that RunRouterAsTerminalAsync can readline multiple times
-            using var input = new StringReader("does not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter");
-            Console.SetIn(input);
-
-            // The default does not have and cancel or timeout
+            // Router will go in infinite loop so listener socket will not be disposed.
             var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
             host = newhostBuilder.Build();
 
-            // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
-            tokenSource.CancelAfter(3000);
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
+            complete.Should().BeFalse();
 
-            // In 3 seconds the Route will be called miltiple times.
-            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            Assert.IsTrue(mockCommandRouter.RouteCalled);
-            Assert.IsTrue(mockCommandRouter.RouteCounter > 10, $"This route counter {mockCommandRouter.RouteCounter} is just a guess, it should be called indefinately till cancelled.");
+            // Verify router called
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+            mockCommandRouter.RawCommandStrings.Should().ContainSingle("Test message from sender");
+
+            // Make sure listener is not closed
+            listnerSocket.LocalEndPoint!.ToString().Should().Be("127.0.0.1:12345");
         }
 
-        [TestMethod]
-        public async Task RunRouterAsTerminalShouldTimeOutCorrectlyAsync()
+        [Fact]
+        public void ReceiveSocketConnectionFromSender()
         {
             // Mock Console read and write
-            Assert.IsNotNull(stringWriter);
             Console.SetOut(stringWriter);
 
-            // This mocks the command string entered by the user
-            using var input = new StringReader("User has entered this command string. ");
-            Console.SetIn(input);
+            // Cancel on first route so we can test user input without this we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
 
-            // Cancel on first route and set delay so we can timeout and break the routing loop.
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
+
+            // The router will run indefinably
+            complete.Should().BeFalse();
+
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+            mockCommandRouter.RawCommandStrings.Should().ContainSingle("Test message from sender");
+        }
+
+        [Fact]
+        public void ShouldIgnoreEmptyMessageFromSender()
+        {
+            // Mock Console read and write
+            Console.SetOut(stringWriter);
+
+            // Cancel on first route so we can test user input without this we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
+
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task senderTask = SendMessageOverSocket("   ", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
+
+            // The router will run indefinably
+            complete.Should().BeFalse();
+
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeFalse();
+            mockCommandRouter.RawCommandStrings.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void ReceiveSocketConnectionWithLongMessageFromSender()
+        {
+            // Mock Console read and write
+            Console.SetOut(stringWriter);
+
+            // Cancel on first route so we can test user input without this we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
+
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task senderTask = SendMessageOverSocket(new string('c', 5000), 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
+
+            // The router will run indefinably
+            complete.Should().BeFalse();
+
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+            mockCommandRouter.RawCommandStrings.Should().ContainSingle(new string('c', 5000));
+        }
+
+        [Fact]
+        public void ReceiveMultipleLongMessagesFromSender()
+        {
+            // Mock Console read and write
+            Console.SetOut(stringWriter);
+
+            // Cancel on first route so we can test user input without this we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
+
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task senderTask1 = SendMessageOverSocket(new string('c', 5000) + "1", 12345);
+            Task senderTask2 = SendMessageOverSocket(new string('c', 5000) + "2", 12345);
+            Task senderTask3 = SendMessageOverSocket(new string('c', 5000) + "3", 12345);
+            Task senderTask4 = SendMessageOverSocket(new string('c', 5000) + "4", 12345);
+            Task senderTask5 = SendMessageOverSocket(new string('c', 5000) + "5", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask1, senderTask2, senderTask3, senderTask4, senderTask5 }, 2000);
+
+            // The router will run indefinably
+            complete.Should().BeFalse();
+
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+
+            // Order is not guaranteed
+            mockCommandRouter.RawCommandStrings.Should().BeEquivalentTo(new[] {
+                new string('c', 5000) + "1",
+                new string('c', 5000) + "2",
+                new string('c', 5000) + "4",
+                new string('c', 5000) + "5",
+                new string('c', 5000) + "3",
+            });
+        }
+
+        [Fact]
+        public void ReceiveMultipleMessagesFromSender()
+        {
+            // Mock Console read and write
+            Console.SetOut(stringWriter);
+
+            // Cancel on first route so we can test user input without this we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
+
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task senderTask1 = SendMessageOverSocket("Test message from sender1", 12345);
+            Task senderTask2 = SendMessageOverSocket("Test message from sender2", 12345);
+            Task senderTask3 = SendMessageOverSocket("Test message from sender3", 12345);
+            Task senderTask4 = SendMessageOverSocket("Test message from sender4", 12345);
+            Task senderTask5 = SendMessageOverSocket("Test message from sender5", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask1, senderTask2, senderTask3, senderTask4, senderTask5 }, 2000);
+
+            // The router will run indefinably
+            complete.Should().BeFalse();
+
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+
+            // Order is not guaranteed
+            mockCommandRouter.RawCommandStrings.Should().BeEquivalentTo(new[] {
+                "Test message from sender1",
+                "Test message from sender2",
+                "Test message from sender4",
+                "Test message from sender5",
+                "Test message from sender3",
+            });
+        }
+
+        [Fact]
+        public void ShouldIgnoreMessagesOverBacklog()
+        {
+            // Mock Console read and write
+            Console.SetOut(stringWriter);
+
+            // Router adds an explicit delay of 3000 milliseconds
+            // Within 3 secs we will fire 5 sender request, with limit set to 3, 2 should be ignored
             var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelayAndCancelOnRoute);
             host = newhostBuilder.Build();
 
-            // Route delay is set to 3000 and timeout is 2000
-            GetCliOptions(host).Router.Timeout = 2000;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
-
-            // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            Assert.IsTrue(publisher.Called);
-            Assert.AreEqual("The command router timed out in 2000 milliseconds.", publisher.PublishedMessage);
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.IsNotNull(errorPublisher.PublishedMessage);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
-        }
-
-        [TestMethod]
-        public async Task RunRouterAsTerminalTitleShouldBeSetCorrectlyAsync()
-        {
-            // Mock Console read and write
-            using StringWriter titleWriter = new StringWriter();
-            Console.SetOut(titleWriter);
-
-            using var input = new StringReader("does not matter");
-            Console.SetIn(input);
-
-            // Cancel on first route
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
-
-            // cancel the token after 2 seconds so routing will be called and it will raise an exception
-            tokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunRouterAsTerminalAsync("test_title", tokenSource.Token);
-            Assert.AreEqual("test_title", titleWriter.ToString());
 
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            Assert.IsTrue(errorPublisher.Called);
-            Assert.IsNotNull(errorPublisher.PublishedMessage);
-            Assert.AreEqual("Received cancellation token, the routing is canceled.", errorPublisher.PublishedMessage);
-            Assert.IsNotNull(stringWriter);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stringWriter.ToString()));
+            // Send 5 sender commands after 3 seconds, with backlog set to 3 2 requests will be rejected.
+            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 3);
+            Task senderTask1 = SendMessageOverSocket("Test message from sender1", 12345, 3000);
+            Task senderTask2 = SendMessageOverSocket("Test message from sender2", 12345, 3000);
+            Task senderTask3 = SendMessageOverSocket("Test message from sender3", 12345, 3000);
+            Task senderTask4 = SendMessageOverSocket("Test message from sender4", 12345, 3000);
+            Task senderTask5 = SendMessageOverSocket("Test message from sender5", 12345, 3000);
+
+            // Time out of 10 secs so we have enough time for everyone to complete
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask1, senderTask2, senderTask3, senderTask4, senderTask5 }, 10000);
+
+            // The router will run indefinitely
+            complete.Should().BeFalse();
+
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+
+            // Order is not guaranteed
+            mockCommandRouter.RawCommandStrings.Should().HaveCount(3);
         }
 
-        protected override void OnTestCleanup()
+        private Socket listenerSocketInitializerDelegate()
         {
-            if (host != null)
-            {
-                host.Dispose();
-            }
-
-            if (stringWriter != null)
-            {
-                stringWriter.Dispose();
-            }
+            listnerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            return listnerSocket;
         }
 
-        protected override void OnTestInitialize()
+        private async Task SendMessageOverSocket(string message, int port, int delay = 500)
         {
-            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = hostBuilder.Build();
+            // Wait for the listener to initialize
+            await Task.Delay(delay);
+
+            using (Socket sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+            {
+                EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Loopback, port);
+                await sender.ConnectAsync(remoteEndPoint);
+                await sender.SendAsync(Encoding.UTF8.GetBytes(message));
+            }
         }
 
         private void ConfigureServicesCancelledRoute(IServiceCollection arg2)
@@ -350,55 +406,60 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
             arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
+
+            // Add text handler
+            arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
         private void ConfigureServicesCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource));
+            arg2.AddSingleton<ICommandRouter>(new MockSocketCommandRouter(null, tokenSource));
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
             arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
+
+            // Add text handler
+            arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
         private void ConfigureServicesDefault(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter());
+            arg2.AddSingleton<ICommandRouter>(new MockSocketCommandRouter());
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory();
             loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
             arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
+
+            // Add text handler
+            arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
         private void ConfigureServicesDelayAndCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(3000, tokenSource));
+            arg2.AddSingleton<ICommandRouter>(new MockSocketCommandRouter(3000, tokenSource));
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory
             {
                 StringWriter = stringWriter
@@ -410,6 +471,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add text handler
+            arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
         private void ConfigureServicesErrorExceptionAndCancelOnRoute(IServiceCollection arg2)
@@ -420,7 +484,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory
             {
                 StringWriter = stringWriter
@@ -432,6 +495,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add text handler
+            arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
         private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
@@ -439,11 +505,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             tokenSource = new CancellationTokenSource();
 
             // Adding space at the end so that any msg are correctly appended.
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation.")));
+            arg2.AddSingleton<ICommandRouter>(new MockSocketCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation.")));
             arg2.AddSingleton(MockCliOptions.New());
 
             // Tells the logger to write to string writer so we can test it,
-            stringWriter = new StringWriter();
             var loggerFactory = new MockLoggerFactory
             {
                 StringWriter = stringWriter
@@ -455,6 +520,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add text handler
+            arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
         private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
@@ -478,6 +546,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add text handler
+            arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
         private CliOptions GetCliOptions(IHost host)
@@ -488,12 +559,50 @@ namespace PerpetualIntelligence.Cli.Extensions
         private void HostStopRequestCallback(object? state)
         {
             IHost? host = state as IHost;
-            Assert.IsNotNull(host);
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(host);
             host.StopAsync().GetAwaiter().GetResult();
         }
 
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DisposeAsync()
+        {
+            if (host != null)
+            {
+                host.Dispose();
+            }
+
+            if (stringWriter != null)
+            {
+                stringWriter.Dispose();
+            }
+
+            // Explicitly dispose. This is done by router except for the cases where router goes in infinite loop.
+            listnerSocket.Dispose();
+
+            return Task.CompletedTask;
+        }
+
+        private void EnsureSocketDisposed(Socket socket)
+        {
+            try
+            {
+                int bytes = socket.Available;
+            }
+            catch (ObjectDisposedException)
+            {
+                return;
+            }
+
+            throw new InvalidOperationException($"Socket {socket.LocalEndPoint} should be disposed but it is not.");
+        }
+
         private IHost host = null!;
-        private StringWriter? stringWriter = null!;
+        private Socket listnerSocket = null!;
+        private StringWriter stringWriter = null!;
         private CancellationTokenSource tokenSource = null!;
     }
 }
