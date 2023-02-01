@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Extensions;
+using PerpetualIntelligence.Cli.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 

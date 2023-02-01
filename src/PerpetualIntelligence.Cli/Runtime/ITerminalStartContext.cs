@@ -7,7 +7,7 @@
 
 using System.Threading;
 
-namespace PerpetualIntelligence.Cli.Configuration.Runtime
+namespace PerpetualIntelligence.Cli.Runtime
 {
     /// <summary>
     /// An abstraction of runtime context while starting the terminal.

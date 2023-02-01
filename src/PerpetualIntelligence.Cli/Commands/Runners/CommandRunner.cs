@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Runtime;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Runners

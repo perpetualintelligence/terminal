@@ -203,11 +203,20 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
+        [WriteDocumentation]
+        public async Task TerminalLoggerIndentLessThanOrEqualToZeroShouldThtow()
+        {
+            options.Terminal.LoggerIndent = -3;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=-3");
+
+            options.Terminal.LoggerIndent = 0;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=0");
+        }
+
+        [TestMethod]
         public async Task DefaultValueConfiguredButProviderNotConfiguredShouldThrow()
         {
             options.Extractor.DefaultArgumentValue = true;
-
-            CommandExtractorContext context = new(new CommandString("prefix5_default"));
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type=PerpetualIntelligence.Cli.Commands.Providers.IDefaultArgumentValueProvider");
         }

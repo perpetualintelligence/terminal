@@ -7,7 +7,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace PerpetualIntelligence.Cli
+namespace PerpetualIntelligence.Cli.Runtime
 {
     /// <summary>
     /// Terminals, also known as command lines, consoles, or CLI applications, allow organizations and users to

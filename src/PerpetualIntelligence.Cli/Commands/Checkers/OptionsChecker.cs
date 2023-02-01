@@ -43,6 +43,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             ITextHandler textHandler = serviceProvider.GetRequiredService<ITextHandler>();
 
+            // Terminal
+            {
+                if (options.Terminal.LoggerIndent <= 0)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent={0}", options.Terminal.LoggerIndent);
+                }
+            }
+
             // Separator
             {
                 // Separator cannot be null or empty

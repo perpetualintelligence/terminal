@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -22,6 +23,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public void TerminalOptionsTests_ShouldHaveCorrectDefaultValues()
         {
             TerminalOptions options = new();
+            options.LoggerIndent.Should().Be(4);
         }
     }
 }

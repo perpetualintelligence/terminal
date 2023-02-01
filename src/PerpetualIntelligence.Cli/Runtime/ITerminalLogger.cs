@@ -7,7 +7,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace PerpetualIntelligence.Cli
+namespace PerpetualIntelligence.Cli.Runtime
 {
     /// <summary>
     /// An abstraction to log messages to the terminal.
