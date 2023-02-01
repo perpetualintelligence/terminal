@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using System;
@@ -23,10 +22,10 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="options">The configuration options.</param>
+        /// <param name="terminalLogger">The terminal logger.</param>
         /// <param name="logger">The logger.</param>
-        public ClearScreenRunner(IHost host, CliOptions options, ILogger<ExitRunner> logger) : base(options, logger)
+        public ClearScreenRunner(CliOptions options, ITerminalLogger terminalLogger, ILogger<ExitRunner> logger) : base(options, terminalLogger, logger)
         {
-            this.host = host;
         }
 
         /// <inheritdoc/>
@@ -35,7 +34,5 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
             Console.Clear();
             return Task.FromResult(new CommandRunnerResult());
         }
-
-        private readonly IHost host;
     }
 }

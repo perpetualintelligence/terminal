@@ -19,7 +19,12 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// <summary>
         /// The configuration options.
         /// </summary>
-        public CliOptions Options { get; }
+        protected CliOptions Options { get; }
+
+        /// <summary>
+        /// The terminal logger.
+        /// </summary>
+        protected ITerminalLogger TerminalLogger { get; }
 
         /// <inheritdoc/>
         public abstract Task<CommandRunnerResult> RunAsync(CommandRunnerContext context);
@@ -28,10 +33,12 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// Initialize a new instance.
         /// </summary>
         /// <param name="options">The configuration options.</param>
+        /// <param name="terminalLogger">The terminal logger.</param>
         /// <param name="logger">The logger.</param>
-        protected CommandRunner(CliOptions options, ILogger logger)
+        protected CommandRunner(CliOptions options, ITerminalLogger terminalLogger, ILogger logger)
         {
             Options = options;
+            TerminalLogger = terminalLogger;
             Logger = logger;
         }
 
