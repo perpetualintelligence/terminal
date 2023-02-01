@@ -229,7 +229,5 @@ namespace PerpetualIntelligence.Cli.Licensing
         private readonly IHttpClientFactory? httpClientFactory;
         private readonly ILogger<LicenseExtractor> logger;
         private License? license;
-
-        //private readonly string checkLicUrl = "http://localhost:7071/api/public/checklicense";
     }
 }
