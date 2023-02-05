@@ -111,87 +111,97 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Returns a task that runs the <see cref="ICommandRouter"/> that opens a socket to receive commands and blocks the calling thread till a cancellation request.
+        /// Returns a task that runs the <see cref="ICommandRouter"/> that listens for connections from TCP network clients and blocks the calling thread till a cancellation token.
         /// </summary>
         /// <param name="host"></param>
-        /// <param name="listenerSocketInitializer">Initializes a listening socket. It is closed and disposed by the router.</param>
-        /// <param name="socketReceiveFlag"></param>
-        /// <param name="endPoint"></param>
-        /// <param name="backlog">The maximum length of the pending connections queue.</param>
+        /// <param name="iPEndPoint">The network endpoint as an IP address and a port number.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task RunRouterAsSocketServer(this IHost host, Func<Socket> listenerSocketInitializer, SocketFlags socketReceiveFlag, EndPoint endPoint, int backlog, CancellationToken? cancellationToken = default)
+        public static Task RunRouterAsTcpServerAsync(this IHost host, IPEndPoint iPEndPoint, CancellationToken? cancellationToken = default)
         {
             return Task.Run(async () =>
             {
                 // Track the application lifetime so we can know whether cancellation is requested.
                 IHostApplicationLifetime applicationLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
                 CliOptions cliOptions = host.Services.GetRequiredService<CliOptions>();
+                ITextHandler textHandler = host.Services.GetRequiredService<ITextHandler>();
 
-                // https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/sockets/socket-services#create-a-socket-server
-                // To create the server socket, the endPoint object can listen for incoming connections on any IP address but the port number must be specified.
-                // Once the socket is created, the server can accept incoming connections and communicate with clients.
-                using (Socket listener = listenerSocketInitializer.Invoke())
+                // Set the TcpListener on specified endpoint.
+                TcpListener server = new(iPEndPoint);
+
+                // Start listening for client requests.
+                server.Start();
+
+                // Accept messages till cancellation token
+                while (true)
                 {
-                    listener.Bind(endPoint);
-                    listener.Listen(backlog);
-
-                    // Accept messages till cancellation token
-                    while (true)
+                    // Honor the cancellation request.
+                    if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
                     {
-                        // Honor the cancellation request.
-                        if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
-                        {
-                            IErrorHandler errorPublisher = host.Services.GetRequiredService<IErrorHandler>();
-                            ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
-                            await errorPublisher.HandleAsync(errContext);
+                        // Make sure listener is stopped
+                        server.Stop();
 
-                            // We are done, break the loop.
-                            break;
+                        IErrorHandler errorPublisher = host.Services.GetRequiredService<IErrorHandler>();
+                        ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
+                        await errorPublisher.HandleAsync(errContext);
+
+                        // We are done, break the loop.
+                        break;
+                    }
+
+                    // Perform a blocking call to accept requests.
+                    using (TcpClient client = await server.AcceptTcpClientAsync())
+                    {
+                        // Get a stream object for reading and writing
+                        NetworkStream stream = client.GetStream();
+
+                        // Loop to receive all the data sent by the client.
+                        int end = 0;
+                        byte[] buffer = new byte[1024];
+                        string? raw = null;
+                        while ((end = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
+                        {
+                            if (raw == null)
+                            {
+                                raw = textHandler.Encoding.GetString(buffer, 0, end);
+                            }
+                            else
+                            {
+                                raw += textHandler.Encoding.GetString(buffer, 0, end);
+                            }
                         }
 
-                        // The server is waiting to accept a message. Currently, we are not spawning a new thread. It is happening on the main thread.
-                        using (Socket accepted = await listener.AcceptAsync())
+                        // Ignore empty commands
+                        if (string.IsNullOrWhiteSpace(raw))
                         {
-                            // Receive message.
-                            byte[] buffer = new byte[accepted.ReceiveBufferSize];
-                            SocketAsyncEventArgs socketAsyncEventArgs = new()
-                            {
-                                SocketFlags = socketReceiveFlag,
-                            };
-                            int bytesReceived = accepted.Receive(buffer);
-                            ITextHandler textHandler = host.Services.GetRequiredService<ITextHandler>();
-                            string raw = textHandler.Encoding.GetString(buffer, 0, bytesReceived);
+                            // Wait for next command.
+                            continue;
+                        }
 
-                            // Ignore empty commands
-                            if (string.IsNullOrWhiteSpace(raw))
-                            {
-                                // Wait for next command.
-                                continue;
-                            }
-
+                        try
+                        {
                             // Route the request.
-                            CommandRouterContext context = new(raw, cancellationToken);
+                            CommandRouterContext context = new(raw!, cancellationToken);
                             ICommandRouter router = host.Services.GetRequiredService<ICommandRouter>();
                             Task<CommandRouterResult> routeTask = router.RouteAsync(context);
 
-                            try
+                            bool success = routeTask.Wait(cliOptions.Router.Timeout, cancellationToken ?? CancellationToken.None);
+                            if (!success)
                             {
-                                bool success = routeTask.Wait(cliOptions.Router.Timeout, cancellationToken ?? CancellationToken.None);
-                                if (!success)
-                                {
-                                    throw new TimeoutException($"The command router timed out in {cliOptions.Router.Timeout} milliseconds.");
-                                }
+                                throw new TimeoutException($"The command router timed out in {cliOptions.Router.Timeout} milliseconds.");
+                            }
 
-                                // This means a success in command runner. Wait for the next command
-                            }
-                            catch (Exception ex)
-                            {
-                                // Task.Wait bundles up any exception into Exception.InnerException
-                                IExceptionHandler exceptionPublisher = host.Services.GetRequiredService<IExceptionHandler>();
-                                ExceptionHandlerContext exContext = new(raw, ex.InnerException ?? ex);
-                                await exceptionPublisher.HandleAsync(exContext);
-                            }
+                            // This means a success in command runner. Wait for the next command
+                        }
+                        catch (Exception ex)
+                        {
+                            // Make sure listener is stopped
+                            server.Stop();
+
+                            // Task.Wait bundles up any exception into Exception.InnerException
+                            IExceptionHandler exceptionPublisher = host.Services.GetRequiredService<IExceptionHandler>();
+                            ExceptionHandlerContext exContext = new(raw!, ex.InnerException ?? ex);
+                            await exceptionPublisher.HandleAsync(exContext);
                         }
                     }
                 }

@@ -317,21 +317,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             stringWriter.ToString().Should().BeNullOrWhiteSpace();
         }
 
-        private void ConfigureServicesCancelledRoute(IServiceCollection arg2)
-        {
-            tokenSource = new CancellationTokenSource();
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouterCancellation());
-            arg2.AddSingleton(MockCliOptions.New());
-
-            // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory();
-            loggerFactory.StringWriter = stringWriter;
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-
-            // Add Error publisher
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-        }
-
         private void ConfigureServicesCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();

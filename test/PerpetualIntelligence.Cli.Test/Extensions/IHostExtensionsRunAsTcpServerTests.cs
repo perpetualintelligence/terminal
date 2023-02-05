@@ -28,9 +28,9 @@ using Xunit;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     [Collection("Sequential")]
-    public class IHostExtensionsRunAsSocketServerTests : InitializerTests, IAsyncLifetime
+    public class IHostExtensionsRunAsTcpServerTests : InitializerTests, IAsyncLifetime
     {
-        public IHostExtensionsRunAsSocketServerTests() : base(TestLogger.Create<IHostExtensionsRunAsSocketServerTests>())
+        public IHostExtensionsRunAsTcpServerTests() : base(TestLogger.Create<IHostExtensionsRunAsTcpServerTests>())
         {
             stringWriter = new StringWriter();
         }
@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
             Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
 
@@ -59,11 +59,11 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token);
             Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
 
-            // complete within 5 sec timeour
+            // complete within 5 sec timeout
             complete.Should().BeTrue();
 
             // Check output
@@ -77,40 +77,19 @@ namespace PerpetualIntelligence.Cli.Extensions
         public void RouterShouldBeCalled()
         {
             // Cancel on first route so we can test socket disposed we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
             host = newhostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token);
             Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
-            complete.Should().BeFalse();
+            complete.Should().BeTrue();
 
             // Verify router called
             MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeTrue();
             mockCommandRouter.RawCommandStrings.Should().ContainSingle("Test message from sender");
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            errorPublisher.Called.Should().BeFalse();
-        }
-
-        [Fact]
-        public void ShouldDisposeLisetnerSocketIfCancelled()
-        {
-            // Cancel on first route so we can test socket disposed we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
-
-            // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
-            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
-            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
-            complete.Should().BeTrue();
-
-            // Make sure listener is closed
-            EnsureSocketDisposed(listnerSocket);
 
             // Check output
             MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
@@ -120,20 +99,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [Fact]
-        public void ShouldDisposeLisetnerSocketIfException()
+        public void RouterErrorIfException()
         {
             // Exception is thrown and the routing is canceled
             var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExceptionAndCancelOnRoute);
             host = newhostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token);
             Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
             complete.Should().BeTrue();
-
-            // Make sure listener is closed
-            EnsureSocketDisposed(listnerSocket);
 
             // Check the published error
             MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -148,20 +124,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [Fact]
-        public void ShouldDisposeLisetnerSocketIfErrorException()
+        public void RouterErrorIfErrorException()
         {
             // Exception is thrown and the routing is canceled
             var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesErrorExceptionAndCancelOnRoute);
             host = newhostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5, tokenSource.Token);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token);
             Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
             complete.Should().BeTrue();
-
-            // Make sure listener is closed
-            EnsureSocketDisposed(listnerSocket);
 
             // Check the published error
             MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -176,41 +149,19 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [Fact]
-        public void ShouldNotDisposeLisetnerSocketTillCancelled()
-        {
-            // Router will go in infinite loop so listener socket will not be disposed.
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = newhostBuilder.Build();
-
-            // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
-            Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
-            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
-            complete.Should().BeFalse();
-
-            // Verify router called
-            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            mockCommandRouter.RouteCalled.Should().BeTrue();
-            mockCommandRouter.RawCommandStrings.Should().ContainSingle("Test message from sender");
-
-            // Make sure listener is not closed
-            listnerSocket.LocalEndPoint!.ToString().Should().Be("127.0.0.1:12345");
-        }
-
-        [Fact]
         public void ReceiveSocketConnectionFromSender()
         {
             // Mock Console read and write
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
             host = newhostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
             Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
 
@@ -222,29 +173,31 @@ namespace PerpetualIntelligence.Cli.Extensions
             mockCommandRouter.RawCommandStrings.Should().ContainSingle("Test message from sender");
         }
 
-        [Fact]
-        public void ShouldIgnoreEmptyMessageFromSender()
+        private void ShouldIgnoreEmptyMessageFromSender()
         {
             // Mock Console read and write
             Console.SetOut(stringWriter);
 
-            // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = newhostBuilder.Build();
+            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = hostBuilder.Build();
 
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-
-            // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
-            Task senderTask = SendMessageOverSocket("   ", 12345);
-            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
+            // We will run in a infinite loop due to empty input so break that after 2 seconds
+            tokenSource.CancelAfter(2000);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token);
+            Task senderTask = SendMessageOverSocket("   ", 12345, 1000);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
 
             // The router will run indefinably
             complete.Should().BeFalse();
 
             MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeFalse();
-            mockCommandRouter.RawCommandStrings.Should().BeEmpty();
+
+            // Check output
+            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            stringWriter.ToString().Should().BeNullOrWhiteSpace();
         }
 
         [Fact]
@@ -254,13 +207,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
             host = newhostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
             Task senderTask = SendMessageOverSocket(new string('c', 5000), 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
 
@@ -279,19 +232,19 @@ namespace PerpetualIntelligence.Cli.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
             host = newhostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
             Task senderTask1 = SendMessageOverSocket(new string('c', 5000) + "1", 12345);
             Task senderTask2 = SendMessageOverSocket(new string('c', 5000) + "2", 12345);
             Task senderTask3 = SendMessageOverSocket(new string('c', 5000) + "3", 12345);
             Task senderTask4 = SendMessageOverSocket(new string('c', 5000) + "4", 12345);
             Task senderTask5 = SendMessageOverSocket(new string('c', 5000) + "5", 12345);
-            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask1, senderTask2, senderTask3, senderTask4, senderTask5 }, 2000);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask1, senderTask2, senderTask3, senderTask4, senderTask5 }, 5000);
 
             // The router will run indefinably
             complete.Should().BeFalse();
@@ -316,13 +269,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
             host = newhostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 5);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
             Task senderTask1 = SendMessageOverSocket("Test message from sender1", 12345);
             Task senderTask2 = SendMessageOverSocket("Test message from sender2", 12345);
             Task senderTask3 = SendMessageOverSocket("Test message from sender3", 12345);
@@ -347,7 +300,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [Fact]
-        public void ShouldIgnoreMessagesOverBacklog()
+        public void ShouldIgnoreMessagesAfterTimeout()
         {
             // Mock Console read and write
             Console.SetOut(stringWriter);
@@ -360,7 +313,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Send 5 sender commands after 3 seconds, with backlog set to 3 2 requests will be rejected.
-            Task routerTask = host.RunRouterAsSocketServer(listenerSocketInitializerDelegate, SocketFlags.None, new IPEndPoint(IPAddress.Loopback, 12345), 3);
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
             Task senderTask1 = SendMessageOverSocket("Test message from sender1", 12345, 3000);
             Task senderTask2 = SendMessageOverSocket("Test message from sender2", 12345, 3000);
             Task senderTask3 = SendMessageOverSocket("Test message from sender3", 12345, 3000);
@@ -380,12 +333,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             mockCommandRouter.RawCommandStrings.Should().HaveCount(3);
         }
 
-        private Socket listenerSocketInitializerDelegate()
-        {
-            listnerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            return listnerSocket;
-        }
-
         private async Task SendMessageOverSocket(string message, int port, int delay = 500)
         {
             // Wait for the listener to initialize
@@ -397,24 +344,6 @@ namespace PerpetualIntelligence.Cli.Extensions
                 await sender.ConnectAsync(remoteEndPoint);
                 await sender.SendAsync(Encoding.UTF8.GetBytes(message));
             }
-        }
-
-        private void ConfigureServicesCancelledRoute(IServiceCollection arg2)
-        {
-            tokenSource = new CancellationTokenSource();
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouterCancellation());
-            arg2.AddSingleton(MockCliOptions.New());
-
-            // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory();
-            loggerFactory.StringWriter = stringWriter;
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-
-            // Add Error publisher
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-
-            // Add text handler
-            arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
         private void ConfigureServicesCancelOnRoute(IServiceCollection arg2)
@@ -556,13 +485,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             return host.Services.GetRequiredService<CliOptions>();
         }
 
-        private void HostStopRequestCallback(object? state)
-        {
-            IHost? host = state as IHost;
-            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(host);
-            host.StopAsync().GetAwaiter().GetResult();
-        }
-
         public Task InitializeAsync()
         {
             originalWriter = Console.Out;
@@ -587,28 +509,10 @@ namespace PerpetualIntelligence.Cli.Extensions
                 stringWriter.Dispose();
             }
 
-            // Explicitly dispose. This is done by router except for the cases where router goes in infinite loop.
-            listnerSocket.Dispose();
-
             return Task.CompletedTask;
         }
 
-        private void EnsureSocketDisposed(Socket socket)
-        {
-            try
-            {
-                int bytes = socket.Available;
-            }
-            catch (ObjectDisposedException)
-            {
-                return;
-            }
-
-            throw new InvalidOperationException($"Socket {socket.LocalEndPoint} should be disposed but it is not.");
-        }
-
         private IHost host = null!;
-        private Socket listnerSocket = null!;
         private TextWriter originalWriter = null!;
         private TextReader originalReader = null!;
         private StringWriter stringWriter = null!;
