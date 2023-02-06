@@ -13,13 +13,18 @@ namespace PerpetualIntelligence.Cli.Runtime
     public enum TerminalStartMode
     {
         /// <summary>
-        /// The terminal starts as a service that listens to an incoming connection.
+        /// The terminal starts as a server that listens to an incoming connection.
         /// </summary>
-        Service = 0,
+        Server = 0,
 
         /// <summary>
         /// The terminal starts as a  console application.
         /// </summary>
-        Console = 1
+        Console = 1,
+
+        /// <summary>
+        /// The terminal starts as a custom service.
+        /// </summary>
+        Custom = 2
     }
 }
