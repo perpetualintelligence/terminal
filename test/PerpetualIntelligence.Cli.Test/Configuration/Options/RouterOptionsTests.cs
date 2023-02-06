@@ -5,25 +5,28 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
+using Xunit;
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
-    [TestClass]
     public class RouterOptionsTests : InitializerTests
     {
         public RouterOptionsTests() : base(TestLogger.Create<RouterOptionsTests>())
         {
         }
 
-        [TestMethod]
+        [Fact]
         public void RouterOptionsShouldHaveCorrectDefaultValues()
         {
             RouterOptions options = new();
 
-            Assert.AreEqual(25000, options.Timeout);
+            options.Timeout.Should().Be(25000);
+            options.SyncDelay.Should().Be(100);
+            options.MaxCommandStringLength.Should().Be(1024);
+            options.MaxClients.Should().Be(5);
         }
     }
 }

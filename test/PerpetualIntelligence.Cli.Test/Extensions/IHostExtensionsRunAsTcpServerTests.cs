@@ -13,6 +13,7 @@ using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Cli.Runtime;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -43,11 +44,11 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), CancellationToken.None);
             Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
 
-            // 5 sec timeour but not complete
+            // 5 sec timeout but not complete
             complete.Should().BeFalse();
         }
 
@@ -161,9 +162,9 @@ namespace PerpetualIntelligence.Cli.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token);
             Task senderTask = SendMessageOverSocket("Test message from sender", 12345);
-            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 5000);
 
             // The router will run indefinably
             complete.Should().BeFalse();
@@ -213,7 +214,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), CancellationToken.None);
             Task senderTask = SendMessageOverSocket(new string('c', 5000), 12345);
             bool complete = Task.WaitAll(new Task[] { routerTask, senderTask }, 2000);
 
@@ -226,7 +227,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [Fact]
-        public void ReceiveMultipleLongMessagesFromSender()
+        public void ReceiveLongMessagesFromMultipleClients()
         {
             // Mock Console read and write
             Console.SetOut(stringWriter);
@@ -236,9 +237,83 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+            GetCliOptions(host).Router.MaxCommandStringLength = 5005;
+            GetCliOptions(host).Router.MaxClients = 5;
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), CancellationToken.None);
+            Task senderTask1 = SendMessageOverSocket(new string('c', 5000) + "1", 12345);
+            Task senderTask2 = SendMessageOverSocket(new string('c', 5000) + "2", 12345);
+            Task senderTask3 = SendMessageOverSocket(new string('c', 5000) + "3", 12345);
+            Task senderTask4 = SendMessageOverSocket(new string('c', 5000) + "4", 12345);
+            Task senderTask5 = SendMessageOverSocket(new string('c', 5000) + "5", 12345);
+            bool complete = Task.WaitAll(new Task[] { routerTask, senderTask1, senderTask2, senderTask3, senderTask4, senderTask5 }, 5000);
+
+            // The router will run indefinably
+            complete.Should().BeFalse();
+
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+
+            // Order is not guaranteed
+            mockCommandRouter.RawCommandStrings.Should().BeEquivalentTo(new[] {
+                new string('c', 5000) + "1",
+                new string('c', 5000) + "2",
+                new string('c', 5000) + "4",
+                new string('c', 5000) + "5",
+                new string('c', 5000) + "3",
+            });
+        }
+
+        [Fact]
+        public void ReceiveMessagesFromMultipleClients_ShouldLogDebug()
+        {
+            // Mock Console read and write
+            Console.SetOut(stringWriter);
+
+            // Cancel on first route so we can test user input without this we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
+
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+            GetCliOptions(host).Router.ReadTimeout = 1000;
+            GetCliOptions(host).Router.MaxCommandStringLength = 5005;
+            GetCliOptions(host).Router.MaxClients = 5;
+
+            // Cancel after 6 seconds
+            tokenSource.CancelAfter(6000);
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token);
+            Task senderTask1 = SendMessageOverSocket(new string('c', 45) + "1", 12345);
+            Task senderTask2 = SendMessageOverSocket(new string('c', 45) + "2", 12345);
+            Task senderTask3 = SendMessageOverSocket(new string('c', 45) + "3", 12345);
+            Task senderTask4 = SendMessageOverSocket(new string('c', 45) + "4", 12345);
+            Task senderTask5 = SendMessageOverSocket(new string('c', 45) + "5", 12345);
+            Task.WaitAll(new Task[] { routerTask, senderTask1, senderTask2, senderTask3, senderTask4, senderTask5 });
+
+            MockSocketCommandRouter mockCommandRouter = (MockSocketCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+
+            // Order is not guaranteed
+        }
+
+        [Fact]
+        public void ReceiveLongMessagesFromMultipleClientsWithLessClientLimit()
+        {
+            // Mock Console read and write
+            Console.SetOut(stringWriter);
+
+            // Cancel on first route so we can test user input without this we will go in infinite loop
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newhostBuilder.Build();
+
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+            GetCliOptions(host).Router.MaxCommandStringLength = 5005;
+            GetCliOptions(host).Router.MaxClients = 1;
+
+            // Start sender and receiver communication and wait for 5 secs
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), CancellationToken.None);
             Task senderTask1 = SendMessageOverSocket(new string('c', 5000) + "1", 12345);
             Task senderTask2 = SendMessageOverSocket(new string('c', 5000) + "2", 12345);
             Task senderTask3 = SendMessageOverSocket(new string('c', 5000) + "3", 12345);
@@ -275,7 +350,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start sender and receiver communication and wait for 5 secs
-            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), CancellationToken.None);
             Task senderTask1 = SendMessageOverSocket("Test message from sender1", 12345);
             Task senderTask2 = SendMessageOverSocket("Test message from sender2", 12345);
             Task senderTask3 = SendMessageOverSocket("Test message from sender3", 12345);
@@ -313,7 +388,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Send 5 sender commands after 3 seconds, with backlog set to 3 2 requests will be rejected.
-            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345));
+            Task routerTask = host.RunRouterAsTcpServerAsync(new IPEndPoint(IPAddress.Loopback, 12345), CancellationToken.None);
             Task senderTask1 = SendMessageOverSocket("Test message from sender1", 12345, 3000);
             Task senderTask2 = SendMessageOverSocket("Test message from sender2", 12345, 3000);
             Task senderTask3 = SendMessageOverSocket("Test message from sender3", 12345, 3000);
@@ -338,7 +413,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Wait for the listener to initialize
             await Task.Delay(delay);
 
-            using (Socket sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+            using (Socket sender = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Loopback, port);
                 await sender.ConnectAsync(remoteEndPoint);
@@ -350,11 +425,14 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             tokenSource = new CancellationTokenSource();
             arg2.AddSingleton<ICommandRouter>(new MockSocketCommandRouter(null, tokenSource));
-            arg2.AddSingleton(MockCliOptions.New());
+            CliOptions options = MockCliOptions.New();
+            arg2.AddSingleton(options);
 
             // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory();
-            loggerFactory.StringWriter = stringWriter;
+            var loggerFactory = new MockLoggerFactory
+            {
+                StringWriter = stringWriter
+            };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
@@ -362,6 +440,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add text handler
             arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
+
+            // Add terminal logger
+            arg2.AddSingleton<ITerminalLogger>(new TerminalConsoleLogger(options));
         }
 
         private void ConfigureServicesDefault(IServiceCollection arg2)

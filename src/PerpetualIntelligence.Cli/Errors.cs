@@ -13,6 +13,11 @@ namespace PerpetualIntelligence.Cli
     public static class Errors
     {
         /// <summary>
+        /// The network connection is closed.
+        /// </summary>
+        public const string ConnectionClosed = "connection_closed";
+
+        /// <summary>
         /// The argument is not already added to the command.
         /// </summary>
         public const string DuplicateArgument = "duplicate_argument";
