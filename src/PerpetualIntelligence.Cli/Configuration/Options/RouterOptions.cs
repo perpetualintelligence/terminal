@@ -15,6 +15,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     public class RouterOptions
     {
         /// <summary>
+        /// The terminal caret to show in the console. The default value is <c>></c>.
+        /// </summary>
+        public string Caret { get; set; } = ">";
+
+        /// <summary>
         /// The command router timeout in milliseconds. The default value is 25 seconds. Use
         /// <see cref="Timeout.Infinite"/> for infinite timeout.
         /// </summary>

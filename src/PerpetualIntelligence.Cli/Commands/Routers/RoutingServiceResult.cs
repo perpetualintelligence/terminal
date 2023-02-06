@@ -12,5 +12,11 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
     /// </summary>
     public class RoutingServiceResult
     {
+        /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        public RoutingServiceResult()
+        {
+        }
     }
 }

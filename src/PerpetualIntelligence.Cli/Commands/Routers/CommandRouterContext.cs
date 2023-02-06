@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com
@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// </summary>
         /// <param name="rawCommandString">The raw command string.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public CommandRouterContext(string rawCommandString, CancellationToken? cancellationToken = null)
+        public CommandRouterContext(string rawCommandString, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(rawCommandString))
             {
@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// <summary>
         /// The cancellation token.
         /// </summary>
-        public CancellationToken? CancellationToken { get; protected set; }
+        public CancellationToken CancellationToken { get; protected set; }
 
         /// <summary>
         /// The raw command string.

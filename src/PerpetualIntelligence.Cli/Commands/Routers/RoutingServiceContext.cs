@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com
 */
 
+using System.Threading;
+
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     /// <summary>
@@ -12,5 +14,18 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
     /// </summary>
     public class RoutingServiceContext
     {
+        /// <summary>
+        /// The cancellation token.
+        /// </summary>
+        public CancellationToken CancellationToken { get; }
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public RoutingServiceContext(CancellationToken cancellationToken)
+        {
+            CancellationToken = cancellationToken;
+        }
     }
 }

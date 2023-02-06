@@ -33,85 +33,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="caret">The command caret to show in the console.</param>
         [WriteDocumentation("Add info about exception handling for ErrorException")]
-        public static Task RunRouterAsTerminalAsync(this IHost host, string? caret = null, CancellationToken? cancellationToken = default)
+        public static Task<RoutingServiceResult> RunRouterAsTerminalAsync(this IHost host, CancellationToken cancellationToken)
         {
-            return Task.Run(async () =>
+            IRoutingService routingService = host.Services.GetRequiredService<IRoutingService>();
+            if (routingService is ConsoleTerminalRoutingService consoleTerminalRouting)
             {
-                // Track the application lifetime so we can know whether cancellation is requested.
-                IHostApplicationLifetime applicationLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
-                CliOptions cliOptions = host.Services.GetRequiredService<CliOptions>();
+                RoutingServiceContext context = new(cancellationToken);
+                return consoleTerminalRouting.RouteAsync(context);
+            }
 
-                while (true)
-                {
-                    // Avoid block threads during cancellation and let the
-                    // applicationLifetime.ApplicationStopping.IsCancellationRequested get synchronized so we can honor the
-                    // app shutdown
-                    await Task.Delay(cliOptions.Router.SyncDelay.GetValueOrDefault());
-
-                    // Honor the cancellation request.
-                    if (cancellationToken.GetValueOrDefault().IsCancellationRequested)
-                    {
-                        IErrorHandler errorPublisher = host.Services.GetRequiredService<IErrorHandler>();
-                        ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
-                        await errorPublisher.HandleAsync(errContext);
-
-                        // We are done, break the loop.
-                        break;
-                    }
-
-                    // Check if application is stopping
-                    if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
-                    {
-                        IErrorHandler errorPublisher = host.Services.GetRequiredService<IErrorHandler>();
-                        ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
-                        await errorPublisher.HandleAsync(errContext);
-
-                        // We are done, break the loop.
-                        break;
-                    }
-
-                    // Print the caret
-                    if (caret != null)
-                    {
-                        Console.Write(caret);
-                    }
-
-                    // Read the user input
-                    string? raw = Console.ReadLine();
-
-                    // Ignore empty commands
-                    if (string.IsNullOrWhiteSpace(raw))
-                    {
-                        // Wait for next command.
-                        continue;
-                    }
-
-                    try
-                    {
-                        // Route the request.
-                        CommandRouterContext context = new(raw, cancellationToken);
-                        ICommandRouter router = host.Services.GetRequiredService<ICommandRouter>();
-                        Task<CommandRouterResult> routeTask = router.RouteAsync(context);
-
-                        bool success = routeTask.Wait(cliOptions.Router.Timeout, cancellationToken ?? CancellationToken.None);
-                        if (!success)
-                        {
-                            throw new TimeoutException($"The command router timed out in {cliOptions.Router.Timeout} milliseconds.");
-                        }
-
-                        // This means a success in command runner. Wait for the next command
-                    }
-                    catch (Exception ex)
-                    {
-                        // Task.Wait bundles up any exception into Exception.InnerException
-                        IExceptionHandler exceptionPublisher = host.Services.GetRequiredService<IExceptionHandler>();
-                        ExceptionHandlerContext exContext = new(raw, ex.InnerException ?? ex);
-                        await exceptionPublisher.HandleAsync(exContext);
-                    }
-                };
-            });
+            throw new ErrorException(Errors.InvalidConfiguration, "The configured routing service is not a console routing service.");
         }
 
         /// <summary>
@@ -189,16 +121,13 @@ namespace PerpetualIntelligence.Cli.Extensions
             });
         }
 
-
-
         /// <summary>
         /// Returns a task that runs the <see cref="ICommandRouter"/> that starts a custom service and blocks the calling thread till a cancellation token.
         /// </summary>
         /// <param name="host"></param>
-        /// <param name="iPEndPoint">The network endpoint as an IP address and a port number.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task RunRouterAsCustomServiceAsync(this IHost host, IPEndPoint iPEndPoint, CancellationToken cancellationToken)
+        public static Task RunRouterAsCustomServiceAsync(this IHost host, CancellationToken cancellationToken)
         {
             return Task.Run(async () =>
             {
@@ -265,7 +194,6 @@ namespace PerpetualIntelligence.Cli.Extensions
                 }
             });
         }
-
 
         private static async Task HandleClientConnectedAync(TcpConnectionData connectionData)
         {

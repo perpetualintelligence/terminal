@@ -23,6 +23,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             RouterOptions options = new();
 
+            options.Caret.Should().Be(">");
             options.Timeout.Should().Be(25000);
             options.SyncDelay.Should().Be(100);
             options.MaxCommandStringLength.Should().Be(1024);
