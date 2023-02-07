@@ -13,6 +13,7 @@ using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers
@@ -22,6 +23,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
     {
         public CommandRouterTests() : base(TestLogger.Create<CommandRouterTests>())
         {
+
         }
 
         [TestMethod]
@@ -29,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             commandExtractor.IsExplicitError = true;
 
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "test_extractor_error", "test_extractor_error_desc");
             Assert.IsTrue(commandExtractor.Called);
@@ -41,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             commandExtractor.IsExplicitNoCommandIdenitity = true;
 
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
 
             await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => router.RouteAsync(routerContext), "Value cannot be null. (Parameter 'commandDescriptor')");
             Assert.IsTrue(commandExtractor.Called);
@@ -53,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             commandExtractor.IsExplicitNoCommand = true;
 
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
 
             await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => router.RouteAsync(routerContext), "Value cannot be null. (Parameter 'command')");
             Assert.IsTrue(commandExtractor.Called);
@@ -65,7 +67,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             commandHandler.IsExplicitError = true;
 
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "test_handler_error", "test_handler_error_desc");
             Assert.IsTrue(commandHandler.Called);
@@ -74,7 +76,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         [TestMethod]
         public async Task RouterShouldCallExtractorAsync()
         {
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
             var result = await router.RouteAsync(routerContext);
             Assert.IsTrue(commandExtractor.Called);
         }
@@ -82,7 +84,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         [TestMethod]
         public async Task RouterShouldCallHandlerAfterExtractorAsync()
         {
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
             var result = await router.RouteAsync(routerContext); ;
 
             Assert.IsTrue(commandExtractor.Called);
@@ -94,7 +96,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             licenseExtractor.NoLicense = true;
 
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "invalid_license", "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
             Assert.IsFalse(commandExtractor.Called);
@@ -104,7 +106,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         [TestMethod]
         public async Task RouterShouldFindHandler()
         {
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
             var result = await router.TryFindHandlerAsync(routerContext);
 
             Assert.IsNull(result.Error);
@@ -117,7 +119,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         [TestMethod]
         public async Task RouterShouldPassExtracterCommandToHandlerAsync()
         {
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
             var result = await router.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
@@ -134,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             licenseExtractor.NoLicense = false;
 
-            CommandRouterContext routerContext = new("test_command_string");
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
             var result = await router.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
@@ -171,8 +173,10 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             commandHandler = new MockCommandHandlerInner();
             licenseExtractor = new MockLicenseExtractorInner();
             router = new CommandRouter(licenseExtractor, commandExtractor, commandHandler);
+            cancellationTokenSource = new CancellationTokenSource();
         }
 
+        private CancellationTokenSource cancellationTokenSource;
         private MockCommandExtractorInner commandExtractor = null!;
         private MockCommandHandlerInner commandHandler = null!;
         private IHost host = null!;

@@ -5,13 +5,10 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     /// <summary>
     /// The TCP connection data.
@@ -29,21 +26,6 @@ namespace PerpetualIntelligence.Cli.Extensions
         public TcpClient Client { get; }
 
         /// <summary>
-        /// The  logger.
-        /// </summary>
-        public ILogger Logger { get; }
-
-        /// <summary>
-        /// The services host.
-        /// </summary>
-        public IHost Host { get; }
-
-        /// <summary>
-        /// >The configuration options.
-        /// </summary>
-        public CliOptions Options { get; }
-
-        /// <summary>
         /// The cancellation token.
         /// </summary>
         public CancellationToken CancellationToken { get; }
@@ -53,19 +35,12 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="server">The TCP command server.</param>
         /// <param name="client">The TCP command client.</param>
-        /// <param name="host">The services host.</param>
-        /// <param name="options">The configuration options.</param>
-        /// <param name="logger">The  logger.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
-        /// <param name=""></param>
-        public TcpConnectionData(TcpListener server, TcpClient client, IHost host, CliOptions options, ILogger logger, CancellationToken cancellationToken)
+        public TcpConnectionData(TcpListener server, TcpClient client, CancellationToken cancellationToken)
         {
             Server = server;
             Client = client;
-            Host = host;
-            Options = options;
             CancellationToken = cancellationToken;
-            Logger = logger;
         }
     }
 }

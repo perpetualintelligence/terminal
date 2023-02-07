@@ -16,6 +16,7 @@ using Xunit;
 
 namespace PerpetualIntelligence.Cli.Runtime
 {
+    [Collection("Sequential")]
     public class ConsoleLoggerTests : IAsyncLifetime
     {
         public ConsoleLoggerTests()

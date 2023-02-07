@@ -438,6 +438,12 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Add Error publisher
             arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
 
+            // Add Exception publisher
+            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, TcpServerRoutingService>();
+
             // Add text handler
             arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
 
@@ -458,6 +464,12 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Error publisher
             arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
+
+            // Add Exception publisher
+            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, TcpServerRoutingService>();
 
             // Add text handler
             arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
@@ -482,6 +494,9 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, TcpServerRoutingService>();
+
             // Add text handler
             arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
@@ -505,6 +520,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, TcpServerRoutingService>();
 
             // Add text handler
             arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
@@ -531,6 +549,9 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, TcpServerRoutingService>();
+
             // Add text handler
             arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
@@ -556,6 +577,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, TcpServerRoutingService>();
 
             // Add text handler
             arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());

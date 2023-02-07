@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using System.Net;
 using System.Threading;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers
@@ -18,6 +19,11 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// The cancellation token.
         /// </summary>
         public CancellationToken CancellationToken { get; }
+
+        /// <summary>
+        /// The network IP endpoint server will connect. Used for <see cref="TcpServerRoutingService"/>.
+        /// </summary>
+        public IPEndPoint? IPEndPoint { get; set; }
 
         /// <summary>
         /// Initializes a new instance.

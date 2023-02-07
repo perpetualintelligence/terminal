@@ -333,6 +333,12 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Error publisher
             arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
+
+            // Add Exception publisher
+            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, ConsoleRoutingService>();
         }
 
         private void ConfigureServicesDefault(IServiceCollection arg2)
@@ -348,6 +354,12 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Error publisher
             arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
+
+            // Add Exception publisher
+            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, ConsoleRoutingService>();
         }
 
         private void ConfigureServicesDelayAndCancelOnRoute(IServiceCollection arg2)
@@ -368,6 +380,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, ConsoleRoutingService>();
         }
 
         private void ConfigureServicesErrorExceptionAndCancelOnRoute(IServiceCollection arg2)
@@ -389,6 +404,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, ConsoleRoutingService>();
         }
 
         private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
@@ -411,6 +429,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, ConsoleRoutingService>();
         }
 
         private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
@@ -433,6 +454,9 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+
+            // Add routing service
+            arg2.AddSingleton<IRoutingService, ConsoleRoutingService>();
         }
 
         private CliOptions GetCliOptions(IHost host)

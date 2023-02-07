@@ -20,6 +20,7 @@ using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Integration
     /// Run test sequentially because we modify the static Console.SetOut
     /// </summary>
     [Collection("Sequential")]
-    public class CliHostedServiceTests : IDisposable
+    public class CliHostedServiceTests : IAsyncLifetime
     {
         public CliHostedServiceTests()
         {
@@ -57,15 +58,7 @@ namespace PerpetualIntelligence.Cli.Integration
             mockCliEventsHostedService = new MockCliEventsHostedService(host.Services, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
         }
 
-        public void Dispose()
-        {
-            host.Dispose();
-
-            if (stringWriter != null)
-            {
-                stringWriter.Dispose();
-            }
-        }
+   
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_AppHeader()
@@ -333,6 +326,26 @@ namespace PerpetualIntelligence.Cli.Integration
             return mockCliEventsHostedService;
         }
 
+        public Task InitializeAsync()
+        {
+            originalWriter = Console.Out;
+            return Task.CompletedTask;
+        }
+
+        public Task DisposeAsync()
+        {
+            Console.SetOut(originalWriter);
+
+            host.Dispose();
+
+            if (stringWriter != null)
+            {
+                stringWriter.Dispose();
+            }
+
+            return Task.CompletedTask;
+        }
+
         private CancellationToken cancellationToken;
         private CancellationTokenSource cancellationTokenSource;
         private CliHostedService defaultCliHostedService;
@@ -344,5 +357,6 @@ namespace PerpetualIntelligence.Cli.Integration
         private MockLicenseExtractor mockLicenseExtractor;
         private MockOptionsChecker mockOptionsChecker;
         private StringWriter? stringWriter = null!;
+        private TextWriter originalWriter =null!;
     }
 }
