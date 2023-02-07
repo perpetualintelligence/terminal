@@ -221,6 +221,19 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
+        /// Adds the <see cref="IRoutingService"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddRoutingService<TRService>(this ICliBuilder builder) where TRService : class, IRoutingService
+        {
+            // Add command routing service.
+            builder.Services.AddTransient<IRoutingService, TRService>();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the <see cref="ICommandStoreHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -369,7 +382,7 @@ namespace PerpetualIntelligence.Cli.Extensions
 
             // Tags
             CommandTagsAttribute tagsAttr = declarativeTarget.GetCustomAttribute<CommandTagsAttribute>(false);
-            if(tagsAttr != null)
+            if (tagsAttr != null)
             {
                 commandBuilder.Tags(tagsAttr.Tags);
             }

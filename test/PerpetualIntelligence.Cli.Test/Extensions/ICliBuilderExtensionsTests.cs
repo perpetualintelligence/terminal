@@ -298,6 +298,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [TestMethod]
+        public void AddRoutingServiceShouldCorrectlyInitialize()
+        {
+            cliBuilder.AddRoutingService<MockRoutingService>();
+
+            var router = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IRoutingService)));
+            Assert.IsNotNull(router);
+            Assert.AreEqual(ServiceLifetime.Transient, router.Lifetime);
+            Assert.AreEqual(typeof(MockRoutingService), router.ImplementationType);
+        }
+
+        [TestMethod]
         public void AddTextHandlerShouldCorrectlyInitialize()
         {
             cliBuilder.AddTextHandler<UnicodeTextHandler>();
