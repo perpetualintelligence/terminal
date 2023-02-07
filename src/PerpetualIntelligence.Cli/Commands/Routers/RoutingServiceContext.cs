@@ -33,5 +33,16 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         {
             CancellationToken = cancellationToken;
         }
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="iPEndPoint">The IP endpoint.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public RoutingServiceContext(IPEndPoint? iPEndPoint, CancellationToken cancellationToken)
+        {
+            IPEndPoint = iPEndPoint;
+            CancellationToken = cancellationToken;
+        }
     }
 }
