@@ -115,7 +115,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             demoClaims.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
 
             demoClaims.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode"));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode ascii"));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));

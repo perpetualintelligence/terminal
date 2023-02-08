@@ -179,7 +179,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             claims.Add("strict_data_type", true);
 
             claims.Add("data_type_handlers", "default");
-            claims.Add("text_handlers", "unicode");
+            claims.Add("text_handlers", new[] { "unicode", "ascii" }.JoinBySpace());
             claims.Add("error_handlers", "default");
             claims.Add("store_handlers", "in-memory");
             claims.Add("service_handlers", "default");

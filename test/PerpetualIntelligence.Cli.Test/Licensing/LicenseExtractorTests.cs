@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
 
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode"));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode ascii"));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
