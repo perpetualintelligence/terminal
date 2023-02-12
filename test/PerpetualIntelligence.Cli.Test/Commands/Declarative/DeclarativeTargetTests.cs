@@ -14,17 +14,67 @@ using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PerpetualIntelligence.Cli.Commands.Declarative
 {
-    public class DeclarativeTargetTests : IDisposable
+    public class DeclarativeTargetTests : IAsyncDisposable
     {
         public DeclarativeTargetTests()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
             cliBuilder = new(serviceCollection);
+        }
+
+        [Fact]
+        public void Build_Should_Read_ArgumentCustomProperties_Correctly()
+        {
+            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.ArgumentDescriptors.Should().NotBeNull();
+
+            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg1"));
+            arg1.CustomProperties.Should().NotBeNull();
+            arg1.CustomProperties!.Count.Should().Be(3);
+            arg1.CustomProperties["a1Key1"].Should().Be("a1Value1");
+            arg1.CustomProperties["a1Key2"].Should().Be("a1Value2");
+            arg1.CustomProperties["a1Key3"].Should().Be("a1Value3");
+
+            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
+            arg2.CustomProperties.Should().NotBeNull();
+            arg2.CustomProperties!.Count.Should().Be(2);
+            arg2.CustomProperties["a2Key1"].Should().Be("a2Value1");
+            arg2.CustomProperties["a2Key2"].Should().Be("a2Value2");
+
+            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
+            arg3.CustomProperties.Should().BeNull();
+        }
+
+        [Fact]
+        public void Build_Should_Read_NoArgumentCustomProperties_Correctly()
+        {
+            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
+            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.ArgumentDescriptors.Should().NotBeNull();
+
+            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg1"));
+            arg1.CustomProperties.Should().BeNull();
+
+            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
+            arg2.CustomProperties.Should().BeNull();
+
+            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
+            arg3.CustomProperties.Should().BeNull();
         }
 
         [Fact]
@@ -123,7 +173,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         }
 
         [Fact]
-        public void Builder_ShouldRead_NoCustomCommandProps_Correctly()
+        public void Builder_Should_Read_NoCustomCommandProps_Correctly()
         {
             cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
             ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
@@ -158,11 +208,6 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             cmdDescs.First().Tags.Should().Equal(new string[] { "tag1", "tag2", "tag3" });
         }
 
-        public void Dispose()
-        {
-            host.Dispose();
-        }
-
         [Fact]
         public void TargetMustDefine_CommandChecker()
         {
@@ -187,6 +232,12 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         private void ConfigureServicesDelegate(IServiceCollection arg2)
         {
             serviceCollection = arg2;
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            host.Dispose();
+            return ValueTask.CompletedTask;
         }
 
         private CliBuilder cliBuilder;

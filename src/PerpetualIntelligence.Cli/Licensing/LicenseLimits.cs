@@ -164,30 +164,31 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <returns></returns>
         public static Dictionary<string, object> DemoClaims()
         {
-            Dictionary<string, object> claims = new();
+            Dictionary<string, object> claims = new()
+            {
+                { "terminal_limit", 1 },
+                { "redistribution_limit", 0 },
+                { "root_command_limit", 1 },
+                { "grouped_command_limit", 2 },
+                { "sub_command_limit", 15 },
+                { "argument_limit", 100 },
 
-            claims.Add("terminal_limit", 1);
-            claims.Add("redistribution_limit", 0);
-            claims.Add("root_command_limit", 1);
-            claims.Add("grouped_command_limit", 2);
-            claims.Add("sub_command_limit", 15);
-            claims.Add("argument_limit", 100);
+                { "argument_alias", true },
+                { "default_argument", true },
+                { "default_argument_value", true },
+                { "strict_data_type", true },
 
-            claims.Add("argument_alias", true);
-            claims.Add("default_argument", true);
-            claims.Add("default_argument_value", true);
-            claims.Add("strict_data_type", true);
+                { "data_type_handlers", "default" },
+                { "text_handlers", new[] { "unicode", "ascii" }.JoinBySpace() },
+                { "error_handlers", "default" },
+                { "store_handlers", "in-memory" },
+                { "service_handlers", "default" },
+                { "license_handlers", "online" },
 
-            claims.Add("data_type_handlers", "default");
-            claims.Add("text_handlers", new[] { "unicode", "ascii" }.JoinBySpace());
-            claims.Add("error_handlers", "default");
-            claims.Add("store_handlers", "in-memory");
-            claims.Add("service_handlers", "default");
-            claims.Add("license_handlers", "online");
-
-            claims.Add("currency", "USD");
-            claims.Add("monthly_price", 0.0);
-            claims.Add("yearly_price", 0.0);
+                { "currency", "USD" },
+                { "monthly_price", 0.0 },
+                { "yearly_price", 0.0 }
+            };
 
             return claims;
         }
@@ -226,27 +227,27 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             LicenseLimits limits = new()
             {
-                Plan = LicensePlans.Custom
+                Plan = LicensePlans.Custom,
+
+                TerminalLimit = Convert.ToInt16(customClaims["terminal_limit"]),
+                RedistributionLimit = Convert.ToInt16(customClaims["redistribution_limit"]),
+                RootCommandLimit = Convert.ToInt16(customClaims["root_command_limit"]),
+                GroupedCommandLimit = Convert.ToInt16(customClaims["grouped_command_limit"]),
+                SubCommandLimit = Convert.ToInt16(customClaims["sub_command_limit"]),
+                ArgumentLimit = Convert.ToInt16(customClaims["argument_limit"]),
+
+                ArgumentAlias = Convert.ToBoolean(customClaims["argument_alias"]),
+                DefaultArgument = Convert.ToBoolean(customClaims["default_argument"]),
+                DefaultArgumentValue = Convert.ToBoolean(customClaims["default_argument_value"]),
+                StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
+
+                DataTypeHandlers = customClaims["data_type_handlers"].ToString().SplitBySpace(),
+                TextHandlers = customClaims["text_handlers"].ToString().SplitBySpace(),
+                ErrorHandlers = customClaims["error_handlers"].ToString().SplitBySpace(),
+                StoreHandlers = customClaims["store_handlers"].ToString().SplitBySpace(),
+                ServiceHandlers = customClaims["service_handlers"].ToString().SplitBySpace(),
+                LicenseHandlers = customClaims["license_handlers"].ToString().SplitBySpace()
             };
-
-            limits.TerminalLimit = Convert.ToInt16(customClaims["terminal_limit"]);
-            limits.RedistributionLimit = Convert.ToInt16(customClaims["redistribution_limit"]);
-            limits.RootCommandLimit = Convert.ToInt16(customClaims["root_command_limit"]);
-            limits.GroupedCommandLimit = Convert.ToInt16(customClaims["grouped_command_limit"]);
-            limits.SubCommandLimit = Convert.ToInt16(customClaims["sub_command_limit"]);
-            limits.ArgumentLimit = Convert.ToInt16(customClaims["argument_limit"]);
-
-            limits.ArgumentAlias = Convert.ToBoolean(customClaims["argument_alias"]);
-            limits.DefaultArgument = Convert.ToBoolean(customClaims["default_argument"]);
-            limits.DefaultArgumentValue = Convert.ToBoolean(customClaims["default_argument_value"]);
-            limits.StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]);
-
-            limits.DataTypeHandlers = customClaims["data_type_handlers"].ToString().SplitBySpace();
-            limits.TextHandlers = customClaims["text_handlers"].ToString().SplitBySpace();
-            limits.ErrorHandlers = customClaims["error_handlers"].ToString().SplitBySpace();
-            limits.StoreHandlers = customClaims["store_handlers"].ToString().SplitBySpace();
-            limits.ServiceHandlers = customClaims["service_handlers"].ToString().SplitBySpace();
-            limits.LicenseHandlers = customClaims["license_handlers"].ToString().SplitBySpace();
 
             return limits;
         }
