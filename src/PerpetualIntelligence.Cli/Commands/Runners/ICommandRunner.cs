@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// An abstraction of a command runner.
     /// </summary>
-    public interface ICommandRunner : IRunner<CommandRunnerContext, CommandRunnerResult>
+    public interface ICommandRunner<TContext, TResult> : IRunner<TContext, TResult> where TContext : CommandRunnerContext where TResult : CommandRunnerResult
     {
     }
 }

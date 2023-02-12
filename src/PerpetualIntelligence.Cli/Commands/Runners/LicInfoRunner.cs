@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The <c>lic</c> command displays the current licensing information.
     /// </summary>
-    public class LicInfoRunner : ICommandRunner
+    public class LicInfoRunner : ICommandRunner<CommandRunnerContext, CommandRunnerResult>
     {
         /// <summary>
         /// Initialize a new instance.

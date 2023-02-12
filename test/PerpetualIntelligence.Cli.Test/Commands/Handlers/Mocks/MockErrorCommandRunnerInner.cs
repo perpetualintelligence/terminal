@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
 {
-    internal class MockErrorCommandRunnerInner : ICommandRunner
+    internal class MockErrorCommandRunnerInner : ICommandRunner<CommandRunnerContext, CommandRunnerResult>
     {
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {

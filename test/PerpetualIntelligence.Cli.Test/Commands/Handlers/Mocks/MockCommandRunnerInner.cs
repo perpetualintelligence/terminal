@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
 {
-    internal class MockCommandRunnerInner : ICommandRunner
+    internal class MockCommandRunnerInner : ICommandRunner<CommandRunnerContext, CommandRunnerResult>
     {
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {

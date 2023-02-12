@@ -15,20 +15,10 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The command runner.
     /// </summary>
-    public abstract class CommandRunner : ICommandRunner
+    public abstract class CommandRunner<TContext, TResult> : ICommandRunner<TContext, TResult> where TContext : CommandRunnerContext where TResult : CommandRunnerResult
     {
-        /// <summary>
-        /// The configuration options.
-        /// </summary>
-        protected CliOptions Options { get; }
-
-        /// <summary>
-        /// The terminal logger.
-        /// </summary>
-        protected ITerminalLogger TerminalLogger { get; }
-
         /// <inheritdoc/>
-        public abstract Task<CommandRunnerResult> RunAsync(CommandRunnerContext context);
+        public abstract Task<TResult> RunAsync(TContext context);
 
         /// <summary>
         /// Initialize a new instance.
@@ -38,14 +28,6 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// <param name="logger">The logger.</param>
         protected CommandRunner(CliOptions options, ITerminalLogger terminalLogger, ILogger logger)
         {
-            Options = options;
-            TerminalLogger = terminalLogger;
-            Logger = logger;
         }
-
-        /// <summary>
-        /// The command runner logger.
-        /// </summary>
-        protected ILogger Logger { get; }
     }
 }

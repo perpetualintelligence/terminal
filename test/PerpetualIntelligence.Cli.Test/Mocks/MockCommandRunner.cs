@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockCommandRunner : ICommandRunner
+    public class MockCommandRunner : ICommandRunner<CommandRunnerContext, CommandRunnerResult>
     {
         public bool Called { get; set; }
 

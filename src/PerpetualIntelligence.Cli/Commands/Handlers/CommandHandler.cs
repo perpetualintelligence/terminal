@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             await commandChecker.CheckAsync(new CommandCheckerContext(context.CommandDescriptor, context.Command));
 
             // Find the runner and run the command
-            ICommandRunner commandRunner = await FindRunnerOrThrowAsync(context);
+            ICommandRunner<CommandRunnerContext, CommandRunnerResult> commandRunner = await FindRunnerOrThrowAsync(context);
             CommandRunnerContext runnerContext = new(context.Command);
             ICommandRunnerResult runnerResult = await commandRunner.RunAsync(runnerContext);
 
@@ -83,7 +83,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             return Task.FromResult(checker);
         }
 
-        private Task<ICommandRunner> FindRunnerOrThrowAsync(CommandHandlerContext context)
+        private Task<ICommandRunner<CommandRunnerContext, CommandRunnerResult>> FindRunnerOrThrowAsync(CommandHandlerContext context)
         {
             // No runner configured.
             if (context.CommandDescriptor.Runner == null)
@@ -99,7 +99,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
 
             // Invalid runner configured
-            if (runnerObj is not ICommandRunner runner)
+            if (runnerObj is not ICommandRunner<CommandRunnerContext, CommandRunnerResult> runner)
             {
                 throw new ErrorException(Errors.ServerError, "The command runner is not valid. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Runner.FullName);
             }

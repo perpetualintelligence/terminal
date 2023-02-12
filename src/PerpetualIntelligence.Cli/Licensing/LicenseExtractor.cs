@@ -67,7 +67,28 @@ namespace PerpetualIntelligence.Cli.Licensing
             return Task.FromResult(license);
         }
 
-        private async Task<HttpResponseMessage> CheckLicenseAsync(LicenseCheckModel checkModel)
+        private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseCheckModel checkModel)
+        {
+            // Setup the HTTP client
+            HttpClient httpClient = EnsureHttpClient();
+
+            // Primary and Secondary endpoints E.g. during certificate renewal the primary endpoints may fail so we fall
+            // back to secondary endpoints.
+            HttpResponseMessage httpResponseMessage;
+            var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
+            try
+            {
+                httpResponseMessage = await httpClient.PostAsync(checkLicUrl, checkContent);
+            }
+            catch (HttpRequestException)
+            {
+                logger.LogWarning("The primary endpoint is not healthy. We are falling back to the secondary endpoint. Please contact the support team if you continue to see this warning after 24 hours.");
+                httpResponseMessage = await httpClient.PostAsync(fallbackCheckLicUrl, checkContent);
+            }
+            return httpResponseMessage;
+        }
+
+        private async Task<HttpResponseMessage> CheckOfflineLicenseAsync(LicenseCheckModel checkModel)
         {
             // Setup the HTTP client
             HttpClient httpClient = EnsureHttpClient();
@@ -174,7 +195,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             };
 
             // Make sure we use the full base address
-            using (HttpResponseMessage response = await CheckLicenseAsync(checkModel))
+            using (HttpResponseMessage response = await CheckOnlineLicenseAsync(checkModel))
             {
                 if (!response.IsSuccessStatusCode)
                 {
