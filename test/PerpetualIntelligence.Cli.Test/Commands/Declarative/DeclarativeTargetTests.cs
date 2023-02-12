@@ -184,13 +184,6 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command runner.");
         }
 
-        [Fact]
-        public void TargetMustDefine_TextHandler()
-        {
-            Action act = () => cliBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoTarget>();
-            act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define text handler.");
-        }
-
         private void ConfigureServicesDelegate(IServiceCollection arg2)
         {
             serviceCollection = arg2;

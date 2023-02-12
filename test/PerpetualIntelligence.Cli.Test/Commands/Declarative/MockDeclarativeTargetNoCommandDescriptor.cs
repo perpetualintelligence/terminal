@@ -11,7 +11,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Cli.Commands.Declarative
 {
-    [TextHandler(typeof(UnicodeTextHandler))]
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]

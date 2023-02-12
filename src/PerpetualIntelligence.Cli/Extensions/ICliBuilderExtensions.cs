@@ -307,14 +307,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Establish command builder Default argument not set ?
             ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Prefix, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.IsGroup, cmdAttr.IsRoot, cmdAttr.IsProtected);
 
-            // Text handler
-            TextHandlerAttribute textHandlerAttribute = declarativeTarget.GetCustomAttribute<TextHandlerAttribute>(false);
-            if (textHandlerAttribute == null)
-            {
-                throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define text handler.");
-            }
-            ITextHandler textHandler = (ITextHandler)Activator.CreateInstance(textHandlerAttribute.TestHandler);
-
             // Optional
             IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<ArgumentDescriptorAttribute>(false);
             IEnumerable<ArgumentValidationAttribute> argVdls = declarativeTarget.GetCustomAttributes<ArgumentValidationAttribute>(false);

@@ -12,7 +12,6 @@ using System.ComponentModel.DataAnnotations;
 namespace PerpetualIntelligence.Cli.Commands.Declarative
 {
     [CommandDescriptor("id1", "name", "test grp cmd", "description")]
-    [TextHandler(typeof(UnicodeTextHandler))]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]
     [CommandCustomProperty("key1", "value1")]

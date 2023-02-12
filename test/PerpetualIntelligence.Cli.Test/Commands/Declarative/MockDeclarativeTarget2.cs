@@ -14,7 +14,6 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     [CommandDescriptor("id2", "name2", "test grp cmd2", "description")]
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]
-    [TextHandler(typeof(AsciiTextHandler))]
     [ArgumentDescriptor("arg1", DataType.Text, "test arg desc1")]
     [ArgumentCustomProperty("arg1", "key1", "value1")]
     [ArgumentCustomProperty("arg1", "key2", "value2")]

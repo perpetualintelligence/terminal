@@ -14,7 +14,6 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     [CommandDescriptor("id3", "name3", "test grp cmd3", "description")]
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]
-    [TextHandler(typeof(UnicodeTextHandler))]
     [CommandTags("tag1", "tag2", "tag3")]
     [CommandCustomProperty("key1", "value1")]
     [CommandCustomProperty("key2", "value2")]
