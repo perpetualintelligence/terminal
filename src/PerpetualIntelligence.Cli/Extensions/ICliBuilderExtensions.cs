@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         public static ICliBuilder AddDeclarativeAssembly(this ICliBuilder builder, Type assemblyType)
         {
             IEnumerable<Type> declarativeTypes = assemblyType.Assembly.GetTypes()
-                .Where(e => e.IsAssignableFrom(typeof(IDeclarativeTarget)) && e.IsClass);
+                .Where(e => typeof(IDeclarativeTarget).IsAssignableFrom(e));
 
             foreach (Type type in declarativeTypes)
             {
