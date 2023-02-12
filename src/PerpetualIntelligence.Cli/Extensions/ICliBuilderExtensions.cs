@@ -90,6 +90,22 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
+        /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TType">The type whose assembly to inspect and read all the declarative targets.</typeparam>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <remarks>
+        /// The <see cref="AddDeclarativeAssembly(ICliBuilder, Type)"/> reads the target assembly and inspects all the
+        /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
+        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ICliBuilder, Type)"/>.
+        /// </remarks>
+        public static ICliBuilder AddDeclarativeAssembly<TType>(this ICliBuilder builder)
+        {
+            return AddDeclarativeAssembly(builder, typeof(TType));
+        }
+
+        /// <summary>
         /// Adds a <see cref="IDeclarativeTarget"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
