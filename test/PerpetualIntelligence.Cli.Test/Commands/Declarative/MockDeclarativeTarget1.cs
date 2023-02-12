@@ -5,8 +5,8 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Shared.Attributes.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Cli.Commands.Declarative
@@ -22,12 +22,13 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     [ArgumentCustomProperty("arg1", "a1Key1", "a1Value1")]
     [ArgumentCustomProperty("arg1", "a1Key2", "a1Value2")]
     [ArgumentCustomProperty("arg1", "a1Key3", "a1Value3")]
-    [ArgumentDescriptor("arg2", DataType.PhoneNumber, "test arg desc2", DefaultValue = 1111111111, Disabled = true, Alias = "arg2_alias")]
+    [ArgumentDescriptor("arg2", DataType.Text, "test arg desc2", DefaultValue = "arg1 default val", Disabled = true, Alias = "arg2_alias")]
     [ArgumentValidation("arg2", typeof(RequiredAttribute))]
+    [ArgumentValidation("arg2", typeof(OneOfAttribute), "test1", "test2", "test3")]
     [ArgumentCustomProperty("arg2", "a2Key1", "a2Value1")]
     [ArgumentCustomProperty("arg2", "a2Key2", "a2Value2")]
     [ArgumentDescriptor("arg3", nameof(System.Double), "test arg desc3", Required = true, Disabled = false, Obsolete = true)]
-    [ArgumentValidation("arg3", typeof(RangeAttribute), 25, 40)]
+    [ArgumentValidation("arg3", typeof(RangeAttribute), 25.34, 40.56)]
     public class MockDeclarativeTarget1 : IDeclarativeTarget
     {
     }

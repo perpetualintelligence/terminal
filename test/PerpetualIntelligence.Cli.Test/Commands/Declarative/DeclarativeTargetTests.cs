@@ -10,10 +10,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,6 +29,97 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
             cliBuilder = new(serviceCollection);
+        }
+
+        [Fact]
+        public void Build_Should_Read_ArgumentValidation_Correctly()
+        {
+            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.ArgumentDescriptors.Should().NotBeNull();
+
+            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg1"));
+            arg1.ValidationAttributes.Should().BeNull();
+
+            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
+            arg2.ValidationAttributes.Should().NotBeNull();
+            arg2.ValidationAttributes!.Count().Should().Be(2);
+            ValidationAttribute val1Attr2 = arg2.ValidationAttributes!.First();
+            val1Attr2.Should().BeOfType<RequiredAttribute>();
+            ValidationAttribute val2Attr2 = arg2.ValidationAttributes!.Last();
+            val2Attr2.Should().BeOfType<OneOfAttribute>();
+            OneOfAttribute val2OneOf = (OneOfAttribute)(val2Attr2);
+            val2OneOf.AllowedValues.Should().BeEquivalentTo(new string[] { "test1", "test2", "test3" });
+
+            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
+            arg3.ValidationAttributes.Should().NotBeNull();
+            arg3.ValidationAttributes!.Count().Should().Be(1);
+            ValidationAttribute val1Attr3 = arg3.ValidationAttributes!.First();
+            val1Attr3.Should().BeOfType<RangeAttribute>();
+            RangeAttribute val1Range = (RangeAttribute)(val1Attr3);
+            val1Range.Minimum.Should().Be(25.34);
+            val1Range.Maximum.Should().Be(40.56);
+        }
+
+        [Fact]
+        public void Build_Should_Read_NoArgumentDescriptor_Correctly()
+        {
+            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
+            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.ArgumentDescriptors.Should().BeNull();
+        }
+
+        [Fact]
+        public void Build_Should_Read_NoCommandTags_Correctly()
+        {
+            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
+            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.Tags.Should().BeNull();
+        }
+
+        [Fact]
+        public void Build_Should_Read_CommandTags_Correctly()
+        {
+            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
+            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.Tags.Should().BeEquivalentTo(new string[] { "tag1", "tag2", "tag3" });
+        }
+
+        [Fact]
+        public void Build_Should_Read_NoArgumentValidaiton_Correctly()
+        {
+            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
+            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.ArgumentDescriptors.Should().NotBeNull();
+
+            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg1"));
+            arg1.ValidationAttributes.Should().BeNull();
+
+            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
+            arg2.ValidationAttributes.Should().BeNull();
+
+            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
+            arg3.ValidationAttributes.Should().BeNull();
         }
 
         [Fact]
@@ -104,7 +198,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[0].DefaultValue.Should().BeNull();
 
             argDescs[1].Id.Should().Be("arg2");
-            argDescs[1].DataType.Should().Be(DataType.PhoneNumber);
+            argDescs[1].DataType.Should().Be(DataType.Text);
             argDescs[1].Description.Should().Be("test arg desc2");
             argDescs[1].CustomDataType.Should().BeNull();
             argDescs[1].Required.Should().BeTrue();
@@ -115,9 +209,10 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[1].CustomProperties!.Keys.Should().Equal(new string[] { "a2Key1", "a2Key2" });
             argDescs[1].CustomProperties!.Values.Should().Equal(new string[] { "a2Value1", "a2Value2" });
             argDescs[1].ValidationAttributes.Should().NotBeNull();
-            argDescs[1].ValidationAttributes.Should().HaveCount(1);
+            argDescs[1].ValidationAttributes.Should().HaveCount(2);
             argDescs[1].ValidationAttributes!.First().Should().BeOfType<RequiredAttribute>();
-            argDescs[1].DefaultValue.Should().Be(1111111111);
+            argDescs[1].ValidationAttributes!.Last().Should().BeOfType<OneOfAttribute>();
+            argDescs[1].DefaultValue.Should().Be("arg1 default val");
 
             argDescs[2].Id.Should().Be("arg3");
             argDescs[2].DataType.Should().Be(DataType.Custom);
@@ -227,6 +322,44 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         {
             Action act = () => cliBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandRunner>();
             act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command runner.");
+        }
+
+        [Fact]
+        public void TargetDoesNotImplements_IDeclarativeTarget()
+        {
+            AssemblyName aName = new AssemblyName("PiCliDeclarativeDynamicAssembly1");
+            AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.RunAndCollect);
+
+            // The module name is usually the same as the assembly name.
+            ModuleBuilder mb = ab.DefineDynamicModule(aName.Name!);
+
+            // Dynamic type with no IDeclarativeTarget
+            var typeBuilder = mb.DefineType("TestMockNoTarget", TypeAttributes.Public, parent: null);
+            Type mockType = typeBuilder.CreateType();
+
+            // No target will be added as it does not implements IDeclarativeTarget
+            cliBuilder.AddDeclarativeAssembly(mockType);
+            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void TargetImplements_IDeclarativeTarget()
+        {
+            AssemblyName aName = new AssemblyName("PiCliDeclarativeDynamicAssembly2");
+            AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.RunAndCollect);
+
+            // The module name is usually the same as the assembly name.
+            ModuleBuilder mb = ab.DefineDynamicModule(aName.Name!);
+
+            // Dynamic type with IDeclarativeTarget
+            var typeBuilder = mb.DefineType("TestMockNoTarget", TypeAttributes.Public, parent: null, interfaces: new Type[] { typeof(IDeclarativeTarget) });
+            Type mockType = typeBuilder.CreateType();
+
+            // This means that we tried adding the target as it implements IDeclarativeTarget
+            Action act = () => cliBuilder.AddDeclarativeAssembly(mockType);
+            act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command descriptor.");
         }
 
         private void ConfigureServicesDelegate(IServiceCollection arg2)
