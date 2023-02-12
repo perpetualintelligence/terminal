@@ -21,11 +21,10 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="host">The host.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="terminalLogger">The terminal logger.</param>
         /// <param name="logger">The logger.</param>
-        public ClearScreenRunner(CliOptions options, ITerminalLogger terminalLogger, ILogger<ExitRunner> logger) : base(options, terminalLogger, logger)
+        public ClearScreenRunner(CliOptions options, ITerminalLogger terminalLogger, ILogger<ExitRunner> logger)
         {
         }
 

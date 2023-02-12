@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// <param name="options">The configuration options.</param>
         /// <param name="terminalLogger">The terminal logger.</param>
         /// <param name="logger">The logger.</param>
-        public RunRunner(CliOptions options, ITerminalLogger terminalLogger, ILogger<ExitRunner> logger) : base(options, terminalLogger, logger)
+        public RunRunner(CliOptions options, ITerminalLogger terminalLogger, ILogger<ExitRunner> logger)
         {
         }
 
