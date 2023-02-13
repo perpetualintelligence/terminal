@@ -70,7 +70,7 @@ jobs:
     # PI_DEPENDENCIES_SUFFIX will be empty for release version
     - name: Dependencies
       run: |
-        echo "PI_PROTOCOLS_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $GITHUB_ENV
+        echo "PI_PROTOCOLS_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $GITHUB_ENV
       continue-on-error: false
     
     # Build Number
@@ -83,28 +83,28 @@ jobs:
     # Format: <package>.2.3.6-preview.2201032602
     - name: Default metadata (rc)
       if: ${{ github.event.inputs.suffix == '' }}
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}-rc.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
+      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}-rc.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
       continue-on-error: false
     
     # Setup preview package versions
     # Format: <package>.2.3.6-preview.2201032602
     - name: Preview metadata
       if: ${{ github.event.inputs.suffix == 'preview' }}
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}-preview.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
+      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}-preview.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
       continue-on-error: false
       
     # Setup rc package versions
     # Format: <package>.2.3.6-rc.2201032602
     - name: RC metadata
       if: ${{ github.event.inputs.suffix == 'rc' }}
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}-rc.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
+      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}-rc.${{ env.PI_BUILD_NUMBER }}" >> $GITHUB_ENV
       continue-on-error: false
       
     # Setup release package versions
     # Format: <package>.2.3.6
     - name: Release metadata
       if: ${{ github.event.inputs.suffix == 'release' }}
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_BUILD_VERSION }}" >> $GITHUB_ENV
+      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}" >> $GITHUB_ENV
       continue-on-error: false
 
     # Setup publish registry (github or nuget)
