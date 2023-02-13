@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Licensing
     /// <summary>
     /// The default <see cref="ILicenseChecker"/> result.
     /// </summary>
-    public class LicenseExtractorResult
+    public sealed class LicenseExtractorResult
     {
         /// <summary>
         /// Initializes a new instance.

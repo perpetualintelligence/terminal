@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Cli.Integration
             printedHeaders[3].Should().Be("license_handler=offline");
             printedHeaders[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
             printedHeaders[5].Should().Be("plan=urn:oneimlx:lic:plan:community");
-            printedHeaders[6].Should().Be("key_source=urn:oneimlx:lic:ksource:jsonfile");
+            printedHeaders[6].Should().Be("key_source=urn:oneimlx:lic:source:jsonfile");
             printedHeaders[7].Should().Be("key_file=testLicKey1");
             printedHeaders[8].Should().Be("");
         }

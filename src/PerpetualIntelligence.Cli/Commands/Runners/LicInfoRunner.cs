@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "provider_id={0}", license.ProviderId);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "key_source={0}", license.LicenseKeySource);
 
-                    if (license.LicenseKeySource == LicenseKeySources.JsonFile)
+                    if (license.LicenseKeySource == LicenseSources.JsonFile)
                     {
                         // Only display key file path
                         ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "key_file={0}", license.LicenseKey);
@@ -67,9 +67,9 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "issuer={0}", license.Claims.Issuer);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "subject={0}", license.Claims.Subject);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "jti={0}", license.Claims.Subject);
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "expiry={0}", license.Claims.Expiry.GetValueOrDefault().ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "issued_at={0}", license.Claims.IssuedAt.GetValueOrDefault().ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "not_before={0}", license.Claims.NotBefore.GetValueOrDefault().ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "expiry={0}", license.Claims.Expiry.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "issued_at={0}", license.Claims.IssuedAt.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "not_before={0}", license.Claims.NotBefore.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
 
                     if (license.Claims.Custom != null)
                     {

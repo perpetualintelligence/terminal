@@ -48,7 +48,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // For singleton DI service we don't extract license keys once extracted.
             if (license == null)
             {
-                if (cliOptions.Licensing.KeySource == LicenseKeySources.JsonFile)
+                if (cliOptions.Licensing.KeySource == LicenseSources.JsonFile)
                 {
                     license = await ExtractFromJsonAsync();
                 }
@@ -159,13 +159,13 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Read the json file
-            LicenseKeyJsonFileModel? jsonFileModel;
+            LicenseFileModel? licenseFileModel;
             try
             {
                 // Make sure the lic stream is disposed to avoid locking.
                 using (Stream licStream = File.OpenRead(cliOptions.Licensing.LicenseKey))
                 {
-                    jsonFileModel = await JsonSerializer.DeserializeAsync<LicenseKeyJsonFileModel>(licStream);
+                    licenseFileModel = await JsonSerializer.DeserializeAsync<LicenseFileModel>(licStream);
                 }
             }
             catch (JsonException ex)
@@ -174,7 +174,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Make sure the model is valid Why ?
-            if (jsonFileModel == null)
+            if (licenseFileModel == null)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", cliOptions.Licensing.LicenseKey);
             }
@@ -183,15 +183,15 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseCheckModel checkModel = new()
             {
                 Issuer = Protocols.Constants.Issuer,
-                Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", jsonFileModel.ConsumerTenantId),
+                Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
-                AuthorizedParty = jsonFileModel.AuthorizedParty,
-                ConsumerObjectId = jsonFileModel.ConsumerObjectId,
-                ConsumerTenantId = jsonFileModel.ConsumerTenantId,
-                Key = jsonFileModel.Key,
-                KeyType = jsonFileModel.KeyType,
-                BrokerId = jsonFileModel.BrokerId,
-                Subject = jsonFileModel.Subject
+                AuthorizedParty = licenseFileModel.AuthorizedParty,
+                ConsumerObjectId = licenseFileModel.ConsumerObjectId,
+                ConsumerTenantId = licenseFileModel.ConsumerTenantId,
+                Key = licenseFileModel.Key,
+                KeyType = licenseFileModel.KeyType,
+                BrokerId = licenseFileModel.BrokerId,
+                Subject = licenseFileModel.Subject
             };
 
             // Make sure we use the full base address

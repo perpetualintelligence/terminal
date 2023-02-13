@@ -10,7 +10,7 @@ namespace PerpetualIntelligence.Cli.Licensing
     /// <summary>
     /// The default <see cref="ILicenseChecker"/> context.
     /// </summary>
-    public class LicenseExtractorContext
+    public sealed class LicenseExtractorContext
     {
         /// <summary>
         /// Initialize a new instance.

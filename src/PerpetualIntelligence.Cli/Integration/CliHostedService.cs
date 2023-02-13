@@ -185,7 +185,7 @@ namespace PerpetualIntelligence.Cli.Integration
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Green, $"plan={license.Plan}");
             ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_source={cliOptions.Licensing.KeySource}");
-            if (license.LicenseKeySource == LicenseKeySources.JsonFile)
+            if (license.LicenseKeySource == LicenseSources.JsonFile)
             {
                 // Don't dump the key, just the lic file path
                 ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_file={license.LicenseKey}");

@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             TestLimits = LicenseLimits.Create(LicensePlans.Community);
             TestPrice = LicensePrice.Create(LicensePlans.Community);
 
-            TestLicense = new License("testProviderId1", Handlers.OfflineHandler, LicensePlans.Community, LicenseUsages.RnD, LicenseKeySources.JsonFile, "testLicKey1", TestClaims, TestLimits, TestPrice);
+            TestLicense = new License("testProviderId1", Handlers.OfflineHandler, LicensePlans.Community, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey1", TestClaims, TestLimits, TestPrice);
         }
 
         public static LicenseClaimsModel TestClaims = null!;
