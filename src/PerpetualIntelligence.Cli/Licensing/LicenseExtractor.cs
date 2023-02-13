@@ -6,13 +6,14 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Protocols.Authorization;
 using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -89,25 +90,41 @@ namespace PerpetualIntelligence.Cli.Licensing
             return httpResponseMessage;
         }
 
-        private async Task<HttpResponseMessage> CheckOfflineLicenseAsync(LicenseOfflineCheckModel checkModel)
+        private async Task<LicenseClaimsModel> CheckOfflineLicenseAsync(LicenseOfflineCheckModel checkModel)
         {
-            // Setup the HTTP client
-            HttpClient httpClient = EnsureHttpClient();
+            // TODO: FOR NOW THIS IS ONLY VERIFYING THE SIGNATURE. WE NEED TO CHECK THE CLAIMS.
+            JsonWebKey validationKey = new(checkModel.ValidationKey);
 
-            // Primary and Secondary endpoints E.g. during certificate renewal the primary endpoints may fail so we fall
-            // back to secondary endpoints.
-            HttpResponseMessage httpResponseMessage;
-            var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
-            try
+            // Init token validation params
+            TokenValidationParameters validationParameters = new()
             {
-                httpResponseMessage = await httpClient.PostAsync(checkLicUrl, checkContent);
-            }
-            catch (HttpRequestException)
+                ValidateAudience = true,
+                ValidAudience = checkModel.Audience,
+
+                ValidateIssuer = true,
+                ValidIssuer = checkModel.Issuer,
+
+                RequireSignedTokens = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKeys = new[] { validationKey },
+
+                RequireExpirationTime = true,
+                ValidateLifetime = true,
+            };
+
+            // Validate the license key
+            JsonWebTokenHandler jwtHandler = new();
+            TokenValidationResult result = await jwtHandler.ValidateTokenAsync(checkModel.Key, validationParameters);
+            if (!result.IsValid)
             {
-                logger.LogWarning("The primary endpoint is not healthy. We are falling back to the secondary endpoint. Please contact the support team if you continue to see this warning after 24 hours.");
-                httpResponseMessage = await httpClient.PostAsync(fallbackCheckLicUrl, checkContent);
+                throw new ErrorException(Error.Unauthorized, "License key validation failed. info={0}", result.Exception.Message);
             }
-            return httpResponseMessage;
+
+            // TODO: Check Standard claims
+
+            // TODO: Check custom claims
+
+            return LicenseClaimsModel.Create(result.Claims);
         }
 
         /// <summary>
@@ -181,7 +198,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
             else if (cliOptions.Handler.LicenseHandler == Handlers.OfflineHandler)
             {
-                throw new NotSupportedException();
+                return await EnsureOfflineLicenseAsync(licenseFileModel);
             }
             else
             {
@@ -189,7 +206,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
         }
 
-        private async Task<License> EnsureOnlineLicenseAsync(LicenseFileModel? licenseFileModel)
+        private async Task<License> EnsureOnlineLicenseAsync(LicenseFileModel licenseFileModel)
         {
             // Check JWS signed assertion (JWS key)
             LicenseOnlineCheckModel checkModel = new()
@@ -256,10 +273,10 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
         }
 
-        private async Task<License> EnsureOfflineLicenseAsync(LicenseFileModel? licenseFileModel)
+        private async Task<License> EnsureOfflineLicenseAsync(LicenseFileModel licenseFileModel)
         {
             // Check JWS signed assertion (JWS key)
-            LicenseOnlineCheckModel checkModel = new()
+            LicenseOfflineCheckModel checkModel = new()
             {
                 Issuer = Protocols.Constants.Issuer,
                 Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", licenseFileModel.ConsumerTenantId),
@@ -270,57 +287,45 @@ namespace PerpetualIntelligence.Cli.Licensing
                 Key = licenseFileModel.Key,
                 KeyType = licenseFileModel.KeyType,
                 BrokerId = licenseFileModel.BrokerId,
-                Subject = licenseFileModel.Subject
+                Subject = licenseFileModel.Subject,
+                ValidationKey = licenseFileModel.ValidationKey
             };
 
             // Make sure we use the full base address
-            using (HttpResponseMessage response = await CheckOnlineLicenseAsync(checkModel))
+            LicenseClaimsModel claims = await CheckOfflineLicenseAsync(checkModel);
+
+            // Check consumer with licensing options.
+            if (claims.TenantId != cliOptions.Licensing.ConsumerTenantId)
             {
-                if (!response.IsSuccessStatusCode)
-                {
-                    Error? error = await JsonSerializer.DeserializeAsync<Error>(await response.Content.ReadAsStreamAsync());
-                    throw new ErrorException(error!);
-                }
-
-                LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>(await response.Content.ReadAsStreamAsync());
-                if (claims == null)
-                {
-                    throw new ErrorException(Errors.InvalidLicense, "The license claims are invalid.");
-                }
-
-                // Check consumer with licensing options.
-                if (claims.TenantId != cliOptions.Licensing.ConsumerTenantId)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", cliOptions.Licensing.ConsumerTenantId);
-                }
-
-                // Check subject with licensing options.
-                if (claims.Subject != cliOptions.Licensing.Subject)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", cliOptions.Licensing.Subject);
-                }
-
-                // Make sure the acr contains the
-                string[] acrValues = claims.AcrValues.SplitBySpace();
-                if (acrValues.Length < 3)
-                {
-                    throw new ErrorException(Errors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
-                }
-
-                string plan = acrValues[0];
-                string usage = acrValues[1];
-                string providerId = acrValues[2];
-
-                // Make sure the provider tenant id matches
-                if (providerId != cliOptions.Licensing.ProviderId)
-                {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", cliOptions.Licensing.ProviderId);
-                }
-
-                LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
-                LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
-                return new License(providerId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+                throw new ErrorException(Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", cliOptions.Licensing.ConsumerTenantId);
             }
+
+            // Check subject with licensing options.
+            if (claims.Subject != cliOptions.Licensing.Subject)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", cliOptions.Licensing.Subject);
+            }
+
+            // Make sure the acr contains the
+            string[] acrValues = claims.AcrValues.SplitBySpace();
+            if (acrValues.Length < 3)
+            {
+                throw new ErrorException(Errors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
+            }
+
+            string plan = acrValues[0];
+            string usage = acrValues[1];
+            string providerId = acrValues[2];
+
+            // Make sure the provider tenant id matches
+            if (providerId != cliOptions.Licensing.ProviderId)
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", cliOptions.Licensing.ProviderId);
+            }
+
+            LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
+            LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
+            return new License(providerId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
         }
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
