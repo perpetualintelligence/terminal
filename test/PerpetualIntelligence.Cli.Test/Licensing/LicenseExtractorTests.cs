@@ -199,14 +199,11 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         [Fact]
-        public async Task ExtractFromJsonAsync_NonOnlineMode_ShouldErrorAsync()
+        public async Task ExtractFromJsonAsync_BoylMode_ShouldErrorAsync()
         {
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=offline");
 
             cliOptions.Handler.LicenseHandler = Handlers.BoylHandler;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=boyl");

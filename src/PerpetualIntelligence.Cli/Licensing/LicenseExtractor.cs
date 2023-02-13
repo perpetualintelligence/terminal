@@ -12,6 +12,7 @@ using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -67,7 +68,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             return Task.FromResult(license);
         }
 
-        private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseCheckModel checkModel)
+        private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseOnlineCheckModel checkModel)
         {
             // Setup the HTTP client
             HttpClient httpClient = EnsureHttpClient();
@@ -88,7 +89,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             return httpResponseMessage;
         }
 
-        private async Task<HttpResponseMessage> CheckOfflineLicenseAsync(LicenseCheckModel checkModel)
+        private async Task<HttpResponseMessage> CheckOfflineLicenseAsync(LicenseOfflineCheckModel checkModel)
         {
             // Setup the HTTP client
             HttpClient httpClient = EnsureHttpClient();
@@ -152,12 +153,6 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file={0}", cliOptions.Licensing.LicenseKey);
             }
 
-            // For now we only support the online check
-            if (cliOptions.Handler.LicenseHandler != Handlers.OnlineHandler)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
-            }
-
             // Read the json file
             LicenseFileModel? licenseFileModel;
             try
@@ -179,8 +174,92 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", cliOptions.Licensing.LicenseKey);
             }
 
+            // Online lic check
+            if (cliOptions.Handler.LicenseHandler == Handlers.OnlineHandler)
+            {
+                return await EnsureOnlineLicenseAsync(licenseFileModel);
+            }
+            else if (cliOptions.Handler.LicenseHandler == Handlers.OfflineHandler)
+            {
+                throw new NotSupportedException();
+            }
+            else
+            {
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
+            }
+        }
+
+        private async Task<License> EnsureOnlineLicenseAsync(LicenseFileModel? licenseFileModel)
+        {
             // Check JWS signed assertion (JWS key)
-            LicenseCheckModel checkModel = new()
+            LicenseOnlineCheckModel checkModel = new()
+            {
+                Issuer = Protocols.Constants.Issuer,
+                Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", licenseFileModel.ConsumerTenantId),
+                AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
+                AuthorizedParty = licenseFileModel.AuthorizedParty,
+                ConsumerObjectId = licenseFileModel.ConsumerObjectId,
+                ConsumerTenantId = licenseFileModel.ConsumerTenantId,
+                Key = licenseFileModel.Key,
+                KeyType = licenseFileModel.KeyType,
+                BrokerId = licenseFileModel.BrokerId,
+                Subject = licenseFileModel.Subject
+            };
+
+            // Make sure we use the full base address
+            using (HttpResponseMessage response = await CheckOnlineLicenseAsync(checkModel))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    Error? error = await JsonSerializer.DeserializeAsync<Error>(await response.Content.ReadAsStreamAsync());
+                    throw new ErrorException(error!);
+                }
+
+                LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>(await response.Content.ReadAsStreamAsync());
+                if (claims == null)
+                {
+                    throw new ErrorException(Errors.InvalidLicense, "The license claims are invalid.");
+                }
+
+                // Check consumer with licensing options.
+                if (claims.TenantId != cliOptions.Licensing.ConsumerTenantId)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", cliOptions.Licensing.ConsumerTenantId);
+                }
+
+                // Check subject with licensing options.
+                if (claims.Subject != cliOptions.Licensing.Subject)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", cliOptions.Licensing.Subject);
+                }
+
+                // Make sure the acr contains the
+                string[] acrValues = claims.AcrValues.SplitBySpace();
+                if (acrValues.Length < 3)
+                {
+                    throw new ErrorException(Errors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
+                }
+
+                string plan = acrValues[0];
+                string usage = acrValues[1];
+                string providerId = acrValues[2];
+
+                // Make sure the provider tenant id matches
+                if (providerId != cliOptions.Licensing.ProviderId)
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", cliOptions.Licensing.ProviderId);
+                }
+
+                LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
+                LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
+                return new License(providerId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+            }
+        }
+
+        private async Task<License> EnsureOfflineLicenseAsync(LicenseFileModel? licenseFileModel)
+        {
+            // Check JWS signed assertion (JWS key)
+            LicenseOnlineCheckModel checkModel = new()
             {
                 Issuer = Protocols.Constants.Issuer,
                 Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", licenseFileModel.ConsumerTenantId),
