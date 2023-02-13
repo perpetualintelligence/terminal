@@ -88,7 +88,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     }
                     catch (Exception ex)
                     {
-                        throw new ErrorException(Errors.InvalidArgument, "The argument value is not valid. argument={0} value={1} additional_info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
+                        throw new ErrorException(Errors.InvalidArgument, "The argument value is not valid. argument={0} value={1} info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
                     }
                 }
             }

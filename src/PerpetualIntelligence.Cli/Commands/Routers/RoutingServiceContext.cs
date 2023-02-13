@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public CancellationToken CancellationToken { get; }
 
         /// <summary>
-        /// The network IP endpoint server will connect. Used for <see cref="TcpServerRoutingService"/>.
+        /// The network IP endpoint server will connect. Used for <see cref="TcpRoutingService"/>.
         /// </summary>
         public IPEndPoint? IPEndPoint { get; set; }
 

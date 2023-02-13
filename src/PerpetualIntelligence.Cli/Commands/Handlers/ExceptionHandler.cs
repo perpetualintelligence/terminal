@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
             else
             {
-                logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} additional_info={1}", context.RawCommandString, context.Exception.Message);
+                logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} info={1}", context.RawCommandString, context.Exception.Message);
             }
 
             return Task.CompletedTask;

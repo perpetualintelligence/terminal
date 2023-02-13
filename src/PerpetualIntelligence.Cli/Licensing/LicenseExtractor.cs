@@ -170,7 +170,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
             catch (JsonException ex)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not valid, see licensing options. json_file={0} additional_info={1}", cliOptions.Licensing.LicenseKey, ex.Message);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not valid, see licensing options. json_file={0} info={1}", cliOptions.Licensing.LicenseKey, ex.Message);
             }
 
             // Make sure the model is valid Why ?

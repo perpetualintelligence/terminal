@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         public static Task RunRouterAsTcpServerAsync(this IHost host, RoutingServiceContext context)
         {
             IRoutingService routingService = host.Services.GetRequiredService<IRoutingService>();
-            if (routingService is TcpServerRoutingService tcpServerRoutingService)
+            if (routingService is TcpRoutingService tcpServerRoutingService)
             {
                 return tcpServerRoutingService.RouteAsync(context);
             }

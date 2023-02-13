@@ -19,9 +19,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
     /// <summary>
-    /// The default <see cref="IRoutingService"/> for TCP server.
+    /// The default <see cref="IRoutingService"/> for TCP client server communication.
     /// </summary>
-    public class TcpServerRoutingService : IRoutingService
+    public class TcpRoutingService : IRoutingService
     {
         private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         private readonly IErrorHandler errorHandler;
         private readonly CliOptions options;
         private readonly ITextHandler textHandler;
-        private readonly ILogger<TcpServerRoutingService> logger;
+        private readonly ILogger<TcpRoutingService> logger;
 
         /// <summary>
         ///
@@ -41,7 +41,14 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// <param name="options"></param>
         /// <param name="textHandler"></param>
         /// <param name="logger"></param>
-        public TcpServerRoutingService(IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, CliOptions options, ITextHandler textHandler, ILogger<TcpServerRoutingService> logger)
+        public TcpRoutingService(
+            IHostApplicationLifetime applicationLifetime,
+            ICommandRouter commandRouter,
+            IExceptionHandler exceptionHandler,
+            IErrorHandler errorHandler,
+            CliOptions options,
+            ITextHandler textHandler,
+            ILogger<TcpRoutingService> logger)
         {
             this.applicationLifetime = applicationLifetime;
             this.commandRouter = commandRouter;
@@ -53,11 +60,10 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <exception cref="NotImplementedException"></exception>
         public Task<RoutingServiceResult> RouteAsync(RoutingServiceContext context)
         {
             return Task.Run(async () =>
@@ -72,7 +78,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                 try
                 {
                     server.Start();
-                    logger.LogDebug("Server started. endpoint={0} timestamp={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                    logger.LogDebug("TCP Server started. endpoint={0} timestamp={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
 
                     // Accept messages till cancellation token
                     while (true)
@@ -82,7 +88,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                         // Honor the cancellation request.
                         if (context.CancellationToken.IsCancellationRequested)
                         {
-                            ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
+                            ErrorHandlerContext errContext = new(new Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
                             await errorHandler.HandleAsync(errContext);
 
                             // We are done, break the loop and stop the server.
@@ -92,7 +98,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                         // Check if application is stopping
                         if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
                         {
-                            ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
+                            ErrorHandlerContext errContext = new(new Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
                             await errorHandler.HandleAsync(errContext);
 
                             // We are done, break the loop and stop the server.
@@ -104,8 +110,10 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                         List<Task> clientConnections = new();
                         for (int idx = 0; idx < options.Router.MaxClients; ++idx)
                         {
+                            int localIdx = idx + 1;
                             clientConnections.Add(Task.Run(async () =>
                             {
+                                logger.LogDebug("Waiting for client to connect on task {0}", localIdx);
                                 using (TcpClient tcpClient = await server.AcceptTcpClientAsync())
                                 {
                                     TcpConnectionData tcpConnection = new(server, tcpClient, context.CancellationToken);
@@ -114,12 +122,13 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                             }));
                         }
                         await Task.WhenAll(clientConnections);
+                        logger.LogWarning("All client connection tasks are exhausted.");
                     }
                 }
                 finally
                 {
                     server.Stop();
-                    logger.LogDebug("Server stopped. endpoint={0} timestamp={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                    logger.LogDebug("TCP server stopped. endpoint={0} timestamp={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
                 }
 
                 return new RoutingServiceResult();
@@ -150,7 +159,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                 {
                     // Get a stream object for reading and writing
                     NetworkStream stream = connectionData.Client.GetStream();
-                    stream.ReadTimeout = options.Router.ReadTimeout;
                     byte[] buffer = new byte[options.Router.MaxCommandStringLength];
                     int end = stream.Read(buffer, 0, buffer.Length);
                     if (end == 0)
@@ -167,7 +175,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                 }
                 catch (Exception ex)
                 {
-                    logger.LogDebug("Client disconnected. client_endpoint={0} server_endpoint={1} additional_info={2}", connectionData.Client.Client.LocalEndPoint.ToString(), connectionData.Server.LocalEndpoint.ToString(), ex.Message);
+                    logger.LogDebug("Client disconnected. client_endpoint={0} server_endpoint={1} info={2}", connectionData.Client.Client.LocalEndPoint.ToString(), connectionData.Server.LocalEndpoint.ToString(), ex.Message);
                     break;
                 }
 

@@ -114,7 +114,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Argument value = new("arg1", "test3", DataType.Text);
 
             ArgumentCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=test3 additional_info=The field value must be one of the valid values.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Argument value = new("arg1", "invalid_4242424242424242", DataType.CreditCard);
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 additional_info=The Argument field is not a valid credit card number.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 info=The Argument field is not a valid credit card number.");
         }
 
         [TestMethod]
