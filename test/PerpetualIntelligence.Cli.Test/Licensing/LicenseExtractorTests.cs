@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void CustomAndStandardClaims_ShouldSerializerCorrectly()
         {
-            LicenseProvisioningModel model = new()
+            LicenseOnlineProvisioningModel model = new()
             {
                 AcrValues = new[] { "acr1", "acr2", "acr3", "custom" },
                 Audience = "https://login.someone.com/hello-mello-jello/v2.0",
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             string json = JsonSerializer.Serialize(model);
 
-            LicenseProvisioningModel? fromJson = JsonSerializer.Deserialize<LicenseProvisioningModel>(json);
+            LicenseOnlineProvisioningModel? fromJson = JsonSerializer.Deserialize<LicenseOnlineProvisioningModel>(json);
             fromJson.Should().NotBeNull();
             fromJson.Should().NotBeSameAs(model);
 
