@@ -46,7 +46,8 @@ jobs:
       PI_NUGET_PAT_ENV: ${{ secrets.PI_NUGET_API_KEY }}
       PI_PUBLISH_REGISTRY: github
       PI_CI_REFERENCE: package
-      PI_CLI_TEST_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_LIC }}
+      PI_CLI_TEST_ONLINE_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_LIC }}
+      PI_CLI_TEST_OFFLINE_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_OFFLINE_LIC }}
       
     steps:
 

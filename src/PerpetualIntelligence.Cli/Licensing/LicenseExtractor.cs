@@ -282,7 +282,6 @@ namespace PerpetualIntelligence.Cli.Licensing
                 Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
-                ConsumerObjectId = licenseFileModel.ConsumerObjectId,
                 ConsumerTenantId = licenseFileModel.ConsumerTenantId,
                 Key = licenseFileModel.Key,
                 KeyType = licenseFileModel.KeyType,

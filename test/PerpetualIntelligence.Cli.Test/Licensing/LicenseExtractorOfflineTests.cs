@@ -26,12 +26,12 @@ using Xunit;
 
 namespace PerpetualIntelligence.Cli.Licensing
 {
-    public class LicenseExtractorTests : IDisposable
+    public class LicenseExtractorOfflineTests : IDisposable
     {
-        public LicenseExtractorTests()
+        public LicenseExtractorOfflineTests()
         {
             // Read the lic file from Github secrets
-            testLicPath = GetJsonLicenseFIleForLocalHostGithubSecretForCICD("PI_CLI_TEST_LIC");
+            testLicPath = GetJsonLicenseFIleForLocalHostGithubSecretForCICD("PI_CLI_TEST_OFFLINE_LIC");
 
             string nonJson = "non json document";
             nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void CustomAndStandardClaims_ShouldSerializerCorrectly()
         {
-            LicenseOnlineProvisioningModel model = new()
+            LicenseOfflineProvisioningModel model = new()
             {
                 AcrValues = new[] { "acr1", "acr2", "acr3", "custom" },
                 Audience = "https://login.someone.com/hello-mello-jello/v2.0",
@@ -56,15 +56,17 @@ namespace PerpetualIntelligence.Cli.Licensing
                 Custom = LicenseLimits.DemoClaims(),
                 ExpiresIn = 365,
                 Issuer = "https://api.someone.com",
-                Operation = "delete",
                 BrokerTenantId = "pvdr1",
                 PublisherTenantId = "pbsr1",
-                Subject = "sub1"
+                Subject = "sub1",
+                ConsumerObjectId = "coid",
+                Status = "active",
+                SigningKey = new LicenseSigningKeyModel(new byte[] { 1, 2, 3 }, "test_pwd")
             };
 
             string json = JsonSerializer.Serialize(model);
 
-            LicenseOnlineProvisioningModel? fromJson = JsonSerializer.Deserialize<LicenseOnlineProvisioningModel>(json);
+            LicenseOfflineProvisioningModel? fromJson = JsonSerializer.Deserialize<LicenseOfflineProvisioningModel>(json);
             fromJson.Should().NotBeNull();
             fromJson.Should().NotBeSameAs(model);
 
@@ -74,13 +76,16 @@ namespace PerpetualIntelligence.Cli.Licensing
             fromJson.AuthorizedParty.Should().Be("authp1");
             fromJson.ConsumerTenantCountry.Should().Be("USA");
             fromJson.ConsumerTenantId.Should().Be("csmr1");
+            fromJson.ConsumerObjectId.Should().Be("coid");
             fromJson.ConsumerTenantName.Should().Be("csmr name");
             fromJson.ExpiresIn.Should().Be(365);
             fromJson.Issuer.Should().Be("https://api.someone.com");
-            fromJson.Operation.Should().Be("delete");
             fromJson.BrokerTenantId.Should().Be("pvdr1");
             fromJson.PublisherTenantId.Should().Be("pbsr1");
             fromJson.Subject.Should().Be("sub1");
+            fromJson.Status.Should().Be("active");
+            fromJson.SigningKey.Key.Should().Equal(new byte[] { 1, 2, 3 });
+            fromJson.SigningKey.Password.Should().Be("test_pwd");
 
             // custom claims
             fromJson.Custom.Should().HaveCount(19);
@@ -113,14 +118,14 @@ namespace PerpetualIntelligence.Cli.Licensing
         public void CustomClaims_ShouldBeDecoratedWith_JsonConverterAttribute()
         {
             typeof(LicenseClaimsModel).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
-            typeof(LicenseProvisioningModel).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
+            typeof(LicenseOfflineProvisioningModel).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
         }
 
         [Fact]
         public void CustomClaims_ShouldNotBeDecoratedWith_JsonExtensionDataAttribute()
         {
             typeof(LicenseClaimsModel).GetProperty("Custom").Should().NotBeDecoratedWith<JsonExtensionDataAttribute>();
-            typeof(LicenseProvisioningModel).GetProperty("Custom").Should().NotBeDecoratedWith<JsonExtensionDataAttribute>();
+            typeof(LicenseOfflineProvisioningModel).GetProperty("Custom").Should().NotBeDecoratedWith<JsonExtensionDataAttribute>();
         }
 
         public void Dispose()
@@ -150,7 +155,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
@@ -246,7 +250,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = demoLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = DemoIdentifiers.PiCliDemoConsumerTenantId;
             cliOptions.Licensing.Subject = DemoIdentifiers.PiCliDemoSubject;
             cliOptions.Licensing.AuthorizedApplicationId = DemoIdentifiers.PiCliDemoAuthorizedApplicationId;
@@ -333,7 +336,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "invalid_app";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -348,7 +350,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "invalid_consumer";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -362,7 +363,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -378,7 +378,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "invalid_subject";
@@ -420,7 +419,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
             cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
-            cliOptions.Http.HttpClientName = httpClientName;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
@@ -536,7 +534,6 @@ namespace PerpetualIntelligence.Cli.Licensing
 
         private readonly CliOptions cliOptions;
         private string? demoLicPath;
-        private readonly string httpClientName = "prod";
         private ILicenseExtractor licenseExtractor;
         private readonly string nonJsonLicPath;
         private readonly string testLicPath;
