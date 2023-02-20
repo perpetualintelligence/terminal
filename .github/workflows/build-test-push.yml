@@ -3,7 +3,7 @@
 #    For license, terms, and data policies, go to:
 #    https://terms.perpetualintelligence.com
 
-name: build-test-publish
+name: build-test-push
 
 concurrency: github-release
 
