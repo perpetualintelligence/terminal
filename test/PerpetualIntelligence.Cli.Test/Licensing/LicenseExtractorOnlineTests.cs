@@ -449,7 +449,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // claims
             result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:isvu urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
-            result.License.Claims.Audience.Should().Be("https://perpetualintelligenceb2c.b2clogin.com/a8379958-ea19-4918-84dc-199bf012361e/v2.0/");
+            result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/a8379958-ea19-4918-84dc-199bf012361e/v2.0");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:cli");
             result.License.Claims.TenantCountry.Should().Be("USA");
             result.License.Claims.Custom.Should().BeNull();
