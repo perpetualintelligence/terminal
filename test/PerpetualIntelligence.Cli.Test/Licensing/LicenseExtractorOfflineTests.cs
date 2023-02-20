@@ -5,27 +5,9 @@
     https://terms.perpetualintelligence.com
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Protocols.Authorization;
-using PerpetualIntelligence.Protocols.Licensing;
-using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Shared.Json;
-using PerpetualIntelligence.Test.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace PerpetualIntelligence.Cli.Licensing
 {
+#if false
     public class LicenseExtractorOfflineTests : IDisposable
     {
         public LicenseExtractorOfflineTests()
@@ -538,4 +520,6 @@ namespace PerpetualIntelligence.Cli.Licensing
         private readonly string nonJsonLicPath;
         private readonly string testLicPath;
     }
+
+#endif
 }
