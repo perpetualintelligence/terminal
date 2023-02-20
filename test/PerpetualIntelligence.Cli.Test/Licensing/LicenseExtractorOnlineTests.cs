@@ -275,7 +275,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // claims
             result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:custom urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
-            result.License.Claims.Audience.Should().Be(MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", DemoIdentifiers.PiCliDemoConsumerTenantId));
+            result.License.Claims.Audience.Should().Be(AuthEndpoints.PiB2CIssuer(DemoIdentifiers.PiCliDemoConsumerTenantId));
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:cli");
             result.License.Claims.TenantCountry.Should().Be("GLOBAL");
             result.License.Claims.Custom.Should().NotBeNull();

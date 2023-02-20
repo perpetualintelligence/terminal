@@ -14,8 +14,10 @@ using PerpetualIntelligence.Protocols.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
+using System;
 using System.IO;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -92,8 +94,15 @@ namespace PerpetualIntelligence.Cli.Licensing
 
         private async Task<LicenseClaimsModel> CheckOfflineLicenseAsync(LicenseOfflineCheckModel checkModel)
         {
-            // TODO: FOR NOW THIS IS ONLY VERIFYING THE SIGNATURE. WE NEED TO CHECK THE CLAIMS.
-            JsonWebKey validationKey = new(checkModel.ValidationKey);
+            // https://stackoverflow.com/questions/58102904/how-to-verify-a-jwt-token-signed-with-x509-with-only-a-public-key-in-aspnetcore
+            X509Certificate2 x509Certificate = new(Convert.FromBase64String(checkModel.ValidationKey));
+            X509SecurityKey validationKey = new(x509Certificate);
+
+            // Validation key cannot be private
+            if (validationKey.PrivateKeyStatus == PrivateKeyStatus.Exists)
+            {
+                throw new ErrorException(Error.Unauthorized, "License validation certificate cannot have private key.");
+            }
 
             // Init token validation params
             TokenValidationParameters validationParameters = new()
@@ -122,7 +131,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // TODO: Check Standard claims
 
-            // TODO: Check custom claims
+            // TODO: Check Custom claims
 
             return LicenseClaimsModel.Create(result.Claims);
         }
@@ -212,7 +221,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseOnlineCheckModel checkModel = new()
             {
                 Issuer = Protocols.Constants.Issuer,
-                Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", licenseFileModel.ConsumerTenantId),
+                Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
                 ConsumerObjectId = licenseFileModel.ConsumerObjectId,
@@ -279,7 +288,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseOfflineCheckModel checkModel = new()
             {
                 Issuer = Protocols.Constants.Issuer,
-                Audience = MsalEndpoints.B2CIssuer("perpetualintelligenceb2c", licenseFileModel.ConsumerTenantId),
+                Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
                 ConsumerTenantId = licenseFileModel.ConsumerTenantId,
