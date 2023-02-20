@@ -6,8 +6,8 @@
 ![windows](https://img.shields.io/badge/windows-grey?style=flat-square&logo=windows)
 
 ## The most flexible cross-platform framework for modern CLI terminals.
-[![build-test-cross-manual](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross-manual.yml)
-[![build-test-publish](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-publish.yml)
+[![build-test-cross](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-cross.yml)
+[![build-test-push](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-push.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/build-test-push.yml)
 [![delete-packages](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/cli/actions/workflows/delete-packages.yml)
 
 
