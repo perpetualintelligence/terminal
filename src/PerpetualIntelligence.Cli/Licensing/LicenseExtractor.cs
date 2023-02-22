@@ -129,9 +129,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Error.Unauthorized, "License key validation failed. info={0}", result.Exception.Message);
             }
 
-            // TODO: Check Standard claims
-
-            // TODO: Check Custom claims
+            // Check Standard claims
+            EnsureClaim(result, "sub", checkModel.Subject, new Error(Error.Unauthorized, "The subject or sub claim is not authorized. sub={0}", checkModel.Subject));
+            EnsureClaim(result, "tid", checkModel.ConsumerTenantId, new Error(Error.Unauthorized, "The consumer tenant or tid claim is not authorized. tid={0}", checkModel.ConsumerTenantId));
+            EnsureClaim(result, "oid", checkModel.ConsumerObjectId, new Error(Error.Unauthorized, "The consumer object or oid claim is not authorized. tid={0}", checkModel.ConsumerObjectId));
+            EnsureClaim(result, "auth_apps", checkModel.AuthorizedApplicationId, new Error(Error.Unauthorized, "The application is not authorized. application_id={0}", checkModel.AuthorizedApplicationId));
 
             return LicenseClaimsModel.Create(result.Claims);
         }
@@ -334,6 +336,23 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
             LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
             return new License(providerId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+        }
+
+        private void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
+        {
+            result.Claims.TryGetValue(claim, out object? jwtValue);
+
+            // Both JSON claim and expected claim do not exist.
+            // E.g. oid claim is optional, so the JWT token may not have it and if check still passes that then it is an error.
+            if (jwtValue == null && expectedValue == null)
+            {
+                return;
+            }
+
+            if (jwtValue == null || !jwtValue.Equals(expectedValue))
+            {
+                throw new ErrorException(error);
+            }
         }
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";

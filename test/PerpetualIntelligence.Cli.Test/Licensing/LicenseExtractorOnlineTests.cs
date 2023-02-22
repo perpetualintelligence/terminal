@@ -488,6 +488,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = null;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source=urn:oneimlx:lic:source:jsonfile");
         }
@@ -496,6 +497,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task UnsupportedKeySource_ShouldErrorAsync()
         {
             cliOptions.Licensing.KeySource = "253";
+            cliOptions.Handler.LicenseHandler = Handlers.OnlineHandler;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source=253");
         }
