@@ -77,7 +77,7 @@ jobs:
     # Build Number
     # Establish a unique build number for current run YYMMDD{RUN_NUMBER}{RUN_ATTEMPT} e.g. 2201032602
     - name: Build Number
-      run: echo "PI_BUILD_NUMBER=$(date +'%y%m%d')${{ github.run_number }}${{ github.run_attempt }}" >> $GITHUB_ENV
+      run: echo "PI_BUILD_NUMBER=$(date +'%d%m%y')${{ github.run_number }}${{ github.run_attempt }}" >> $GITHUB_ENV
       continue-on-error: false
     
     # Setup preview package versions based on trigger
