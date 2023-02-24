@@ -275,7 +275,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             host = newhostBuilder.Build();
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            mockCommandRouter.ReturnedRouterResult.HandlerResult.RunnerResult.IsDisposed.Should().BeFalse();
+            mockCommandRouter.ReturnedRouterResult.Should().BeNull();
 
             // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
             tokenSource.CancelAfter(2000);
