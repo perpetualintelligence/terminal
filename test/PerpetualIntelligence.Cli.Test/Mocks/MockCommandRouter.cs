@@ -34,6 +34,8 @@ namespace PerpetualIntelligence.Cli.Mocks
         //This is used in the context of singleton Router
         public int RouteCounter { get; set; }
 
+        public CommandRouterResult ReturnedRouterResult { get; private set; }
+
         public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
             // Stats
@@ -65,7 +67,8 @@ namespace PerpetualIntelligence.Cli.Mocks
                 throw new ErrorException(explicitError);
             }
 
-            return new CommandRouterResult();
+            ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult()));
+            return ReturnedRouterResult;
         }
 
         public Task<TryResultOrError<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)

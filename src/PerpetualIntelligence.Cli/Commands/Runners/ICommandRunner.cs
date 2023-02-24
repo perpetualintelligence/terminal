@@ -5,14 +5,20 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Protocols.Abstractions;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Runners
 {
     /// <summary>
     /// An abstraction of a command runner.
     /// </summary>
-    public interface ICommandRunner<TContext, TResult> : IRunner<TContext, TResult> where TContext : CommandRunnerContext where TResult : CommandRunnerResult
+    public interface ICommandRunner<TResult> where TResult : CommandRunnerResult
     {
+        /// <summary>
+        /// Runs a command asynchronously.
+        /// </summary>
+        /// <param name="context">The runner context.</param>
+        /// <returns>The runner result.</returns>
+        Task<TResult> RunAsync(CommandRunnerContext context);
     }
 }

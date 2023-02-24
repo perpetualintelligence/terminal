@@ -21,7 +21,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// Routes to a service implementation.
         /// </summary>
         /// <param name="context"></param>
-        /// <returns>The routing service result object <see cref="RoutingServiceResult"/>.</returns>
-        public Task<RoutingServiceResult> RouteAsync(RoutingServiceContext context);
+        public Task RouteAsync(RoutingServiceContext context);
     }
 }

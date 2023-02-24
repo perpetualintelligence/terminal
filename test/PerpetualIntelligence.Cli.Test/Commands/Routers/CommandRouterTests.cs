@@ -23,7 +23,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
     {
         public CommandRouterTests() : base(TestLogger.Create<CommandRouterTests>())
         {
-
         }
 
         [TestMethod]
@@ -100,19 +99,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             await TestHelper.AssertThrowsErrorExceptionAsync(() => router.RouteAsync(routerContext), "invalid_license", "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
             Assert.IsFalse(commandExtractor.Called);
-            Assert.IsFalse(commandHandler.Called);
-        }
-
-        [TestMethod]
-        public async Task RouterShouldFindHandler()
-        {
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
-            var result = await router.TryFindHandlerAsync(routerContext);
-
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.IsInstanceOfType(result.Result, typeof(MockCommandHandlerInner));
-            Assert.IsTrue(ReferenceEquals(commandHandler, result.Result));
             Assert.IsFalse(commandHandler.Called);
         }
 

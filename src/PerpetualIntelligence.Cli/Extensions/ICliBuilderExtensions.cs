@@ -292,7 +292,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultArgument = null) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerContext, CommandRunnerResult>
+        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultArgument = null) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
         {
             return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected, defaultArgument);
         }

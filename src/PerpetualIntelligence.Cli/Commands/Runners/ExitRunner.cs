@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The exit command runner.
     /// </summary>
-    public class ExitRunner : CommandRunner<CommandRunnerContext, CommandRunnerResult>
+    public class ExitRunner : CommandRunner<CommandRunnerResult>
     {
         /// <summary>
         /// Initializes a new instance.

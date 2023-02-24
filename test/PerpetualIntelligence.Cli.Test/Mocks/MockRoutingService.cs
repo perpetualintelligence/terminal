@@ -17,10 +17,10 @@ namespace PerpetualIntelligence.Cli.Mocks
             get; private set;
         }
 
-        public Task<RoutingServiceResult> RouteAsync(RoutingServiceContext context)
+        public Task RouteAsync(RoutingServiceContext context)
         {
             Called = true;
-            return Task.FromResult(new RoutingServiceResult());
+            return Task.CompletedTask;
         }
     }
 }

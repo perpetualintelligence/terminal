@@ -12,9 +12,20 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The command runner.
     /// </summary>
-    public abstract class CommandRunner<TContext, TResult> : ICommandRunner<TContext, TResult> where TContext : CommandRunnerContext where TResult : CommandRunnerResult
+    public abstract class CommandRunner<TResult> : IDelegateCommandRunner, ICommandRunner<TResult> where TResult : CommandRunnerResult
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public async Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context)
+        {
+            var result = await RunAsync(context);
+            return (CommandRunnerResult)(object)result;
+        }
+
         /// <inheritdoc/>
-        public abstract Task<TResult> RunAsync(TContext context);
+        public abstract Task<TResult> RunAsync(CommandRunnerContext context);
     }
 }

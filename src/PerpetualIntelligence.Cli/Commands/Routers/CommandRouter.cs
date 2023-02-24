@@ -9,7 +9,6 @@ using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
@@ -51,18 +50,9 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(new CommandString(context.RawCommandString)));
 
             // Delegate to handler
-            TryResultOrError<ICommandHandler> tryHandler = await TryFindHandlerAsync(context);
             CommandHandlerContext handlerContext = new(extractorResult.CommandDescriptor, extractorResult.Command, license);
-            await tryHandler.Result!.HandleAsync(handlerContext);
-
-            return new CommandRouterResult();
-        }
-
-        /// <inheritdoc/>
-        public Task<TryResultOrError<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
-        {
-            // Dummy for design. We will always find the handler as its checked in constructor.
-            return Task.FromResult(new TryResultOrError<ICommandHandler>(commandHandler));
+            CommandHandlerResult result = await commandHandler.HandleAsync(handlerContext);
+            return new CommandRouterResult(result);
         }
 
         private readonly ICommandExtractor commandExtractor;

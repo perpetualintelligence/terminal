@@ -260,6 +260,32 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [Fact]
+        public async Task RunRouterAsTerminalShouldDisposeCommandRunnerResultAsync()
+        {
+            // Mock Console read and write
+            using var output = new StringWriter();
+            Console.SetOut(output);
+
+            // Mock the multiple lines here so that RunRouterAsTerminalAsync can readline multiple times
+            using var input = new StringReader("does not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter");
+            Console.SetIn(input);
+
+            // The default does not have and cancel or timeout
+            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newhostBuilder.Build();
+
+            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.ReturnedRouterResult.HandlerResult.RunnerResult.IsDisposed.Should().BeFalse();
+
+            // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
+            tokenSource.CancelAfter(2000);
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+            await host.RunRouterAsTerminalAsync(new RoutingServiceContext(tokenSource.Token));
+
+            mockCommandRouter.ReturnedRouterResult.HandlerResult.RunnerResult.IsDisposed.Should().BeTrue();
+        }
+
+        [Fact]
         public async Task RunRouterAsTerminalShouldTimeOutCorrectlyAsync()
         {
             // Mock Console read and write

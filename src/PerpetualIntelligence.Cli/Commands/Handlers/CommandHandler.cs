@@ -44,19 +44,15 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             await commandChecker.CheckAsync(new CommandCheckerContext(context.CommandDescriptor, context.Command));
 
             // Find the runner and run the command
-            ICommandRunner<CommandRunnerContext, CommandRunnerResult> commandRunner = await FindRunnerOrThrowAsync(context);
+            IDelegateCommandRunner commandRunner = await FindRunnerOrThrowAsync(context);
             CommandRunnerContext runnerContext = new(context.Command);
-            ICommandRunnerResult runnerResult = await commandRunner.RunAsync(runnerContext);
+            CommandRunnerResult runnerResult = await commandRunner.DelegateRunAsync(runnerContext);
 
-            // Process the result
-            CommandRunnerResultProcessorContext resultProcessorContext = new(runnerContext);
-            await runnerResult.ProcessAsync(resultProcessorContext);
-
-            // Dispose the result's managed resources
-            await runnerResult.DisposeAsync();
+            // Process the result, we don't dispose the result here. It is disposed by the routing service at the end.
+            await runnerResult.ProcessAsync(new(runnerContext));
 
             // Return the result to process it further.
-            return new CommandHandlerResult();
+            return new CommandHandlerResult(runnerResult);
         }
 
         private Task<ICommandChecker> FindCheckerOrThrowAsync(CommandHandlerContext context)
@@ -83,7 +79,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             return Task.FromResult(checker);
         }
 
-        private Task<ICommandRunner<CommandRunnerContext, CommandRunnerResult>> FindRunnerOrThrowAsync(CommandHandlerContext context)
+        private Task<IDelegateCommandRunner> FindRunnerOrThrowAsync(CommandHandlerContext context)
         {
             // No runner configured.
             if (context.CommandDescriptor.Runner == null)
@@ -99,12 +95,12 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
 
             // Invalid runner configured
-            if (runnerObj is not ICommandRunner<CommandRunnerContext, CommandRunnerResult> runner)
+            if (runnerObj is not IDelegateCommandRunner runnerDelegate)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner is not valid. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Runner.FullName);
+                throw new ErrorException(Errors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Runner.FullName);
             }
 
-            return Task.FromResult(runner);
+            return Task.FromResult(runnerDelegate);
         }
 
         private readonly ILicenseChecker licenseChecker;

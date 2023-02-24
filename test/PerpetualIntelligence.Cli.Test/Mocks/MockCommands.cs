@@ -105,154 +105,154 @@ namespace PerpetualIntelligence.Cli.Mocks
             Commands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("id1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("id2", "name2", "name2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id2", "name2", "name2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Multiple prefix names
-                NewCommandDefinition("id3", "name3", "prefix3 sub3 name3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id3", "name3", "prefix3 sub3 name3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with no args
                 NewCommandDefinition("id4", "name4", "prefix4_noargs", "desc4").Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key1").Item1,
+                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultArgumentValueDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key1").Item1,
+                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultArgumentValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
             };
 
             GroupedCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "the silent login command within the auth group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key2").Item1,
+                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "the silent login command within the auth group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key2").Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "the slient oidc login command within the slogin group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "the slient oidc login command within the slogin group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "the slient oauth login command within the slogin group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key1").Item1,
+                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "the slient oauth login command within the slogin group", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
             };
 
             AliasCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key1").Item1,
+                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestAliasArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
             };
 
             GroupedOptionsCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "top org cmd group", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid", "pi", "pi", "top org cmd group", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "org auth cmd group", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid:authid", "auth", "pi auth", "org auth cmd group", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "org auth login cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "org auth login cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "org auth slogin cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key2").Item1,
+                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "org auth slogin cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key2").Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "org auth slogin oidc cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "org auth slogin oidc cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "org auth slogin oauth cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key1").Item1,
+                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "org auth slogin oauth cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
             };
 
             LicensingCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("root1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isRoot: true).Item1,
+                NewCommandDefinition("root1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("root2", "name2", "prefix2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isRoot: true).Item1,
+                NewCommandDefinition("root2", "name2", "prefix2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("root3", "name3", "prefix3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isRoot: true).Item1,
+                NewCommandDefinition("root3", "name3", "prefix3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("grp1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isGroup: true).Item1,
+                NewCommandDefinition("grp1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("grp2", "name2", "prefix2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isGroup: true).Item1,
+                NewCommandDefinition("grp2", "name2", "prefix2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("grp3", "name3", "prefix3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isGroup: true).Item1,
+                NewCommandDefinition("grp3", "name3", "prefix3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("id1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id1", "name1", "prefix1", "desc1", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("id2", "name2", "name2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id2", "name2", "name2", "desc2", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Multiple prefix names
-                NewCommandDefinition("id3", "name3", "prefix3 sub3 name3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id3", "name3", "prefix3 sub3 name3", "desc3", TestArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with no args
                 NewCommandDefinition("id4", "name4", "prefix4_noargs", "desc4").Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key1").Item1,
+                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultArgumentValueDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "key1").Item1,
+                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultArgumentValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
             };
 
             UnicodeCommands = new()
             {
                 // --- Hindi --- Root command
-                NewCommandDefinition("uc1", "यूनिकोड", "यूनिकोड", "यूनिकोड रूट कमांड", null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isRoot: true).Item1,
+                NewCommandDefinition("uc1", "यूनिकोड", "यूनिकोड", "यूनिकोड रूट कमांड", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
 
                 // Grouped command
-                NewCommandDefinition("uc2", "परीक्षण", "यूनिकोड परीक्षण", "यूनिकोड समूहीकृत कमांड", null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isGroup: true).Item1,
+                NewCommandDefinition("uc2", "परीक्षण", "यूनिकोड परीक्षण", "यूनिकोड समूहीकृत कमांड", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
 
                 // Subcommand
-                NewCommandDefinition("uc3", "प्रिंट", "यूनिकोड परीक्षण प्रिंट", "प्रिंट कमांड", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("uc3", "प्रिंट", "यूनिकोड परीक्षण प्रिंट", "प्रिंट कमांड", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // subcommand with default argument
-                NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "एक").Item1,
+                NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "एक").Item1,
 
                 // --- Chinese --- Root command
-                NewCommandDefinition("uc5", "統一碼", "統一碼", "示例根命令描述", null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isRoot: true).Item1,
+                NewCommandDefinition("uc5", "統一碼", "統一碼", "示例根命令描述", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
 
                 // Grouped command
-                NewCommandDefinition("uc6", "測試", "統一碼 測試", "示例分組命令", null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), isGroup: true).Item1,
+                NewCommandDefinition("uc6", "測試", "統一碼 測試", "示例分組命令", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
 
                 // Subcommand
-                NewCommandDefinition("uc7", "打印", "統一碼 測試 打印", "測試命令", TestChineseUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >)).Item1,
+                NewCommandDefinition("uc7", "打印", "統一碼 測試 打印", "測試命令", TestChineseUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // subcommand with default argument
-                NewCommandDefinition("uc8", "備用", "統一碼 測試 備用", "替代描述", TestChineseUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerContext, CommandRunnerResult >), defaultArg: "第一的").Item1,
+                NewCommandDefinition("uc8", "備用", "統一碼 測試 備用", "替代描述", TestChineseUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "第一的").Item1,
             };
         }
 

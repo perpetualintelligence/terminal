@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// Runs an OS command. This runner will be available in a future release. It does not perform any action right now.
     /// For more information on road-map, <see href="https://docs.perpetualintelligence.com/articles/pi-cli/roadmap.html"/>
     /// </summary>
-    public class RunRunner : CommandRunner<CommandRunnerContext, CommandRunnerResult>
+    public class RunRunner : CommandRunner<CommandRunnerResult>
     {
         /// <summary>
         /// Initializes a new instance.

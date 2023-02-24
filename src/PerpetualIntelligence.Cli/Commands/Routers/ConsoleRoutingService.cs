@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Task<RoutingServiceResult> RouteAsync(RoutingServiceContext context)
+        public Task RouteAsync(RoutingServiceContext context)
         {
             return Task.Run(async () =>
             {
@@ -111,7 +111,9 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                             throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
                         }
 
-                        // This means a success in command runner. Wait for the next command
+                        // This means a success in command runner. Wait for the next command.
+                        // Dispose the runner result as it is not propagated any further.
+                        await routeTask.Result.HandlerResult.RunnerResult.DisposeAsync();
                     }
                     catch (Exception ex)
                     {
@@ -120,8 +122,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                         await exceptionHandler.HandleAsync(exContext);
                     }
                 };
-
-                return new RoutingServiceResult();
             });
         }
     }

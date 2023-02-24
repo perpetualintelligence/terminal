@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
@@ -14,5 +14,18 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
     /// </summary>
     public class CommandRouterResult
     {
+        /// <summary>
+        /// The command handler result.
+        /// </summary>
+        public CommandHandlerResult HandlerResult { get; set; }
+
+        /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        /// <param name="handlerResult"></param>
+        public CommandRouterResult(CommandHandlerResult handlerResult)
+        {
+            HandlerResult = handlerResult;
+        }
     }
 }

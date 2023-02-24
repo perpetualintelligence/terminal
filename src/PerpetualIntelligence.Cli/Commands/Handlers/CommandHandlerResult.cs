@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Commands.Runners;
+
 namespace PerpetualIntelligence.Cli.Commands.Handlers
 {
     /// <summary>
@@ -12,5 +14,18 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
     /// </summary>
     public class CommandHandlerResult
     {
+        /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        /// <param name="runnerResult">The command runner result.</param>
+        public CommandHandlerResult(CommandRunnerResult runnerResult)
+        {
+            RunnerResult = runnerResult;
+        }
+
+        /// <summary>
+        /// The command runner result.
+        /// </summary>
+        public CommandRunnerResult RunnerResult { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="context"></param>
-        public static Task<RoutingServiceResult> RunRouterAsTerminalAsync(this IHost host, RoutingServiceContext context)
+        public static Task RunRouterAsTerminalAsync(this IHost host, RoutingServiceContext context)
         {
             IRoutingService routingService = host.Services.GetRequiredService<IRoutingService>();
             if (routingService is ConsoleRoutingService consoleTerminalRouting)

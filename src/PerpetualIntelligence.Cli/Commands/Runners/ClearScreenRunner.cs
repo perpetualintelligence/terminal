@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The clear screen command runner.
     /// </summary>
-    public class ClearScreenRunner : CommandRunner<CommandRunnerContext, CommandRunnerResult>
+    public class ClearScreenRunner : CommandRunner<CommandRunnerResult>
     {
         /// <summary>
         /// Initializes a new instance.

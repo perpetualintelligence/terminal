@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Handlers.Mocks;
+using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
@@ -75,7 +76,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
                 var result = await handler.HandleAsync(commandContext);
 
                 Assert.IsTrue(MockCommandRunnerInnerResult.ResultProcessed);
-                Assert.IsTrue(MockCommandRunnerInnerResult.ResultDisposed);
+                Assert.IsFalse(MockCommandRunnerInnerResult.ResultDisposed);
             }
             finally
             {
@@ -104,7 +105,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             command.Item1.Runner = typeof(MockNotCheckerOrRunner);
 
             CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), Errors.ServerError, "The command runner is not valid. command_name=name1 command_id=id1 runner=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockNotCheckerOrRunner");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), Errors.ServerError, "The command runner delegate is not configured. command_name=name1 command_id=id1 runner=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockNotCheckerOrRunner");
         }
 
         [TestMethod]
@@ -168,6 +169,27 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
             var result = await handler.HandleAsync(commandContext);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType<CommandHandlerResult>(result);
+
+            Assert.IsNotNull(result.RunnerResult);
+            Assert.IsInstanceOfType<CommandRunnerResult>(result.RunnerResult);
+            
+        }
+
+        [TestMethod]
+        public async Task ValidGenericRunnerShouldlAllowHandlerAsync()
+        {
+            command.Item1.Checker = typeof(MockCommandCheckerInner);
+            command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
+
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
+            var result = await handler.HandleAsync(commandContext);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType<CommandHandlerResult>(result);
+
+            Assert.IsNotNull(result.RunnerResult);
+            Assert.IsInstanceOfType<MockGenericCommandRunnerResult>(result.RunnerResult);
         }
 
         protected override void OnTestInitialize()
@@ -194,6 +216,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             arg2.AddTransient<MockCommandRunnerInner>();
             arg2.AddTransient<MockErrorCommandRunnerInner>();
+            arg2.AddTransient<MockGenericCommandRunnerInner>();
 
             arg2.AddTransient<MockNotCheckerOrRunner>();
         }

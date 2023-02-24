@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
     /// <summary>
     /// The <c>lic</c> command displays the current licensing information.
     /// </summary>
-    public class LicInfoRunner : ICommandRunner<CommandRunnerContext, CommandRunnerResult>
+    public class LicInfoRunner : CommandRunner<CommandRunnerResult>
     {
         /// <summary>
         /// Initialize a new instance.
@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public async Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "grouped_command_limit={0}", PrintNumber(license.Limits.GroupedCommandLimit));
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument_limit={0}", PrintNumber(license.Limits.ArgumentLimit));
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument_alias={0}", license.Limits.ArgumentAlias.ToString());                                       
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument_alias={0}", license.Limits.ArgumentAlias.ToString());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_argument={0}", license.Limits.DefaultArgument.ToString());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_argument_value={0}", license.Limits.DefaultArgumentValue.ToString());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
