@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
             }
             else
             {
-                return Task.FromResult(new CommandHandlerResult(new Runners.CommandRunnerResult()));
+                return Task.FromResult(new CommandHandlerResult(new Runners.CommandRunnerResult(), new Checkers.CommandCheckerResult()));
             }
         }
     }

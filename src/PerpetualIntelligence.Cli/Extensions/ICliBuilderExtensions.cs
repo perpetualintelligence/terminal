@@ -17,6 +17,7 @@ using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Events;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Stores;
@@ -45,6 +46,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             builder.Services.AddTransient<IArgumentDataTypeMapper, TMapper>();
             builder.Services.AddTransient<IArgumentChecker, TChecker>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="IAsyncEventHandler"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddEventHandler<TEventHandler>(this ICliBuilder builder) where TEventHandler : class, IAsyncEventHandler
+        {
+            builder.Services.AddTransient<IAsyncEventHandler, TEventHandler>();
             return builder;
         }
 

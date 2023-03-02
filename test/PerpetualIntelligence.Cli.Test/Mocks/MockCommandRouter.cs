@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 throw new ErrorException(explicitError);
             }
 
-            ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult()));
+            ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()));
             return ReturnedRouterResult;
         }
 

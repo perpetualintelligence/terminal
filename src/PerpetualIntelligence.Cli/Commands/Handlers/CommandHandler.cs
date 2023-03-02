@@ -5,11 +5,13 @@
     https://terms.perpetualintelligence.com
 */
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Events;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
@@ -36,23 +38,66 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         /// <inheritdoc/>
         public async Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
         {
+            // Optional Event handler
+            IAsyncEventHandler? asyncEventHandler = services.GetService<IAsyncEventHandler>();
+
             // Check the license
             await licenseChecker.CheckAsync(new LicenseCheckerContext(context.License));
 
-            // Find the checker and check the command
-            ICommandChecker commandChecker = await FindCheckerOrThrowAsync(context);
-            await commandChecker.CheckAsync(new CommandCheckerContext(context.CommandDescriptor, context.Command));
+            // Checks the command
+            CommandCheckerResult checkerResult = await CheckCommandAsync(context, asyncEventHandler);
+
+            // Run the command
+            CommandRunnerResult runnerResult = await RunCommandAsync(context, asyncEventHandler);
+
+            // Return the processed result
+            return new CommandHandlerResult(runnerResult, checkerResult);
+        }
+
+        private async Task<CommandRunnerResult> RunCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        {
+            // Issue a before run event if configured
+            if (asyncEventHandler != null)
+            {
+                await asyncEventHandler.BeforeCommandRunAsync(context.Command);
+            }
 
             // Find the runner and run the command
             IDelegateCommandRunner commandRunner = await FindRunnerOrThrowAsync(context);
             CommandRunnerContext runnerContext = new(context.Command);
-            CommandRunnerResult runnerResult = await commandRunner.DelegateRunAsync(runnerContext);
+            CommandRunnerResult result = await commandRunner.DelegateRunAsync(runnerContext);            
 
             // Process the result, we don't dispose the result here. It is disposed by the routing service at the end.
-            await runnerResult.ProcessAsync(new(runnerContext));
+            await result.ProcessAsync(new(runnerContext));
 
-            // Return the result to process it further.
-            return new CommandHandlerResult(runnerResult);
+            // Issue a after run event if configured
+            if (asyncEventHandler != null)
+            {
+                await asyncEventHandler.AfterCommandRunAsync(context.Command, result);
+            }
+
+            return result;
+        }
+
+        private async Task<CommandCheckerResult> CheckCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        {
+            // Issue a before check event if configured
+            if (asyncEventHandler != null)
+            {
+                await asyncEventHandler.BeforeCommandCheckAsync(context.CommandDescriptor, context.Command);
+            }
+
+            // Find the checker and check the command
+            ICommandChecker commandChecker = await FindCheckerOrThrowAsync(context);
+            var result = await commandChecker.CheckAsync(new CommandCheckerContext(context.CommandDescriptor, context.Command));
+
+            // Issue a after check event if configured
+            if (asyncEventHandler != null)
+            {
+                await asyncEventHandler.AfterCommandCheckAsync(context.CommandDescriptor, context.Command, result);
+            }
+
+            return result;
         }
 
         private Task<ICommandChecker> FindCheckerOrThrowAsync(CommandHandlerContext context)

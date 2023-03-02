@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         public Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
         {
             Called = true;
-            return Task.FromResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult()));
+            return Task.FromResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()));
         }
     }
 }

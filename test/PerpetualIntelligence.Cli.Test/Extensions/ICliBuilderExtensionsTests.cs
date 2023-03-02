@@ -16,6 +16,7 @@ using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Events;
 using PerpetualIntelligence.Cli.Integration;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores;
@@ -32,6 +33,17 @@ namespace PerpetualIntelligence.Cli.Extensions
     {
         public ICliBuilderExtensionsTests() : base(TestLogger.Create<ICliBuilderExtensionsTests>())
         {
+        }
+
+        [TestMethod]
+        public void AddEventHandlerShouldCorrectlyInitialize()
+        {
+            cliBuilder.AddEventHandler<MockAsyncEventHandler>();
+
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IAsyncEventHandler)));
+            Assert.IsNotNull(arg);
+            Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
+            Assert.AreEqual(typeof(MockAsyncEventHandler), arg.ImplementationType);
         }
 
         [TestMethod]

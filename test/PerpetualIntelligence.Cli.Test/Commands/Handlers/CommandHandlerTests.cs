@@ -5,12 +5,15 @@
     https://terms.perpetualintelligence.com
 */
 
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Handlers.Mocks;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Events;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
 
@@ -174,7 +177,6 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             Assert.IsNotNull(result.RunnerResult);
             Assert.IsInstanceOfType<CommandRunnerResult>(result.RunnerResult);
-            
         }
 
         [TestMethod]
@@ -188,8 +190,53 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType<CommandHandlerResult>(result);
 
+            Assert.IsNotNull(result.CheckerResult);
+            Assert.IsInstanceOfType<CommandCheckerResult>(result.CheckerResult);
+
             Assert.IsNotNull(result.RunnerResult);
             Assert.IsInstanceOfType<MockGenericCommandRunnerResult>(result.RunnerResult);
+        }
+
+        [TestMethod]
+        public async Task ShouldCallCheckerEventIfConfigured()
+        {
+            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
+            host = hostBuilder.Build();
+            handler = new CommandHandler(host.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
+
+            command.Item1.Checker = typeof(MockCommandCheckerInner);
+            command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
+
+            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<IAsyncEventHandler>();
+            asyncEventHandler.BeforeCheckCalled.Should().Be(false);
+            asyncEventHandler.AfterCheckCalled.Should().Be(false);
+
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
+            var result = await handler.HandleAsync(commandContext);
+
+            asyncEventHandler.BeforeCheckCalled.Should().Be(true);
+            asyncEventHandler.AfterCheckCalled.Should().Be(true);
+        }
+
+        [TestMethod]
+        public async Task ShouldCallRunnerEventIfConfigured()
+        {
+            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
+            host = hostBuilder.Build();
+            handler = new CommandHandler(host.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
+
+            command.Item1.Checker = typeof(MockCommandCheckerInner);
+            command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
+
+            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<IAsyncEventHandler>();
+            asyncEventHandler.BeforeRunCalled.Should().Be(false);
+            asyncEventHandler.AfterRunCalled.Should().Be(false);
+
+            CommandHandlerContext commandContext = new(command.Item1, command.Item2, license);
+            var result = await handler.HandleAsync(commandContext);
+
+            asyncEventHandler.BeforeRunCalled.Should().Be(true);
+            asyncEventHandler.AfterRunCalled.Should().Be(true);
         }
 
         protected override void OnTestInitialize()
@@ -219,6 +266,20 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             arg2.AddTransient<MockGenericCommandRunnerInner>();
 
             arg2.AddTransient<MockNotCheckerOrRunner>();
+        }
+
+        private void ConfigureServicesWithEventHandler(IServiceCollection arg2)
+        {
+            arg2.AddTransient<MockCommandCheckerInner>();
+            arg2.AddTransient<MockErrorCommandCheckerInner>();
+
+            arg2.AddTransient<MockCommandRunnerInner>();
+            arg2.AddTransient<MockErrorCommandRunnerInner>();
+            arg2.AddTransient<MockGenericCommandRunnerInner>();
+
+            arg2.AddTransient<MockNotCheckerOrRunner>();
+
+            arg2.AddSingleton<IAsyncEventHandler, MockAsyncEventHandler>();
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;
