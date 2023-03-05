@@ -75,9 +75,11 @@ jobs:
       continue-on-error: false
     
     # Build Number
-    # Establish a unique build number for current run YYMMDD{RUN_NUMBER}{RUN_ATTEMPT} e.g. 2201032602
+    # Establish a unique build number for current run DMYY{RUN_NUMBER}{RUN_ATTEMPT} e.g. 11223234
+    # Ignore leading 0 in day and month.
+    # https://stackoverflow.com/questions/54066437/date-month-in-bash-without-leading-0-or-space
     - name: Build Number
-      run: echo "PI_BUILD_NUMBER=$(date +'%d%m%y')${{ github.run_number }}${{ github.run_attempt }}" >> $GITHUB_ENV
+      run: echo "PI_BUILD_NUMBER=$(date +'%-d%-m%y')${{ github.run_number }}${{ github.run_attempt }}" >> $GITHUB_ENV
       continue-on-error: false
     
     # Setup preview package versions based on trigger
