@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         public async Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
         {
             // Optional Event handler
-            IAsyncEventHandler? asyncEventHandler = services.GetService<IAsyncEventHandler>();
+            IAsyncCliEventHandler? asyncEventHandler = services.GetService<IAsyncCliEventHandler>();
 
             // Check the license
             await licenseChecker.CheckAsync(new LicenseCheckerContext(context.License));
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             return new CommandHandlerResult(runnerResult, checkerResult);
         }
 
-        private async Task<CommandRunnerResult> RunCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        private async Task<CommandRunnerResult> RunCommandAsync(CommandHandlerContext context, IAsyncCliEventHandler? asyncEventHandler)
         {
             // Issue a before run event if configured
             if (asyncEventHandler != null)
@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             return result;
         }
 
-        private async Task<CommandCheckerResult> CheckCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        private async Task<CommandCheckerResult> CheckCommandAsync(CommandHandlerContext context, IAsyncCliEventHandler? asyncEventHandler)
         {
             // Issue a before check event if configured
             if (asyncEventHandler != null)

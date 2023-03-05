@@ -13,25 +13,28 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalLogger"/> that indents  messages based on scopes to the standard <see cref="Console"/>.
+    /// The default <see cref="ITerminalLogger{TCategoryName}"/> that indents  messages based on scopes to the standard <see cref="Console"/>.
     /// </summary>
-    public sealed class TerminalConsoleLogger : ITerminalLogger
+    public sealed class TerminalConsoleLogger<TCategoryName> : ITerminalLogger<TCategoryName>
     {
-        private readonly CliOptions cliOptions;
+        private readonly CliOptions options;
 
         /// <summary>
-        /// Initialize a new instance.
+        /// Initializes a new instance.
         /// </summary>
-        public TerminalConsoleLogger(CliOptions cliOptions)
+        /// <param name="options">The configuration options.</param>
+        /// <param name="logger">The standard logger.</param>
+        public TerminalConsoleLogger(CliOptions options, ILogger<TCategoryName> logger)
         {
             Scopes = new List<IDisposable>();
-            this.cliOptions = cliOptions;
+            this.options = options;
+            Logger = logger;
         }
 
         /// <inheritdoc/>
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
-            return new TerminalConsoleLoggerScope<TState>(state, this);
+            return new TerminalConsoleLoggerScope<TCategoryName, TState>(state, this);
         }
 
         /// <inheritdoc/>
@@ -43,13 +46,20 @@ namespace PerpetualIntelligence.Cli.Runtime
         /// <inheritdoc/>
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
+            // Display the message to console
             if (Scopes.Count > 0)
             {
-                Console.WriteLine(new string(' ', Scopes.Count * cliOptions.Terminal.LoggerIndent) + formatter.Invoke(state, exception));
+                Console.WriteLine(new string(' ', Scopes.Count * options.Terminal.LoggerIndent) + formatter.Invoke(state, exception));
             }
             else
             {
                 Console.WriteLine(formatter.Invoke(state, exception));
+            }
+
+            // Log to standard logger.
+            if (options.Terminal.LogToStandard.GetValueOrDefault())
+            {
+                Logger.Log(logLevel, eventId, state, exception, formatter);
             }
         }
 
@@ -57,5 +67,10 @@ namespace PerpetualIntelligence.Cli.Runtime
         /// The console logger scopes.
         /// </summary>
         public List<IDisposable> Scopes { get; }
+
+        /// <summary>
+        /// The standard application logger.
+        /// </summary>
+        public ILogger<TCategoryName> Logger { get; }
     }
 }

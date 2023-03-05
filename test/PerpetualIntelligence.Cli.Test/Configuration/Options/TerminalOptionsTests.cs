@@ -24,6 +24,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             TerminalOptions options = new();
             options.LoggerIndent.Should().Be(4);
+            options.LogToStandard.Should().BeNull();
         }
     }
 }

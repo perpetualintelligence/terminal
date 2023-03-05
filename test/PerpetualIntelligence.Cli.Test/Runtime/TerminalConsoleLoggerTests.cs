@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Extensions;
+using PerpetualIntelligence.Test.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,13 +18,14 @@ using Xunit;
 namespace PerpetualIntelligence.Cli.Runtime
 {
     [Collection("Sequential")]
-    public class ConsoleLoggerTests : IAsyncLifetime
+    public class TerminalConsoleLoggerTests : IAsyncLifetime
     {
-        public ConsoleLoggerTests()
+        public TerminalConsoleLoggerTests()
         {
             originalOut = Console.Out;
             stringWriter = new StringWriter();
-            consoleLogger = new TerminalConsoleLogger(MockCliOptions.NewOptions());
+            logger = TestLogger.Create<TerminalConsoleLoggerTests>();
+            consoleLogger = new TerminalConsoleLogger<TerminalConsoleLoggerTests>(MockCliOptions.NewOptions(), logger);
         }
 
         [Fact]
@@ -141,7 +143,8 @@ namespace PerpetualIntelligence.Cli.Runtime
             return Task.CompletedTask;
         }
 
-        private TerminalConsoleLogger consoleLogger;
+        private ILogger<TerminalConsoleLoggerTests> logger;
+        private TerminalConsoleLogger<TerminalConsoleLoggerTests> consoleLogger;
         private TextWriter originalOut;
         private StringWriter stringWriter;
     }

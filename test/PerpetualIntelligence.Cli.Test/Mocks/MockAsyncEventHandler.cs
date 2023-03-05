@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    internal class MockAsyncEventHandler : IAsyncEventHandler
+    internal class MockAsyncEventHandler : IAsyncCliEventHandler
     {
         public bool AfterRunCalled { get; private set; }
         public bool BeforeRunCalled { get; private set; }

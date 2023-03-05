@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         public ILogger CreateLogger(string categoryName)
         {
             Assert.IsNotNull(StringWriter);
-            var logger = new MockLogger(StringWriter);
+            var logger = new MockStringWriterLogger(StringWriter);
             return logger;
         }
 

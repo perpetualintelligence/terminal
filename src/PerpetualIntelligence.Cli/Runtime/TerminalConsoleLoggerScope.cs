@@ -10,16 +10,16 @@ using System;
 namespace PerpetualIntelligence.Cli.Runtime
 {
     /// <summary>
-    /// The <see cref="ITerminalLogger"/> scope.
+    /// The <see cref="ITerminalLogger{TCategoryName}"/> scope.
     /// </summary>
-    public sealed class TerminalConsoleLoggerScope<TState> : IDisposable
+    public sealed class TerminalConsoleLoggerScope<TCategoryName, TState> : IDisposable
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="state">The state identifier.</param>
         /// <param name="terminalConsoleLogger">The terminal console logger.</param>
-        public TerminalConsoleLoggerScope(TState state, TerminalConsoleLogger terminalConsoleLogger)
+        public TerminalConsoleLoggerScope(TState state, TerminalConsoleLogger<TCategoryName> terminalConsoleLogger)
         {
             State = state;
             TerminalConsoleLogger = terminalConsoleLogger;
@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Cli.Runtime
         /// <summary>
         /// The console logger.
         /// </summary>
-        public TerminalConsoleLogger TerminalConsoleLogger { get; }
+        public TerminalConsoleLogger<TCategoryName> TerminalConsoleLogger { get; }
 
         /// <summary>
         /// Disposes the console scope.

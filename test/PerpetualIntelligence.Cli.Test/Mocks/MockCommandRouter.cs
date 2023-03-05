@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         //This is used in the context of singleton Router
         public int RouteCounter { get; set; }
 
-        public CommandRouterResult ReturnedRouterResult { get; private set; }
+        public CommandRouterResult? ReturnedRouterResult { get; private set; }
 
         public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {

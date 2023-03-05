@@ -162,7 +162,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             cancellationTokenSource = new CancellationTokenSource();
         }
 
-        private CancellationTokenSource cancellationTokenSource;
+        private CancellationTokenSource cancellationTokenSource = null!;
         private MockCommandExtractorInner commandExtractor = null!;
         private MockCommandHandlerInner commandHandler = null!;
         private IHost host = null!;

@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Events
     /// <summary>
     /// The  <c>pi-cli</c> asynchronous event handler.
     /// </summary>
-    public interface IAsyncEventHandler
+    public interface IAsyncCliEventHandler
     {
         /// <summary>
         /// Override this method if you will perform an asynchronous operation before <see cref="ICommandHandler"/> starts a command run.

@@ -282,7 +282,8 @@ namespace PerpetualIntelligence.Cli.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             await host.RunRouterAsTerminalAsync(new RoutingServiceContext(tokenSource.Token));
 
-            mockCommandRouter.ReturnedRouterResult.HandlerResult.RunnerResult.IsDisposed.Should().BeTrue();
+            mockCommandRouter.ReturnedRouterResult.Should().NotBeNull();
+            mockCommandRouter.ReturnedRouterResult!.HandlerResult.RunnerResult.IsDisposed.Should().BeTrue();
         }
 
         [Fact]

@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             };
 
             var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration!)
                 .Build();
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>

@@ -11,14 +11,14 @@ using System.IO;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockLogger : ILogger
+    public class MockStringWriterLogger : ILogger
     {
-        public MockLogger(StringWriter output)
+        public MockStringWriterLogger(StringWriter output)
         {
             Output = output;
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable BeginScope<TState>(TState state) where TState : notnull
         {
             return new MockLoggerScope();
         }
