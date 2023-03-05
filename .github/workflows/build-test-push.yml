@@ -37,7 +37,7 @@ jobs:
   setup:    
     runs-on: ubuntu-latest
     environment: github-release
-    timeout-minutes: 10
+    timeout-minutes: 15
     
     # Define environment variables to authenticate the package feeds
     env:
