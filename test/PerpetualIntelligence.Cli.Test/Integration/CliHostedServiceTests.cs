@@ -15,7 +15,7 @@ using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Integration.Mocks;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.IO;

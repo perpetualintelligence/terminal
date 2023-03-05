@@ -6,7 +6,7 @@
 */
 
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Protocols.Abstractions;
+using PerpetualIntelligence.Shared.Abstractions;
 
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {

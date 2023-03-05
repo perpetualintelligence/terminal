@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Services;
-using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.Threading.Tasks;

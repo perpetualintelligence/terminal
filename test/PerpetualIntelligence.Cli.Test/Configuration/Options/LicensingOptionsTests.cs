@@ -6,7 +6,7 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 

@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Protocols.Authorization;
-using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Shared.Authorization;
+using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
@@ -222,7 +222,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseOnlineCheckModel checkModel = new()
             {
-                Issuer = Protocols.Constants.Issuer,
+                Issuer = Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
@@ -289,7 +289,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseOfflineCheckModel checkModel = new()
             {
-                Issuer = Protocols.Constants.Issuer,
+                Issuer = Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,

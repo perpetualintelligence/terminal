@@ -9,7 +9,7 @@ using FluentAssertions;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Test.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -6,7 +6,7 @@
 */
 
 using PerpetualIntelligence.Cli.Licensing;
-using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Shared.Licensing;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks

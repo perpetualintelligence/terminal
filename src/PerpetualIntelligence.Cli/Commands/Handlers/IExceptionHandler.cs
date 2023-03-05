@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Protocols.Abstractions;
+using PerpetualIntelligence.Shared.Abstractions;
 using System;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers

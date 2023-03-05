@@ -6,7 +6,7 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Protocols.Licensing;
+using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;

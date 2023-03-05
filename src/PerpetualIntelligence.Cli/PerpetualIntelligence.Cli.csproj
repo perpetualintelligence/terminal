@@ -23,12 +23,12 @@
     <Choose>
         <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
-                <ProjectReference Include="..\..\..\protocols\src\PerpetualIntelligence.Protocols\PerpetualIntelligence.Protocols.csproj" />
+                <ProjectReference Include="..\..\..\shared\src\PerpetualIntelligence.Shared\PerpetualIntelligence.Shared.csproj" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="PerpetualIntelligence.Protocols" Version="$(PI_PROTOCOLS_PACKAGE_VERSION)" />
+                <PackageReference Include="PerpetualIntelligence.Shared" Version="$(PI_PROTOCOLS_PACKAGE_VERSION)" />
             </ItemGroup>
         </Otherwise>
     </Choose>

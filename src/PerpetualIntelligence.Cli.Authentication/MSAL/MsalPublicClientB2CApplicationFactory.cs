@@ -6,7 +6,7 @@
 */
 
 using Microsoft.Identity.Client;
-using PerpetualIntelligence.Protocols.Authorization;
+using PerpetualIntelligence.Shared.Authorization;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Authentication.Msal
