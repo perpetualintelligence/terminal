@@ -9,7 +9,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Test.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -24,8 +23,7 @@ namespace PerpetualIntelligence.Cli.Runtime
         {
             originalOut = Console.Out;
             stringWriter = new StringWriter();
-            logger = TestLogger.Create<TerminalConsoleLoggerTests>();
-            consoleLogger = new TerminalConsoleLogger<TerminalConsoleLoggerTests>(MockCliOptions.NewOptions(), logger);
+            consoleLogger = new TerminalConsoleLogger("test", MockCliOptions.NewOptions());
         }
 
         [Fact]
@@ -143,9 +141,8 @@ namespace PerpetualIntelligence.Cli.Runtime
             return Task.CompletedTask;
         }
 
-        private ILogger<TerminalConsoleLoggerTests> logger;
-        private TerminalConsoleLogger<TerminalConsoleLoggerTests> consoleLogger;
-        private TextWriter originalOut;
-        private StringWriter stringWriter;
+        private readonly TerminalConsoleLogger consoleLogger;
+        private readonly TextWriter originalOut;
+        private readonly StringWriter stringWriter;
     }
 }
