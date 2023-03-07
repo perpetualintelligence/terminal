@@ -11,9 +11,8 @@ using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Licensing;
-using PerpetualIntelligence.Cli.Services;
-using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Licensing;
 using System;
 using System.Reflection;
 using System.Threading;
@@ -77,7 +76,7 @@ namespace PerpetualIntelligence.Cli.Integration
             }
             catch (ErrorException ex)
             {
-                ConsoleHelper.WriteLineColor(ConsoleColor.Red, $"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
+                logger.LogError($"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
             }
         }
 
@@ -101,18 +100,18 @@ namespace PerpetualIntelligence.Cli.Integration
             {
                 if (license.Usage == LicenseUsages.Educational)
                 {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your community license plan is free for educational purposes. For non-educational or production environment, you require a commercial license.");
+                    logger.LogInformation("Your community license plan is free for educational purposes. For non-educational or production environment, you require a commercial license.");
                 }
                 else if (license.Usage == LicenseUsages.RnD)
                 {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
+                    logger.LogInformation("Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
                 }
             }
             else if (license.Plan == LicensePlans.Custom)
             {
                 if (license.Usage == LicenseUsages.RnD)
                 {
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Yellow, "Your demo license is free for RnD, test and evaluation purposes. For production environment, you require a commercial license.");
+                    logger.LogInformation("Your demo license is free for RnD, test and evaluation purposes. For production environment, you require a commercial license.");
                 }
             }
 
@@ -133,8 +132,8 @@ namespace PerpetualIntelligence.Cli.Integration
         /// </summary>
         protected virtual void OnStarted()
         {
-            Console.WriteLine("Server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
-            Console.WriteLine();
+            logger.LogInformation("Server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
+            logger.LogInformation("");
         }
 
         /// <summary>
@@ -143,7 +142,7 @@ namespace PerpetualIntelligence.Cli.Integration
         /// </summary>
         protected virtual void OnStopped()
         {
-            ConsoleHelper.WriteLineColor(ConsoleColor.Red, "Server stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
+            logger.LogInformation("Server stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
         }
 
         /// <summary>
@@ -152,7 +151,7 @@ namespace PerpetualIntelligence.Cli.Integration
         /// </summary>
         protected virtual void OnStopping()
         {
-            Console.WriteLine("Stopping server...");
+            logger.LogInformation("Stopping server...");
         }
 
         /// <summary>
@@ -160,13 +159,12 @@ namespace PerpetualIntelligence.Cli.Integration
         /// </summary>
         protected virtual Task PrintHostApplicationHeaderAsync()
         {
-            Console.WriteLine("---------------------------------------------------------------------------------------------");
-            Console.WriteLine("Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.");
-            Console.WriteLine("For license, terms, and data policies, go to:");
-            Console.WriteLine("https://terms.perpetualintelligence.com");
-            Console.WriteLine("---------------------------------------------------------------------------------------------");
+            logger.LogInformation("---------------------------------------------------------------------------------------------");
+            logger.LogInformation("Demo custom header line-1");
+            logger.LogInformation("Demo custom header line-2");
+            logger.LogInformation("---------------------------------------------------------------------------------------------");
 
-            Console.WriteLine($"Starting server \"{Shared.Constants.CliUrn}\" version={typeof(CliHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
+            logger.LogInformation($"Starting server \"{Shared.Constants.CliUrn}\" version={typeof(CliHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
             return Task.CompletedTask;
         }
 
@@ -178,17 +176,17 @@ namespace PerpetualIntelligence.Cli.Integration
         protected virtual Task PrintHostApplicationLicensingAsync(License license)
         {
             // Print the license information
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"consumer={license.Claims.Name} ({license.Claims.TenantId})");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"country={license.Claims.TenantCountry}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"subject={cliOptions.Licensing.Subject}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"license_handler={license.Handler}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"usage={license.Usage}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Green, $"plan={license.Plan}");
-            ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_source={cliOptions.Licensing.KeySource}");
+            logger.LogInformation($"consumer={license.Claims.Name} ({license.Claims.TenantId})");
+            logger.LogInformation($"country={license.Claims.TenantCountry}");
+            logger.LogInformation($"subject={cliOptions.Licensing.Subject}");
+            logger.LogInformation($"license_handler={license.Handler}");
+            logger.LogInformation($"usage={license.Usage}");
+            logger.LogInformation($"plan={license.Plan}");
+            logger.LogInformation($"key_source={cliOptions.Licensing.KeySource}");
             if (license.LicenseKeySource == LicenseSources.JsonFile)
             {
                 // Don't dump the key, just the lic file path
-                ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, $"key_file={license.LicenseKey}");
+                logger.LogInformation($"key_file={license.LicenseKey}");
             }
 
             return Task.CompletedTask;

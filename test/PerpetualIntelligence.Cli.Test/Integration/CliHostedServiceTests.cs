@@ -8,7 +8,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -16,11 +15,9 @@ using PerpetualIntelligence.Cli.Integration.Mocks;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Shared.Extensions;
 using System;
-using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -43,7 +40,10 @@ namespace PerpetualIntelligence.Cli.Integration
             mockLicenseChecker = new();
             mockOptionsChecker = new();
 
-            hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services =>
+            logger = new MockCliHostedServiceLogger();
+
+            hostBuilder = Host.CreateDefaultBuilder()
+            .ConfigureServices(services =>
             {
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
@@ -53,65 +53,49 @@ namespace PerpetualIntelligence.Cli.Integration
             host = hostBuilder.Start();
 
             // Different hosted services to test behaviors
-            defaultCliHostedService = new CliHostedService(host.Services, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
-            mockCustomCliHostedService = new MockCliCustomHostedService(host.Services, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
-            mockCliEventsHostedService = new MockCliEventsHostedService(host.Services, cliOptions, new LoggerFactory().CreateLogger<CliHostedService>());
+            defaultCliHostedService = new CliHostedService(host.Services, cliOptions, logger);
+            mockCustomCliHostedService = new MockCliCustomHostedService(host.Services, cliOptions, logger);
+            mockCliEventsHostedService = new MockCliEventsHostedService(host.Services, cliOptions, logger);
         }
-
-   
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_AppHeader()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             // use reflection to call
             MethodInfo? printAppHeader = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationHeaderAsync", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printAppHeader);
             printAppHeader.Invoke(defaultCliHostedService, null);
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(7);
-            printedHeaders[0].Should().Be("---------------------------------------------------------------------------------------------");
-            printedHeaders[1].Should().Be("Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.");
-            printedHeaders[2].Should().Be("For license, terms, and data policies, go to:");
-            printedHeaders[3].Should().Be("https://terms.perpetualintelligence.com");
-            printedHeaders[4].Should().Be("---------------------------------------------------------------------------------------------");
-            printedHeaders[5].Should().Be("Starting server \"urn:oneimlx:cli\" version=1.0.2-local");
-            printedHeaders[6].Should().Be("");
+            logger.Messages.Should().HaveCount(5);
+            logger.Messages[0].Should().Be("---------------------------------------------------------------------------------------------");
+            logger.Messages[1].Should().Be("Demo custom header line-1");
+            logger.Messages[2].Should().Be("Demo custom header line-2");
+            logger.Messages[3].Should().Be("---------------------------------------------------------------------------------------------");
+            logger.Messages[4].Should().Be("Starting server \"urn:oneimlx:cli\" version=1.0.2-local");
         }
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_LicenseInfo()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
             printLic.Invoke(defaultCliHostedService, new[] { MockLicenses.TestLicense });
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(9);
-            printedHeaders[0].Should().Be("consumer=test_name (test_tenantid)");
-            printedHeaders[1].Should().Be("country=");
-            printedHeaders[2].Should().Be("subject=");
-            printedHeaders[3].Should().Be("license_handler=offline");
-            printedHeaders[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
-            printedHeaders[5].Should().Be("plan=urn:oneimlx:lic:plan:community");
-            printedHeaders[6].Should().Be("key_source=urn:oneimlx:lic:source:jsonfile");
-            printedHeaders[7].Should().Be("key_file=testLicKey1");
-            printedHeaders[8].Should().Be("");
+            logger.Messages.Should().HaveCount(8);
+            logger.Messages[0].Should().Be("consumer=test_name (test_tenantid)");
+            logger.Messages[1].Should().Be("country=");
+            logger.Messages[2].Should().Be("subject=");
+            logger.Messages[3].Should().Be("license_handler=offline");
+            logger.Messages[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
+            logger.Messages[5].Should().Be("plan=urn:oneimlx:lic:plan:community");
+            logger.Messages[6].Should().Be("key_source=urn:oneimlx:lic:source:jsonfile");
+            logger.Messages[7].Should().Be("key_file=testLicKey1");
         }
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Demo()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
@@ -119,18 +103,13 @@ namespace PerpetualIntelligence.Cli.Integration
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
             printLic.Invoke(defaultCliHostedService, new[] { community });
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Your demo license is free for RnD, test and evaluation purposes. For production environment, you require a commercial license.");
-            printedHeaders[1].Should().Be("");
+            logger.Messages.Should().HaveCount(1);
+            logger.Messages[0].Should().Be("Your demo license is free for RnD, test and evaluation purposes. For production environment, you require a commercial license.");
         }
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Educational()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Community, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
@@ -138,18 +117,13 @@ namespace PerpetualIntelligence.Cli.Integration
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
             printLic.Invoke(defaultCliHostedService, new[] { community });
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Your community license plan is free for educational purposes. For non-educational or production environment, you require a commercial license.");
-            printedHeaders[1].Should().Be("");
+            logger.Messages.Should().HaveCount(1);
+            logger.Messages[0].Should().Be("Your community license plan is free for educational purposes. For non-educational or production environment, you require a commercial license.");
         }
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Community, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
@@ -157,62 +131,45 @@ namespace PerpetualIntelligence.Cli.Integration
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
             printLic.Invoke(defaultCliHostedService, new[] { community });
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
-            printedHeaders[1].Should().Be("");
+            logger.Messages.Should().HaveCount(1);
+            logger.Messages[0].Should().Be("Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
         }
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_OnStarted()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             // use reflection to call
             MethodInfo? print = defaultCliHostedService.GetType().GetMethod("OnStarted", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(print);
             print.Invoke(defaultCliHostedService, null);
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(3);
-            printedHeaders[0].Should().StartWith("Server started on");
-            printedHeaders[1].Should().Be("");
-            printedHeaders[2].Should().Be("");
+            logger.Messages.Should().HaveCount(2);
+            logger.Messages[0].Should().StartWith("Server started on");
+            logger.Messages[1].Should().Be("");
         }
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_OnStopped()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             // use reflection to call
             MethodInfo? print = defaultCliHostedService.GetType().GetMethod("OnStopped", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(print);
             print.Invoke(defaultCliHostedService, null);
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().StartWith("Server stopped on");
-            printedHeaders[1].Should().Be("");
+            logger.Messages.Should().HaveCount(1);
+            logger.Messages[0].Should().StartWith("Server stopped on");
         }
 
         [Fact]
         public void StartAsync_Default_ShouldPrint_OnStopping()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             // use reflection to call
             MethodInfo? print = defaultCliHostedService.GetType().GetMethod("OnStopping", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(print);
             print.Invoke(defaultCliHostedService, null);
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-            printedHeaders.Should().HaveCount(2);
-            printedHeaders[0].Should().Be("Stopping server...");
-            printedHeaders[1].Should().Be("");
+            logger.Messages.Should().HaveCount(1);
+            logger.Messages[0].Should().Be("Stopping server...");
         }
 
         [Fact]
@@ -283,16 +240,11 @@ namespace PerpetualIntelligence.Cli.Integration
         [Fact]
         public async Task StartAsync_ShouldHandleErrorExceptionCorrectly()
         {
-            stringWriter = new StringWriter();
-            Console.SetOut(stringWriter);
-
             mockLicenseExtractor.ThrowError = true;
             await defaultCliHostedService.StartAsync(cancellationToken);
 
-            string[] printedHeaders = stringWriter.ToString().SplitByNewline();
-
             // Last is a new line
-            printedHeaders[printedHeaders.Length - 2].Should().Be("test_error=test description. arg1=val1 arg2=val2");
+            logger.Messages.Last().Should().Be("test_error=test description. arg1=val1 arg2=val2");
         }
 
         [Fact]
@@ -328,21 +280,11 @@ namespace PerpetualIntelligence.Cli.Integration
 
         public Task InitializeAsync()
         {
-            originalWriter = Console.Out;
             return Task.CompletedTask;
         }
 
         public Task DisposeAsync()
         {
-            Console.SetOut(originalWriter);
-
-            host.Dispose();
-
-            if (stringWriter != null)
-            {
-                stringWriter.Dispose();
-            }
-
             return Task.CompletedTask;
         }
 
@@ -356,7 +298,6 @@ namespace PerpetualIntelligence.Cli.Integration
         private MockLicenseChecker mockLicenseChecker;
         private MockLicenseExtractor mockLicenseExtractor;
         private MockOptionsChecker mockOptionsChecker;
-        private StringWriter? stringWriter = null!;
-        private TextWriter originalWriter =null!;
+        private MockCliHostedServiceLogger logger = null!;
     }
 }
