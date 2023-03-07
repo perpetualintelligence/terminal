@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// The argument checker.
+    /// The default argument checker.
     /// </summary>
     /// <remarks>
     /// The <see cref="ArgumentChecker"/> uses the <see cref="ValidationAttribute"/> to check an argument value.
@@ -79,12 +79,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             if (context.ArgumentDescriptor.ValueCheckers != null)
             {
-                foreach (ValidationAttribute vAttr in context.ArgumentDescriptor.ValueCheckers)
+                foreach (IArgumentValueChecker valueChecker in context.ArgumentDescriptor.ValueCheckers)
                 {
                     try
                     {
-                        ValidationContext validationContext = new(context.Argument);
-                        vAttr.Validate(context.Argument.Value, validationContext);
+                        valueChecker.CheckAsync(context.Argument);
                     }
                     catch (Exception ex)
                     {

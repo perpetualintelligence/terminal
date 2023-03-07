@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Cli.Commands.Checkers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -58,9 +59,9 @@ namespace PerpetualIntelligence.Cli.Integration
 
                 // Validation Attribute
                 IEnumerable<ValidationAttribute> attributes = localSeviceProvider.GetServices<ValidationAttribute>();
-                if(attributes.Any())
+                if (attributes.Any())
                 {
-                    argumentDescriptor.ValueCheckers = attributes;
+                    argumentDescriptor.ValueCheckers = attributes.Select(e => new DataValidationArgumentValueChecker(e));
                 }
 
                 commandBuilder.Services.AddSingleton(argumentDescriptor);

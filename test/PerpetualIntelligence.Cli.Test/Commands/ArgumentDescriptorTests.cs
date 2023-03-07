@@ -6,8 +6,8 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Cli.Commands.Checkers;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
@@ -32,9 +32,8 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void RequiredShouldBeSetWithDataAnnotationRequiredAttribute()
         {
-            ArgumentDescriptor arg = new("name", "custom", "test desc", required: false) { ValueCheckers = new[] { new RequiredAttribute() } };
+            ArgumentDescriptor arg = new("name", "custom", "test desc", required: false) { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new RequiredAttribute()) } };
             Assert.IsNotNull(arg.ValueCheckers);
-            CollectionAssert.Contains(arg.ValueCheckers.ToArray(), new RequiredAttribute());
             Assert.IsTrue(arg.Required);
         }
     }

@@ -821,9 +821,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[3], "key4", DataType.EmailAddress, "Key4 value email");
             AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[4], "key5", DataType.Url, "Key5 value url");
             AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[5], "key6", nameof(Boolean), "Key6 no value");
-            AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new ValidationAttribute[] { new OneOfAttribute("INR", "USD", "EUR") });
+            AssertArgumentDescriptor(result.CommandDescriptor.ArgumentDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new DataValidationArgumentValueChecker[] { new(new OneOfAttribute("INR", "USD", "EUR")) });
             AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[7], "key8", nameof(Int32), "Key8 value custom int");
-            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new ValidationAttribute[] { new RequiredAttribute(), new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5) });
+            AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new DataValidationArgumentValueChecker[] { new(new RequiredAttribute()), new(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) });
             AssertArgumentIdentity(result.CommandDescriptor.ArgumentDescriptors[9], "key10", nameof(String), "Key10 value custom string");
 
             // Supported arguments 10, user only passed 7
@@ -947,22 +947,24 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgumentDescriptor(ArgumentDescriptor arg, string name, DataType dataType, string? description = null, ValidationAttribute[]? supportedValues = null)
+        private void AssertArgumentDescriptor(ArgumentDescriptor arg, string name, DataType dataType, string? description = null, DataValidationArgumentValueChecker[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
             Assert.IsNull(arg.CustomDataType);
             Assert.AreEqual(arg.Description, description);
-            CollectionAssert.AreEquivalent(arg.ValueCheckers?.ToArray(), supportedValues);
+
+            DataValidationArgumentValueChecker[]? expectedCheckers = arg.ValueCheckers?.Cast<DataValidationArgumentValueChecker>().ToArray();
+            CollectionAssert.AreEquivalent(expectedCheckers, supportedValues);
         }
 
-        private void AssertArgumentIdentity(ArgumentDescriptor arg, string name, string customDataType, string? description = null, ValidationAttribute[]? supportedValues = null)
+        private void AssertArgumentIdentity(ArgumentDescriptor arg, string name, string customDataType, string? description = null, DataValidationArgumentValueChecker[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
             Assert.AreEqual(arg.CustomDataType, customDataType);
             Assert.AreEqual(arg.Description, description);
-            CollectionAssert.AreEquivalent(arg.ValueCheckers?.ToArray(), supportedValues);
+            CollectionAssert.AreEquivalent(arg.ValueCheckers?.Cast<DataValidationArgumentValueChecker>().ToArray(), supportedValues);
         }
 
         private ArgumentExtractor argExtractor = null!;

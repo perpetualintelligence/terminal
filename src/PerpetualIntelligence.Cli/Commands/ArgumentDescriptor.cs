@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Commands.Checkers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -127,21 +128,21 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Determines is the argument is required.
         /// </summary>
-        public bool? Required { get; set; }
+        public bool? Required { get; private set; }
 
         /// <summary>
         /// The argument value checkers.
         /// </summary>
-        public IEnumerable<ValidationAttribute>? ValueCheckers
+        public IEnumerable<IArgumentValueChecker>? ValueCheckers
         {
             get
             {
-                return validationAttributes;
+                return valueCheckers;
             }
 
             set
             {
-                validationAttributes = value;
+                valueCheckers = value;
                 SetValidationRequired();
             }
         }
@@ -151,15 +152,15 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         private void SetValidationRequired()
         {
-            if (validationAttributes != null)
+            if (valueCheckers != null)
             {
-                if (validationAttributes.Contains(new RequiredAttribute()))
+                if (valueCheckers.Any(e => e.GetRawType() == typeof(RequiredAttribute)))
                 {
                     Required = true;
                 }
             }
         }
 
-        private IEnumerable<ValidationAttribute>? validationAttributes;
+        private IEnumerable<IArgumentValueChecker>? valueCheckers;
     }
 }

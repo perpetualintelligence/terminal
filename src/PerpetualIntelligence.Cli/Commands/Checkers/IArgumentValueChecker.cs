@@ -5,6 +5,9 @@
     https://terms.perpetualintelligence.com
 */
 
+using System;
+using System.Threading.Tasks;
+
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
@@ -12,5 +15,17 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// </summary>
     public interface IArgumentValueChecker
     {
+        /// <summary>
+        /// Checks the argument value.
+        /// </summary>
+        /// <param name="argument">The argument to check.</param>
+        /// <returns></returns>
+        Task CheckAsync(Argument argument);
+
+        /// <summary>
+        /// Returns the underlying checker raw type.
+        /// </summary>
+        /// <returns></returns>
+        public Type GetRawType();
     }
 }
