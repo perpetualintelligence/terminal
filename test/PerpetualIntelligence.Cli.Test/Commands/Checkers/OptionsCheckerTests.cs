@@ -204,12 +204,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task TerminalLoggerIndentLessThanOrEqualToZeroShouldThtow()
+        public async Task LoggerIndentLessThanOrEqualToZeroShouldThtow()
         {
-            options.Terminal.LoggerIndent = -3;
+            options.Logging.LoggerIndent = -3;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=-3");
 
-            options.Terminal.LoggerIndent = 0;
+            options.Logging.LoggerIndent = 0;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=0");
         }
 

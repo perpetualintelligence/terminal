@@ -5,26 +5,28 @@
     https://terms.perpetualintelligence.com
 */
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
 using System;
 using System.Collections.Concurrent;
 
 namespace PerpetualIntelligence.Cli.Runtime
 {
     /// <summary>
-    /// The <see cref="ILoggerProvider"/> for <see cref="ITerminalLogger"/>.
+    /// The <see cref="ILoggerProvider"/> for <see cref="TerminalLogger"/>.
     /// </summary>
-    public sealed class TerminalLoggerProvider : ILoggerProvider
+    public sealed class TerminalLoggerProvider<TLogger> : ILoggerProvider where TLogger : TerminalLogger
     {
-        private readonly ConcurrentDictionary<string, ITerminalLogger> loggers;
+        private readonly ConcurrentDictionary<string, TerminalLogger> loggers;
+        private readonly IServiceProvider services;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public TerminalLoggerProvider()
+        public TerminalLoggerProvider(IServiceProvider services)
         {
-            loggers = new ConcurrentDictionary<string, ITerminalLogger>(StringComparer.OrdinalIgnoreCase);
+            loggers = new ConcurrentDictionary<string, TerminalLogger>(StringComparer.OrdinalIgnoreCase);
+            this.services = services;
         }
 
         /// <summary>
@@ -35,7 +37,7 @@ namespace PerpetualIntelligence.Cli.Runtime
         public ILogger CreateLogger(string categoryName)
         {
             // Use configure to pass the pre-configured options
-            return loggers.GetOrAdd(categoryName, factory => new TerminalConsoleLogger(categoryName, null!));
+            return loggers.GetOrAdd(categoryName, factory => (TerminalLogger)ActivatorUtilities.CreateInstance(services, typeof(TLogger), categoryName));
         }
 
         /// <inheritdoc/>

@@ -13,9 +13,9 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Cli.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalLogger"/> that indents  messages based on scopes to the standard <see cref="Console"/>.
+    /// The default <see cref="ILogger"/> that indents  messages based on scopes to the standard <see cref="Console"/>.
     /// </summary>
-    public sealed class TerminalConsoleLogger : ITerminalLogger
+    public sealed class TerminalConsoleLogger : TerminalLogger
     {
         private readonly CliOptions options;
 
@@ -30,43 +30,6 @@ namespace PerpetualIntelligence.Cli.Runtime
             this.options = options;
         }
 
-        /// <inheritdoc/>
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
-        {
-            return new TerminalConsoleLoggerScope<TState>(state, this);
-        }
-
-        /// <inheritdoc/>
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-        {
-            if (!IsEnabled(logLevel))
-            {
-                return;
-            }
-
-            // Display the message to console
-            if (Scopes.Count > 0)
-            {
-                Console.WriteLine(new string(' ', Scopes.Count * options.Terminal.LoggerIndent) + formatter.Invoke(state, exception));
-            }
-            else
-            {
-                Console.WriteLine(formatter.Invoke(state, exception));
-            }
-
-            // Log to standard logger.
-            if (Logger != null && options.Terminal.LogToStandard.GetValueOrDefault())
-            {
-                Logger.Log(logLevel, eventId, state, exception, formatter);
-            }
-        }
-
         /// <summary>
         /// The console logger scopes.
         /// </summary>
@@ -76,5 +39,42 @@ namespace PerpetualIntelligence.Cli.Runtime
         /// The standard application logger.
         /// </summary>
         public ILogger? Logger { get; }
+
+        /// <inheritdoc/>
+        public override IDisposable? BeginScope<TState>(TState state)
+        {
+            return new TerminalConsoleLoggerScope<TState>(state, this);
+        }
+
+        /// <inheritdoc/>
+        public override bool IsEnabled(LogLevel logLevel)
+        {
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            if (!IsEnabled(logLevel))
+            {
+                return;
+            }
+
+            // Display the message to console
+            if (Scopes.Count > 0)
+            {
+                Console.WriteLine(new string(' ', Scopes.Count * options.Logging.LoggerIndent) + formatter.Invoke(state, exception));
+            }
+            else
+            {
+                Console.WriteLine(formatter.Invoke(state, exception));
+            }
+
+            // Log to standard logger.
+            if (Logger != null && options.Logging.LogToStandard.GetValueOrDefault())
+            {
+                Logger.Log(logLevel, eventId, state, exception, formatter);
+            }
+        }
     }
 }

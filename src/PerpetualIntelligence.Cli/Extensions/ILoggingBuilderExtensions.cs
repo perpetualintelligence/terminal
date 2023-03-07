@@ -18,13 +18,13 @@ namespace PerpetualIntelligence.Cli.Extensions
     public static class ILoggingBuilderExtensions
     {
         /// <summary>
-        /// Adds <see cref="TerminalLoggerProvider"/> to the logging providers.
+        /// Adds <see cref="TerminalLoggerProvider{TLogger}"/> to the logging providers.
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static ILoggingBuilder AddTerminalLogger<TTerminalLogger>(this ILoggingBuilder builder) where TTerminalLogger : class, ITerminalLogger
+        public static ILoggingBuilder AddTerminalLogger<TTerminalLogger>(this ILoggingBuilder builder) where TTerminalLogger : TerminalLogger
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TerminalLoggerProvider>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TerminalLoggerProvider<TTerminalLogger>>());
             return builder;
         }
     }

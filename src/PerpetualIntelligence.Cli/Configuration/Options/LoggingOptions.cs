@@ -12,5 +12,14 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
     /// </summary>
     public class LoggingOptions : Shared.Infrastructure.LoggingOptions
     {
+        /// <summary>
+        /// The indent size for the terminal logger messages.
+        /// </summary>
+        public int LoggerIndent { get; set; } = 4;
+
+        /// <summary>
+        /// Logs all the terminal messages to standard logger.
+        /// </summary>
+        public bool? LogToStandard { get; set; }
     }
 }

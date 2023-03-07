@@ -5,26 +5,35 @@
     https://terms.perpetualintelligence.com
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
+using Xunit;
 
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
-    [TestClass]
     public class LoggingOptionsTests : InitializerTests
     {
         public LoggingOptionsTests() : base(TestLogger.Create<LoggingOptionsTests>())
         {
         }
 
-        [TestMethod]
+        [Fact]
+        public void DefualtValuesShouldBeCorrect()
+        {
+            LoggingOptions options = new LoggingOptions();
+
+            options.LoggerIndent.Should().Be(4);
+            options.LogToStandard.Should().BeNull();
+        }
+
+        [Fact]
         public void LoggingOptionsShouldHaveCorrectDefaultValues()
         {
             LoggingOptions options = new LoggingOptions();
 
-            Assert.IsTrue(options.ObsureErrorArguments);
-            Assert.AreEqual("****", options.ObscureErrorArgumentString);
+            options.ObsureErrorArguments.Should().BeTrue();
+            options.ObscureErrorArgumentString.Should().Be("****");
         }
     }
 }
