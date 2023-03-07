@@ -60,7 +60,7 @@ namespace PerpetualIntelligence.Cli.Integration
                 IEnumerable<ValidationAttribute> attributes = localSeviceProvider.GetServices<ValidationAttribute>();
                 if(attributes.Any())
                 {
-                    argumentDescriptor.ValidationAttributes = attributes;
+                    argumentDescriptor.ValueCheckers = attributes;
                 }
 
                 commandBuilder.Services.AddSingleton(argumentDescriptor);

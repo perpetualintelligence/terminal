@@ -25,16 +25,16 @@ namespace PerpetualIntelligence.Cli.Commands
         public void RequiredExplicitlySetShouldNotSetDataAnnotationRequiredAttribute()
         {
             ArgumentDescriptor arg = new("name", "custom", "test desc", required: true);
-            Assert.IsNull(arg.ValidationAttributes);
+            Assert.IsNull(arg.ValueCheckers);
             Assert.IsTrue(arg.Required);
         }
 
         [TestMethod]
         public void RequiredShouldBeSetWithDataAnnotationRequiredAttribute()
         {
-            ArgumentDescriptor arg = new("name", "custom", "test desc", required: false) { ValidationAttributes = new[] { new RequiredAttribute() } };
-            Assert.IsNotNull(arg.ValidationAttributes);
-            CollectionAssert.Contains(arg.ValidationAttributes.ToArray(), new RequiredAttribute());
+            ArgumentDescriptor arg = new("name", "custom", "test desc", required: false) { ValueCheckers = new[] { new RequiredAttribute() } };
+            Assert.IsNotNull(arg.ValueCheckers);
+            CollectionAssert.Contains(arg.ValueCheckers.ToArray(), new RequiredAttribute());
             Assert.IsTrue(arg.Required);
         }
     }

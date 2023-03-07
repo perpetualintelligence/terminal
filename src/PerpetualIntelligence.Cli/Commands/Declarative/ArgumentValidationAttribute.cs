@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     /// <summary>
     /// Declares an <see cref="ArgumentDescriptor"/> validation attribute.
     /// </summary>
-    /// <seealso cref="ArgumentDescriptor.ValidationAttributes"/>
+    /// <seealso cref="ArgumentDescriptor.ValueCheckers"/>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class ArgumentValidationAttribute : Attribute
     {

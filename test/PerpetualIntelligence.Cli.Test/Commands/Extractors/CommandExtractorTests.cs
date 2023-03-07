@@ -953,7 +953,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.DataType, dataType);
             Assert.IsNull(arg.CustomDataType);
             Assert.AreEqual(arg.Description, description);
-            CollectionAssert.AreEquivalent(arg.ValidationAttributes?.ToArray(), supportedValues);
+            CollectionAssert.AreEquivalent(arg.ValueCheckers?.ToArray(), supportedValues);
         }
 
         private void AssertArgumentIdentity(ArgumentDescriptor arg, string name, string customDataType, string? description = null, ValidationAttribute[]? supportedValues = null)
@@ -962,7 +962,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.DataType, DataType.Custom);
             Assert.AreEqual(arg.CustomDataType, customDataType);
             Assert.AreEqual(arg.Description, description);
-            CollectionAssert.AreEquivalent(arg.ValidationAttributes?.ToArray(), supportedValues);
+            CollectionAssert.AreEquivalent(arg.ValueCheckers?.ToArray(), supportedValues);
         }
 
         private ArgumentExtractor argExtractor = null!;

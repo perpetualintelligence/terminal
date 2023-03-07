@@ -130,9 +130,9 @@ namespace PerpetualIntelligence.Cli.Commands
         public bool? Required { get; set; }
 
         /// <summary>
-        /// The data annotation validation attributes to check the argument value.
+        /// The argument value checkers.
         /// </summary>
-        public IEnumerable<ValidationAttribute>? ValidationAttributes
+        public IEnumerable<ValidationAttribute>? ValueCheckers
         {
             get
             {
