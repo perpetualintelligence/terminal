@@ -50,9 +50,9 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(new CommandString(context.RawCommandString)));
 
             // Delegate to handler
-            CommandHandlerContext handlerContext = new(extractorResult.CommandDescriptor, extractorResult.Command, license);
+            CommandHandlerContext handlerContext = new(context.Route, extractorResult.CommandDescriptor, extractorResult.Command, license);
             CommandHandlerResult result = await commandHandler.HandleAsync(handlerContext);
-            return new CommandRouterResult(result);
+            return new CommandRouterResult(result, context.Route);
         }
 
         private readonly ICommandExtractor commandExtractor;

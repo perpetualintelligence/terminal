@@ -50,13 +50,13 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="IAsyncCliEventHandler"/> to the service collection.
+        /// Adds the <see cref="IAsyncEventHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddEventHandler<TEventHandler>(this ICliBuilder builder) where TEventHandler : class, IAsyncCliEventHandler
+        public static ICliBuilder AddEventHandler<TEventHandler>(this ICliBuilder builder) where TEventHandler : class, IAsyncEventHandler
         {
-            builder.Services.AddTransient<IAsyncCliEventHandler, TEventHandler>();
+            builder.Services.AddTransient<IAsyncEventHandler, TEventHandler>();
             return builder;
         }
 

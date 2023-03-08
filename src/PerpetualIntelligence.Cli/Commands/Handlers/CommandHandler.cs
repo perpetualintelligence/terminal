@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         public async Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
         {
             // Optional Event handler
-            IAsyncCliEventHandler? asyncEventHandler = services.GetService<IAsyncCliEventHandler>();
+            IAsyncEventHandler? asyncEventHandler = services.GetService<IAsyncEventHandler>();
 
             // Check the license
             await licenseChecker.CheckAsync(new LicenseCheckerContext(context.License));
@@ -54,18 +54,18 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             return new CommandHandlerResult(runnerResult, checkerResult);
         }
 
-        private async Task<CommandRunnerResult> RunCommandAsync(CommandHandlerContext context, IAsyncCliEventHandler? asyncEventHandler)
+        private async Task<CommandRunnerResult> RunCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
         {
             // Issue a before run event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.BeforeCommandRunAsync(context.Command);
+                await asyncEventHandler.BeforeCommandRunAsync(context.CommandRoute, context.Command);
             }
 
             // Find the runner and run the command
             IDelegateCommandRunner commandRunner = await FindRunnerOrThrowAsync(context);
             CommandRunnerContext runnerContext = new(context.Command);
-            CommandRunnerResult result = await commandRunner.DelegateRunAsync(runnerContext);            
+            CommandRunnerResult result = await commandRunner.DelegateRunAsync(runnerContext);
 
             // Process the result, we don't dispose the result here. It is disposed by the routing service at the end.
             await result.ProcessAsync(new(runnerContext));
@@ -73,18 +73,18 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Issue a after run event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.AfterCommandRunAsync(context.Command, result);
+                await asyncEventHandler.AfterCommandRunAsync(context.CommandRoute, context.Command, result);
             }
 
             return result;
         }
 
-        private async Task<CommandCheckerResult> CheckCommandAsync(CommandHandlerContext context, IAsyncCliEventHandler? asyncEventHandler)
+        private async Task<CommandCheckerResult> CheckCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
         {
             // Issue a before check event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.BeforeCommandCheckAsync(context.CommandDescriptor, context.Command);
+                await asyncEventHandler.BeforeCommandCheckAsync(context.CommandRoute, context.CommandDescriptor, context.Command);
             }
 
             // Find the checker and check the command
@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Issue a after check event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.AfterCommandCheckAsync(context.CommandDescriptor, context.Command, result);
+                await asyncEventHandler.AfterCommandCheckAsync(context.CommandRoute, context.CommandDescriptor, context.Command, result);
             }
 
             return result;

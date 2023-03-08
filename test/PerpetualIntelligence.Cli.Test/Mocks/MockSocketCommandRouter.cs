@@ -68,7 +68,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 throw new ErrorException(explicitError);
             }
 
-            return new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()));
+            return new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()), context.Route);
         }
 
         public Task<TryResultOrError<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)

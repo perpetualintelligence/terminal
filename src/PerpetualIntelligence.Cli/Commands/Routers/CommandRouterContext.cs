@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using System;
 using System.Threading;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers
@@ -12,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
     /// <summary>
     /// The <c>pi-cli</c> generic command router context.
     /// </summary>
-    public class CommandRouterContext
+    public sealed class CommandRouterContext
     {
         /// <summary>
         /// The command string.
@@ -28,16 +29,22 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
 
             RawCommandString = rawCommandString;
             CancellationToken = cancellationToken;
+            Route = new CommandRoute(Guid.NewGuid().ToString());
         }
 
         /// <summary>
         /// The cancellation token.
         /// </summary>
-        public CancellationToken CancellationToken { get; protected set; }
+        public CancellationToken CancellationToken { get; }
 
         /// <summary>
         /// The raw command string.
         /// </summary>
-        public string RawCommandString { get; protected set; }
+        public string RawCommandString { get; }
+
+        /// <summary>
+        /// The command route.
+        /// </summary>
+        public CommandRoute Route { get; }
     }
 }

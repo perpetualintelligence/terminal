@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             cliBuilder.AddEventHandler<MockAsyncEventHandler>();
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IAsyncCliEventHandler)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IAsyncEventHandler)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockAsyncEventHandler), arg.ImplementationType);

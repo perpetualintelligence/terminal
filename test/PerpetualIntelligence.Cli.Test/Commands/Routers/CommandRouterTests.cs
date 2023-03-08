@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using FluentAssertions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Routers.Mocks;
@@ -129,6 +130,29 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             Assert.AreEqual(licenseExtractor.TestLicense, commandHandler.ContextCalled.License);
             Assert.IsTrue(commandExtractor.Called);
             Assert.IsTrue(commandHandler.Called);
+        }
+
+        [TestMethod]
+        public void EachContextShouldBeUnique()
+        {
+            CommandRouterContext context1 = new("test", CancellationToken.None);
+            CommandRouterContext context2 = new("test", CancellationToken.None);
+            CommandRouterContext context3 = new("test", CancellationToken.None);
+
+            context1.Route.Id.Should().NotBe(context2.Route.Id);
+            context2.Route.Id.Should().NotBe(context3.Route.Id);
+            context1.Route.Id.Should().NotBe(context3.Route.Id);
+        }
+
+        [TestMethod]
+        public async Task RouterShouldPassRouteToHandler()
+        {
+            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            var result = await router.RouteAsync(routerContext);
+
+            Assert.IsNotNull(commandHandler.ContextCalled);
+            commandHandler.Called.Should().BeTrue();
+            commandHandler.ContextCalled.CommandRoute.Should().BeSameAs(routerContext.Route);
         }
 
         [TestMethod]

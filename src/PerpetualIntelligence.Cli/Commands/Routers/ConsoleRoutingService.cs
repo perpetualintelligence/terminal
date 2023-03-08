@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                 // Track the application lifetime so we can know whether cancellation is requested.
                 while (true)
                 {
-                    // Avoid block threads during cancellation and let the
+                    // Avoid blocking threads during cancellation and let the
                     // applicationLifetime.ApplicationStopping.IsCancellationRequested get synchronized so we can honor the
                     // app shutdown
                     await Task.Delay(options.Router.SyncDelay.GetValueOrDefault());

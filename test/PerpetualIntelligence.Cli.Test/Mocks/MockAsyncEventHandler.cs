@@ -7,38 +7,39 @@
 
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Events;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    internal class MockAsyncEventHandler : IAsyncCliEventHandler
+    internal class MockAsyncEventHandler : IAsyncEventHandler
     {
         public bool AfterRunCalled { get; private set; }
         public bool BeforeRunCalled { get; private set; }
         public bool AfterCheckCalled { get; private set; }
         public bool BeforeCheckCalled { get; private set; }
 
-        public Task AfterCommandCheckAsync(CommandDescriptor commandDescriptor, Command command, CommandCheckerResult result)
+        public Task AfterCommandCheckAsync(CommandRoute commandRoute, CommandDescriptor commandDescriptor, Command command, CommandCheckerResult result)
         {
             AfterCheckCalled = true;
             return Task.CompletedTask;
         }
 
-        public Task AfterCommandRunAsync(Command command, CommandRunnerResult result)
+        public Task AfterCommandRunAsync(CommandRoute commandRoute, Command command, CommandRunnerResult result)
         {
             AfterRunCalled = true;
             return Task.CompletedTask;
         }
 
-        public Task BeforeCommandCheckAsync(CommandDescriptor commandDescriptor, Command command)
+        public Task BeforeCommandCheckAsync(CommandRoute commandRoute, CommandDescriptor commandDescriptor, Command command)
         {
             BeforeCheckCalled = true;
             return Task.CompletedTask;
         }
 
-        public Task BeforeCommandRunAsync(Command command)
+        public Task BeforeCommandRunAsync(CommandRoute commandRoute, Command command)
         {
             BeforeRunCalled = true;
             return Task.CompletedTask;
