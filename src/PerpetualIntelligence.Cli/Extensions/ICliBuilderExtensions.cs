@@ -78,6 +78,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
+        /// Adds the command <see cref="IHelpProvider"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        public static ICliBuilder AddHelpProvider<THelpProvider>(this ICliBuilder builder) where THelpProvider : class, IHelpProvider
+        {
+            builder.Services.AddSingleton<IHelpProvider, THelpProvider>();
+            return builder;
+        }
+
+        /// <summary>
         /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>

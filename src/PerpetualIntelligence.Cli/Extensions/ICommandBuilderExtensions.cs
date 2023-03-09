@@ -82,7 +82,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
         public static ICommandBuilder Tags(this ICommandBuilder builder, params string[] tags)
         {
-            if(!tags.Any())
+            if (!tags.Any())
             {
                 throw new InvalidOperationException("The tags cannot be null or empty.");
             }

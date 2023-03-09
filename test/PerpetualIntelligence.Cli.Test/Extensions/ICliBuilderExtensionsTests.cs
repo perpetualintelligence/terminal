@@ -36,6 +36,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         [TestMethod]
+        public void AddHelpProviderShouldCorrectlyInitialize()
+        {
+            cliBuilder.AddHelpProvider<MockHelpProvider>();
+
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IHelpProvider)));
+            Assert.IsNotNull(arg);
+            Assert.AreEqual(ServiceLifetime.Singleton, arg.Lifetime);
+            Assert.AreEqual(typeof(MockHelpProvider), arg.ImplementationType);
+        }
+
+        [TestMethod]
         public void AddEventHandlerShouldCorrectlyInitialize()
         {
             cliBuilder.AddEventHandler<MockAsyncEventHandler>();

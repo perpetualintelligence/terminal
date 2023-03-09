@@ -56,5 +56,10 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// The terminal configuration options.
         /// </summary>
         public TerminalOptions Terminal { get; set; } = new TerminalOptions();
+
+        /// <summary>
+        /// The help configuration options.
+        /// </summary>
+        public HelpOptions Help { get; set; } = new HelpOptions();
     }
 }

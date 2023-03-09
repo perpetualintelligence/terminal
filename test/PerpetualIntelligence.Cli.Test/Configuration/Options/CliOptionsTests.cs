@@ -31,6 +31,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             Assert.IsNotNull(options.Licensing);
             Assert.IsNotNull(options.Router);
             Assert.IsNotNull(options.Http);
+            Assert.IsNotNull(options.Terminal);
+            Assert.IsNotNull(options.Help);
         }
     }
 }
