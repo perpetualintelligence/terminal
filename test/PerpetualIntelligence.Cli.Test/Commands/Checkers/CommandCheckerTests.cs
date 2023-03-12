@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             Arguments arguments = new(textHandler);
             arguments.Add(new Argument("key2", "value2", DataType.Text));
-            Command argsCommand = new("id1", "name1", "desc1", arguments);
+            Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.MissingArgument, "The required argument is missing. command_name=name1 command_id=id1 argument=key1");

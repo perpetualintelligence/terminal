@@ -20,5 +20,12 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         /// <param name="context">The runner context.</param>
         /// <returns>The runner result.</returns>
         Task<TResult> RunAsync(CommandRunnerContext context);
+
+        /// <summary>
+        /// Runs a command help asynchronously.
+        /// </summary>
+        /// <param name="context">The runner context.</param>
+        /// <returns>The runner result.</returns>
+        Task HelpAsync(CommandRunnerContext context);
     }
 }

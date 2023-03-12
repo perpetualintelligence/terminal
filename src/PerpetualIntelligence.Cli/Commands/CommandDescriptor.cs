@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Cli.Commands.Extractors;
-using PerpetualIntelligence.Cli.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -95,6 +94,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The command description.
         /// </summary>
         public string Description { get; }
+
+        /// <summary>
+        /// The command usage.
+        /// </summary>
+        public string? Usage { get; }
 
         /// <summary>
         /// The command id.

@@ -256,7 +256,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             };
         }
 
-        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, ArgumentDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false)
+        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, ArgumentDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false, Arguments? arguments = null)
         {
             var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultArgument: defaultArg)
             {
@@ -267,7 +267,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 IsRoot = isRoot.GetValueOrDefault()
             };
 
-            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(id, name, desc));
+            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, arguments));
         }
 
         public static List<CommandDescriptor> AliasCommands;

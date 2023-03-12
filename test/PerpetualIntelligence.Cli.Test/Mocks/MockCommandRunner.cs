@@ -12,11 +12,19 @@ namespace PerpetualIntelligence.Cli.Mocks
 {
     public class MockCommandRunner : ICommandRunner<CommandRunnerResult>
     {
-        public bool Called { get; set; }
+        public bool RunCalled { get; set; }
+
+        public bool HelpCalled { get; set; }
+
+        public Task HelpAsync(CommandRunnerContext context)
+        {
+            HelpCalled = true;
+            return Task.FromResult(new CommandRunnerResult());
+        }
 
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
-            Called = true;
+            RunCalled = true;
             return Task.FromResult(new CommandRunnerResult());
         }
     }

@@ -11,16 +11,18 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Handlers.Mocks;
+using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Events;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
-
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers
@@ -142,6 +144,114 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         }
 
         [TestMethod]
+        public async Task HelpErrorShouldErrorHandler()
+        {
+            // Make sure checker pass so runner can fail
+            helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
+
+            helpCommand.Item1.Runner = typeof(MockErrorCommandRunnerInner);
+
+            CommandHandlerContext commandContext = new(new CommandRoute("test_id"), helpCommand.Item1, helpCommand.Item2, license);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_runner_help_error", "test_runner_help_error_desc");
+        }
+
+        [TestMethod]
+        public async Task HelpShouldBeCalledIfEnabledAndRequested()
+        {
+            helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
+            helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
+
+            CommandHandlerContext commandContext = new(new CommandRoute("test_id"), helpCommand.Item1, helpCommand.Item2, license);
+            await handler.HandleAsync(commandContext);
+
+            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
+            mockHelpProvider.HelpCalled.Should().BeTrue();
+
+            MockCommandRunnerInner commandRunnerInner = host.Services.GetRequiredService<MockCommandRunnerInner>();
+            commandRunnerInner.DelegateHelpCalled.Should().BeTrue();
+            commandRunnerInner.HelpCalled.Should().BeTrue();
+
+            commandRunnerInner.DelegateRunCalled.Should().BeFalse();
+            commandRunnerInner.RunCalled.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task HelpShouldBeCalledAndReturnsNoProcessing()
+        {
+            helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
+            helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
+
+            CommandHandlerContext commandContext = new(new CommandRoute("test_id"), helpCommand.Item1, helpCommand.Item2, license);
+            var result = await handler.HandleAsync(commandContext);
+
+            result.RunnerResult.Should().BeEquivalentTo(CommandRunnerResult.NoProcessing);
+        }
+
+        [TestMethod]
+        public async Task RunShouldBeCalledIfHelpIsDisabled()
+        {
+            options.Help.Disabled = true;
+
+            command.Item1.Checker = typeof(MockCommandCheckerInner);
+            command.Item1.Runner = typeof(MockCommandRunnerInner);
+
+            CommandHandlerContext commandContext = new(new CommandRoute("test_id"), command.Item1, command.Item2, license);
+            var result = await handler.HandleAsync(commandContext);
+
+            MockCommandRunnerInner commandRunnerInner = host.Services.GetRequiredService<MockCommandRunnerInner>();
+            commandRunnerInner.DelegateHelpCalled.Should().BeFalse();
+            commandRunnerInner.HelpCalled.Should().BeFalse();
+
+            commandRunnerInner.DelegateRunCalled.Should().BeTrue();
+            commandRunnerInner.RunCalled.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task RunShouldBeCalled()
+        {
+            command.Item1.Checker = typeof(MockCommandCheckerInner);
+            command.Item1.Runner = typeof(MockCommandRunnerInner);
+
+            CommandHandlerContext commandContext = new(new CommandRoute("test_id"), command.Item1, command.Item2, license);
+            var result = await handler.HandleAsync(commandContext);
+
+            MockCommandRunnerInner commandRunnerInner = host.Services.GetRequiredService<MockCommandRunnerInner>();
+            commandRunnerInner.DelegateHelpCalled.Should().BeFalse();
+            commandRunnerInner.HelpCalled.Should().BeFalse();
+
+            commandRunnerInner.DelegateRunCalled.Should().BeTrue();
+            commandRunnerInner.RunCalled.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task HelpShouldNotBeCalledIfDisabledAndRequested()
+        {
+            options.Help.Disabled = true;
+
+            helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
+            helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
+
+            CommandHandlerContext commandContext = new(new CommandRoute("test_id"), helpCommand.Item1, helpCommand.Item2, license);
+            await handler.HandleAsync(commandContext);
+
+            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
+            mockHelpProvider.HelpCalled.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task HelpShouldNotBeCalledIfEnabledAndNotRequested()
+        {
+            command.Item1.Checker = typeof(MockCommandCheckerInner);
+            command.Item1.Runner = typeof(MockCommandRunnerInner);
+
+            CommandHandlerContext commandContext = new(new CommandRoute("test_id"), command.Item1, command.Item2, license);
+            await handler.HandleAsync(commandContext);
+
+            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
+            mockHelpProvider.HelpCalled.Should().BeFalse();
+        }
+
+        [TestMethod]
         public async Task RunnerNotConfiguredShouldError()
         {
             // Make sure checker pass so runner can fail
@@ -245,10 +355,22 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
             host = hostBuilder.Build();
 
+            options = MockCliOptions.New();
             license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1");
-            options = MockCliOptions.New();
+
+            ArgumentDescriptors argumentDescriptors = new(new UnicodeTextHandler(), new List<ArgumentDescriptor>()
+            {
+                new ArgumentDescriptor(options.Help.HelpArgumentId, nameof(Boolean), "Help options")
+            });
+
+            // This mocks the help requested
+            Arguments arguments = new(new UnicodeTextHandler());
+            Argument helpAttr = new(argumentDescriptors.First(), true);
+            arguments.Add(helpAttr);
+            helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "prefix2", "desc2", argumentDescriptors, arguments: arguments);
+
             handler = new CommandHandler(host.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
         }
 
@@ -259,14 +381,16 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
         private void ConfigureServices(IServiceCollection arg2)
         {
-            arg2.AddTransient<MockCommandCheckerInner>();
-            arg2.AddTransient<MockErrorCommandCheckerInner>();
+            arg2.AddSingleton<MockCommandCheckerInner>();
+            arg2.AddSingleton<MockErrorCommandCheckerInner>();
 
-            arg2.AddTransient<MockCommandRunnerInner>();
-            arg2.AddTransient<MockErrorCommandRunnerInner>();
-            arg2.AddTransient<MockGenericCommandRunnerInner>();
+            arg2.AddSingleton<MockCommandRunnerInner>();
+            arg2.AddSingleton<MockErrorCommandRunnerInner>();
+            arg2.AddSingleton<MockGenericCommandRunnerInner>();
 
-            arg2.AddTransient<MockNotCheckerOrRunner>();
+            arg2.AddSingleton<MockNotCheckerOrRunner>();
+
+            arg2.AddSingleton<IHelpProvider, MockHelpProvider>();
         }
 
         private void ConfigureServicesWithEventHandler(IServiceCollection arg2)
@@ -281,9 +405,12 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             arg2.AddTransient<MockNotCheckerOrRunner>();
 
             arg2.AddSingleton<IAsyncEventHandler, MockAsyncEventHandler>();
+
+            arg2.AddSingleton<IHelpProvider, MockHelpProvider>();
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;
+        private Tuple<CommandDescriptor, Command> helpCommand = null!;
         private CommandHandler handler = null!;
         private IHost host = null!;
         private License license = null!;

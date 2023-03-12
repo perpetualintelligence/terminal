@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
+using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using System.Threading.Tasks;
 
@@ -12,16 +13,37 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
 {
     internal class MockCommandRunnerInner : IDelegateCommandRunner, ICommandRunner<CommandRunnerResult>
     {
-        public bool DelegateCalled  { get; set; }
+        public bool DelegateRunCalled { get; set; }
+
+        public bool HelpCalled { get; set; }
+        public bool RunCalled { get; private set; }
+        public bool DelegateHelpCalled { get; private set; }
+
+        private IHelpProvider helpProvider;
+
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider)
+        {
+            this.helpProvider = helpProvider;
+            DelegateHelpCalled = true;
+            await HelpAsync(context);
+            return CommandRunnerResult.NoProcessing;
+        }
 
         public Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context)
         {
-            DelegateCalled = true;
+            DelegateRunCalled = true;
             return RunAsync(context);
+        }
+
+        public async Task HelpAsync(CommandRunnerContext context)
+        {
+            await helpProvider.ProvideHelpAsync(new HelpProviderContext(context.Command));
+            HelpCalled = true;
         }
 
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
+            RunCalled = true;
             return Task.FromResult<CommandRunnerResult>(new MockCommandRunnerInnerResult());
         }
     }

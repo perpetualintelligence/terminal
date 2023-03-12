@@ -26,6 +26,11 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string HelpArgumentId { get; set; } = "help";
 
         /// <summary>
+        /// The help description.
+        /// </summary>
+        public string HelpArgumentDescription { get; set; } = "The command help.";
+
+        /// <summary>
         /// The help argument alias.
         /// </summary>
         /// <remarks>

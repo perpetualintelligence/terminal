@@ -28,14 +28,29 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// </summary>
         public ILogger<HelpLoggerProvider> Logger { get; }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task ProvideHelpAsync()
+        /// <inheritdoc/>
+        public Task ProvideHelpAsync(HelpProviderContext context)
         {
-            throw new System.NotImplementedException();
+            Logger.LogInformation("Command:");
+            Logger.LogInformation("    " + context.Command.Descriptor.Name);
+            Logger.LogInformation(context.Command.Descriptor.Description);
+
+            if (context.Command.Descriptor.ArgumentDescriptors != null)
+            {
+                foreach (ArgumentDescriptor argument in context.Command.Descriptor.ArgumentDescriptors)
+                {
+                    if (argument.Alias != null)
+                    {
+                        Logger.LogInformation("{0} ({1}) - {2}", argument.Id, argument.Alias, argument.Description);
+                    }
+                    else
+                    {
+                        Logger.LogInformation("{0} - {1}", argument.Id, argument.Description);
+                    }
+                }
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

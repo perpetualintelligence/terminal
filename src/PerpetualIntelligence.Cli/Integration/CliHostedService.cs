@@ -8,12 +8,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Licensing;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,13 +32,13 @@ namespace PerpetualIntelligence.Cli.Integration
         /// Initializes a new instance.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="cliOptions">The configuration options.</param>
+        /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CliHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<CliHostedService> logger)
+        public CliHostedService(IServiceProvider serviceProvider, CliOptions options, ILogger<CliHostedService> logger)
         {
             this.hostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
             this.serviceProvider = serviceProvider;
-            this.cliOptions = cliOptions;
+            this.options = options;
             this.logger = logger;
         }
 
@@ -69,15 +72,47 @@ namespace PerpetualIntelligence.Cli.Integration
                 await PrintHostApplicationMandatoryLicensingAsync(result.License);
 
                 // Do mandatory configuration check
-                await CheckHostApplicationMandatoryConfigurationAsync(cliOptions);
+                await CheckHostApplicationMandatoryConfigurationAsync(options);
 
                 // Do custom configuration check
-                await CheckHostApplicationConfigurationAsync(cliOptions);
+                await CheckHostApplicationConfigurationAsync(options);
+
+                // Register the help arguments with command descriptors. This is intentionally done at the end so we don't take
+                // performance hit in case there is a license check failure.
+                await RegisterHelpArgumentAsync();
             }
             catch (ErrorException ex)
             {
                 logger.LogError($"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
             }
+        }
+
+        /// <summary>
+        /// Registers the help arguments based on configuration options.
+        /// </summary>
+        /// <returns></returns>
+        internal virtual Task RegisterHelpArgumentAsync()
+        {
+            if (options.Help.Disabled.GetValueOrDefault())
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(() =>
+            {
+                // This can be a long list of command, but it is executed only once during startup.
+                IEnumerable<CommandDescriptor> commandDescriptors = serviceProvider.GetServices<CommandDescriptor>();
+                foreach (CommandDescriptor commandDescriptor in commandDescriptors)
+                {
+                    if (commandDescriptor.ArgumentDescriptors == null)
+                    {
+                        commandDescriptor.ArgumentDescriptors = new ArgumentDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
+                    }
+
+                    ArgumentDescriptor helpDescriptor = new(options.Help.HelpArgumentId, nameof(Boolean), options.Help.HelpArgumentDescription) { Alias = options.Help.HelpArgumentAlias };
+                    commandDescriptor.ArgumentDescriptors.Add(helpDescriptor);
+                }
+            });
         }
 
         /// <summary>
@@ -178,11 +213,11 @@ namespace PerpetualIntelligence.Cli.Integration
             // Print the license information
             logger.LogInformation($"consumer={license.Claims.Name} ({license.Claims.TenantId})");
             logger.LogInformation($"country={license.Claims.TenantCountry}");
-            logger.LogInformation($"subject={cliOptions.Licensing.Subject}");
+            logger.LogInformation($"subject={options.Licensing.Subject}");
             logger.LogInformation($"license_handler={license.Handler}");
             logger.LogInformation($"usage={license.Usage}");
             logger.LogInformation($"plan={license.Plan}");
-            logger.LogInformation($"key_source={cliOptions.Licensing.KeySource}");
+            logger.LogInformation($"key_source={options.Licensing.KeySource}");
             if (license.LicenseKeySource == LicenseSources.JsonFile)
             {
                 // Don't dump the key, just the lic file path
@@ -228,7 +263,7 @@ namespace PerpetualIntelligence.Cli.Integration
             return result;
         }
 
-        private readonly CliOptions cliOptions;
+        private readonly CliOptions options;
         private readonly IHostApplicationLifetime hostApplicationLifetime;
         private readonly ILogger<CliHostedService> logger;
         private readonly IServiceProvider serviceProvider;

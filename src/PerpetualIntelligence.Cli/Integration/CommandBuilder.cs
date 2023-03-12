@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Cli.Integration
         /// <returns></returns>
         public ICliBuilder Add()
         {
-            // Add the command descriptor from local to the global cli builder.
+            // Add the command descriptor from local to the global CLI builder.
             ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
             CommandDescriptor commandDescriptor = localSeviceProvider.GetRequiredService<CommandDescriptor>();
 
@@ -74,7 +74,6 @@ namespace PerpetualIntelligence.Cli.Integration
             // Make sure the command runner and checker are added. TODO this may add duplicate types
             cliBuilder.Services.AddTransient(commandDescriptor.Checker);
             cliBuilder.Services.AddTransient(commandDescriptor.Runner);
-
             cliBuilder.Services.AddSingleton(commandDescriptor);
 
             return cliBuilder;

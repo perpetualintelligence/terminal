@@ -8,9 +8,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Cli.Extensions;
 using PerpetualIntelligence.Cli.Integration.Mocks;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
@@ -235,6 +237,11 @@ namespace PerpetualIntelligence.Cli.Integration
             mockCustomCliHostedService.CheckAppConfigCalled.Should().NotBeNull();
             mockCustomCliHostedService.CheckAppConfigCalled.Item1.Should().Be(8);
             mockCustomCliHostedService.CheckAppConfigCalled.Item2.Should().BeTrue();
+
+            // #9 call
+            mockCustomCliHostedService.RegisterHelpArgumentCalled.Should().NotBeNull();
+            mockCustomCliHostedService.RegisterHelpArgumentCalled.Item1.Should().Be(9);
+            mockCustomCliHostedService.RegisterHelpArgumentCalled.Item2.Should().BeTrue();
         }
 
         [Fact]
@@ -257,7 +264,7 @@ namespace PerpetualIntelligence.Cli.Integration
             hostBuilder.ConfigureServices(services =>
             {
                 // Make sure we use the instance created for test
-                services.AddHostedService(CreateEventsHostedService);
+                services.AddHostedService(EventsHostedService);
             });
 
             mockCliEventsHostedService.OnStartedCalled.Should().BeFalse();
@@ -273,9 +280,96 @@ namespace PerpetualIntelligence.Cli.Integration
             //mockCliEventsHostedService.OnStoppedCalled.Should().BeTrue();
         }
 
-        private MockCliEventsHostedService CreateEventsHostedService(IServiceProvider arg)
+        [Fact]
+        public async void StartAsync_ShouldRegister_HelpArgument_ByDefault()
+        {
+            CliOptions cliOptions = MockCliOptions.NewOptions();
+
+            hostBuilder = Host.CreateDefaultBuilder()
+            .ConfigureServices(services =>
+            {
+                services.AddCli()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
+                       .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                       .DefineArgument("id2", nameof(Int32), "test arg2", "alais_id2").Add()
+                       .DefineArgument("id3", nameof(Boolean), "test arg3").Add()
+                   .Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add();
+
+                // Replace with Mock DIs
+                services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
+                services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
+                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<ITextHandler, UnicodeTextHandler>();
+            });
+            host = await hostBuilder.StartAsync();
+
+            defaultCliHostedService = new CliHostedService(host.Services, cliOptions, logger);
+            await defaultCliHostedService.StartAsync(CancellationToken.None);
+
+            var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
+            commandDescriptors.Should().NotBeEmpty();
+            foreach (var commandDescriptor in commandDescriptors)
+            {
+                commandDescriptor.ArgumentDescriptors.Should().NotBeEmpty();
+                ArgumentDescriptor? helpAttr = commandDescriptor.ArgumentDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.HelpArgumentId));
+                helpAttr.Should().NotBeNull();
+                helpAttr!.Alias.Should().Be(cliOptions.Help.HelpArgumentAlias);
+                helpAttr.Description.Should().Be(cliOptions.Help.HelpArgumentDescription);
+            }
+        }
+
+        [Fact]
+        public async void StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
+        {
+            CliOptions cliOptions = MockCliOptions.NewOptions();
+            cliOptions.Help.Disabled = true;
+
+            hostBuilder = Host.CreateDefaultBuilder()
+            .ConfigureServices(services =>
+            {
+                services.AddCli()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1")
+                        .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                    .Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
+                       .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                       .DefineArgument("id2", nameof(Int32), "test arg2", "alais_id2").Add()
+                       .DefineArgument("id3", nameof(Boolean), "test arg3").Add()
+                   .Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd3", "cmd3", "cmd3", "test1")
+                        .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                    .Add();
+
+                // Replace with Mock DIs
+                services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
+                services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
+                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<ITextHandler, UnicodeTextHandler>();
+            });
+            host = await hostBuilder.StartAsync();
+
+            defaultCliHostedService = new CliHostedService(host.Services, cliOptions, logger);
+            await defaultCliHostedService.StartAsync(CancellationToken.None);
+
+            var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
+            commandDescriptors.Should().NotBeEmpty();
+            foreach (var commandDescriptor in commandDescriptors)
+            {
+                ArgumentDescriptor? helpAttr = commandDescriptor.ArgumentDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.HelpArgumentId));
+                helpAttr.Should().BeNull();
+            }
+        }
+
+        private MockCliEventsHostedService EventsHostedService(IServiceProvider arg)
         {
             return mockCliEventsHostedService;
+        }
+
+        private CliHostedService DefaultHostedService(IServiceProvider arg)
+        {
+            return defaultCliHostedService;
         }
 
         public Task InitializeAsync()

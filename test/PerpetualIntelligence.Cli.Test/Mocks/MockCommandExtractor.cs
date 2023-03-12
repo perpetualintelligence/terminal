@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             Called = true;
 
             var cIdt = new Commands.CommandDescriptor("testid", "testname", "testname", "desc");
-            return Task.FromResult(new CommandExtractorResult(new Command("testid", "testname", "desc"), cIdt));
+            return Task.FromResult(new CommandExtractorResult(new Command(cIdt), cIdt));
         }
     }
 }

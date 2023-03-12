@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
-
 namespace PerpetualIntelligence.Cli.Commands.Providers
 {
     /// <summary>

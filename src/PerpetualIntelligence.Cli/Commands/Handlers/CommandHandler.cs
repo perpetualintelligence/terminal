@@ -8,6 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -62,21 +63,32 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
                 await asyncEventHandler.BeforeCommandRunAsync(context.CommandRoute, context.Command);
             }
 
-            // Find the runner and run the command
+            // Find the runner to run the command
             IDelegateCommandRunner commandRunner = await FindRunnerOrThrowAsync(context);
             CommandRunnerContext runnerContext = new(context.Command);
-            CommandRunnerResult result = await commandRunner.DelegateRunAsync(runnerContext);
+            CommandRunnerResult runnerResult;
+
+            // Run or Help
+            if (!options.Help.Disabled.GetValueOrDefault() && runnerContext.Command.TryGetArgument(options.Help.HelpArgumentId, out Argument helpArg))
+            {
+                IHelpProvider helpProvider = services.GetRequiredService<IHelpProvider>();
+                runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, helpProvider);
+            }
+            else
+            {
+                runnerResult = await commandRunner.DelegateRunAsync(runnerContext);
+            }
 
             // Process the result, we don't dispose the result here. It is disposed by the routing service at the end.
-            await result.ProcessAsync(new(runnerContext));
+            await runnerResult.ProcessAsync(new(runnerContext));
 
             // Issue a after run event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.AfterCommandRunAsync(context.CommandRoute, context.Command, result);
+                await asyncEventHandler.AfterCommandRunAsync(context.CommandRoute, context.Command, runnerResult);
             }
 
-            return result;
+            return runnerResult;
         }
 
         private async Task<CommandCheckerResult> CheckCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)

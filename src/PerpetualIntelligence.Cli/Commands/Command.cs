@@ -23,33 +23,6 @@ namespace PerpetualIntelligence.Cli.Commands
     public sealed class Command
     {
         /// <summary>
-        /// Initialize a new instance.
-        /// </summary>
-        /// <param name="id">The command id.</param>
-        /// <param name="name">The command name.</param>
-        /// <param name="description">The command description.</param>
-        /// <param name="arguments">The command arguments.</param>
-        /// <param name="customProperties">The custom command properties.</param>
-        public Command(string id, string name, string description, Arguments? arguments = null, Dictionary<string, object>? customProperties = null)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new System.ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
-            }
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new System.ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
-            }
-
-            Id = id;
-            Name = name;
-            Description = description ?? throw new System.ArgumentNullException(nameof(description));
-            Arguments = arguments;
-            CustomProperties = customProperties;
-        }
-
-        /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="commandDescriptor"></param>
@@ -60,9 +33,15 @@ namespace PerpetualIntelligence.Cli.Commands
             Id = commandDescriptor.Id;
             Name = commandDescriptor.Name;
             Description = commandDescriptor.Description;
+            Descriptor = commandDescriptor;
             Arguments = arguments;
             CustomProperties = properties;
         }
+
+        /// <summary>
+        /// The command descriptor.
+        /// </summary>
+        public CommandDescriptor Descriptor { get; }
 
         /// <summary>
         /// The command arguments.

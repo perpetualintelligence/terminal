@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Extract the arguments. Arguments are optional for commands.
             Arguments? arguments = await ExtractArgumentsOrThrowAsync(context, commandDescriptor);
 
-            // Process default argument.
+            // Merge default argument.
             arguments = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, arguments);
 
             return new CommandExtractorResult(new Command(commandDescriptor, arguments), commandDescriptor);
