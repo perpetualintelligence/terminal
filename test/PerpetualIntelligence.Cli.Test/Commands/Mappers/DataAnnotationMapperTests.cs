@@ -57,11 +57,11 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
 
             if (dataType == DataType.Custom)
             {
-                argument = new Argument("arg1", "val1", customDataType!);
+                argument = new Argument(new ArgumentDescriptor("arg1", customDataType!, "desc"), "val1");
             }
             else
             {
-                argument = new Argument("arg1", "val1", dataType);
+                argument = new Argument(new ArgumentDescriptor("arg1", dataType, "desc"), "val1");
             }
 
             var result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(argument));
@@ -71,11 +71,11 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         [TestMethod]
         public async Task NullOrWhitespaceCustomDataTypeShouldErrorAsync()
         {
-            Argument test = new Argument("arg1", "val1", "  ");
+            Argument test = new Argument(new ArgumentDescriptor("arg1", "  ", "desc"), "val1");
             await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(test)), Errors.InvalidArgument, "The argument custom data type is null or whitespace. argument=arg1");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Argument test2 = new Argument("arg2", "val2", customDataType: null);
+            Argument test2 = new Argument(new ArgumentDescriptor("arg2", customDataType: null, "desc"), "val2");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(test2)), Errors.InvalidArgument, "The argument custom data type is null or whitespace. argument=arg2");
         }
@@ -83,14 +83,14 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         [TestMethod]
         public async Task UnsupportedCustomDataTypeShouldErrorAsync()
         {
-            var argument = new Argument("arg1", "val1", "unsupported_custom");
+            var argument = new Argument(new ArgumentDescriptor("arg1", "unsupported_custom", "desc"), "val1");
             await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(argument)), Errors.UnsupportedArgument, "The argument custom data type is not supported. argument=arg1 custom_data_type=unsupported_custom");
         }
 
         [TestMethod]
         public async Task UnsupportedDataTypeShouldErrorAsync()
         {
-            var argument = new Argument("arg1", "val1", (DataType)int.MaxValue);
+            var argument = new Argument(new ArgumentDescriptor("arg1", (DataType)int.MaxValue, "desc"), "val1");
             await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(argument)), Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
         }
 

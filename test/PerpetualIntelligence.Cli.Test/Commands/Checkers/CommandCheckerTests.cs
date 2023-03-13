@@ -31,10 +31,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task DisabledArgumentShouldErrorAsync()
         {
-            CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text, "desc1") { Disabled = true } }));
+            ArgumentDescriptor argumentDescriptor = new("key1", DataType.Text, "desc1") { Disabled = true };
+            CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
-            Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", "value1", DataType.Text));
+            Arguments arguments = new(textHandler)
+            {
+                new Argument(argumentDescriptor, "value1")
+            };
             Command argsCommand = new(disabledArgsDescriptor, arguments);
 
             CommandCheckerContext context = new(disabledArgsDescriptor, argsCommand);
@@ -44,10 +47,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task EnabledArgumentShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text, "desc1") { Disabled = false } }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.Text, "desc1") { Disabled = false };
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", "value1", DataType.Text));
+            arguments.Add(new Argument(argumentDescriptor, "value1"));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
@@ -57,10 +61,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteAllowedShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text, "desc1") { Obsolete = true } }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.Text, "desc1") { Obsolete = true };
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", "value1", DataType.Text));
+            arguments.Add(new Argument(argumentDescriptor, "value1"));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
@@ -72,10 +77,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ObsoleteArgumentAndObsoleteNotAllowedShouldErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text, "desc1") { Obsolete = true } }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.Text, "desc1") { Obsolete = true };
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", "value1", DataType.Text));
+            arguments.Add(new Argument(argumentDescriptor, "value1"));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
@@ -90,10 +96,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task RequiredArgumentMissingShouldErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text, "desc1", required: true) }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.Text, "desc1", required: true);
+            ArgumentDescriptor argumentDescriptor2 = new ArgumentDescriptor("key2", DataType.Text, "desc1", required: true);
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key2", "value2", DataType.Text));
+            arguments.Add(new Argument(argumentDescriptor2, "value2"));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
@@ -103,10 +111,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task RequiredArgumentPassedShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Text, "desc1", required: true) }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.Text, "desc1", required: true);
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", "value1", DataType.Text));
+            arguments.Add(new Argument(argumentDescriptor, "value1"));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
@@ -118,10 +127,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = false;
 
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Date, "desc1") }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.Date, "desc1");
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", "non-date", DataType.Date));
+            arguments.Add(new Argument(argumentDescriptor, "non-date"));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
@@ -135,10 +145,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = true;
 
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Date, "desc1") }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.Date, "desc1");
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", "non-date", DataType.Date));
+            arguments.Add(new Argument(argumentDescriptor, "non-date"));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
@@ -150,10 +161,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = true;
 
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.Date, "desc1") }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.Date, "desc1");
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", "25-Mar-2021", DataType.Date));
+            arguments.Add(new Argument(argumentDescriptor, "25-Mar-2021"));
             Command argsCommand = new(descriptor, arguments);
 
             object oldValue = arguments[0].Value;
@@ -171,10 +183,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ValueValidCustomDataTypeShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", nameof(Double), "test desc") }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", nameof(Double), "test desc");
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", 25.36, nameof(Double)));
+            arguments.Add(new Argument(argumentDescriptor, 25.36));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);
@@ -184,10 +197,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task ValueValidShouldNotErrorAsync()
         {
-            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { new ArgumentDescriptor("key1", DataType.DateTime, "desc1") }));
+            ArgumentDescriptor argumentDescriptor = new ArgumentDescriptor("key1", DataType.DateTime, "desc1");
+            CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
 
             Arguments arguments = new(textHandler);
-            arguments.Add(new Argument("key1", DateTime.Now, DataType.DateTime));
+            arguments.Add(new Argument(argumentDescriptor, DateTime.Now));
             Command argsCommand = new(descriptor, arguments);
 
             CommandCheckerContext context = new(descriptor, argsCommand);

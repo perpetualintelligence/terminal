@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
         {
             Called = true;
-            return Task.FromResult(new ArgumentExtractorResult(new Commands.Argument("testid", "testvalue", System.ComponentModel.DataAnnotations.DataType.Text)));
+            return Task.FromResult(new ArgumentExtractorResult(new Commands.Argument(new Commands.ArgumentDescriptor("testid", System.ComponentModel.DataAnnotations.DataType.Text, "testdesc"), "testvalue")));
         }
     }
 }

@@ -45,34 +45,13 @@ namespace PerpetualIntelligence.Cli.Commands
             Value = value;
             Properties = argumentDescriptor.CustomProperties;
             Alias = argumentDescriptor.Alias;
+            Descriptor = argumentDescriptor;
         }
 
         /// <summary>
-        /// Initialize a new instance..
+        /// The argument descriptor.
         /// </summary>
-        /// <param name="id">The argument id.</param>
-        /// <param name="value">The argument value.</param>
-        /// <param name="customDataType">The argument custom data type.</param>
-        public Argument(string id, object value, string customDataType)
-        {
-            Id = id;
-            Value = value;
-            DataType = DataType.Custom;
-            CustomDataType = customDataType;
-        }
-
-        /// <summary>
-        /// Initialize a new instance..
-        /// </summary>
-        /// <param name="id">The argument id.</param>
-        /// <param name="value">The argument value.</param>
-        /// <param name="dataType">The argument data type.</param>
-        public Argument(string id, object value, DataType dataType)
-        {
-            Id = id;
-            Value = value;
-            DataType = dataType;
-        }
+        public ArgumentDescriptor Descriptor { get; }
 
         /// <summary>
         /// The argument alias.

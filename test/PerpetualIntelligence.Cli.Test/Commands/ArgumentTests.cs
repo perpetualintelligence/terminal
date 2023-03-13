@@ -21,19 +21,19 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         [TestMethod]
-        public void ArgumentsWithDifferentNameAreNotEqual()
+        public void ArgumentsWithDifferentIdAreNotEqual()
         {
-            Argument arg1 = new Argument("name1", "value1", DataType.Text);
-            Argument arg2 = new Argument("name2", "value1", DataType.Text);
+            Argument arg1 = new(new ArgumentDescriptor("id1", DataType.Text, "desc1"), "value1");
+            Argument arg2 = new(new ArgumentDescriptor("id2", DataType.Text, "desc1"), "value1");
 
             Assert.AreNotEqual(arg1, arg2);
         }
 
         [TestMethod]
-        public void ArgumentsWithSameNameAreEqual()
+        public void ArgumentsWithSameIdAreEqual()
         {
-            Argument arg1 = new Argument("name1", "value1", DataType.Text);
-            Argument arg2 = new Argument("name1", 26.36, "Custom");
+            Argument arg1 = new(new ArgumentDescriptor("id1", DataType.Text, "desc1"), "value1");
+            Argument arg2 = new(new ArgumentDescriptor("id1", "Custom", "desc1"), 25.64);
 
             Assert.AreEqual(arg1, arg2);
         }
