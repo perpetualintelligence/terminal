@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="argumentDescriptor">The argument descriptor.</param>
         /// <param name="argument">The argument.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ArgumentCheckerContext(ArgumentDescriptor argumentDescriptor, Argument argument)
+        public ArgumentCheckerContext(OptionDescriptor argumentDescriptor, Option argument)
         {
             ArgumentDescriptor = argumentDescriptor ?? throw new ArgumentNullException(nameof(argumentDescriptor));
             Argument = argument ?? throw new ArgumentNullException(nameof(argument));
@@ -31,11 +31,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <summary>
         /// The argument to check.
         /// </summary>
-        public Argument Argument { get; set; }
+        public Option Argument { get; set; }
 
         /// <summary>
         /// The argument descriptor.
         /// </summary>
-        public ArgumentDescriptor ArgumentDescriptor { get; }
+        public OptionDescriptor ArgumentDescriptor { get; }
     }
 }

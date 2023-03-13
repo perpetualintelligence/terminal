@@ -106,10 +106,10 @@ namespace PerpetualIntelligence.Cli.Hosting
                 {
                     if (commandDescriptor.ArgumentDescriptors == null)
                     {
-                        commandDescriptor.ArgumentDescriptors = new ArgumentDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
+                        commandDescriptor.ArgumentDescriptors = new OptionDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
                     }
 
-                    ArgumentDescriptor helpDescriptor = new(options.Help.HelpArgumentId, nameof(Boolean), options.Help.HelpArgumentDescription) { Alias = options.Help.HelpArgumentAlias };
+                    OptionDescriptor helpDescriptor = new(options.Help.HelpArgumentId, nameof(Boolean), options.Help.HelpArgumentDescription) { Alias = options.Help.HelpArgumentAlias };
                     commandDescriptor.ArgumentDescriptors.Add(helpDescriptor);
                 }
             });

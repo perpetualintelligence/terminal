@@ -929,7 +929,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
-        private void AssertArgument(Argument arg, string name, string customDataType, string description, object value)
+        private void AssertArgument(Option arg, string name, string customDataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
@@ -938,7 +938,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgument(Argument arg, string name, DataType dataType, string description, object value)
+        private void AssertArgument(Option arg, string name, DataType dataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
@@ -947,7 +947,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgumentDescriptor(ArgumentDescriptor arg, string name, DataType dataType, string? description = null, DataValidationArgumentValueChecker[]? supportedValues = null)
+        private void AssertArgumentDescriptor(OptionDescriptor arg, string name, DataType dataType, string? description = null, DataValidationArgumentValueChecker[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
@@ -958,7 +958,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CollectionAssert.AreEquivalent(expectedCheckers, supportedValues);
         }
 
-        private void AssertArgumentIdentity(ArgumentDescriptor arg, string name, string customDataType, string? description = null, DataValidationArgumentValueChecker[]? supportedValues = null)
+        private void AssertArgumentIdentity(OptionDescriptor arg, string name, string customDataType, string? description = null, DataValidationArgumentValueChecker[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);

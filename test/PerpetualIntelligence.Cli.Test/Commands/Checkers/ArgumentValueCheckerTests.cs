@@ -28,8 +28,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task MapperFailureShouldErrorAsync()
         {
             // Any failure, we just want to test that mapper failure is correclty returned
-            ArgumentDescriptor identity = new("arg1", (DataType)int.MaxValue, "desc1");
-            Argument value = new(identity, 23.69);
+            OptionDescriptor identity = new("arg1", (DataType)int.MaxValue, "desc1");
+            Option value = new(identity, 23.69);
 
             ArgumentCheckerContext context = new(identity, value);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
@@ -38,9 +38,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task NullArgumentValueShouldErrorAsync()
         {
-            ArgumentDescriptor identity = new("arg1", DataType.Text, "desc1");
+            OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Argument value = new(identity, null);
+            Option value = new(identity, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             ArgumentCheckerContext context = new(identity, value);
@@ -53,8 +53,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             options.Checker.StrictArgumentValueType = true;
 
             // Value is double, but we can convert it so this should not error.
-            ArgumentDescriptor identity = new("arg1", DataType.Text, "desc1");
-            Argument value = new(identity, 23.69);
+            OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
+            Option value = new(identity, 23.69);
 
             ArgumentCheckerContext context = new(identity, value);
             await checker.CheckAsync(context);
@@ -70,8 +70,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             options.Checker.StrictArgumentValueType = false;
 
             // Value is double, strict checking is disabled so we will not convert it
-            ArgumentDescriptor identity = new("arg1", DataType.Text, "desc1");
-            Argument value = new(identity, 23.69);
+            OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
+            Option value = new(identity, 23.69);
 
             ArgumentCheckerContext context = new(identity, value);
             await checker.CheckAsync(context);
@@ -86,8 +86,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = false;
 
-            ArgumentDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("test1", "test2")) } };
-            Argument value = new(identity, "test3");
+            OptionDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("test1", "test2")) } };
+            Option value = new(identity, "test3");
 
             ArgumentCheckerContext context = new(identity, value);
             await checker.CheckAsync(context);
@@ -98,8 +98,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = false;
 
-            ArgumentDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new CreditCardAttribute()) } };
-            Argument value = new(identity, "invalid_4242424242424242");
+            OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new CreditCardAttribute()) } };
+            Option value = new(identity, "invalid_4242424242424242");
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
             await checker.CheckAsync(context);
@@ -110,8 +110,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = true;
 
-            ArgumentDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("test1", "test2")) } };
-            Argument value = new(identity, "test3");
+            OptionDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("test1", "test2")) } };
+            Option value = new(identity, "test3");
 
             ArgumentCheckerContext context = new(identity, value);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=test3 info=The field value must be one of the valid values.");
@@ -122,8 +122,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Checker.StrictArgumentValueType = true;
 
-            ArgumentDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new CreditCardAttribute()) } };
-            Argument value = new(identity, "invalid_4242424242424242");
+            OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new CreditCardAttribute()) } };
+            Option value = new(identity, "invalid_4242424242424242");
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The argument value is not valid. argument=arg1 value=invalid_4242424242424242 info=The Argument field is not a valid credit card number.");
@@ -132,8 +132,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task SupportedValueShouldNotErrorAsync()
         {
-            ArgumentDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("test1", "test2")) } };
-            Argument value = new(identity, "test2");
+            OptionDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("test1", "test2")) } };
+            Option value = new(identity, "test2");
 
             ArgumentCheckerContext context = new(identity, value);
             ArgumentCheckerResult result = await checker.CheckAsync(context);
@@ -142,8 +142,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task SystemTypeMatchAndDataValidationSuccessShouldNotErrorAsync()
         {
-            ArgumentDescriptor identity = new("arg1", DataType.CreditCard, "desc1");
-            Argument value = new(identity, "4242424242424242");
+            OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1");
+            Option value = new(identity, "4242424242424242");
 
             ArgumentCheckerContext context = new ArgumentCheckerContext(identity, value);
             var result = await checker.CheckAsync(context);

@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// Initialize a new instance.
         /// </summary>
         /// <param name="argument"></param>
-        public ArgumentExtractorResult(Argument argument)
+        public ArgumentExtractorResult(Option argument)
         {
             Argument = argument ?? throw new System.ArgumentNullException(nameof(argument));
         }
@@ -26,6 +26,6 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <summary>
         /// The extracted argument.
         /// </summary>
-        public Argument Argument { get; set; }
+        public Option Argument { get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public ValidationAttribute ValidationAttribute { get; }
 
         /// <inheritdoc/>
-        public Task CheckAsync(Argument argument)
+        public Task CheckAsync(Option argument)
         {
             ValidationContext context = new(argument);
             ValidationAttribute.Validate(argument.Value, context);

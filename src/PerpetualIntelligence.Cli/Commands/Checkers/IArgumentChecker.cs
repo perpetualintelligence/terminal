@@ -10,7 +10,7 @@ using PerpetualIntelligence.Shared.Abstractions;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// An abstraction to check an <see cref="Argument"/>.
+    /// An abstraction to check an <see cref="Option"/>.
     /// </summary>
     public interface IArgumentChecker : IChecker<ArgumentCheckerContext, ArgumentCheckerResult>
     {

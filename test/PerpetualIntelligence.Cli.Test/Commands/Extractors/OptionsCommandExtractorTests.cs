@@ -302,7 +302,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
-        private void AssertArgument(Argument arg, string name, string customDataType, string description, object value, string? alias)
+        private void AssertArgument(Option arg, string name, string customDataType, string description, object value, string? alias)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
@@ -312,7 +312,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Alias, alias);
         }
 
-        private void AssertArgument(Argument arg, string name, DataType dataType, string description, object value, string? alias)
+        private void AssertArgument(Option arg, string name, DataType dataType, string description, object value, string? alias)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);

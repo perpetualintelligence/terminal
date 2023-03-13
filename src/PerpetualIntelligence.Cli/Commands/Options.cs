@@ -12,14 +12,14 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The ordered <see cref="Argument"/> keyed collection.
+    /// The ordered <see cref="Option"/> keyed collection.
     /// </summary>
-    public sealed class Arguments : KeyedCollection<string, Argument>
+    public sealed class Options : KeyedCollection<string, Option>
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public Arguments(ITextHandler textHandler) : base(textHandler.EqualityComparer())
+        public Options(ITextHandler textHandler) : base(textHandler.EqualityComparer())
         {
             TextHandler = textHandler;
         }
@@ -69,11 +69,11 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Returns the key from the specified <see cref="Argument"/>.
+        /// Returns the key from the specified <see cref="Option"/>.
         /// </summary>
-        /// <param name="item">The <see cref="Argument"/> instance.</param>
+        /// <param name="item">The <see cref="Option"/> instance.</param>
         /// <returns>The key.</returns>
-        protected override string GetKeyForItem(Argument item)
+        protected override string GetKeyForItem(Option item)
         {
             return item.Id;
         }

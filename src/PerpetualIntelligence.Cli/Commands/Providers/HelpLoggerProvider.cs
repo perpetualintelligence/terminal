@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
 
             if (context.Command.Descriptor.ArgumentDescriptors != null)
             {
-                foreach (ArgumentDescriptor argument in context.Command.Descriptor.ArgumentDescriptors)
+                foreach (OptionDescriptor argument in context.Command.Descriptor.ArgumentDescriptors)
                 {
                     if (argument.Alias != null)
                     {

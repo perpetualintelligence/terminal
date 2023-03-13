@@ -56,13 +56,13 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// </summary>
         /// <remarks>
         /// <see cref="DefaultArgument"/> is not the default argument value (see
-        /// <see cref="ArgumentDescriptor.DefaultValue"/>), it is the default argument identifier (see
-        /// <see cref="ArgumentDescriptor.Id"/>) whose value is populated automatically based on the
+        /// <see cref="OptionDescriptor.DefaultValue"/>), it is the default argument identifier (see
+        /// <see cref="OptionDescriptor.Id"/>) whose value is populated automatically based on the
         /// <see cref="CommandString"/>. If <see cref="DefaultArgument"/> is set to a non <c>null</c> value, then the
         /// <see cref="ICommandExtractor"/> will attempt to extract the value from the <see cref="CommandString"/> and
-        /// put it in an <see cref="Argument"/> identified by <see cref="DefaultArgument"/>.
+        /// put it in an <see cref="Option"/> identified by <see cref="DefaultArgument"/>.
         /// </remarks>
-        /// <seealso cref="ArgumentDescriptor.DefaultValue"/>
+        /// <seealso cref="OptionDescriptor.DefaultValue"/>
         public string? DefaultArgument { get; set; }
 
         /// <summary>

@@ -36,13 +36,13 @@ namespace PerpetualIntelligence.Cli.Hosting
         public IServiceCollection Services { get; }
 
         /// <summary>
-        /// Builds an <see cref="ArgumentDescriptor"/> and adds it to the service collection.
+        /// Builds an <see cref="OptionDescriptor"/> and adds it to the service collection.
         /// </summary>
         /// <returns></returns>
         public ICommandBuilder Add()
         {
             ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
-            ArgumentDescriptor? argumentDescriptor = localSeviceProvider.GetService<ArgumentDescriptor>();
+            OptionDescriptor? argumentDescriptor = localSeviceProvider.GetService<OptionDescriptor>();
             if (argumentDescriptor != null)
             {
                 // Custom Properties

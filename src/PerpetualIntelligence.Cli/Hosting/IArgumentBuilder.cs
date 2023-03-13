@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         IServiceCollection Services { get; }
 
         /// <summary>
-        /// Builds a new <see cref="ArgumentDescriptor"/> and add it to the service collection.
+        /// Builds a new <see cref="OptionDescriptor"/> and add it to the service collection.
         /// </summary>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
         ICommandBuilder Add();

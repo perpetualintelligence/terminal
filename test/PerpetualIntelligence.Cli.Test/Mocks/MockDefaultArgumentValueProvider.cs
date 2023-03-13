@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         public Task<DefaultArgumentValueProviderResult> ProvideAsync(DefaultArgumentValueProviderContext context)
         {
             Called = true;
-            return Task.FromResult(new DefaultArgumentValueProviderResult(new Commands.ArgumentDescriptors(new UnicodeTextHandler())));
+            return Task.FromResult(new DefaultArgumentValueProviderResult(new Commands.OptionDescriptors(new UnicodeTextHandler())));
         }
     }
 }

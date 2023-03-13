@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             foreach (var argDescriptor in context.CommandDescriptor.ArgumentDescriptors)
             {
                 // Optimize (not all arguments are required)
-                bool containsArg = context.Command.TryGetArgument(argDescriptor.Id, out Argument? arg);
+                bool containsArg = context.Command.TryGetArgument(argDescriptor.Id, out Option? arg);
                 if (!containsArg)
                 {
                     // Required argument is missing

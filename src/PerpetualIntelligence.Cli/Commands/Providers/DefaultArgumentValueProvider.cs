@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
                 throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any arguments. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            return Task.FromResult(new DefaultArgumentValueProviderResult(new ArgumentDescriptors(textHandler, context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
+            return Task.FromResult(new DefaultArgumentValueProviderResult(new OptionDescriptors(textHandler, context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
         }
 
         private readonly ITextHandler textHandler;

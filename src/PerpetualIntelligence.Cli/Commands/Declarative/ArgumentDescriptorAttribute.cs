@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 namespace PerpetualIntelligence.Cli.Commands.Declarative
 {
     /// <summary>
-    /// Declares an <see cref="ArgumentDescriptor"/> for a command.
+    /// Declares an <see cref="OptionDescriptor"/> for a command.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class ArgumentDescriptorAttribute : Attribute

@@ -37,8 +37,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "--";
             options.Extractor.ArgumentAliasPrefix = aliasPrefix;
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            ArgumentExtractorContext context = new(new ArgumentString($"{aliasPrefix}key1=value1", aliasPrefix: true, 0), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
+            ArgumentExtractorContext context = new(new OptionString($"{aliasPrefix}key1=value1", aliasPrefix: true, 0), cmd);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidConfiguration, $"The argument extraction by alias prefix is not configured. argument_string={aliasPrefix}key1=value1");
         }
 
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentValueSeparator = separator;
 
-            ArgumentExtractorContext context = new(new ArgumentString($"-key1{separator}value{separator}value2{separator}"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"-key1{separator}value{separator}value2{separator}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"key1", result.Argument.Id);
@@ -77,22 +77,22 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task ArgumentWithoutPrefixShouldError()
         {
             // Argument extractor does not work with prefix
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            ArgumentExtractorContext context = new(new ArgumentString($"key1=value1"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
+            ArgumentExtractorContext context = new(new OptionString($"key1=value1"), cmd);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, $"The argument string is not valid. argument_string=key1=value1");
         }
 
         [TestMethod]
         public async Task ArgumentWithoutPrefixShouldErrorAsync()
         {
-            ArgumentExtractorContext context = new(new ArgumentString($"key1=value"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"key1=value"), command.Item1);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument string is not valid. argument_string=key1=value");
         }
 
         [TestMethod]
         public async Task AttrubuteShouldSetTheArgumentIdCorrectlyAsync()
         {
-            ArgumentExtractorContext context = new(new ArgumentString("-key6"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString("-key6"), command.Item1);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("key6", result.Argument.Id);
@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task EmptyArgumentIdShouldErrorAsync()
         {
-            ArgumentExtractorContext context = new(new ArgumentString($"-  =value"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"-  =value"), command.Item1);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument identifier is null or empty. argument_string=-  =value");
         }
 
@@ -118,7 +118,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             // Arg string has incorrect separator Without the valid value separator the extractor will interpret as a
             // key only argument and that wil fail
-            ArgumentExtractorContext context = new(new ArgumentString($"-key1{invalid}value1"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"-key1{invalid}value1"), command.Item1);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, $"The argument is not supported. argument=key1{invalid}value1");
         }
 
@@ -138,7 +138,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentValueSeparator = argSeparator;
 
-            ArgumentExtractorContext context = new(new ArgumentString($"-key1{argSeparator}value1"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"-key1{argSeparator}value1"), command.Item1);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"key1", result.Argument.Id);
@@ -148,7 +148,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task KeyValueArgumentShouldSetTheArgumentIdAndValueCorrecltyAsync()
         {
-            ArgumentExtractorContext context = new(new ArgumentString($"-key5=htts://google.com"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"-key5=htts://google.com"), command.Item1);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("key5", result.Argument.Id);
@@ -169,8 +169,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = prefix;
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            ArgumentExtractorContext context = new(new ArgumentString($"{prefix}{prefix}{prefix}key1=value1"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
+            ArgumentExtractorContext context = new(new OptionString($"{prefix}{prefix}{prefix}key1=value1"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"key1", result.Argument.Id);
@@ -190,8 +190,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = prefix;
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            ArgumentExtractorContext context = new(new ArgumentString($"{prefix}{prefix}{prefix}{prefix}key=value1"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
+            ArgumentExtractorContext context = new(new OptionString($"{prefix}{prefix}{prefix}{prefix}key=value1"), cmd);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, $"The argument is not supported. argument=key");
         }
 
@@ -200,7 +200,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CA1806 // Do not ignore method results
-            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext(new ArgumentString("test_arg_string"), null), "Value cannot be null. (Parameter 'commandDescriptor')");
+            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext(new OptionString("test_arg_string"), null), "Value cannot be null. (Parameter 'commandDescriptor')");
 #pragma warning restore CA1806 // Do not ignore method results
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
@@ -210,10 +210,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext(new ArgumentString(null), command.Item1), "'raw' cannot be null or whitespace. (Parameter 'raw')");
+            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext(new OptionString(null), command.Item1), "'raw' cannot be null or whitespace. (Parameter 'raw')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext(new ArgumentString("   "), command.Item1), "'raw' cannot be null or whitespace. (Parameter 'raw')");
+            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new ArgumentExtractorContext(new OptionString("   "), command.Item1), "'raw' cannot be null or whitespace. (Parameter 'raw')");
 #pragma warning restore CA1806 // Do not ignore method results
         }
 
@@ -232,8 +232,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "";
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            ArgumentExtractorContext context = new ArgumentExtractorContext(new ArgumentString($"{prefix}key=value"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
+            ArgumentExtractorContext context = new ArgumentExtractorContext(new OptionString($"{prefix}key=value"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"{prefix}key", result.Argument.Id);
@@ -255,8 +255,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = prefix;
 
             // Prefix are not allowed in argument id
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            ArgumentExtractorContext context = new(new ArgumentString($"{prefix}key1=value1"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
+            ArgumentExtractorContext context = new(new OptionString($"{prefix}key1=value1"), cmd);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, "The argument is not supported. argument=key1");
         }
@@ -276,8 +276,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = prefix;
 
             // Prefix are not allowed in argument id
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor($"key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            ArgumentExtractorContext context = new(new ArgumentString($"{prefix}key1={prefix}value1{prefix}"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
+            ArgumentExtractorContext context = new(new OptionString($"{prefix}key1={prefix}value1{prefix}"), cmd);
             var result = await extractor.ExtractAsync(context);
 
             Assert.AreEqual("key1", result.Argument.Id);
@@ -291,8 +291,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "ई";
             options.Extractor.ArgumentValueSeparator = "र";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            ArgumentExtractorContext context = new(new ArgumentString($"ईपक्षीरप्राणीप्रेम"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
+            ArgumentExtractorContext context = new(new OptionString($"ईपक्षीरप्राणीप्रेम"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("पक्षी", result.Argument.Id);
@@ -306,8 +306,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "ई";
             options.Extractor.ArgumentValueSeparator = "र";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", nameof(Boolean), "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("ईपक्षी"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", nameof(Boolean), "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("ईपक्षी"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("पक्षी", result.Argument.Id);
@@ -321,8 +321,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "ई";
             options.Extractor.ArgumentValueSeparator = "र";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("ईपक्षी"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("ईपक्षी"), cmd);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument value is missing. argument_string=ईपक्षीर");
         }
@@ -334,8 +334,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "ई";
             options.Extractor.ArgumentValueSeparator = "र";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("ईपक्षीर"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("ईपक्षीर"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("पक्षी", result.Argument.Id);
@@ -349,8 +349,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "ई";
             options.Extractor.ArgumentValueSeparator = "र";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("रईपक्षीप्राणीप्रेम"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("रईपक्षीप्राणीप्रेम"), cmd);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument string is not valid. argument_string=रईपक्षीप्राणीप्रेम");
         }
@@ -362,8 +362,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "ई";
             options.Extractor.ArgumentValueSeparator = "र";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("सईपक्षीरप्राणीप्रेम"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("सईपक्षीरप्राणीप्रेम"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("पक्षी", result.Argument.Id);
@@ -378,8 +378,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentValueSeparator = "र";
             options.Extractor.ArgumentValueWithIn = "बी";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("ईपक्षीरप्राणीप्रेमबी"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("ईपक्षीरप्राणीप्रेमबी"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("पक्षी", result.Argument.Id);
@@ -394,8 +394,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentValueSeparator = "र";
             options.Extractor.ArgumentValueWithIn = "बी";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("ईपक्षीरबीप्राणीप्रेमबी"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("ईपक्षीरबीप्राणीप्रेमबी"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("पक्षी", result.Argument.Id);
@@ -409,8 +409,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "ई";
             options.Extractor.ArgumentValueSeparator = "र";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("ससससससईईईईईईईईपक्षीरररररररररप्राणीप्रेमसससससस"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("ससससससईईईईईईईईपक्षीरररररररररप्राणीप्रेमसससससस"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("पक्षी", result.Argument.Id);
@@ -422,8 +422,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = "माणू";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("स", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
-            ArgumentExtractorContext context = new(new ArgumentString("माणूमाणूस=माणूसमास"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("स", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
+            ArgumentExtractorContext context = new(new OptionString("माणूमाणूस=माणूसमास"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"स", result.Argument.Id);
@@ -433,7 +433,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task UsupportedArgumentShouldErrorAsync()
         {
-            ArgumentExtractorContext context = new ArgumentExtractorContext(new ArgumentString("-invalid=value"), command.Item1);
+            ArgumentExtractorContext context = new ArgumentExtractorContext(new OptionString("-invalid=value"), command.Item1);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, "The argument is not supported. argument=invalid");
         }
 
@@ -448,8 +448,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentPrefix = "-";
             options.Extractor.ArgumentAliasPrefix = "--";
 
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor("key1", nameof(Boolean), "test desc") { Alias = keyAlias } }));
-            ArgumentExtractorContext context = new(new ArgumentString($"--{keyAlias}", aliasPrefix: true, 0), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", nameof(Boolean), "test desc") { Alias = keyAlias } }));
+            ArgumentExtractorContext context = new(new OptionString($"--{keyAlias}", aliasPrefix: true, 0), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual("key1", result.Argument.Id);
@@ -465,8 +465,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task ValidArgIdOnlyShouldNotErrorAsync(string key)
         {
-            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new ArgumentDescriptors(textHandler, new[] { new ArgumentDescriptor(key, nameof(Boolean), "test desc") }));
-            ArgumentExtractorContext context = new ArgumentExtractorContext(new ArgumentString($"-{key}"), cmd);
+            CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor(key, nameof(Boolean), "test desc") }));
+            ArgumentExtractorContext context = new ArgumentExtractorContext(new OptionString($"-{key}"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual(key, result.Argument.Id);
@@ -488,7 +488,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentValueWithIn = withIn;
 
-            ArgumentExtractorContext context = new(new ArgumentString($"-key1=test string with {withIn} in between and end but not at start {withIn}"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"-key1=test string with {withIn} in between and end but not at start {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"key1", result.Argument.Id);
@@ -508,7 +508,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentValueWithIn = withIn;
 
-            ArgumentExtractorContext context = new(new ArgumentString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"key1", result.Argument.Id);
@@ -528,7 +528,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentValueWithIn = null;
 
-            ArgumentExtractorContext context = new(new ArgumentString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
+            ArgumentExtractorContext context = new(new OptionString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Argument);
             Assert.AreEqual($"key1", result.Argument.Id);

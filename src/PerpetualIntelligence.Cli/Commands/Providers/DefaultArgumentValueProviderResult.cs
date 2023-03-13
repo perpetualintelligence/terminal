@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// Initialize a new instance.
         /// </summary>
         /// <param name="defaultValueArgumentDescriptors">The default value argument descriptors.</param>
-        public DefaultArgumentValueProviderResult(ArgumentDescriptors defaultValueArgumentDescriptors)
+        public DefaultArgumentValueProviderResult(OptionDescriptors defaultValueArgumentDescriptors)
         {
             DefaultValueArgumentDescriptors = defaultValueArgumentDescriptors ?? throw new System.ArgumentNullException(nameof(defaultValueArgumentDescriptors));
         }
@@ -26,6 +26,6 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// <summary>
         /// The default value argument descriptors.
         /// </summary>
-        public ArgumentDescriptors DefaultValueArgumentDescriptors { get; }
+        public OptionDescriptors DefaultValueArgumentDescriptors { get; }
     }
 }

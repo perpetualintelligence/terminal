@@ -226,7 +226,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Now find the argument by id or alias.
-            ArgumentDescriptor argDescriptor;
+            OptionDescriptor argDescriptor;
             if (aliasEnabled && argAndAliasPrefixSame)
             {
                 // If alias is not enabled then we should not be here as we can only find by id. If alias is enabled but
@@ -247,7 +247,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 // The value will not be white space because we have already removed all the separators.
                 string value = (argValue == null || textHandler.TextEquals(argValue, string.Empty)) ? true.ToString() : argValue;
-                return Task.FromResult(new ArgumentExtractorResult(new Argument(argDescriptor, value)));
+                return Task.FromResult(new ArgumentExtractorResult(new Option(argDescriptor, value)));
             }
             else
             {
@@ -256,7 +256,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     throw new ErrorException(Errors.InvalidArgument, "The argument value is missing. argument_string={0}", prefixArgValue);
                 }
 
-                return Task.FromResult(new ArgumentExtractorResult(new Argument(argDescriptor, argValue)));
+                return Task.FromResult(new ArgumentExtractorResult(new Option(argDescriptor, argValue)));
             }
         }
 

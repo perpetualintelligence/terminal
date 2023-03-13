@@ -15,18 +15,18 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The ordered <see cref="ArgumentDescriptor"/> collection.
+    /// The ordered <see cref="OptionDescriptor"/> collection.
     /// </summary>
-    public sealed class ArgumentDescriptors : KeyedCollection<string, ArgumentDescriptor>
+    public sealed class OptionDescriptors : KeyedCollection<string, OptionDescriptor>
     {
         /// <summary>
         /// Initializes a new instance with the specified argument descriptors.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="collection">The argument descriptors.</param>
-        public ArgumentDescriptors(ITextHandler textHandler, IEnumerable<ArgumentDescriptor> collection) : this(textHandler)
+        public OptionDescriptors(ITextHandler textHandler, IEnumerable<OptionDescriptor> collection) : this(textHandler)
         {
-            foreach (ArgumentDescriptor argumentDescriptor in collection)
+            foreach (OptionDescriptor argumentDescriptor in collection)
             {
                 Add(argumentDescriptor);
             }
@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public ArgumentDescriptors(ITextHandler textHandler) : base(textHandler.EqualityComparer())
+        public OptionDescriptors(ITextHandler textHandler) : base(textHandler.EqualityComparer())
         {
             TextHandler = textHandler ?? throw new ArgumentNullException(nameof(textHandler));
         }
@@ -46,10 +46,10 @@ namespace PerpetualIntelligence.Cli.Commands
         public ITextHandler TextHandler { get; }
 
         /// <summary>
-        /// Gets or sets an <see cref="ArgumentDescriptor"/> instance at the specified index.
+        /// Gets or sets an <see cref="OptionDescriptor"/> instance at the specified index.
         /// </summary>
         /// <param name="index">The zero based index.</param>
-        public new ArgumentDescriptor this[int index]
+        public new OptionDescriptor this[int index]
         {
             get
             {
@@ -70,14 +70,14 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Gets an <see cref="ArgumentDescriptor"/> instance with the specified id.
+        /// Gets an <see cref="OptionDescriptor"/> instance with the specified id.
         /// </summary>
         /// <param name="id">The argument id.</param>
-        /// <returns><see cref="ArgumentDescriptor"/> instance if found.</returns>
+        /// <returns><see cref="OptionDescriptor"/> instance if found.</returns>
         /// <exception cref="ErrorException">
-        /// If <see cref="ArgumentDescriptor"/> instance with specified id is not found.
+        /// If <see cref="OptionDescriptor"/> instance with specified id is not found.
         /// </exception>
-        public new ArgumentDescriptor this[string id]
+        public new OptionDescriptor this[string id]
         {
             get
             {
@@ -93,7 +93,7 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Gets an <see cref="ArgumentDescriptor"/> instance with the specified id.
+        /// Gets an <see cref="OptionDescriptor"/> instance with the specified id.
         /// </summary>
         /// <param name="idOrAlias">The argument id or its alias.</param>
         /// <param name="alias"><c>true</c> to find the argument by its alias, <c>false</c> to find by its identifier.</param>
@@ -101,15 +101,15 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <c>true</c> to find the argument by its id. If not found, then attempt to find it by its alias. <c>false</c>
         /// to find by id or alias but not both.
         /// </param>
-        /// <returns><see cref="ArgumentDescriptor"/> instance if found.</returns>
+        /// <returns><see cref="OptionDescriptor"/> instance if found.</returns>
         /// <exception cref="ErrorException">
-        /// If <see cref="ArgumentDescriptor"/> instance with specified id is not found.
+        /// If <see cref="OptionDescriptor"/> instance with specified id is not found.
         /// </exception>
         /// <remarks>
         /// We recommend to use <see cref="this[string]"/> to get an argument. Using alias will degrade the
         /// application's performance.
         /// </remarks>
-        public ArgumentDescriptor this[string idOrAlias, bool? alias = null, bool? ifNotThen = null]
+        public OptionDescriptor this[string idOrAlias, bool? alias = null, bool? ifNotThen = null]
         {
             get
             {
@@ -168,11 +168,11 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Returns the key from the specified <see cref="ArgumentDescriptor"/>.
+        /// Returns the key from the specified <see cref="OptionDescriptor"/>.
         /// </summary>
-        /// <param name="item">The <see cref="ArgumentDescriptor"/> instance.</param>
+        /// <param name="item">The <see cref="OptionDescriptor"/> instance.</param>
         /// <returns>The key.</returns>
-        protected override string GetKeyForItem(ArgumentDescriptor item)
+        protected override string GetKeyForItem(OptionDescriptor item)
         {
             return item.Id;
         }

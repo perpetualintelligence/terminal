@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <returns>The configured <see cref="IArgumentBuilder"/>.</returns>
         public static IArgumentBuilder DefineArgument(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
-            ArgumentDescriptor argument = new(id, dataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
+            OptionDescriptor argument = new(id, dataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
             ArgumentBuilder argumentBuilder = new(builder);
             argumentBuilder.Services.AddSingleton(argument);
             return argumentBuilder;
@@ -68,7 +68,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <returns>The configured <see cref="IArgumentBuilder"/>.</returns>
         public static IArgumentBuilder DefineArgument(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
-            ArgumentDescriptor argument = new(id, customDataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
+            OptionDescriptor argument = new(id, customDataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
             ArgumentBuilder argumentBuilder = new(builder);
             argumentBuilder.Services.AddSingleton(argument);
             return argumentBuilder;

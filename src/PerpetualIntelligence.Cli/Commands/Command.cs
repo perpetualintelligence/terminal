@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Commands
     /// or external network. A command can virtually do anything in the context of your application or service.
     /// </summary>
     /// <seealso cref="CommandDescriptor"/>
-    /// <seealso cref="Argument"/>
+    /// <seealso cref="Option"/>
     /// <seealso cref="Arguments"/>
     public sealed class Command
     {
@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <param name="commandDescriptor"></param>
         /// <param name="arguments"></param>
-        public Command(CommandDescriptor commandDescriptor, Arguments? arguments = null)
+        public Command(CommandDescriptor commandDescriptor, Options? arguments = null)
         {
             Descriptor = commandDescriptor;
             Arguments = arguments;
@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The command arguments.
         /// </summary>
-        public Arguments? Arguments { get; }
+        public Options? Arguments { get; }
 
         /// <summary>
         /// The command custom properties.
@@ -108,7 +108,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="argument">The argument if found in the collection.</param>
         /// <returns><c>true</c> if an argument exist in the collection, otherwise <c>false</c>.</returns>
         [WriteUnitTest]
-        public bool TryGetArgument(string id, out Argument argument)
+        public bool TryGetArgument(string id, out Option argument)
         {
             if (Arguments == null)
             {

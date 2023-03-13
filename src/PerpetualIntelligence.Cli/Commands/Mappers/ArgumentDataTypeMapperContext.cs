@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         /// </summary>
         /// <param name="argument">The argument.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ArgumentDataTypeMapperContext(Argument argument)
+        public ArgumentDataTypeMapperContext(Option argument)
         {
             Argument = argument ?? throw new ArgumentNullException(nameof(argument));
         }
@@ -27,6 +27,6 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         /// <summary>
         /// The argument to map.
         /// </summary>
-        public Argument Argument { get; set; }
+        public Option Argument { get; set; }
     }
 }

@@ -69,7 +69,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             CommandRunnerResult runnerResult;
 
             // Run or Help
-            if (!options.Help.Disabled.GetValueOrDefault() && runnerContext.Command.TryGetArgument(options.Help.HelpArgumentId, out Argument helpArg))
+            if (!options.Help.Disabled.GetValueOrDefault() && runnerContext.Command.TryGetArgument(options.Help.HelpArgumentId, out Option helpArg))
             {
                 IHelpProvider helpProvider = services.GetRequiredService<IHelpProvider>();
                 runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, helpProvider);

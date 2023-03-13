@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// </summary>
         /// <param name="argument">The argument to check.</param>
         /// <returns></returns>
-        Task CheckAsync(Argument argument);
+        Task CheckAsync(Option argument);
 
         /// <summary>
         /// Returns the underlying checker raw type.

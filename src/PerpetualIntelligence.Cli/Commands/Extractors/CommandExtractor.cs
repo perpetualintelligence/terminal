@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor commandDescriptor = await MatchByPrefixAsync(context.CommandString);
 
             // Extract the arguments. Arguments are optional for commands.
-            Arguments? arguments = await ExtractArgumentsOrThrowAsync(context, commandDescriptor);
+            Options? arguments = await ExtractArgumentsOrThrowAsync(context, commandDescriptor);
 
             // Merge default argument.
             arguments = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, arguments);
@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return new CommandExtractorResult(new Command(commandDescriptor, arguments), commandDescriptor);
         }
 
-        private async Task<Arguments?> ExtractArgumentsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
+        private async Task<Options?> ExtractArgumentsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
         {
             // Remove the prefix from the start so we can get the argument string.
             string raw = context.CommandString.Raw;
@@ -139,7 +139,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var argumentStrings = ExtractArgumentStrings(rawArgString);
 
             List<Error> errors = new();
-            Arguments arguments = new(textHandler);
+            Options arguments = new(textHandler);
             foreach (var argString in argumentStrings)
             {
                 // We capture all the argument extraction errors
@@ -178,7 +178,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return arguments;
         }
 
-        private ArgumentStrings ExtractArgumentStrings(string raw)
+        private OptionStrings ExtractArgumentStrings(string raw)
         {
             string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
             string argAliasSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix);
@@ -187,7 +187,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             int currentPos = 0;
             bool currentIsAlias = false;
             int nextIdx = 0;
-            ArgumentStrings locations = new();
+            OptionStrings locations = new();
             while (true)
             {
                 // No more matches so break. When the currentPos reaches the end then we have traversed the entire argString.
@@ -241,7 +241,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // Get the arg substring and record its position and alias
                 // NOTE: This is the current pos and current alias not the next.
                 string kvp = raw.Substring(currentPos, nextIdx - currentPos);
-                locations.Add(new ArgumentString(kvp, currentIsAlias, currentPos));
+                locations.Add(new OptionString(kvp, currentIsAlias, currentPos));
 
                 // Move next
                 currentPos = nextIdx;
@@ -309,7 +309,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <returns></returns>
         /// <exception cref="ErrorException"></exception>
         /// <exception cref="MultiErrorException"></exception>
-        private async Task<Arguments?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Arguments? userArguments)
+        private async Task<Options?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Options? userArguments)
         {
             // If default argument value is disabled or the command itself does not support any arguments then ignore
             if (!options.Extractor.DefaultArgumentValue.GetValueOrDefault()
@@ -326,18 +326,18 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Get default values. Make sure we take user inputs.
-            Arguments? finalArgs = userArguments;
+            Options? finalArgs = userArguments;
             DefaultArgumentValueProviderResult defaultResult = await defaultArgumentValueProvider.ProvideAsync(new DefaultArgumentValueProviderContext(commandDescriptor));
             if (defaultResult.DefaultValueArgumentDescriptors != null && defaultResult.DefaultValueArgumentDescriptors.Count > 0)
             {
                 // arguments can be null here, if the command string did not specify any arguments
                 if (finalArgs == null)
                 {
-                    finalArgs = new Arguments(textHandler);
+                    finalArgs = new Options(textHandler);
                 }
 
                 List<Error> errors = new();
-                foreach (ArgumentDescriptor argumentDescriptor in defaultResult.DefaultValueArgumentDescriptors)
+                foreach (OptionDescriptor argumentDescriptor in defaultResult.DefaultValueArgumentDescriptors)
                 {
                     // Protect against bad implementation, catch all the errors
                     if (argumentDescriptor.DefaultValue == null)
@@ -349,7 +349,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // If user already specified the value then disregard the default value
                     if (userArguments == null || !userArguments.Contains(argumentDescriptor.Id))
                     {
-                        finalArgs.Add(new Argument(argumentDescriptor, argumentDescriptor.DefaultValue));
+                        finalArgs.Add(new Option(argumentDescriptor, argumentDescriptor.DefaultValue));
                     }
                 }
 

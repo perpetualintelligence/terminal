@@ -19,14 +19,14 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void ArgumentShouldBeSealed()
         {
-            Assert.IsTrue(typeof(Argument).IsSealed);
+            Assert.IsTrue(typeof(Option).IsSealed);
         }
 
         [TestMethod]
         public void ArgumentsWithDifferentIdAreNotEqual()
         {
-            Argument arg1 = new(new ArgumentDescriptor("id1", DataType.Text, "desc1"), "value1");
-            Argument arg2 = new(new ArgumentDescriptor("id2", DataType.Text, "desc1"), "value1");
+            Option arg1 = new(new OptionDescriptor("id1", DataType.Text, "desc1"), "value1");
+            Option arg2 = new(new OptionDescriptor("id2", DataType.Text, "desc1"), "value1");
 
             Assert.AreNotEqual(arg1, arg2);
         }
@@ -34,8 +34,8 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void ArgumentsWithSameIdAreEqual()
         {
-            Argument arg1 = new(new ArgumentDescriptor("id1", DataType.Text, "desc1"), "value1");
-            Argument arg2 = new(new ArgumentDescriptor("id1", "Custom", "desc1"), 25.64);
+            Option arg1 = new(new OptionDescriptor("id1", DataType.Text, "desc1"), "value1");
+            Option arg2 = new(new OptionDescriptor("id1", "Custom", "desc1"), 25.64);
 
             Assert.AreEqual(arg1, arg2);
         }
@@ -43,15 +43,15 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void JsonPropertyNamesShouldBeCorrect()
         {
-            TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.Value)), "value");
-            TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.Descriptor)), "descriptor");
+            TestHelper.AssertJsonPropertyName(typeof(Option).GetProperty(nameof(Option.Value)), "value");
+            TestHelper.AssertJsonPropertyName(typeof(Option).GetProperty(nameof(Option.Descriptor)), "descriptor");
 
-            typeof(Argument).GetProperty(nameof(Argument.Alias)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
-            typeof(Argument).GetProperty(nameof(Argument.CustomDataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
-            typeof(Argument).GetProperty(nameof(Argument.CustomProperties)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
-            typeof(Argument).GetProperty(nameof(Argument.DataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
-            typeof(Argument).GetProperty(nameof(Argument.Description)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
-            typeof(Argument).GetProperty(nameof(Argument.Id)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Option).GetProperty(nameof(Option.Alias)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Option).GetProperty(nameof(Option.CustomDataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Option).GetProperty(nameof(Option.CustomProperties)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Option).GetProperty(nameof(Option.DataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Option).GetProperty(nameof(Option.Description)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Option).GetProperty(nameof(Option.Id)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
         }
     }
 }

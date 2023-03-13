@@ -42,11 +42,11 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Argument builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
-            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(OptionDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 
-            ArgumentDescriptor argument = (ArgumentDescriptor)serviceDescriptor.ImplementationInstance!;
+            OptionDescriptor argument = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
             argument.Id.Should().Be("arg1");
             argument.DataType.Should().Be(DataType.Custom);
             argument.CustomDataType.Should().Be("custom-dt");
@@ -66,11 +66,11 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Argument builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
-            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(OptionDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 
-            ArgumentDescriptor argument = (ArgumentDescriptor)serviceDescriptor.ImplementationInstance!;
+            OptionDescriptor argument = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
             argument.Id.Should().Be("arg1");
             argument.DataType.Should().Be(DataType.CreditCard);
             argument.CustomDataType.Should().BeNull();

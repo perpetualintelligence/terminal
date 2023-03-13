@@ -14,13 +14,13 @@ using System.Linq;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The <see cref="ArgumentDescriptor"/> class defines the command argument identity, data type, and data validation
+    /// The <see cref="OptionDescriptor"/> class defines the command argument identity, data type, and data validation
     /// behavior. We also refer to arguments as command options or command flags.
     /// </summary>
-    /// <seealso cref="Argument"/>
+    /// <seealso cref="Option"/>
     /// <seealso cref="CommandString"/>
     /// <seealso cref="CommandDescriptor"/>
-    public sealed class ArgumentDescriptor
+    public sealed class OptionDescriptor
     {
         /// <summary>
         /// Initializes a new instance.
@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="description">The argument description.</param>
         /// <param name="required">The argument is required.</param>
         /// <param name="defaultValue">The argument default value.</param>
-        public ArgumentDescriptor(string id, DataType dataType, string description, bool? required = null, object? defaultValue = null)
+        public OptionDescriptor(string id, DataType dataType, string description, bool? required = null, object? defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="description">The argument description.</param>
         /// <param name="required">The argument is required.</param>
         /// <param name="defaultValue">The argument default value.</param>
-        public ArgumentDescriptor(string id, string customDataType, string description, bool? required = null, object? defaultValue = null)
+        public OptionDescriptor(string id, string customDataType, string description, bool? required = null, object? defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {

@@ -10,9 +10,9 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Declarative
 {
     /// <summary>
-    /// Declares an <see cref="ArgumentDescriptor"/> validation attribute.
+    /// Declares an <see cref="OptionDescriptor"/> validation attribute.
     /// </summary>
-    /// <seealso cref="ArgumentDescriptor.ValueCheckers"/>
+    /// <seealso cref="OptionDescriptor.ValueCheckers"/>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class ArgumentValidationAttribute : Attribute
     {

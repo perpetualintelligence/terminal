@@ -13,30 +13,30 @@ using System.Text.Json.Serialization;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The <see cref="Argument"/> class is a runtime validated representation of an actual command argument and its
+    /// The <see cref="Option"/> class is a runtime validated representation of an actual command argument and its
     /// value passed by a user or an application.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// An argument id is always unique within a command. By design <see cref="Argument"/> implements the default
+    /// An argument id is always unique within a command. By design <see cref="Option"/> implements the default
     /// equality <see cref="IEquatable{T}"/> and <see cref="GetHashCode()"/> using <see cref="Id"/> property. Thus, two
     /// arguments with the same id are equal irrespective of other property values. This is done to improve performance
     /// during lookup and avoid multiple arguments with same identifiers.
     /// </para>
     /// <para>
     /// The arguments can have same ids across multiple commands. Each <see cref="Command"/> has
-    /// <see cref="ArgumentDescriptors"/> collection that contains arguments with unique ids.
+    /// <see cref="OptionDescriptors"/> collection that contains arguments with unique ids.
     /// </para>
     /// </remarks>
     /// <seealso cref="Command"/>
-    public sealed class Argument : IEquatable<Argument?>
+    public sealed class Option : IEquatable<Option?>
     {
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
         /// <param name="argumentDescriptor">The argument descriptor.</param>
         /// <param name="value">The argument value.</param>
-        public Argument(ArgumentDescriptor argumentDescriptor, object value)
+        public Option(OptionDescriptor argumentDescriptor, object value)
         {
             Value = value;
             Descriptor = argumentDescriptor;
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The argument descriptor.
         /// </summary>
         [JsonPropertyName("descriptor")]
-        public ArgumentDescriptor Descriptor { get; }
+        public OptionDescriptor Descriptor { get; }
 
         /// <summary>
         /// The argument alias.
@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="left">The left argument.</param>
         /// <param name="right">The right argument.</param>
         /// <returns><c>true</c> if the current argument is not equal to the other argument; otherwise, false.</returns>
-        public static bool operator !=(Argument? left, Argument? right)
+        public static bool operator !=(Option? left, Option? right)
         {
             return !(left == right);
         }
@@ -109,9 +109,9 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="left">The left argument.</param>
         /// <param name="right">The right argument.</param>
         /// <returns><c>true</c> if the current argument is equal to the other argument; otherwise, false.</returns>
-        public static bool operator ==(Argument? left, Argument? right)
+        public static bool operator ==(Option? left, Option? right)
         {
-            return EqualityComparer<Argument?>.Default.Equals(left, right);
+            return EqualityComparer<Option?>.Default.Equals(left, right);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <returns><c>true</c> if the current argument is equal to the other argument; otherwise, false.</returns>
         public override bool Equals(object? obj)
         {
-            return Equals(obj as Argument);
+            return Equals(obj as Option);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <param name="other">The other argument.</param>
         /// <returns><c>true</c> if the current argument is equal to the other argument; otherwise, false.</returns>
-        public bool Equals(Argument? other)
+        public bool Equals(Option? other)
         {
             return other != null &&
                    Id == other.Id;

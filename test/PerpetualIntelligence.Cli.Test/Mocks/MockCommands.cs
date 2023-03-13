@@ -28,78 +28,78 @@ namespace PerpetualIntelligence.Cli.Mocks
         {
             TestArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false),
-                new ArgumentDescriptor("key2", DataType.Text, "Key2 value text", true),
-                new ArgumentDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
-                new ArgumentDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
-                new ArgumentDescriptor("key5", DataType.Url, "Key5 value url", false),
-                new ArgumentDescriptor("key6", nameof(Boolean), "Key6 no value", false),
-                new ArgumentDescriptor("key7", DataType.Currency, "Key7 value currency", true) { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
-                new ArgumentDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
-                new ArgumentDescriptor("key9", nameof(Double), "Key9 value custom double", true) {ValueCheckers = new []{ new DataValidationArgumentValueChecker(new RequiredAttribute()), new DataValidationArgumentValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new ArgumentDescriptor("key10", nameof(String), "Key10 value custom string", true)
+                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false),
+                new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
+                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
+                new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
+                new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
+                new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", false),
+                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
+                new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
+                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true) {ValueCheckers = new []{ new DataValidationArgumentValueChecker(new RequiredAttribute()), new DataValidationArgumentValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true)
             };
 
             TestDefaultArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false),
-                new ArgumentDescriptor("key2", DataType.Text, "Key2 value text", true),
-                new ArgumentDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false, defaultValue: "44444444444"),
-                new ArgumentDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
-                new ArgumentDescriptor("key5", DataType.Url, "Key5 value url", false),
-                new ArgumentDescriptor("key6", nameof(Boolean), "Key6 no value", false, defaultValue: false),
-                new ArgumentDescriptor("key7", DataType.Currency, "Key7 value currency", true) {ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
-                new ArgumentDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
-                new ArgumentDescriptor("key9", nameof(Double), "Key9 value custom double", true, defaultValue: 25.36) { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new ArgumentDescriptor("key10", nameof(String), "Key10 value custom string", true, defaultValue: "mello default")
+                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false),
+                new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
+                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false, defaultValue: "44444444444"),
+                new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
+                new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
+                new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", false, defaultValue: false),
+                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) {ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
+                new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
+                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true, defaultValue: 25.36) { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true, defaultValue: "mello default")
             };
 
             TestDefaultArgumentValueDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value"),
-                new ArgumentDescriptor("key2", DataType.Text, "Key2 value text", true),
-                new ArgumentDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
-                new ArgumentDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
+                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value"),
+                new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
+                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
+                new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
             };
 
             TestAliasArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
-                new ArgumentDescriptor("key2", DataType.Text, "Key2 value text", true) { },
-                new ArgumentDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "key3_alias" },
-                new ArgumentDescriptor("key4", nameof(Double), "Key4 value number", false) { Alias = "key4_alias" },
+                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
+                new OptionDescriptor("key2", DataType.Text, "Key2 value text", true) { },
+                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "key3_alias" },
+                new OptionDescriptor("key4", nameof(Double), "Key4 value number", false) { Alias = "key4_alias" },
             };
 
             TestOptionsDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
-                new ArgumentDescriptor("key2-er", DataType.Text, "Key2 value text", true, defaultValue: "key2 default value"),
-                new ArgumentDescriptor("key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "k3" },
-                new ArgumentDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
-                new ArgumentDescriptor("key5", DataType.Url, "Key5 value url", false),
-                new ArgumentDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", false),
-                new ArgumentDescriptor("key7", DataType.Currency, "Key7 value currency", true, defaultValue: "INR") { ValueCheckers = new[] { new DataValidationArgumentValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
-                new ArgumentDescriptor("key8", nameof(Int32), "Key8 value int", false),
-                new ArgumentDescriptor("key9", nameof(Double), "Key9 invalid default value", true, defaultValue: 89568.36) {ValueCheckers = new[] { new DataValidationArgumentValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new ArgumentDescriptor("key10", nameof(String), "Key10 value custom string", true) { Alias = "k10" },
-                new ArgumentDescriptor("key11", nameof(Boolean), "Key11 value boolean", true) { Alias = "k11" },
-                new ArgumentDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true) { Alias = "k12", DefaultValue = true }
+                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
+                new OptionDescriptor("key2-er", DataType.Text, "Key2 value text", true, defaultValue: "key2 default value"),
+                new OptionDescriptor("key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "k3" },
+                new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
+                new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
+                new OptionDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", false),
+                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true, defaultValue: "INR") { ValueCheckers = new[] { new DataValidationArgumentValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
+                new OptionDescriptor("key8", nameof(Int32), "Key8 value int", false),
+                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", true, defaultValue: 89568.36) {ValueCheckers = new[] { new DataValidationArgumentValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true) { Alias = "k10" },
+                new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", true) { Alias = "k11" },
+                new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true) { Alias = "k12", DefaultValue = true }
             };
 
             TestHindiUnicodeArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("एक", DataType.Text, "पहला तर्क", false, defaultValue: "डिफ़ॉल्ट मान") { Alias = "एकहै" },
-                new ArgumentDescriptor("दो", nameof(Boolean), "दूसरा तर्क", true) { },
-                new ArgumentDescriptor("तीन", DataType.Text, "तीसरा तर्क", false) { Alias = "तीनहै" },
-                new ArgumentDescriptor("चार", nameof(Double), "चौथा तर्क", false) { Alias = "चारहै" },
+                new OptionDescriptor("एक", DataType.Text, "पहला तर्क", false, defaultValue: "डिफ़ॉल्ट मान") { Alias = "एकहै" },
+                new OptionDescriptor("दो", nameof(Boolean), "दूसरा तर्क", true) { },
+                new OptionDescriptor("तीन", DataType.Text, "तीसरा तर्क", false) { Alias = "तीनहै" },
+                new OptionDescriptor("चार", nameof(Double), "चौथा तर्क", false) { Alias = "चारहै" },
             };
 
             TestChineseUnicodeArgumentDescriptors = new(new UnicodeTextHandler())
             {
-                new ArgumentDescriptor("第一的", DataType.Text, "第一個命令參數", false, defaultValue: "默認值") { Alias = "第一" },
-                new ArgumentDescriptor("第二", nameof(Boolean), "第二個命令參數", true) { },
-                new ArgumentDescriptor("第三", DataType.Text, "第三個命令參數", false),
-                new ArgumentDescriptor("第四", nameof(Double), "第四個命令參數", false)
+                new OptionDescriptor("第一的", DataType.Text, "第一個命令參數", false, defaultValue: "默認值") { Alias = "第一" },
+                new OptionDescriptor("第二", nameof(Boolean), "第二個命令參數", true) { },
+                new OptionDescriptor("第三", DataType.Text, "第三個命令參數", false),
+                new OptionDescriptor("第四", nameof(Double), "第四個命令參數", false)
             };
 
             Commands = new()
@@ -120,7 +120,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with default arg
                 NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
@@ -219,7 +219,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new ArgumentDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with default arg
                 NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
@@ -256,7 +256,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             };
         }
 
-        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, ArgumentDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false, Arguments? arguments = null)
+        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, OptionDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false, Options? arguments = null)
         {
             var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultArgument: defaultArg)
             {
@@ -275,13 +275,13 @@ namespace PerpetualIntelligence.Cli.Mocks
         public static List<CommandDescriptor> GroupedCommands;
         public static List<CommandDescriptor> GroupedOptionsCommands;
         public static List<CommandDescriptor> LicensingCommands;
-        public static ArgumentDescriptors TestAliasArgumentDescriptors;
-        public static ArgumentDescriptors TestArgumentDescriptors;
-        public static ArgumentDescriptors TestChineseUnicodeArgumentDescriptors;
-        public static ArgumentDescriptors TestDefaultArgumentDescriptors;
-        public static ArgumentDescriptors TestDefaultArgumentValueDescriptors;
-        public static ArgumentDescriptors TestHindiUnicodeArgumentDescriptors;
-        public static ArgumentDescriptors TestOptionsDescriptors;
+        public static OptionDescriptors TestAliasArgumentDescriptors;
+        public static OptionDescriptors TestArgumentDescriptors;
+        public static OptionDescriptors TestChineseUnicodeArgumentDescriptors;
+        public static OptionDescriptors TestDefaultArgumentDescriptors;
+        public static OptionDescriptors TestDefaultArgumentValueDescriptors;
+        public static OptionDescriptors TestHindiUnicodeArgumentDescriptors;
+        public static OptionDescriptors TestOptionsDescriptors;
         public static List<CommandDescriptor> UnicodeCommands;
     }
 }
