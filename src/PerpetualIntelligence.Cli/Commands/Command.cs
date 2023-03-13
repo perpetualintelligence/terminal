@@ -27,15 +27,10 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <param name="commandDescriptor"></param>
         /// <param name="arguments"></param>
-        /// <param name="properties"></param>
-        public Command(CommandDescriptor commandDescriptor, Arguments? arguments = null, Dictionary<string, object>? properties = null)
+        public Command(CommandDescriptor commandDescriptor, Arguments? arguments = null)
         {
-            Id = commandDescriptor.Id;
-            Name = commandDescriptor.Name;
-            Description = commandDescriptor.Description;
             Descriptor = commandDescriptor;
             Arguments = arguments;
-            CustomProperties = properties;
         }
 
         /// <summary>
@@ -51,22 +46,22 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The command custom properties.
         /// </summary>
-        public Dictionary<string, object>? CustomProperties { get; }
+        public Dictionary<string, object>? CustomProperties => Descriptor.CustomProperties;
 
         /// <summary>
         /// The command description.
         /// </summary>
-        public string? Description { get; }
+        public string? Description => Descriptor.Description;
 
         /// <summary>
         /// The command id unique.
         /// </summary>
-        public string? Id { get; }
+        public string? Id => Descriptor.Id;
 
         /// <summary>
         /// The command name.
         /// </summary>
-        public string Name { get; }
+        public string Name => Descriptor.Name;
 
         /// <summary>
         /// Gets the optional argument value for the specified identifier.
