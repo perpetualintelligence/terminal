@@ -38,59 +38,53 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="value">The argument value.</param>
         public Argument(ArgumentDescriptor argumentDescriptor, object value)
         {
-            Id = argumentDescriptor.Id;
-            DataType = argumentDescriptor.DataType;
-            CustomDataType = argumentDescriptor.CustomDataType;
-            Description = argumentDescriptor.Description;
             Value = value;
-            Properties = argumentDescriptor.CustomProperties;
-            Alias = argumentDescriptor.Alias;
             Descriptor = argumentDescriptor;
         }
 
         /// <summary>
         /// The argument descriptor.
         /// </summary>
+        [JsonPropertyName("descriptor")]
         public ArgumentDescriptor Descriptor { get; }
 
         /// <summary>
         /// The argument alias.
         /// </summary>
-        public string? Alias { get; }
+        [JsonIgnore]
+        public string? Alias => Descriptor.Alias;
 
         /// <summary>
         /// The argument custom data type.
         /// </summary>
         /// <remarks>This custom data type is used only if the <see cref="DataType"/> property is set to <see cref="DataType.Custom"/>.</remarks>
-        [JsonPropertyName("custom_data_type")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? CustomDataType { get; set; }
+        [JsonIgnore]
+        public string? CustomDataType => Descriptor.CustomDataType;
 
         /// <summary>
         /// The argument data type. Defaults to <see cref="DataType.Text"/>.
         /// </summary>
-        [JsonPropertyName("data_type")]
-        public DataType DataType { get; set; } = DataType.Text;
+        [JsonIgnore]
+        public DataType DataType => Descriptor.DataType;
 
         /// <summary>
         /// The argument description.
         /// </summary>
-        [JsonPropertyName("description")]
-        public string? Description { get; set; }
+        [JsonIgnore]
+        public string? Description => Descriptor.Description;
 
         /// <summary>
         /// The argument id.
         /// </summary>
         /// <remarks>The argument id is unique with in a command.</remarks>
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
+        [JsonIgnore]
+        public string Id => Descriptor.Id;
 
         /// <summary>
         /// The argument custom properties.
         /// </summary>
-        [JsonPropertyName("properties")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Dictionary<string, object>? Properties { get; set; }
+        [JsonIgnore]
+        public Dictionary<string, object>? CustomProperties => Descriptor.CustomProperties;
 
         /// <summary>
         /// The argument value.

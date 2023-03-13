@@ -5,9 +5,11 @@
     https://terms.perpetualintelligence.com
 */
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test.Services;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PerpetualIntelligence.Cli.Commands
 {
@@ -41,12 +43,15 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void JsonPropertyNamesShouldBeCorrect()
         {
-            TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.CustomDataType)), "custom_data_type");
-            TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.DataType)), "data_type");
-            TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.Description)), "description");
-            TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.Id)), "id");
             TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.Value)), "value");
-            TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.Properties)), "properties");
+            TestHelper.AssertJsonPropertyName(typeof(Argument).GetProperty(nameof(Argument.Descriptor)), "descriptor");
+
+            typeof(Argument).GetProperty(nameof(Argument.Alias)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Argument).GetProperty(nameof(Argument.CustomDataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Argument).GetProperty(nameof(Argument.CustomProperties)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Argument).GetProperty(nameof(Argument.DataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Argument).GetProperty(nameof(Argument.Description)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Argument).GetProperty(nameof(Argument.Id)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
         }
     }
 }
