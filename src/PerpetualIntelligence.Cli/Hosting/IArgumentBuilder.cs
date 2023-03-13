@@ -8,7 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands;
 
-namespace PerpetualIntelligence.Cli.Integration
+namespace PerpetualIntelligence.Cli.Hosting
 {
     /// <summary>
     /// An abstraction of <c>pi-cli</c> argument builder.

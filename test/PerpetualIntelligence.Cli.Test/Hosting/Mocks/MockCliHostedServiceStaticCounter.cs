@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com
 */
 
-namespace PerpetualIntelligence.Cli.Integration.Mocks
+namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
     public static class MockCliHostedServiceStaticCounter
     {

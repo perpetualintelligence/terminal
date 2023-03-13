@@ -18,7 +18,7 @@ using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Events;
-using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Cli.Hosting;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Stores;
 using PerpetualIntelligence.Shared.Exceptions;

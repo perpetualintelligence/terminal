@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Cli.Hosting;
 using System;
 
 namespace PerpetualIntelligence.Cli.Extensions

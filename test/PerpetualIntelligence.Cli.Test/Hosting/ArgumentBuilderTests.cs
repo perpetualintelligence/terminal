@@ -13,7 +13,7 @@ using PerpetualIntelligence.Cli.Mocks;
 using System;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Integration
+namespace PerpetualIntelligence.Cli.Hosting
 {
     public class ArgumentBuilderTests : IDisposable
     {

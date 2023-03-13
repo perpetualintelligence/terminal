@@ -8,7 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace PerpetualIntelligence.Cli.Integration
+namespace PerpetualIntelligence.Cli.Hosting
 {
     /// <summary>
     /// The default <see cref="ICliBuilder"/>.

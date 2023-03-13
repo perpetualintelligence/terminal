@@ -12,7 +12,7 @@ using PerpetualIntelligence.Cli.Licensing;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Integration.Mocks
+namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
     public class MockCliCustomHostedService : CliHostedService
     {

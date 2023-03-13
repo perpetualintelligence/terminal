@@ -11,7 +11,7 @@ using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Integration.Mocks
+namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
     public class MockLicenseExtractor : ILicenseExtractor
     {

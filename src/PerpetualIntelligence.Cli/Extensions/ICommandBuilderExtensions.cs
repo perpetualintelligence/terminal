@@ -7,7 +7,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Cli.Hosting;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;

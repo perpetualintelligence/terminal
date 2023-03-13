@@ -15,7 +15,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Integration
+namespace PerpetualIntelligence.Cli.Hosting
 {
     public class CommandBuilderTests
     {

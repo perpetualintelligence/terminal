@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Cli.Integration.Mocks
+namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
     internal class MockCliHostedServiceLogger : ILogger<CliHostedService>
     {

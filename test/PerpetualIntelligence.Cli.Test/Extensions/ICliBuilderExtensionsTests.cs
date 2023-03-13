@@ -17,7 +17,7 @@ using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Events;
-using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Cli.Hosting;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores;
 

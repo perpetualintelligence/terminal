@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Graph;
 using PerpetualIntelligence.Cli.Authentication;
 using PerpetualIntelligence.Cli.Authentication.Msal;
-using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Cli.Hosting;
 using System;
 using System.Net.Http;
 using System.Threading;

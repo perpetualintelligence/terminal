@@ -10,7 +10,7 @@ using PerpetualIntelligence.Cli.Mocks;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Integration.Mocks
+namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
     /// <summary>
     /// </summary>

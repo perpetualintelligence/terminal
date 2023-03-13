@@ -13,7 +13,7 @@ using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Extensions;
-using PerpetualIntelligence.Cli.Integration.Mocks;
+using PerpetualIntelligence.Cli.Hosting.Mocks;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Licensing;
@@ -24,7 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Integration
+namespace PerpetualIntelligence.Cli.Hosting
 {
     /// <summary>
     /// Run test sequentially because we modify the static Console.SetOut

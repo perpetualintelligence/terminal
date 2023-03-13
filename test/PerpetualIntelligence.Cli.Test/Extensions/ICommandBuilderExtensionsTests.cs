@@ -9,7 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Integration;
+using PerpetualIntelligence.Cli.Hosting;
 using PerpetualIntelligence.Cli.Mocks;
 using System;
 using System.ComponentModel.DataAnnotations;
