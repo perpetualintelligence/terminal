@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="defaultArgumentValueProvider">The optional option default value provider.</param>
         public CommandExtractor(
             ICommandStoreHandler commandStoreHandler,
-            IArgumentExtractor argumentExtractor,
+            IOptionExtractor argumentExtractor,
             ITextHandler textHandler,
             CliOptions cliOptions,
             ILogger<CommandExtractor> logger,
@@ -144,7 +144,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             foreach (var argString in argumentStrings)
             {
                 // We capture all the option extraction errors
-                TryResultOrError<ArgumentExtractorResult> tryResult = await InfraHelper.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(argString, commandDescriptor));
+                TryResultOrError<OptionExtractorResult> tryResult = await InfraHelper.EnsureResultAsync(argumentExtractor.ExtractAsync, new OptionExtractorContext(argString, commandDescriptor));
                 if (tryResult.Error != null)
                 {
                     errors.Add(tryResult.Error);
@@ -363,7 +363,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return finalArgs;
         }
 
-        private readonly IArgumentExtractor argumentExtractor;
+        private readonly IOptionExtractor argumentExtractor;
         private readonly ICommandStoreHandler commandStore;
         private readonly IDefaultArgumentProvider? defaultArgumentProvider;
         private readonly IDefaultArgumentValueProvider? defaultArgumentValueProvider;

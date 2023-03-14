@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// <summary>
     /// The option extractor context.
     /// </summary>
-    public class ArgumentExtractorContext
+    public class OptionExtractorContext
     {
         /// <summary>
         /// Initialize a new instance.
@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="argumentString">The option string.</param>
         /// <param name="commandDescriptor">The command descriptor.</param>
 
-        public ArgumentExtractorContext(OptionString argumentString, CommandDescriptor commandDescriptor)
+        public OptionExtractorContext(OptionString argumentString, CommandDescriptor commandDescriptor)
         {
             ArgumentString = argumentString ?? throw new ArgumentNullException(nameof(argumentString));
             CommandDescriptor = commandDescriptor ?? throw new ArgumentNullException(nameof(commandDescriptor));

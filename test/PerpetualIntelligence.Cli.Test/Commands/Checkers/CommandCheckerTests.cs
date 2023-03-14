@@ -212,7 +212,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             cliOptions = MockCliOptions.New();
             textHandler = new UnicodeTextHandler();
-            mapper = new DataAnnotationsArgumentDataTypeMapper(cliOptions, TestLogger.Create<DataAnnotationsArgumentDataTypeMapper>());
+            mapper = new DataAnnotationsOptionDataTypeMapper(cliOptions, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
             valueChecker = new OptionChecker(mapper, cliOptions, TestLogger.Create<OptionChecker>());
             checker = new CommandChecker(valueChecker, cliOptions, TestLogger.Create<CommandChecker>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -220,7 +220,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         private CommandChecker checker = null!;
         private ICommandStoreHandler commands = null!;
-        private IArgumentDataTypeMapper mapper = null!;
+        private IOptionDataTypeMapper mapper = null!;
         private CliOptions cliOptions = null!;
         private ITextHandler textHandler = null!;
         private IOptionChecker valueChecker = null!;

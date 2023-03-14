@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     /// </summary>
     /// <seealso cref="OptionDescriptor.ValueCheckers"/>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public sealed class ArgumentValidationAttribute : Attribute
+    public sealed class OptionValidationAttribute : Attribute
     {
         /// <summary>
         /// Initialize a new instance.
@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <param name="argId">The option identifier.</param>
         /// <param name="validationAttribute">The option validation attribute.</param>
         /// <param name="validationArgs">The validation attribute options.</param>
-        public ArgumentValidationAttribute(string argId, Type validationAttribute, params object[] validationArgs)
+        public OptionValidationAttribute(string argId, Type validationAttribute, params object[] validationArgs)
         {
             ArgId = argId;
             ValidationAttribute = validationAttribute;

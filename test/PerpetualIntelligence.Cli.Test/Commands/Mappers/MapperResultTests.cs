@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new ArgumentDataTypeMapperResult(null), "Value cannot be null. (Parameter 'mappedType')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new OptionDataTypeMapperResult(null), "Value cannot be null. (Parameter 'mappedType')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }

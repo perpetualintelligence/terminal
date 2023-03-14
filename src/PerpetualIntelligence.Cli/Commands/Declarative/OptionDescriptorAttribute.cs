@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     /// Declares an <see cref="OptionDescriptor"/> for a command.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public sealed class ArgumentDescriptorAttribute : Attribute
+    public sealed class OptionDescriptorAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance.
@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <param name="id">The option id.</param>
         /// <param name="dataType">The option data type.</param>
         /// <param name="description">The option description.</param>
-        public ArgumentDescriptorAttribute(string id, DataType dataType, string description)
+        public OptionDescriptorAttribute(string id, DataType dataType, string description)
         {
             Id = id;
             DataType = dataType;
@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <param name="id">The option id.</param>
         /// <param name="customDataType">The option custom data type.</param>
         /// <param name="description">The option description.</param>
-        public ArgumentDescriptorAttribute(string id, string customDataType, string description)
+        public OptionDescriptorAttribute(string id, string customDataType, string description)
         {
             Id = id;
             CustomDataType = customDataType;

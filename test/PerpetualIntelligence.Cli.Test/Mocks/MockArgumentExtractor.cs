@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockArgumentExtractor : IArgumentExtractor
+    public class MockArgumentExtractor : IOptionExtractor
     {
         public bool Called { get; set; }
 
-        public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
+        public Task<OptionExtractorResult> ExtractAsync(OptionExtractorContext context)
         {
             Called = true;
-            return Task.FromResult(new ArgumentExtractorResult(new Commands.Option(new Commands.OptionDescriptor("testid", System.ComponentModel.DataAnnotations.DataType.Text, "testdesc"), "testvalue")));
+            return Task.FromResult(new OptionExtractorResult(new Commands.Option(new Commands.OptionDescriptor("testid", System.ComponentModel.DataAnnotations.DataType.Text, "testdesc"), "testvalue")));
         }
     }
 }

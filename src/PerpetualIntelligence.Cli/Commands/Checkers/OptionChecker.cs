@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="mapper">The option data-type mapper.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public OptionChecker(IArgumentDataTypeMapper mapper, CliOptions options, ILogger<OptionChecker> logger)
+        public OptionChecker(IOptionDataTypeMapper mapper, CliOptions options, ILogger<OptionChecker> logger)
         {
             this.mapper = mapper;
             this.options = options;
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             }
 
             // Check option data type and value type
-            ArgumentDataTypeMapperResult mapperResult = await mapper.MapAsync(new ArgumentDataTypeMapperContext(context.Argument));
+            OptionDataTypeMapperResult mapperResult = await mapper.MapAsync(new OptionDataTypeMapperContext(context.Argument));
 
             // Check whether we need to check type
             if (options.Checker.StrictArgumentValueType.GetValueOrDefault())
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <param name="context"></param>
         /// <param name="mapperResult"></param>
         /// <returns></returns>
-        protected Task<OptionCheckerResult> StrictTypeCheckingAsync(OptionCheckerContext context, ArgumentDataTypeMapperResult mapperResult)
+        protected Task<OptionCheckerResult> StrictTypeCheckingAsync(OptionCheckerContext context, OptionDataTypeMapperResult mapperResult)
         {
             // Ensure strict value compatibility
             try
@@ -96,7 +96,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         private readonly ILogger<OptionChecker> logger;
-        private readonly IArgumentDataTypeMapper mapper;
+        private readonly IOptionDataTypeMapper mapper;
         private readonly CliOptions options;
     }
 }

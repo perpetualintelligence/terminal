@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// try to map an option value to its corresponding .NET value type. If the mapping fails, the command will
         /// not run.
         /// </summary>
-        /// <see cref="Commands.Mappers.IArgumentDataTypeMapper"/>
+        /// <see cref="Commands.Mappers.IOptionDataTypeMapper"/>
         public bool? StrictArgumentValueType { get; set; }
     }
 }

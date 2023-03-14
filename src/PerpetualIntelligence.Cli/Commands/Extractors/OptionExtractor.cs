@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The default <see cref="IArgumentExtractor"/>.
+    /// The default <see cref="IOptionExtractor"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// <seealso cref="ExtractorOptions.ArgumentPrefix"/>
     /// <seealso cref="ExtractorOptions.ArgumentValueSeparator"/>
     [WriteDocumentation]
-    public class ArgumentExtractor : IArgumentExtractor
+    public class OptionExtractor : IOptionExtractor
     {
         /// <summary>
         /// Initialize a new instance.
@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="textHandler">The text handler.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ArgumentExtractor(ITextHandler textHandler, CliOptions options, ILogger<ArgumentExtractor> logger)
+        public OptionExtractor(ITextHandler textHandler, CliOptions options, ILogger<OptionExtractor> logger)
         {
             this.textHandler = textHandler;
             this.options = options;
@@ -148,7 +148,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <inheritdoc/>
-        public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
+        public Task<OptionExtractorResult> ExtractAsync(OptionExtractorContext context)
         {
             // Sanity check
             if (context.CommandDescriptor.ArgumentDescriptors == null)
@@ -247,7 +247,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 // The value will not be white space because we have already removed all the separators.
                 string value = (argValue == null || textHandler.TextEquals(argValue, string.Empty)) ? true.ToString() : argValue;
-                return Task.FromResult(new ArgumentExtractorResult(new Option(argDescriptor, value)));
+                return Task.FromResult(new OptionExtractorResult(new Option(argDescriptor, value)));
             }
             else
             {
@@ -256,11 +256,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     throw new ErrorException(Errors.InvalidArgument, "The option value is missing. argument_string={0}", prefixArgValue);
                 }
 
-                return Task.FromResult(new ArgumentExtractorResult(new Option(argDescriptor, argValue)));
+                return Task.FromResult(new OptionExtractorResult(new Option(argDescriptor, argValue)));
             }
         }
 
-        private readonly ILogger<ArgumentExtractor> logger;
+        private readonly ILogger<OptionExtractor> logger;
         private readonly CliOptions options;
         private readonly ITextHandler textHandler;
     }

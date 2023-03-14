@@ -18,21 +18,21 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// The option data type mapper using <see cref="System.ComponentModel.DataAnnotations"/>.
     /// </summary>
-    public class DataAnnotationsArgumentDataTypeMapper : IArgumentDataTypeMapper
+    public class DataAnnotationsOptionDataTypeMapper : IOptionDataTypeMapper
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public DataAnnotationsArgumentDataTypeMapper(CliOptions options, ILogger<DataAnnotationsArgumentDataTypeMapper> logger)
+        public DataAnnotationsOptionDataTypeMapper(CliOptions options, ILogger<DataAnnotationsOptionDataTypeMapper> logger)
         {
             this.options = options;
             this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public Task<ArgumentDataTypeMapperResult> MapAsync(ArgumentDataTypeMapperContext context)
+        public Task<OptionDataTypeMapperResult> MapAsync(OptionDataTypeMapperContext context)
         {
             if (context.Argument.DataType == DataType.Custom && string.IsNullOrWhiteSpace(context.Argument.CustomDataType))
             {
@@ -86,12 +86,12 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
             }
         }
 
-        private Task<ArgumentDataTypeMapperResult> Valid(Type type)
+        private Task<OptionDataTypeMapperResult> Valid(Type type)
         {
-            return Task.FromResult(new ArgumentDataTypeMapperResult(type));
+            return Task.FromResult(new OptionDataTypeMapperResult(type));
         }
 
-        private readonly ILogger<DataAnnotationsArgumentDataTypeMapper> logger;
+        private readonly ILogger<DataAnnotationsOptionDataTypeMapper> logger;
         private readonly CliOptions options;
     }
 }

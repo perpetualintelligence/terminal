@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Extractors.Mocks
 {
-    internal class MockBadArgumentExtractor : IArgumentExtractor
+    internal class MockBadArgumentExtractor : IOptionExtractor
     {
-        public Task<ArgumentExtractorResult> ExtractAsync(ArgumentExtractorContext context)
+        public Task<OptionExtractorResult> ExtractAsync(OptionExtractorContext context)
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            return Task.FromResult(new ArgumentExtractorResult(null));
+            return Task.FromResult(new OptionExtractorResult(null));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
     }

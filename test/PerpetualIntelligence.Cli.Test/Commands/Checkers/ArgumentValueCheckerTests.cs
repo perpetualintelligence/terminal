@@ -158,12 +158,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.New();
-            mapper = new DataAnnotationsArgumentDataTypeMapper(options, TestLogger.Create<DataAnnotationsArgumentDataTypeMapper>());
+            mapper = new DataAnnotationsOptionDataTypeMapper(options, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
             checker = new OptionChecker(mapper, options, TestLogger.Create<OptionChecker>());
         }
 
         private IOptionChecker checker = null!;
-        private IArgumentDataTypeMapper mapper = null!;
+        private IOptionDataTypeMapper mapper = null!;
         private CliOptions options = null!;
     }
 }

@@ -12,14 +12,14 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// The option data-type mapper context.
     /// </summary>
-    public class ArgumentDataTypeMapperContext
+    public sealed class OptionDataTypeMapperContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="option">The option.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ArgumentDataTypeMapperContext(Option option)
+        public OptionDataTypeMapperContext(Option option)
         {
             Argument = option ?? throw new ArgumentNullException(nameof(option));
         }

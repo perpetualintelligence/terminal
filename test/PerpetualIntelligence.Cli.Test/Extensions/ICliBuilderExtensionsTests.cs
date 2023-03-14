@@ -235,7 +235,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
             Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentExtractor)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
@@ -251,7 +251,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
             Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentExtractor)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
@@ -272,7 +272,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
             Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentExtractor)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);

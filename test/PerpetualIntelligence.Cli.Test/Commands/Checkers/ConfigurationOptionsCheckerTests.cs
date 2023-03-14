@@ -38,7 +38,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             optionsChecker = new ConfigurationOptionsChecker(host.Services);
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandStore>());
-            argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
+            argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
             defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
         }
@@ -270,7 +270,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token cannot be whitespace.");
         }
 
-        private readonly ArgumentExtractor argExtractor;
+        private readonly OptionExtractor argExtractor;
         private readonly ICommandStoreHandler commands;
         private readonly IDefaultArgumentProvider defaultArgProvider = null!;
         private readonly IDefaultArgumentValueProvider defaultArgValueProvider = null!;

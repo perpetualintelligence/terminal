@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockArgumentMapper : IArgumentDataTypeMapper
+    public class MockArgumentMapper : IOptionDataTypeMapper
     {
         public bool Called { get; set; }
 
-        public Task<ArgumentDataTypeMapperResult> MapAsync(ArgumentDataTypeMapperContext context)
+        public Task<OptionDataTypeMapperResult> MapAsync(OptionDataTypeMapperContext context)
         {
             Called = true;
-            return Task.FromResult(new ArgumentDataTypeMapperResult(typeof(string)));
+            return Task.FromResult(new OptionDataTypeMapperResult(typeof(string)));
         }
     }
 }

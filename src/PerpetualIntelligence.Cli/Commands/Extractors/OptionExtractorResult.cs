@@ -12,13 +12,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// <summary>
     /// The option extractor result.
     /// </summary>
-    public class ArgumentExtractorResult
+    public class OptionExtractorResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="option"></param>
-        public ArgumentExtractorResult(Option option)
+        public OptionExtractorResult(Option option)
         {
             Argument = option ?? throw new System.ArgumentNullException(nameof(option));
         }

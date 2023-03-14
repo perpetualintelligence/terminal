@@ -7,12 +7,12 @@
 
 using PerpetualIntelligence.Shared.Abstractions;
 
-namespace PerpetualIntelligence.Cli.Commands.Mappers
+namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// An abstraction to map an <see cref="Option.DataType"/> to <see cref="System.Type"/>.
+    /// An abstraction to extract an option.
     /// </summary>
-    public interface IArgumentDataTypeMapper : IMapper<ArgumentDataTypeMapperContext, ArgumentDataTypeMapperResult>
+    public interface IOptionExtractor : IExtractor<OptionExtractorContext, OptionExtractorResult>
     {
     }
 }

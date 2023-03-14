@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     /// <remarks>Each custom property must have a unique key within an option.</remarks>
     /// <seealso cref="OptionDescriptor.CustomProperties"/>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public sealed class ArgumentCustomPropertyAttribute : Attribute
+    public sealed class OptionCustomPropertyAttribute : Attribute
     {
         /// <summary>
         /// Initialize a new instance.
@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <param name="argId">The option identifier.</param>
         /// <param name="key">The custom property key.</param>
         /// <param name="value">The custom property value.</param>
-        public ArgumentCustomPropertyAttribute(string argId, string key, object value)
+        public OptionCustomPropertyAttribute(string argId, string key, object value)
         {
             if (string.IsNullOrWhiteSpace(argId))
             {

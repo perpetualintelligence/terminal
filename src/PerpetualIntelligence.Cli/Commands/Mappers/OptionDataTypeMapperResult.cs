@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 
 namespace PerpetualIntelligence.Cli.Commands.Mappers
@@ -13,14 +12,14 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
     /// <summary>
     /// The option data-type mapper result.
     /// </summary>
-    public class ArgumentDataTypeMapperResult
+    public sealed class OptionDataTypeMapperResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="mappedType">The mapped type.</param>
         /// <exception cref="ArgumentNullException">Null mapped type.</exception>
-        public ArgumentDataTypeMapperResult(Type mappedType)
+        public OptionDataTypeMapperResult(Type mappedType)
         {
             MappedType = mappedType ?? throw new ArgumentNullException(nameof(mappedType));
         }

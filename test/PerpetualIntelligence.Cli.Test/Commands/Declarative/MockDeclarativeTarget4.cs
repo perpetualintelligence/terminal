@@ -14,9 +14,9 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]
-    [ArgumentDescriptor("arg1", DataType.Text, "test arg desc1")]
-    [ArgumentDescriptor("arg2", DataType.Text, "test arg desc2")]
-    [ArgumentDescriptor("arg3", DataType.Text, "test arg desc3")]
+    [OptionDescriptor("arg1", DataType.Text, "test arg desc1")]
+    [OptionDescriptor("arg2", DataType.Text, "test arg desc2")]
+    [OptionDescriptor("arg3", DataType.Text, "test arg desc3")]
     public class MockDeclarativeTarget4 : IDeclarativeTarget
     {
     }

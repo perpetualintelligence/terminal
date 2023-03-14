@@ -923,7 +923,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions = MockCliOptions.New();
             textHandler = new UnicodeTextHandler();
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
-            argExtractor = new ArgumentExtractor(textHandler, cliOptions, TestLogger.Create<ArgumentExtractor>());
+            argExtractor = new OptionExtractor(textHandler, cliOptions, TestLogger.Create<OptionExtractor>());
             defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
             defaultArgProvider = new DefaultArgumentProvider(cliOptions, TestLogger.Create<DefaultArgumentProvider>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
@@ -967,7 +967,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CollectionAssert.AreEquivalent(arg.ValueCheckers?.Cast<DataValidationOptionValueChecker>().ToArray(), supportedValues);
         }
 
-        private ArgumentExtractor argExtractor = null!;
+        private OptionExtractor argExtractor = null!;
         private ICommandStoreHandler commands = null!;
         private IDefaultArgumentProvider defaultArgProvider = null!;
         private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
