@@ -25,22 +25,22 @@ namespace PerpetualIntelligence.Cli.Licensing
         public bool ArgumentAlias { get; internal set; }
 
         /// <summary>
-        /// The maximum arguments or options. Defaults to <c>null</c> or no limit.
+        /// The maximum options or options. Defaults to <c>null</c> or no limit.
         /// </summary>
         public long? ArgumentLimit { get; internal set; }
 
         /// <summary>
-        /// Supports the command argument data type checks. Defaults to <c>null</c> or no data type checks.
+        /// Supports the command option data type checks. Defaults to <c>null</c> or no data type checks.
         /// </summary>
         public string[]? DataTypeHandlers { get; internal set; }
 
         /// <summary>
-        /// Supports the default command argument. Defaults to <c>false</c> or no default arguments.
+        /// Supports the default command option. Defaults to <c>false</c> or no default options.
         /// </summary>
         public bool DefaultArgument { get; internal set; }
 
         /// <summary>
-        /// Supports the default argument value. Defaults to <c>false</c> or no default argument value.
+        /// Supports the default option value. Defaults to <c>false</c> or no default option value.
         /// </summary>
         public bool DefaultArgumentValue { get; internal set; }
 

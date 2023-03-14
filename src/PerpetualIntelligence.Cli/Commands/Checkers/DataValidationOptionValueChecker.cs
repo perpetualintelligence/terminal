@@ -13,15 +13,15 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// The default <see cref="IArgumentValueChecker"/> that uses <see cref="System.ComponentModel.DataAnnotations.ValidationAttribute"/> to check an argument value.
+    /// The default <see cref="IOptionValueChecker"/> that uses <see cref="System.ComponentModel.DataAnnotations.ValidationAttribute"/> to check an option value.
     /// </summary>
-    public sealed class DataValidationArgumentValueChecker : IArgumentValueChecker
+    public sealed class DataValidationOptionValueChecker : IOptionValueChecker
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="validationAttribute">The validation attribute.</param>
-        public DataValidationArgumentValueChecker(ValidationAttribute validationAttribute)
+        public DataValidationOptionValueChecker(ValidationAttribute validationAttribute)
         {
             this.ValidationAttribute = validationAttribute ?? throw new ArgumentNullException(nameof(validationAttribute));
         }
@@ -32,10 +32,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public ValidationAttribute ValidationAttribute { get; }
 
         /// <inheritdoc/>
-        public Task CheckAsync(Option argument)
+        public Task CheckAsync(Option option)
         {
-            ValidationContext context = new(argument);
-            ValidationAttribute.Validate(argument.Value, context);
+            ValidationContext context = new(option);
+            ValidationAttribute.Validate(option.Value, context);
             return Task.CompletedTask;
         }
 
@@ -47,13 +47,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 return false;
             }
 
-            if (obj is not DataValidationArgumentValueChecker objClass) { return false; }
+            if (obj is not DataValidationOptionValueChecker objClass) { return false; }
 
             return objClass.ValidationAttribute.Equals(this.ValidationAttribute);
         }
 
         /// <inheritdoc/>
-        public bool Equals(DataValidationArgumentValueChecker other)
+        public bool Equals(DataValidationOptionValueChecker other)
         {
             return other.ValidationAttribute.Equals(this.ValidationAttribute);
         }
@@ -71,13 +71,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public static bool operator ==(DataValidationArgumentValueChecker? left, DataValidationArgumentValueChecker? right)
+        public static bool operator ==(DataValidationOptionValueChecker? left, DataValidationOptionValueChecker? right)
         {
-            return EqualityComparer<DataValidationArgumentValueChecker>.Default.Equals(left, right);
+            return EqualityComparer<DataValidationOptionValueChecker>.Default.Equals(left, right);
         }
 
         /// <inheritdoc/>
-        public static bool operator !=(DataValidationArgumentValueChecker? left, DataValidationArgumentValueChecker? right)
+        public static bool operator !=(DataValidationOptionValueChecker? left, DataValidationOptionValueChecker? right)
         {
             return !(left == right);
         }

@@ -37,15 +37,15 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
 
             if (context.Command.Descriptor.ArgumentDescriptors != null)
             {
-                foreach (OptionDescriptor argument in context.Command.Descriptor.ArgumentDescriptors)
+                foreach (OptionDescriptor option in context.Command.Descriptor.ArgumentDescriptors)
                 {
-                    if (argument.Alias != null)
+                    if (option.Alias != null)
                     {
-                        Logger.LogInformation("{0} ({1}) - {2}", argument.Id, argument.Alias, argument.Description);
+                        Logger.LogInformation("{0} ({1}) - {2}", option.Id, option.Alias, option.Description);
                     }
                     else
                     {
-                        Logger.LogInformation("{0} - {1}", argument.Id, argument.Description);
+                        Logger.LogInformation("{0} - {1}", option.Id, option.Description);
                     }
                 }
             }

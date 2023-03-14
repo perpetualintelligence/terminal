@@ -61,7 +61,7 @@ namespace PerpetualIntelligence.Cli.Hosting
                 IEnumerable<ValidationAttribute> attributes = localSeviceProvider.GetServices<ValidationAttribute>();
                 if (attributes.Any())
                 {
-                    argumentDescriptor.ValueCheckers = attributes.Select(e => new DataValidationArgumentValueChecker(e));
+                    argumentDescriptor.ValueCheckers = attributes.Select(e => new DataValidationOptionValueChecker(e));
                 }
 
                 commandBuilder.Services.AddSingleton(argumentDescriptor);

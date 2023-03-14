@@ -20,10 +20,10 @@ namespace PerpetualIntelligence.Cli.Commands
     public sealed class OptionDescriptors : KeyedCollection<string, OptionDescriptor>
     {
         /// <summary>
-        /// Initializes a new instance with the specified argument descriptors.
+        /// Initializes a new instance with the specified option descriptors.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
-        /// <param name="collection">The argument descriptors.</param>
+        /// <param name="collection">The option descriptors.</param>
         public OptionDescriptors(ITextHandler textHandler, IEnumerable<OptionDescriptor> collection) : this(textHandler)
         {
             foreach (OptionDescriptor argumentDescriptor in collection)
@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Commands
                 }
                 catch
                 {
-                    throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. argument={0}", index);
+                    throw new ErrorException(Errors.UnsupportedArgument, "The option is not supported. option={0}", index);
                 }
             }
 
@@ -72,7 +72,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Gets an <see cref="OptionDescriptor"/> instance with the specified id.
         /// </summary>
-        /// <param name="id">The argument id.</param>
+        /// <param name="id">The option id.</param>
         /// <returns><see cref="OptionDescriptor"/> instance if found.</returns>
         /// <exception cref="ErrorException">
         /// If <see cref="OptionDescriptor"/> instance with specified id is not found.
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Cli.Commands
                 }
                 catch
                 {
-                    throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. argument={0}", id);
+                    throw new ErrorException(Errors.UnsupportedArgument, "The option is not supported. option={0}", id);
                 }
             }
         }
@@ -95,10 +95,10 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Gets an <see cref="OptionDescriptor"/> instance with the specified id.
         /// </summary>
-        /// <param name="idOrAlias">The argument id or its alias.</param>
-        /// <param name="alias"><c>true</c> to find the argument by its alias, <c>false</c> to find by its identifier.</param>
+        /// <param name="idOrAlias">The option id or its alias.</param>
+        /// <param name="alias"><c>true</c> to find the option by its alias, <c>false</c> to find by its identifier.</param>
         /// <param name="ifNotThen">
-        /// <c>true</c> to find the argument by its id. If not found, then attempt to find it by its alias. <c>false</c>
+        /// <c>true</c> to find the option by its id. If not found, then attempt to find it by its alias. <c>false</c>
         /// to find by id or alias but not both.
         /// </param>
         /// <returns><see cref="OptionDescriptor"/> instance if found.</returns>
@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// If <see cref="OptionDescriptor"/> instance with specified id is not found.
         /// </exception>
         /// <remarks>
-        /// We recommend to use <see cref="this[string]"/> to get an argument. Using alias will degrade the
+        /// We recommend to use <see cref="this[string]"/> to get an option. Using alias will degrade the
         /// application's performance.
         /// </remarks>
         public OptionDescriptor this[string idOrAlias, bool? alias = null, bool? ifNotThen = null]
@@ -153,15 +153,15 @@ namespace PerpetualIntelligence.Cli.Commands
                 {
                     if (isOrAliasError)
                     {
-                        throw new ErrorException(Errors.UnsupportedArgument, "The argument or its alias is not supported. argument={0}", idOrAlias);
+                        throw new ErrorException(Errors.UnsupportedArgument, "The option or its alias is not supported. option={0}", idOrAlias);
                     }
                     else if (idError)
                     {
-                        throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. argument={0}", idOrAlias);
+                        throw new ErrorException(Errors.UnsupportedArgument, "The option is not supported. option={0}", idOrAlias);
                     }
                     else
                     {
-                        throw new ErrorException(Errors.UnsupportedArgument, "The argument alias is not supported. argument={0}", idOrAlias);
+                        throw new ErrorException(Errors.UnsupportedArgument, "The option alias is not supported. option={0}", idOrAlias);
                     }
                 }
             }

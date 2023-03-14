@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             cliBuilder.AddArgumentChecker<MockArgumentMapper, MockArgumentChecker>();
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentChecker)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionChecker)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentChecker), arg.ImplementationType);

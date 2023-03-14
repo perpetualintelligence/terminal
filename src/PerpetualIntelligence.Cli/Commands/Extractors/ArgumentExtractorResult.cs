@@ -10,21 +10,21 @@ using PerpetualIntelligence.Shared.Infrastructure;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The argument extractor result.
+    /// The option extractor result.
     /// </summary>
     public class ArgumentExtractorResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="argument"></param>
-        public ArgumentExtractorResult(Option argument)
+        /// <param name="option"></param>
+        public ArgumentExtractorResult(Option option)
         {
-            Argument = argument ?? throw new System.ArgumentNullException(nameof(argument));
+            Argument = option ?? throw new System.ArgumentNullException(nameof(option));
         }
 
         /// <summary>
-        /// The extracted argument.
+        /// The extracted option.
         /// </summary>
         public Option Argument { get; set; }
     }

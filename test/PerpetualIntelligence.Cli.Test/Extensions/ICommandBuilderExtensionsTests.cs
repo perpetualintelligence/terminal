@@ -46,16 +46,16 @@ namespace PerpetualIntelligence.Cli.Extensions
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 
-            OptionDescriptor argument = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
-            argument.Id.Should().Be("arg1");
-            argument.DataType.Should().Be(DataType.Custom);
-            argument.CustomDataType.Should().Be("custom-dt");
-            argument.Description.Should().Be("description1");
-            argument.Alias.Should().BeNull();
-            argument.DefaultValue.Should().BeNull();
-            argument.Required.Should().BeFalse();
-            argument.Disabled.Should().BeTrue();
-            argument.Obsolete.Should().BeFalse();
+            OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
+            option.Id.Should().Be("arg1");
+            option.DataType.Should().Be(DataType.Custom);
+            option.CustomDataType.Should().Be("custom-dt");
+            option.Description.Should().Be("description1");
+            option.Alias.Should().BeNull();
+            option.DefaultValue.Should().BeNull();
+            option.Required.Should().BeFalse();
+            option.Disabled.Should().BeTrue();
+            option.Obsolete.Should().BeFalse();
         }
 
         [Fact]
@@ -70,16 +70,16 @@ namespace PerpetualIntelligence.Cli.Extensions
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 
-            OptionDescriptor argument = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
-            argument.Id.Should().Be("arg1");
-            argument.DataType.Should().Be(DataType.CreditCard);
-            argument.CustomDataType.Should().BeNull();
-            argument.Description.Should().Be("description1");
-            argument.Alias.Should().Be("arg-alias1");
-            argument.DefaultValue.Should().Be(4444555544445555);
-            argument.Required.Should().BeTrue();
-            argument.Disabled.Should().BeFalse();
-            argument.Obsolete.Should().BeTrue();
+            OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
+            option.Id.Should().Be("arg1");
+            option.DataType.Should().Be(DataType.CreditCard);
+            option.CustomDataType.Should().BeNull();
+            option.Description.Should().Be("description1");
+            option.Alias.Should().Be("arg-alias1");
+            option.DefaultValue.Should().Be(4444555544445555);
+            option.Required.Should().BeTrue();
+            option.Disabled.Should().BeFalse();
+            option.Obsolete.Should().BeTrue();
         }
 
         private ICliBuilder cliBuilder = null!;

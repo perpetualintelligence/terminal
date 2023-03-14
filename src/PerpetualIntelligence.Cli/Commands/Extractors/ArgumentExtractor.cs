@@ -22,19 +22,19 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The syntax for a separator based argument is <c>{arg}={value}</c> for e.g. <c>name=oneimlx</c>. The syntax has 4 parts:
+    /// The syntax for a separator based option is <c>{arg}={value}</c> for e.g. <c>name=oneimlx</c>. The syntax has 4 parts:
     /// <list type="number">
     /// <item>
-    /// <description><c>-</c> is an argument prefix. You can configure it via <see cref="ExtractorOptions.ArgumentPrefix"/></description>
+    /// <description><c>-</c> is an option prefix. You can configure it via <see cref="ExtractorOptions.ArgumentPrefix"/></description>
     /// </item>
     /// <item>
-    /// <description>{arg} is an argument id. For e.g. <c>name</c></description>
+    /// <description>{arg} is an option id. For e.g. <c>name</c></description>
     /// </item>
     /// <item>
-    /// <description><c>=</c> is an argument separator. You can configure it via <see cref="ExtractorOptions.ArgumentValueSeparator"/></description>
+    /// <description><c>=</c> is an option separator. You can configure it via <see cref="ExtractorOptions.ArgumentValueSeparator"/></description>
     /// </item>
     /// <item>
-    /// <description>{value} is an argument value. For e.g. <c>oneimlx</c></description>
+    /// <description>{value} is an option value. For e.g. <c>oneimlx</c></description>
     /// </item>
     /// </list>
     /// </para>
@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the argument alias with no value.
+        /// Gets the REGEX pattern to match the option alias with no value.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -104,7 +104,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the argument id and value using <see cref="ExtractorOptions.ArgumentPrefix"/>.
+        /// Gets the REGEX pattern to match the option id and value using <see cref="ExtractorOptions.ArgumentPrefix"/>.
         /// </summary>
         public virtual string ArgumentAliasValueRegexPattern
         {
@@ -115,7 +115,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
+        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
         /// </summary>
         public virtual string ArgumentIdNoValueRegexPattern
         {
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
+        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
         /// </summary>
         public virtual string ArgumentIdValueRegexPattern
         {
@@ -137,7 +137,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the argument alias and value using <see cref="ExtractorOptions.ArgumentValueWithIn"/>.
+        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.ArgumentValueWithIn"/>.
         /// </summary>
         public virtual string ArgumentValueWithinRegexPattern
         {
@@ -153,13 +153,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Sanity check
             if (context.CommandDescriptor.ArgumentDescriptors == null)
             {
-                throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any arguments. command_id={0} command_name{1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
+                throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any options. command_id={0} command_name{1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
             string rawArgumentString = context.ArgumentString.Raw;
             bool aliasPrefix = context.ArgumentString.AliasPrefix;
 
-            // Extract the argument and value by default or custom patterns.
+            // Extract the option and value by default or custom patterns.
             string argIdValueRegex = aliasPrefix ? ArgumentAliasValueRegexPattern : ArgumentIdValueRegexPattern;
             Match argIdValueMatch = Regex.Match(rawArgumentString, argIdValueRegex);
             string? argIdOrAlias = null;
@@ -200,14 +200,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Not matched
             if (!matched)
             {
-                throw new ErrorException(Errors.InvalidArgument, "The argument string is not valid. argument_string={0}", rawArgumentString);
+                throw new ErrorException(Errors.InvalidArgument, "The option string is not valid. argument_string={0}", rawArgumentString);
             }
 
             // For error handling
             string prefixArgValue = $"{argPrefix}{argIdOrAlias}{options.Extractor.ArgumentValueSeparator}{argValue}";
             if (argIdOrAlias == null || string.IsNullOrWhiteSpace(argIdOrAlias))
             {
-                throw new ErrorException(Errors.InvalidArgument, "The argument identifier is null or empty. argument_string={0}", prefixArgValue);
+                throw new ErrorException(Errors.InvalidArgument, "The option identifier is null or empty. argument_string={0}", prefixArgValue);
             }
 
             // Find by alias only if configured.
@@ -221,11 +221,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 if (textHandler.TextEquals(options.Extractor.ArgumentAliasPrefix, argPrefix))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The argument extraction by alias prefix is not configured. argument_string={0}", prefixArgValue);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option extraction by alias prefix is not configured. argument_string={0}", prefixArgValue);
                 }
             }
 
-            // Now find the argument by id or alias.
+            // Now find the option by id or alias.
             OptionDescriptor argDescriptor;
             if (aliasEnabled && argAndAliasPrefixSame)
             {
@@ -253,7 +253,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 if (argValue == null)
                 {
-                    throw new ErrorException(Errors.InvalidArgument, "The argument value is missing. argument_string={0}", prefixArgValue);
+                    throw new ErrorException(Errors.InvalidArgument, "The option value is missing. argument_string={0}", prefixArgValue);
                 }
 
                 return Task.FromResult(new ArgumentExtractorResult(new Option(argDescriptor, argValue)));

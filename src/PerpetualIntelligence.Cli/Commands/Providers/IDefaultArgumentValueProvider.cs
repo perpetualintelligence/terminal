@@ -10,7 +10,7 @@ using PerpetualIntelligence.Shared.Abstractions;
 namespace PerpetualIntelligence.Cli.Commands.Providers
 {
     /// <summary>
-    /// An abstraction to provide an argument's default value.
+    /// An abstraction to provide an option's default value.
     /// </summary>
     public interface IDefaultArgumentValueProvider : IProvider<DefaultArgumentValueProviderContext, DefaultArgumentValueProviderResult>
     {

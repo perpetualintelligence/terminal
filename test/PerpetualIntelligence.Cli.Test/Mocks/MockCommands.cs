@@ -34,9 +34,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
                 new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
                 new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", false),
-                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
+                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
                 new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
-                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true) {ValueCheckers = new []{ new DataValidationArgumentValueChecker(new RequiredAttribute()), new DataValidationArgumentValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true) {ValueCheckers = new []{ new DataValidationOptionValueChecker(new RequiredAttribute()), new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true)
             };
 
@@ -48,9 +48,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
                 new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
                 new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", false, defaultValue: false),
-                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) {ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
+                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) {ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
                 new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
-                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true, defaultValue: 25.36) { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true, defaultValue: 25.36) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true, defaultValue: "mello default")
             };
 
@@ -78,9 +78,9 @@ namespace PerpetualIntelligence.Cli.Mocks
                 new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
                 new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
                 new OptionDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", false),
-                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true, defaultValue: "INR") { ValueCheckers = new[] { new DataValidationArgumentValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
+                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true, defaultValue: "INR") { ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
                 new OptionDescriptor("key8", nameof(Int32), "Key8 value int", false),
-                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", true, defaultValue: 89568.36) {ValueCheckers = new[] { new DataValidationArgumentValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", true, defaultValue: 89568.36) {ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true) { Alias = "k10" },
                 new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", true) { Alias = "k11" },
                 new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true) { Alias = "k12", DefaultValue = true }
@@ -239,7 +239,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 // Subcommand
                 NewCommandDefinition("uc3", "प्रिंट", "यूनिकोड परीक्षण प्रिंट", "प्रिंट कमांड", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
-                // subcommand with default argument
+                // subcommand with default option
                 NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestHindiUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "एक").Item1,
 
                 // --- Chinese --- Root command
@@ -251,12 +251,12 @@ namespace PerpetualIntelligence.Cli.Mocks
                 // Subcommand
                 NewCommandDefinition("uc7", "打印", "統一碼 測試 打印", "測試命令", TestChineseUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
-                // subcommand with default argument
+                // subcommand with default option
                 NewCommandDefinition("uc8", "備用", "統一碼 測試 備用", "替代描述", TestChineseUnicodeArgumentDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "第一的").Item1,
             };
         }
 
-        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, OptionDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false, Options? arguments = null)
+        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, OptionDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false, Options? options = null)
         {
             var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultArgument: defaultArg)
             {
@@ -267,7 +267,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 IsRoot = isRoot.GetValueOrDefault()
             };
 
-            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, arguments));
+            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options));
         }
 
         public static List<CommandDescriptor> AliasCommands;

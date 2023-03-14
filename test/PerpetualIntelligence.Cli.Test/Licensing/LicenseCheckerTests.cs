@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Error, not allowed but configured
             license.Limits.ArgumentAlias = false;
             cliOptions.Extractor.ArgumentAlias = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured argument alias option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.ArgumentAlias = false;
@@ -81,7 +81,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Error, not allowed but configured
             license.Limits.DefaultArgument = false;
             cliOptions.Extractor.DefaultArgument = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default argument option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.DefaultArgument = false;
@@ -110,7 +110,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Error, not allowed but configured
             license.Limits.DefaultArgumentValue = false;
             cliOptions.Extractor.DefaultArgumentValue = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default argument value option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.DefaultArgumentValue = false;
@@ -158,7 +158,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             // Args 13
             license.Limits.ArgumentLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The argument limit exceeded. max_limit=2 current=13");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The option limit exceeded. max_limit=2 current=13");
         }
 
         [Fact]
@@ -307,7 +307,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Error, not allowed but configured
             license.Limits.StrictDataType = false;
             cliOptions.Checker.StrictArgumentValueType = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured strict argument value type option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured strict option value type option is not allowed for your license edition.");
 
             // No error, not allowed configured false
             license.Limits.StrictDataType = false;

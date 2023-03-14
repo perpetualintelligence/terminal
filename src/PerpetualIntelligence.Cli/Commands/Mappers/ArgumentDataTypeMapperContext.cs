@@ -10,22 +10,22 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
-    /// The argument data-type mapper context.
+    /// The option data-type mapper context.
     /// </summary>
     public class ArgumentDataTypeMapperContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="argument">The argument.</param>
+        /// <param name="option">The option.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ArgumentDataTypeMapperContext(Option argument)
+        public ArgumentDataTypeMapperContext(Option option)
         {
-            Argument = argument ?? throw new ArgumentNullException(nameof(argument));
+            Argument = option ?? throw new ArgumentNullException(nameof(option));
         }
 
         /// <summary>
-        /// The argument to map.
+        /// The option to map.
         /// </summary>
         public Option Argument { get; set; }
     }

@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             ArgumentExtractorContext context = new(new OptionString($"{aliasPrefix}key1=value1", aliasPrefix: true, 0), cmd);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidConfiguration, $"The argument extraction by alias prefix is not configured. argument_string={aliasPrefix}key1=value1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidConfiguration, $"The option extraction by alias prefix is not configured. argument_string={aliasPrefix}key1=value1");
         }
 
         [TestMethod]
@@ -79,14 +79,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Argument extractor does not work with prefix
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             ArgumentExtractorContext context = new(new OptionString($"key1=value1"), cmd);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, $"The argument string is not valid. argument_string=key1=value1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, $"The option string is not valid. argument_string=key1=value1");
         }
 
         [TestMethod]
         public async Task ArgumentWithoutPrefixShouldErrorAsync()
         {
             ArgumentExtractorContext context = new(new OptionString($"key1=value"), command.Item1);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument string is not valid. argument_string=key1=value");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The option string is not valid. argument_string=key1=value");
         }
 
         [TestMethod]
@@ -102,7 +102,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task EmptyArgumentIdShouldErrorAsync()
         {
             ArgumentExtractorContext context = new(new OptionString($"-  =value"), command.Item1);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument identifier is null or empty. argument_string=-  =value");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The option identifier is null or empty. argument_string=-  =value");
         }
 
         [DataTestMethod]
@@ -117,9 +117,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.ArgumentValueSeparator = valid;
 
             // Arg string has incorrect separator Without the valid value separator the extractor will interpret as a
-            // key only argument and that wil fail
+            // key only option and that wil fail
             ArgumentExtractorContext context = new(new OptionString($"-key1{invalid}value1"), command.Item1);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, $"The argument is not supported. argument=key1{invalid}value1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, $"The option is not supported. option=key1{invalid}value1");
         }
 
         [DataTestMethod]
@@ -192,7 +192,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             ArgumentExtractorContext context = new(new OptionString($"{prefix}{prefix}{prefix}{prefix}key=value1"), cmd);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, $"The argument is not supported. argument=key");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, $"The option is not supported. option=key");
         }
 
         [TestMethod]
@@ -254,11 +254,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = prefix;
 
-            // Prefix are not allowed in argument id
+            // Prefix are not allowed in option id
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             ArgumentExtractorContext context = new(new OptionString($"{prefix}key1=value1"), cmd);
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, "The argument is not supported. argument=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, "The option is not supported. option=key1");
         }
 
         [DataTestMethod]
@@ -275,7 +275,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.ArgumentPrefix = prefix;
 
-            // Prefix are not allowed in argument id
+            // Prefix are not allowed in option id
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             ArgumentExtractorContext context = new(new OptionString($"{prefix}key1={prefix}value1{prefix}"), cmd);
             var result = await extractor.ExtractAsync(context);
@@ -324,7 +324,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             ArgumentExtractorContext context = new(new OptionString("ईपक्षी"), cmd);
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument value is missing. argument_string=ईपक्षीर");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The option value is missing. argument_string=ईपक्षीर");
         }
 
         [TestMethod]
@@ -352,7 +352,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             ArgumentExtractorContext context = new(new OptionString("रईपक्षीप्राणीप्रेम"), cmd);
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The argument string is not valid. argument_string=रईपक्षीप्राणीप्रेम");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidArgument, "The option string is not valid. argument_string=रईपक्षीप्राणीप्रेम");
         }
 
         [TestMethod]
@@ -434,7 +434,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UsupportedArgumentShouldErrorAsync()
         {
             ArgumentExtractorContext context = new ArgumentExtractorContext(new OptionString("-invalid=value"), command.Item1);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, "The argument is not supported. argument=invalid");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedArgument, "The option is not supported. option=invalid");
         }
 
         [DataTestMethod]

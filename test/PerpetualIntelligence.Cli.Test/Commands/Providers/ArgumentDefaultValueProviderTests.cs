@@ -23,10 +23,10 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
             DefaultArgumentValueProvider provider = new(new UnicodeTextHandler());
 
             DefaultArgumentValueProviderContext nullContext = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: null));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(nullContext), Errors.UnsupportedArgument, "The command does not support any arguments. command_id=test command_name=testname");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(nullContext), Errors.UnsupportedArgument, "The command does not support any options. command_id=test command_name=testname");
 
             DefaultArgumentValueProviderContext emptyContext = new(new CommandDescriptor("test_empty", "test_emptyname", "test_emptyprefix", "desc", argumentDescriptors: new(new UnicodeTextHandler())));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(emptyContext), Errors.UnsupportedArgument, "The command does not support any arguments. command_id=test_empty command_name=test_emptyname");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(emptyContext), Errors.UnsupportedArgument, "The command does not support any options. command_id=test_empty command_name=test_emptyname");
         }
 
         [TestMethod]

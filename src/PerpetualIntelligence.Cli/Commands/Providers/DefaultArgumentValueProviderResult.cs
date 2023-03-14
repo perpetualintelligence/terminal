@@ -10,21 +10,21 @@ using PerpetualIntelligence.Shared.Infrastructure;
 namespace PerpetualIntelligence.Cli.Commands.Providers
 {
     /// <summary>
-    /// The argument default value provider result.
+    /// The option default value provider result.
     /// </summary>
     public class DefaultArgumentValueProviderResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="defaultValueArgumentDescriptors">The default value argument descriptors.</param>
+        /// <param name="defaultValueArgumentDescriptors">The default value option descriptors.</param>
         public DefaultArgumentValueProviderResult(OptionDescriptors defaultValueArgumentDescriptors)
         {
             DefaultValueArgumentDescriptors = defaultValueArgumentDescriptors ?? throw new System.ArgumentNullException(nameof(defaultValueArgumentDescriptors));
         }
 
         /// <summary>
-        /// The default value argument descriptors.
+        /// The default value option descriptors.
         /// </summary>
         public OptionDescriptors DefaultValueArgumentDescriptors { get; }
     }

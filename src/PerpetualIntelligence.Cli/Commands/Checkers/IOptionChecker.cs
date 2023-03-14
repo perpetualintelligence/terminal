@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// <summary>
     /// An abstraction to check an <see cref="Option"/>.
     /// </summary>
-    public interface IArgumentChecker : IChecker<ArgumentCheckerContext, ArgumentCheckerResult>
+    public interface IOptionChecker : IChecker<OptionCheckerContext, OptionCheckerResult>
     {
     }
 }

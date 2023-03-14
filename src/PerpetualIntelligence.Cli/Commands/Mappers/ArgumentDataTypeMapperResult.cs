@@ -11,7 +11,7 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Mappers
 {
     /// <summary>
-    /// The argument data-type mapper result.
+    /// The option data-type mapper result.
     /// </summary>
     public class ArgumentDataTypeMapperResult
     {

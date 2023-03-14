@@ -19,16 +19,16 @@ namespace PerpetualIntelligence.Cli.Runtime
         /// </summary>
         /// <param name="startInformation">The terminal start information.</param>
         /// <param name="cancellationTokenSource">The cancellation token.</param>
-        /// <param name="arguments">The start or command line arguments.</param>
-        public TerminalStartContext(TerminalStartInfo startInformation, CancellationTokenSource cancellationTokenSource, string[]? arguments = null)
+        /// <param name="options">The start or command line options.</param>
+        public TerminalStartContext(TerminalStartInfo startInformation, CancellationTokenSource cancellationTokenSource, string[]? options = null)
         {
             StartInformation = startInformation;
             CancellationTokenSource = cancellationTokenSource;
-            Arguments = arguments;
+            Arguments = options;
         }
 
         /// <summary>
-        /// The command line arguments.
+        /// The command line options.
         /// </summary>
         public string[]? Arguments { get; }
 

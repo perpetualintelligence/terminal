@@ -19,9 +19,9 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="argId">The argument identifier.</param>
-        /// <param name="validationAttribute">The argument validation attribute.</param>
-        /// <param name="validationArgs">The validation attribute arguments.</param>
+        /// <param name="argId">The option identifier.</param>
+        /// <param name="validationAttribute">The option validation attribute.</param>
+        /// <param name="validationArgs">The validation attribute options.</param>
         public ArgumentValidationAttribute(string argId, Type validationAttribute, params object[] validationArgs)
         {
             ArgId = argId;
@@ -30,17 +30,17 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         }
 
         /// <summary>
-        /// The argument identifier.
+        /// The option identifier.
         /// </summary>
         public string ArgId { get; }
 
         /// <summary>
-        /// The validation attribute arguments.
+        /// The validation attribute options.
         /// </summary>
         public object[]? ValidationArgs { get; }
 
         /// <summary>
-        /// The argument validation attribute.
+        /// The option validation attribute.
         /// </summary>
         public Type ValidationAttribute { get; }
     }

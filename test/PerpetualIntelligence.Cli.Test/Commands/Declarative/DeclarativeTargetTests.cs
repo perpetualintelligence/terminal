@@ -49,9 +49,9 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             OptionDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
             arg2.ValueCheckers.Should().NotBeNull();
             arg2.ValueCheckers!.Count().Should().Be(2);
-            DataValidationArgumentValueChecker val2Checker1 = (DataValidationArgumentValueChecker)arg2.ValueCheckers!.First();
+            DataValidationOptionValueChecker val2Checker1 = (DataValidationOptionValueChecker)arg2.ValueCheckers!.First();
             val2Checker1.ValidationAttribute.Should().BeOfType<RequiredAttribute>();
-            DataValidationArgumentValueChecker val2Checker2 = (DataValidationArgumentValueChecker)arg2.ValueCheckers!.Last();
+            DataValidationOptionValueChecker val2Checker2 = (DataValidationOptionValueChecker)arg2.ValueCheckers!.Last();
             val2Checker2.ValidationAttribute.Should().BeOfType<OneOfAttribute>();
             OneOfAttribute val2OneOf = (OneOfAttribute)(val2Checker2.ValidationAttribute);
             val2OneOf.AllowedValues.Should().BeEquivalentTo(new string[] { "test1", "test2", "test3" });
@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             OptionDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
             arg3.ValueCheckers.Should().NotBeNull();
             arg3.ValueCheckers!.Count().Should().Be(1);
-            DataValidationArgumentValueChecker val1Checker3 = (DataValidationArgumentValueChecker)arg3.ValueCheckers!.First();
+            DataValidationOptionValueChecker val1Checker3 = (DataValidationOptionValueChecker)arg3.ValueCheckers!.First();
             val1Checker3.ValidationAttribute.Should().BeOfType<RangeAttribute>();
             RangeAttribute val1Range = (RangeAttribute)(val1Checker3.ValidationAttribute);
             val1Range.Minimum.Should().Be(25.34);
@@ -211,8 +211,8 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[1].CustomProperties!.Values.Should().Equal(new string[] { "a2Value1", "a2Value2" });
             argDescs[1].ValueCheckers.Should().NotBeNull();
             argDescs[1].ValueCheckers.Should().HaveCount(2);
-            argDescs[1].ValueCheckers!.Cast<DataValidationArgumentValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
-            argDescs[1].ValueCheckers!.Cast<DataValidationArgumentValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+            argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
+            argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
             argDescs[1].DefaultValue.Should().Be("arg1 default val");
 
             argDescs[2].Id.Should().Be("arg3");
@@ -226,7 +226,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[2].CustomProperties.Should().BeNull();
             argDescs[2].ValueCheckers.Should().NotBeNull();
             argDescs[2].ValueCheckers.Should().HaveCount(1);
-            argDescs[2].ValueCheckers!.Cast<DataValidationArgumentValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
+            argDescs[2].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
             argDescs[2].DefaultValue.Should().BeNull();
         }
 

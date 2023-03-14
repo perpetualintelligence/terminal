@@ -15,7 +15,7 @@ using System.Runtime.CompilerServices;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The <see cref="CommandDescriptor"/> defines the command identity and its supported arguments that an end-user or
+    /// The <see cref="CommandDescriptor"/> defines the command identity and its supported options that an end-user or
     /// an application can use. You can also describe the command behavior, such as whether the command is a root,
     /// grouped, or subcommand.
     /// </summary>
@@ -30,9 +30,9 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="name">The command name.</param>
         /// <param name="prefix">The command prefix to map the command string.</param>
         /// <param name="description">The command description.</param>
-        /// <param name="argumentDescriptors">The argument descriptors.</param>
+        /// <param name="argumentDescriptors">The option descriptors.</param>
         /// <param name="customProperties">The custom properties.</param>
-        /// <param name="defaultArgument">The default argument.</param>
+        /// <param name="defaultArgument">The default option.</param>
         /// <param name="tags">The tags to find a command.</param>
         public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? argumentDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultArgument = null, string[]? tags = null)
         {
@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// The command argument descriptors.
+        /// The command option descriptors.
         /// </summary>
         public OptionDescriptors? ArgumentDescriptors { get; internal set; }
 
@@ -77,11 +77,11 @@ namespace PerpetualIntelligence.Cli.Commands
         public Dictionary<string, object>? CustomProperties { get; internal set; }
 
         /// <summary>
-        /// The default argument. <c>null</c> means the command does not support a default argument.
+        /// The default option. <c>null</c> means the command does not support a default option.
         /// </summary>
         /// <remarks>
-        /// <see cref="DefaultArgument"/> is not the default argument value (see
-        /// <see cref="OptionDescriptor.DefaultValue"/>), it is the default argument identifier (see
+        /// <see cref="DefaultArgument"/> is not the default option value (see
+        /// <see cref="OptionDescriptor.DefaultValue"/>), it is the default option identifier (see
         /// <see cref="OptionDescriptor.Id"/>) whose value is populated automatically based on the
         /// <see cref="CommandString"/>. If <see cref="DefaultArgument"/> is set to a non <c>null</c> value, then the
         /// <see cref="ICommandExtractor"/> will attempt to extract the value from the <see cref="CommandString"/> and
@@ -143,11 +143,11 @@ namespace PerpetualIntelligence.Cli.Commands
         public string[]? Tags { get; internal set; }
 
         /// <summary>
-        /// Attempts to find an argument descriptor.
+        /// Attempts to find an option descriptor.
         /// </summary>
-        /// <param name="argId">The argument descriptor identifier.</param>
-        /// <param name="argumentDescriptor">The argument descriptor if found.</param>
-        /// <returns><c>true</c> if an argument descriptor exist in the collection, otherwise <c>false</c>.</returns>
+        /// <param name="argId">The option descriptor identifier.</param>
+        /// <param name="argumentDescriptor">The option descriptor if found.</param>
+        /// <returns><c>true</c> if an option descriptor exist in the collection, otherwise <c>false</c>.</returns>
         public bool TryGetArgumentDescriptor(string argId, out OptionDescriptor argumentDescriptor)
         {
             if (ArgumentDescriptors == null)

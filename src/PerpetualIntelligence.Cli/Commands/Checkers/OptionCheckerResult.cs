@@ -11,17 +11,17 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// The argument checker result.
+    /// The option checker result.
     /// </summary>
-    /// <seealso cref="IArgumentChecker"/>
-    /// <seealso cref="ArgumentCheckerContext"/>
-    public class ArgumentCheckerResult
+    /// <seealso cref="IOptionChecker"/>
+    /// <seealso cref="OptionCheckerContext"/>
+    public class OptionCheckerResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="mappedType">The mapped type to validate the argument.</param>
-        public ArgumentCheckerResult(Type mappedType)
+        /// <param name="mappedType">The mapped type to validate the option.</param>
+        public OptionCheckerResult(Type mappedType)
         {
             MappedType = mappedType ?? throw new ArgumentNullException(nameof(mappedType));
         }

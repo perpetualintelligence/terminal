@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Extensions
     public static class IArgumentBuilderExtensions
     {
         /// <summary>
-        /// Adds an argument custom property to the <see cref="IArgumentBuilder"/>.
+        /// Adds an option custom property to the <see cref="IArgumentBuilder"/>.
         /// </summary>
         /// <param name="builder">The <see cref="IArgumentBuilder"/>.</param>
         /// <param name="key">The custom property key.</param>
@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="args">
-        /// An array of arguments that match in number, order, and type of constructor parameters for the validation
+        /// An array of options that match in number, order, and type of constructor parameters for the validation
         /// attribute. If args is an empty array or null, the constructor that takes no parameters (the default
         /// constructor) is invoked. The constructor must be public.
         /// </param>
@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="validationAttribute">The validation attribute.</param>
         /// <param name="args">
-        /// An array of arguments that match in number, order, and type of constructor parameters for the validation
+        /// An array of options that match in number, order, and type of constructor parameters for the validation
         /// attribute. If args is an empty array or null, the constructor that takes no parameters (the default
         /// constructor) is invoked. The constructor must be public.
         /// </param>

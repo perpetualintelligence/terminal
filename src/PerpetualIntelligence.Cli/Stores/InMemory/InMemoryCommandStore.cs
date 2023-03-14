@@ -86,7 +86,7 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
             Dictionary<CommandDescriptor, int> matches = new();
             foreach (var cmd in commandDescriptors)
             {
-                // If the command does not support default argument then match the exact prefix.
+                // If the command does not support default option then match the exact prefix.
                 if (cmd.DefaultArgument == null)
                 {
                     string regEx = $"^{cmd.Prefix}$";

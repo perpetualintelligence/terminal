@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Cli.Commands.Providers
 {
     /// <summary>
-    /// The argument default provider context.
+    /// The option default provider context.
     /// </summary>
     public class DefaultArgumentProviderContext
     {

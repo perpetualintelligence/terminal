@@ -77,7 +77,7 @@ namespace PerpetualIntelligence.Cli.Hosting
                 // Do custom configuration check
                 await CheckHostApplicationConfigurationAsync(options);
 
-                // Register the help arguments with command descriptors. This is intentionally done at the end so we don't take
+                // Register the help options with command descriptors. This is intentionally done at the end so we don't take
                 // performance hit in case there is a license check failure.
                 await RegisterHelpArgumentAsync();
             }
@@ -88,7 +88,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         }
 
         /// <summary>
-        /// Registers the help arguments based on configuration options.
+        /// Registers the help options based on configuration options.
         /// </summary>
         /// <returns></returns>
         internal virtual Task RegisterHelpArgumentAsync()

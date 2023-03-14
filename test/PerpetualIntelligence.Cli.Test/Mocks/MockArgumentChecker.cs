@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockArgumentChecker : IArgumentChecker
+    public class MockArgumentChecker : IOptionChecker
     {
         public bool Called { get; set; }
 
-        public Task<ArgumentCheckerResult> CheckAsync(ArgumentCheckerContext context)
+        public Task<OptionCheckerResult> CheckAsync(OptionCheckerContext context)
         {
             Called = true;
-            return Task.FromResult(new ArgumentCheckerResult(typeof(string)));
+            return Task.FromResult(new OptionCheckerResult(typeof(string)));
         }
     }
 }

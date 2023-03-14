@@ -53,18 +53,18 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         [DataRow(DataType.Custom, typeof(double), null, nameof(Double))]
         public async Task MapperShouldReturnCorrectMappingAsync(DataType dataType, Type systemType, Type valiationAttribute, string? customDataType)
         {
-            Option? argument = null;
+            Option? option = null;
 
             if (dataType == DataType.Custom)
             {
-                argument = new Option(new OptionDescriptor("arg1", customDataType!, "desc"), "val1");
+                option = new Option(new OptionDescriptor("arg1", customDataType!, "desc"), "val1");
             }
             else
             {
-                argument = new Option(new OptionDescriptor("arg1", dataType, "desc"), "val1");
+                option = new Option(new OptionDescriptor("arg1", dataType, "desc"), "val1");
             }
 
-            var result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(argument));
+            var result = await mapper.MapAsync(new ArgumentDataTypeMapperContext(option));
             Assert.AreEqual(systemType, result.MappedType);
         }
 
@@ -72,26 +72,26 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         public async Task NullOrWhitespaceCustomDataTypeShouldErrorAsync()
         {
             Option test = new Option(new OptionDescriptor("arg1", "  ", "desc"), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(test)), Errors.InvalidArgument, "The argument custom data type is null or whitespace. argument=arg1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(test)), Errors.InvalidArgument, "The option custom data type is null or whitespace. option=arg1");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Option test2 = new Option(new OptionDescriptor("arg2", customDataType: null, "desc"), "val2");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(test2)), Errors.InvalidArgument, "The argument custom data type is null or whitespace. argument=arg2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(test2)), Errors.InvalidArgument, "The option custom data type is null or whitespace. option=arg2");
         }
 
         [TestMethod]
         public async Task UnsupportedCustomDataTypeShouldErrorAsync()
         {
-            var argument = new Option(new OptionDescriptor("arg1", "unsupported_custom", "desc"), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(argument)), Errors.UnsupportedArgument, "The argument custom data type is not supported. argument=arg1 custom_data_type=unsupported_custom");
+            var option = new Option(new OptionDescriptor("arg1", "unsupported_custom", "desc"), "val1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(option)), Errors.UnsupportedArgument, "The option custom data type is not supported. option=arg1 custom_data_type=unsupported_custom");
         }
 
         [TestMethod]
         public async Task UnsupportedDataTypeShouldErrorAsync()
         {
-            var argument = new Option(new OptionDescriptor("arg1", (DataType)int.MaxValue, "desc"), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(argument)), Errors.UnsupportedArgument, "The argument data type is not supported. argument=arg1 data_type=2147483647");
+            var option = new Option(new OptionDescriptor("arg1", (DataType)int.MaxValue, "desc"), "val1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new ArgumentDataTypeMapperContext(option)), Errors.UnsupportedArgument, "The option data type is not supported. option=arg1 data_type=2147483647");
         }
 
         protected override void OnTestInitialize()

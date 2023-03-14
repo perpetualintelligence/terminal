@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new ArgumentExtractorResult(null), "Value cannot be null. (Parameter 'argument')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new ArgumentExtractorResult(null), "Value cannot be null. (Parameter 'option')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }

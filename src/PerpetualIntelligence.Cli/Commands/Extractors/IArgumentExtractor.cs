@@ -10,7 +10,7 @@ using PerpetualIntelligence.Shared.Abstractions;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// An abstraction to extract an argument.
+    /// An abstraction to extract an option.
     /// </summary>
     public interface IArgumentExtractor : IExtractor<ArgumentExtractorContext, ArgumentExtractorResult>
     {

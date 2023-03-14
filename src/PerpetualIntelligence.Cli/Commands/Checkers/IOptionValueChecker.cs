@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// An abstraction to check an argument value.
+    /// An abstraction to check an option value.
     /// </summary>
-    public interface IArgumentValueChecker
+    public interface IOptionValueChecker
     {
         /// <summary>
-        /// Checks the argument value.
+        /// Checks the option value.
         /// </summary>
-        /// <param name="argument">The argument to check.</param>
+        /// <param name="option">The option to check.</param>
         /// <returns></returns>
-        Task CheckAsync(Option argument);
+        Task CheckAsync(Option option);
 
         /// <summary>
         /// Returns the underlying checker raw type.

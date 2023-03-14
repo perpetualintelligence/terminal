@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// An immutable unicode textual form representing the command and its arguments or options that a user or an
+    /// An immutable unicode textual form representing the command and its options or options that a user or an
     /// application wants to execute.
     /// </summary>
     public sealed class CommandString

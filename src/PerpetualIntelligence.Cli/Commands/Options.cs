@@ -30,22 +30,22 @@ namespace PerpetualIntelligence.Cli.Commands
         public ITextHandler TextHandler { get; }
 
         /// <summary>
-        /// Gets the argument value by its id.
+        /// Gets the option value by its id.
         /// </summary>
-        /// <param name="argId">The argument identifier or the alias.</param>
+        /// <param name="argId">The option identifier or the alias.</param>
         public TValue GetValue<TValue>(string argId)
         {
             return (TValue)this[argId].Value;
         }
 
         /// <summary>
-        /// Gets the argument value by its id or alias.
+        /// Gets the option value by its id or alias.
         /// </summary>
-        /// <param name="argIdOrAlias">The argument identifier or the alias.</param>
-        /// <param name="alias"><c>true</c> to find the argument by alias, <c>false</c> to find by its identifier.</param>
+        /// <param name="argIdOrAlias">The option identifier or the alias.</param>
+        /// <param name="alias"><c>true</c> to find the option by alias, <c>false</c> to find by its identifier.</param>
         /// <typeparam name="TValue">The value type.</typeparam>
         /// <remarks>
-        /// We recommend to use <see cref="GetValue{TValue}(string)"/> to get an argument value. Using alias will
+        /// We recommend to use <see cref="GetValue{TValue}(string)"/> to get an option value. Using alias will
         /// degrade the application's performance.
         /// </remarks>
         public TValue GetValue<TValue>(string argIdOrAlias, bool? alias = false)

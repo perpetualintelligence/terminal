@@ -115,7 +115,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "root_command={0}", checkResult.RootCommandCount);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "grouped_command={0}", checkResult.CommandGroupCount);
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command={0}", checkResult.SubCommandCount);
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument={0}", checkResult.ArgumentCount);
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "option={0}", checkResult.ArgumentCount);
                 }
 
                 return new CommandRunnerResult();

@@ -6,6 +6,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -32,17 +33,17 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// Initialize a new instance.
         /// </summary>
         /// <param name="commandStoreHandler">The command store handler.</param>
-        /// <param name="argumentExtractor">The argument extractor.</param>
+        /// <param name="argumentExtractor">The option extractor.</param>
         /// <param name="textHandler">The text handler.</param>
-        /// <param name="options">The configuration options.</param>
+        /// <param name="cliOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        /// <param name="defaultArgumentProvider">The optional default argument provider.</param>
-        /// <param name="defaultArgumentValueProvider">The optional argument default value provider.</param>
+        /// <param name="defaultArgumentProvider">The optional default option provider.</param>
+        /// <param name="defaultArgumentValueProvider">The optional option default value provider.</param>
         public CommandExtractor(
             ICommandStoreHandler commandStoreHandler,
             IArgumentExtractor argumentExtractor,
             ITextHandler textHandler,
-            CliOptions options,
+            CliOptions cliOptions,
             ILogger<CommandExtractor> logger,
             IDefaultArgumentProvider? defaultArgumentProvider = null,
             IDefaultArgumentValueProvider? defaultArgumentValueProvider = null)
@@ -52,7 +53,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             this.textHandler = textHandler;
             this.defaultArgumentValueProvider = defaultArgumentValueProvider;
             this.defaultArgumentProvider = defaultArgumentProvider;
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.cliOptions = cliOptions ?? throw new ArgumentNullException(nameof(cliOptions));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -62,32 +63,32 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Find the command identify by prefix
             CommandDescriptor commandDescriptor = await MatchByPrefixAsync(context.CommandString);
 
-            // Extract the arguments. Arguments are optional for commands.
-            Options? arguments = await ExtractArgumentsOrThrowAsync(context, commandDescriptor);
+            // Extract the options. Arguments are optional for commands.
+            Options? options = await ExtractArgumentsOrThrowAsync(context, commandDescriptor);
 
-            // Merge default argument.
-            arguments = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, arguments);
+            // Merge default option.
+            options = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, options);
 
-            return new CommandExtractorResult(new Command(commandDescriptor, arguments), commandDescriptor);
+            return new CommandExtractorResult(new Command(commandDescriptor, options), commandDescriptor);
         }
 
         private async Task<Options?> ExtractArgumentsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
         {
-            // Remove the prefix from the start so we can get the argument string.
+            // Remove the prefix from the start so we can get the option string.
             string raw = context.CommandString.Raw;
             string rawArgString = raw.TrimStart(commandDescriptor.Prefix, textHandler.Comparison);
 
-            // Commands may not have arguments.
+            // Commands may not have options.
             if (!string.IsNullOrWhiteSpace(rawArgString))
             {
-                // If arguments are passed make sure command supports arguments, exact arguments are checked later
+                // If options are passed make sure command supports options, exact options are checked later
                 if (commandDescriptor.ArgumentDescriptors == null || commandDescriptor.ArgumentDescriptors.Count == 0)
                 {
-                    throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any arguments. command_name={0} command_id={1}", commandDescriptor.Name, commandDescriptor.Id);
+                    throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any options. command_name={0} command_id={1}", commandDescriptor.Name, commandDescriptor.Id);
                 }
 
-                // Make sure there is a separator between the command prefix and arguments
-                if (!rawArgString.StartsWith(options.Extractor.Separator, textHandler.Comparison))
+                // Make sure there is a separator between the command prefix and options
+                if (!rawArgString.StartsWith(this.cliOptions.Extractor.Separator, textHandler.Comparison))
                 {
                     throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", raw);
                 }
@@ -97,41 +98,41 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 return null;
             }
 
-            // Check if the command supports default argument. The default argument does not have standard argument
-            // syntax For e.g. If 'pi format ruc' command has 'i' as a default argument then the command string 'pi
+            // Check if the command supports default option. The default option does not have standard option
+            // syntax For e.g. If 'pi format ruc' command has 'i' as a default option then the command string 'pi
             // format ruc remove_underscore_and_capitalize' will be extracted as 'pi format ruc' and
-            // remove_underscore_and_capitalize will be added as a value of argument 'i'.
-            if (options.Extractor.DefaultArgument.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultArgument))
+            // remove_underscore_and_capitalize will be added as a value of option 'i'.
+            if (this.cliOptions.Extractor.DefaultArgument.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultArgument))
             {
                 // Sanity check
                 if (defaultArgumentProvider == null)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The default argument provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
                 }
 
-                // Options and command supports the default argument, but is the default value provided by user ? If yes
+                // Options and command supports the default option, but is the default value provided by user ? If yes
                 // then add the default attribute
                 bool proccessDefaultArg = true;
-                string argStringDef = rawArgString.TrimStart(options.Extractor.Separator, textHandler.Comparison);
-                if (argStringDef.StartsWith(options.Extractor.ArgumentPrefix, textHandler.Comparison))
+                string argStringDef = rawArgString.TrimStart(this.cliOptions.Extractor.Separator, textHandler.Comparison);
+                if (argStringDef.StartsWith(this.cliOptions.Extractor.ArgumentPrefix, textHandler.Comparison))
                 {
-                    // Default attribute value should be the first after command prefix User has explicitly passed an argument.
+                    // Default attribute value should be the first after command prefix User has explicitly passed an option.
                     proccessDefaultArg = false;
                 }
 
                 if (proccessDefaultArg)
                 {
-                    // Get the default argument
+                    // Get the default option
                     DefaultArgumentProviderResult defaultArgumentProviderResult = await defaultArgumentProvider.ProvideAsync(new DefaultArgumentProviderContext(commandDescriptor));
 
-                    // Convert the arg string to standard format and let the IArgumentExtractor extract the argument and
+                    // Convert the arg string to standard format and let the IArgumentExtractor extract the option and
                     // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
-                    rawArgString = $"{options.Extractor.Separator}{options.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{options.Extractor.ArgumentValueSeparator}{argStringDef}";
+                    rawArgString = $"{this.cliOptions.Extractor.Separator}{this.cliOptions.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{this.cliOptions.Extractor.ArgumentValueSeparator}{argStringDef}";
                 }
             }
 
-            // The argSplit string is used to split the arguments. This is to avoid splitting the argument value
-            // containing the separator. If space is the separator and - is the argument prefix then the arg split
+            // The argSplit string is used to split the options. This is to avoid splitting the option value
+            // containing the separator. If space is the separator and - is the option prefix then the arg split
             // format is " -"
             // - E.g. -key1=val with space -key2=val2
             // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
@@ -139,10 +140,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var argumentStrings = ExtractArgumentStrings(rawArgString);
 
             List<Error> errors = new();
-            Options arguments = new(textHandler);
+            Options options = new(textHandler);
             foreach (var argString in argumentStrings)
             {
-                // We capture all the argument extraction errors
+                // We capture all the option extraction errors
                 TryResultOrError<ArgumentExtractorResult> tryResult = await InfraHelper.EnsureResultAsync(argumentExtractor.ExtractAsync, new ArgumentExtractorContext(argString, commandDescriptor));
                 if (tryResult.Error != null)
                 {
@@ -153,18 +154,18 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Protect for bad custom implementation.
                     if (tryResult.Result == null)
                     {
-                        errors.Add(new Error(Errors.InvalidArgument, "The argument string did not return an error or extract the argument. argument_string={0}", argString.Raw));
+                        errors.Add(new Error(Errors.InvalidArgument, "The option string did not return an error or extract the option. argument_string={0}", argString.Raw));
                     }
                     else
                     {
                         // Avoid dictionary duplicate key and give meaningful error
-                        if (arguments.Contains(tryResult.Result.Argument))
+                        if (options.Contains(tryResult.Result.Argument))
                         {
-                            errors.Add(new Error(Errors.DuplicateArgument, "The argument is already added to the command. argument={0}", tryResult.Result.Argument.Id));
+                            errors.Add(new Error(Errors.DuplicateArgument, "The option is already added to the command. option={0}", tryResult.Result.Argument.Id));
                         }
                         else
                         {
-                            arguments.Add(tryResult.Result.Argument);
+                            options.Add(tryResult.Result.Argument);
                         }
                     }
                 }
@@ -175,13 +176,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 throw new MultiErrorException(errors.ToArray());
             }
 
-            return arguments;
+            return options;
         }
 
         private OptionStrings ExtractArgumentStrings(string raw)
         {
-            string argSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentPrefix);
-            string argAliasSplit = string.Concat(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix);
+            string argSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.ArgumentPrefix);
+            string argAliasSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.ArgumentAliasPrefix);
 
             // First pass
             int currentPos = 0;
@@ -212,8 +213,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Since this is the first iteration the minimum can be 0
                     nextIdx = InfraHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
 
-                    // If the min positive is the nextAliasPos then the next argument is identified by alias. If there
-                    // is a conflict we give preference to argument id not alias.
+                    // If the min positive is the nextAliasPos then the next option is identified by alias. If there
+                    // is a conflict we give preference to option id not alias.
                     currentIsAlias = nextIdx != nextArgPos;
                 }
 
@@ -233,8 +234,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // TODO: Improve performance
                     nextIdx = InfraHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
 
-                    // If the min positive is the nextAliasPos then the next argument is identified by alias. If there
-                    // is a conflict we give preference to argument id not alias.
+                    // If the min positive is the nextAliasPos then the next option is identified by alias. If there
+                    // is a conflict we give preference to option id not alias.
                     nextIsAlias = nextIdx != nextArgPos;
                 }
 
@@ -261,12 +262,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             string prefix = commandString.Raw;
 
-            // Find the prefix. Prefix is the entire string till first argument or default argument value. But the
-            // default argument is specified after the command prefix followed by command separator.
+            // Find the prefix. Prefix is the entire string till first option or default option value. But the
+            // default option is specified after the command prefix followed by command separator.
             // - E.g. pi auth login {default_arg_value}.
             int[] indices = new int[2];
-            indices[0] = prefix.IndexOf(options.Extractor.ArgumentPrefix, textHandler.Comparison);
-            indices[1] = prefix.IndexOf(options.Extractor.ArgumentAliasPrefix, textHandler.Comparison);
+            indices[0] = prefix.IndexOf(cliOptions.Extractor.ArgumentPrefix, textHandler.Comparison);
+            indices[1] = prefix.IndexOf(cliOptions.Extractor.ArgumentAliasPrefix, textHandler.Comparison);
             int minIndex = indices.Where(x => x > 0).DefaultIfEmpty().Min();
             if (minIndex != 0)
             {
@@ -276,9 +277,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Make sure we trim the command separator. prefix from the previous step will most likely have a command separator
             // - E.g. pi auth login -key=value -> "pi auth login "
             //
-            // At this point the prefix may also have default argument value.
+            // At this point the prefix may also have default option value.
             // - E.g. pi auth login default_value
-            prefix = prefix.TrimEnd(options.Extractor.Separator, textHandler.Comparison);
+            prefix = prefix.TrimEnd(cliOptions.Extractor.Separator, textHandler.Comparison);
             TryResultOrError<CommandDescriptor> result = await commandStore.TryMatchByPrefixAsync(prefix);
             if (result.Error != null)
             {
@@ -292,16 +293,16 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Make sure the command id is valid
-            if (!Regex.IsMatch(result.Result.Id, options.Extractor.CommandIdRegex))
+            if (!Regex.IsMatch(result.Result.Id, cliOptions.Extractor.CommandIdRegex))
             {
-                throw new ErrorException(Errors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, options.Extractor.CommandIdRegex);
+                throw new ErrorException(Errors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, cliOptions.Extractor.CommandIdRegex);
             }
 
             return result.Result;
         }
 
         /// <summary>
-        /// Check for default arguments if enabled and merges then. Default values are added at the end if there is no
+        /// Check for default options if enabled and merges then. Default values are added at the end if there is no
         /// explicit user input.
         /// </summary>
         /// <param name="commandDescriptor"></param>
@@ -311,8 +312,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <exception cref="MultiErrorException"></exception>
         private async Task<Options?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Options? userArguments)
         {
-            // If default argument value is disabled or the command itself does not support any arguments then ignore
-            if (!options.Extractor.DefaultArgumentValue.GetValueOrDefault()
+            // If default option value is disabled or the command itself does not support any options then ignore
+            if (!cliOptions.Extractor.DefaultArgumentValue.GetValueOrDefault()
                 || commandDescriptor.ArgumentDescriptors == null
                 || commandDescriptor.ArgumentDescriptors.Count == 0)
             {
@@ -322,7 +323,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Sanity check
             if (defaultArgumentValueProvider == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The argument default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
+                throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
             }
 
             // Get default values. Make sure we take user inputs.
@@ -330,7 +331,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             DefaultArgumentValueProviderResult defaultResult = await defaultArgumentValueProvider.ProvideAsync(new DefaultArgumentValueProviderContext(commandDescriptor));
             if (defaultResult.DefaultValueArgumentDescriptors != null && defaultResult.DefaultValueArgumentDescriptors.Count > 0)
             {
-                // arguments can be null here, if the command string did not specify any arguments
+                // options can be null here, if the command string did not specify any options
                 if (finalArgs == null)
                 {
                     finalArgs = new Options(textHandler);
@@ -342,7 +343,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Protect against bad implementation, catch all the errors
                     if (argumentDescriptor.DefaultValue == null)
                     {
-                        errors.Add(new Error(Errors.InvalidArgument, "The argument does not have a default value. argument={0}", argumentDescriptor.Id));
+                        errors.Add(new Error(Errors.InvalidArgument, "The option does not have a default value. option={0}", argumentDescriptor.Id));
                         continue;
                     }
 
@@ -367,7 +368,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private readonly IDefaultArgumentProvider? defaultArgumentProvider;
         private readonly IDefaultArgumentValueProvider? defaultArgumentValueProvider;
         private readonly ILogger<CommandExtractor> logger;
-        private readonly CliOptions options;
+        private readonly CliOptions cliOptions;
         private readonly ITextHandler textHandler;
     }
 }

@@ -8,44 +8,44 @@
 namespace PerpetualIntelligence.Cli.Configuration.Options
 {
     /// <summary>
-    /// The <c>pi-cli</c> command and argument extraction options.
+    /// The <c>pi-cli</c> command and option extraction options.
     /// </summary>
     public class ExtractorOptions
     {
         /// <summary>
-        /// Determines whether the extractor support extracting an argument by alias.
+        /// Determines whether the extractor support extracting an option by alias.
         /// </summary>
         /// <remarks>
-        /// Argument alias supports the apps that identify a command argument with an id and an alias string. For modern
-        /// console apps, we recommend using just an argument identifier. We have optimized the core data model to work
-        /// with argument id. An app should not identify the same argument with multiple strings. Using an alias will
+        /// Argument alias supports the apps that identify a command option with an id and an alias string. For modern
+        /// console apps, we recommend using just an option identifier. We have optimized the core data model to work
+        /// with option id. An app should not identify the same option with multiple strings. Using an alias will
         /// degrade the performance.
         /// </remarks>
         public bool? ArgumentAlias { get; set; }
 
         /// <summary>
-        /// The argument alias prefix if <see cref="ArgumentAlias"/> is enabled. Defaults to <c>-</c>.
+        /// The option alias prefix if <see cref="ArgumentAlias"/> is enabled. Defaults to <c>-</c>.
         /// </summary>
-        /// <remarks>The argument alias prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
+        /// <remarks>The option alias prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
         public string ArgumentAliasPrefix { get; set; } = "-";
 
         /// <summary>
-        /// The argument prefix. Defaults to <c>-</c>.
+        /// The option prefix. Defaults to <c>-</c>.
         /// </summary>
-        /// <remarks>The argument prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
+        /// <remarks>The option prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
         public string ArgumentPrefix { get; set; } = "-";
 
         /// <summary>
-        /// The argument value separator. Defaults to <c>=</c>.
+        /// The option value separator. Defaults to <c>=</c>.
         /// </summary>
-        /// <remarks>The argument value separator must be a single Unicode character, and it can be a single whitespace.</remarks>
+        /// <remarks>The option value separator must be a single Unicode character, and it can be a single whitespace.</remarks>
         public string ArgumentValueSeparator { get; set; } = "=";
 
         /// <summary>
-        /// An optional token within which to extract an argument value. Default to <c>null</c>.
+        /// An optional token within which to extract an option value. Default to <c>null</c>.
         /// </summary>
         /// <remarks>
-        /// The optional argument within token must be a single Unicode character. If set it cannot be <c>null</c> or whitespace.
+        /// The optional option within token must be a single Unicode character. If set it cannot be <c>null</c> or whitespace.
         /// </remarks>
         public string? ArgumentValueWithIn { get; set; }
 
@@ -55,12 +55,12 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string CommandIdRegex { get; set; } = "^[A-Za-z0-9_-]*$";
 
         /// <summary>
-        /// Determines whether command supports default argument.
+        /// Determines whether command supports default option.
         /// </summary>
         public bool? DefaultArgument { get; set; }
 
         /// <summary>
-        /// Determines whether argument support default value.
+        /// Determines whether option support default value.
         /// </summary>
         public bool? DefaultArgumentValue { get; set; }
 

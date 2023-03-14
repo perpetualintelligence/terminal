@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Cli.Runtime
     public interface ITerminalStartContext
     {
         /// <summary>
-        /// The command line arguments.
+        /// The command line options.
         /// </summary>
         string[]? Arguments { get; }
 

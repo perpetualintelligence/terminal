@@ -10,14 +10,14 @@ using System;
 namespace PerpetualIntelligence.Cli.Commands.Extractors
 {
     /// <summary>
-    /// The argument extractor context.
+    /// The option extractor context.
     /// </summary>
     public class ArgumentExtractorContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="argumentString">The argument string.</param>
+        /// <param name="argumentString">The option string.</param>
         /// <param name="commandDescriptor">The command descriptor.</param>
 
         public ArgumentExtractorContext(OptionString argumentString, CommandDescriptor commandDescriptor)
@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         /// <summary>
-        /// The argument string.
+        /// The option string.
         /// </summary>
         public OptionString ArgumentString { get; set; }
 

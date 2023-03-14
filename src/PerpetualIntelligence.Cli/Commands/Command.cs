@@ -26,11 +26,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// Initializes a new instance.
         /// </summary>
         /// <param name="commandDescriptor"></param>
-        /// <param name="arguments"></param>
-        public Command(CommandDescriptor commandDescriptor, Options? arguments = null)
+        /// <param name="options"></param>
+        public Command(CommandDescriptor commandDescriptor, Options? options = null)
         {
             Descriptor = commandDescriptor;
-            Arguments = arguments;
+            Arguments = options;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Commands
         public CommandDescriptor Descriptor { get; }
 
         /// <summary>
-        /// The command arguments.
+        /// The command options.
         /// </summary>
         public Options? Arguments { get; }
 
@@ -64,10 +64,10 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Name => Descriptor.Name;
 
         /// <summary>
-        /// Gets the optional argument value for the specified identifier.
+        /// Gets the optional option value for the specified identifier.
         /// </summary>
         /// <typeparam name="TValue">The type of value.</typeparam>
-        /// <returns>The optional argument value.</returns>
+        /// <returns>The optional option value.</returns>
         public TValue? GetOptionalArgumentValue<TValue>(string id)
         {
             if (Arguments == null)
@@ -86,50 +86,50 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Gets the required argument value for the specified identifier.
+        /// Gets the required option value for the specified identifier.
         /// </summary>
         /// <typeparam name="TValue">The type of value.</typeparam>
-        /// <returns>The argument value.</returns>
-        /// <exception cref="ErrorException">If the argument is not supported.</exception>
+        /// <returns>The option value.</returns>
+        /// <exception cref="ErrorException">If the option is not supported.</exception>
         public TValue GetRequiredArgumentValue<TValue>(string id)
         {
             if (Arguments == null)
             {
-                throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. argument={0}", id);
+                throw new ErrorException(Errors.UnsupportedArgument, "The option is not supported. option={0}", id);
             }
 
             return Arguments.GetValue<TValue>(id);
         }
 
         /// <summary>
-        /// Attempts to find an argument.
+        /// Attempts to find an option.
         /// </summary>
-        /// <param name="id">The argument identifier.</param>
-        /// <param name="argument">The argument if found in the collection.</param>
-        /// <returns><c>true</c> if an argument exist in the collection, otherwise <c>false</c>.</returns>
+        /// <param name="id">The option identifier.</param>
+        /// <param name="option">The option if found in the collection.</param>
+        /// <returns><c>true</c> if an option exist in the collection, otherwise <c>false</c>.</returns>
         [WriteUnitTest]
-        public bool TryGetArgument(string id, out Option argument)
+        public bool TryGetArgument(string id, out Option option)
         {
             if (Arguments == null)
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                argument = default;
+                option = default;
                 return false;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }
 
 #if NETSTANDARD2_1_OR_GREATER
-            return Arguments.TryGetValue(id, out argument);
+            return Arguments.TryGetValue(id, out option);
 #else
             if (Arguments.Contains(id))
             {
-                argument = Arguments[id];
+                option = Arguments[id];
                 return true;
             }
             else
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                argument = default;
+                option = default;
                 return false;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }

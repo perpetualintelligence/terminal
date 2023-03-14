@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Cli.Commands
         [TestMethod]
         public void RequiredShouldBeSetWithDataAnnotationRequiredAttribute()
         {
-            OptionDescriptor arg = new("name", "custom", "test desc", required: false) { ValueCheckers = new[] { new DataValidationArgumentValueChecker(new RequiredAttribute()) } };
+            OptionDescriptor arg = new("name", "custom", "test desc", required: false) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new RequiredAttribute()) } };
             Assert.IsNotNull(arg.ValueCheckers);
             Assert.IsTrue(arg.Required);
         }

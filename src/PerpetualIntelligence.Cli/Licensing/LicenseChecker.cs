@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Argument limit
             if (argumentCount > context.License.Limits.ArgumentLimit)
             {
-                throw new ErrorException(Errors.InvalidLicense, "The argument limit exceeded. max_limit={0} current={1}", context.License.Limits.ArgumentLimit, argumentCount);
+                throw new ErrorException(Errors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", context.License.Limits.ArgumentLimit, argumentCount);
             }
 
             // We have found a valid license within limit so reset the previous failed and return.
@@ -111,25 +111,25 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Argument alias
             if (!OptionsValid(limits.ArgumentAlias, cliOptions.Extractor.ArgumentAlias))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured argument alias option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
             }
 
-            // Default arguments
+            // Default options
             if (!OptionsValid(limits.DefaultArgument, cliOptions.Extractor.DefaultArgument))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured default argument option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
             }
 
-            // Default argument value
+            // Default option value
             if (!OptionsValid(limits.DefaultArgumentValue, cliOptions.Extractor.DefaultArgumentValue))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured default argument value option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
             }
 
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictArgumentValueType))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured strict argument value type option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured strict option value type option is not allowed for your license edition.");
             }
 
             // Date Type handler, null allowed for data type handler.
@@ -200,7 +200,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                     // All are commands
                     subCommandCount += 1;
 
-                    // For now we only care about argument count.
+                    // For now we only care about option count.
                     if (cmd.ArgumentDescriptors != null)
                     {
                         argumentCount += 1;

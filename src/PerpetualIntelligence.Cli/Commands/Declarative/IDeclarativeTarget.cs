@@ -8,11 +8,11 @@
 namespace PerpetualIntelligence.Cli.Commands.Declarative
 {
     /// <summary>
-    /// Specifies a target that provides declarative command and argument descriptors.
+    /// Specifies a target that provides declarative command and option descriptors.
     /// </summary>
     /// <remarks>
     /// The <c>pi-cli</c> DI engine uses reflection to identify all the declarative targets and populate the command and
-    /// argument descriptors.
+    /// option descriptors.
     /// </remarks>
     public interface IDeclarativeTarget
     {

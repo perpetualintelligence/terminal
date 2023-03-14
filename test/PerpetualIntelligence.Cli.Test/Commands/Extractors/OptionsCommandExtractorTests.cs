@@ -76,7 +76,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The argument extraction by alias prefix is not configured. argument_string=-key1_alias value1" }
+               new[] { "The option extraction by alias prefix is not configured. argument_string=-key1_alias value1" }
            );
         }
 
@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 () => extractor.ExtractAsync(context),
                 1,
                 new[] { Errors.UnsupportedArgument },
-                new[] { "The argument is not supported. argument=key1_alias" }
+                new[] { "The option is not supported. option=key1_alias" }
             );
         }
 
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The argument extraction by alias prefix is not configured. argument_string=-key1 value1" }
+               new[] { "The option extraction by alias prefix is not configured. argument_string=-key1 value1" }
            );
         }
 
@@ -142,7 +142,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The argument extraction by alias prefix is not configured. argument_string=-key1 value1" }
+               new[] { "The option extraction by alias prefix is not configured. argument_string=-key1 value1" }
            );
         }
 
@@ -155,7 +155,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.UnsupportedArgument },
-               new[] { "The argument alias is not supported. argument=key1" }
+               new[] { "The option alias is not supported. option=key1" }
            );
         }
 
