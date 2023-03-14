@@ -17,18 +17,18 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     /// <summary>
-    /// The default <see cref="IOptionsChecker"/>.
+    /// The default <see cref="IConfigurationOptionsChecker"/>.
     /// </summary>
     /// <remarks>
     /// The <see cref="CheckAsync(CliOptions)"/> does not return any result. It throws <see cref="ErrorException"/> if
     /// you do not configure an option correctly.
     /// </remarks>
-    public class OptionsChecker : IOptionsChecker
+    public class ConfigurationOptionsChecker : IConfigurationOptionsChecker
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public OptionsChecker(IServiceProvider serviceProvider)
+        public ConfigurationOptionsChecker(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }

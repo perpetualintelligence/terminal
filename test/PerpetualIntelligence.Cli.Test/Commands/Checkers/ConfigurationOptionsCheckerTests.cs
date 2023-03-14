@@ -22,9 +22,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Checkers
 {
     [TestClass]
-    public class OptionsCheckerTests
+    public class ConfigurationOptionsCheckerTests
     {
-        public OptionsCheckerTests()
+        public ConfigurationOptionsCheckerTests()
         {
             options = MockCliOptions.New();
             textHandler = new UnicodeTextHandler();
@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             });
             host = hostBuilder.Start();
 
-            optionsChecker = new OptionsChecker(host.Services);
+            optionsChecker = new ConfigurationOptionsChecker(host.Services);
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandStore>());
             argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
             defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
@@ -277,7 +277,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         private readonly IHost host;
         private readonly IHostBuilder hostBuilder;
         private readonly CliOptions options;
-        private readonly IOptionsChecker optionsChecker;
+        private readonly IConfigurationOptionsChecker optionsChecker;
         private readonly ITextHandler textHandler;
     }
 }

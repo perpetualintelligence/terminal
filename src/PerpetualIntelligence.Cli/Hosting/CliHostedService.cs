@@ -246,7 +246,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         /// <returns></returns>
         private async Task CheckHostApplicationMandatoryConfigurationAsync(CliOptions options)
         {
-            IOptionsChecker optionsChecker = serviceProvider.GetRequiredService<IOptionsChecker>();
+            IConfigurationOptionsChecker optionsChecker = serviceProvider.GetRequiredService<IConfigurationOptionsChecker>();
             await optionsChecker.CheckAsync(options);
         }
 

@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
     /// <summary>
     /// An abstraction of <see cref="CliOptions"/> checker.
     /// </summary>
-    public interface IOptionsChecker : ICheckerNoResult<CliOptions>
+    public interface IConfigurationOptionsChecker : ICheckerNoResult<CliOptions>
     {
         
     }

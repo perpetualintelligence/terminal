@@ -72,7 +72,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<CliOptions>>().Value);
 
             // Add options checker
-            builder.Services.AddSingleton<IOptionsChecker, OptionsChecker>();
+            builder.Services.AddSingleton<IConfigurationOptionsChecker, ConfigurationOptionsChecker>();
 
             return builder;
         }

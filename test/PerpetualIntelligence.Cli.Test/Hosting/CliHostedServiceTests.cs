@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             {
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
-                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
                 services.AddSingleton<ITextHandler, UnicodeTextHandler>();
             });
             host = hostBuilder.Start();
@@ -300,7 +300,7 @@ namespace PerpetualIntelligence.Cli.Hosting
                 // Replace with Mock DIs
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
-                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
                 services.AddSingleton<ITextHandler, UnicodeTextHandler>();
             });
             host = await hostBuilder.StartAsync();
@@ -345,7 +345,7 @@ namespace PerpetualIntelligence.Cli.Hosting
                 // Replace with Mock DIs
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
-                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
                 services.AddSingleton<ITextHandler, UnicodeTextHandler>();
             });
             host = await hostBuilder.StartAsync();

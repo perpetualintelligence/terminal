@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
     /// <summary>
     /// </summary>
-    public class MockOptionsChecker : IOptionsChecker
+    public class MockOptionsChecker : IConfigurationOptionsChecker
     {
         public ValueTuple<int, bool> CheckOptionsCalled { get; set; }
 
