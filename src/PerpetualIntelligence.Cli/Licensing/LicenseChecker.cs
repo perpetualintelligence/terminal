@@ -91,7 +91,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Errors.InvalidLicense, "The sub command limit exceeded. max_limit={0} current={1}", context.License.Limits.SubCommandLimit, subCommandCount);
             }
 
-            // Argument limit
+            // Option limit
             if (argumentCount > context.License.Limits.ArgumentLimit)
             {
                 throw new ErrorException(Errors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", context.License.Limits.ArgumentLimit, argumentCount);
@@ -108,7 +108,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // check the options value with license value.
             LicenseLimits limits = context.License.Limits;
 
-            // Argument alias
+            // Option alias
             if (!OptionsValid(limits.ArgumentAlias, cliOptions.Extractor.OptionAlias))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");

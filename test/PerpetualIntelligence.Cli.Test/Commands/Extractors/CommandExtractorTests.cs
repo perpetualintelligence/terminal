@@ -579,7 +579,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
 
-            // Argument values are processed sequentially and default values are added at the end User values
+            // Option values are processed sequentially and default values are added at the end User values
             Assert.AreEqual("key6", result.Command.Options[0].Id);
             Assert.AreEqual("True", result.Command.Options[0].Value);
             Assert.AreEqual("key10", result.Command.Options[1].Id);

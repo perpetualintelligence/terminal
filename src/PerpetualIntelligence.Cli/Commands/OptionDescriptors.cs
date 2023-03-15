@@ -26,9 +26,9 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="collection">The option descriptors.</param>
         public OptionDescriptors(ITextHandler textHandler, IEnumerable<OptionDescriptor> collection) : this(textHandler)
         {
-            foreach (OptionDescriptor argumentDescriptor in collection)
+            foreach (OptionDescriptor optionDescriptor in collection)
             {
-                Add(argumentDescriptor);
+                Add(optionDescriptor);
             }
         }
 

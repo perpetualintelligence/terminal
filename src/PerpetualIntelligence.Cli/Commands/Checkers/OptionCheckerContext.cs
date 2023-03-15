@@ -19,19 +19,19 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="argumentDescriptor">The option descriptor.</param>
+        /// <param name="optionDescriptor">The option descriptor.</param>
         /// <param name="option">The option.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public OptionCheckerContext(OptionDescriptor argumentDescriptor, Option option)
+        public OptionCheckerContext(OptionDescriptor optionDescriptor, Option option)
         {
-            OptionDescriptor = argumentDescriptor ?? throw new ArgumentNullException(nameof(argumentDescriptor));
-            Argument = option ?? throw new ArgumentNullException(nameof(option));
+            OptionDescriptor = optionDescriptor ?? throw new ArgumentNullException(nameof(optionDescriptor));
+            Option = option ?? throw new ArgumentNullException(nameof(option));
         }
 
         /// <summary>
         /// The option to check.
         /// </summary>
-        public Option Argument { get; set; }
+        public Option Option { get; set; }
 
         /// <summary>
         /// The option descriptor.

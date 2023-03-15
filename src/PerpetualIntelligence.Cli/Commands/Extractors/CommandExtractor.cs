@@ -159,13 +159,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     else
                     {
                         // Avoid dictionary duplicate key and give meaningful error
-                        if (options.Contains(tryResult.Result.Argument))
+                        if (options.Contains(tryResult.Result.Option))
                         {
-                            errors.Add(new Error(Errors.DuplicateOption, "The option is already added to the command. option={0}", tryResult.Result.Argument.Id));
+                            errors.Add(new Error(Errors.DuplicateOption, "The option is already added to the command. option={0}", tryResult.Result.Option.Id));
                         }
                         else
                         {
-                            options.Add(tryResult.Result.Argument);
+                            options.Add(tryResult.Result.Option);
                         }
                     }
                 }
@@ -338,19 +338,19 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 List<Error> errors = new();
-                foreach (OptionDescriptor argumentDescriptor in defaultResult.DefaultValueArgumentDescriptors)
+                foreach (OptionDescriptor optionDescriptor in defaultResult.DefaultValueArgumentDescriptors)
                 {
                     // Protect against bad implementation, catch all the errors
-                    if (argumentDescriptor.DefaultValue == null)
+                    if (optionDescriptor.DefaultValue == null)
                     {
-                        errors.Add(new Error(Errors.InvalidOption, "The option does not have a default value. option={0}", argumentDescriptor.Id));
+                        errors.Add(new Error(Errors.InvalidOption, "The option does not have a default value. option={0}", optionDescriptor.Id));
                         continue;
                     }
 
                     // If user already specified the value then disregard the default value
-                    if (userOptions == null || !userOptions.Contains(argumentDescriptor.Id))
+                    if (userOptions == null || !userOptions.Contains(optionDescriptor.Id))
                     {
-                        finalArgs.Add(new Option(argumentDescriptor, argumentDescriptor.DefaultValue));
+                        finalArgs.Add(new Option(optionDescriptor, optionDescriptor.DefaultValue));
                     }
                 }
 

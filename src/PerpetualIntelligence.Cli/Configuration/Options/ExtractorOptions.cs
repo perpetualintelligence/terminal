@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// Determines whether the extractor support extracting an option by alias.
         /// </summary>
         /// <remarks>
-        /// Argument alias supports the apps that identify a command option with an id and an alias string. For modern
+        /// Option alias supports the apps that identify a command option with an id and an alias string. For modern
         /// console apps, we recommend using just an option identifier. We have optimized the core data model to work
         /// with option id. An app should not identify the same option with multiple strings. Using an alias will
         /// degrade the performance.

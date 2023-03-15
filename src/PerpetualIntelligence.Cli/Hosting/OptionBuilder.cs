@@ -42,17 +42,17 @@ namespace PerpetualIntelligence.Cli.Hosting
         public ICommandBuilder Add()
         {
             ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
-            OptionDescriptor? argumentDescriptor = localSeviceProvider.GetService<OptionDescriptor>();
-            if (argumentDescriptor != null)
+            OptionDescriptor? optionDescriptor = localSeviceProvider.GetService<OptionDescriptor>();
+            if (optionDescriptor != null)
             {
                 // Custom Properties
                 IEnumerable<Tuple<string, object>> customProps = localSeviceProvider.GetServices<Tuple<string, object>>();
                 if (customProps.Any())
                 {
-                    argumentDescriptor.CustomProperties = new Dictionary<string, object>();
+                    optionDescriptor.CustomProperties = new Dictionary<string, object>();
                     customProps.All(e =>
                     {
-                        argumentDescriptor.CustomProperties.Add(e.Item1, e.Item2);
+                        optionDescriptor.CustomProperties.Add(e.Item1, e.Item2);
                         return true;
                     });
                 }
@@ -61,10 +61,10 @@ namespace PerpetualIntelligence.Cli.Hosting
                 IEnumerable<ValidationAttribute> attributes = localSeviceProvider.GetServices<ValidationAttribute>();
                 if (attributes.Any())
                 {
-                    argumentDescriptor.ValueCheckers = attributes.Select(e => new DataValidationOptionValueChecker(e));
+                    optionDescriptor.ValueCheckers = attributes.Select(e => new DataValidationOptionValueChecker(e));
                 }
 
-                commandBuilder.Services.AddSingleton(argumentDescriptor);
+                commandBuilder.Services.AddSingleton(optionDescriptor);
             }
 
             // Does nothing for now.

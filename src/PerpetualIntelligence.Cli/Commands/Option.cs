@@ -34,12 +34,12 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
-        /// <param name="argumentDescriptor">The option descriptor.</param>
+        /// <param name="optionDescriptor">The option descriptor.</param>
         /// <param name="value">The option value.</param>
-        public Option(OptionDescriptor argumentDescriptor, object value)
+        public Option(OptionDescriptor optionDescriptor, object value)
         {
             Value = value;
-            Descriptor = argumentDescriptor;
+            Descriptor = optionDescriptor;
         }
 
         /// <summary>

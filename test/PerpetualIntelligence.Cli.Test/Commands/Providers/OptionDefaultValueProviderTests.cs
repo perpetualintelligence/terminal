@@ -22,10 +22,10 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         {
             DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
 
-            DefaultOptionValueProviderContext nullContext = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: null));
+            DefaultOptionValueProviderContext nullContext = new(new CommandDescriptor("test", "testname", "testprefix", "desc", optionDescriptors: null));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(nullContext), Errors.UnsupportedOption, "The command does not support any options. command_id=test command_name=testname");
 
-            DefaultOptionValueProviderContext emptyContext = new(new CommandDescriptor("test_empty", "test_emptyname", "test_emptyprefix", "desc", argumentDescriptors: new(new UnicodeTextHandler())));
+            DefaultOptionValueProviderContext emptyContext = new(new CommandDescriptor("test_empty", "test_emptyname", "test_emptyprefix", "desc", optionDescriptors: new(new UnicodeTextHandler())));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(emptyContext), Errors.UnsupportedOption, "The command does not support any options. command_id=test_empty command_name=test_emptyname");
         }
 
@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         public async Task ProviderShouldProvideDefaultOptionsCorrectly()
         {
             DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
-            DefaultOptionValueProviderContext context = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: MockCommands.TestDefaultArgumentDescriptors));
+            DefaultOptionValueProviderContext context = new(new CommandDescriptor("test", "testname", "testprefix", "desc", optionDescriptors: MockCommands.TestDefaultArgumentDescriptors));
             var result = await provider.ProvideAsync(context);
             Assert.AreEqual(4, result.DefaultValueArgumentDescriptors.Count);
             Assert.AreEqual("44444444444", result.DefaultValueArgumentDescriptors[0].DefaultValue);

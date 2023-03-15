@@ -365,7 +365,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                     argumentBuilder = commandBuilder.DefineArgument(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
                 }
 
-                // Argument validation attribute
+                // Option validation attribute
                 List<ValidationAttribute>? validationAttributes = null;
                 if (argVdls.Any())
                 {
@@ -380,7 +380,7 @@ namespace PerpetualIntelligence.Cli.Extensions
                     });
                 }
 
-                // Argument custom properties
+                // Option custom properties
                 Dictionary<string, object>? argCustomProps = null;
                 if (argPropAttrs.Any())
                 {

@@ -20,12 +20,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <param name="option"></param>
         public OptionExtractorResult(Option option)
         {
-            Argument = option ?? throw new System.ArgumentNullException(nameof(option));
+            Option = option ?? throw new System.ArgumentNullException(nameof(option));
         }
 
         /// <summary>
         /// The extracted option.
         /// </summary>
-        public Option Argument { get; set; }
+        public Option Option { get; set; }
     }
 }

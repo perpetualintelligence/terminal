@@ -34,12 +34,12 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         /// <inheritdoc/>
         public Task<OptionDataTypeMapperResult> MapAsync(OptionDataTypeMapperContext context)
         {
-            if (context.Argument.DataType == DataType.Custom && string.IsNullOrWhiteSpace(context.Argument.CustomDataType))
+            if (context.Option.DataType == DataType.Custom && string.IsNullOrWhiteSpace(context.Option.CustomDataType))
             {
-                throw new ErrorException(Errors.InvalidOption, "The option custom data type is null or whitespace. option={0}", context.Argument.Id);
+                throw new ErrorException(Errors.InvalidOption, "The option custom data type is null or whitespace. option={0}", context.Option.Id);
             }
 
-            switch (context.Argument.DataType)
+            switch (context.Option.DataType)
             {
                 case DataType.CreditCard: return Valid(typeof(string));
                 case DataType.Currency: return Valid(typeof(string));
@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
                 case DataType.Url: return Valid(typeof(Uri));
                 case DataType.Custom:
                     {
-                        switch (context.Argument.CustomDataType)
+                        switch (context.Option.CustomDataType)
                         {
                             // The system defined custom data type don't need any type validation as they are validated
                             // explicitly by the checker.
@@ -75,13 +75,13 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
                             case nameof(Double): return Valid(typeof(double));
                             default:
                                 {
-                                    throw new ErrorException(Errors.UnsupportedOption, "The option custom data type is not supported. option={0} custom_data_type={1}", context.Argument.Id, context.Argument.CustomDataType);
+                                    throw new ErrorException(Errors.UnsupportedOption, "The option custom data type is not supported. option={0} custom_data_type={1}", context.Option.Id, context.Option.CustomDataType);
                                 }
                         }
                     }
                 default:
                     {
-                        throw new ErrorException(Errors.UnsupportedOption, "The option data type is not supported. option={0} data_type={1}", context.Argument.Id, context.Argument.DataType);
+                        throw new ErrorException(Errors.UnsupportedOption, "The option data type is not supported. option={0} data_type={1}", context.Option.Id, context.Option.DataType);
                     }
             }
         }

@@ -30,11 +30,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="name">The command name.</param>
         /// <param name="prefix">The command prefix to map the command string.</param>
         /// <param name="description">The command description.</param>
-        /// <param name="argumentDescriptors">The option descriptors.</param>
+        /// <param name="optionDescriptors">The option descriptors.</param>
         /// <param name="customProperties">The custom properties.</param>
         /// <param name="defaultArgument">The default option.</param>
         /// <param name="tags">The tags to find a command.</param>
-        public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? argumentDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultArgument = null, string[]? tags = null)
+        public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? optionDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultArgument = null, string[]? tags = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Name = name;
             Prefix = prefix;
             Description = description;
-            OptionDescriptors = argumentDescriptors;
+            OptionDescriptors = optionDescriptors;
             CustomProperties = customProperties;
             DefaultArgument = defaultArgument;
             Tags = tags;
@@ -146,30 +146,30 @@ namespace PerpetualIntelligence.Cli.Commands
         /// Attempts to find an option descriptor.
         /// </summary>
         /// <param name="argId">The option descriptor identifier.</param>
-        /// <param name="argumentDescriptor">The option descriptor if found.</param>
+        /// <param name="optionDescriptor">The option descriptor if found.</param>
         /// <returns><c>true</c> if an option descriptor exist in the collection, otherwise <c>false</c>.</returns>
-        public bool TryGetArgumentDescriptor(string argId, out OptionDescriptor argumentDescriptor)
+        public bool TryGetArgumentDescriptor(string argId, out OptionDescriptor optionDescriptor)
         {
             if (OptionDescriptors == null)
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                argumentDescriptor = default;
+                optionDescriptor = default;
                 return false;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }
 
 #if NETSTANDARD2_1_OR_GREATER
-            return OptionDescriptors.TryGetValue(argId, out argumentDescriptor);
+            return OptionDescriptors.TryGetValue(argId, out optionDescriptor);
 #else
             if (OptionDescriptors.Contains(argId))
             {
-                argumentDescriptor = OptionDescriptors[argId];
+                optionDescriptor = OptionDescriptors[argId];
                 return true;
             }
             else
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                argumentDescriptor = default;
+                optionDescriptor = default;
                 return false;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }

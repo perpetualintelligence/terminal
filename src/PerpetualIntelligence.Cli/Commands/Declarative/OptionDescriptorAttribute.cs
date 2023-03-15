@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         /// The option alias.
         /// </summary>
         /// <remarks>
-        /// The option alias is unique within a command. Argument alias supports the legacy apps that identified a
+        /// The option alias is unique within a command. Option alias supports the legacy apps that identified a
         /// command option with an id and an alias string. For modern console apps, we recommend using just an
         /// option identifier. The core data model is optimized to work with option id. In general, an app should
         /// not identify the same option with multiple strings.

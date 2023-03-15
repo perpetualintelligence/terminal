@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             IOptionBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", "custom-dt", "description1", alias: null, defaultValue: null, required: false, disabled: true, obsolete: false);
 
-            // Argument builder, command builder have different service collections.
+            // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
             ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(OptionDescriptor)));
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         {
             IOptionBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", defaultValue: 4444555544445555, required: true, disabled: false, obsolete: true);
 
-            // Argument builder, command builder have different service collections.
+            // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
             ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(OptionDescriptor)));

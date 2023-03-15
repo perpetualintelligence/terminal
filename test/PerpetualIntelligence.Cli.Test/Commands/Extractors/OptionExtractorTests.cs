@@ -68,15 +68,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             OptionExtractorContext context = new(new OptionString($"-key1{separator}value{separator}value2{separator}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Id);
-            Assert.AreEqual($"value{separator}value2{separator}", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual($"key1", result.Option.Id);
+            Assert.AreEqual($"value{separator}value2{separator}", result.Option.Value);
         }
 
         [TestMethod]
         public async Task ArgumentWithoutPrefixShouldError()
         {
-            // Argument extractor does not work with prefix
+            // Option extractor does not work with prefix
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             OptionExtractorContext context = new(new OptionString($"key1=value1"), cmd);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidOption, $"The option string is not valid. argument_string=key1=value1");
@@ -94,8 +94,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             OptionExtractorContext context = new(new OptionString("-key6"), command.Item1);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("key6", result.Argument.Id);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("key6", result.Option.Id);
         }
 
         [TestMethod]
@@ -140,9 +140,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             OptionExtractorContext context = new(new OptionString($"-key1{argSeparator}value1"), command.Item1);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Id);
-            Assert.AreEqual($"value1", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual($"key1", result.Option.Id);
+            Assert.AreEqual($"value1", result.Option.Value);
         }
 
         [TestMethod]
@@ -150,9 +150,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             OptionExtractorContext context = new(new OptionString($"-key5=htts://google.com"), command.Item1);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("key5", result.Argument.Id);
-            Assert.AreEqual("htts://google.com", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("key5", result.Option.Id);
+            Assert.AreEqual("htts://google.com", result.Option.Value);
         }
 
         [DataTestMethod]
@@ -172,9 +172,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             OptionExtractorContext context = new(new OptionString($"{prefix}{prefix}{prefix}key1=value1"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Id);
-            Assert.AreEqual($"value1", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual($"key1", result.Option.Id);
+            Assert.AreEqual($"value1", result.Option.Value);
         }
 
         [DataTestMethod]
@@ -235,9 +235,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             OptionExtractorContext context = new OptionExtractorContext(new OptionString($"{prefix}key=value"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"{prefix}key", result.Argument.Id);
-            Assert.AreEqual($"value", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual($"{prefix}key", result.Option.Id);
+            Assert.AreEqual($"value", result.Option.Value);
         }
 
         [DataTestMethod]
@@ -280,8 +280,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             OptionExtractorContext context = new(new OptionString($"{prefix}key1={prefix}value1{prefix}"), cmd);
             var result = await extractor.ExtractAsync(context);
 
-            Assert.AreEqual("key1", result.Argument.Id);
-            Assert.AreEqual($"{prefix}value1{prefix}", result.Argument.Value);
+            Assert.AreEqual("key1", result.Option.Id);
+            Assert.AreEqual($"{prefix}value1{prefix}", result.Option.Value);
         }
 
         [TestMethod]
@@ -294,9 +294,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             OptionExtractorContext context = new(new OptionString($"ईपक्षीरप्राणीप्रेम"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("पक्षी", result.Argument.Id);
-            Assert.AreEqual($"प्राणीप्रेम", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("पक्षी", result.Option.Id);
+            Assert.AreEqual($"प्राणीप्रेम", result.Option.Value);
         }
 
         [TestMethod]
@@ -309,9 +309,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", nameof(Boolean), "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षी"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("पक्षी", result.Argument.Id);
-            Assert.AreEqual("True", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("पक्षी", result.Option.Id);
+            Assert.AreEqual("True", result.Option.Value);
         }
 
         [TestMethod]
@@ -337,9 +337,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षीर"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("पक्षी", result.Argument.Id);
-            Assert.AreEqual("", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("पक्षी", result.Option.Id);
+            Assert.AreEqual("", result.Option.Value);
         }
 
         [TestMethod]
@@ -365,9 +365,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("सईपक्षीरप्राणीप्रेम"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("पक्षी", result.Argument.Id);
-            Assert.AreEqual($"प्राणीप्रेम", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("पक्षी", result.Option.Id);
+            Assert.AreEqual($"प्राणीप्रेम", result.Option.Value);
         }
 
         [TestMethod]
@@ -381,9 +381,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षीरप्राणीप्रेमबी"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("पक्षी", result.Argument.Id);
-            Assert.AreEqual($"प्राणीप्रेमबी", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("पक्षी", result.Option.Id);
+            Assert.AreEqual($"प्राणीप्रेमबी", result.Option.Value);
         }
 
         [TestMethod]
@@ -397,9 +397,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षीरबीप्राणीप्रेमबी"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("पक्षी", result.Argument.Id);
-            Assert.AreEqual($"प्राणीप्रेम", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("पक्षी", result.Option.Id);
+            Assert.AreEqual($"प्राणीप्रेम", result.Option.Value);
         }
 
         [TestMethod]
@@ -412,9 +412,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ससससससईईईईईईईईपक्षीरररररररररप्राणीप्रेमसससससस"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("पक्षी", result.Argument.Id);
-            Assert.AreEqual($"प्राणीप्रेम", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("पक्षी", result.Option.Id);
+            Assert.AreEqual($"प्राणीप्रेम", result.Option.Value);
         }
 
         [TestMethod]
@@ -425,9 +425,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("स", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("माणूमाणूस=माणूसमास"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"स", result.Argument.Id);
-            Assert.AreEqual($"माणूसमास", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual($"स", result.Option.Id);
+            Assert.AreEqual($"माणूसमास", result.Option.Value);
         }
 
         [TestMethod]
@@ -451,11 +451,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", nameof(Boolean), "test desc") { Alias = keyAlias } }));
             OptionExtractorContext context = new(new OptionString($"--{keyAlias}", aliasPrefix: true, 0), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual("key1", result.Argument.Id);
-            Assert.AreEqual(System.ComponentModel.DataAnnotations.DataType.Custom, result.Argument.DataType);
-            Assert.AreEqual(nameof(Boolean), result.Argument.CustomDataType);
-            Assert.AreEqual("True", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual("key1", result.Option.Id);
+            Assert.AreEqual(System.ComponentModel.DataAnnotations.DataType.Custom, result.Option.DataType);
+            Assert.AreEqual(nameof(Boolean), result.Option.CustomDataType);
+            Assert.AreEqual("True", result.Option.Value);
         }
 
         [DataTestMethod]
@@ -468,11 +468,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor(key, nameof(Boolean), "test desc") }));
             OptionExtractorContext context = new OptionExtractorContext(new OptionString($"-{key}"), cmd);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual(key, result.Argument.Id);
-            Assert.AreEqual(System.ComponentModel.DataAnnotations.DataType.Custom, result.Argument.DataType);
-            Assert.AreEqual(nameof(Boolean), result.Argument.CustomDataType);
-            Assert.AreEqual("True", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual(key, result.Option.Id);
+            Assert.AreEqual(System.ComponentModel.DataAnnotations.DataType.Custom, result.Option.DataType);
+            Assert.AreEqual(nameof(Boolean), result.Option.CustomDataType);
+            Assert.AreEqual("True", result.Option.Value);
         }
 
         [TestMethod]
@@ -490,9 +490,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             OptionExtractorContext context = new(new OptionString($"-key1=test string with {withIn} in between and end but not at start {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Id);
-            Assert.AreEqual($"test string with {withIn} in between and end but not at start {withIn}", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual($"key1", result.Option.Id);
+            Assert.AreEqual($"test string with {withIn} in between and end but not at start {withIn}", result.Option.Value);
         }
 
         [TestMethod]
@@ -510,9 +510,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             OptionExtractorContext context = new(new OptionString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Id);
-            Assert.AreEqual($"test string with {withIn} in between ", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual($"key1", result.Option.Id);
+            Assert.AreEqual($"test string with {withIn} in between ", result.Option.Value);
         }
 
         [TestMethod]
@@ -530,9 +530,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             OptionExtractorContext context = new(new OptionString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Argument);
-            Assert.AreEqual($"key1", result.Argument.Id);
-            Assert.AreEqual($"{withIn}test string with {withIn} in between {withIn}", result.Argument.Value);
+            Assert.IsNotNull(result.Option);
+            Assert.AreEqual($"key1", result.Option.Id);
+            Assert.AreEqual($"{withIn}test string with {withIn} in between {withIn}", result.Option.Value);
         }
 
         protected override void OnTestInitialize()

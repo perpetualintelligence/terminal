@@ -40,13 +40,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task<OptionCheckerResult> CheckAsync(OptionCheckerContext context)
         {
             // Check for null option value
-            if (context.Argument.Value == null)
+            if (context.Option.Value == null)
             {
-                throw new ErrorException(Errors.InvalidOption, "The option value cannot be null. option={0}", context.Argument.Id);
+                throw new ErrorException(Errors.InvalidOption, "The option value cannot be null. option={0}", context.Option.Id);
             }
 
             // Check option data type and value type
-            OptionDataTypeMapperResult mapperResult = await mapper.MapAsync(new OptionDataTypeMapperContext(context.Argument));
+            OptionDataTypeMapperResult mapperResult = await mapper.MapAsync(new OptionDataTypeMapperContext(context.Option));
 
             // Check whether we need to check type
             if (options.Checker.StrictOptionValueType.GetValueOrDefault())
@@ -69,12 +69,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             // Ensure strict value compatibility
             try
             {
-                context.Argument.ChangeValueType(mapperResult.MappedType);
+                context.Option.ChangeValueType(mapperResult.MappedType);
             }
             catch
             {
                 // Meaningful error instead of format exception
-                throw new ErrorException(Errors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
+                throw new ErrorException(Errors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Option.Id, mapperResult.MappedType, context.Option.DataType, context.Option.Value.GetType().Name, context.Option.Value);
             }
 
             if (context.OptionDescriptor.ValueCheckers != null)
@@ -83,11 +83,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 {
                     try
                     {
-                        valueChecker.CheckAsync(context.Argument);
+                        valueChecker.CheckAsync(context.Option);
                     }
                     catch (Exception ex)
                     {
-                        throw new ErrorException(Errors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
+                        throw new ErrorException(Errors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", context.Option.Id, context.Option.Value, ex.Message);
                     }
                 }
             }

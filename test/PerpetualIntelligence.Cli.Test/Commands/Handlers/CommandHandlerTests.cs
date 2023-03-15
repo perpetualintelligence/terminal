@@ -360,16 +360,16 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1");
 
-            OptionDescriptors argumentDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
+            OptionDescriptors optionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
                 new OptionDescriptor(cliOptions.Help.OptionId, nameof(Boolean), "Help options")
             });
 
             // This mocks the help requested
             Options options = new(new UnicodeTextHandler());
-            Option helpAttr = new(argumentDescriptors.First(), true);
+            Option helpAttr = new(optionDescriptors.First(), true);
             options.Add(helpAttr);
-            helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "prefix2", "desc2", argumentDescriptors, options: options);
+            helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "prefix2", "desc2", optionDescriptors, options: options);
 
             handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
         }

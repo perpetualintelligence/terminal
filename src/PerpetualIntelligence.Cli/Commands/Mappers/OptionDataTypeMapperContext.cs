@@ -21,12 +21,12 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         /// <exception cref="ArgumentNullException"></exception>
         public OptionDataTypeMapperContext(Option option)
         {
-            Argument = option ?? throw new ArgumentNullException(nameof(option));
+            Option = option ?? throw new ArgumentNullException(nameof(option));
         }
 
         /// <summary>
         /// The option to map.
         /// </summary>
-        public Option Argument { get; set; }
+        public Option Option { get; set; }
     }
 }
