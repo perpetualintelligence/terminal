@@ -44,12 +44,12 @@ namespace PerpetualIntelligence.Cli.Hosting
             ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
             CommandDescriptor commandDescriptor = localSeviceProvider.GetRequiredService<CommandDescriptor>();
 
-            // Arguments
+            // Options
             IEnumerable<OptionDescriptor> argumentDescriptors = localSeviceProvider.GetServices<OptionDescriptor>();
             if (argumentDescriptors.Any())
             {
                 // FOMAC MUST UnicodeTextHandler is hard coded
-                commandDescriptor.ArgumentDescriptors = new OptionDescriptors(new UnicodeTextHandler(), argumentDescriptors);
+                commandDescriptor.OptionDescriptors = new OptionDescriptors(new UnicodeTextHandler(), argumentDescriptors);
             }
 
             // Custom Properties

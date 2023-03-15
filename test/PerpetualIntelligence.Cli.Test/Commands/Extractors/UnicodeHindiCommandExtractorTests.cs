@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc2", result.Command.Id);
             Assert.AreEqual("परीक्षण", result.Command.Name);
             Assert.AreEqual("यूनिकोड समूहीकृत कमांड", result.Command.Description);
-            Assert.IsNull(result.Command.Arguments);
+            Assert.IsNull(result.Command.Options);
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc1", result.Command.Id);
             Assert.AreEqual("यूनिकोड", result.Command.Name);
             Assert.AreEqual("यूनिकोड रूट कमांड", result.Command.Description);
-            Assert.IsNull(result.Command.Arguments);
+            Assert.IsNull(result.Command.Options);
         }
 
         [TestMethod]
@@ -82,13 +82,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc3", result.Command.Id);
             Assert.AreEqual("प्रिंट", result.Command.Name);
             Assert.AreEqual("प्रिंट कमांड", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Arguments[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
-            AssertArgument(result.Command.Arguments[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Arguments[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertArgument(result.Command.Arguments[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertArgument(result.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
+            AssertArgument(result.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertArgument(result.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertArgument(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
         [TestMethod]
@@ -105,13 +105,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc3", result.Command.Id);
             Assert.AreEqual("प्रिंट", result.Command.Name);
             Assert.AreEqual("प्रिंट कमांड", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Arguments[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
-            AssertArgument(result.Command.Arguments[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Arguments[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertArgument(result.Command.Arguments[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertArgument(result.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
+            AssertArgument(result.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertArgument(result.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertArgument(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
         [TestMethod]
@@ -131,16 +131,16 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc4", result.Command.Id);
             Assert.AreEqual("दूसरा", result.Command.Name);
             Assert.AreEqual("दूसरा आदेश", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
             
-            AssertArgument(result.Command.Arguments[0], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Arguments[1], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertArgument(result.Command.Arguments[2], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertArgument(result.Command.Options[0], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertArgument(result.Command.Options[1], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertArgument(result.Command.Options[2], "चार", nameof(Double), "चौथा तर्क", "253.36");
 
             // Default added at the end
-            AssertArgument(result.Command.Arguments[3], "एक", DataType.Text, "पहला तर्क", "डिफ़ॉल्ट मान");
+            AssertArgument(result.Command.Options[3], "एक", DataType.Text, "पहला तर्क", "डिफ़ॉल्ट मान");
         }
 
         protected override void OnTestInitialize()

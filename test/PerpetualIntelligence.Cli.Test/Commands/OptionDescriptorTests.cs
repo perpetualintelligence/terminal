@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 namespace PerpetualIntelligence.Cli.Commands
 {
     [TestClass]
-    public class ArgumentDescriptorTests
+    public class OptionDescriptorTests
     {
         [TestMethod]
         public void CustomDataTypeShouldSetDataType()

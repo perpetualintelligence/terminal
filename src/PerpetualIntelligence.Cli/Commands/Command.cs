@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Cli.Commands
     /// </summary>
     /// <seealso cref="CommandDescriptor"/>
     /// <seealso cref="Option"/>
-    /// <seealso cref="Arguments"/>
+    /// <seealso cref="Options"/>
     public sealed class Command
     {
         /// <summary>
@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Cli.Commands
         public Command(CommandDescriptor commandDescriptor, Options? options = null)
         {
             Descriptor = commandDescriptor;
-            Arguments = options;
+            Options = options;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The command options.
         /// </summary>
-        public Options? Arguments { get; }
+        public Options? Options { get; }
 
         /// <summary>
         /// The command custom properties.
@@ -70,14 +70,14 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <returns>The optional option value.</returns>
         public TValue? GetOptionalArgumentValue<TValue>(string id)
         {
-            if (Arguments == null)
+            if (Options == null)
             {
                 return default;
             }
 
-            if (Arguments.Contains(id))
+            if (Options.Contains(id))
             {
-                return Arguments.GetValue<TValue>(id);
+                return Options.GetValue<TValue>(id);
             }
             else
             {
@@ -93,12 +93,12 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <exception cref="ErrorException">If the option is not supported.</exception>
         public TValue GetRequiredArgumentValue<TValue>(string id)
         {
-            if (Arguments == null)
+            if (Options == null)
             {
-                throw new ErrorException(Errors.UnsupportedArgument, "The option is not supported. option={0}", id);
+                throw new ErrorException(Errors.UnsupportedOption, "The option is not supported. option={0}", id);
             }
 
-            return Arguments.GetValue<TValue>(id);
+            return Options.GetValue<TValue>(id);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace PerpetualIntelligence.Cli.Commands
         [WriteUnitTest]
         public bool TryGetArgument(string id, out Option option)
         {
-            if (Arguments == null)
+            if (Options == null)
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 option = default;
@@ -119,11 +119,11 @@ namespace PerpetualIntelligence.Cli.Commands
             }
 
 #if NETSTANDARD2_1_OR_GREATER
-            return Arguments.TryGetValue(id, out option);
+            return Options.TryGetValue(id, out option);
 #else
-            if (Arguments.Contains(id))
+            if (Options.Contains(id))
             {
-                option = Arguments[id];
+                option = Options[id];
                 return true;
             }
             else

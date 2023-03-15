@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc6", result.Command.Id);
             Assert.AreEqual("測試", result.Command.Name);
             Assert.AreEqual("示例分組命令", result.Command.Description);
-            Assert.IsNull(result.Command.Arguments);
+            Assert.IsNull(result.Command.Options);
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc5", result.Command.Id);
             Assert.AreEqual("統一碼", result.Command.Name);
             Assert.AreEqual("示例根命令描述", result.Command.Description);
-            Assert.IsNull(result.Command.Arguments);
+            Assert.IsNull(result.Command.Options);
         }
 
         [TestMethod]
@@ -83,13 +83,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc7", result.Command.Id);
             Assert.AreEqual("打印", result.Command.Name);
             Assert.AreEqual("測試命令", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Arguments[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
-            AssertArgument(result.Command.Arguments[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
-            AssertArgument(result.Command.Arguments[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
-            AssertArgument(result.Command.Arguments[3], "第四", nameof(Double), "第四個命令參數", "253.36");
+            AssertArgument(result.Command.Options[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
+            AssertArgument(result.Command.Options[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
+            AssertArgument(result.Command.Options[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
+            AssertArgument(result.Command.Options[3], "第四", nameof(Double), "第四個命令參數", "253.36");
         }
 
         [TestMethod]
@@ -109,15 +109,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc7", result.Command.Id);
             Assert.AreEqual("打印", result.Command.Name);
             Assert.AreEqual("測試命令", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Arguments[0], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
-            AssertArgument(result.Command.Arguments[1], "第三", DataType.Text, "第三個命令參數", "第三個值");
-            AssertArgument(result.Command.Arguments[2], "第四", nameof(Double), "第四個命令參數", "253.36");
+            AssertArgument(result.Command.Options[0], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
+            AssertArgument(result.Command.Options[1], "第三", DataType.Text, "第三個命令參數", "第三個值");
+            AssertArgument(result.Command.Options[2], "第四", nameof(Double), "第四個命令參數", "253.36");
 
             // Default added at the end
-            AssertArgument(result.Command.Arguments[3], "第一的", DataType.Text, "第一個命令參數", "默認值");
+            AssertArgument(result.Command.Options[3], "第一的", DataType.Text, "第一個命令參數", "默認值");
         }
 
         [TestMethod]
@@ -133,13 +133,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc7", result.Command.Id);
             Assert.AreEqual("打印", result.Command.Name);
             Assert.AreEqual("測試命令", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Arguments[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
-            AssertArgument(result.Command.Arguments[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
-            AssertArgument(result.Command.Arguments[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
-            AssertArgument(result.Command.Arguments[3], "第四", nameof(Double), "第四個命令參數", "253.36");
+            AssertArgument(result.Command.Options[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
+            AssertArgument(result.Command.Options[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
+            AssertArgument(result.Command.Options[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
+            AssertArgument(result.Command.Options[3], "第四", nameof(Double), "第四個命令參數", "253.36");
         }
 
         protected override void OnTestInitialize()

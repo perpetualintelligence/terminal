@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Cli.Runtime
         /// <summary>
         /// The command line options.
         /// </summary>
-        string[]? Arguments { get; }
+        string[]? Options { get; }
 
         /// <summary>
         /// The cancellation token.

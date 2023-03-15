@@ -35,9 +35,9 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
             Logger.LogInformation("    " + context.Command.Descriptor.Name);
             Logger.LogInformation(context.Command.Descriptor.Description);
 
-            if (context.Command.Descriptor.ArgumentDescriptors != null)
+            if (context.Command.Descriptor.OptionDescriptors != null)
             {
-                foreach (OptionDescriptor option in context.Command.Descriptor.ArgumentDescriptors)
+                foreach (OptionDescriptor option in context.Command.Descriptor.OptionDescriptors)
                 {
                     if (option.Alias != null)
                     {

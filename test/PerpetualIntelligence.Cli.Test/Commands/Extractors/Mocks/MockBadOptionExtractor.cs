@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Extractors.Mocks
 {
-    internal class MockBadArgumentExtractor : IOptionExtractor
+    internal class MockBadOptionExtractor : IOptionExtractor
     {
         public Task<OptionExtractorResult> ExtractAsync(OptionExtractorContext context)
         {

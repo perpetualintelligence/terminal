@@ -24,13 +24,13 @@ namespace PerpetualIntelligence.Cli.Runtime
         {
             StartInformation = startInformation;
             CancellationTokenSource = cancellationTokenSource;
-            Arguments = options;
+            Options = options;
         }
 
         /// <summary>
         /// The command line options.
         /// </summary>
-        public string[]? Arguments { get; }
+        public string[]? Options { get; }
 
         /// <summary>
         /// The cancellation token source.

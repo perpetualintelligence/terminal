@@ -352,7 +352,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeTarget.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
             IEnumerable<OptionCustomPropertyAttribute> argPropAttrs = declarativeTarget.GetCustomAttributes<OptionCustomPropertyAttribute>(false);
 
-            // Arguments Descriptors
+            // Options Descriptors
             foreach (OptionDescriptorAttribute argAttr in argAttrs)
             {
                 IOptionBuilder argumentBuilder;

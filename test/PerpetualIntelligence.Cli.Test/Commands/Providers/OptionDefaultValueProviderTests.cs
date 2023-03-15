@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Cli.Commands.Providers
 {
     [TestClass]
-    public class ArgumentDefaultValueProviderTests : LoggerTests<ArgumentDefaultValueProviderTests>
+    public class OptionDefaultValueProviderTests : LoggerTests<OptionDefaultValueProviderTests>
     {
         [TestMethod]
         public async Task NullOrEmptyArgumentDescriptorsShouldThrowAsync()
@@ -23,14 +23,14 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
             DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
 
             DefaultOptionValueProviderContext nullContext = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: null));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(nullContext), Errors.UnsupportedArgument, "The command does not support any options. command_id=test command_name=testname");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(nullContext), Errors.UnsupportedOption, "The command does not support any options. command_id=test command_name=testname");
 
             DefaultOptionValueProviderContext emptyContext = new(new CommandDescriptor("test_empty", "test_emptyname", "test_emptyprefix", "desc", argumentDescriptors: new(new UnicodeTextHandler())));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(emptyContext), Errors.UnsupportedArgument, "The command does not support any options. command_id=test_empty command_name=test_emptyname");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(emptyContext), Errors.UnsupportedOption, "The command does not support any options. command_id=test_empty command_name=test_emptyname");
         }
 
         [TestMethod]
-        public async Task ProviderShouldProvideDefaultArgumentsCorrectly()
+        public async Task ProviderShouldProvideDefaultOptionsCorrectly()
         {
             DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
             DefaultOptionValueProviderContext context = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: MockCommands.TestDefaultArgumentDescriptors));

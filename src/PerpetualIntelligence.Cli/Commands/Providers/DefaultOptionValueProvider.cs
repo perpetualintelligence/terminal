@@ -35,12 +35,12 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// <exception cref="ErrorException"></exception>
         public Task<DefaultOptionValueProviderResult> ProvideAsync(DefaultOptionValueProviderContext context)
         {
-            if (context.CommandDescriptor.ArgumentDescriptors == null || context.CommandDescriptor.ArgumentDescriptors.Count == 0)
+            if (context.CommandDescriptor.OptionDescriptors == null || context.CommandDescriptor.OptionDescriptors.Count == 0)
             {
-                throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any options. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
+                throw new ErrorException(Errors.UnsupportedOption, "The command does not support any options. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            return Task.FromResult(new DefaultOptionValueProviderResult(new OptionDescriptors(textHandler, context.CommandDescriptor.ArgumentDescriptors.Where(a => a.DefaultValue != null))));
+            return Task.FromResult(new DefaultOptionValueProviderResult(new OptionDescriptors(textHandler, context.CommandDescriptor.OptionDescriptors.Where(a => a.DefaultValue != null))));
         }
 
         private readonly ITextHandler textHandler;

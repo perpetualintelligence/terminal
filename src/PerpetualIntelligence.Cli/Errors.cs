@@ -20,12 +20,12 @@ namespace PerpetualIntelligence.Cli
         /// <summary>
         /// The option is not already added to the command.
         /// </summary>
-        public const string DuplicateArgument = "duplicate_argument";
+        public const string DuplicateOption = "duplicate_option";
 
         /// <summary>
         /// The option is not valid.
         /// </summary>
-        public const string InvalidArgument = "invalid_argument";
+        public const string InvalidOption = "invalid_option";
 
         /// <summary>
         /// The command is not valid.
@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli
         /// <summary>
         /// The option is missing.
         /// </summary>
-        public const string MissingArgument = "missing_argument";
+        public const string MissingOption = "missing_option";
 
         /// <summary>
         /// The claim is missing.
@@ -80,7 +80,7 @@ namespace PerpetualIntelligence.Cli
         /// <summary>
         /// The option is not supported.
         /// </summary>
-        public const string UnsupportedArgument = "unsupported_argument";
+        public const string UnsupportedOption = "unsupported_option";
 
         /// <summary>
         /// The command is not supported.

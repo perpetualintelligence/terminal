@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Commands
                 }
                 catch
                 {
-                    throw new ErrorException(Errors.UnsupportedArgument, "The option is not supported. option={0}", index);
+                    throw new ErrorException(Errors.UnsupportedOption, "The option is not supported. option={0}", index);
                 }
             }
 
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Cli.Commands
                 }
                 catch
                 {
-                    throw new ErrorException(Errors.UnsupportedArgument, "The option is not supported. option={0}", id);
+                    throw new ErrorException(Errors.UnsupportedOption, "The option is not supported. option={0}", id);
                 }
             }
         }
@@ -153,15 +153,15 @@ namespace PerpetualIntelligence.Cli.Commands
                 {
                     if (isOrAliasError)
                     {
-                        throw new ErrorException(Errors.UnsupportedArgument, "The option or its alias is not supported. option={0}", idOrAlias);
+                        throw new ErrorException(Errors.UnsupportedOption, "The option or its alias is not supported. option={0}", idOrAlias);
                     }
                     else if (idError)
                     {
-                        throw new ErrorException(Errors.UnsupportedArgument, "The option is not supported. option={0}", idOrAlias);
+                        throw new ErrorException(Errors.UnsupportedOption, "The option is not supported. option={0}", idOrAlias);
                     }
                     else
                     {
-                        throw new ErrorException(Errors.UnsupportedArgument, "The option alias is not supported. option={0}", idOrAlias);
+                        throw new ErrorException(Errors.UnsupportedOption, "The option alias is not supported. option={0}", idOrAlias);
                     }
                 }
             }

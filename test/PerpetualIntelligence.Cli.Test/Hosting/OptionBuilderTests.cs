@@ -15,9 +15,9 @@ using Xunit;
 
 namespace PerpetualIntelligence.Cli.Hosting
 {
-    public class ArgumentBuilderTests : IDisposable
+    public class OptionBuilderTests : IDisposable
     {
-        public ArgumentBuilderTests()
+        public OptionBuilderTests()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();

@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <exception cref="ArgumentNullException"></exception>
         public OptionCheckerContext(OptionDescriptor argumentDescriptor, Option option)
         {
-            ArgumentDescriptor = argumentDescriptor ?? throw new ArgumentNullException(nameof(argumentDescriptor));
+            OptionDescriptor = argumentDescriptor ?? throw new ArgumentNullException(nameof(argumentDescriptor));
             Argument = option ?? throw new ArgumentNullException(nameof(option));
         }
 
@@ -36,6 +36,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <summary>
         /// The option descriptor.
         /// </summary>
-        public OptionDescriptor ArgumentDescriptor { get; }
+        public OptionDescriptor OptionDescriptor { get; }
     }
 }

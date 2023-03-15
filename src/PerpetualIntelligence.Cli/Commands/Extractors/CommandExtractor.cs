@@ -63,16 +63,16 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Find the command identify by prefix
             CommandDescriptor commandDescriptor = await MatchByPrefixAsync(context.CommandString);
 
-            // Extract the options. Arguments are optional for commands.
-            Options? options = await ExtractArgumentsOrThrowAsync(context, commandDescriptor);
+            // Extract the options. Options are optional for commands.
+            Options? options = await ExtractOptionsOrThrowAsync(context, commandDescriptor);
 
             // Merge default option.
-            options = await MergeDefaultArgumentsOrThrowAsync(commandDescriptor, options);
+            options = await MergeDefaultOptionsOrThrowAsync(commandDescriptor, options);
 
             return new CommandExtractorResult(new Command(commandDescriptor, options), commandDescriptor);
         }
 
-        private async Task<Options?> ExtractArgumentsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
+        private async Task<Options?> ExtractOptionsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
         {
             // Remove the prefix from the start so we can get the option string.
             string raw = context.CommandString.Raw;
@@ -82,9 +82,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             if (!string.IsNullOrWhiteSpace(rawArgString))
             {
                 // If options are passed make sure command supports options, exact options are checked later
-                if (commandDescriptor.ArgumentDescriptors == null || commandDescriptor.ArgumentDescriptors.Count == 0)
+                if (commandDescriptor.OptionDescriptors == null || commandDescriptor.OptionDescriptors.Count == 0)
                 {
-                    throw new ErrorException(Errors.UnsupportedArgument, "The command does not support any options. command_name={0} command_id={1}", commandDescriptor.Name, commandDescriptor.Id);
+                    throw new ErrorException(Errors.UnsupportedOption, "The command does not support any options. command_name={0} command_id={1}", commandDescriptor.Name, commandDescriptor.Id);
                 }
 
                 // Make sure there is a separator between the command prefix and options
@@ -154,14 +154,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Protect for bad custom implementation.
                     if (tryResult.Result == null)
                     {
-                        errors.Add(new Error(Errors.InvalidArgument, "The option string did not return an error or extract the option. argument_string={0}", argString.Raw));
+                        errors.Add(new Error(Errors.InvalidOption, "The option string did not return an error or extract the option. argument_string={0}", argString.Raw));
                     }
                     else
                     {
                         // Avoid dictionary duplicate key and give meaningful error
                         if (options.Contains(tryResult.Result.Argument))
                         {
-                            errors.Add(new Error(Errors.DuplicateArgument, "The option is already added to the command. option={0}", tryResult.Result.Argument.Id));
+                            errors.Add(new Error(Errors.DuplicateOption, "The option is already added to the command. option={0}", tryResult.Result.Argument.Id));
                         }
                         else
                         {
@@ -306,18 +306,18 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// explicit user input.
         /// </summary>
         /// <param name="commandDescriptor"></param>
-        /// <param name="userArguments"></param>
+        /// <param name="userOptions"></param>
         /// <returns></returns>
         /// <exception cref="ErrorException"></exception>
         /// <exception cref="MultiErrorException"></exception>
-        private async Task<Options?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Options? userArguments)
+        private async Task<Options?> MergeDefaultOptionsOrThrowAsync(CommandDescriptor commandDescriptor, Options? userOptions)
         {
             // If default option value is disabled or the command itself does not support any options then ignore
             if (!cliOptions.Extractor.DefaultOptionValue.GetValueOrDefault()
-                || commandDescriptor.ArgumentDescriptors == null
-                || commandDescriptor.ArgumentDescriptors.Count == 0)
+                || commandDescriptor.OptionDescriptors == null
+                || commandDescriptor.OptionDescriptors.Count == 0)
             {
-                return userArguments;
+                return userOptions;
             }
 
             // Sanity check
@@ -327,7 +327,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Get default values. Make sure we take user inputs.
-            Options? finalArgs = userArguments;
+            Options? finalArgs = userOptions;
             DefaultOptionValueProviderResult defaultResult = await defaultArgumentValueProvider.ProvideAsync(new DefaultOptionValueProviderContext(commandDescriptor));
             if (defaultResult.DefaultValueArgumentDescriptors != null && defaultResult.DefaultValueArgumentDescriptors.Count > 0)
             {
@@ -343,12 +343,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Protect against bad implementation, catch all the errors
                     if (argumentDescriptor.DefaultValue == null)
                     {
-                        errors.Add(new Error(Errors.InvalidArgument, "The option does not have a default value. option={0}", argumentDescriptor.Id));
+                        errors.Add(new Error(Errors.InvalidOption, "The option does not have a default value. option={0}", argumentDescriptor.Id));
                         continue;
                     }
 
                     // If user already specified the value then disregard the default value
-                    if (userArguments == null || !userArguments.Contains(argumentDescriptor.Id))
+                    if (userOptions == null || !userOptions.Contains(argumentDescriptor.Id))
                     {
                         finalArgs.Add(new Option(argumentDescriptor, argumentDescriptor.DefaultValue));
                     }

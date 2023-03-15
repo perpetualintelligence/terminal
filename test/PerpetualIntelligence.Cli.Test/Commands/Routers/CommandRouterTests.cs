@@ -156,7 +156,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         }
 
         [TestMethod]
-        public void RouteWithNullArgumentsShouldThrow()
+        public void RouteWithNullOptionsShouldThrow()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(null, commandExtractor, commandHandler), "Value cannot be null. (Parameter 'licenseExtractor')");

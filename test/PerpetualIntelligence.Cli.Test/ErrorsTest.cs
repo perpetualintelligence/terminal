@@ -21,13 +21,13 @@ namespace PerpetualIntelligence.Cli
             Assert.AreEqual("connection_closed", Errors.ConnectionClosed);
             Assert.AreEqual("invalid_command", Errors.InvalidCommand);
             Assert.AreEqual("invalid_configuration", Errors.InvalidConfiguration);
-            Assert.AreEqual("invalid_argument", Errors.InvalidArgument);
-            Assert.AreEqual("duplicate_argument", Errors.DuplicateArgument);
+            Assert.AreEqual("invalid_option", Errors.InvalidOption);
+            Assert.AreEqual("duplicate_option", Errors.DuplicateOption);
             Assert.AreEqual("invalid_request", Errors.InvalidRequest);
-            Assert.AreEqual("unsupported_argument", Errors.UnsupportedArgument);
+            Assert.AreEqual("unsupported_option", Errors.UnsupportedOption);
             Assert.AreEqual("unsupported_command", Errors.UnsupportedCommand);
             Assert.AreEqual("server_error", Errors.ServerError);
-            Assert.AreEqual("missing_argument", Errors.MissingArgument);
+            Assert.AreEqual("missing_option", Errors.MissingOption);
             Assert.AreEqual("missing_claim", Errors.MissingClaim);
             Assert.AreEqual("request_canceled", Errors.RequestCanceled);
             Assert.AreEqual("invalid_license", Errors.InvalidLicense);

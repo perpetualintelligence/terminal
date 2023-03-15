@@ -38,12 +38,12 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// <exception cref="ErrorException"></exception>
         public Task<DefaultOptionProviderResult> ProvideAsync(DefaultOptionProviderContext context)
         {
-            if (context.CommandDescriptor.ArgumentDescriptors == null || context.CommandDescriptor.DefaultArgument == null)
+            if (context.CommandDescriptor.OptionDescriptors == null || context.CommandDescriptor.DefaultArgument == null)
             {
-                throw new ErrorException(Errors.UnsupportedArgument, "The command does not support default option. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
+                throw new ErrorException(Errors.UnsupportedOption, "The command does not support default option. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            return Task.FromResult(new DefaultOptionProviderResult(context.CommandDescriptor.ArgumentDescriptors[context.CommandDescriptor.DefaultArgument]));
+            return Task.FromResult(new DefaultOptionProviderResult(context.CommandDescriptor.OptionDescriptors[context.CommandDescriptor.DefaultArgument]));
         }
 
         private readonly ILogger<DefaultOptionProvider> logger;

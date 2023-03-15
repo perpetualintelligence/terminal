@@ -72,26 +72,26 @@ namespace PerpetualIntelligence.Cli.Commands.Mappers
         public async Task NullOrWhitespaceCustomDataTypeShouldErrorAsync()
         {
             Option test = new Option(new OptionDescriptor("arg1", "  ", "desc"), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test)), Errors.InvalidArgument, "The option custom data type is null or whitespace. option=arg1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test)), Errors.InvalidOption, "The option custom data type is null or whitespace. option=arg1");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Option test2 = new Option(new OptionDescriptor("arg2", customDataType: null, "desc"), "val2");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test2)), Errors.InvalidArgument, "The option custom data type is null or whitespace. option=arg2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test2)), Errors.InvalidOption, "The option custom data type is null or whitespace. option=arg2");
         }
 
         [TestMethod]
         public async Task UnsupportedCustomDataTypeShouldErrorAsync()
         {
             var option = new Option(new OptionDescriptor("arg1", "unsupported_custom", "desc"), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(option)), Errors.UnsupportedArgument, "The option custom data type is not supported. option=arg1 custom_data_type=unsupported_custom");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(option)), Errors.UnsupportedOption, "The option custom data type is not supported. option=arg1 custom_data_type=unsupported_custom");
         }
 
         [TestMethod]
         public async Task UnsupportedDataTypeShouldErrorAsync()
         {
             var option = new Option(new OptionDescriptor("arg1", (DataType)int.MaxValue, "desc"), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(option)), Errors.UnsupportedArgument, "The option data type is not supported. option=arg1 data_type=2147483647");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(option)), Errors.UnsupportedOption, "The option data type is not supported. option=arg1 data_type=2147483647");
         }
 
         protected override void OnTestInitialize()

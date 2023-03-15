@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         [TestMethod]
-        public void ArgumentsWithDifferentIdAreNotEqual()
+        public void OptionsWithDifferentIdAreNotEqual()
         {
             Option arg1 = new(new OptionDescriptor("id1", DataType.Text, "desc1"), "value1");
             Option arg2 = new(new OptionDescriptor("id2", DataType.Text, "desc1"), "value1");
@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         [TestMethod]
-        public void ArgumentsWithSameIdAreEqual()
+        public void OptionsWithSameIdAreEqual()
         {
             Option arg1 = new(new OptionDescriptor("id1", DataType.Text, "desc1"), "value1");
             Option arg2 = new(new OptionDescriptor("id1", "Custom", "desc1"), 25.64);

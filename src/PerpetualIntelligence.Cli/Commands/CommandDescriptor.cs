@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Name = name;
             Prefix = prefix;
             Description = description;
-            ArgumentDescriptors = argumentDescriptors;
+            OptionDescriptors = argumentDescriptors;
             CustomProperties = customProperties;
             DefaultArgument = defaultArgument;
             Tags = tags;
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <summary>
         /// The command option descriptors.
         /// </summary>
-        public OptionDescriptors? ArgumentDescriptors { get; internal set; }
+        public OptionDescriptors? OptionDescriptors { get; internal set; }
 
         /// <summary>
         /// The command checker.
@@ -150,7 +150,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <returns><c>true</c> if an option descriptor exist in the collection, otherwise <c>false</c>.</returns>
         public bool TryGetArgumentDescriptor(string argId, out OptionDescriptor argumentDescriptor)
         {
-            if (ArgumentDescriptors == null)
+            if (OptionDescriptors == null)
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 argumentDescriptor = default;
@@ -159,11 +159,11 @@ namespace PerpetualIntelligence.Cli.Commands
             }
 
 #if NETSTANDARD2_1_OR_GREATER
-            return ArgumentDescriptors.TryGetValue(argId, out argumentDescriptor);
+            return OptionDescriptors.TryGetValue(argId, out argumentDescriptor);
 #else
-            if (ArgumentDescriptors.Contains(argId))
+            if (OptionDescriptors.Contains(argId))
             {
-                argumentDescriptor = ArgumentDescriptors[argId];
+                argumentDescriptor = OptionDescriptors[argId];
                 return true;
             }
             else

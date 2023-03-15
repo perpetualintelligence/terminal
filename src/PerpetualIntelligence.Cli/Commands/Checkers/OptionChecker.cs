@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             // Check for null option value
             if (context.Argument.Value == null)
             {
-                throw new ErrorException(Errors.InvalidArgument, "The option value cannot be null. option={0}", context.Argument.Id);
+                throw new ErrorException(Errors.InvalidOption, "The option value cannot be null. option={0}", context.Argument.Id);
             }
 
             // Check option data type and value type
@@ -74,12 +74,12 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             catch
             {
                 // Meaningful error instead of format exception
-                throw new ErrorException(Errors.InvalidArgument, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
+                throw new ErrorException(Errors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
             }
 
-            if (context.ArgumentDescriptor.ValueCheckers != null)
+            if (context.OptionDescriptor.ValueCheckers != null)
             {
-                foreach (IOptionValueChecker valueChecker in context.ArgumentDescriptor.ValueCheckers)
+                foreach (IOptionValueChecker valueChecker in context.OptionDescriptor.ValueCheckers)
                 {
                     try
                     {
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     }
                     catch (Exception ex)
                     {
-                        throw new ErrorException(Errors.InvalidArgument, "The option value is not valid. option={0} value={1} info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
+                        throw new ErrorException(Errors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
                     }
                 }
             }

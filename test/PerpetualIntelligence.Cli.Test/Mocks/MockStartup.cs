@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Cli.Mocks
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddCli(options => { options.Logging.ObsureErrorArguments = true; })
+            services.AddCli(options => { options.Logging.ObsureInvalidOptions = true; })
                .AddExtractor<CommandExtractor, OptionExtractor>();
         }
     }

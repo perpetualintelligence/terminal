@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 Logging = new LoggingOptions()
                 {
-                    ObsureErrorArguments = false
+                    ObsureInvalidOptions = false
                 },
                 Extractor = new ExtractorOptions()
                 {
@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 Logging = new LoggingOptions()
                 {
-                    ObsureErrorArguments = false
+                    ObsureInvalidOptions = false
                 },
                 Extractor = new ExtractorOptions()
                 {

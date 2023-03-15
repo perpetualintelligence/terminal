@@ -201,7 +201,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                     subCommandCount += 1;
 
                     // For now we only care about option count.
-                    if (cmd.ArgumentDescriptors != null)
+                    if (cmd.OptionDescriptors != null)
                     {
                         argumentCount += 1;
                     }

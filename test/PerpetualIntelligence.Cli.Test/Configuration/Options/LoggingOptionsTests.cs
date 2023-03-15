@@ -32,8 +32,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             LoggingOptions options = new LoggingOptions();
 
-            options.ObsureErrorArguments.Should().BeTrue();
-            options.ObscureErrorArgumentString.Should().Be("****");
+            options.ObsureInvalidOptions.Should().BeTrue();
+            options.ObscureStringForInvalidOption.Should().Be("****");
         }
     }
 }

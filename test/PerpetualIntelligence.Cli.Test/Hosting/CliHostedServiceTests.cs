@@ -312,8 +312,8 @@ namespace PerpetualIntelligence.Cli.Hosting
             commandDescriptors.Should().NotBeEmpty();
             foreach (var commandDescriptor in commandDescriptors)
             {
-                commandDescriptor.ArgumentDescriptors.Should().NotBeEmpty();
-                OptionDescriptor? helpAttr = commandDescriptor.ArgumentDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.OptionId));
+                commandDescriptor.OptionDescriptors.Should().NotBeEmpty();
+                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.OptionId));
                 helpAttr.Should().NotBeNull();
                 helpAttr!.Alias.Should().Be(cliOptions.Help.OptionAlias);
                 helpAttr.Description.Should().Be(cliOptions.Help.OptionDescription);
@@ -357,7 +357,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             commandDescriptors.Should().NotBeEmpty();
             foreach (var commandDescriptor in commandDescriptors)
             {
-                OptionDescriptor? helpAttr = commandDescriptor.ArgumentDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.OptionId));
+                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.OptionId));
                 helpAttr.Should().BeNull();
             }
         }
