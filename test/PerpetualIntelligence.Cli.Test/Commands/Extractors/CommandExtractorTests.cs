@@ -547,7 +547,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
             CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=PerpetualIntelligence.Cli.Commands.Providers.IDefaultArgumentValueProvider");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
         }
 
         [TestMethod]
@@ -924,8 +924,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             textHandler = new UnicodeTextHandler();
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             argExtractor = new OptionExtractor(textHandler, cliOptions, TestLogger.Create<OptionExtractor>());
-            defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
-            defaultArgProvider = new DefaultArgumentProvider(cliOptions, TestLogger.Create<DefaultArgumentProvider>());
+            defaultArgValueProvider = new DefaultOptionValueProvider(textHandler);
+            defaultArgProvider = new DefaultOptionProvider(cliOptions, TestLogger.Create<DefaultOptionProvider>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
@@ -969,8 +969,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private OptionExtractor argExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultArgumentProvider defaultArgProvider = null!;
-        private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
+        private IDefaultOptionProvider defaultArgProvider = null!;
+        private IDefaultOptionValueProvider defaultArgValueProvider = null!;
         private CommandExtractor extractor = null!;
         private CliOptions cliOptions = null!;
         private ITextHandler textHandler = null!;

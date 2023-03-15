@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Hosting
     /// <summary>
     /// An abstraction of <c>pi-cli</c> option builder.
     /// </summary>
-    public interface IArgumentBuilder
+    public interface IOptionBuilder
     {
         /// <summary>
         /// The service collection.

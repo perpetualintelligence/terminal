@@ -17,14 +17,14 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
     /// The default option provider.
     /// </summary>
     /// <seealso cref="CommandDescriptor.DefaultArgument"/>
-    public class DefaultArgumentProvider : IDefaultArgumentProvider
+    public class DefaultOptionProvider : IDefaultOptionProvider
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultArgumentProvider(CliOptions options, ILogger<DefaultArgumentProvider> logger)
+        public DefaultOptionProvider(CliOptions options, ILogger<DefaultOptionProvider> logger)
         {
             this.options = options;
             this.logger = logger;
@@ -34,19 +34,19 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// Provides default values for all the command options.
         /// </summary>
         /// <param name="context">The option default value provider context.</param>
-        /// <returns>The <see cref="DefaultArgumentValueProviderResult"/> instance that contains the default values.</returns>
+        /// <returns>The <see cref="DefaultOptionValueProviderResult"/> instance that contains the default values.</returns>
         /// <exception cref="ErrorException"></exception>
-        public Task<DefaultArgumentProviderResult> ProvideAsync(DefaultArgumentProviderContext context)
+        public Task<DefaultOptionProviderResult> ProvideAsync(DefaultOptionProviderContext context)
         {
             if (context.CommandDescriptor.ArgumentDescriptors == null || context.CommandDescriptor.DefaultArgument == null)
             {
                 throw new ErrorException(Errors.UnsupportedArgument, "The command does not support default option. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            return Task.FromResult(new DefaultArgumentProviderResult(context.CommandDescriptor.ArgumentDescriptors[context.CommandDescriptor.DefaultArgument]));
+            return Task.FromResult(new DefaultOptionProviderResult(context.CommandDescriptor.ArgumentDescriptors[context.CommandDescriptor.DefaultArgument]));
         }
 
-        private readonly ILogger<DefaultArgumentProvider> logger;
+        private readonly ILogger<DefaultOptionProvider> logger;
         private readonly CliOptions options;
     }
 }

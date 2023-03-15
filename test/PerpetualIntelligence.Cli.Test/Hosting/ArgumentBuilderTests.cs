@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             CliBuilder cliBuilder = new(serviceCollection);
             ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
 
-            ArgumentBuilder argumentBuilder = new(commandBuilder);
+            OptionBuilder argumentBuilder = new(commandBuilder);
             ICommandBuilder cmdBuilderFromArgBuilder = argumentBuilder.Add();
             commandBuilder.Should().BeSameAs(cmdBuilderFromArgBuilder);
         }
@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         {
             CliBuilder cliBuilder = new(serviceCollection);
             CommandBuilder commandBuilder = new(cliBuilder);
-            ArgumentBuilder argumentBuilder = new (commandBuilder);
+            OptionBuilder argumentBuilder = new (commandBuilder);
 
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
             argumentBuilder.Services.Should().NotBeSameAs(serviceCollection);

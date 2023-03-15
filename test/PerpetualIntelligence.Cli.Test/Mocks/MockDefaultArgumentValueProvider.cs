@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockDefaultArgumentValueProvider : IDefaultArgumentValueProvider
+    public class MockDefaultArgumentValueProvider : IDefaultOptionValueProvider
     {
         public bool Called { get; set; }
 
-        public Task<DefaultArgumentValueProviderResult> ProvideAsync(DefaultArgumentValueProviderContext context)
+        public Task<DefaultOptionValueProviderResult> ProvideAsync(DefaultOptionValueProviderContext context)
         {
             Called = true;
-            return Task.FromResult(new DefaultArgumentValueProviderResult(new Commands.OptionDescriptors(new UnicodeTextHandler())));
+            return Task.FromResult(new DefaultOptionValueProviderResult(new Commands.OptionDescriptors(new UnicodeTextHandler())));
         }
     }
 }

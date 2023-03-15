@@ -8,15 +8,15 @@
 namespace PerpetualIntelligence.Cli.Commands.Providers
 {
     /// <summary>
-    /// The option default value provider context.
+    /// The option default provider context.
     /// </summary>
-    public class DefaultArgumentValueProviderContext
+    public class DefaultOptionProviderContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="commandDescriptor">The command descriptor.</param>
-        public DefaultArgumentValueProviderContext(CommandDescriptor commandDescriptor)
+        public DefaultOptionProviderContext(CommandDescriptor commandDescriptor)
         {
             CommandDescriptor = commandDescriptor;
         }

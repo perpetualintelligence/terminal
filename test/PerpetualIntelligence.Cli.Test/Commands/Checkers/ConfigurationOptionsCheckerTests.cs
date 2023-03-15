@@ -39,8 +39,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             optionsChecker = new ConfigurationOptionsChecker(host.Services);
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandStore>());
             argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
-            defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
+            defaultArgValueProvider = new DefaultOptionValueProvider(textHandler);
+            defaultArgProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
         }
 
         [TestMethod]
@@ -199,7 +199,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             CommandExtractorContext context = new(new CommandString("prefix6_defaultarg"));
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type=PerpetualIntelligence.Cli.Commands.Providers.IDefaultArgumentProvider");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type=IDefaultOptionProvider");
         }
 
         [TestMethod]
@@ -218,7 +218,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Extractor.DefaultArgumentValue = true;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=PerpetualIntelligence.Cli.Commands.Providers.IDefaultArgumentValueProvider");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
         }
 
         [TestMethod]
@@ -272,8 +272,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         private readonly OptionExtractor argExtractor;
         private readonly ICommandStoreHandler commands;
-        private readonly IDefaultArgumentProvider defaultArgProvider = null!;
-        private readonly IDefaultArgumentValueProvider defaultArgValueProvider = null!;
+        private readonly IDefaultOptionProvider defaultArgProvider = null!;
+        private readonly IDefaultOptionValueProvider defaultArgValueProvider = null!;
         private readonly IHost host;
         private readonly IHostBuilder hostBuilder;
         private readonly CliOptions options;

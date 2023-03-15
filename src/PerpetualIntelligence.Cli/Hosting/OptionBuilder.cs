@@ -18,13 +18,13 @@ namespace PerpetualIntelligence.Cli.Hosting
     /// <summary>
     /// The default <see cref="ICommandBuilder"/>.
     /// </summary>
-    public sealed class ArgumentBuilder : IArgumentBuilder
+    public sealed class OptionBuilder : IOptionBuilder
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="commandBuilder">The <see cref="ICommandBuilder"/>.</param>
-        public ArgumentBuilder(ICommandBuilder commandBuilder)
+        public OptionBuilder(ICommandBuilder commandBuilder)
         {
             this.commandBuilder = commandBuilder;
             Services = new ServiceCollection();

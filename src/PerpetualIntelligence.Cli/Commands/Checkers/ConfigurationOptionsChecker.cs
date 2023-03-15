@@ -159,19 +159,19 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             // Default option and values
             {
-                IDefaultArgumentProvider? defaultArgumentProvider = serviceProvider.GetService<IDefaultArgumentProvider>();
-                IDefaultArgumentValueProvider? defaultArgumentValueProvider = serviceProvider.GetService<IDefaultArgumentValueProvider>();
+                IDefaultOptionProvider? defaultArgumentProvider = serviceProvider.GetService<IDefaultOptionProvider>();
+                IDefaultOptionValueProvider? defaultArgumentValueProvider = serviceProvider.GetService<IDefaultOptionValueProvider>();
 
                 // Command default option provider is missing
                 if (options.Extractor.DefaultArgument.GetValueOrDefault() && defaultArgumentProvider == null)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentProvider).FullName);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionProvider).Name);
                 }
 
                 // Argument default value provider is missing
                 if (options.Extractor.DefaultArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
                 }
             }
 

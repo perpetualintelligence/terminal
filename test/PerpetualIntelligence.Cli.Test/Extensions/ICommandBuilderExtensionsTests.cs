@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [Fact]
         public void AddArgument_Adds_Custom_DataType_Correctly()
         {
-            IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", "custom-dt", "description1", alias: null, defaultValue: null, required: false, disabled: true, obsolete: false);
+            IOptionBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", "custom-dt", "description1", alias: null, defaultValue: null, required: false, disabled: true, obsolete: false);
 
             // Argument builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
@@ -61,7 +61,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         [Fact]
         public void AddArgument_Adds_Std_DataType_Correctly()
         {
-            IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", defaultValue: 4444555544445555, required: true, disabled: false, obsolete: true);
+            IOptionBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", defaultValue: 4444555544445555, required: true, disabled: false, obsolete: true);
 
             // Argument builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);

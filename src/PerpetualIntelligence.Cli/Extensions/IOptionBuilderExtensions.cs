@@ -13,25 +13,25 @@ using System.ComponentModel.DataAnnotations;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     /// <summary>
-    /// The <see cref="IArgumentBuilder"/> extension methods.
+    /// The <see cref="IOptionBuilder"/> extension methods.
     /// </summary>
-    public static class IArgumentBuilderExtensions
+    public static class IOptionBuilderExtensions
     {
         /// <summary>
-        /// Adds an option custom property to the <see cref="IArgumentBuilder"/>.
+        /// Adds an option custom property to the <see cref="IOptionBuilder"/>.
         /// </summary>
-        /// <param name="builder">The <see cref="IArgumentBuilder"/>.</param>
+        /// <param name="builder">The <see cref="IOptionBuilder"/>.</param>
         /// <param name="key">The custom property key.</param>
         /// <param name="value">The custom property value.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static IArgumentBuilder CustomProperty(this IArgumentBuilder builder, string key, object value)
+        public static IOptionBuilder CustomProperty(this IOptionBuilder builder, string key, object value)
         {
             builder.Services.AddSingleton(new Tuple<string, object>(key, value));
             return builder;
         }
 
         /// <summary>
-        /// Adds a <see cref="ValidationAttribute{TValidation}"/> to the <see cref="IArgumentBuilder"/>
+        /// Adds a <see cref="ValidationAttribute{TValidation}"/> to the <see cref="IOptionBuilder"/>
         /// </summary>
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="args">
@@ -41,13 +41,13 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
         /// -
-        public static IArgumentBuilder ValidationAttribute<TValidation>(this IArgumentBuilder builder, params object[]? args) where TValidation : ValidationAttribute
+        public static IOptionBuilder ValidationAttribute<TValidation>(this IOptionBuilder builder, params object[]? args) where TValidation : ValidationAttribute
         {
             return ValidationAttribute(builder, typeof(TValidation), args);
         }
 
         /// <summary>
-        /// Adds a <see cref="ValidationAttribute{TValidation}"/> to the <see cref="IArgumentBuilder"/>
+        /// Adds a <see cref="ValidationAttribute{TValidation}"/> to the <see cref="IOptionBuilder"/>
         /// </summary>
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="validationAttribute">The validation attribute.</param>
@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
         /// -
-        public static IArgumentBuilder ValidationAttribute(this IArgumentBuilder builder, Type validationAttribute, params object[]? args)
+        public static IOptionBuilder ValidationAttribute(this IOptionBuilder builder, Type validationAttribute, params object[]? args)
         {
             ValidationAttribute validationAttributeInstance = (ValidationAttribute)Activator.CreateInstance(validationAttribute, args);
             builder.Services.AddSingleton(validationAttributeInstance);

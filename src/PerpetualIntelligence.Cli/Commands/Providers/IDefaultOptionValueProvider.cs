@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
     /// <summary>
     /// An abstraction to provide an option's default value.
     /// </summary>
-    public interface IDefaultArgumentValueProvider : IProvider<DefaultArgumentValueProviderContext, DefaultArgumentValueProviderResult>
+    public interface IDefaultOptionValueProvider : IProvider<DefaultOptionValueProviderContext, DefaultOptionValueProviderResult>
     {
     }
 }

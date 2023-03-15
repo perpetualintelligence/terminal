@@ -297,8 +297,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedOptionsCommands, options, TestLogger.Create<InMemoryCommandStore>());
             argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
-            defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
+            defaultArgValueProvider = new DefaultOptionValueProvider(textHandler);
+            defaultArgProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
@@ -340,8 +340,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private OptionExtractor argExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultArgumentProvider defaultArgProvider = null!;
-        private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
+        private IDefaultOptionProvider defaultArgProvider = null!;
+        private IDefaultOptionValueProvider defaultArgValueProvider = null!;
         private CommandExtractor extractor = null!;
         private CliOptions options = null!;
         private ITextHandler textHandler = null!;

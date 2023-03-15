@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         }
 
         /// <summary>
-        /// Starts a new <see cref="IArgumentBuilder"/> definition.
+        /// Starts a new <see cref="IOptionBuilder"/> definition.
         /// </summary>
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="id">The option id.</param>
@@ -44,17 +44,17 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="required">The option is required.</param>
         /// <param name="disabled">The option is disabled.</param>
         /// <param name="obsolete">The option is obsolete.</param>
-        /// <returns>The configured <see cref="IArgumentBuilder"/>.</returns>
-        public static IArgumentBuilder DefineArgument(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
+        public static IOptionBuilder DefineArgument(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
             OptionDescriptor option = new(id, dataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
-            ArgumentBuilder argumentBuilder = new(builder);
+            OptionBuilder argumentBuilder = new(builder);
             argumentBuilder.Services.AddSingleton(option);
             return argumentBuilder;
         }
 
         /// <summary>
-        /// Starts a new <see cref="IArgumentBuilder"/> definition.
+        /// Starts a new <see cref="IOptionBuilder"/> definition.
         /// </summary>
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="id">The option id.</param>
@@ -65,11 +65,11 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="required">The option is required.</param>
         /// <param name="disabled">The option is disabled.</param>
         /// <param name="obsolete">The option is obsolete.</param>
-        /// <returns>The configured <see cref="IArgumentBuilder"/>.</returns>
-        public static IArgumentBuilder DefineArgument(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
+        public static IOptionBuilder DefineArgument(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
             OptionDescriptor option = new(id, customDataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
-            ArgumentBuilder argumentBuilder = new(builder);
+            OptionBuilder argumentBuilder = new(builder);
             argumentBuilder.Services.AddSingleton(option);
             return argumentBuilder;
         }

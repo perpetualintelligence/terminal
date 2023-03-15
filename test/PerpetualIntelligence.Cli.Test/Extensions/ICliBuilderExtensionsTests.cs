@@ -256,7 +256,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
 
-            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultArgumentValueProvider)));
+            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionValueProvider)));
             Assert.IsNotNull(def);
             Assert.AreEqual(ServiceLifetime.Transient, def.Lifetime);
             Assert.AreEqual(typeof(MockDefaultArgumentValueProvider), def.ImplementationType);
@@ -277,12 +277,12 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
 
-            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultArgumentProvider)));
+            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionProvider)));
             Assert.IsNotNull(def);
             Assert.AreEqual(ServiceLifetime.Transient, def.Lifetime);
             Assert.AreEqual(typeof(MockDefaultArgumentProvider), def.ImplementationType);
 
-            var defValue = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultArgumentValueProvider)));
+            var defValue = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionValueProvider)));
             Assert.IsNotNull(defValue);
             Assert.AreEqual(ServiceLifetime.Transient, defValue.Lifetime);
             Assert.AreEqual(typeof(MockDefaultArgumentValueProvider), defValue.ImplementationType);

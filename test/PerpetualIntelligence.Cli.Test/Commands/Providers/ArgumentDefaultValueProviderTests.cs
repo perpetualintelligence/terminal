@@ -20,20 +20,20 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         [TestMethod]
         public async Task NullOrEmptyArgumentDescriptorsShouldThrowAsync()
         {
-            DefaultArgumentValueProvider provider = new(new UnicodeTextHandler());
+            DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
 
-            DefaultArgumentValueProviderContext nullContext = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: null));
+            DefaultOptionValueProviderContext nullContext = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: null));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(nullContext), Errors.UnsupportedArgument, "The command does not support any options. command_id=test command_name=testname");
 
-            DefaultArgumentValueProviderContext emptyContext = new(new CommandDescriptor("test_empty", "test_emptyname", "test_emptyprefix", "desc", argumentDescriptors: new(new UnicodeTextHandler())));
+            DefaultOptionValueProviderContext emptyContext = new(new CommandDescriptor("test_empty", "test_emptyname", "test_emptyprefix", "desc", argumentDescriptors: new(new UnicodeTextHandler())));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(emptyContext), Errors.UnsupportedArgument, "The command does not support any options. command_id=test_empty command_name=test_emptyname");
         }
 
         [TestMethod]
         public async Task ProviderShouldProvideDefaultArgumentsCorrectly()
         {
-            DefaultArgumentValueProvider provider = new(new UnicodeTextHandler());
-            DefaultArgumentValueProviderContext context = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: MockCommands.TestDefaultArgumentDescriptors));
+            DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
+            DefaultOptionValueProviderContext context = new(new CommandDescriptor("test", "testname", "testprefix", "desc", argumentDescriptors: MockCommands.TestDefaultArgumentDescriptors));
             var result = await provider.ProvideAsync(context);
             Assert.AreEqual(4, result.DefaultValueArgumentDescriptors.Count);
             Assert.AreEqual("44444444444", result.DefaultValueArgumentDescriptors[0].DefaultValue);

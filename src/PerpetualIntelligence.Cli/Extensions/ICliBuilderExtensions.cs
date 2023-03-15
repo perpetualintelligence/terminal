@@ -179,14 +179,14 @@ namespace PerpetualIntelligence.Cli.Extensions
 
         /// <summary>
         /// Adds the <see cref="ICommandExtractor"/>, <see cref="IOptionExtractor"/> and
-        /// <see cref="IDefaultArgumentValueProvider"/> to the service collection.
+        /// <see cref="IDefaultOptionValueProvider"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
         /// <typeparam name="TArgument">The option extractor type.</typeparam>
         /// <typeparam name="TDefaultArgumentValue">The option default value provider type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddExtractor<TCommand, TArgument, TDefaultArgumentValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TArgument : class, IOptionExtractor where TDefaultArgumentValue : class, IDefaultArgumentValueProvider
+        public static ICliBuilder AddExtractor<TCommand, TArgument, TDefaultArgumentValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TArgument : class, IOptionExtractor where TDefaultArgumentValue : class, IDefaultOptionValueProvider
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
@@ -195,14 +195,14 @@ namespace PerpetualIntelligence.Cli.Extensions
             builder.Services.AddTransient<IOptionExtractor, TArgument>();
 
             // Add default option value provider
-            builder.Services.AddTransient<IDefaultArgumentValueProvider, TDefaultArgumentValue>();
+            builder.Services.AddTransient<IDefaultOptionValueProvider, TDefaultArgumentValue>();
 
             return builder;
         }
 
         /// <summary>
         /// Adds the <see cref="ICommandExtractor"/>, <see cref="IOptionExtractor"/>,
-        /// <see cref="IDefaultArgumentProvider"/> and <see cref="IDefaultArgumentValueProvider"/> to the service collection.
+        /// <see cref="IDefaultOptionProvider"/> and <see cref="IDefaultOptionValueProvider"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
@@ -210,7 +210,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TDefaultArgument">The default option provider type.</typeparam>
         /// <typeparam name="TDefaultArgumentValue">The default option value provider type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddExtractor<TCommand, TArgument, TDefaultArgument, TDefaultArgumentValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TArgument : class, IOptionExtractor where TDefaultArgument : class, IDefaultArgumentProvider where TDefaultArgumentValue : class, IDefaultArgumentValueProvider
+        public static ICliBuilder AddExtractor<TCommand, TArgument, TDefaultArgument, TDefaultArgumentValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TArgument : class, IOptionExtractor where TDefaultArgument : class, IDefaultOptionProvider where TDefaultArgumentValue : class, IDefaultOptionValueProvider
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
@@ -219,10 +219,10 @@ namespace PerpetualIntelligence.Cli.Extensions
             builder.Services.AddTransient<IOptionExtractor, TArgument>();
 
             // Add default option provider
-            builder.Services.AddTransient<IDefaultArgumentProvider, TDefaultArgument>();
+            builder.Services.AddTransient<IDefaultOptionProvider, TDefaultArgument>();
 
             // Add default option value provider
-            builder.Services.AddTransient<IDefaultArgumentValueProvider, TDefaultArgumentValue>();
+            builder.Services.AddTransient<IDefaultOptionValueProvider, TDefaultArgumentValue>();
 
             return builder;
         }
@@ -355,7 +355,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             // Arguments Descriptors
             foreach (OptionDescriptorAttribute argAttr in argAttrs)
             {
-                IArgumentBuilder argumentBuilder;
+                IOptionBuilder argumentBuilder;
                 if (argAttr.CustomDataType != null)
                 {
                     argumentBuilder = commandBuilder.DefineArgument(argAttr.Id, argAttr.CustomDataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);

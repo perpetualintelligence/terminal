@@ -45,8 +45,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             ITextHandler textHandler,
             CliOptions cliOptions,
             ILogger<CommandExtractor> logger,
-            IDefaultArgumentProvider? defaultArgumentProvider = null,
-            IDefaultArgumentValueProvider? defaultArgumentValueProvider = null)
+            IDefaultOptionProvider? defaultArgumentProvider = null,
+            IDefaultOptionValueProvider? defaultArgumentValueProvider = null)
         {
             this.commandStore = commandStoreHandler ?? throw new ArgumentNullException(nameof(commandStoreHandler));
             this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
@@ -107,7 +107,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // Sanity check
                 if (defaultArgumentProvider == null)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).FullName);
                 }
 
                 // Options and command supports the default option, but is the default value provided by user ? If yes
@@ -123,7 +123,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 if (proccessDefaultArg)
                 {
                     // Get the default option
-                    DefaultArgumentProviderResult defaultArgumentProviderResult = await defaultArgumentProvider.ProvideAsync(new DefaultArgumentProviderContext(commandDescriptor));
+                    DefaultOptionProviderResult defaultArgumentProviderResult = await defaultArgumentProvider.ProvideAsync(new DefaultOptionProviderContext(commandDescriptor));
 
                     // Convert the arg string to standard format and let the IArgumentExtractor extract the option and
                     // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
@@ -323,12 +323,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Sanity check
             if (defaultArgumentValueProvider == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultArgumentValueProvider).FullName);
+                throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).FullName);
             }
 
             // Get default values. Make sure we take user inputs.
             Options? finalArgs = userArguments;
-            DefaultArgumentValueProviderResult defaultResult = await defaultArgumentValueProvider.ProvideAsync(new DefaultArgumentValueProviderContext(commandDescriptor));
+            DefaultOptionValueProviderResult defaultResult = await defaultArgumentValueProvider.ProvideAsync(new DefaultOptionValueProviderContext(commandDescriptor));
             if (defaultResult.DefaultValueArgumentDescriptors != null && defaultResult.DefaultValueArgumentDescriptors.Count > 0)
             {
                 // options can be null here, if the command string did not specify any options
@@ -365,8 +365,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private readonly IOptionExtractor argumentExtractor;
         private readonly ICommandStoreHandler commandStore;
-        private readonly IDefaultArgumentProvider? defaultArgumentProvider;
-        private readonly IDefaultArgumentValueProvider? defaultArgumentValueProvider;
+        private readonly IDefaultOptionProvider? defaultArgumentProvider;
+        private readonly IDefaultOptionValueProvider? defaultArgumentValueProvider;
         private readonly ILogger<CommandExtractor> logger;
         private readonly CliOptions cliOptions;
         private readonly ITextHandler textHandler;

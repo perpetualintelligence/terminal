@@ -12,13 +12,13 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
     /// <summary>
     /// The option default value provider result.
     /// </summary>
-    public class DefaultArgumentValueProviderResult
+    public class DefaultOptionValueProviderResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="defaultValueArgumentDescriptors">The default value option descriptors.</param>
-        public DefaultArgumentValueProviderResult(OptionDescriptors defaultValueArgumentDescriptors)
+        public DefaultOptionValueProviderResult(OptionDescriptors defaultValueArgumentDescriptors)
         {
             DefaultValueArgumentDescriptors = defaultValueArgumentDescriptors ?? throw new System.ArgumentNullException(nameof(defaultValueArgumentDescriptors));
         }
