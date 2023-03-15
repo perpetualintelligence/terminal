@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
@@ -35,17 +35,17 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
             Logger.LogInformation("    " + context.Command.Descriptor.Name);
             Logger.LogInformation(context.Command.Descriptor.Description);
 
-            if (context.Command.Descriptor.ArgumentDescriptors != null)
+            if (context.Command.Descriptor.OptionDescriptors != null)
             {
-                foreach (ArgumentDescriptor argument in context.Command.Descriptor.ArgumentDescriptors)
+                foreach (OptionDescriptor option in context.Command.Descriptor.OptionDescriptors)
                 {
-                    if (argument.Alias != null)
+                    if (option.Alias != null)
                     {
-                        Logger.LogInformation("{0} ({1}) - {2}", argument.Id, argument.Alias, argument.Description);
+                        Logger.LogInformation("{0} ({1}) - {2}", option.Id, option.Alias, option.Description);
                     }
                     else
                     {
-                        Logger.LogInformation("{0} - {1}", argument.Id, argument.Description);
+                        Logger.LogInformation("{0} - {1}", option.Id, option.Description);
                     }
                 }
             }

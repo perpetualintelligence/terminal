@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 namespace PerpetualIntelligence.Cli
@@ -18,14 +18,14 @@ namespace PerpetualIntelligence.Cli
         public const string ConnectionClosed = "connection_closed";
 
         /// <summary>
-        /// The argument is not already added to the command.
+        /// The option is not already added to the command.
         /// </summary>
-        public const string DuplicateArgument = "duplicate_argument";
+        public const string DuplicateOption = "duplicate_option";
 
         /// <summary>
-        /// The argument is not valid.
+        /// The option is not valid.
         /// </summary>
-        public const string InvalidArgument = "invalid_argument";
+        public const string InvalidOption = "invalid_option";
 
         /// <summary>
         /// The command is not valid.
@@ -53,9 +53,9 @@ namespace PerpetualIntelligence.Cli
         public const string InvalidRequest = "invalid_request";
 
         /// <summary>
-        /// The argument is missing.
+        /// The option is missing.
         /// </summary>
-        public const string MissingArgument = "missing_argument";
+        public const string MissingOption = "missing_option";
 
         /// <summary>
         /// The claim is missing.
@@ -78,9 +78,9 @@ namespace PerpetualIntelligence.Cli
         public const string UnauthorizedAccess = "unauthorized_access";
 
         /// <summary>
-        /// The argument is not supported.
+        /// The option is not supported.
         /// </summary>
-        public const string UnsupportedArgument = "unsupported_argument";
+        public const string UnsupportedOption = "unsupported_option";
 
         /// <summary>
         /// The command is not supported.

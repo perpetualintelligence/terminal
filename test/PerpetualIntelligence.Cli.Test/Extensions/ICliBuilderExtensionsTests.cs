@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
@@ -60,9 +60,9 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddArgumentCheckerShouldCorrectlyInitialize()
         {
-            cliBuilder.AddArgumentChecker<MockArgumentMapper, MockArgumentChecker>();
+            cliBuilder.AddOptionChecker<MockArgumentMapper, MockArgumentChecker>();
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentChecker)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionChecker)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentChecker), arg.ImplementationType);
@@ -235,7 +235,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
             Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentExtractor)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
@@ -244,48 +244,48 @@ namespace PerpetualIntelligence.Cli.Extensions
         [TestMethod]
         public void AddExtractorWithDefaultArgValueProviderShouldCorrectlyInitialize()
         {
-            cliBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor, MockDefaultArgumentValueProvider>();
+            cliBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor, MockDefaultOptionValueProvider>();
 
             var cmd = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandExtractor)));
             Assert.IsNotNull(cmd);
             Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
             Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentExtractor)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
 
-            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultArgumentValueProvider)));
+            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionValueProvider)));
             Assert.IsNotNull(def);
             Assert.AreEqual(ServiceLifetime.Transient, def.Lifetime);
-            Assert.AreEqual(typeof(MockDefaultArgumentValueProvider), def.ImplementationType);
+            Assert.AreEqual(typeof(MockDefaultOptionValueProvider), def.ImplementationType);
         }
 
         [TestMethod]
         public void AddExtractorWithDefaultProviderShouldCorrectlyInitialize()
         {
-            cliBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor, MockDefaultArgumentProvider, MockDefaultArgumentValueProvider>();
+            cliBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor, MockDefaultOptionProvider, MockDefaultOptionValueProvider>();
 
             var cmd = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandExtractor)));
             Assert.IsNotNull(cmd);
             Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
             Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
 
-            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentExtractor)));
+            var arg = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
 
-            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultArgumentProvider)));
+            var def = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionProvider)));
             Assert.IsNotNull(def);
             Assert.AreEqual(ServiceLifetime.Transient, def.Lifetime);
-            Assert.AreEqual(typeof(MockDefaultArgumentProvider), def.ImplementationType);
+            Assert.AreEqual(typeof(MockDefaultOptionProvider), def.ImplementationType);
 
-            var defValue = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultArgumentValueProvider)));
+            var defValue = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionValueProvider)));
             Assert.IsNotNull(defValue);
             Assert.AreEqual(ServiceLifetime.Transient, defValue.Lifetime);
-            Assert.AreEqual(typeof(MockDefaultArgumentValueProvider), defValue.ImplementationType);
+            Assert.AreEqual(typeof(MockDefaultOptionValueProvider), defValue.ImplementationType);
         }
 
         [TestMethod]

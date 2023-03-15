@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Hosting;
@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Cli.Hosting.Mocks
             return Task.CompletedTask;
         }
 
-        internal override Task RegisterHelpArgumentAsync()
+        internal override Task RegisterHelpAsync()
         {
             RegisterHelpArgumentCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;

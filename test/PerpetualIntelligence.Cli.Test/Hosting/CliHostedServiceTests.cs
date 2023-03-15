@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             {
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
-                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
                 services.AddSingleton<ITextHandler, UnicodeTextHandler>();
             });
             host = hostBuilder.Start();
@@ -291,16 +291,16 @@ namespace PerpetualIntelligence.Cli.Hosting
                 services.AddCli()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
-                       .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
-                       .DefineArgument("id2", nameof(Int32), "test arg2", "alais_id2").Add()
-                       .DefineArgument("id3", nameof(Boolean), "test arg3").Add()
+                       .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                       .DefineOption("id2", nameof(Int32), "test arg2", "alais_id2").Add()
+                       .DefineOption("id3", nameof(Boolean), "test arg3").Add()
                    .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add();
 
                 // Replace with Mock DIs
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
-                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
                 services.AddSingleton<ITextHandler, UnicodeTextHandler>();
             });
             host = await hostBuilder.StartAsync();
@@ -312,11 +312,11 @@ namespace PerpetualIntelligence.Cli.Hosting
             commandDescriptors.Should().NotBeEmpty();
             foreach (var commandDescriptor in commandDescriptors)
             {
-                commandDescriptor.ArgumentDescriptors.Should().NotBeEmpty();
-                ArgumentDescriptor? helpAttr = commandDescriptor.ArgumentDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.HelpArgumentId));
+                commandDescriptor.OptionDescriptors.Should().NotBeEmpty();
+                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.OptionId));
                 helpAttr.Should().NotBeNull();
-                helpAttr!.Alias.Should().Be(cliOptions.Help.HelpArgumentAlias);
-                helpAttr.Description.Should().Be(cliOptions.Help.HelpArgumentDescription);
+                helpAttr!.Alias.Should().Be(cliOptions.Help.OptionAlias);
+                helpAttr.Description.Should().Be(cliOptions.Help.OptionDescription);
             }
         }
 
@@ -331,21 +331,21 @@ namespace PerpetualIntelligence.Cli.Hosting
             {
                 services.AddCli()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1")
-                        .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                        .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
                     .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
-                       .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
-                       .DefineArgument("id2", nameof(Int32), "test arg2", "alais_id2").Add()
-                       .DefineArgument("id3", nameof(Boolean), "test arg3").Add()
+                       .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                       .DefineOption("id2", nameof(Int32), "test arg2", "alais_id2").Add()
+                       .DefineOption("id3", nameof(Boolean), "test arg3").Add()
                    .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd3", "cmd3", "cmd3", "test1")
-                        .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                        .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
                     .Add();
 
                 // Replace with Mock DIs
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
-                services.AddSingleton<IOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
                 services.AddSingleton<ITextHandler, UnicodeTextHandler>();
             });
             host = await hostBuilder.StartAsync();
@@ -357,7 +357,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             commandDescriptors.Should().NotBeEmpty();
             foreach (var commandDescriptor in commandDescriptors)
             {
-                ArgumentDescriptor? helpAttr = commandDescriptor.ArgumentDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.HelpArgumentId));
+                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.OptionId));
                 helpAttr.Should().BeNull();
             }
         }

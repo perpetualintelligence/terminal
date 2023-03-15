@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,8 +23,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             CheckerOptions options = new ();
 
-            Assert.AreEqual(null, options.AllowObsoleteArgument);
-            Assert.AreEqual(null, options.StrictArgumentValueType);            
+            Assert.AreEqual(null, options.AllowObsoleteOption);
+            Assert.AreEqual(null, options.StrictOptionValueType);            
         }
     }
 }

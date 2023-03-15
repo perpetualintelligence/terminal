@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
@@ -46,90 +46,90 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         [Fact]
-        public async Task CheckAsync_ArgumentAlias_ShouldBehaveCorrectly()
+        public async Task CheckAsync_OptionAlias_ShouldBehaveCorrectly()
         {
             // Error, not allowed but configured
-            license.Limits.ArgumentAlias = false;
-            cliOptions.Extractor.ArgumentAlias = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured argument alias option is not allowed for your license edition.");
+            license.Limits.OptionAlias = false;
+            cliOptions.Extractor.OptionAlias = true;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
 
             // No error, not allowed not configured
-            license.Limits.ArgumentAlias = false;
-            cliOptions.Extractor.ArgumentAlias = false;
+            license.Limits.OptionAlias = false;
+            cliOptions.Extractor.OptionAlias = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, not allowed not configured
-            license.Limits.ArgumentAlias = false;
-            cliOptions.Extractor.ArgumentAlias = null;
+            license.Limits.OptionAlias = false;
+            cliOptions.Extractor.OptionAlias = null;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed not configured
-            license.Limits.ArgumentAlias = true;
-            cliOptions.Extractor.ArgumentAlias = false;
+            license.Limits.OptionAlias = true;
+            cliOptions.Extractor.OptionAlias = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed and configured
-            license.Limits.ArgumentAlias = true;
-            cliOptions.Extractor.ArgumentAlias = true;
+            license.Limits.OptionAlias = true;
+            cliOptions.Extractor.OptionAlias = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
         }
 
 
         [Fact]
-        public async Task CheckAsync_DefaultArgument_ShouldBehaveCorrectly()
+        public async Task CheckAsync_DefaultOption_ShouldBehaveCorrectly()
         {
             // Error, not allowed but configured
-            license.Limits.DefaultArgument = false;
-            cliOptions.Extractor.DefaultArgument = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default argument option is not allowed for your license edition.");
+            license.Limits.DefaultOption = false;
+            cliOptions.Extractor.DefaultOption = true;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
 
             // No error, not allowed not configured
-            license.Limits.DefaultArgument = false;
-            cliOptions.Extractor.DefaultArgument = false;
+            license.Limits.DefaultOption = false;
+            cliOptions.Extractor.DefaultOption = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, not allowed not configured
-            license.Limits.DefaultArgument = false;
-            cliOptions.Extractor.DefaultArgument = null;
+            license.Limits.DefaultOption = false;
+            cliOptions.Extractor.DefaultOption = null;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed not configured
-            license.Limits.DefaultArgument = true;
-            cliOptions.Extractor.DefaultArgument = false;
+            license.Limits.DefaultOption = true;
+            cliOptions.Extractor.DefaultOption = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed and configured
-            license.Limits.DefaultArgument = true;
-            cliOptions.Extractor.DefaultArgument = true;
+            license.Limits.DefaultOption = true;
+            cliOptions.Extractor.DefaultOption = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
         }
 
         [Fact]
-        public async Task CheckAsync_DefaultArgumentValue_ShouldBehaveCorrectly()
+        public async Task CheckAsync_DefaultOptionValue_ShouldBehaveCorrectly()
         {
             // Error, not allowed but configured
-            license.Limits.DefaultArgumentValue = false;
-            cliOptions.Extractor.DefaultArgumentValue = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default argument value option is not allowed for your license edition.");
+            license.Limits.DefaultOptionValue = false;
+            cliOptions.Extractor.DefaultOptionValue = true;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
 
             // No error, not allowed not configured
-            license.Limits.DefaultArgumentValue = false;
-            cliOptions.Extractor.DefaultArgumentValue = false;
+            license.Limits.DefaultOptionValue = false;
+            cliOptions.Extractor.DefaultOptionValue = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, not allowed not configured
-            license.Limits.DefaultArgumentValue = false;
-            cliOptions.Extractor.DefaultArgumentValue = null;
+            license.Limits.DefaultOptionValue = false;
+            cliOptions.Extractor.DefaultOptionValue = null;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed not configured
-            license.Limits.DefaultArgumentValue = true;
-            cliOptions.Extractor.DefaultArgumentValue = false;
+            license.Limits.DefaultOptionValue = true;
+            cliOptions.Extractor.DefaultOptionValue = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed and configured
-            license.Limits.DefaultArgumentValue = true;
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            license.Limits.DefaultOptionValue = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
         }
 
@@ -157,8 +157,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task CheckAsync_ExceededArgumentLimit_ShouldError()
         {
             // Args 13
-            license.Limits.ArgumentLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The argument limit exceeded. max_limit=2 current=13");
+            license.Limits.OptionLimit = 2;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The option limit exceeded. max_limit=2 current=13");
         }
 
         [Fact]
@@ -208,7 +208,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             result.RootCommandCount.Should().Be(3);
             result.CommandGroupCount.Should().Be(3);
             result.SubCommandCount.Should().Be(14);
-            result.ArgumentCount.Should().Be(13);
+            result.OptionCount.Should().Be(13);
         }
 
         [Fact]
@@ -306,27 +306,27 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             // Error, not allowed but configured
             license.Limits.StrictDataType = false;
-            cliOptions.Checker.StrictArgumentValueType = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured strict argument value type option is not allowed for your license edition.");
+            cliOptions.Checker.StrictOptionValueType = true;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured strict option value type option is not allowed for your license edition.");
 
             // No error, not allowed configured false
             license.Limits.StrictDataType = false;
-            cliOptions.Checker.StrictArgumentValueType = false;
+            cliOptions.Checker.StrictOptionValueType = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, not allowed not configured
             license.Limits.StrictDataType = false;
-            cliOptions.Checker.StrictArgumentValueType = null;
+            cliOptions.Checker.StrictOptionValueType = null;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed not configured
             license.Limits.StrictDataType = true;
-            cliOptions.Checker.StrictArgumentValueType = false;
+            cliOptions.Checker.StrictOptionValueType = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed and configured
             license.Limits.StrictDataType = true;
-            cliOptions.Checker.StrictArgumentValueType = true;
+            cliOptions.Checker.StrictOptionValueType = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
         }
 

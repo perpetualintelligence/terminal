@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Cli.Commands.Handlers;
@@ -75,14 +75,14 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string ServiceHandler { get; set; } = "default";
 
         /// <summary>
-        /// The command and argument store handler. Its value can be <c>in-memory</c>, <c>json</c> or <c>custom</c>. The
+        /// The command and option store handler. Its value can be <c>in-memory</c>, <c>json</c> or <c>custom</c>. The
         /// <c>json</c> or <c>custom</c> are reserved for future releases.
         /// </summary>
         /// <remarks>
-        /// <para><c>in-memory</c> handler provides in memory command and argument descriptions.</para>
-        /// <para><c>json</c> handler provides command and argument descriptions in a JSON file.</para>
+        /// <para><c>in-memory</c> handler provides in memory command and option descriptions.</para>
+        /// <para><c>json</c> handler provides command and option descriptions in a JSON file.</para>
         /// <para>
-        /// <c>custom</c> handler allows application authors to provide command and argument descriptions from a custom
+        /// <c>custom</c> handler allows application authors to provide command and option descriptions from a custom
         /// store such as Entity framework or cloud databases REST API.
         /// </para>
         /// </remarks>

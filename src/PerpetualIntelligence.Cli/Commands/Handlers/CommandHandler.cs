@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.DependencyInjection;
@@ -69,7 +69,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             CommandRunnerResult runnerResult;
 
             // Run or Help
-            if (!options.Help.Disabled.GetValueOrDefault() && runnerContext.Command.TryGetArgument(options.Help.HelpArgumentId, out Argument helpArg))
+            if (!options.Help.Disabled.GetValueOrDefault() && runnerContext.Command.TryGetOption(options.Help.OptionId, out Option helpArg))
             {
                 IHelpProvider helpProvider = services.GetRequiredService<IHelpProvider>();
                 runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, helpProvider);

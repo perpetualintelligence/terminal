@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using System.Threading;
@@ -15,9 +15,9 @@ namespace PerpetualIntelligence.Cli.Runtime
     public interface ITerminalStartContext
     {
         /// <summary>
-        /// The command line arguments.
+        /// The command line options.
         /// </summary>
-        string[]? Arguments { get; }
+        string[]? Options { get; }
 
         /// <summary>
         /// The cancellation token.

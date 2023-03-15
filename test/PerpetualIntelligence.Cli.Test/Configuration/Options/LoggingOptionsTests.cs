@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
@@ -32,8 +32,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             LoggingOptions options = new LoggingOptions();
 
-            options.ObsureErrorArguments.Should().BeTrue();
-            options.ObscureErrorArgumentString.Should().Be("****");
+            options.ObsureInvalidOptions.Should().BeTrue();
+            options.ObscureStringForInvalidOption.Should().Be("****");
         }
     }
 }

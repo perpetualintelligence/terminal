@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
@@ -86,8 +86,8 @@ namespace PerpetualIntelligence.Cli.Stores.InMemory
             Dictionary<CommandDescriptor, int> matches = new();
             foreach (var cmd in commandDescriptors)
             {
-                // If the command does not support default argument then match the exact prefix.
-                if (cmd.DefaultArgument == null)
+                // If the command does not support default option then match the exact prefix.
+                if (cmd.DefaultOption == null)
                 {
                     string regEx = $"^{cmd.Prefix}$";
                     Match match = Regex.Match(prefix, regEx);

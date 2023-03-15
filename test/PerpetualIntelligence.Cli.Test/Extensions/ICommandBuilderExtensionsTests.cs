@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
@@ -37,49 +37,49 @@ namespace PerpetualIntelligence.Cli.Extensions
         [Fact]
         public void AddArgument_Adds_Custom_DataType_Correctly()
         {
-            IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", "custom-dt", "description1", alias: null, defaultValue: null, required: false, disabled: true, obsolete: false);
+            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("arg1", "custom-dt", "description1", alias: null, defaultValue: null, required: false, disabled: true, obsolete: false);
 
-            // Argument builder, command builder have different service collections.
+            // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
-            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(OptionDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 
-            ArgumentDescriptor argument = (ArgumentDescriptor)serviceDescriptor.ImplementationInstance!;
-            argument.Id.Should().Be("arg1");
-            argument.DataType.Should().Be(DataType.Custom);
-            argument.CustomDataType.Should().Be("custom-dt");
-            argument.Description.Should().Be("description1");
-            argument.Alias.Should().BeNull();
-            argument.DefaultValue.Should().BeNull();
-            argument.Required.Should().BeFalse();
-            argument.Disabled.Should().BeTrue();
-            argument.Obsolete.Should().BeFalse();
+            OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
+            option.Id.Should().Be("arg1");
+            option.DataType.Should().Be(DataType.Custom);
+            option.CustomDataType.Should().Be("custom-dt");
+            option.Description.Should().Be("description1");
+            option.Alias.Should().BeNull();
+            option.DefaultValue.Should().BeNull();
+            option.Required.Should().BeFalse();
+            option.Disabled.Should().BeTrue();
+            option.Obsolete.Should().BeFalse();
         }
 
         [Fact]
         public void AddArgument_Adds_Std_DataType_Correctly()
         {
-            IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", defaultValue: 4444555544445555, required: true, disabled: false, obsolete: true);
+            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", defaultValue: 4444555544445555, required: true, disabled: false, obsolete: true);
 
-            // Argument builder, command builder have different service collections.
+            // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
-            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(ArgumentDescriptor)));
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(OptionDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 
-            ArgumentDescriptor argument = (ArgumentDescriptor)serviceDescriptor.ImplementationInstance!;
-            argument.Id.Should().Be("arg1");
-            argument.DataType.Should().Be(DataType.CreditCard);
-            argument.CustomDataType.Should().BeNull();
-            argument.Description.Should().Be("description1");
-            argument.Alias.Should().Be("arg-alias1");
-            argument.DefaultValue.Should().Be(4444555544445555);
-            argument.Required.Should().BeTrue();
-            argument.Disabled.Should().BeFalse();
-            argument.Obsolete.Should().BeTrue();
+            OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
+            option.Id.Should().Be("arg1");
+            option.DataType.Should().Be(DataType.CreditCard);
+            option.CustomDataType.Should().BeNull();
+            option.Description.Should().Be("description1");
+            option.Alias.Should().Be("arg-alias1");
+            option.DefaultValue.Should().Be(4444555544445555);
+            option.Required.Should().BeTrue();
+            option.Disabled.Should().BeFalse();
+            option.Obsolete.Should().BeTrue();
         }
 
         private ICliBuilder cliBuilder = null!;

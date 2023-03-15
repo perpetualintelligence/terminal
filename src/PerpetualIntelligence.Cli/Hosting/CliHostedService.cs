@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.DependencyInjection;
@@ -77,9 +77,9 @@ namespace PerpetualIntelligence.Cli.Hosting
                 // Do custom configuration check
                 await CheckHostApplicationConfigurationAsync(options);
 
-                // Register the help arguments with command descriptors. This is intentionally done at the end so we don't take
+                // Register the help options with command descriptors. This is intentionally done at the end so we don't take
                 // performance hit in case there is a license check failure.
-                await RegisterHelpArgumentAsync();
+                await RegisterHelpAsync();
             }
             catch (ErrorException ex)
             {
@@ -88,10 +88,10 @@ namespace PerpetualIntelligence.Cli.Hosting
         }
 
         /// <summary>
-        /// Registers the help arguments based on configuration options.
+        /// Registers the help options based on configuration options.
         /// </summary>
         /// <returns></returns>
-        internal virtual Task RegisterHelpArgumentAsync()
+        internal virtual Task RegisterHelpAsync()
         {
             if (options.Help.Disabled.GetValueOrDefault())
             {
@@ -104,13 +104,13 @@ namespace PerpetualIntelligence.Cli.Hosting
                 IEnumerable<CommandDescriptor> commandDescriptors = serviceProvider.GetServices<CommandDescriptor>();
                 foreach (CommandDescriptor commandDescriptor in commandDescriptors)
                 {
-                    if (commandDescriptor.ArgumentDescriptors == null)
+                    if (commandDescriptor.OptionDescriptors == null)
                     {
-                        commandDescriptor.ArgumentDescriptors = new ArgumentDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
+                        commandDescriptor.OptionDescriptors = new OptionDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
                     }
 
-                    ArgumentDescriptor helpDescriptor = new(options.Help.HelpArgumentId, nameof(Boolean), options.Help.HelpArgumentDescription) { Alias = options.Help.HelpArgumentAlias };
-                    commandDescriptor.ArgumentDescriptors.Add(helpDescriptor);
+                    OptionDescriptor helpDescriptor = new(options.Help.OptionId, nameof(Boolean), options.Help.OptionDescription) { Alias = options.Help.OptionAlias };
+                    commandDescriptor.OptionDescriptors.Add(helpDescriptor);
                 }
             });
         }
@@ -246,7 +246,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         /// <returns></returns>
         private async Task CheckHostApplicationMandatoryConfigurationAsync(CliOptions options)
         {
-            IOptionsChecker optionsChecker = serviceProvider.GetRequiredService<IOptionsChecker>();
+            IConfigurationOptionsChecker optionsChecker = serviceProvider.GetRequiredService<IConfigurationOptionsChecker>();
             await optionsChecker.CheckAsync(options);
         }
 

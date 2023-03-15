@@ -5,7 +5,7 @@
 ![windows](https://img.shields.io/badge/windows-grey?style=flat-square&logo=windows)
 
 ## The most flexible cross-platform framework for modern CLI terminals.
-`pi-cli` is the most flexible cross-platform framework for building modern CLI terminals for your company, product, service, SaaS, development, and testing needs. Users, customers, and enterprises across engineering, manufacturing, technology, digital industries, digital twins, artificial intelligence, machine learning, finance, media, creative design, etc., can create CLI apps with few flags or advanced CLIs with roots, groups, sub-commands, arguments, and options.
+`pi-cli` is the most flexible cross-platform framework for building modern CLI terminals for your company, product, service, SaaS, development, and testing needs. Users, customers, and enterprises across engineering, manufacturing, technology, digital industries, digital twins, artificial intelligence, machine learning, finance, media, creative design, etc., can create CLI apps with few flags or advanced CLIs with roots, groups, sub-commands, options, and options.
 
 > ***Take your app, service, or tool to the command line with Unicode support and build CLI terminals in any user language.***
 
@@ -23,7 +23,7 @@ The framework handles the entire CLI infrastructure, so your focus is on buildin
 
 ## License and Pricing
 
-**See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html) and [pricing](https://www.perpetualintelligence.com/products/picli#pricing)**.
+**See our [licensing terms](https://terms.perpetualintelligence.com/articles/intro.html/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/intro.html/articles/redistribution.html) and [pricing](https://www.perpetualintelligence.com/products/picli#pricing)**.
 
 Our community edition is free for educational, research, and non-production use. We recommend creating an account to generate a license for your specific use case.
 

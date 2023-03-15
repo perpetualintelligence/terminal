@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Shared.Exceptions;
@@ -34,9 +34,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         public long TerminalCount { get; set; }
 
         /// <summary>
-        /// The argument count.
+        /// The option count.
         /// </summary>
-        public long ArgumentCount { get; set; }
+        public long OptionCount { get; set; }
 
         /// <summary>
         /// The grouped command count.

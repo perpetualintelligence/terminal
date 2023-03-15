@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Cli.Commands.Extractors;
@@ -15,12 +15,12 @@ using System.Runtime.CompilerServices;
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// The <see cref="CommandDescriptor"/> defines the command identity and its supported arguments that an end-user or
+    /// The <see cref="CommandDescriptor"/> defines the command identity and its supported options that an end-user or
     /// an application can use. You can also describe the command behavior, such as whether the command is a root,
     /// grouped, or subcommand.
     /// </summary>
     /// <seealso cref="Command"/>
-    /// <seealso cref="ArgumentDescriptor"/>
+    /// <seealso cref="OptionDescriptor"/>
     public sealed class CommandDescriptor
     {
         /// <summary>
@@ -30,11 +30,11 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="name">The command name.</param>
         /// <param name="prefix">The command prefix to map the command string.</param>
         /// <param name="description">The command description.</param>
-        /// <param name="argumentDescriptors">The argument descriptors.</param>
+        /// <param name="optionDescriptors">The option descriptors.</param>
         /// <param name="customProperties">The custom properties.</param>
-        /// <param name="defaultArgument">The default argument.</param>
+        /// <param name="defaultOption">The default option.</param>
         /// <param name="tags">The tags to find a command.</param>
-        public CommandDescriptor(string id, string name, string prefix, string description, ArgumentDescriptors? argumentDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultArgument = null, string[]? tags = null)
+        public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? optionDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultOption = null, string[]? tags = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -55,16 +55,16 @@ namespace PerpetualIntelligence.Cli.Commands
             Name = name;
             Prefix = prefix;
             Description = description;
-            ArgumentDescriptors = argumentDescriptors;
+            OptionDescriptors = optionDescriptors;
             CustomProperties = customProperties;
-            DefaultArgument = defaultArgument;
+            DefaultOption = defaultOption;
             Tags = tags;
         }
 
         /// <summary>
-        /// The command argument descriptors.
+        /// The command option descriptors.
         /// </summary>
-        public ArgumentDescriptors? ArgumentDescriptors { get; internal set; }
+        public OptionDescriptors? OptionDescriptors { get; internal set; }
 
         /// <summary>
         /// The command checker.
@@ -77,18 +77,18 @@ namespace PerpetualIntelligence.Cli.Commands
         public Dictionary<string, object>? CustomProperties { get; internal set; }
 
         /// <summary>
-        /// The default argument. <c>null</c> means the command does not support a default argument.
+        /// The default option. <c>null</c> means the command does not support a default option.
         /// </summary>
         /// <remarks>
-        /// <see cref="DefaultArgument"/> is not the default argument value (see
-        /// <see cref="ArgumentDescriptor.DefaultValue"/>), it is the default argument identifier (see
-        /// <see cref="ArgumentDescriptor.Id"/>) whose value is populated automatically based on the
-        /// <see cref="CommandString"/>. If <see cref="DefaultArgument"/> is set to a non <c>null</c> value, then the
+        /// <see cref="DefaultOption"/> is not the default option value (see
+        /// <see cref="OptionDescriptor.DefaultValue"/>), it is the default option identifier (see
+        /// <see cref="OptionDescriptor.Id"/>) whose value is populated automatically based on the
+        /// <see cref="CommandString"/>. If <see cref="DefaultOption"/> is set to a non <c>null</c> value, then the
         /// <see cref="ICommandExtractor"/> will attempt to extract the value from the <see cref="CommandString"/> and
-        /// put it in an <see cref="Argument"/> identified by <see cref="DefaultArgument"/>.
+        /// put it in an <see cref="Option"/> identified by <see cref="DefaultOption"/>.
         /// </remarks>
-        /// <seealso cref="ArgumentDescriptor.DefaultValue"/>
-        public string? DefaultArgument { get; internal set; }
+        /// <seealso cref="OptionDescriptor.DefaultValue"/>
+        public string? DefaultOption { get; internal set; }
 
         /// <summary>
         /// The command description.
@@ -143,33 +143,33 @@ namespace PerpetualIntelligence.Cli.Commands
         public string[]? Tags { get; internal set; }
 
         /// <summary>
-        /// Attempts to find an argument descriptor.
+        /// Attempts to find an option descriptor.
         /// </summary>
-        /// <param name="argId">The argument descriptor identifier.</param>
-        /// <param name="argumentDescriptor">The argument descriptor if found.</param>
-        /// <returns><c>true</c> if an argument descriptor exist in the collection, otherwise <c>false</c>.</returns>
-        public bool TryGetArgumentDescriptor(string argId, out ArgumentDescriptor argumentDescriptor)
+        /// <param name="argId">The option descriptor identifier.</param>
+        /// <param name="optionDescriptor">The option descriptor if found.</param>
+        /// <returns><c>true</c> if an option descriptor exist in the collection, otherwise <c>false</c>.</returns>
+        public bool TryGetOptionDescriptor(string argId, out OptionDescriptor optionDescriptor)
         {
-            if (ArgumentDescriptors == null)
+            if (OptionDescriptors == null)
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                argumentDescriptor = default;
+                optionDescriptor = default;
                 return false;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }
 
 #if NETSTANDARD2_1_OR_GREATER
-            return ArgumentDescriptors.TryGetValue(argId, out argumentDescriptor);
+            return OptionDescriptors.TryGetValue(argId, out optionDescriptor);
 #else
-            if (ArgumentDescriptors.Contains(argId))
+            if (OptionDescriptors.Contains(argId))
             {
-                argumentDescriptor = ArgumentDescriptors[argId];
+                optionDescriptor = OptionDescriptors[argId];
                 return true;
             }
             else
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                argumentDescriptor = default;
+                optionDescriptor = default;
                 return false;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }

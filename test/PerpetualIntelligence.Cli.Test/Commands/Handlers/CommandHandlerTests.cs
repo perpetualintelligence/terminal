@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             using var newhost = hostBuilder.Build();
 
             CommandHandlerContext commandContext = new(new CommandRoute("test_id"), command.Item1, command.Item2, license);
-            var newHandler = new CommandHandler(newhost.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
+            var newHandler = new CommandHandler(newhost.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), Errors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockCommandCheckerInner");
         }
 
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             using var newhost = hostBuilder.Build();
-            var newHandler = new CommandHandler(newhost.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
+            var newHandler = new CommandHandler(newhost.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
             CommandHandlerContext commandContext = new(new CommandRoute("test_id"), command.Item1, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), Errors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=PerpetualIntelligence.Cli.Commands.Handlers.Mocks.MockCommandRunnerInner");
         }
@@ -190,7 +190,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         [TestMethod]
         public async Task RunShouldBeCalledIfHelpIsDisabled()
         {
-            options.Help.Disabled = true;
+            cliOptions.Help.Disabled = true;
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -226,7 +226,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         [TestMethod]
         public async Task HelpShouldNotBeCalledIfDisabledAndRequested()
         {
-            options.Help.Disabled = true;
+            cliOptions.Help.Disabled = true;
 
             helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -313,7 +313,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -334,7 +334,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -355,23 +355,23 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
             host = hostBuilder.Build();
 
-            options = MockCliOptions.New();
+            cliOptions = MockCliOptions.New();
             license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1");
 
-            ArgumentDescriptors argumentDescriptors = new(new UnicodeTextHandler(), new List<ArgumentDescriptor>()
+            OptionDescriptors optionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
-                new ArgumentDescriptor(options.Help.HelpArgumentId, nameof(Boolean), "Help options")
+                new OptionDescriptor(cliOptions.Help.OptionId, nameof(Boolean), "Help options")
             });
 
             // This mocks the help requested
-            Arguments arguments = new(new UnicodeTextHandler());
-            Argument helpAttr = new(argumentDescriptors.First(), true);
-            arguments.Add(helpAttr);
-            helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "prefix2", "desc2", argumentDescriptors, arguments: arguments);
+            Options options = new(new UnicodeTextHandler());
+            Option helpAttr = new(optionDescriptors.First(), true);
+            options.Add(helpAttr);
+            helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "prefix2", "desc2", optionDescriptors, options: options);
 
-            handler = new CommandHandler(host.Services, licenseChecker, options, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
         }
 
         private void ConfigureCheckerOnly(IServiceCollection arg2)
@@ -415,6 +415,6 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         private IHost host = null!;
         private License license = null!;
         private MockLicenseCheckerInner licenseChecker = null!;
-        private CliOptions options = null!;
+        private CliOptions cliOptions = null!;
     }
 }

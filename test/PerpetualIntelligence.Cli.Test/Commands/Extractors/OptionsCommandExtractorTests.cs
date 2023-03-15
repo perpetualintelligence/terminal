@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,44 +31,44 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task AdditionalSeparatorsShouldBeIgnored()
         {
-            options.Extractor.DefaultArgumentValue = false;
+            options.Extractor.DefaultOptionValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi     -key1_alias   value1  --key2-er  value2   --key6-a-s-xx-s --key9   25.36     -k12     "));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 5);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Arguments[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Arguments[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Arguments[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Arguments[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
         }
 
         [TestMethod]
         public async Task AdditionalSeparatorsWithinValueShouldNotBeIgnored()
         {
-            options.Extractor.DefaultArgumentValue = false;
-            options.Extractor.ArgumentValueWithIn = "\"";
+            options.Extractor.DefaultOptionValue = false;
+            options.Extractor.OptionValueWithIn = "\"";
 
             CommandExtractorContext context = new(new CommandString("pi     -key1_alias \"  value1 \"  --key2-er  \"value2     \" --key6-a-s-xx-s --key9   25.36     -k12     "));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 5);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "  value1 ", "key1_alias");
-            AssertArgument(result.Command.Arguments[1], "key2-er", DataType.Text, "Key2 value text", "value2     ", null);
-            AssertArgument(result.Command.Arguments[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Arguments[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Arguments[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "  value1 ", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2     ", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
         }
 
         [TestMethod]
         public async Task AliasIdButAliasNotConfiguredShouldError()
         {
-            options.Extractor.ArgumentAlias = false;
+            options.Extractor.OptionAlias = false;
 
             CommandExtractorContext context = new(new CommandString("pi -key1_alias value1"));
 
@@ -76,7 +76,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The argument extraction by alias prefix is not configured. argument_string=-key1_alias value1" }
+               new[] { "The option extraction by alias prefix is not configured. option_string=-key1_alias value1" }
            );
         }
 
@@ -87,21 +87,21 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 1);
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            Assert.AreEqual("key1_alias", result.Command.Arguments[0].Alias);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            Assert.AreEqual("key1_alias", result.Command.Options[0].Alias);
         }
 
         [TestMethod]
-        public async Task AliasIdWithArgumentPrefixShouldError()
+        public async Task AliasIdWithOptionPrefixShouldError()
         {
             CommandExtractorContext context = new(new CommandString("pi --key1_alias value1"));
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                 () => extractor.ExtractAsync(context),
                 1,
-                new[] { Errors.UnsupportedArgument },
-                new[] { "The argument is not supported. argument=key1_alias" }
+                new[] { Errors.UnsupportedOption },
+                new[] { "The option is not supported. option=key1_alias" }
             );
         }
 
@@ -111,15 +111,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandExtractorContext context = new(new CommandString("pi --key1 value1"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(1, result.Command.Arguments.Count);
-            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(1, result.Command.Options.Count);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
         }
 
         [TestMethod]
         public async Task ArgumentIdWithAliasPrefixAndAliasNotConfiguredMultipleSpacesShouldError()
         {
-            options.Extractor.ArgumentAlias = false;
+            options.Extractor.OptionAlias = false;
 
             CommandExtractorContext context = new(new CommandString("pi    -key1     value1 "));
 
@@ -127,14 +127,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The argument extraction by alias prefix is not configured. argument_string=-key1 value1" }
+               new[] { "The option extraction by alias prefix is not configured. option_string=-key1 value1" }
            );
         }
 
         [TestMethod]
         public async Task ArgumentIdWithAliasPrefixAndAliasNotConfiguredShouldError()
         {
-            options.Extractor.ArgumentAlias = false;
+            options.Extractor.OptionAlias = false;
 
             CommandExtractorContext context = new(new CommandString("pi -key1 value1"));
 
@@ -142,7 +142,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The argument extraction by alias prefix is not configured. argument_string=-key1 value1" }
+               new[] { "The option extraction by alias prefix is not configured. option_string=-key1 value1" }
            );
         }
 
@@ -154,135 +154,135 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
-               new[] { Errors.UnsupportedArgument },
-               new[] { "The argument alias is not supported. argument=key1" }
+               new[] { Errors.UnsupportedOption },
+               new[] { "The option alias is not supported. option=key1" }
            );
         }
 
         [TestMethod]
-        public async Task DefaultArgumentValueConfiguredShouldExtractCorrectly()
+        public async Task DefaultOptionValueConfiguredShouldExtractCorrectly()
         {
-            options.Extractor.DefaultArgumentValue = true;
+            options.Extractor.DefaultOptionValue = true;
 
             CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 6);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Arguments[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Arguments[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
 
-            AssertArgument(result.Command.Arguments[3], "key7", DataType.Currency, "Key7 value currency", "INR", null);
-            AssertArgument(result.Command.Arguments[4], "key9", nameof(Double), "Key9 invalid default value", 89568.36, null);
-            AssertArgument(result.Command.Arguments[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
+            AssertOption(result.Command.Options[3], "key7", DataType.Currency, "Key7 value currency", "INR", null);
+            AssertOption(result.Command.Options[4], "key9", nameof(Double), "Key9 invalid default value", 89568.36, null);
+            AssertOption(result.Command.Options[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
         }
 
         [TestMethod]
-        public async Task DefaultArgumentValueConfiguredShouldOverrideCorrectly()
+        public async Task DefaultOptionValueConfiguredShouldOverrideCorrectly()
         {
-            options.Extractor.DefaultArgumentValue = true;
+            options.Extractor.DefaultOptionValue = true;
 
             CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 6);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Arguments[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Arguments[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Arguments[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null); // Override default value
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null); // Override default value
 
-            AssertArgument(result.Command.Arguments[4], "key7", DataType.Currency, "Key7 value currency", "INR", null);
-            AssertArgument(result.Command.Arguments[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
+            AssertOption(result.Command.Options[4], "key7", DataType.Currency, "Key7 value currency", "INR", null);
+            AssertOption(result.Command.Options[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
         }
 
         [TestMethod]
-        public async Task DefaultArgumentValueNotConfiguredShouldExtractCorrectly()
+        public async Task DefaultOptionValueNotConfiguredShouldExtractCorrectly()
         {
-            options.Extractor.DefaultArgumentValue = false;
+            options.Extractor.DefaultOptionValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 4);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Arguments[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Arguments[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Arguments[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
         }
 
         [TestMethod]
-        public async Task MixedArgumentsAndAliasShouldExtractCorrectly()
+        public async Task MixedOptionsAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaultArgumentValue = false;
+            options.Extractor.DefaultOptionValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 -k3 (551) 208 9779 --key6-a-s-xx-s --key9 25.36 -k10 value10 -k11 --key12"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 8);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Arguments[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Arguments[2], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
-            AssertArgument(result.Command.Arguments[3], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Arguments[4], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Arguments[5], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
-            AssertArgument(result.Command.Arguments[6], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
-            AssertArgument(result.Command.Arguments[7], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
+            AssertOption(result.Command.Options[3], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[4], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[5], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
+            AssertOption(result.Command.Options[6], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
+            AssertOption(result.Command.Options[7], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
         }
 
         [TestMethod]
-        public async Task MixedArgumentsInRandomOrderAndAliasShouldExtractCorrectly()
+        public async Task MixedOptionsInRandomOrderAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaultArgumentValue = false;
+            options.Extractor.DefaultOptionValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi -k11 -k3 (551) 208 9779 --key9 25.36 --key2-er value2 --key12 --key6-a-s-xx-s --key1 value1 -k10 value10"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 8);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[0], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
-            AssertArgument(result.Command.Arguments[1], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
-            AssertArgument(result.Command.Arguments[2], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Arguments[3], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Arguments[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
-            AssertArgument(result.Command.Arguments[5], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Arguments[6], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Arguments[7], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
+            AssertOption(result.Command.Options[1], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
+            AssertOption(result.Command.Options[2], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[3], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            AssertOption(result.Command.Options[5], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[6], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[7], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
         }
 
         [TestMethod]
-        public async Task MixedArgumentsInReverseAndAliasShouldExtractCorrectly()
+        public async Task MixedOptionsInReverseAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaultArgumentValue = false;
+            options.Extractor.DefaultOptionValue = false;
 
             CommandExtractorContext context = new(new CommandString("pi --key12 -k11 -k10 value10 --key9 25.36 --key6-a-s-xx-s -k3 (551) 208 9779 --key2-er value2 --key1 value1"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 8);
 
-            Assert.IsNotNull(result.Command.Arguments);
-            AssertArgument(result.Command.Arguments[7], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Arguments[6], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Arguments[5], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
-            AssertArgument(result.Command.Arguments[4], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Arguments[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Arguments[2], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
-            AssertArgument(result.Command.Arguments[1], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
-            AssertArgument(result.Command.Arguments[0], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[7], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[6], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[5], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
+            AssertOption(result.Command.Options[4], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[2], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
+            AssertOption(result.Command.Options[1], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
+            AssertOption(result.Command.Options[0], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
         }
 
         [TestMethod]
-        public async Task NoArgumentsShouldExtractCorrectly()
+        public async Task NoOptionsShouldExtractCorrectly()
         {
-            options.Extractor.ArgumentAlias = false;
+            options.Extractor.OptionAlias = false;
 
             CommandExtractorContext context = new(new CommandString("pi"));
             var result = await extractor.ExtractAsync(context);
@@ -294,15 +294,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options = MockCliOptions.NewOptions();
             textHandler = new UnicodeTextHandler();
-            argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
+            argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedOptionsCommands, options, TestLogger.Create<InMemoryCommandStore>());
-            argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
-            defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
-            defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
+            argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
+            defaultArgValueProvider = new DefaultOptionValueProvider(textHandler);
+            defaultArgProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
-        private void AssertArgument(Argument arg, string name, string customDataType, string description, object value, string? alias)
+        private void AssertOption(Option arg, string name, string customDataType, string description, object value, string? alias)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
@@ -312,7 +312,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Alias, alias);
         }
 
-        private void AssertArgument(Argument arg, string name, DataType dataType, string description, object value, string? alias)
+        private void AssertOption(Option arg, string name, DataType dataType, string description, object value, string? alias)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
@@ -329,19 +329,19 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             if (argCount == null)
             {
-                Assert.IsNull(command.Arguments);
+                Assert.IsNull(command.Options);
             }
             else
             {
-                Assert.IsNotNull(command.Arguments);
-                Assert.AreEqual(argCount, command.Arguments.Count);
+                Assert.IsNotNull(command.Options);
+                Assert.AreEqual(argCount, command.Options.Count);
             }
         }
 
-        private ArgumentExtractor argExtractor = null!;
+        private OptionExtractor argExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultArgumentProvider defaultArgProvider = null!;
-        private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
+        private IDefaultOptionProvider defaultArgProvider = null!;
+        private IDefaultOptionValueProvider defaultArgValueProvider = null!;
         private CommandExtractor extractor = null!;
         private CliOptions options = null!;
         private ITextHandler textHandler = null!;

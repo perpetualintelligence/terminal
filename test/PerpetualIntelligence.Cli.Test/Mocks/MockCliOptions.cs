@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -17,12 +17,12 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 Logging = new LoggingOptions()
                 {
-                    ObsureErrorArguments = false
+                    ObsureInvalidOptions = false
                 },
                 Extractor = new ExtractorOptions()
                 {
-                    ArgumentPrefix = "-",
-                    ArgumentValueSeparator = "=",
+                    OptionPrefix = "-",
+                    OptionValueSeparator = "=",
                     Separator = " ",
                     CommandIdRegex = "^[A-Za-z0-9:]*$"
                 },
@@ -35,15 +35,15 @@ namespace PerpetualIntelligence.Cli.Mocks
             {
                 Logging = new LoggingOptions()
                 {
-                    ObsureErrorArguments = false
+                    ObsureInvalidOptions = false
                 },
                 Extractor = new ExtractorOptions()
                 {
-                    ArgumentAlias = true,
-                    ArgumentValueWithIn = "\"",
-                    ArgumentPrefix = "--",
-                    ArgumentAliasPrefix = "-",
-                    ArgumentValueSeparator = " ",
+                    OptionAlias = true,
+                    OptionValueWithIn = "\"",
+                    OptionPrefix = "--",
+                    OptionAliasPrefix = "-",
+                    OptionValueSeparator = " ",
                     Separator = " ",
                     CommandIdRegex = "^[A-Za-z0-9:]*$"
                 },

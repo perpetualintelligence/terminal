@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandCount = rootCommandCount,
                 CommandGroupCount = commandGroupCount,
                 SubCommandCount = subCommandCount,
-                ArgumentCount = argumentCount,
+                OptionCount = optionCount,
             };
         }
 
@@ -91,10 +91,10 @@ namespace PerpetualIntelligence.Cli.Licensing
                 throw new ErrorException(Errors.InvalidLicense, "The sub command limit exceeded. max_limit={0} current={1}", context.License.Limits.SubCommandLimit, subCommandCount);
             }
 
-            // Argument limit
-            if (argumentCount > context.License.Limits.ArgumentLimit)
+            // Option limit
+            if (optionCount > context.License.Limits.OptionLimit)
             {
-                throw new ErrorException(Errors.InvalidLicense, "The argument limit exceeded. max_limit={0} current={1}", context.License.Limits.ArgumentLimit, argumentCount);
+                throw new ErrorException(Errors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", context.License.Limits.OptionLimit, optionCount);
             }
 
             // We have found a valid license within limit so reset the previous failed and return.
@@ -108,28 +108,28 @@ namespace PerpetualIntelligence.Cli.Licensing
             // check the options value with license value.
             LicenseLimits limits = context.License.Limits;
 
-            // Argument alias
-            if (!OptionsValid(limits.ArgumentAlias, cliOptions.Extractor.ArgumentAlias))
+            // Option alias
+            if (!OptionsValid(limits.OptionAlias, cliOptions.Extractor.OptionAlias))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured argument alias option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
             }
 
-            // Default arguments
-            if (!OptionsValid(limits.DefaultArgument, cliOptions.Extractor.DefaultArgument))
+            // Default options
+            if (!OptionsValid(limits.DefaultOption, cliOptions.Extractor.DefaultOption))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured default argument option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
             }
 
-            // Default argument value
-            if (!OptionsValid(limits.DefaultArgumentValue, cliOptions.Extractor.DefaultArgumentValue))
+            // Default option value
+            if (!OptionsValid(limits.DefaultOptionValue, cliOptions.Extractor.DefaultOptionValue))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured default argument value option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
             }
 
             // Strict Data Type
-            if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictArgumentValueType))
+            if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictOptionValueType))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured strict argument value type option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured strict option value type option is not allowed for your license edition.");
             }
 
             // Date Type handler, null allowed for data type handler.
@@ -200,10 +200,10 @@ namespace PerpetualIntelligence.Cli.Licensing
                     // All are commands
                     subCommandCount += 1;
 
-                    // For now we only care about argument count.
-                    if (cmd.ArgumentDescriptors != null)
+                    // For now we only care about option count.
+                    if (cmd.OptionDescriptors != null)
                     {
-                        argumentCount += 1;
+                        optionCount += 1;
                     }
                 }
 
@@ -251,7 +251,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         private readonly IEnumerable<CommandDescriptor> commandDescriptors;
         private readonly ILogger<LicenseChecker> logger;
 
-        private long argumentCount;
+        private long optionCount;
         private long commandGroupCount;
         private bool initialized;
         private object lockObject = new();

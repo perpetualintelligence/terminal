@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Shared.Attributes;
@@ -18,19 +18,19 @@ namespace PerpetualIntelligence.Cli.Commands
     /// or external network. A command can virtually do anything in the context of your application or service.
     /// </summary>
     /// <seealso cref="CommandDescriptor"/>
-    /// <seealso cref="Argument"/>
-    /// <seealso cref="Arguments"/>
+    /// <seealso cref="Option"/>
+    /// <seealso cref="Options"/>
     public sealed class Command
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="commandDescriptor"></param>
-        /// <param name="arguments"></param>
-        public Command(CommandDescriptor commandDescriptor, Arguments? arguments = null)
+        /// <param name="options"></param>
+        public Command(CommandDescriptor commandDescriptor, Options? options = null)
         {
             Descriptor = commandDescriptor;
-            Arguments = arguments;
+            Options = options;
         }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace PerpetualIntelligence.Cli.Commands
         public CommandDescriptor Descriptor { get; }
 
         /// <summary>
-        /// The command arguments.
+        /// The command options.
         /// </summary>
-        public Arguments? Arguments { get; }
+        public Options? Options { get; }
 
         /// <summary>
         /// The command custom properties.
@@ -64,20 +64,20 @@ namespace PerpetualIntelligence.Cli.Commands
         public string Name => Descriptor.Name;
 
         /// <summary>
-        /// Gets the optional argument value for the specified identifier.
+        /// Gets the optional option value for the specified identifier.
         /// </summary>
         /// <typeparam name="TValue">The type of value.</typeparam>
-        /// <returns>The optional argument value.</returns>
-        public TValue? GetOptionalArgumentValue<TValue>(string id)
+        /// <returns>The optional option value.</returns>
+        public TValue? GetOptionalOptionValue<TValue>(string id)
         {
-            if (Arguments == null)
+            if (Options == null)
             {
                 return default;
             }
 
-            if (Arguments.Contains(id))
+            if (Options.Contains(id))
             {
-                return Arguments.GetValue<TValue>(id);
+                return Options.GetValue<TValue>(id);
             }
             else
             {
@@ -86,50 +86,50 @@ namespace PerpetualIntelligence.Cli.Commands
         }
 
         /// <summary>
-        /// Gets the required argument value for the specified identifier.
+        /// Gets the required option value for the specified identifier.
         /// </summary>
         /// <typeparam name="TValue">The type of value.</typeparam>
-        /// <returns>The argument value.</returns>
-        /// <exception cref="ErrorException">If the argument is not supported.</exception>
-        public TValue GetRequiredArgumentValue<TValue>(string id)
+        /// <returns>The option value.</returns>
+        /// <exception cref="ErrorException">If the option is not supported.</exception>
+        public TValue GetRequiredOptionValue<TValue>(string id)
         {
-            if (Arguments == null)
+            if (Options == null)
             {
-                throw new ErrorException(Errors.UnsupportedArgument, "The argument is not supported. argument={0}", id);
+                throw new ErrorException(Errors.UnsupportedOption, "The option is not supported. option={0}", id);
             }
 
-            return Arguments.GetValue<TValue>(id);
+            return Options.GetValue<TValue>(id);
         }
 
         /// <summary>
-        /// Attempts to find an argument.
+        /// Attempts to find an option.
         /// </summary>
-        /// <param name="id">The argument identifier.</param>
-        /// <param name="argument">The argument if found in the collection.</param>
-        /// <returns><c>true</c> if an argument exist in the collection, otherwise <c>false</c>.</returns>
+        /// <param name="id">The option identifier.</param>
+        /// <param name="option">The option if found in the collection.</param>
+        /// <returns><c>true</c> if an option exist in the collection, otherwise <c>false</c>.</returns>
         [WriteUnitTest]
-        public bool TryGetArgument(string id, out Argument argument)
+        public bool TryGetOption(string id, out Option option)
         {
-            if (Arguments == null)
+            if (Options == null)
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                argument = default;
+                option = default;
                 return false;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }
 
 #if NETSTANDARD2_1_OR_GREATER
-            return Arguments.TryGetValue(id, out argument);
+            return Options.TryGetValue(id, out option);
 #else
-            if (Arguments.Contains(id))
+            if (Options.Contains(id))
             {
-                argument = Arguments[id];
+                option = Options[id];
                 return true;
             }
             else
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                argument = default;
+                option = default;
                 return false;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }

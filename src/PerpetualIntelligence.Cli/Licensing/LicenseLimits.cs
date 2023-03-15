@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -20,29 +20,29 @@ namespace PerpetualIntelligence.Cli.Licensing
     public sealed class LicenseLimits
     {
         /// <summary>
-        /// Checks <see cref="ExtractorOptions.ArgumentAlias"/> option.
+        /// Checks <see cref="ExtractorOptions.OptionAlias"/> option.
         /// </summary>
-        public bool ArgumentAlias { get; internal set; }
+        public bool OptionAlias { get; internal set; }
 
         /// <summary>
-        /// The maximum arguments or options. Defaults to <c>null</c> or no limit.
+        /// The maximum options or options. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public long? ArgumentLimit { get; internal set; }
+        public long? OptionLimit { get; internal set; }
 
         /// <summary>
-        /// Supports the command argument data type checks. Defaults to <c>null</c> or no data type checks.
+        /// Supports the command option data type checks. Defaults to <c>null</c> or no data type checks.
         /// </summary>
         public string[]? DataTypeHandlers { get; internal set; }
 
         /// <summary>
-        /// Supports the default command argument. Defaults to <c>false</c> or no default arguments.
+        /// Supports the default command option. Defaults to <c>false</c> or no default options.
         /// </summary>
-        public bool DefaultArgument { get; internal set; }
+        public bool DefaultOption { get; internal set; }
 
         /// <summary>
-        /// Supports the default argument value. Defaults to <c>false</c> or no default argument value.
+        /// Supports the default option value. Defaults to <c>false</c> or no default option value.
         /// </summary>
-        public bool DefaultArgumentValue { get; internal set; }
+        public bool DefaultOptionValue { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
@@ -207,11 +207,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandLimit = 1,
                 GroupedCommandLimit = 5,
                 SubCommandLimit = 25,
-                ArgumentLimit = 500,
+                OptionLimit = 500,
 
-                ArgumentAlias = false,
-                DefaultArgument = false,
-                DefaultArgumentValue = false,
+                OptionAlias = false,
+                DefaultOption = false,
+                DefaultOptionValue = false,
                 StrictDataType = false,
 
                 DataTypeHandlers = null,
@@ -234,11 +234,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandLimit = Convert.ToInt16(customClaims["root_command_limit"]),
                 GroupedCommandLimit = Convert.ToInt16(customClaims["grouped_command_limit"]),
                 SubCommandLimit = Convert.ToInt16(customClaims["sub_command_limit"]),
-                ArgumentLimit = Convert.ToInt16(customClaims["argument_limit"]),
+                OptionLimit = Convert.ToInt16(customClaims["argument_limit"]),
 
-                ArgumentAlias = Convert.ToBoolean(customClaims["argument_alias"]),
-                DefaultArgument = Convert.ToBoolean(customClaims["default_argument"]),
-                DefaultArgumentValue = Convert.ToBoolean(customClaims["default_argument_value"]),
+                OptionAlias = Convert.ToBoolean(customClaims["argument_alias"]),
+                DefaultOption = Convert.ToBoolean(customClaims["default_argument"]),
+                DefaultOptionValue = Convert.ToBoolean(customClaims["default_argument_value"]),
                 StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
 
                 DataTypeHandlers = customClaims["data_type_handlers"].ToString().SplitBySpace(),
@@ -262,11 +262,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandLimit = 3,
                 GroupedCommandLimit = 20,
                 SubCommandLimit = 100,
-                ArgumentLimit = 2000,
+                OptionLimit = 2000,
 
-                ArgumentAlias = true,
-                DefaultArgument = true,
-                DefaultArgumentValue = true,
+                OptionAlias = true,
+                DefaultOption = true,
+                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { "default", "custom" },
@@ -288,11 +288,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandLimit = 5,
                 GroupedCommandLimit = 50,
                 SubCommandLimit = 250,
-                ArgumentLimit = 5000,
+                OptionLimit = 5000,
 
-                ArgumentAlias = true,
-                DefaultArgument = true,
-                DefaultArgumentValue = true,
+                OptionAlias = true,
+                DefaultOption = true,
+                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { "default", "custom" },
@@ -314,11 +314,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandLimit = null,
                 GroupedCommandLimit = null,
                 SubCommandLimit = null,
-                ArgumentLimit = null,
+                OptionLimit = null,
 
-                ArgumentAlias = true,
-                DefaultArgument = true,
-                DefaultArgumentValue = true,
+                OptionAlias = true,
+                DefaultOption = true,
+                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { "default", "custom" },
@@ -340,11 +340,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandLimit = 1,
                 GroupedCommandLimit = 5,
                 SubCommandLimit = 25,
-                ArgumentLimit = 500,
+                OptionLimit = 500,
 
-                ArgumentAlias = false,
-                DefaultArgument = false,
-                DefaultArgumentValue = false,
+                OptionAlias = false,
+                DefaultOption = false,
+                DefaultOptionValue = false,
                 StrictDataType = false,
 
                 DataTypeHandlers = null,
@@ -366,11 +366,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandLimit = 1,
                 GroupedCommandLimit = 10,
                 SubCommandLimit = 50,
-                ArgumentLimit = 1000,
+                OptionLimit = 1000,
 
-                ArgumentAlias = true,
-                DefaultArgument = true,
-                DefaultArgumentValue = true,
+                OptionAlias = true,
+                DefaultOption = true,
+                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { "default" },

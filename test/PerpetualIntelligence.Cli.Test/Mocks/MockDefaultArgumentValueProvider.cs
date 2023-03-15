@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Cli.Commands.Handlers;
@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockDefaultArgumentValueProvider : IDefaultArgumentValueProvider
+    public class MockDefaultOptionValueProvider : IDefaultOptionValueProvider
     {
         public bool Called { get; set; }
 
-        public Task<DefaultArgumentValueProviderResult> ProvideAsync(DefaultArgumentValueProviderContext context)
+        public Task<DefaultOptionValueProviderResult> ProvideAsync(DefaultOptionValueProviderContext context)
         {
             Called = true;
-            return Task.FromResult(new DefaultArgumentValueProviderResult(new Commands.ArgumentDescriptors(new UnicodeTextHandler())));
+            return Task.FromResult(new DefaultOptionValueProviderResult(new Commands.OptionDescriptors(new UnicodeTextHandler())));
         }
     }
 }

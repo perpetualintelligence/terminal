@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.DependencyInjection;
@@ -44,12 +44,12 @@ namespace PerpetualIntelligence.Cli.Hosting
             ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
             CommandDescriptor commandDescriptor = localSeviceProvider.GetRequiredService<CommandDescriptor>();
 
-            // Arguments
-            IEnumerable<ArgumentDescriptor> argumentDescriptors = localSeviceProvider.GetServices<ArgumentDescriptor>();
-            if (argumentDescriptors.Any())
+            // Options
+            IEnumerable<OptionDescriptor> optionDescriptors = localSeviceProvider.GetServices<OptionDescriptor>();
+            if (optionDescriptors.Any())
             {
                 // FOMAC MUST UnicodeTextHandler is hard coded
-                commandDescriptor.ArgumentDescriptors = new ArgumentDescriptors(new UnicodeTextHandler(), argumentDescriptors);
+                commandDescriptor.OptionDescriptors = new OptionDescriptors(new UnicodeTextHandler(), optionDescriptors);
             }
 
             // Custom Properties

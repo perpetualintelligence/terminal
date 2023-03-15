@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Cli.Commands.Checkers;
@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
     /// <summary>
     /// </summary>
-    public class MockOptionsChecker : IOptionsChecker
+    public class MockOptionsChecker : IConfigurationOptionsChecker
     {
         public ValueTuple<int, bool> CheckOptionsCalled { get; set; }
 

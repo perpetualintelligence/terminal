@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
@@ -41,25 +41,25 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.ArgumentDescriptors.Should().NotBeNull();
+            cmd.OptionDescriptors.Should().NotBeNull();
 
-            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg1"));
+            OptionDescriptor arg1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg1"));
             arg1.ValueCheckers.Should().BeNull();
 
-            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
+            OptionDescriptor arg2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg2"));
             arg2.ValueCheckers.Should().NotBeNull();
             arg2.ValueCheckers!.Count().Should().Be(2);
-            DataValidationArgumentValueChecker val2Checker1 = (DataValidationArgumentValueChecker)arg2.ValueCheckers!.First();
+            DataValidationOptionValueChecker val2Checker1 = (DataValidationOptionValueChecker)arg2.ValueCheckers!.First();
             val2Checker1.ValidationAttribute.Should().BeOfType<RequiredAttribute>();
-            DataValidationArgumentValueChecker val2Checker2 = (DataValidationArgumentValueChecker)arg2.ValueCheckers!.Last();
+            DataValidationOptionValueChecker val2Checker2 = (DataValidationOptionValueChecker)arg2.ValueCheckers!.Last();
             val2Checker2.ValidationAttribute.Should().BeOfType<OneOfAttribute>();
             OneOfAttribute val2OneOf = (OneOfAttribute)(val2Checker2.ValidationAttribute);
             val2OneOf.AllowedValues.Should().BeEquivalentTo(new string[] { "test1", "test2", "test3" });
 
-            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
+            OptionDescriptor arg3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg3"));
             arg3.ValueCheckers.Should().NotBeNull();
             arg3.ValueCheckers!.Count().Should().Be(1);
-            DataValidationArgumentValueChecker val1Checker3 = (DataValidationArgumentValueChecker)arg3.ValueCheckers!.First();
+            DataValidationOptionValueChecker val1Checker3 = (DataValidationOptionValueChecker)arg3.ValueCheckers!.First();
             val1Checker3.ValidationAttribute.Should().BeOfType<RangeAttribute>();
             RangeAttribute val1Range = (RangeAttribute)(val1Checker3.ValidationAttribute);
             val1Range.Minimum.Should().Be(25.34);
@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         }
 
         [Fact]
-        public void Build_Should_Read_NoArgumentDescriptor_Correctly()
+        public void Build_Should_Read_NoOptionDescriptor_Correctly()
         {
             cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
             ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.ArgumentDescriptors.Should().BeNull();
+            cmd.OptionDescriptors.Should().BeNull();
         }
 
         [Fact]
@@ -111,15 +111,15 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.ArgumentDescriptors.Should().NotBeNull();
+            cmd.OptionDescriptors.Should().NotBeNull();
 
-            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg1"));
+            OptionDescriptor arg1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg1"));
             arg1.ValueCheckers.Should().BeNull();
 
-            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
+            OptionDescriptor arg2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg2"));
             arg2.ValueCheckers.Should().BeNull();
 
-            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
+            OptionDescriptor arg3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg3"));
             arg3.ValueCheckers.Should().BeNull();
         }
 
@@ -132,22 +132,22 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.ArgumentDescriptors.Should().NotBeNull();
+            cmd.OptionDescriptors.Should().NotBeNull();
 
-            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg1"));
+            OptionDescriptor arg1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg1"));
             arg1.CustomProperties.Should().NotBeNull();
             arg1.CustomProperties!.Count.Should().Be(3);
             arg1.CustomProperties["a1Key1"].Should().Be("a1Value1");
             arg1.CustomProperties["a1Key2"].Should().Be("a1Value2");
             arg1.CustomProperties["a1Key3"].Should().Be("a1Value3");
 
-            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
+            OptionDescriptor arg2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg2"));
             arg2.CustomProperties.Should().NotBeNull();
             arg2.CustomProperties!.Count.Should().Be(2);
             arg2.CustomProperties["a2Key1"].Should().Be("a2Value1");
             arg2.CustomProperties["a2Key2"].Should().Be("a2Value2");
 
-            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
+            OptionDescriptor arg3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg3"));
             arg3.CustomProperties.Should().BeNull();
         }
 
@@ -160,20 +160,20 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.ArgumentDescriptors.Should().NotBeNull();
+            cmd.OptionDescriptors.Should().NotBeNull();
 
-            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg1"));
+            OptionDescriptor arg1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg1"));
             arg1.CustomProperties.Should().BeNull();
 
-            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg2"));
+            OptionDescriptor arg2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg2"));
             arg2.CustomProperties.Should().BeNull();
 
-            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors!.First(e => e.Id.Equals("arg3"));
+            OptionDescriptor arg3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg3"));
             arg3.CustomProperties.Should().BeNull();
         }
 
         [Fact]
-        public void Build_ShouldRead_Arguments_Correctly()
+        public void Build_ShouldRead_Options_Correctly()
         {
             cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
             ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
@@ -181,9 +181,9 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             cmdDescs.First().Prefix.Should().Be("test grp cmd1");
-            cmdDescs.First().ArgumentDescriptors.Should().HaveCount(3);
+            cmdDescs.First().OptionDescriptors.Should().HaveCount(3);
 
-            var argDescs = cmdDescs.First().ArgumentDescriptors!.ToArray();
+            var argDescs = cmdDescs.First().OptionDescriptors!.ToArray();
             argDescs[0].Id.Should().Be("arg1");
             argDescs[0].DataType.Should().Be(DataType.Text);
             argDescs[0].Description.Should().Be("test arg desc1");
@@ -211,8 +211,8 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[1].CustomProperties!.Values.Should().Equal(new string[] { "a2Value1", "a2Value2" });
             argDescs[1].ValueCheckers.Should().NotBeNull();
             argDescs[1].ValueCheckers.Should().HaveCount(2);
-            argDescs[1].ValueCheckers!.Cast<DataValidationArgumentValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
-            argDescs[1].ValueCheckers!.Cast<DataValidationArgumentValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+            argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
+            argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
             argDescs[1].DefaultValue.Should().Be("arg1 default val");
 
             argDescs[2].Id.Should().Be("arg3");
@@ -226,7 +226,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             argDescs[2].CustomProperties.Should().BeNull();
             argDescs[2].ValueCheckers.Should().NotBeNull();
             argDescs[2].ValueCheckers.Should().HaveCount(1);
-            argDescs[2].ValueCheckers!.Cast<DataValidationArgumentValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
+            argDescs[2].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
             argDescs[2].DefaultValue.Should().BeNull();
         }
 

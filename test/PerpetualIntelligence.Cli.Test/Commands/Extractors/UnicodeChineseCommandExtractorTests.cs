@@ -2,7 +2,7 @@
     Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com
+    https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc6", result.Command.Id);
             Assert.AreEqual("測試", result.Command.Name);
             Assert.AreEqual("示例分組命令", result.Command.Description);
-            Assert.IsNull(result.Command.Arguments);
+            Assert.IsNull(result.Command.Options);
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc5", result.Command.Id);
             Assert.AreEqual("統一碼", result.Command.Name);
             Assert.AreEqual("示例根命令描述", result.Command.Description);
-            Assert.IsNull(result.Command.Arguments);
+            Assert.IsNull(result.Command.Options);
         }
 
         [TestMethod]
@@ -83,20 +83,20 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc7", result.Command.Id);
             Assert.AreEqual("打印", result.Command.Name);
             Assert.AreEqual("測試命令", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Arguments[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
-            AssertArgument(result.Command.Arguments[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
-            AssertArgument(result.Command.Arguments[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
-            AssertArgument(result.Command.Arguments[3], "第四", nameof(Double), "第四個命令參數", "253.36");
+            AssertOption(result.Command.Options[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
+            AssertOption(result.Command.Options[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
+            AssertOption(result.Command.Options[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
+            AssertOption(result.Command.Options[3], "第四", nameof(Double), "第四個命令參數", "253.36");
         }
 
         [TestMethod]
         public async Task UnicodeSubCommand_Default_Should_Extract_Correctly()
         {
-            options.Extractor.DefaultArgumentValue = true;
-            options.Extractor.DefaultArgument = true;
+            options.Extractor.DefaultOptionValue = true;
+            options.Extractor.DefaultOption = true;
 
             // 第一 is required and has default value
             CommandExtractorContext context = new(new CommandString("統一碼 測試 打印 --第二 --第三 第三個值 --第四 253.36"));
@@ -109,15 +109,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc7", result.Command.Id);
             Assert.AreEqual("打印", result.Command.Name);
             Assert.AreEqual("測試命令", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Arguments[0], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
-            AssertArgument(result.Command.Arguments[1], "第三", DataType.Text, "第三個命令參數", "第三個值");
-            AssertArgument(result.Command.Arguments[2], "第四", nameof(Double), "第四個命令參數", "253.36");
+            AssertOption(result.Command.Options[0], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
+            AssertOption(result.Command.Options[1], "第三", DataType.Text, "第三個命令參數", "第三個值");
+            AssertOption(result.Command.Options[2], "第四", nameof(Double), "第四個命令參數", "253.36");
 
             // Default added at the end
-            AssertArgument(result.Command.Arguments[3], "第一的", DataType.Text, "第一個命令參數", "默認值");
+            AssertOption(result.Command.Options[3], "第一的", DataType.Text, "第一個命令參數", "默認值");
         }
 
         [TestMethod]
@@ -133,28 +133,28 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("uc7", result.Command.Id);
             Assert.AreEqual("打印", result.Command.Name);
             Assert.AreEqual("測試命令", result.Command.Description);
-            Assert.IsNotNull(result.Command.Arguments);
-            Assert.AreEqual(4, result.Command.Arguments.Count);
+            Assert.IsNotNull(result.Command.Options);
+            Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Arguments[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
-            AssertArgument(result.Command.Arguments[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
-            AssertArgument(result.Command.Arguments[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
-            AssertArgument(result.Command.Arguments[3], "第四", nameof(Double), "第四個命令參數", "253.36");
+            AssertOption(result.Command.Options[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
+            AssertOption(result.Command.Options[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
+            AssertOption(result.Command.Options[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
+            AssertOption(result.Command.Options[3], "第四", nameof(Double), "第四個命令參數", "253.36");
         }
 
         protected override void OnTestInitialize()
         {
             options = MockCliOptions.NewOptions();
             textHandler = new UnicodeTextHandler();
-            argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
+            argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.UnicodeCommands, options, TestLogger.Create<InMemoryCommandStore>());
-            argExtractor = new ArgumentExtractor(textHandler, options, TestLogger.Create<ArgumentExtractor>());
-            defaultArgValueProvider = new DefaultArgumentValueProvider(textHandler);
-            defaultArgProvider = new DefaultArgumentProvider(options, TestLogger.Create<DefaultArgumentProvider>());
+            argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
+            defaultArgValueProvider = new DefaultOptionValueProvider(textHandler);
+            defaultArgProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
-        private void AssertArgument(Argument arg, string name, DataType dataType, string description, object value)
+        private void AssertOption(Option arg, string name, DataType dataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
@@ -163,7 +163,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgument(Argument arg, string name, string customDataType, string description, object value)
+        private void AssertOption(Option arg, string name, string customDataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
@@ -172,10 +172,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private ArgumentExtractor argExtractor = null!;
+        private OptionExtractor argExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultArgumentProvider defaultArgProvider = null!;
-        private IDefaultArgumentValueProvider defaultArgValueProvider = null!;
+        private IDefaultOptionProvider defaultArgProvider = null!;
+        private IDefaultOptionValueProvider defaultArgValueProvider = null!;
         private CommandExtractor extractor = null!;
         private CliOptions options = null!;
         private ITextHandler textHandler = null!;
