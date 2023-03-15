@@ -39,11 +39,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertCommand(result.Command, "orgid", "pi", 5);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
         }
 
         [TestMethod]
@@ -58,11 +58,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertCommand(result.Command, "orgid", "pi", 5);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "  value1 ", "key1_alias");
-            AssertArgument(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2     ", null);
-            AssertArgument(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "  value1 ", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2     ", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
         }
 
         [TestMethod]
@@ -88,12 +88,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             AssertCommand(result.Command, "orgid", "pi", 1);
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
             Assert.AreEqual("key1_alias", result.Command.Options[0].Alias);
         }
 
         [TestMethod]
-        public async Task AliasIdWithArgumentPrefixShouldError()
+        public async Task AliasIdWithOptionPrefixShouldError()
         {
             CommandExtractorContext context = new(new CommandString("pi --key1_alias value1"));
 
@@ -113,7 +113,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(1, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
         }
 
         [TestMethod]
@@ -160,7 +160,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task DefaultArgumentValueConfiguredShouldExtractCorrectly()
+        public async Task DefaultOptionValueConfiguredShouldExtractCorrectly()
         {
             options.Extractor.DefaultOptionValue = true;
 
@@ -170,17 +170,17 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertCommand(result.Command, "orgid", "pi", 6);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
 
-            AssertArgument(result.Command.Options[3], "key7", DataType.Currency, "Key7 value currency", "INR", null);
-            AssertArgument(result.Command.Options[4], "key9", nameof(Double), "Key9 invalid default value", 89568.36, null);
-            AssertArgument(result.Command.Options[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
+            AssertOption(result.Command.Options[3], "key7", DataType.Currency, "Key7 value currency", "INR", null);
+            AssertOption(result.Command.Options[4], "key9", nameof(Double), "Key9 invalid default value", 89568.36, null);
+            AssertOption(result.Command.Options[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
         }
 
         [TestMethod]
-        public async Task DefaultArgumentValueConfiguredShouldOverrideCorrectly()
+        public async Task DefaultOptionValueConfiguredShouldOverrideCorrectly()
         {
             options.Extractor.DefaultOptionValue = true;
 
@@ -190,17 +190,17 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertCommand(result.Command, "orgid", "pi", 6);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null); // Override default value
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null); // Override default value
 
-            AssertArgument(result.Command.Options[4], "key7", DataType.Currency, "Key7 value currency", "INR", null);
-            AssertArgument(result.Command.Options[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
+            AssertOption(result.Command.Options[4], "key7", DataType.Currency, "Key7 value currency", "INR", null);
+            AssertOption(result.Command.Options[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
         }
 
         [TestMethod]
-        public async Task DefaultArgumentValueNotConfiguredShouldExtractCorrectly()
+        public async Task DefaultOptionValueNotConfiguredShouldExtractCorrectly()
         {
             options.Extractor.DefaultOptionValue = false;
 
@@ -210,10 +210,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertCommand(result.Command, "orgid", "pi", 4);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
         }
 
         [TestMethod]
@@ -227,14 +227,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertCommand(result.Command, "orgid", "pi", 8);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Options[2], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
-            AssertArgument(result.Command.Options[3], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Options[4], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Options[5], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
-            AssertArgument(result.Command.Options[6], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
-            AssertArgument(result.Command.Options[7], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[2], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
+            AssertOption(result.Command.Options[3], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[4], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[5], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
+            AssertOption(result.Command.Options[6], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
+            AssertOption(result.Command.Options[7], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
         }
 
         [TestMethod]
@@ -248,14 +248,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertCommand(result.Command, "orgid", "pi", 8);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
-            AssertArgument(result.Command.Options[1], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
-            AssertArgument(result.Command.Options[2], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Options[3], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
-            AssertArgument(result.Command.Options[5], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Options[6], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Options[7], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
+            AssertOption(result.Command.Options[0], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
+            AssertOption(result.Command.Options[1], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
+            AssertOption(result.Command.Options[2], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[3], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[4], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            AssertOption(result.Command.Options[5], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[6], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[7], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
         }
 
         [TestMethod]
@@ -269,14 +269,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             AssertCommand(result.Command, "orgid", "pi", 8);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[7], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertArgument(result.Command.Options[6], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertArgument(result.Command.Options[5], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
-            AssertArgument(result.Command.Options[4], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertArgument(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertArgument(result.Command.Options[2], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
-            AssertArgument(result.Command.Options[1], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
-            AssertArgument(result.Command.Options[0], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
+            AssertOption(result.Command.Options[7], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
+            AssertOption(result.Command.Options[6], "key2-er", DataType.Text, "Key2 value text", "value2", null);
+            AssertOption(result.Command.Options[5], "key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", "(551) 208 9779", "k3");
+            AssertOption(result.Command.Options[4], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
+            AssertOption(result.Command.Options[2], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
+            AssertOption(result.Command.Options[1], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
+            AssertOption(result.Command.Options[0], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
         }
 
         [TestMethod]
@@ -302,7 +302,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
-        private void AssertArgument(Option arg, string name, string customDataType, string description, object value, string? alias)
+        private void AssertOption(Option arg, string name, string customDataType, string description, object value, string? alias)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
@@ -312,7 +312,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Alias, alias);
         }
 
-        private void AssertArgument(Option arg, string name, DataType dataType, string description, object value, string? alias)
+        private void AssertOption(Option arg, string name, DataType dataType, string description, object value, string? alias)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);

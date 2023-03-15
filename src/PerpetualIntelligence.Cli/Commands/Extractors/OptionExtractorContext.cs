@@ -22,14 +22,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         public OptionExtractorContext(OptionString argumentString, CommandDescriptor commandDescriptor)
         {
-            ArgumentString = argumentString ?? throw new ArgumentNullException(nameof(argumentString));
+            OptionString = argumentString ?? throw new ArgumentNullException(nameof(argumentString));
             CommandDescriptor = commandDescriptor ?? throw new ArgumentNullException(nameof(commandDescriptor));
         }
 
         /// <summary>
         /// The option string.
         /// </summary>
-        public OptionString ArgumentString { get; set; }
+        public OptionString OptionString { get; set; }
 
         /// <summary>
         /// The command descriptor.

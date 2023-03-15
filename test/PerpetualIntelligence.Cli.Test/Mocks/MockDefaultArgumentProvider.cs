@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockDefaultArgumentProvider : IDefaultOptionProvider
+    public class MockDefaultOptionProvider : IDefaultOptionProvider
     {
         public bool Called { get; set; }
 

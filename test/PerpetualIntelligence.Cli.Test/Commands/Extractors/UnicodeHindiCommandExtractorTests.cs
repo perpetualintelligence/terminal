@@ -85,10 +85,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
-            AssertArgument(result.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertArgument(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertOption(result.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
+            AssertOption(result.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertOption(result.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertOption(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
         [TestMethod]
@@ -108,10 +108,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
 
-            AssertArgument(result.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
-            AssertArgument(result.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertArgument(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertOption(result.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
+            AssertOption(result.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertOption(result.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertOption(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
         [TestMethod]
@@ -135,12 +135,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(4, result.Command.Options.Count);
 
             
-            AssertArgument(result.Command.Options[0], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertArgument(result.Command.Options[1], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertArgument(result.Command.Options[2], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertOption(result.Command.Options[0], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertOption(result.Command.Options[1], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertOption(result.Command.Options[2], "चार", nameof(Double), "चौथा तर्क", "253.36");
 
             // Default added at the end
-            AssertArgument(result.Command.Options[3], "एक", DataType.Text, "पहला तर्क", "डिफ़ॉल्ट मान");
+            AssertOption(result.Command.Options[3], "एक", DataType.Text, "पहला तर्क", "डिफ़ॉल्ट मान");
         }
 
         protected override void OnTestInitialize()
@@ -155,7 +155,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
-        private void AssertArgument(Option arg, string name, DataType dataType, string description, object value)
+        private void AssertOption(Option arg, string name, DataType dataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
@@ -164,7 +164,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgument(Option arg, string name, string customDataType, string description, object value)
+        private void AssertOption(Option arg, string name, string customDataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);

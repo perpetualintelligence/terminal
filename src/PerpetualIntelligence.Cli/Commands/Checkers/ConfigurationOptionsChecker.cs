@@ -132,25 +132,25 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.OptionValueWithIn);
                 }
 
-                // with_in cannot be same as ArgumentPrefix
+                // with_in cannot be same as OptionPrefix
                 if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.OptionValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
                 }
 
-                // with_in cannot be same as ArgumentPrefix
+                // with_in cannot be same as OptionPrefix
                 if (textHandler.TextEquals(options.Extractor.OptionPrefix, options.Extractor.OptionValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option prefix cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
                 }
 
-                // with_in cannot be same as ArgumentAliasPrefix
+                // with_in cannot be same as OptionAliasPrefix
                 if (textHandler.TextEquals(options.Extractor.OptionAliasPrefix, options.Extractor.OptionValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option alias prefix cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
                 }
 
-                // with_in cannot be same as ArgumentSeparator
+                // with_in cannot be same as OptionSeparator
                 if (textHandler.TextEquals(options.Extractor.OptionValueSeparator, options.Extractor.OptionValueWithIn))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option separator cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
@@ -159,17 +159,17 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             // Default option and values
             {
-                IDefaultOptionProvider? defaultArgumentProvider = serviceProvider.GetService<IDefaultOptionProvider>();
-                IDefaultOptionValueProvider? defaultArgumentValueProvider = serviceProvider.GetService<IDefaultOptionValueProvider>();
+                IDefaultOptionProvider? defaultOptionProvider = serviceProvider.GetService<IDefaultOptionProvider>();
+                IDefaultOptionValueProvider? defaultOptionValueProvider = serviceProvider.GetService<IDefaultOptionValueProvider>();
 
                 // Command default option provider is missing
-                if (options.Extractor.DefaultOption.GetValueOrDefault() && defaultArgumentProvider == null)
+                if (options.Extractor.DefaultOption.GetValueOrDefault() && defaultOptionProvider == null)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionProvider).Name);
                 }
 
                 // Option default value provider is missing
-                if (options.Extractor.DefaultOptionValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
+                if (options.Extractor.DefaultOptionValue.GetValueOrDefault() && defaultOptionValueProvider == null)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
                 }

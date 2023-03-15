@@ -17,15 +17,15 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="defaultValueArgumentDescriptors">The default value option descriptors.</param>
-        public DefaultOptionValueProviderResult(OptionDescriptors defaultValueArgumentDescriptors)
+        /// <param name="defaultValueOptionDescriptors">The default value option descriptors.</param>
+        public DefaultOptionValueProviderResult(OptionDescriptors defaultValueOptionDescriptors)
         {
-            DefaultValueArgumentDescriptors = defaultValueArgumentDescriptors ?? throw new System.ArgumentNullException(nameof(defaultValueArgumentDescriptors));
+            DefaultValueOptionDescriptors = defaultValueOptionDescriptors ?? throw new System.ArgumentNullException(nameof(defaultValueOptionDescriptors));
         }
 
         /// <summary>
         /// The default value option descriptors.
         /// </summary>
-        public OptionDescriptors DefaultValueArgumentDescriptors { get; }
+        public OptionDescriptors DefaultValueOptionDescriptors { get; }
     }
 }

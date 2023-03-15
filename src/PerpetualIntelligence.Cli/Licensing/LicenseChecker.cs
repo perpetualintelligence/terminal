@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandCount = rootCommandCount,
                 CommandGroupCount = commandGroupCount,
                 SubCommandCount = subCommandCount,
-                ArgumentCount = argumentCount,
+                OptionCount = optionCount,
             };
         }
 
@@ -92,9 +92,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Option limit
-            if (argumentCount > context.License.Limits.ArgumentLimit)
+            if (optionCount > context.License.Limits.OptionLimit)
             {
-                throw new ErrorException(Errors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", context.License.Limits.ArgumentLimit, argumentCount);
+                throw new ErrorException(Errors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", context.License.Limits.OptionLimit, optionCount);
             }
 
             // We have found a valid license within limit so reset the previous failed and return.
@@ -109,19 +109,19 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseLimits limits = context.License.Limits;
 
             // Option alias
-            if (!OptionsValid(limits.ArgumentAlias, cliOptions.Extractor.OptionAlias))
+            if (!OptionsValid(limits.OptionAlias, cliOptions.Extractor.OptionAlias))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
             }
 
             // Default options
-            if (!OptionsValid(limits.DefaultArgument, cliOptions.Extractor.DefaultOption))
+            if (!OptionsValid(limits.DefaultOption, cliOptions.Extractor.DefaultOption))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
             }
 
             // Default option value
-            if (!OptionsValid(limits.DefaultArgumentValue, cliOptions.Extractor.DefaultOptionValue))
+            if (!OptionsValid(limits.DefaultOptionValue, cliOptions.Extractor.DefaultOptionValue))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
             }
@@ -203,7 +203,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                     // For now we only care about option count.
                     if (cmd.OptionDescriptors != null)
                     {
-                        argumentCount += 1;
+                        optionCount += 1;
                     }
                 }
 
@@ -251,7 +251,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         private readonly IEnumerable<CommandDescriptor> commandDescriptors;
         private readonly ILogger<LicenseChecker> logger;
 
-        private long argumentCount;
+        private long optionCount;
         private long commandGroupCount;
         private bool initialized;
         private object lockObject = new();

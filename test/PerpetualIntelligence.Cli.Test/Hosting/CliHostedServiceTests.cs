@@ -291,9 +291,9 @@ namespace PerpetualIntelligence.Cli.Hosting
                 services.AddCli()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
-                       .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
-                       .DefineArgument("id2", nameof(Int32), "test arg2", "alais_id2").Add()
-                       .DefineArgument("id3", nameof(Boolean), "test arg3").Add()
+                       .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                       .DefineOption("id2", nameof(Int32), "test arg2", "alais_id2").Add()
+                       .DefineOption("id3", nameof(Boolean), "test arg3").Add()
                    .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add();
 
@@ -331,15 +331,15 @@ namespace PerpetualIntelligence.Cli.Hosting
             {
                 services.AddCli()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1")
-                        .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                        .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
                     .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
-                       .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
-                       .DefineArgument("id2", nameof(Int32), "test arg2", "alais_id2").Add()
-                       .DefineArgument("id3", nameof(Boolean), "test arg3").Add()
+                       .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                       .DefineOption("id2", nameof(Int32), "test arg2", "alais_id2").Add()
+                       .DefineOption("id3", nameof(Boolean), "test arg3").Add()
                    .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd3", "cmd3", "cmd3", "test1")
-                        .DefineArgument("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                        .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
                     .Add();
 
                 // Replace with Mock DIs

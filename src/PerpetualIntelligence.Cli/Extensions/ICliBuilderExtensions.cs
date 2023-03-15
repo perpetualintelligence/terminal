@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TMapper">The option mapper type.</typeparam>
         /// <typeparam name="TChecker">The option checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddArgumentChecker<TMapper, TChecker>(this ICliBuilder builder) where TMapper : class, IOptionDataTypeMapper where TChecker : class, IOptionChecker
+        public static ICliBuilder AddOptionChecker<TMapper, TChecker>(this ICliBuilder builder) where TMapper : class, IOptionDataTypeMapper where TChecker : class, IOptionChecker
         {
             builder.Services.AddTransient<IOptionDataTypeMapper, TMapper>();
             builder.Services.AddTransient<IOptionChecker, TChecker>();
@@ -164,15 +164,15 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
-        /// <typeparam name="TArgument">The option extractor type.</typeparam>
+        /// <typeparam name="TOption">The option extractor type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddExtractor<TCommand, TArgument>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TArgument : class, IOptionExtractor
+        public static ICliBuilder AddExtractor<TCommand, TOption>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
 
             // Add option extractor
-            builder.Services.AddTransient<IOptionExtractor, TArgument>();
+            builder.Services.AddTransient<IOptionExtractor, TOption>();
 
             return builder;
         }
@@ -183,19 +183,19 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
-        /// <typeparam name="TArgument">The option extractor type.</typeparam>
-        /// <typeparam name="TDefaultArgumentValue">The option default value provider type.</typeparam>
+        /// <typeparam name="TOption">The option extractor type.</typeparam>
+        /// <typeparam name="TDefaultOptionValue">The option default value provider type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddExtractor<TCommand, TArgument, TDefaultArgumentValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TArgument : class, IOptionExtractor where TDefaultArgumentValue : class, IDefaultOptionValueProvider
+        public static ICliBuilder AddExtractor<TCommand, TOption, TDefaultOptionValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor where TDefaultOptionValue : class, IDefaultOptionValueProvider
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
 
             // Add option extractor
-            builder.Services.AddTransient<IOptionExtractor, TArgument>();
+            builder.Services.AddTransient<IOptionExtractor, TOption>();
 
             // Add default option value provider
-            builder.Services.AddTransient<IDefaultOptionValueProvider, TDefaultArgumentValue>();
+            builder.Services.AddTransient<IDefaultOptionValueProvider, TDefaultOptionValue>();
 
             return builder;
         }
@@ -206,23 +206,23 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
-        /// <typeparam name="TArgument">The option extractor type.</typeparam>
-        /// <typeparam name="TDefaultArgument">The default option provider type.</typeparam>
-        /// <typeparam name="TDefaultArgumentValue">The default option value provider type.</typeparam>
+        /// <typeparam name="TOption">The option extractor type.</typeparam>
+        /// <typeparam name="TDefaultOption">The default option provider type.</typeparam>
+        /// <typeparam name="TDefaultOptionValue">The default option value provider type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddExtractor<TCommand, TArgument, TDefaultArgument, TDefaultArgumentValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TArgument : class, IOptionExtractor where TDefaultArgument : class, IDefaultOptionProvider where TDefaultArgumentValue : class, IDefaultOptionValueProvider
+        public static ICliBuilder AddExtractor<TCommand, TOption, TDefaultOption, TDefaultOptionValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor where TDefaultOption : class, IDefaultOptionProvider where TDefaultOptionValue : class, IDefaultOptionValueProvider
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
 
             // Add option extractor
-            builder.Services.AddTransient<IOptionExtractor, TArgument>();
+            builder.Services.AddTransient<IOptionExtractor, TOption>();
 
             // Add default option provider
-            builder.Services.AddTransient<IDefaultOptionProvider, TDefaultArgument>();
+            builder.Services.AddTransient<IDefaultOptionProvider, TDefaultOption>();
 
             // Add default option value provider
-            builder.Services.AddTransient<IDefaultOptionValueProvider, TDefaultArgumentValue>();
+            builder.Services.AddTransient<IDefaultOptionValueProvider, TDefaultOptionValue>();
 
             return builder;
         }
@@ -310,14 +310,14 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
         /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
         /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
-        /// <param name="defaultArgument">The default option.</param>
+        /// <param name="defaultOption">The default option.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultArgument = null) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
+        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
         {
-            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected, defaultArgument);
+            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected, defaultOption);
         }
 
         private static ICliBuilder AddDeclarativeTarget(this ICliBuilder builder, Type declarativeTarget)
@@ -358,11 +358,11 @@ namespace PerpetualIntelligence.Cli.Extensions
                 IOptionBuilder argumentBuilder;
                 if (argAttr.CustomDataType != null)
                 {
-                    argumentBuilder = commandBuilder.DefineArgument(argAttr.Id, argAttr.CustomDataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
+                    argumentBuilder = commandBuilder.DefineOption(argAttr.Id, argAttr.CustomDataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
                 }
                 else
                 {
-                    argumentBuilder = commandBuilder.DefineArgument(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
+                    argumentBuilder = commandBuilder.DefineOption(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
                 }
 
                 // Option validation attribute
@@ -421,14 +421,14 @@ namespace PerpetualIntelligence.Cli.Extensions
             return commandBuilder.Add();
         }
 
-        private static ICommandBuilder DefineCommand(this ICliBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultArgument = null)
+        private static ICommandBuilder DefineCommand(this ICliBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null)
         {
             if (isRoot && !isGroup)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
             }
 
-            CommandDescriptor cmd = new(id, name, prefix, description, defaultArgument: defaultArgument)
+            CommandDescriptor cmd = new(id, name, prefix, description, defaultOption: defaultOption)
             {
                 Checker = checker,
                 Runner = runner,

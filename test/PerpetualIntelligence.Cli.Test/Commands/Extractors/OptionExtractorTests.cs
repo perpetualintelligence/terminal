@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("-")]
         [DataRow("öö")]
         [DataRow("मासे")]
-        public async Task ArgumentAliasNotConfiguredButAliasPrefixUsedShouldErrorAsync(string aliasPrefix)
+        public async Task OptionAliasNotConfiguredButAliasPrefixUsedShouldErrorAsync(string aliasPrefix)
         {
             options.Extractor.OptionPrefix = "--";
             options.Extractor.OptionAliasPrefix = aliasPrefix;
@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("मासे")]
         [DataRow("女性")]
-        public async Task ArgumentValueWithArgumentSeparatorShouldNotErrorAsync(string separator)
+        public async Task OptionValueWithOptionSeparatorShouldNotErrorAsync(string separator)
         {
             options.Extractor.OptionValueSeparator = separator;
 
@@ -111,7 +111,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö", "मा")]
         [DataRow("öö", "-")]
         [DataRow("मासे", "#")]
-        public async Task InvalidArgumentValueSepratorShouldErrorAsync(string valid, string invalid)
+        public async Task InvalidOptionValueSepratorShouldErrorAsync(string valid, string invalid)
         {
             // Set the correct separator
             options.Extractor.OptionValueSeparator = valid;
@@ -206,7 +206,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         }
 
         [TestMethod]
-        public void NullOrWhiteSpaceArgumentStringShouldError()
+        public void NullOrWhiteSpaceOptionStringshouldError()
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -271,7 +271,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("मासे")]
         [DataRow("女性")]
-        public async Task PrefixInArgumentValueShouldNotErrorAsync(string prefix)
+        public async Task PrefixInOptionValueShouldNotErrorAsync(string prefix)
         {
             options.Extractor.OptionPrefix = prefix;
 
@@ -538,7 +538,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         protected override void OnTestInitialize()
         {
             textHandler = new UnicodeTextHandler();
-            command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1", MockCommands.TestArgumentDescriptors, null, null);
+            command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1", MockCommands.TestOptionDescriptors, null, null);
             options = MockCliOptions.New();
             extractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
         }

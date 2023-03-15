@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
         }
 
         [Fact]
-        public void Build_Should_Read_NoArgumentDescriptor_Correctly()
+        public void Build_Should_Read_NoOptionDescriptor_Correctly()
         {
             cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
             ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();

@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="disabled">The option is disabled.</param>
         /// <param name="obsolete">The option is obsolete.</param>
         /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
-        public static IOptionBuilder DefineArgument(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
             OptionDescriptor option = new(id, dataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
             OptionBuilder argumentBuilder = new(builder);
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="disabled">The option is disabled.</param>
         /// <param name="obsolete">The option is obsolete.</param>
         /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
-        public static IOptionBuilder DefineArgument(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
             OptionDescriptor option = new(id, customDataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
             OptionBuilder argumentBuilder = new(builder);

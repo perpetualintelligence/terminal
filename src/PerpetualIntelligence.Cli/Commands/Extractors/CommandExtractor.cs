@@ -33,26 +33,26 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// Initialize a new instance.
         /// </summary>
         /// <param name="commandStoreHandler">The command store handler.</param>
-        /// <param name="argumentExtractor">The option extractor.</param>
+        /// <param name="optionExtractor">The option extractor.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="cliOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        /// <param name="defaultArgumentProvider">The optional default option provider.</param>
-        /// <param name="defaultArgumentValueProvider">The optional option default value provider.</param>
+        /// <param name="defaultOptionProvider">The optional default option provider.</param>
+        /// <param name="defaultOptionValueProvider">The optional option default value provider.</param>
         public CommandExtractor(
             ICommandStoreHandler commandStoreHandler,
-            IOptionExtractor argumentExtractor,
+            IOptionExtractor optionExtractor,
             ITextHandler textHandler,
             CliOptions cliOptions,
             ILogger<CommandExtractor> logger,
-            IDefaultOptionProvider? defaultArgumentProvider = null,
-            IDefaultOptionValueProvider? defaultArgumentValueProvider = null)
+            IDefaultOptionProvider? defaultOptionProvider = null,
+            IDefaultOptionValueProvider? defaultOptionValueProvider = null)
         {
             this.commandStore = commandStoreHandler ?? throw new ArgumentNullException(nameof(commandStoreHandler));
-            this.argumentExtractor = argumentExtractor ?? throw new ArgumentNullException(nameof(argumentExtractor));
+            this.optionExtractor = optionExtractor ?? throw new ArgumentNullException(nameof(optionExtractor));
             this.textHandler = textHandler;
-            this.defaultArgumentValueProvider = defaultArgumentValueProvider;
-            this.defaultArgumentProvider = defaultArgumentProvider;
+            this.defaultOptionValueProvider = defaultOptionValueProvider;
+            this.defaultOptionProvider = defaultOptionProvider;
             this.cliOptions = cliOptions ?? throw new ArgumentNullException(nameof(cliOptions));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -102,10 +102,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // syntax For e.g. If 'pi format ruc' command has 'i' as a default option then the command string 'pi
             // format ruc remove_underscore_and_capitalize' will be extracted as 'pi format ruc' and
             // remove_underscore_and_capitalize will be added as a value of option 'i'.
-            if (this.cliOptions.Extractor.DefaultOption.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultArgument))
+            if (this.cliOptions.Extractor.DefaultOption.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultOption))
             {
                 // Sanity check
-                if (defaultArgumentProvider == null)
+                if (defaultOptionProvider == null)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).FullName);
                 }
@@ -123,11 +123,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 if (proccessDefaultArg)
                 {
                     // Get the default option
-                    DefaultOptionProviderResult defaultArgumentProviderResult = await defaultArgumentProvider.ProvideAsync(new DefaultOptionProviderContext(commandDescriptor));
+                    DefaultOptionProviderResult defaultOptionProviderResult = await defaultOptionProvider.ProvideAsync(new DefaultOptionProviderContext(commandDescriptor));
 
                     // Convert the arg string to standard format and let the IArgumentExtractor extract the option and
                     // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
-                    rawArgString = $"{this.cliOptions.Extractor.Separator}{this.cliOptions.Extractor.OptionPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{this.cliOptions.Extractor.OptionValueSeparator}{argStringDef}";
+                    rawArgString = $"{this.cliOptions.Extractor.Separator}{this.cliOptions.Extractor.OptionPrefix}{defaultOptionProviderResult.DefaultOptionDescriptor.Id}{this.cliOptions.Extractor.OptionValueSeparator}{argStringDef}";
                 }
             }
 
@@ -137,14 +137,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // - E.g. -key1=val with space -key2=val2
             // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
             // split the arg string into 3 parts but there are only 2 args. May be the string should be in quotes ""
-            var argumentStrings = ExtractArgumentStrings(rawArgString);
+            var optionStrings = ExtractOptionStrings(rawArgString);
 
             List<Error> errors = new();
             Options options = new(textHandler);
-            foreach (var argString in argumentStrings)
+            foreach (var argString in optionStrings)
             {
                 // We capture all the option extraction errors
-                TryResultOrError<OptionExtractorResult> tryResult = await InfraHelper.EnsureResultAsync(argumentExtractor.ExtractAsync, new OptionExtractorContext(argString, commandDescriptor));
+                TryResultOrError<OptionExtractorResult> tryResult = await InfraHelper.EnsureResultAsync(optionExtractor.ExtractAsync, new OptionExtractorContext(argString, commandDescriptor));
                 if (tryResult.Error != null)
                 {
                     errors.Add(tryResult.Error);
@@ -179,7 +179,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return options;
         }
 
-        private OptionStrings ExtractArgumentStrings(string raw)
+        private OptionStrings ExtractOptionStrings(string raw)
         {
             string argSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.OptionPrefix);
             string argAliasSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.OptionAliasPrefix);
@@ -321,15 +321,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // Sanity check
-            if (defaultArgumentValueProvider == null)
+            if (defaultOptionValueProvider == null)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
             }
 
             // Get default values. Make sure we take user inputs.
             Options? finalArgs = userOptions;
-            DefaultOptionValueProviderResult defaultResult = await defaultArgumentValueProvider.ProvideAsync(new DefaultOptionValueProviderContext(commandDescriptor));
-            if (defaultResult.DefaultValueArgumentDescriptors != null && defaultResult.DefaultValueArgumentDescriptors.Count > 0)
+            DefaultOptionValueProviderResult defaultResult = await defaultOptionValueProvider.ProvideAsync(new DefaultOptionValueProviderContext(commandDescriptor));
+            if (defaultResult.DefaultValueOptionDescriptors != null && defaultResult.DefaultValueOptionDescriptors.Count > 0)
             {
                 // options can be null here, if the command string did not specify any options
                 if (finalArgs == null)
@@ -338,7 +338,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 }
 
                 List<Error> errors = new();
-                foreach (OptionDescriptor optionDescriptor in defaultResult.DefaultValueArgumentDescriptors)
+                foreach (OptionDescriptor optionDescriptor in defaultResult.DefaultValueOptionDescriptors)
                 {
                     // Protect against bad implementation, catch all the errors
                     if (optionDescriptor.DefaultValue == null)
@@ -363,10 +363,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             return finalArgs;
         }
 
-        private readonly IOptionExtractor argumentExtractor;
+        private readonly IOptionExtractor optionExtractor;
         private readonly ICommandStoreHandler commandStore;
-        private readonly IDefaultOptionProvider? defaultArgumentProvider;
-        private readonly IDefaultOptionValueProvider? defaultArgumentValueProvider;
+        private readonly IDefaultOptionProvider? defaultOptionProvider;
+        private readonly IDefaultOptionValueProvider? defaultOptionValueProvider;
         private readonly ILogger<CommandExtractor> logger;
         private readonly CliOptions cliOptions;
         private readonly ITextHandler textHandler;

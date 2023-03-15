@@ -32,9 +32,9 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="description">The command description.</param>
         /// <param name="optionDescriptors">The option descriptors.</param>
         /// <param name="customProperties">The custom properties.</param>
-        /// <param name="defaultArgument">The default option.</param>
+        /// <param name="defaultOption">The default option.</param>
         /// <param name="tags">The tags to find a command.</param>
-        public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? optionDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultArgument = null, string[]? tags = null)
+        public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? optionDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultOption = null, string[]? tags = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -57,7 +57,7 @@ namespace PerpetualIntelligence.Cli.Commands
             Description = description;
             OptionDescriptors = optionDescriptors;
             CustomProperties = customProperties;
-            DefaultArgument = defaultArgument;
+            DefaultOption = defaultOption;
             Tags = tags;
         }
 
@@ -80,15 +80,15 @@ namespace PerpetualIntelligence.Cli.Commands
         /// The default option. <c>null</c> means the command does not support a default option.
         /// </summary>
         /// <remarks>
-        /// <see cref="DefaultArgument"/> is not the default option value (see
+        /// <see cref="DefaultOption"/> is not the default option value (see
         /// <see cref="OptionDescriptor.DefaultValue"/>), it is the default option identifier (see
         /// <see cref="OptionDescriptor.Id"/>) whose value is populated automatically based on the
-        /// <see cref="CommandString"/>. If <see cref="DefaultArgument"/> is set to a non <c>null</c> value, then the
+        /// <see cref="CommandString"/>. If <see cref="DefaultOption"/> is set to a non <c>null</c> value, then the
         /// <see cref="ICommandExtractor"/> will attempt to extract the value from the <see cref="CommandString"/> and
-        /// put it in an <see cref="Option"/> identified by <see cref="DefaultArgument"/>.
+        /// put it in an <see cref="Option"/> identified by <see cref="DefaultOption"/>.
         /// </remarks>
         /// <seealso cref="OptionDescriptor.DefaultValue"/>
-        public string? DefaultArgument { get; internal set; }
+        public string? DefaultOption { get; internal set; }
 
         /// <summary>
         /// The command description.
@@ -148,7 +148,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="argId">The option descriptor identifier.</param>
         /// <param name="optionDescriptor">The option descriptor if found.</param>
         /// <returns><c>true</c> if an option descriptor exist in the collection, otherwise <c>false</c>.</returns>
-        public bool TryGetArgumentDescriptor(string argId, out OptionDescriptor optionDescriptor)
+        public bool TryGetOptionDescriptor(string argId, out OptionDescriptor optionDescriptor)
         {
             if (OptionDescriptors == null)
             {

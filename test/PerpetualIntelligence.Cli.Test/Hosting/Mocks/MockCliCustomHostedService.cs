@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Cli.Hosting.Mocks
             return Task.CompletedTask;
         }
 
-        internal override Task RegisterHelpArgumentAsync()
+        internal override Task RegisterHelpAsync()
         {
             RegisterHelpArgumentCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;

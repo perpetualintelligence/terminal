@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         /// <summary>
         /// The option count.
         /// </summary>
-        public long ArgumentCount { get; set; }
+        public long OptionCount { get; set; }
 
         /// <summary>
         /// The grouped command count.

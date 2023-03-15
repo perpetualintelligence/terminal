@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
 {
-    public class MockDefaultArgumentValueProvider : IDefaultOptionValueProvider
+    public class MockDefaultOptionValueProvider : IDefaultOptionValueProvider
     {
         public bool Called { get; set; }
 

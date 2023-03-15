@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Cli.Hosting
 
                 // Register the help options with command descriptors. This is intentionally done at the end so we don't take
                 // performance hit in case there is a license check failure.
-                await RegisterHelpArgumentAsync();
+                await RegisterHelpAsync();
             }
             catch (ErrorException ex)
             {
@@ -91,7 +91,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         /// Registers the help options based on configuration options.
         /// </summary>
         /// <returns></returns>
-        internal virtual Task RegisterHelpArgumentAsync()
+        internal virtual Task RegisterHelpAsync()
         {
             if (options.Help.Disabled.GetValueOrDefault())
             {

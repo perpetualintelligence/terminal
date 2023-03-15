@@ -68,7 +68,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// </summary>
         /// <typeparam name="TValue">The type of value.</typeparam>
         /// <returns>The optional option value.</returns>
-        public TValue? GetOptionalArgumentValue<TValue>(string id)
+        public TValue? GetOptionalOptionValue<TValue>(string id)
         {
             if (Options == null)
             {
@@ -91,7 +91,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <typeparam name="TValue">The type of value.</typeparam>
         /// <returns>The option value.</returns>
         /// <exception cref="ErrorException">If the option is not supported.</exception>
-        public TValue GetRequiredArgumentValue<TValue>(string id)
+        public TValue GetRequiredOptionValue<TValue>(string id)
         {
             if (Options == null)
             {
@@ -108,7 +108,7 @@ namespace PerpetualIntelligence.Cli.Commands
         /// <param name="option">The option if found in the collection.</param>
         /// <returns><c>true</c> if an option exist in the collection, otherwise <c>false</c>.</returns>
         [WriteUnitTest]
-        public bool TryGetArgument(string id, out Option option)
+        public bool TryGetOption(string id, out Option option)
         {
             if (Options == null)
             {

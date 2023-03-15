@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task NullArgumentValueShouldErrorAsync()
+        public async Task NullOptionValueShouldErrorAsync()
         {
             OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.

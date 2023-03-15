@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task ArgumentAliasPrefixCannotBeNullOrWhitespaceAsync()
+        public async Task OptionAliasPrefixCannotBeNullOrWhitespaceAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.OptionAliasPrefix = null;
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("öö")]
         [DataRow("माणू")]
         [DataRow("女性")]
-        public async Task ArgumentAliasPrefixCannotStartWithArgumentPrefix(string prefix)
+        public async Task OptionAliasPrefixCannotStartWithOptionPrefix(string prefix)
         {
             options.Extractor.OptionPrefix = prefix;
             options.Extractor.OptionAliasPrefix = $"{prefix}:";
@@ -83,14 +83,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("माणूसस")]
         [DataRow("女性女性")]
         [DataRow("-女माö")]
-        public async Task ArgumentAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
+        public async Task OptionAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
             options.Extractor.OptionAliasPrefix = prefix;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option alias prefix cannot be more than 3 Unicode characters. option_alias_prefix={prefix}");
         }
 
         [TestMethod]
-        public async Task ArgumentPrefixCannotBeNullOrWhitespaceAsync()
+        public async Task OptionPrefixCannotBeNullOrWhitespaceAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.OptionPrefix = null;
@@ -113,7 +113,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("माणूसस")]
         [DataRow("女性女性")]
         [DataRow("-女माö")]
-        public async Task ArgumentPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
+        public async Task OptionPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
             options.Extractor.OptionPrefix = prefix;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option prefix cannot be more than 3 Unicode characters. option_prefix={prefix}");
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task ArgumentSeparatorAndArgumentAliasPrefixCannotBeSameAsync(string separator)
+        public async Task OptionSeparatorAndOptionAliasPrefixCannotBeSameAsync(string separator)
         {
             options.Extractor.OptionValueSeparator = separator;
             options.Extractor.OptionPrefix = ":";
@@ -144,7 +144,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task ArgumentSeparatorAndArgumentPrefixCannotBeSameAsync(string separator)
+        public async Task OptionSeparatorAndOptionPrefixCannotBeSameAsync(string separator)
         {
             options.Extractor.OptionValueSeparator = separator;
             options.Extractor.OptionPrefix = separator;
@@ -153,7 +153,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task ArgumentSeparatorCannotBeNullOrEmptyAsync()
+        public async Task OptionSeparatorCannotBeNullOrEmptyAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.OptionValueSeparator = null;
@@ -172,7 +172,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandSeparatorAndArgumentPrefixCannotBeSameAsync(string separator)
+        public async Task CommandSeparatorAndOptionPrefixCannotBeSameAsync(string separator)
         {
             options.Extractor.Separator = separator;
             options.Extractor.OptionPrefix = separator;
@@ -193,7 +193,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task DefaultArgumentConfiguredButProviderNotConfiguredShouldThrow()
+        public async Task DefaultOptionConfiguredButProviderNotConfiguredShouldThrow()
         {
             options.Extractor.DefaultOption = true;
 

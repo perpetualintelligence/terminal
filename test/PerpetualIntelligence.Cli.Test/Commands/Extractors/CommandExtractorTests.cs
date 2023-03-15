@@ -159,10 +159,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(cmdId, result.Command.Id);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
-            AssertArgument(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
-            AssertArgument(result.Command.Options[2], "key3", DataType.PhoneNumber, "Key3 value phone", "value3");
-            AssertArgument(result.Command.Options[3], "key4", nameof(Double), "Key4 value number", "25.36");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
+            AssertOption(result.Command.Options[2], "key3", DataType.PhoneNumber, "Key3 value phone", "value3");
+            AssertOption(result.Command.Options[3], "key4", nameof(Double), "Key4 value number", "25.36");
         }
 
         [DataTestMethod]
@@ -188,10 +188,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(cmdId, result.Command.Id);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "value2");
-            AssertArgument(result.Command.Options[1], "key3", DataType.PhoneNumber, "Key3 value phone", "value3");
-            AssertArgument(result.Command.Options[2], "key4", nameof(Double), "Key4 value number", "25.36");
-            AssertArgument(result.Command.Options[3], "key1", DataType.Text, "Key1 value text", "key1 default value");
+            AssertOption(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "value2");
+            AssertOption(result.Command.Options[1], "key3", DataType.PhoneNumber, "Key3 value phone", "value3");
+            AssertOption(result.Command.Options[2], "key4", nameof(Double), "Key4 value number", "25.36");
+            AssertOption(result.Command.Options[3], "key1", DataType.Text, "Key1 value text", "key1 default value");
         }
 
         [DataTestMethod]
@@ -214,10 +214,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(cmdId, result.Command.Id);
 
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
-            AssertArgument(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
-            AssertArgument(result.Command.Options[2], "key3", DataType.PhoneNumber, "Key3 value phone", "value3");
-            AssertArgument(result.Command.Options[3], "key4", nameof(Double), "Key4 value number", "25.36");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
+            AssertOption(result.Command.Options[2], "key3", DataType.PhoneNumber, "Key3 value phone", "value3");
+            AssertOption(result.Command.Options[3], "key4", nameof(Double), "Key4 value number", "25.36");
         }
 
         [DataTestMethod]
@@ -299,7 +299,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandSeparatorAndArgumentSeparatorCanBeSameAsync(string separator)
+        public async Task CommandSeparatorAndOptionSeparatorCanBeSameAsync(string separator)
         {
             cliOptions.Extractor.Separator = separator;
             cliOptions.Extractor.OptionValueSeparator = separator;
@@ -309,10 +309,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
-            AssertArgument(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
-            AssertArgument(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertArgument(result.Command.Options[3], "key9", nameof(Double), "Key9 value custom double", "26.36");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
+            AssertOption(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 value custom double", "26.36");
         }
 
         [DataTestMethod]
@@ -323,7 +323,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldAllowArgumentPrefixInArgumentValueAsync(string prefix)
+        public async Task CommandStringShouldAllowOptionPrefixInOptionValueAsync(string prefix)
         {
             // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
             // option values
@@ -335,10 +335,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{prefix}prefix{prefix}message");
-            AssertArgument(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
-            AssertArgument(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertArgument(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{prefix}with{prefix}prefix");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{prefix}prefix{prefix}message");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
+            AssertOption(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{prefix}with{prefix}prefix");
         }
 
         [DataTestMethod]
@@ -349,7 +349,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldAllowArgumentSeparatorInArgumentValueAsync(string separator)
+        public async Task CommandStringShouldAllowOptionSeparatorInOptionValueAsync(string separator)
         {
             // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
             // option values
@@ -361,10 +361,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{separator}separator{separator}message");
-            AssertArgument(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nosseparatormessage");
-            AssertArgument(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertArgument(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}separator");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{separator}separator{separator}message");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nosseparatormessage");
+            AssertOption(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}separator");
         }
 
         [DataTestMethod]
@@ -375,7 +375,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldAllowCommandSeparatorInArgumentValueAsync(string seperator)
+        public async Task CommandStringShouldAllowCommandSeparatorInOptionValueAsync(string seperator)
         {
             // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
             // option values
@@ -387,10 +387,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}space{seperator}message");
-            AssertArgument(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
-            AssertArgument(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertArgument(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}space");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}space{seperator}message");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
+            AssertOption(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}space");
         }
 
         [DataTestMethod]
@@ -401,7 +401,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldAllowMultipleSeparatorForArgumentAndArgumentValueAsync(string seperator)
+        public async Task CommandStringShouldAllowMultipleSeparatorForArgumentAndOptionValueAsync(string seperator)
         {
             // E.g. if ' ' space is used as a command separator then the command string should allow multiple spaces in
             // the option and spaces in option values
@@ -413,10 +413,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}{seperator}space{seperator}{seperator}{seperator}{seperator}message");
-            AssertArgument(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
-            AssertArgument(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertArgument(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}{seperator}space");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}{seperator}space{seperator}{seperator}{seperator}{seperator}message");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
+            AssertOption(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}{seperator}space");
         }
 
         [TestMethod]
@@ -427,7 +427,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldStripSeparatorAtTheEndOfArgumentValueAsync(string separator)
+        public async Task CommandStringShouldStripSeparatorAtTheEndOfOptionValueAsync(string separator)
         {
             cliOptions.Extractor.Separator = separator;
 
@@ -436,12 +436,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(1, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test space message");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test space message");
         }
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task DefaultArgumentShouldWorkCorrectlyWithItsValueAndWithInConfiguredAsync()
+        public async Task DefaultOptionShouldWorkCorrectlyWithItsValueAndWithInConfiguredAsync()
         {
             cliOptions.Extractor.DefaultOption = true;
             cliOptions.Extractor.OptionValueWithIn = "\"";
@@ -450,18 +450,18 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandExtractorContext context = new(new CommandString("prefix7_defaultarg \"key1_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
 
             // with arg id
             context = new(new CommandString("prefix7_defaultarg -key1=\"key1_value\""));
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
         }
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task DefaultArgumentShouldWorkCorrectlyWithItsValueAsync()
+        public async Task DefaultOptionShouldWorkCorrectlyWithItsValueAsync()
         {
             cliOptions.Extractor.DefaultOption = true;
             cliOptions.Extractor.OptionValueWithIn = null;
@@ -471,19 +471,19 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(1, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
 
             // value with arg id
             context = new(new CommandString("prefix7_defaultarg -key1=key1_value"));
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(1, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
         }
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task DefaultArgumentShouldWorkCorrectlyWithoutItsValueAsync()
+        public async Task DefaultOptionShouldWorkCorrectlyWithoutItsValueAsync()
         {
             cliOptions.Extractor.DefaultOption = true;
 
@@ -497,13 +497,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(2, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "hello");
-            AssertArgument(result.Command.Options[1], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "hello");
+            AssertOption(result.Command.Options[1], "key6", nameof(Boolean), "Key6 no value", "True");
         }
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task DefaultArgumentWithBothExplicitAndImplicitArgumentValueShouldError()
+        public async Task DefaultOptionWithBothExplicitAndImplicitOptionValueShouldError()
         {
             cliOptions.Extractor.DefaultOption = true;
             cliOptions.Extractor.DefaultOptionValue = true;
@@ -519,7 +519,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task DefaultArgumentWithDefaultValueNotSpecifiedShouldWorkCorrectly()
+        public async Task DefaultOptionWithDefaultValueNotSpecifiedShouldWorkCorrectly()
         {
             cliOptions.Extractor.DefaultOption = true;
             cliOptions.Extractor.DefaultOptionValue = true;
@@ -528,15 +528,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CommandExtractorContext context = new(new CommandString("prefix8_defaultarg_defaultvalue"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1 default value");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1 default value");
 
             // with arg id
             context = new(new CommandString("prefix8_defaultarg_defaultvalue -key2=key2_value -key3=3652669856"));
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
-            AssertArgument(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "key2_value");
-            AssertArgument(result.Command.Options[1], "key3", DataType.PhoneNumber, "Key3 value phone", "3652669856");
-            AssertArgument(result.Command.Options[2], "key1", DataType.Text, "Key1 value text", "key1 default value");
+            AssertOption(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "key2_value");
+            AssertOption(result.Command.Options[1], "key3", DataType.PhoneNumber, "Key3 value phone", "3652669856");
+            AssertOption(result.Command.Options[2], "key1", DataType.Text, "Key1 value text", "key1 default value");
         }
 
         [TestMethod]
@@ -815,16 +815,16 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(typeof(CommandRunner<CommandRunnerResult>), result.CommandDescriptor.Runner);
             Assert.IsNotNull(result.CommandDescriptor.OptionDescriptors);
             Assert.AreEqual(10, result.CommandDescriptor.OptionDescriptors.Count);
-            AssertArgumentDescriptor(result.CommandDescriptor.OptionDescriptors[0], "key1", DataType.Text, "Key1 value text");
-            AssertArgumentDescriptor(result.CommandDescriptor.OptionDescriptors[1], "key2", DataType.Text, "Key2 value text");
-            AssertArgumentDescriptor(result.CommandDescriptor.OptionDescriptors[2], "key3", DataType.PhoneNumber, "Key3 value phone");
-            AssertArgumentDescriptor(result.CommandDescriptor.OptionDescriptors[3], "key4", DataType.EmailAddress, "Key4 value email");
-            AssertArgumentDescriptor(result.CommandDescriptor.OptionDescriptors[4], "key5", DataType.Url, "Key5 value url");
-            AssertArgumentIdentity(result.CommandDescriptor.OptionDescriptors[5], "key6", nameof(Boolean), "Key6 no value");
-            AssertArgumentDescriptor(result.CommandDescriptor.OptionDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new DataValidationOptionValueChecker[] { new(new OneOfAttribute("INR", "USD", "EUR")) });
-            AssertArgumentIdentity(result.CommandDescriptor.OptionDescriptors[7], "key8", nameof(Int32), "Key8 value custom int");
-            AssertArgumentIdentity(result.CommandDescriptor.OptionDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new DataValidationOptionValueChecker[] { new(new RequiredAttribute()), new(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) });
-            AssertArgumentIdentity(result.CommandDescriptor.OptionDescriptors[9], "key10", nameof(String), "Key10 value custom string");
+            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[0], "key1", DataType.Text, "Key1 value text");
+            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[1], "key2", DataType.Text, "Key2 value text");
+            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[2], "key3", DataType.PhoneNumber, "Key3 value phone");
+            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[3], "key4", DataType.EmailAddress, "Key4 value email");
+            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[4], "key5", DataType.Url, "Key5 value url");
+            AssertOptionIdentity(result.CommandDescriptor.OptionDescriptors[5], "key6", nameof(Boolean), "Key6 no value");
+            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new DataValidationOptionValueChecker[] { new(new OneOfAttribute("INR", "USD", "EUR")) });
+            AssertOptionIdentity(result.CommandDescriptor.OptionDescriptors[7], "key8", nameof(Int32), "Key8 value custom int");
+            AssertOptionIdentity(result.CommandDescriptor.OptionDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new DataValidationOptionValueChecker[] { new(new RequiredAttribute()), new(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) });
+            AssertOptionIdentity(result.CommandDescriptor.OptionDescriptors[9], "key10", nameof(String), "Key10 value custom string");
 
             // Supported options 10, user only passed 7
             Assert.IsNotNull(result.Command);
@@ -833,13 +833,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual("desc2", result.Command.Description);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(7, result.Command.Options.Count);
-            AssertArgument(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
-            AssertArgument(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
-            AssertArgument(result.Command.Options[2], "key3", DataType.PhoneNumber, "Key3 value phone", "+1-2365985632");
-            AssertArgument(result.Command.Options[3], "key4", DataType.EmailAddress, "Key4 value email", "testmail@gmail.com");
-            AssertArgument(result.Command.Options[4], "key5", DataType.Url, "Key5 value url", "C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt");
-            AssertArgument(result.Command.Options[5], "key6", "Boolean", "Key6 no value", "True");
-            AssertArgument(result.Command.Options[6], "key9", "Double", "Key9 value custom double", "33.368");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
+            AssertOption(result.Command.Options[2], "key3", DataType.PhoneNumber, "Key3 value phone", "+1-2365985632");
+            AssertOption(result.Command.Options[3], "key4", DataType.EmailAddress, "Key4 value email", "testmail@gmail.com");
+            AssertOption(result.Command.Options[4], "key5", DataType.Url, "Key5 value url", "C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt");
+            AssertOption(result.Command.Options[5], "key6", "Boolean", "Key6 no value", "True");
+            AssertOption(result.Command.Options[6], "key9", "Double", "Key9 value custom double", "33.368");
         }
 
         [TestMethod]
@@ -929,7 +929,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
         }
 
-        private void AssertArgument(Option arg, string name, string customDataType, string description, object value)
+        private void AssertOption(Option arg, string name, string customDataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);
@@ -938,7 +938,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgument(Option arg, string name, DataType dataType, string description, object value)
+        private void AssertOption(Option arg, string name, DataType dataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
@@ -947,7 +947,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private void AssertArgumentDescriptor(OptionDescriptor arg, string name, DataType dataType, string? description = null, DataValidationOptionValueChecker[]? supportedValues = null)
+        private void AssertOptionDescriptor(OptionDescriptor arg, string name, DataType dataType, string? description = null, DataValidationOptionValueChecker[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
@@ -958,7 +958,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             CollectionAssert.AreEquivalent(expectedCheckers, supportedValues);
         }
 
-        private void AssertArgumentIdentity(OptionDescriptor arg, string name, string customDataType, string? description = null, DataValidationOptionValueChecker[]? supportedValues = null)
+        private void AssertOptionIdentity(OptionDescriptor arg, string name, string customDataType, string? description = null, DataValidationOptionValueChecker[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, DataType.Custom);

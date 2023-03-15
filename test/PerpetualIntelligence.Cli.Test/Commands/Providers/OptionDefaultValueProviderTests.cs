@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
     public class OptionDefaultValueProviderTests : LoggerTests<OptionDefaultValueProviderTests>
     {
         [TestMethod]
-        public async Task NullOrEmptyArgumentDescriptorsShouldThrowAsync()
+        public async Task NullOrEmptyOptionDescriptorsShouldThrowAsync()
         {
             DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
 
@@ -33,13 +33,13 @@ namespace PerpetualIntelligence.Cli.Commands.Providers
         public async Task ProviderShouldProvideDefaultOptionsCorrectly()
         {
             DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
-            DefaultOptionValueProviderContext context = new(new CommandDescriptor("test", "testname", "testprefix", "desc", optionDescriptors: MockCommands.TestDefaultArgumentDescriptors));
+            DefaultOptionValueProviderContext context = new(new CommandDescriptor("test", "testname", "testprefix", "desc", optionDescriptors: MockCommands.TestDefaultOptionDescriptors));
             var result = await provider.ProvideAsync(context);
-            Assert.AreEqual(4, result.DefaultValueArgumentDescriptors.Count);
-            Assert.AreEqual("44444444444", result.DefaultValueArgumentDescriptors[0].DefaultValue);
-            Assert.AreEqual(false, result.DefaultValueArgumentDescriptors[1].DefaultValue);
-            Assert.AreEqual(25.36, result.DefaultValueArgumentDescriptors[2].DefaultValue);
-            Assert.AreEqual("mello default", result.DefaultValueArgumentDescriptors[3].DefaultValue);
+            Assert.AreEqual(4, result.DefaultValueOptionDescriptors.Count);
+            Assert.AreEqual("44444444444", result.DefaultValueOptionDescriptors[0].DefaultValue);
+            Assert.AreEqual(false, result.DefaultValueOptionDescriptors[1].DefaultValue);
+            Assert.AreEqual(25.36, result.DefaultValueOptionDescriptors[2].DefaultValue);
+            Assert.AreEqual("mello default", result.DefaultValueOptionDescriptors[3].DefaultValue);
         }
     }
 }

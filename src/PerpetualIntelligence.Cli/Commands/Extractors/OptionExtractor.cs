@@ -156,12 +156,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 throw new ErrorException(Errors.UnsupportedOption, "The command does not support any options. command_id={0} command_name{1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
-            string rawArgumentString = context.ArgumentString.Raw;
-            bool aliasPrefix = context.ArgumentString.AliasPrefix;
+            string rawOptionString = context.OptionString.Raw;
+            bool aliasPrefix = context.OptionString.AliasPrefix;
 
             // Extract the option and value by default or custom patterns.
             string argIdValueRegex = aliasPrefix ? OptionAliasValueRegexPattern : OptionIdValueRegexPattern;
-            Match argIdValueMatch = Regex.Match(rawArgumentString, argIdValueRegex);
+            Match argIdValueMatch = Regex.Match(rawOptionString, argIdValueRegex);
             string? argIdOrAlias = null;
             string? argValue = null;
             string? argPrefix = null;
@@ -188,7 +188,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             else
             {
                 string argIdOnlyRegex = aliasPrefix ? OptionAliasNoValueRegexPattern : OptionIdNoValueRegexPattern;
-                Match argIdOnlyMatch = Regex.Match(rawArgumentString, argIdOnlyRegex);
+                Match argIdOnlyMatch = Regex.Match(rawOptionString, argIdOnlyRegex);
                 if (argIdOnlyMatch.Success)
                 {
                     argPrefix = argIdOnlyMatch.Groups[1].Value;
@@ -200,7 +200,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Not matched
             if (!matched)
             {
-                throw new ErrorException(Errors.InvalidOption, "The option string is not valid. option_string={0}", rawArgumentString);
+                throw new ErrorException(Errors.InvalidOption, "The option string is not valid. option_string={0}", rawOptionString);
             }
 
             // For error handling
@@ -214,8 +214,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             bool argAndAliasPrefixSame = textHandler.TextEquals(options.Extractor.OptionPrefix, options.Extractor.OptionAliasPrefix);
             bool aliasEnabled = options.Extractor.OptionAlias.GetValueOrDefault();
 
-            // Compatibility check: If ArgumentAlias is not enabled and the prefix is used to identify by alias then
-            // this is an error. If ArgumentPrefix and ArgumentAliasPrefix are same then bypass the compatibility check.
+            // Compatibility check: If OptionAlias is not enabled and the prefix is used to identify by alias then
+            // this is an error. If OptionPrefix and OptionAliasPrefix are same then bypass the compatibility check.
             // find it.
             if (!argAndAliasPrefixSame && !aliasEnabled)
             {
