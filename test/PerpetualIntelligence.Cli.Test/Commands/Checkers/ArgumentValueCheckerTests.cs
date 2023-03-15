@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeChecking_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
-            options.Checker.StrictArgumentValueType = true;
+            options.Checker.StrictOptionValueType = true;
 
             // Value is double, but we can convert it so this should not error.
             OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabled_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
-            options.Checker.StrictArgumentValueType = false;
+            options.Checker.StrictOptionValueType = false;
 
             // Value is double, strict checking is disabled so we will not convert it
             OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
@@ -84,7 +84,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabledNotSupportedValueShouldNotErrorAsync()
         {
-            options.Checker.StrictArgumentValueType = false;
+            options.Checker.StrictOptionValueType = false;
 
             OptionDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
             Option value = new(identity, "test3");
@@ -96,7 +96,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabledSystemTypeMatchAndDataValidationFailShouldNotErrorAsync()
         {
-            options.Checker.StrictArgumentValueType = false;
+            options.Checker.StrictOptionValueType = false;
 
             OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
             Option value = new(identity, "invalid_4242424242424242");
@@ -108,7 +108,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingNotSupportedValueShouldErrorAsync()
         {
-            options.Checker.StrictArgumentValueType = true;
+            options.Checker.StrictOptionValueType = true;
 
             OptionDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
             Option value = new(identity, "test3");
@@ -120,7 +120,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingSystemTypeMatchAndDataValidationFailShouldErrorAsync()
         {
-            options.Checker.StrictArgumentValueType = true;
+            options.Checker.StrictOptionValueType = true;
 
             OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
             Option value = new(identity, "invalid_4242424242424242");

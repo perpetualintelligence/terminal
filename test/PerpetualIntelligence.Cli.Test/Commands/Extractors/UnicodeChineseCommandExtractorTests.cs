@@ -95,8 +95,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task UnicodeSubCommand_Default_Should_Extract_Correctly()
         {
-            options.Extractor.DefaultArgumentValue = true;
-            options.Extractor.DefaultArgument = true;
+            options.Extractor.DefaultOptionValue = true;
+            options.Extractor.DefaultOption = true;
 
             // 第一 is required and has default value
             CommandExtractorContext context = new(new CommandString("統一碼 測試 打印 --第二 --第三 第三個值 --第四 253.36"));

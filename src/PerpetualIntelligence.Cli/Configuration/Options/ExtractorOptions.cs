@@ -21,25 +21,25 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// with option id. An app should not identify the same option with multiple strings. Using an alias will
         /// degrade the performance.
         /// </remarks>
-        public bool? ArgumentAlias { get; set; }
+        public bool? OptionAlias { get; set; }
 
         /// <summary>
-        /// The option alias prefix if <see cref="ArgumentAlias"/> is enabled. Defaults to <c>-</c>.
+        /// The option alias prefix if <see cref="OptionAlias"/> is enabled. Defaults to <c>-</c>.
         /// </summary>
         /// <remarks>The option alias prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
-        public string ArgumentAliasPrefix { get; set; } = "-";
+        public string OptionAliasPrefix { get; set; } = "-";
 
         /// <summary>
         /// The option prefix. Defaults to <c>-</c>.
         /// </summary>
         /// <remarks>The option prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
-        public string ArgumentPrefix { get; set; } = "-";
+        public string OptionPrefix { get; set; } = "-";
 
         /// <summary>
         /// The option value separator. Defaults to <c>=</c>.
         /// </summary>
         /// <remarks>The option value separator must be a single Unicode character, and it can be a single whitespace.</remarks>
-        public string ArgumentValueSeparator { get; set; } = "=";
+        public string OptionValueSeparator { get; set; } = "=";
 
         /// <summary>
         /// An optional token within which to extract an option value. Default to <c>null</c>.
@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// <remarks>
         /// The optional option within token must be a single Unicode character. If set it cannot be <c>null</c> or whitespace.
         /// </remarks>
-        public string? ArgumentValueWithIn { get; set; }
+        public string? OptionValueWithIn { get; set; }
 
         /// <summary>
         /// The Regex pattern for command identifier. Defaults to <c>^[A-Za-z0-9_-]*$</c>.
@@ -57,12 +57,12 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// <summary>
         /// Determines whether command supports default option.
         /// </summary>
-        public bool? DefaultArgument { get; set; }
+        public bool? DefaultOption { get; set; }
 
         /// <summary>
         /// Determines whether option support default value.
         /// </summary>
-        public bool? DefaultArgumentValue { get; set; }
+        public bool? DefaultOptionValue { get; set; }
 
         /// <summary>
         /// The command string separator. Defaults to a single whitespace.

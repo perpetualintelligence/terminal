@@ -34,8 +34,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("मासे")]
         public async Task ArgumentAliasNotConfiguredButAliasPrefixUsedShouldErrorAsync(string aliasPrefix)
         {
-            options.Extractor.ArgumentPrefix = "--";
-            options.Extractor.ArgumentAliasPrefix = aliasPrefix;
+            options.Extractor.OptionPrefix = "--";
+            options.Extractor.OptionAliasPrefix = aliasPrefix;
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             OptionExtractorContext context = new(new OptionString($"{aliasPrefix}key1=value1", aliasPrefix: true, 0), cmd);
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task ArgumentValueWithArgumentSeparatorShouldNotErrorAsync(string separator)
         {
-            options.Extractor.ArgumentValueSeparator = separator;
+            options.Extractor.OptionValueSeparator = separator;
 
             OptionExtractorContext context = new(new OptionString($"-key1{separator}value{separator}value2{separator}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -114,7 +114,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task InvalidArgumentValueSepratorShouldErrorAsync(string valid, string invalid)
         {
             // Set the correct separator
-            options.Extractor.ArgumentValueSeparator = valid;
+            options.Extractor.OptionValueSeparator = valid;
 
             // Arg string has incorrect separator Without the valid value separator the extractor will interpret as a
             // key only option and that wil fail
@@ -136,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("माणू女性")]
         public async Task KeySeparatorValueShouldNotErrorAsync(string argSeparator)
         {
-            options.Extractor.ArgumentValueSeparator = argSeparator;
+            options.Extractor.OptionValueSeparator = argSeparator;
 
             OptionExtractorContext context = new(new OptionString($"-key1{argSeparator}value1"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -167,7 +167,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task MultiplePrefixBeforeArgumentIdShouldNotErrorAsync(string prefix)
         {
-            options.Extractor.ArgumentPrefix = prefix;
+            options.Extractor.OptionPrefix = prefix;
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             OptionExtractorContext context = new(new OptionString($"{prefix}{prefix}{prefix}key1=value1"), cmd);
@@ -188,7 +188,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task MultiplePrefixNotMatchingArgumentIdShouldErrorAsync(string prefix)
         {
-            options.Extractor.ArgumentPrefix = prefix;
+            options.Extractor.OptionPrefix = prefix;
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             OptionExtractorContext context = new(new OptionString($"{prefix}{prefix}{prefix}{prefix}key=value1"), cmd);
@@ -229,7 +229,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task PrefixEmptyButArgumentIdWithPrefixShouldNotErrorAsync(string prefix)
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Extractor.ArgumentPrefix = "";
+            options.Extractor.OptionPrefix = "";
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
@@ -252,7 +252,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task PrefixInArgumentIdShouldErrorAsync(string prefix)
         {
-            options.Extractor.ArgumentPrefix = prefix;
+            options.Extractor.OptionPrefix = prefix;
 
             // Prefix are not allowed in option id
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
@@ -273,7 +273,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task PrefixInArgumentValueShouldNotErrorAsync(string prefix)
         {
-            options.Extractor.ArgumentPrefix = prefix;
+            options.Extractor.OptionPrefix = prefix;
 
             // Prefix are not allowed in option id
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"key1", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
@@ -288,8 +288,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringDoesNotStartWithSeparatorShouldExtractCorrectly()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
             OptionExtractorContext context = new(new OptionString($"ईपक्षीरप्राणीप्रेम"), cmd);
@@ -303,8 +303,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringNoArgSeparatorForBooleanShouldNotError()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", nameof(Boolean), "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षी"), cmd);
@@ -318,8 +318,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringNoArgSeparatorShouldErrorAsync()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षी"), cmd);
@@ -331,8 +331,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringNoValueShouldNotErrorAsync()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षीर"), cmd);
@@ -346,8 +346,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringStartsWithArgSeparatorShouldErrorAsync()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("रईपक्षीप्राणीप्रेम"), cmd);
@@ -359,8 +359,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringStartsWithSeparatorShouldExtractCorrectly()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("सईपक्षीरप्राणीप्रेम"), cmd);
@@ -374,9 +374,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringValueNotWithinShouldNotErrorAsync()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
-            options.Extractor.ArgumentValueWithIn = "बी";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
+            options.Extractor.OptionValueWithIn = "बी";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षीरप्राणीप्रेमबी"), cmd);
@@ -390,9 +390,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringValueWithinShouldNotErrorAsync()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
-            options.Extractor.ArgumentValueWithIn = "बी";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
+            options.Extractor.OptionValueWithIn = "बी";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षीरबीप्राणीप्रेमबी"), cmd);
@@ -406,8 +406,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeArgStringWithMultiplePrefixAndSeparatorShouldNotErrorAsync()
         {
             options.Extractor.Separator = "स";
-            options.Extractor.ArgumentPrefix = "ई";
-            options.Extractor.ArgumentValueSeparator = "र";
+            options.Extractor.OptionPrefix = "ई";
+            options.Extractor.OptionValueSeparator = "र";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ससससससईईईईईईईईपक्षीरररररररररप्राणीप्रेमसससससस"), cmd);
@@ -420,7 +420,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task UnicodePrefixInValueShouldNotErrorAsync()
         {
-            options.Extractor.ArgumentPrefix = "माणू";
+            options.Extractor.OptionPrefix = "माणू";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("स", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("माणूमाणूस=माणूसमास"), cmd);
@@ -444,9 +444,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task ValidArgAliasOnlyShouldNotErrorAsync(string keyAlias)
         {
-            options.Extractor.ArgumentAlias = true;
-            options.Extractor.ArgumentPrefix = "-";
-            options.Extractor.ArgumentAliasPrefix = "--";
+            options.Extractor.OptionAlias = true;
+            options.Extractor.OptionPrefix = "-";
+            options.Extractor.OptionAliasPrefix = "--";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("key1", nameof(Boolean), "test desc") { Alias = keyAlias } }));
             OptionExtractorContext context = new(new OptionString($"--{keyAlias}", aliasPrefix: true, 0), cmd);
@@ -486,7 +486,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task WithInConfiguredButNotUsedShouldExtractCorrectlyAsync(string withIn)
         {
-            options.Extractor.ArgumentValueWithIn = withIn;
+            options.Extractor.OptionValueWithIn = withIn;
 
             OptionExtractorContext context = new(new OptionString($"-key1=test string with {withIn} in between and end but not at start {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -506,7 +506,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task WithInConfiguredShouldExtractCorrectlyAsync(string withIn)
         {
-            options.Extractor.ArgumentValueWithIn = withIn;
+            options.Extractor.OptionValueWithIn = withIn;
 
             OptionExtractorContext context = new(new OptionString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -526,7 +526,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [DataRow("女性")]
         public async Task WithInNotConfiguredShouldExtractCorrectlyAsync(string withIn)
         {
-            options.Extractor.ArgumentValueWithIn = null;
+            options.Extractor.OptionValueWithIn = null;
 
             OptionExtractorContext context = new(new OptionString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);

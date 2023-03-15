@@ -109,25 +109,25 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicenseLimits limits = context.License.Limits;
 
             // Argument alias
-            if (!OptionsValid(limits.ArgumentAlias, cliOptions.Extractor.ArgumentAlias))
+            if (!OptionsValid(limits.ArgumentAlias, cliOptions.Extractor.OptionAlias))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
             }
 
             // Default options
-            if (!OptionsValid(limits.DefaultArgument, cliOptions.Extractor.DefaultArgument))
+            if (!OptionsValid(limits.DefaultArgument, cliOptions.Extractor.DefaultOption))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
             }
 
             // Default option value
-            if (!OptionsValid(limits.DefaultArgumentValue, cliOptions.Extractor.DefaultArgumentValue))
+            if (!OptionsValid(limits.DefaultArgumentValue, cliOptions.Extractor.DefaultOptionValue))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
             }
 
             // Strict Data Type
-            if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictArgumentValueType))
+            if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictOptionValueType))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured strict option value type option is not allowed for your license edition.");
             }

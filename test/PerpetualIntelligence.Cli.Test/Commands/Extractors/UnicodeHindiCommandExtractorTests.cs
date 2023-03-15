@@ -117,8 +117,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task UnicodeSubCommand_Default_Should_Extract_Correctly()
         {
-            options.Extractor.DefaultArgumentValue = true;
-            options.Extractor.DefaultArgument = true;
+            options.Extractor.DefaultOptionValue = true;
+            options.Extractor.DefaultOption = true;
 
             // एक is required and has default value
             CommandExtractorContext context = new(new CommandString("यूनिकोड परीक्षण दूसरा --दो --तीन तीसरा मूल्य -चारहै 253.36"));

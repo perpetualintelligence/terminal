@@ -60,13 +60,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 }
 
                 // Command separator and option prefix cannot be same
-                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.ArgumentPrefix))
+                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.OptionPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The command separator and option prefix cannot be same. separator={0}", options.Extractor.Separator);
                 }
 
                 // Command separator and option alias prefix cannot be same
-                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.ArgumentAliasPrefix))
+                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.OptionAliasPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The command separator and option alias prefix cannot be same. separator={0}", options.Extractor.Separator);
                 }
@@ -75,85 +75,85 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             // Argument
             {
                 // Argument separator can be null or empty
-                if (options.Extractor.ArgumentValueSeparator == null || options.Extractor.ArgumentValueSeparator == string.Empty)
+                if (options.Extractor.OptionValueSeparator == null || options.Extractor.OptionValueSeparator == string.Empty)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The option separator cannot be null or empty.", options.Extractor.Separator);
                 }
 
                 // Argument prefix cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentPrefix))
+                if (string.IsNullOrWhiteSpace(options.Extractor.OptionPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The option prefix cannot be null or whitespace.");
                 }
 
                 // Argument prefix cannot be more than 3 Unicode characters
-                if (textHandler.TextLength(options.Extractor.ArgumentPrefix) > 3)
+                if (textHandler.TextLength(options.Extractor.OptionPrefix) > 3)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option prefix cannot be more than 3 Unicode characters. argument_prefix={0}", options.Extractor.ArgumentPrefix);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option prefix cannot be more than 3 Unicode characters. argument_prefix={0}", options.Extractor.OptionPrefix);
                 }
 
                 // Argument alias prefix cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Extractor.ArgumentAliasPrefix))
+                if (string.IsNullOrWhiteSpace(options.Extractor.OptionAliasPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The option alias prefix cannot be null or whitespace.");
                 }
 
                 // Argument prefix cannot be more than 3 Unicode characters
-                if (textHandler.TextLength(options.Extractor.ArgumentAliasPrefix) > 3)
+                if (textHandler.TextLength(options.Extractor.OptionAliasPrefix) > 3)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={0}", options.Extractor.ArgumentAliasPrefix);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={0}", options.Extractor.OptionAliasPrefix);
                 }
 
                 // Argument separator and option prefix cannot be same
-                if (textHandler.TextEquals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentPrefix))
+                if (textHandler.TextEquals(options.Extractor.OptionValueSeparator, options.Extractor.OptionPrefix))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option separator and option prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option separator and option prefix cannot be same. separator={0}", options.Extractor.OptionValueSeparator);
                 }
 
                 // Argument separator and option prefix cannot be same
-                if (textHandler.TextEquals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentAliasPrefix))
+                if (textHandler.TextEquals(options.Extractor.OptionValueSeparator, options.Extractor.OptionAliasPrefix))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option separator and option alias prefix cannot be same. separator={0}", options.Extractor.ArgumentValueSeparator);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option separator and option alias prefix cannot be same. separator={0}", options.Extractor.OptionValueSeparator);
                 }
 
                 // - FOMAC confusing. Argument alias prefix can be same as option prefix but it cannot start with
                 // option prefix.
-                if (!textHandler.TextEquals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentPrefix) && options.Extractor.ArgumentAliasPrefix.StartsWith(options.Extractor.ArgumentPrefix, textHandler.Comparison))
+                if (!textHandler.TextEquals(options.Extractor.OptionAliasPrefix, options.Extractor.OptionPrefix) && options.Extractor.OptionAliasPrefix.StartsWith(options.Extractor.OptionPrefix, textHandler.Comparison))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option alias prefix cannot start with option prefix. prefix={0}", options.Extractor.ArgumentPrefix);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option alias prefix cannot start with option prefix. prefix={0}", options.Extractor.OptionPrefix);
                 }
             }
 
             // String with in
             {
                 // Argument prefix cannot be null, empty or whitespace
-                if (options.Extractor.ArgumentValueWithIn != null && options.Extractor.ArgumentValueWithIn.All(e => char.IsWhiteSpace(e)))
+                if (options.Extractor.OptionValueWithIn != null && options.Extractor.OptionValueWithIn.All(e => char.IsWhiteSpace(e)))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.ArgumentValueWithIn);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.OptionValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentPrefix
-                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.ArgumentValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.OptionValueWithIn))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentPrefix
-                if (textHandler.TextEquals(options.Extractor.ArgumentPrefix, options.Extractor.ArgumentValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.OptionPrefix, options.Extractor.OptionValueWithIn))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option prefix cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option prefix cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentAliasPrefix
-                if (textHandler.TextEquals(options.Extractor.ArgumentAliasPrefix, options.Extractor.ArgumentValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.OptionAliasPrefix, options.Extractor.OptionValueWithIn))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option alias prefix cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option alias prefix cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
                 }
 
                 // with_in cannot be same as ArgumentSeparator
-                if (textHandler.TextEquals(options.Extractor.ArgumentValueSeparator, options.Extractor.ArgumentValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.OptionValueSeparator, options.Extractor.OptionValueWithIn))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option separator cannot be same. with_in={0}", options.Extractor.ArgumentValueWithIn);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The string with_in token and option separator cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
                 }
             }
 
@@ -163,13 +163,13 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 IDefaultOptionValueProvider? defaultArgumentValueProvider = serviceProvider.GetService<IDefaultOptionValueProvider>();
 
                 // Command default option provider is missing
-                if (options.Extractor.DefaultArgument.GetValueOrDefault() && defaultArgumentProvider == null)
+                if (options.Extractor.DefaultOption.GetValueOrDefault() && defaultArgumentProvider == null)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionProvider).Name);
                 }
 
                 // Argument default value provider is missing
-                if (options.Extractor.DefaultArgumentValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
+                if (options.Extractor.DefaultOptionValue.GetValueOrDefault() && defaultArgumentValueProvider == null)
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
                 }

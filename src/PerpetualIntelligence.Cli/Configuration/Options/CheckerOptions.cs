@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// command and passes an obsolete option value. This option has no effect if the command supports an obsolete
         /// option, but the user did not give its value through the command string.
         /// </remarks>
-        public bool? AllowObsoleteArgument { get; set; }
+        public bool? AllowObsoleteOption { get; set; }
 
         /// <summary>
         /// Determines whether the checker checks an option value type. If this option is enabled, the checker will
@@ -29,6 +29,6 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         /// not run.
         /// </summary>
         /// <see cref="Commands.Mappers.IOptionDataTypeMapper"/>
-        public bool? StrictArgumentValueType { get; set; }
+        public bool? StrictOptionValueType { get; set; }
     }
 }

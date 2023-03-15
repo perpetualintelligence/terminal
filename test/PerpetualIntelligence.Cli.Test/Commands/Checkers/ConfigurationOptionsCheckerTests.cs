@@ -47,14 +47,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task ArgumentAliasPrefixCannotBeNullOrWhitespaceAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Extractor.ArgumentAliasPrefix = null;
+            options.Extractor.OptionAliasPrefix = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
 
-            options.Extractor.ArgumentAliasPrefix = "";
+            options.Extractor.OptionAliasPrefix = "";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
 
-            options.Extractor.ArgumentAliasPrefix = "   ";
+            options.Extractor.OptionAliasPrefix = "   ";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
         }
 
@@ -68,8 +68,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("女性")]
         public async Task ArgumentAliasPrefixCannotStartWithArgumentPrefix(string prefix)
         {
-            options.Extractor.ArgumentPrefix = prefix;
-            options.Extractor.ArgumentAliasPrefix = $"{prefix}:";
+            options.Extractor.OptionPrefix = prefix;
+            options.Extractor.OptionAliasPrefix = $"{prefix}:";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option alias prefix cannot start with option prefix. prefix={prefix}");
         }
@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("-女माö")]
         public async Task ArgumentAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
-            options.Extractor.ArgumentAliasPrefix = prefix;
+            options.Extractor.OptionAliasPrefix = prefix;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={prefix}");
         }
 
@@ -93,14 +93,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task ArgumentPrefixCannotBeNullOrWhitespaceAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Extractor.ArgumentPrefix = null;
+            options.Extractor.OptionPrefix = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
 
-            options.Extractor.ArgumentPrefix = "";
+            options.Extractor.OptionPrefix = "";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
 
-            options.Extractor.ArgumentPrefix = "   ";
+            options.Extractor.OptionPrefix = "   ";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
         }
 
@@ -115,7 +115,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("-女माö")]
         public async Task ArgumentPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
-            options.Extractor.ArgumentPrefix = prefix;
+            options.Extractor.OptionPrefix = prefix;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option prefix cannot be more than 3 Unicode characters. argument_prefix={prefix}");
         }
 
@@ -129,9 +129,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("女性")]
         public async Task ArgumentSeparatorAndArgumentAliasPrefixCannotBeSameAsync(string separator)
         {
-            options.Extractor.ArgumentValueSeparator = separator;
-            options.Extractor.ArgumentPrefix = ":";
-            options.Extractor.ArgumentAliasPrefix = separator;
+            options.Extractor.OptionValueSeparator = separator;
+            options.Extractor.OptionPrefix = ":";
+            options.Extractor.OptionAliasPrefix = separator;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option separator and option alias prefix cannot be same. separator={separator}");
         }
@@ -146,8 +146,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [DataRow("女性")]
         public async Task ArgumentSeparatorAndArgumentPrefixCannotBeSameAsync(string separator)
         {
-            options.Extractor.ArgumentValueSeparator = separator;
-            options.Extractor.ArgumentPrefix = separator;
+            options.Extractor.OptionValueSeparator = separator;
+            options.Extractor.OptionPrefix = separator;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option separator and option prefix cannot be same. separator={separator}");
         }
@@ -156,11 +156,11 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task ArgumentSeparatorCannotBeNullOrEmptyAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Extractor.ArgumentValueSeparator = null;
+            options.Extractor.OptionValueSeparator = null;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The option separator cannot be null or empty.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            options.Extractor.ArgumentValueSeparator = "";
+            options.Extractor.OptionValueSeparator = "";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The option separator cannot be null or empty.");
         }
 
@@ -175,7 +175,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task CommandSeparatorAndArgumentPrefixCannotBeSameAsync(string separator)
         {
             options.Extractor.Separator = separator;
-            options.Extractor.ArgumentPrefix = separator;
+            options.Extractor.OptionPrefix = separator;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The command separator and option prefix cannot be same. separator={separator}");
         }
 
@@ -195,7 +195,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [WriteDocumentation]
         public async Task DefaultArgumentConfiguredButProviderNotConfiguredShouldThrow()
         {
-            options.Extractor.DefaultArgument = true;
+            options.Extractor.DefaultOption = true;
 
             CommandExtractorContext context = new(new CommandString("prefix6_defaultarg"));
 
@@ -216,7 +216,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task DefaultValueConfiguredButProviderNotConfiguredShouldThrow()
         {
-            options.Extractor.DefaultArgumentValue = true;
+            options.Extractor.DefaultOptionValue = true;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
         }
@@ -225,9 +225,9 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task WithInStringCannotBeSameAsArgAliasPrefix()
         {
             // Make sure command separator is different so we can fail for option separator below.
-            options.Extractor.ArgumentPrefix = "#";
-            options.Extractor.ArgumentValueWithIn = "^";
-            options.Extractor.ArgumentAliasPrefix = "^";
+            options.Extractor.OptionPrefix = "#";
+            options.Extractor.OptionValueWithIn = "^";
+            options.Extractor.OptionAliasPrefix = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token and option alias prefix cannot be same. with_in=^");
         }
@@ -236,8 +236,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task WithInStringCannotBeSameAsArgPrefix()
         {
             // Make sure command separator is different so we can fail for option separator below.
-            options.Extractor.ArgumentPrefix = "^";
-            options.Extractor.ArgumentValueWithIn = "^";
+            options.Extractor.OptionPrefix = "^";
+            options.Extractor.OptionValueWithIn = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token and option prefix cannot be same. with_in=^");
         }
@@ -246,8 +246,8 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task WithInStringCannotBeSameAsArgSeparator()
         {
             // Make sure command separator is different so we can fail for option separator below.
-            options.Extractor.ArgumentValueSeparator = "^";
-            options.Extractor.ArgumentValueWithIn = "^";
+            options.Extractor.OptionValueSeparator = "^";
+            options.Extractor.OptionValueWithIn = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token and option separator cannot be same. with_in=^");
         }
@@ -257,7 +257,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Extractor.Separator = "^";
-            options.Extractor.ArgumentValueWithIn = "^";
+            options.Extractor.OptionValueWithIn = "^";
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token and separator cannot be same. with_in=^");
         }
@@ -266,7 +266,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task WithInStringCannotBeWhitespace()
         {
             // Make sure command separator is different so we can fail for option separator below.
-            options.Extractor.ArgumentValueWithIn = "   ";
+            options.Extractor.OptionValueWithIn = "   ";
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token cannot be whitespace.");
         }
 

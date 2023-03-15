@@ -70,7 +70,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             CommandCheckerContext context = new(descriptor, argsCommand);
 
-            cliOptions.Checker.AllowObsoleteArgument = true;
+            cliOptions.Checker.AllowObsoleteOption = true;
             var result = await checker.CheckAsync(context);
         }
 
@@ -86,10 +86,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
 
             CommandCheckerContext context = new(descriptor, argsCommand);
 
-            cliOptions.Checker.AllowObsoleteArgument = null;
+            cliOptions.Checker.AllowObsoleteOption = null;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
 
-            cliOptions.Checker.AllowObsoleteArgument = false;
+            cliOptions.Checker.AllowObsoleteOption = false;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidArgument, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
         }
 
@@ -125,7 +125,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabledInvalidValueTypeShouldNotErrorAsync()
         {
-            cliOptions.Checker.StrictArgumentValueType = false;
+            cliOptions.Checker.StrictOptionValueType = false;
 
             OptionDescriptor argumentDescriptor = new OptionDescriptor("key1", DataType.Date, "desc1");
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
@@ -143,7 +143,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingWithInvalidValueTypeShouldErrorAsync()
         {
-            cliOptions.Checker.StrictArgumentValueType = true;
+            cliOptions.Checker.StrictOptionValueType = true;
 
             OptionDescriptor argumentDescriptor = new OptionDescriptor("key1", DataType.Date, "desc1");
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));
@@ -159,7 +159,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingWithValidValueTypeShouldChangeTypeCorrectlyAsync()
         {
-            cliOptions.Checker.StrictArgumentValueType = true;
+            cliOptions.Checker.StrictOptionValueType = true;
 
             OptionDescriptor argumentDescriptor = new OptionDescriptor("key1", DataType.Date, "desc1");
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { argumentDescriptor }));

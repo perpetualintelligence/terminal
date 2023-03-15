@@ -42,9 +42,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task AliasConfiguredDifferentPrefixWithInvalidAliasShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
-            cliOptions.Extractor.ArgumentAlias = true;
-            cliOptions.Extractor.ArgumentPrefix = "--";
-            cliOptions.Extractor.ArgumentAliasPrefix = "-";
+            cliOptions.Extractor.OptionAlias = true;
+            cliOptions.Extractor.OptionPrefix = "--";
+            cliOptions.Extractor.OptionAliasPrefix = "-";
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -69,9 +69,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task AliasConfiguredDifferentPrefixWithInvalidArgShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
-            cliOptions.Extractor.ArgumentAlias = true;
-            cliOptions.Extractor.ArgumentPrefix = "--";
-            cliOptions.Extractor.ArgumentAliasPrefix = "-";
+            cliOptions.Extractor.OptionAlias = true;
+            cliOptions.Extractor.OptionPrefix = "--";
+            cliOptions.Extractor.OptionAliasPrefix = "-";
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -96,7 +96,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task AliasConfiguredSamePrefixWithInvalidAliasShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
-            cliOptions.Extractor.ArgumentAlias = true;
+            cliOptions.Extractor.OptionAlias = true;
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -121,7 +121,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task AliasConfiguredSamePrefixWithInvalidArgShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
-            cliOptions.Extractor.ArgumentAlias = true;
+            cliOptions.Extractor.OptionAlias = true;
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -146,7 +146,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task AliasConfiguredValidCommandStringWithAliasShouldNotError(string prefix, string cmdId)
         {
             // Enable alias
-            cliOptions.Extractor.ArgumentAlias = true;
+            cliOptions.Extractor.OptionAlias = true;
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -172,9 +172,9 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task AliasConfiguredWithDefaultArgAndDefaultValueShouldNotErrorAsync(string prefix, string cmdId)
         {
             // Enable alias
-            cliOptions.Extractor.ArgumentAlias = true;
-            cliOptions.Extractor.DefaultArgument = true;
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            cliOptions.Extractor.OptionAlias = true;
+            cliOptions.Extractor.DefaultOption = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -199,8 +199,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task AliasConfiguredWithDefaultArgShouldNotErrorAsync(string prefix, string cmdId)
         {
             // Enable alias
-            cliOptions.Extractor.ArgumentAlias = true;
-            cliOptions.Extractor.DefaultArgument = true;
+            cliOptions.Extractor.OptionAlias = true;
+            cliOptions.Extractor.DefaultOption = true;
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -227,7 +227,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task AliasNotConfiguredWithAliasShouldErrorAsync(string prefix, string cmdId, String cmdName)
         {
             // Disable alias
-            cliOptions.Extractor.ArgumentAlias = false;
+            cliOptions.Extractor.OptionAlias = false;
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
@@ -302,7 +302,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task CommandSeparatorAndArgumentSeparatorCanBeSameAsync(string separator)
         {
             cliOptions.Extractor.Separator = separator;
-            cliOptions.Extractor.ArgumentValueSeparator = separator;
+            cliOptions.Extractor.OptionValueSeparator = separator;
 
             CommandExtractorContext context = new CommandExtractorContext(new CommandString($"prefix1{separator}-key1{separator}value1{separator}-key2{separator}value2{separator}-key6{separator}-key9{separator}26.36"));
             var result = await extractor.ExtractAsync(context);
@@ -328,7 +328,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
             // option values
             // -> prefix1 -key=Test-prefix-message -key2=nosprefixmessage -key3=again-with-prefix
-            cliOptions.Extractor.ArgumentPrefix = prefix;
+            cliOptions.Extractor.OptionPrefix = prefix;
 
             CommandExtractorContext context = new(new CommandString($"prefix1 {prefix}key1=Test{prefix}prefix{prefix}message {prefix}key2=nospacemessage {prefix}key6 {prefix}key10=Again{prefix}with{prefix}prefix"));
             var result = await extractor.ExtractAsync(context);
@@ -354,7 +354,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
             // option values
             // -> prefix1 -key=Test=separator=message -key2=nosseparatormessage -key3=again=with=separator
-            cliOptions.Extractor.ArgumentValueSeparator = separator;
+            cliOptions.Extractor.OptionValueSeparator = separator;
 
             CommandExtractorContext context = new CommandExtractorContext(new CommandString($"prefix1 -key1{separator}Test{separator}separator{separator}message -key2{separator}nosseparatormessage -key6 -key10{separator}Again{separator}with{separator}separator"));
             var result = await extractor.ExtractAsync(context);
@@ -443,8 +443,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [WriteDocumentation]
         public async Task DefaultArgumentShouldWorkCorrectlyWithItsValueAndWithInConfiguredAsync()
         {
-            cliOptions.Extractor.DefaultArgument = true;
-            cliOptions.Extractor.ArgumentValueWithIn = "\"";
+            cliOptions.Extractor.DefaultOption = true;
+            cliOptions.Extractor.OptionValueWithIn = "\"";
 
             // No arg id
             CommandExtractorContext context = new(new CommandString("prefix7_defaultarg \"key1_value\""));
@@ -463,8 +463,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [WriteDocumentation]
         public async Task DefaultArgumentShouldWorkCorrectlyWithItsValueAsync()
         {
-            cliOptions.Extractor.DefaultArgument = true;
-            cliOptions.Extractor.ArgumentValueWithIn = null;
+            cliOptions.Extractor.DefaultOption = true;
+            cliOptions.Extractor.OptionValueWithIn = null;
 
             // value without arg id
             CommandExtractorContext context = new(new CommandString("prefix7_defaultarg key1_value"));
@@ -485,7 +485,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [WriteDocumentation]
         public async Task DefaultArgumentShouldWorkCorrectlyWithoutItsValueAsync()
         {
-            cliOptions.Extractor.DefaultArgument = true;
+            cliOptions.Extractor.DefaultOption = true;
 
             // No default arg value
             CommandExtractorContext context = new(new CommandString("prefix7_defaultarg"));
@@ -505,8 +505,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [WriteDocumentation]
         public async Task DefaultArgumentWithBothExplicitAndImplicitArgumentValueShouldError()
         {
-            cliOptions.Extractor.DefaultArgument = true;
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            cliOptions.Extractor.DefaultOption = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix8_defaultarg_defaultvalue implitcit_default_value -key1=explicit_default_value"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -521,8 +521,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [WriteDocumentation]
         public async Task DefaultArgumentWithDefaultValueNotSpecifiedShouldWorkCorrectly()
         {
-            cliOptions.Extractor.DefaultArgument = true;
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            cliOptions.Extractor.DefaultOption = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
 
             // No default arg, but it will be added because it has a default value
             CommandExtractorContext context = new(new CommandString("prefix8_defaultarg_defaultvalue"));
@@ -542,7 +542,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredButProviderNotConfiguredShouldThrow()
         {
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
             CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
@@ -553,7 +553,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotError()
         {
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
 
             // This is just extracting no checking
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
@@ -570,7 +570,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotOverrideUserValues()
         {
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
 
             // This is just extracting no checking
             CommandExtractorContext context = new(new CommandString("prefix5_default -key6 -key10=user value"));
@@ -595,7 +595,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotPopulateIfDisabled()
         {
-            cliOptions.Extractor.DefaultArgumentValue = false;
+            cliOptions.Extractor.DefaultOptionValue = false;
 
             // This is just extracting no checking
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
@@ -607,7 +607,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredCommandWithEmptyArgsShouldNotErrorAsync()
         {
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix6_empty_args"));
             var result = await extractor.ExtractAsync(context);
@@ -618,7 +618,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
-            cliOptions.Extractor.DefaultArgumentValue = true;
+            cliOptions.Extractor.DefaultOptionValue = true;
 
             CommandExtractorContext context = new(new CommandString("prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);
@@ -629,7 +629,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueDisabledButProviderNotConfiguredShouldNotThrow()
         {
-            cliOptions.Extractor.DefaultArgumentValue = false;
+            cliOptions.Extractor.DefaultOptionValue = false;
 
             CommandExtractorContext context = new(new CommandString("prefix5_default"));
             CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
@@ -639,7 +639,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task DefaultValueNotConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
-            cliOptions.Extractor.DefaultArgumentValue = false;
+            cliOptions.Extractor.DefaultOptionValue = false;
 
             CommandExtractorContext context = new(new CommandString("prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);

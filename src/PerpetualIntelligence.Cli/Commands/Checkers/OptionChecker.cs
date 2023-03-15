@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             OptionDataTypeMapperResult mapperResult = await mapper.MapAsync(new OptionDataTypeMapperContext(context.Argument));
 
             // Check whether we need to check type
-            if (options.Checker.StrictArgumentValueType.GetValueOrDefault())
+            if (options.Checker.StrictOptionValueType.GetValueOrDefault())
             {
                 // Check value compatibility
                 return await StrictTypeCheckingAsync(context, mapperResult);

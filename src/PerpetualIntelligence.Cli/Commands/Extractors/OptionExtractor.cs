@@ -25,13 +25,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// The syntax for a separator based option is <c>{arg}={value}</c> for e.g. <c>name=oneimlx</c>. The syntax has 4 parts:
     /// <list type="number">
     /// <item>
-    /// <description><c>-</c> is an option prefix. You can configure it via <see cref="ExtractorOptions.ArgumentPrefix"/></description>
+    /// <description><c>-</c> is an option prefix. You can configure it via <see cref="ExtractorOptions.OptionPrefix"/></description>
     /// </item>
     /// <item>
     /// <description>{arg} is an option id. For e.g. <c>name</c></description>
     /// </item>
     /// <item>
-    /// <description><c>=</c> is an option separator. You can configure it via <see cref="ExtractorOptions.ArgumentValueSeparator"/></description>
+    /// <description><c>=</c> is an option separator. You can configure it via <see cref="ExtractorOptions.OptionValueSeparator"/></description>
     /// </item>
     /// <item>
     /// <description>{value} is an option value. For e.g. <c>oneimlx</c></description>
@@ -39,8 +39,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
     /// </list>
     /// </para>
     /// </remarks>
-    /// <seealso cref="ExtractorOptions.ArgumentPrefix"/>
-    /// <seealso cref="ExtractorOptions.ArgumentValueSeparator"/>
+    /// <seealso cref="ExtractorOptions.OptionPrefix"/>
+    /// <seealso cref="ExtractorOptions.OptionValueSeparator"/>
     [WriteDocumentation]
     public class OptionExtractor : IOptionExtractor
     {
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <remarks>
         /// <para>
         /// Lets assume that you have configured <see cref="ExtractorOptions.Separator"/> as a single whitespace string
-        /// ' ', and <see cref="ExtractorOptions.ArgumentAliasPrefix"/> as a single dash character string '-'.
+        /// ' ', and <see cref="ExtractorOptions.OptionAliasPrefix"/> as a single dash character string '-'.
         /// </para>
         /// <para>
         /// The default implementation for <see cref="ArgumentAliasNoValueRegexPattern"/> will match using the following criteria:
@@ -83,7 +83,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// </item>
         /// <item>
         /// <term>'(-)+'</term>
-        /// <description>Create a new capture group and matches 1 or more <see cref="ExtractorOptions.ArgumentAliasPrefix"/></description>
+        /// <description>Create a new capture group and matches 1 or more <see cref="ExtractorOptions.OptionAliasPrefix"/></description>
         /// </item>
         /// <item>
         /// <term>'(.+?)'</term>
@@ -99,51 +99,51 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             get
             {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentAliasPrefix})+(.+?)[{options.Extractor.Separator}]*$";
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.OptionAliasPrefix})+(.+?)[{options.Extractor.Separator}]*$";
             }
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the option id and value using <see cref="ExtractorOptions.ArgumentPrefix"/>.
+        /// Gets the REGEX pattern to match the option id and value using <see cref="ExtractorOptions.OptionPrefix"/>.
         /// </summary>
         public virtual string ArgumentAliasValueRegexPattern
         {
             get
             {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentAliasPrefix})+(.+?){options.Extractor.ArgumentValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.OptionAliasPrefix})+(.+?){options.Extractor.OptionValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
             }
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
+        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.OptionAliasPrefix"/>.
         /// </summary>
         public virtual string ArgumentIdNoValueRegexPattern
         {
             get
             {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentPrefix})+(.+?)[{options.Extractor.Separator}]*$";
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.OptionPrefix})+(.+?)[{options.Extractor.Separator}]*$";
             }
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.ArgumentAliasPrefix"/>.
+        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.OptionAliasPrefix"/>.
         /// </summary>
         public virtual string ArgumentIdValueRegexPattern
         {
             get
             {
-                return $"^[{options.Extractor.Separator}]*({options.Extractor.ArgumentPrefix})+(.+?){options.Extractor.ArgumentValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
+                return $"^[{options.Extractor.Separator}]*({options.Extractor.OptionPrefix})+(.+?){options.Extractor.OptionValueSeparator}+(.*?)[{options.Extractor.Separator}]*$";
             }
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.ArgumentValueWithIn"/>.
+        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.OptionValueWithIn"/>.
         /// </summary>
         public virtual string ArgumentValueWithinRegexPattern
         {
             get
             {
-                return $"^{options.Extractor.ArgumentValueWithIn}(.*){options.Extractor.ArgumentValueWithIn}$";
+                return $"^{options.Extractor.OptionValueWithIn}(.*){options.Extractor.OptionValueWithIn}$";
             }
         }
 
@@ -173,7 +173,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 argValue = argIdValueMatch.Groups[3].Value;
 
                 // Check if we need to extract the value with_in a token
-                if (options.Extractor.ArgumentValueWithIn != null)
+                if (options.Extractor.OptionValueWithIn != null)
                 {
                     Match argValueWithInMatch = Regex.Match(argValue, ArgumentValueWithinRegexPattern);
                     if (argValueWithInMatch.Success)
@@ -204,22 +204,22 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             }
 
             // For error handling
-            string prefixArgValue = $"{argPrefix}{argIdOrAlias}{options.Extractor.ArgumentValueSeparator}{argValue}";
+            string prefixArgValue = $"{argPrefix}{argIdOrAlias}{options.Extractor.OptionValueSeparator}{argValue}";
             if (argIdOrAlias == null || string.IsNullOrWhiteSpace(argIdOrAlias))
             {
                 throw new ErrorException(Errors.InvalidArgument, "The option identifier is null or empty. argument_string={0}", prefixArgValue);
             }
 
             // Find by alias only if configured.
-            bool argAndAliasPrefixSame = textHandler.TextEquals(options.Extractor.ArgumentPrefix, options.Extractor.ArgumentAliasPrefix);
-            bool aliasEnabled = options.Extractor.ArgumentAlias.GetValueOrDefault();
+            bool argAndAliasPrefixSame = textHandler.TextEquals(options.Extractor.OptionPrefix, options.Extractor.OptionAliasPrefix);
+            bool aliasEnabled = options.Extractor.OptionAlias.GetValueOrDefault();
 
             // Compatibility check: If ArgumentAlias is not enabled and the prefix is used to identify by alias then
             // this is an error. If ArgumentPrefix and ArgumentAliasPrefix are same then bypass the compatibility check.
             // find it.
             if (!argAndAliasPrefixSame && !aliasEnabled)
             {
-                if (textHandler.TextEquals(options.Extractor.ArgumentAliasPrefix, argPrefix))
+                if (textHandler.TextEquals(options.Extractor.OptionAliasPrefix, argPrefix))
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The option extraction by alias prefix is not configured. argument_string={0}", prefixArgValue);
                 }

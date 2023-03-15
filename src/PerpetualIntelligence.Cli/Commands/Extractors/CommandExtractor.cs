@@ -102,7 +102,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // syntax For e.g. If 'pi format ruc' command has 'i' as a default option then the command string 'pi
             // format ruc remove_underscore_and_capitalize' will be extracted as 'pi format ruc' and
             // remove_underscore_and_capitalize will be added as a value of option 'i'.
-            if (this.cliOptions.Extractor.DefaultArgument.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultArgument))
+            if (this.cliOptions.Extractor.DefaultOption.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultArgument))
             {
                 // Sanity check
                 if (defaultArgumentProvider == null)
@@ -114,7 +114,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // then add the default attribute
                 bool proccessDefaultArg = true;
                 string argStringDef = rawArgString.TrimStart(this.cliOptions.Extractor.Separator, textHandler.Comparison);
-                if (argStringDef.StartsWith(this.cliOptions.Extractor.ArgumentPrefix, textHandler.Comparison))
+                if (argStringDef.StartsWith(this.cliOptions.Extractor.OptionPrefix, textHandler.Comparison))
                 {
                     // Default attribute value should be the first after command prefix User has explicitly passed an option.
                     proccessDefaultArg = false;
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
                     // Convert the arg string to standard format and let the IArgumentExtractor extract the option and
                     // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
-                    rawArgString = $"{this.cliOptions.Extractor.Separator}{this.cliOptions.Extractor.ArgumentPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{this.cliOptions.Extractor.ArgumentValueSeparator}{argStringDef}";
+                    rawArgString = $"{this.cliOptions.Extractor.Separator}{this.cliOptions.Extractor.OptionPrefix}{defaultArgumentProviderResult.DefaultArgumentDescriptor.Id}{this.cliOptions.Extractor.OptionValueSeparator}{argStringDef}";
                 }
             }
 
@@ -181,8 +181,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
 
         private OptionStrings ExtractArgumentStrings(string raw)
         {
-            string argSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.ArgumentPrefix);
-            string argAliasSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.ArgumentAliasPrefix);
+            string argSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.OptionPrefix);
+            string argAliasSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.OptionAliasPrefix);
 
             // First pass
             int currentPos = 0;
@@ -266,8 +266,8 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // default option is specified after the command prefix followed by command separator.
             // - E.g. pi auth login {default_arg_value}.
             int[] indices = new int[2];
-            indices[0] = prefix.IndexOf(cliOptions.Extractor.ArgumentPrefix, textHandler.Comparison);
-            indices[1] = prefix.IndexOf(cliOptions.Extractor.ArgumentAliasPrefix, textHandler.Comparison);
+            indices[0] = prefix.IndexOf(cliOptions.Extractor.OptionPrefix, textHandler.Comparison);
+            indices[1] = prefix.IndexOf(cliOptions.Extractor.OptionAliasPrefix, textHandler.Comparison);
             int minIndex = indices.Where(x => x > 0).DefaultIfEmpty().Min();
             if (minIndex != 0)
             {
@@ -313,7 +313,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         private async Task<Options?> MergeDefaultArgumentsOrThrowAsync(CommandDescriptor commandDescriptor, Options? userArguments)
         {
             // If default option value is disabled or the command itself does not support any options then ignore
-            if (!cliOptions.Extractor.DefaultArgumentValue.GetValueOrDefault()
+            if (!cliOptions.Extractor.DefaultOptionValue.GetValueOrDefault()
                 || commandDescriptor.ArgumentDescriptors == null
                 || commandDescriptor.ArgumentDescriptors.Count == 0)
             {
@@ -323,7 +323,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Sanity check
             if (defaultArgumentValueProvider == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).FullName);
+                throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
             }
 
             // Get default values. Make sure we take user inputs.

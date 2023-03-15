@@ -362,7 +362,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
 
             OptionDescriptors argumentDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
-                new OptionDescriptor(cliOptions.Help.HelpArgumentId, nameof(Boolean), "Help options")
+                new OptionDescriptor(cliOptions.Help.OptionId, nameof(Boolean), "Help options")
             });
 
             // This mocks the help requested

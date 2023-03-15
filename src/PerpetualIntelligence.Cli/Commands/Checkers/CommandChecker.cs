@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 else
                 {
                     // Check obsolete
-                    if (argDescriptor.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteArgument.GetValueOrDefault())
+                    if (argDescriptor.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
                     {
                         throw new ErrorException(Errors.InvalidArgument, "The option is obsolete. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
                     }

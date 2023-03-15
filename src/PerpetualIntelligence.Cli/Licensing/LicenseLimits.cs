@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli.Licensing
     public sealed class LicenseLimits
     {
         /// <summary>
-        /// Checks <see cref="ExtractorOptions.ArgumentAlias"/> option.
+        /// Checks <see cref="ExtractorOptions.OptionAlias"/> option.
         /// </summary>
         public bool ArgumentAlias { get; internal set; }
 

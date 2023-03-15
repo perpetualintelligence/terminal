@@ -109,7 +109,7 @@ namespace PerpetualIntelligence.Cli.Hosting
                         commandDescriptor.ArgumentDescriptors = new OptionDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
                     }
 
-                    OptionDescriptor helpDescriptor = new(options.Help.HelpArgumentId, nameof(Boolean), options.Help.HelpArgumentDescription) { Alias = options.Help.HelpArgumentAlias };
+                    OptionDescriptor helpDescriptor = new(options.Help.OptionId, nameof(Boolean), options.Help.OptionDescription) { Alias = options.Help.OptionAlias };
                     commandDescriptor.ArgumentDescriptors.Add(helpDescriptor);
                 }
             });

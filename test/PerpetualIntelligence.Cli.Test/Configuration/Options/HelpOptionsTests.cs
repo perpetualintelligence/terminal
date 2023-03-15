@@ -23,8 +23,8 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         {
             HelpOptions options = new();
 
-            options.HelpArgumentAlias.Should().Be("H");
-            options.HelpArgumentId.Should().Be("help");
+            options.OptionAlias.Should().Be("H");
+            options.OptionId.Should().Be("help");
             options.Disabled.Should().BeNull();
         }
     }
