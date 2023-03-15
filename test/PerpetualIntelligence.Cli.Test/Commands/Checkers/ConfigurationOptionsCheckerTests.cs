@@ -86,7 +86,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task ArgumentAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
             options.Extractor.OptionAliasPrefix = prefix;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={prefix}");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option alias prefix cannot be more than 3 Unicode characters. option_alias_prefix={prefix}");
         }
 
         [TestMethod]
@@ -116,7 +116,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         public async Task ArgumentPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
             options.Extractor.OptionPrefix = prefix;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option prefix cannot be more than 3 Unicode characters. argument_prefix={prefix}");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The option prefix cannot be more than 3 Unicode characters. option_prefix={prefix}");
         }
 
         [DataTestMethod]

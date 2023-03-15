@@ -154,7 +154,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                     // Protect for bad custom implementation.
                     if (tryResult.Result == null)
                     {
-                        errors.Add(new Error(Errors.InvalidOption, "The option string did not return an error or extract the option. argument_string={0}", argString.Raw));
+                        errors.Add(new Error(Errors.InvalidOption, "The option string did not return an error or extract the option. option_string={0}", argString.Raw));
                     }
                     else
                     {

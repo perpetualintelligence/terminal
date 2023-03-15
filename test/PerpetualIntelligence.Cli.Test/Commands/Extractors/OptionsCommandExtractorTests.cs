@@ -76,7 +76,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The option extraction by alias prefix is not configured. argument_string=-key1_alias value1" }
+               new[] { "The option extraction by alias prefix is not configured. option_string=-key1_alias value1" }
            );
         }
 
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The option extraction by alias prefix is not configured. argument_string=-key1 value1" }
+               new[] { "The option extraction by alias prefix is not configured. option_string=-key1 value1" }
            );
         }
 
@@ -142,7 +142,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] { Errors.InvalidConfiguration },
-               new[] { "The option extraction by alias prefix is not configured. argument_string=-key1 value1" }
+               new[] { "The option extraction by alias prefix is not configured. option_string=-key1 value1" }
            );
         }
 

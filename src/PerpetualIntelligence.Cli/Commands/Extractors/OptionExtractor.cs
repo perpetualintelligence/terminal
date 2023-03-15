@@ -200,14 +200,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Not matched
             if (!matched)
             {
-                throw new ErrorException(Errors.InvalidOption, "The option string is not valid. argument_string={0}", rawArgumentString);
+                throw new ErrorException(Errors.InvalidOption, "The option string is not valid. option_string={0}", rawArgumentString);
             }
 
             // For error handling
             string prefixArgValue = $"{argPrefix}{argIdOrAlias}{options.Extractor.OptionValueSeparator}{argValue}";
             if (argIdOrAlias == null || string.IsNullOrWhiteSpace(argIdOrAlias))
             {
-                throw new ErrorException(Errors.InvalidOption, "The option identifier is null or empty. argument_string={0}", prefixArgValue);
+                throw new ErrorException(Errors.InvalidOption, "The option identifier is null or empty. option_string={0}", prefixArgValue);
             }
 
             // Find by alias only if configured.
@@ -221,7 +221,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 if (textHandler.TextEquals(options.Extractor.OptionAliasPrefix, argPrefix))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option extraction by alias prefix is not configured. argument_string={0}", prefixArgValue);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option extraction by alias prefix is not configured. option_string={0}", prefixArgValue);
                 }
             }
 
@@ -253,7 +253,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             {
                 if (argValue == null)
                 {
-                    throw new ErrorException(Errors.InvalidOption, "The option value is missing. argument_string={0}", prefixArgValue);
+                    throw new ErrorException(Errors.InvalidOption, "The option value is missing. option_string={0}", prefixArgValue);
                 }
 
                 return Task.FromResult(new OptionExtractorResult(new Option(argDescriptor, argValue)));

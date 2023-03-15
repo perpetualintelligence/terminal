@@ -89,7 +89,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 // Option prefix cannot be more than 3 Unicode characters
                 if (textHandler.TextLength(options.Extractor.OptionPrefix) > 3)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option prefix cannot be more than 3 Unicode characters. argument_prefix={0}", options.Extractor.OptionPrefix);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option prefix cannot be more than 3 Unicode characters. option_prefix={0}", options.Extractor.OptionPrefix);
                 }
 
                 // Option alias prefix cannot be null, empty or whitespace
@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
                 // Option prefix cannot be more than 3 Unicode characters
                 if (textHandler.TextLength(options.Extractor.OptionAliasPrefix) > 3)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option alias prefix cannot be more than 3 Unicode characters. argument_alias_prefix={0}", options.Extractor.OptionAliasPrefix);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The option alias prefix cannot be more than 3 Unicode characters. option_alias_prefix={0}", options.Extractor.OptionAliasPrefix);
                 }
 
                 // Option separator and option prefix cannot be same
