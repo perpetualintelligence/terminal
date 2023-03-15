@@ -23,7 +23,7 @@ The framework handles the entire CLI infrastructure, so your focus is on buildin
 
 ## License and Pricing
 
-**See our [licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html) and [pricing](https://www.perpetualintelligence.com/products/picli#pricing)**.
+**See our [licensing terms](https://terms.perpetualintelligence.com/articles/intro.html/articles/licensing.html), [redistribution terms](https://terms.perpetualintelligence.com/articles/intro.html/articles/redistribution.html) and [pricing](https://www.perpetualintelligence.com/products/picli#pricing)**.
 
 Our community edition is free for educational, research, and non-production use. We recommend creating an account to generate a license for your specific use case.
 
