@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             switch (saasPlan)
             {
-                case LicensePlans.Community:
+                case LicensePlans.Demo:
                     {
                         return new LicensePrice("USD", 0, 0, saasPlan);
                     }
@@ -67,11 +67,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                     {
                         return new LicensePrice("USD", 219, 2309, saasPlan);
                     }
-                case LicensePlans.ISV:
+                case LicensePlans.OnPremise:
                     {
                         return new LicensePrice("USD", 619, 6609, saasPlan);
                     }
-                case LicensePlans.ISVU:
+                case LicensePlans.Unlimited:
                     {
                         return new LicensePrice("USD", 1219, 13109, saasPlan);
                     }

@@ -118,9 +118,9 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             switch (saasPlan)
             {
-                case LicensePlans.Community:
+                case LicensePlans.Demo:
                     {
-                        return ForCommunity();
+                        return ForDemo();
                     }
                 case LicensePlans.Micro:
                     {
@@ -134,13 +134,13 @@ namespace PerpetualIntelligence.Cli.Licensing
                     {
                         return ForEnterprise();
                     }
-                case LicensePlans.ISV:
+                case LicensePlans.OnPremise:
                     {
-                        return ForISV();
+                        return ForOnPremise();
                     }
-                case LicensePlans.ISVU:
+                case LicensePlans.Unlimited:
                     {
-                        return ForISVU();
+                        return ForUnlimited();
                     }
                 case LicensePlans.Custom:
                     {
@@ -197,11 +197,11 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
         }
 
-        internal static LicenseLimits ForCommunity()
+        internal static LicenseLimits ForDemo()
         {
             return new()
             {
-                Plan = LicensePlans.Community,
+                Plan = LicensePlans.Demo,
                 TerminalLimit = 1,
                 RedistributionLimit = 0,
                 RootCommandLimit = 1,
@@ -278,11 +278,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             };
         }
 
-        internal static LicenseLimits ForISV()
+        internal static LicenseLimits ForOnPremise()
         {
             return new()
             {
-                Plan = LicensePlans.ISV,
+                Plan = LicensePlans.OnPremise,
                 TerminalLimit = 25,
                 RedistributionLimit = 10000,
                 RootCommandLimit = 5,
@@ -304,11 +304,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             };
         }
 
-        internal static LicenseLimits ForISVU()
+        internal static LicenseLimits ForUnlimited()
         {
             return new()
             {
-                Plan = LicensePlans.ISVU,
+                Plan = LicensePlans.Unlimited,
                 TerminalLimit = null,
                 RedistributionLimit = null,
                 RootCommandLimit = null,

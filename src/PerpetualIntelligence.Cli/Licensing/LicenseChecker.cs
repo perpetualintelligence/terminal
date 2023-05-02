@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Check Limits
             await CheckLimitsAsync(context);
 
-            // Check Limits
+            // Check Options
             await CheckOptionsAsync(context);
 
             return new LicenseCheckerResult(context.License)

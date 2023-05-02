@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Authentication.Msal
             if (client == null)
             {
                 client = PublicClientApplicationBuilder.Create("1ec3af12-346f-4742-bb29-b23656676177")
-                                                       .WithB2CAuthority("https://perpetualintelligenceb2c.b2clogin.com/tfp/perpetualintelligenceb2c.onmicrosoft.com/B2C_1A_SIGNUP_SIGNIN")
+                                                       .WithB2CAuthority("https://perpetualintelligenceb2c.b2clogin.com/tfp/perpetualintelligenceb2c.onmicrosoft.com/b2c_1_signinsignup")
                                                        .WithRedirectUri(context.AuthenticationOptions.RedirectUri)
                                                        .Build();
 

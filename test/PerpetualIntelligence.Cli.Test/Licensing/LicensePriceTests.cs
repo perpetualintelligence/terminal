@@ -19,8 +19,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void CommunityEdition_ShouldSetPriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.Community);
-            price.Plan.Should().Be(LicensePlans.Community);
+            LicensePrice price = LicensePrice.Create(LicensePlans.Demo);
+            price.Plan.Should().Be(LicensePlans.Demo);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(0);
             price.Yearly.Should().Be(0);
@@ -76,8 +76,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void ISVEdition_PriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.ISV);
-            price.Plan.Should().Be(LicensePlans.ISV);
+            LicensePrice price = LicensePrice.Create(LicensePlans.OnPremise);
+            price.Plan.Should().Be(LicensePlans.OnPremise);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(619);
             price.Yearly.Should().Be(6609);
@@ -86,8 +86,8 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void ISVUEdition_PriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.ISVU);
-            price.Plan.Should().Be(LicensePlans.ISVU);
+            LicensePrice price = LicensePrice.Create(LicensePlans.Unlimited);
+            price.Plan.Should().Be(LicensePlans.Unlimited);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(1219);
             price.Yearly.Should().Be(13109);
@@ -123,7 +123,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 {"yearly_price", 251451544536523.36 },
             };
 
-            LicensePrice price = LicensePrice.Create(LicensePlans.Community, expected);
+            LicensePrice price = LicensePrice.Create(LicensePlans.Demo, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);
@@ -143,12 +143,12 @@ namespace PerpetualIntelligence.Cli.Licensing
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);
 
-            price = LicensePrice.Create(LicensePlans.ISV, expected);
+            price = LicensePrice.Create(LicensePlans.OnPremise, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);
 
-            price = LicensePrice.Create(LicensePlans.ISVU, expected);
+            price = LicensePrice.Create(LicensePlans.Unlimited, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);

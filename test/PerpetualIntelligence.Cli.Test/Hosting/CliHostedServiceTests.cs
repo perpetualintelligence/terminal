@@ -90,7 +90,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             logger.Messages[2].Should().Be("subject=");
             logger.Messages[3].Should().Be("license_handler=offline");
             logger.Messages[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
-            logger.Messages[5].Should().Be("plan=urn:oneimlx:lic:plan:community");
+            logger.Messages[5].Should().Be("plan=urn:oneimlx:lic:plan:demo");
             logger.Messages[6].Should().Be("key_source=urn:oneimlx:lic:source:jsonfile");
             logger.Messages[7].Should().Be("key_file=testLicKey1");
         }
@@ -112,7 +112,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Educational()
         {
-            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Community, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Demo, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
         {
-            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Community, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Demo, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);

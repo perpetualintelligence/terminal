@@ -131,7 +131,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         /// <param name="license">The extracted license.</param>
         internal virtual Task PrintHostApplicationMandatoryLicensingAsync(License license)
         {
-            if (license.Plan == LicensePlans.Community)
+            if (license.Plan == LicensePlans.Demo)
             {
                 if (license.Usage == LicenseUsages.Educational)
                 {

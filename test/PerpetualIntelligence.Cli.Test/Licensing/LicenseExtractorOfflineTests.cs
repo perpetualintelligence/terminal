@@ -319,11 +319,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             // plan, mode and usage
             result.License.ProviderId.Should().Be("urn:oneimlx:lic:pvdr:pi");
             cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
-            result.License.Plan.Should().Be("urn:oneimlx:lic:plan:isvu");
+            result.License.Plan.Should().Be("urn:oneimlx:lic:plan:unlimited");
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:rnd");
 
             // claims
-            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:isvu urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:unlimited urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
             result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/a8379958-ea19-4918-84dc-199bf012361e/v2.0");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:cli");
             result.License.Claims.TenantCountry.Should().Be("USA");
@@ -343,10 +343,10 @@ namespace PerpetualIntelligence.Cli.Licensing
             result.License.Claims.Custom.Should().BeNull();
 
             // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:lic:plan:isvu");
+            result.License.Limits.Plan.Should().Be("urn:oneimlx:lic:plan:unlimited");
 
             // Price
-            result.License.Price.Plan.Should().Be("urn:oneimlx:lic:plan:isvu");
+            result.License.Price.Plan.Should().Be("urn:oneimlx:lic:plan:unlimited");
             result.License.Price.Currency.Should().Be("USD");
             result.License.Price.Monthly.Should().Be(1219.0);
             result.License.Price.Yearly.Should().Be(13109.0);

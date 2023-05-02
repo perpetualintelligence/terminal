@@ -19,9 +19,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void CommunityEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Community);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Demo);
 
-            limits.Plan.Should().Be(LicensePlans.Community);
+            limits.Plan.Should().Be(LicensePlans.Demo);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);
@@ -171,9 +171,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void ISVEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(LicensePlans.ISV);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.OnPremise);
 
-            limits.Plan.Should().Be(LicensePlans.ISV);
+            limits.Plan.Should().Be(LicensePlans.OnPremise);
 
             limits.TerminalLimit.Should().Be(25);
             limits.RedistributionLimit.Should().Be(10000);
@@ -198,9 +198,9 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void ISVUEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(LicensePlans.ISVU);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Unlimited);
 
-            limits.Plan.Should().Be(LicensePlans.ISVU);
+            limits.Plan.Should().Be(LicensePlans.Unlimited);
 
             limits.TerminalLimit.Should().Be(null);
             limits.RedistributionLimit.Should().Be(null);
@@ -286,7 +286,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                 { "text_handlers", new[] { "new1", "new2" } }
             };
 
-            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Community, expected);
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Demo, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
@@ -306,12 +306,12 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(LicensePlans.ISV, expected);
+            limits = LicenseLimits.Create(LicensePlans.OnPremise, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(LicensePlans.ISVU, expected);
+            limits = LicenseLimits.Create(LicensePlans.Unlimited, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
