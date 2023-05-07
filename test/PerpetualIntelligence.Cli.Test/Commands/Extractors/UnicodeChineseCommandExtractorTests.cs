@@ -30,13 +30,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task UnicodeGroupedCommand_Should_Extract_Correctly()
         {
-            CommandExtractorContext context = new(new CommandString("統一碼 測試"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "統一碼 測試"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("統一碼 測試", result.CommandDescriptor.Prefix);
-            Assert.IsFalse(result.CommandDescriptor.IsRoot);
-            Assert.IsTrue(result.CommandDescriptor.IsGroup);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("統一碼 測試", result.Command.Descriptor.Prefix);
+            Assert.IsFalse(result.Command.Descriptor.IsRoot);
+            Assert.IsTrue(result.Command.Descriptor.IsGroup);
 
             Assert.IsNotNull(result.Command);
             Assert.AreEqual("uc6", result.Command.Id);
@@ -48,19 +48,19 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task UnicodeGroupedCommand_With_Imcomplete_Prefix_ShouldError()
         {
-            CommandExtractorContext context = new(new CommandString("測試"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "測試"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=測試");
         }
 
         [TestMethod]
         public async Task UnicodeRootCommand_Should_Extract_Correctly()
         {
-            CommandExtractorContext context = new(new CommandString("統一碼"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "統一碼"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("統一碼", result.CommandDescriptor.Prefix);
-            Assert.IsTrue(result.CommandDescriptor.IsRoot);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("統一碼", result.Command.Descriptor.Prefix);
+            Assert.IsTrue(result.Command.Descriptor.IsRoot);
 
             Assert.IsNotNull(result.Command);
             Assert.AreEqual("uc5", result.Command.Id);
@@ -73,11 +73,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task UnicodeSubCommand_Alias_Should_Extract_Correctly()
         {
             // 第一 is alias
-            CommandExtractorContext context = new(new CommandString("統一碼 測試 打印 -第一 第一個值 --第二 --第三 第三個值 --第四 253.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "統一碼 測試 打印 -第一 第一個值 --第二 --第三 第三個值 --第四 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("統一碼 測試 打印", result.CommandDescriptor.Prefix);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("統一碼 測試 打印", result.Command.Descriptor.Prefix);
 
             Assert.IsNotNull(result.Command);
             Assert.AreEqual("uc7", result.Command.Id);
@@ -99,11 +99,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.DefaultOption = true;
 
             // 第一 is required and has default value
-            CommandExtractorContext context = new(new CommandString("統一碼 測試 打印 --第二 --第三 第三個值 --第四 253.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "統一碼 測試 打印 --第二 --第三 第三個值 --第四 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("統一碼 測試 打印", result.CommandDescriptor.Prefix);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("統一碼 測試 打印", result.Command.Descriptor.Prefix);
 
             Assert.IsNotNull(result.Command);
             Assert.AreEqual("uc7", result.Command.Id);
@@ -123,11 +123,11 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task UnicodeSubCommand_Should_Extract_Correctly()
         {
-            CommandExtractorContext context = new(new CommandString("統一碼 測試 打印 --第一的 第一個值 --第二 --第三 第三個值 --第四 253.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "統一碼 測試 打印 --第一的 第一個值 --第二 --第三 第三個值 --第四 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("統一碼 測試 打印", result.CommandDescriptor.Prefix);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("統一碼 測試 打印", result.Command.Descriptor.Prefix);
 
             Assert.IsNotNull(result.Command);
             Assert.AreEqual("uc7", result.Command.Id);

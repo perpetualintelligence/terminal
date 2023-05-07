@@ -27,20 +27,14 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                 throw new System.ArgumentException($"'{nameof(rawCommandString)}' cannot be null or whitespace.", nameof(rawCommandString));
             }
 
-            RawCommandString = rawCommandString;
             CancellationToken = cancellationToken;
-            Route = new CommandRoute(Guid.NewGuid().ToString());
+            Route = new CommandRoute(Guid.NewGuid().ToString(), rawCommandString);
         }
 
         /// <summary>
         /// The cancellation token.
         /// </summary>
         public CancellationToken CancellationToken { get; }
-
-        /// <summary>
-        /// The raw command string.
-        /// </summary>
-        public string RawCommandString { get; }
 
         /// <summary>
         /// The command route.

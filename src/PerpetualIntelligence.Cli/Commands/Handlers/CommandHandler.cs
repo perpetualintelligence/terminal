@@ -60,7 +60,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Issue a before run event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.BeforeCommandRunAsync(context.CommandRoute, context.Command);
+                await asyncEventHandler.BeforeCommandRunAsync(context.Command);
             }
 
             // Find the runner to run the command
@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Issue a after run event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.AfterCommandRunAsync(context.CommandRoute, context.Command, runnerResult);
+                await asyncEventHandler.AfterCommandRunAsync(context.Command, runnerResult);
             }
 
             return runnerResult;
@@ -96,17 +96,17 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             // Issue a before check event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.BeforeCommandCheckAsync(context.CommandRoute, context.CommandDescriptor, context.Command);
+                await asyncEventHandler.BeforeCommandCheckAsync(context.Command);
             }
 
             // Find the checker and check the command
             ICommandChecker commandChecker = await FindCheckerOrThrowAsync(context);
-            var result = await commandChecker.CheckAsync(new CommandCheckerContext(context.CommandDescriptor, context.Command));
+            var result = await commandChecker.CheckAsync(new CommandCheckerContext(context.Command));
 
             // Issue a after check event if configured
             if (asyncEventHandler != null)
             {
-                await asyncEventHandler.AfterCommandCheckAsync(context.CommandRoute, context.CommandDescriptor, context.Command, result);
+                await asyncEventHandler.AfterCommandCheckAsync(context.Command, result);
             }
 
             return result;
@@ -115,22 +115,22 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         private Task<ICommandChecker> FindCheckerOrThrowAsync(CommandHandlerContext context)
         {
             // No checker configured.
-            if (context.CommandDescriptor.Checker == null)
+            if (context.Command.Descriptor.Checker == null)
             {
-                throw new ErrorException(Errors.ServerError, "The command checker is not configured. command_name={0} command_id={1}", context.CommandDescriptor.Name, context.CommandDescriptor.Id);
+                throw new ErrorException(Errors.ServerError, "The command checker is not configured. command_name={0} command_id={1}", context.Command.Descriptor.Name, context.Command.Descriptor.Id);
             }
 
             // Not added to service collection
-            object? checkerObj = services.GetService(context.CommandDescriptor.Checker);
+            object? checkerObj = services.GetService(context.Command.Descriptor.Checker);
             if (checkerObj == null)
             {
-                throw new ErrorException(Errors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Checker.FullName);
+                throw new ErrorException(Errors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.FullName);
             }
 
             // Invalid checker configured
             if (checkerObj is not ICommandChecker checker)
             {
-                throw new ErrorException(Errors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Checker.FullName);
+                throw new ErrorException(Errors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.FullName);
             }
 
             return Task.FromResult(checker);
@@ -139,22 +139,22 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
         private Task<IDelegateCommandRunner> FindRunnerOrThrowAsync(CommandHandlerContext context)
         {
             // No runner configured.
-            if (context.CommandDescriptor.Runner == null)
+            if (context.Command.Descriptor.Runner == null)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner is not configured. command_name={0} command_id={1}", context.CommandDescriptor.Name, context.CommandDescriptor.Id);
+                throw new ErrorException(Errors.ServerError, "The command runner is not configured. command_name={0} command_id={1}", context.Command.Descriptor.Name, context.Command.Descriptor.Id);
             }
 
             // Not added to service collection
-            object? runnerObj = services.GetService(context.CommandDescriptor.Runner);
+            object? runnerObj = services.GetService(context.Command.Descriptor.Runner);
             if (runnerObj == null)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Runner.FullName);
+                throw new ErrorException(Errors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.FullName);
             }
 
             // Invalid runner configured
             if (runnerObj is not IDelegateCommandRunner runnerDelegate)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.CommandDescriptor.Name, context.CommandDescriptor.Id, context.CommandDescriptor.Runner.FullName);
+                throw new ErrorException(Errors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.FullName);
             }
 
             return Task.FromResult(runnerDelegate);

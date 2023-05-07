@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         [TestMethod]
         public async Task ExtractorNoExtractedCommandDescriptorShouldNotRouteFurtherAsync()
         {
-            commandExtractor.IsExplicitNoCommandIdenitity = true;
+            commandExtractor.IsExplicitNoCommandDescriptor = true;
 
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
 
@@ -110,9 +110,9 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             var result = await router.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
-            Assert.AreEqual("test_id", commandHandler.ContextCalled.CommandDescriptor.Id);
-            Assert.AreEqual("test_name", commandHandler.ContextCalled.CommandDescriptor.Name);
-            Assert.AreEqual("test_prefix", commandHandler.ContextCalled.CommandDescriptor.Prefix);
+            Assert.AreEqual("test_id", commandHandler.ContextCalled.Command.Descriptor.Id);
+            Assert.AreEqual("test_name", commandHandler.ContextCalled.Command.Descriptor.Name);
+            Assert.AreEqual("test_prefix", commandHandler.ContextCalled.Command.Descriptor.Prefix);
 
             Assert.AreEqual("test_id", commandHandler.ContextCalled.Command.Id);
             Assert.AreEqual("test_name", commandHandler.ContextCalled.Command.Name);
@@ -152,7 +152,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
 
             Assert.IsNotNull(commandHandler.ContextCalled);
             commandHandler.Called.Should().BeTrue();
-            commandHandler.ContextCalled.CommandRoute.Should().BeSameAs(routerContext.Route);
+            commandHandler.ContextCalled.Command.Route.Id.Should().Be("id1");
         }
 
         [TestMethod]
@@ -163,6 +163,34 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(licenseExtractor, null, commandHandler), "Value cannot be null. (Parameter 'commandExtractor')");
             TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(licenseExtractor, commandExtractor, null), "Value cannot be null. (Parameter 'commandHandler')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        }
+
+        [TestMethod]
+        public async Task ShouldCallRunnerEventIfConfigured()
+        {
+            //CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            //var result = await router.RouteAsync(routerContext);
+
+            //Assert.IsNotNull(commandHandler.ContextCalled);
+            //commandHandler.Called.Should().BeTrue();
+            //commandHandler.ContextCalled.CommandRoute.Should().BeSameAs(routerContext.Route);
+
+            //var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
+            //host = hostBuilder.Build();
+            //handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
+
+            //command.Item1.Checker = typeof(MockCommandCheckerInner);
+            //command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
+
+            //MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<IAsyncEventHandler>();
+            //asyncEventHandler.BeforeRunCalled.Should().Be(false);
+            //asyncEventHandler.AfterRunCalled.Should().Be(false);
+
+            //CommandHandlerContext commandContext = new(new CommandRoute("test_id", "test_raw"), command.Item1, command.Item2, license);
+            //var result = await handler.HandleAsync(commandContext);
+
+            //asyncEventHandler.BeforeRunCalled.Should().Be(true);
+            //asyncEventHandler.AfterRunCalled.Should().Be(true);
         }
 
         protected override void OnTestCleanup()

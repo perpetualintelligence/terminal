@@ -7,6 +7,7 @@
 
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Extractors;
+using PerpetualIntelligence.Cli.Commands.Routers;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Mocks
@@ -20,7 +21,7 @@ namespace PerpetualIntelligence.Cli.Mocks
             Called = true;
 
             var cIdt = new Commands.CommandDescriptor("testid", "testname", "testname", "desc");
-            return Task.FromResult(new CommandExtractorResult(new Command(cIdt), cIdt));
+            return Task.FromResult(new CommandExtractorResult(new Command(new CommandRoute("id1", "test"), cIdt)));
         }
     }
 }

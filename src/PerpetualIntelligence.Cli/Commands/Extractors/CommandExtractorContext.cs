@@ -17,15 +17,15 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandString">The command string.</param>
-        public CommandExtractorContext(CommandString commandString)
+        /// <param name="commandRoute">The command route.</param>
+        public CommandExtractorContext(CommandRoute commandRoute)
         {
-            CommandString = commandString ?? throw new ArgumentNullException(nameof(commandString));
+            Route = commandRoute ?? throw new ArgumentNullException(nameof(commandRoute));
         }
 
         /// <summary>
-        /// The command string.
+        /// The command route.
         /// </summary>
-        public CommandString CommandString { get; set; }
+        public CommandRoute Route { get; set; }
     }
 }

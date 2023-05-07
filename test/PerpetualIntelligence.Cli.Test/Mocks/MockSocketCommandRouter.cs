@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Cli.Mocks
         {
             // Stats
             RouteCalled = true;
-            RawCommandStrings.Add(context.RawCommandString);
+            RawCommandStrings.Add(context.Route.Command.Raw);
             RouteCounter += 1;
 
             // Add delay

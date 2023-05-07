@@ -8,6 +8,7 @@
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Checkers;
 using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners;
 using PerpetualIntelligence.Shared.Attributes.Validation;
 using System;
@@ -267,7 +268,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 IsRoot = isRoot.GetValueOrDefault()
             };
 
-            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options));
+            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(new CommandRoute("id1", "test"), cmd1, options));
         }
 
         public static List<CommandDescriptor> AliasCommands;
