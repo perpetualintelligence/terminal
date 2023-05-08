@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_invalid_alias=value1 --key2=value2 -key3_alias=value3 --key4=25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_invalid_alias=value1 --key2=value2 -key3_alias=value3 --key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
@@ -77,7 +77,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 --key2=value2 -key3_alias=value3 --key4_invalid=25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 --key2=value2 -key3_alias=value3 --key4_invalid=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
@@ -102,7 +102,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_invalid_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_invalid_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2_invalid=value2 -key3_alias=value3 -key4=25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2_invalid=value2 -key3_alias=value3 -key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
@@ -152,10 +152,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.AreEqual(prefix, result.CommandDescriptor.Prefix);
+            Assert.AreEqual(prefix, result.Command.Descriptor.Prefix);
             Assert.AreEqual(cmdId, result.Command.Id);
 
             Assert.IsNotNull(result.Command.Options);
@@ -181,10 +181,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
 
             // key1 with alias key1_alias is default arg with default value key1 default value
-            CommandExtractorContext context = new(new CommandString($"{prefix} -key2=value2 -key3_alias=value3 -key4=25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key2=value2 -key3_alias=value3 -key4=25.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.AreEqual(prefix, result.CommandDescriptor.Prefix);
+            Assert.AreEqual(prefix, result.Command.Descriptor.Prefix);
             Assert.AreEqual(cmdId, result.Command.Id);
 
             Assert.IsNotNull(result.Command.Options);
@@ -207,10 +207,10 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, null);
 
             // key1 with alias key1_alias is default arg for value1
-            CommandExtractorContext context = new(new CommandString($"{prefix} value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.AreEqual(prefix, result.CommandDescriptor.Prefix);
+            Assert.AreEqual(prefix, result.Command.Descriptor.Prefix);
             Assert.AreEqual(cmdId, result.Command.Id);
 
             Assert.IsNotNull(result.Command.Options);
@@ -233,7 +233,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new(new CommandString($"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                 () => extractor.ExtractAsync(context),
@@ -251,7 +251,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task BadCustomArgExtractorShouldErrorAsync()
         {
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("prefix1 -key1=value1 -key2=value2"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "prefix1 -key1=value1 -key2=value2"));
             var badExtractor = new CommandExtractor(commands, new MockBadOptionExtractor(), textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -270,7 +270,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task CommandDoesNotSupportArgsButUserPassedArgShouldErrorAsync()
         {
-            CommandExtractorContext context = new(new CommandString($"prefix4_noargs -key1=hello -key2=mello -key3 -key4=36.69"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix4_noargs -key1=hello -key2=mello -key3 -key4=36.69"));
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedOption, "The command does not support any options. command_name=name4 command_id=id4");
         }
@@ -287,7 +287,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new(new CommandString($"{prefix} -key1=value1 -key2=value2"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1=value1 -key2=value2"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, $"The command identifier is not valid. command_id={cmdId} regex={cliOptions.Extractor.CommandIdRegex}");
         }
 
@@ -304,7 +304,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.Separator = separator;
             cliOptions.Extractor.OptionValueSeparator = separator;
 
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString($"prefix1{separator}-key1{separator}value1{separator}-key2{separator}value2{separator}-key6{separator}-key9{separator}26.36"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", $"prefix1{separator}-key1{separator}value1{separator}-key2{separator}value2{separator}-key6{separator}-key9{separator}26.36"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNotNull(result.Command.Options);
@@ -330,7 +330,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // -> prefix1 -key=Test-prefix-message -key2=nosprefixmessage -key3=again-with-prefix
             cliOptions.Extractor.OptionPrefix = prefix;
 
-            CommandExtractorContext context = new(new CommandString($"prefix1 {prefix}key1=Test{prefix}prefix{prefix}message {prefix}key2=nospacemessage {prefix}key6 {prefix}key10=Again{prefix}with{prefix}prefix"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1 {prefix}key1=Test{prefix}prefix{prefix}message {prefix}key2=nospacemessage {prefix}key6 {prefix}key10=Again{prefix}with{prefix}prefix"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
@@ -356,7 +356,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // -> prefix1 -key=Test=separator=message -key2=nosseparatormessage -key3=again=with=separator
             cliOptions.Extractor.OptionValueSeparator = separator;
 
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString($"prefix1 -key1{separator}Test{separator}separator{separator}message -key2{separator}nosseparatormessage -key6 -key10{separator}Again{separator}with{separator}separator"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", $"prefix1 -key1{separator}Test{separator}separator{separator}message -key2{separator}nosseparatormessage -key6 -key10{separator}Again{separator}with{separator}separator"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
@@ -382,7 +382,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // -> prefix1 -key=Test space message -key2=nospacemessage -key3=Again with space
             cliOptions.Extractor.Separator = seperator;
 
-            CommandExtractorContext context = new(new CommandString($"prefix1{seperator}-key1=Test{seperator}space{seperator}message{seperator}-key2=nospacemessage{seperator}-key6{seperator}-key10=Again{seperator}with{seperator}space"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1{seperator}-key1=Test{seperator}space{seperator}message{seperator}-key2=nospacemessage{seperator}-key6{seperator}-key10=Again{seperator}with{seperator}space"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
@@ -408,7 +408,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // -> "prefix1 -key1=Test space message -key2=nospacemessage -key6 -key10=Again with space"
             cliOptions.Extractor.Separator = seperator;
 
-            CommandExtractorContext context = new(new CommandString($"prefix1{seperator}{seperator}{seperator}-key1=Test{seperator}{seperator}space{seperator}{seperator}{seperator}{seperator}message{seperator}{seperator}{seperator}-key2=nospacemessage{seperator}{seperator}-key6{seperator}{seperator}{seperator}{seperator}-key10=Again{seperator}with{seperator}{seperator}space"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1{seperator}{seperator}{seperator}-key1=Test{seperator}{seperator}space{seperator}{seperator}{seperator}{seperator}message{seperator}{seperator}{seperator}-key2=nospacemessage{seperator}{seperator}-key6{seperator}{seperator}{seperator}{seperator}-key10=Again{seperator}with{seperator}{seperator}space"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
@@ -431,7 +431,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             cliOptions.Extractor.Separator = separator;
 
-            CommandExtractorContext context = new(new CommandString($"prefix1{separator}-key1=Test space message{separator}{separator}{separator}{separator}{separator}"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1{separator}-key1=Test space message{separator}{separator}{separator}{separator}{separator}"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
@@ -447,13 +447,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.OptionValueWithIn = "\"";
 
             // No arg id
-            CommandExtractorContext context = new(new CommandString("prefix7_defaultarg \"key1_value\""));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix7_defaultarg \"key1_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
 
             // with arg id
-            context = new(new CommandString("prefix7_defaultarg -key1=\"key1_value\""));
+            context = new(new CommandRoute("id1", "prefix7_defaultarg -key1=\"key1_value\""));
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
@@ -467,14 +467,14 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.OptionValueWithIn = null;
 
             // value without arg id
-            CommandExtractorContext context = new(new CommandString("prefix7_defaultarg key1_value"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix7_defaultarg key1_value"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(1, result.Command.Options.Count);
             AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
 
             // value with arg id
-            context = new(new CommandString("prefix7_defaultarg -key1=key1_value"));
+            context = new(new CommandRoute("id1", "prefix7_defaultarg -key1=key1_value"));
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(1, result.Command.Options.Count);
@@ -488,12 +488,12 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.DefaultOption = true;
 
             // No default arg value
-            CommandExtractorContext context = new(new CommandString("prefix7_defaultarg"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix7_defaultarg"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNull(result.Command.Options);
 
             // No default arg value with other args
-            context = new(new CommandString("prefix7_defaultarg -key2=hello -key6"));
+            context = new(new CommandRoute("id1", "prefix7_defaultarg -key2=hello -key6"));
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(2, result.Command.Options.Count);
@@ -508,7 +508,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.DefaultOption = true;
             cliOptions.Extractor.DefaultOptionValue = true;
 
-            CommandExtractorContext context = new(new CommandString("prefix8_defaultarg_defaultvalue implitcit_default_value -key1=explicit_default_value"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix8_defaultarg_defaultvalue implitcit_default_value -key1=explicit_default_value"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                 () => extractor.ExtractAsync(context),
                 1,
@@ -525,13 +525,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.DefaultOptionValue = true;
 
             // No default arg, but it will be added because it has a default value
-            CommandExtractorContext context = new(new CommandString("prefix8_defaultarg_defaultvalue"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix8_defaultarg_defaultvalue"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1 default value");
 
             // with arg id
-            context = new(new CommandString("prefix8_defaultarg_defaultvalue -key2=key2_value -key3=3652669856"));
+            context = new(new CommandRoute("id1", "prefix8_defaultarg_defaultvalue -key2=key2_value -key3=3652669856"));
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             AssertOption(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "key2_value");
@@ -544,7 +544,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             cliOptions.Extractor.DefaultOptionValue = true;
 
-            CommandExtractorContext context = new(new CommandString("prefix5_default"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
             CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
@@ -556,7 +556,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.DefaultOptionValue = true;
 
             // This is just extracting no checking
-            CommandExtractorContext context = new(new CommandString("prefix5_default"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNotNull(result.Command.Options);
@@ -573,7 +573,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.DefaultOptionValue = true;
 
             // This is just extracting no checking
-            CommandExtractorContext context = new(new CommandString("prefix5_default -key6 -key10=user value"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default -key6 -key10=user value"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNotNull(result.Command.Options);
@@ -598,7 +598,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             cliOptions.Extractor.DefaultOptionValue = false;
 
             // This is just extracting no checking
-            CommandExtractorContext context = new(new CommandString("prefix5_default"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNull(result.Command.Options);
@@ -609,7 +609,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             cliOptions.Extractor.DefaultOptionValue = true;
 
-            CommandExtractorContext context = new(new CommandString("prefix6_empty_args"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix6_empty_args"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNull(result.Command.Options);
@@ -620,7 +620,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             cliOptions.Extractor.DefaultOptionValue = true;
 
-            CommandExtractorContext context = new(new CommandString("prefix4_noargs"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNull(result.Command.Options);
@@ -631,7 +631,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             cliOptions.Extractor.DefaultOptionValue = false;
 
-            CommandExtractorContext context = new(new CommandString("prefix5_default"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
             CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
             await noProviderExtrator.ExtractAsync(context);
         }
@@ -641,7 +641,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             cliOptions.Extractor.DefaultOptionValue = false;
 
-            CommandExtractorContext context = new(new CommandString("prefix4_noargs"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNull(result.Command.Options);
@@ -654,17 +654,17 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new(new CommandString("pi auth invalid"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi auth invalid"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
 
-            context = new CommandExtractorContext(new CommandString("pi auth invalid -key1=value1"));
+            context = new CommandExtractorContext(new CommandRoute("id1", "pi auth invalid -key1=value1"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
         }
 
         [TestMethod]
         public async Task MixedSupportedAndUnsupportedArgsShouldErrorAsync()
         {
-            CommandExtractorContext context = new(new CommandString($"prefix1 -key1=hello -keyunsupported1 -key2=mello -key6 -key4=36.69 -keyunsupported2=value"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1 -key1=hello -keyunsupported1 -key2=mello -key6 -key4=36.69 -keyunsupported2=value"));
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
@@ -693,54 +693,54 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task PrefixMatchButDifferentCommandNameShouldNotError()
         {
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("prefix1 -key1=value1 -key2=value2"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "prefix1 -key1=value1 -key2=value2"));
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("id1", result.CommandDescriptor.Id);
-            Assert.AreEqual("name1", result.CommandDescriptor.Name);
-            Assert.AreEqual("prefix1", result.CommandDescriptor.Prefix);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("id1", result.Command.Descriptor.Id);
+            Assert.AreEqual("name1", result.Command.Descriptor.Name);
+            Assert.AreEqual("prefix1", result.Command.Descriptor.Prefix);
         }
 
         [TestMethod]
         public async Task PrefixMatchSameCommandNameShouldNotError()
         {
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("name2 -key1=value1 -key2=value2"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "name2 -key1=value1 -key2=value2"));
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("id2", result.CommandDescriptor.Id);
-            Assert.AreEqual("name2", result.CommandDescriptor.Name);
-            Assert.AreEqual("name2", result.CommandDescriptor.Prefix);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("id2", result.Command.Descriptor.Id);
+            Assert.AreEqual("name2", result.Command.Descriptor.Name);
+            Assert.AreEqual("name2", result.Command.Descriptor.Prefix);
         }
 
         [TestMethod]
         public async Task PrefixMatchWithMultipleWordsShouldNotError()
         {
-            CommandExtractorContext context = new(new CommandString("prefix3 sub3 name3 -key1=value1 -key2=value2"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix3 sub3 name3 -key1=value1 -key2=value2"));
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("id3", result.CommandDescriptor.Id);
-            Assert.AreEqual("name3", result.CommandDescriptor.Name);
-            Assert.AreEqual("prefix3 sub3 name3", result.CommandDescriptor.Prefix);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("id3", result.Command.Descriptor.Id);
+            Assert.AreEqual("name3", result.Command.Descriptor.Name);
+            Assert.AreEqual("prefix3 sub3 name3", result.Command.Descriptor.Prefix);
         }
 
         [TestMethod]
         public async Task PrefixMismatchMultipleWordsShouldError()
         {
-            CommandExtractorContext context = new(new CommandString("invalid_prefix3 sub3 name3 -key1=value1 -key2=value2"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "invalid_prefix3 sub3 name3 -key1=value1 -key2=value2"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix3 sub3 name3");
         }
 
         [TestMethod]
         public async Task PrefixMismatchShouldError()
         {
-            CommandExtractorContext context = new(new CommandString("invalidprefix -key1=value1 -key2=value2"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "invalidprefix -key1=value1 -key2=value2"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalidprefix");
         }
 
         [TestMethod]
         public async Task TryMatchByPrefixShouldErrorIfNotFoundAsync()
         {
-            CommandExtractorContext context = new(new CommandString("invalid prefix1"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "invalid prefix1"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid prefix1");
         }
 
@@ -748,25 +748,25 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task TryMatchByPrefixWithInsufficientPharasesShouldErrorAsync()
         {
             // Missing name3
-            CommandExtractorContext context = new(new CommandString("prefix3 sub3"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix3 sub3"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=prefix3 sub3");
         }
 
         [TestMethod]
         public async Task TryMatchByPrefixWithMultiplePharasesShouldNotErrorIfMatchedAsync()
         {
-            CommandExtractorContext context = new(new CommandString("prefix3 sub3 name3"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix3 sub3 name3"));
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("id3", result.CommandDescriptor.Id);
-            Assert.AreEqual("name3", result.CommandDescriptor.Name);
-            Assert.AreEqual("prefix3 sub3 name3", result.CommandDescriptor.Prefix);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("id3", result.Command.Descriptor.Id);
+            Assert.AreEqual("name3", result.Command.Descriptor.Name);
+            Assert.AreEqual("prefix3 sub3 name3", result.Command.Descriptor.Prefix);
         }
 
         [TestMethod]
         public async Task UnsupportedOptionsShouldErrorMultipleAsync()
         {
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("prefix1 -invalid_key1=value1 -invalid_key2=value2 -invalid_key3=value3"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "prefix1 -invalid_key1=value1 -invalid_key2=value2 -invalid_key3=value3"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync
             (
                 () => extractor.ExtractAsync(context),
@@ -787,7 +787,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task UnsupportedCommandShouldErrorAsync()
         {
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("invalid_cmd"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "invalid_cmd"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_cmd");
         }
 
@@ -803,28 +803,28 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             cliOptions.Extractor.Separator = seperator;
 
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString($"name2{seperator}-key1=value1{seperator}-key2=value2{seperator}-key3=+1-2365985632{seperator}-key4=testmail@gmail.com{seperator}-key5=C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt{seperator}-key6{seperator}-key9=33.368"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", $"name2{seperator}-key1=value1{seperator}-key2=value2{seperator}-key3=+1-2365985632{seperator}-key4=testmail@gmail.com{seperator}-key5=C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt{seperator}-key6{seperator}-key9=33.368"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("id2", result.CommandDescriptor.Id);
-            Assert.AreEqual("name2", result.CommandDescriptor.Name);
-            Assert.AreEqual("name2", result.CommandDescriptor.Prefix);
-            Assert.AreEqual("desc2", result.CommandDescriptor.Description);
-            Assert.AreEqual(typeof(CommandChecker), result.CommandDescriptor.Checker);
-            Assert.AreEqual(typeof(CommandRunner<CommandRunnerResult>), result.CommandDescriptor.Runner);
-            Assert.IsNotNull(result.CommandDescriptor.OptionDescriptors);
-            Assert.AreEqual(10, result.CommandDescriptor.OptionDescriptors.Count);
-            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[0], "key1", DataType.Text, "Key1 value text");
-            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[1], "key2", DataType.Text, "Key2 value text");
-            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[2], "key3", DataType.PhoneNumber, "Key3 value phone");
-            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[3], "key4", DataType.EmailAddress, "Key4 value email");
-            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[4], "key5", DataType.Url, "Key5 value url");
-            AssertOptionIdentity(result.CommandDescriptor.OptionDescriptors[5], "key6", nameof(Boolean), "Key6 no value");
-            AssertOptionDescriptor(result.CommandDescriptor.OptionDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new DataValidationOptionValueChecker[] { new(new OneOfAttribute("INR", "USD", "EUR")) });
-            AssertOptionIdentity(result.CommandDescriptor.OptionDescriptors[7], "key8", nameof(Int32), "Key8 value custom int");
-            AssertOptionIdentity(result.CommandDescriptor.OptionDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new DataValidationOptionValueChecker[] { new(new RequiredAttribute()), new(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) });
-            AssertOptionIdentity(result.CommandDescriptor.OptionDescriptors[9], "key10", nameof(String), "Key10 value custom string");
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("id2", result.Command.Descriptor.Id);
+            Assert.AreEqual("name2", result.Command.Descriptor.Name);
+            Assert.AreEqual("name2", result.Command.Descriptor.Prefix);
+            Assert.AreEqual("desc2", result.Command.Descriptor.Description);
+            Assert.AreEqual(typeof(CommandChecker), result.Command.Descriptor.Checker);
+            Assert.AreEqual(typeof(CommandRunner<CommandRunnerResult>), result.Command.Descriptor.Runner);
+            Assert.IsNotNull(result.Command.Descriptor.OptionDescriptors);
+            Assert.AreEqual(10, result.Command.Descriptor.OptionDescriptors.Count);
+            AssertOptionDescriptor(result.Command.Descriptor.OptionDescriptors[0], "key1", DataType.Text, "Key1 value text");
+            AssertOptionDescriptor(result.Command.Descriptor.OptionDescriptors[1], "key2", DataType.Text, "Key2 value text");
+            AssertOptionDescriptor(result.Command.Descriptor.OptionDescriptors[2], "key3", DataType.PhoneNumber, "Key3 value phone");
+            AssertOptionDescriptor(result.Command.Descriptor.OptionDescriptors[3], "key4", DataType.EmailAddress, "Key4 value email");
+            AssertOptionDescriptor(result.Command.Descriptor.OptionDescriptors[4], "key5", DataType.Url, "Key5 value url");
+            AssertOptionIdentity(result.Command.Descriptor.OptionDescriptors[5], "key6", nameof(Boolean), "Key6 no value");
+            AssertOptionDescriptor(result.Command.Descriptor.OptionDescriptors[6], "key7", DataType.Currency, "Key7 value currency", new DataValidationOptionValueChecker[] { new(new OneOfAttribute("INR", "USD", "EUR")) });
+            AssertOptionIdentity(result.Command.Descriptor.OptionDescriptors[7], "key8", nameof(Int32), "Key8 value custom int");
+            AssertOptionIdentity(result.Command.Descriptor.OptionDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new DataValidationOptionValueChecker[] { new(new RequiredAttribute()), new(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) });
+            AssertOptionIdentity(result.Command.Descriptor.OptionDescriptors[9], "key10", nameof(String), "Key10 value custom string");
 
             // Supported options 10, user only passed 7
             Assert.IsNotNull(result.Command);
@@ -845,13 +845,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task ValidCommandStringWithOptionsButNoOptionsPassedShouldNotError()
         {
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("prefix1"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "prefix1"));
             var result = await extractor.ExtractAsync(context);
 
             // Args Supported
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.IsNotNull(result.CommandDescriptor.OptionDescriptors);
-            Assert.AreEqual(10, result.CommandDescriptor.OptionDescriptors.Count);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.IsNotNull(result.Command.Descriptor.OptionDescriptors);
+            Assert.AreEqual(10, result.Command.Descriptor.OptionDescriptors.Count);
 
             // No Args Passed
             Assert.IsNotNull(result.Command);
@@ -865,47 +865,47 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedCommands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
             extractor = new CommandExtractor(commands, argExtractor, textHandler, cliOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("pi"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "pi"));
             var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("orgid", result.CommandDescriptor.Id);
-            Assert.AreEqual("pi", result.CommandDescriptor.Name);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("orgid", result.Command.Descriptor.Id);
+            Assert.AreEqual("pi", result.Command.Descriptor.Name);
 
-            context = new CommandExtractorContext(new CommandString("pi auth"));
+            context = new CommandExtractorContext(new CommandRoute("id1", "pi auth"));
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("orgid:authid", result.CommandDescriptor.Id);
-            Assert.AreEqual("auth", result.CommandDescriptor.Name);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("orgid:authid", result.Command.Descriptor.Id);
+            Assert.AreEqual("auth", result.Command.Descriptor.Name);
 
-            context = new CommandExtractorContext(new CommandString("pi auth login"));
+            context = new CommandExtractorContext(new CommandRoute("id1", "pi auth login"));
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("orgid:authid:loginid", result.CommandDescriptor.Id);
-            Assert.AreEqual("login", result.CommandDescriptor.Name);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("orgid:authid:loginid", result.Command.Descriptor.Id);
+            Assert.AreEqual("login", result.Command.Descriptor.Name);
 
-            context = new CommandExtractorContext(new CommandString("pi auth slogin"));
+            context = new CommandExtractorContext(new CommandRoute("id1", "pi auth slogin"));
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("orgid:authid:sloginid", result.CommandDescriptor.Id);
-            Assert.AreEqual("slogin", result.CommandDescriptor.Name);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("orgid:authid:sloginid", result.Command.Descriptor.Id);
+            Assert.AreEqual("slogin", result.Command.Descriptor.Name);
 
-            context = new CommandExtractorContext(new CommandString("pi auth slogin oidc"));
+            context = new CommandExtractorContext(new CommandRoute("id1", "pi auth slogin oidc"));
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("orgid:authid:sloginid:oidc", result.CommandDescriptor.Id);
-            Assert.AreEqual("oidc", result.CommandDescriptor.Name);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("orgid:authid:sloginid:oidc", result.Command.Descriptor.Id);
+            Assert.AreEqual("oidc", result.Command.Descriptor.Name);
 
-            context = new CommandExtractorContext(new CommandString("pi auth slogin oauth"));
+            context = new CommandExtractorContext(new CommandRoute("id1", "pi auth slogin oauth"));
             result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.CommandDescriptor);
-            Assert.AreEqual("orgid:authid:sloginid:oauth", result.CommandDescriptor.Id);
-            Assert.AreEqual("oauth", result.CommandDescriptor.Name);
+            Assert.IsNotNull(result.Command.Descriptor);
+            Assert.AreEqual("orgid:authid:sloginid:oauth", result.Command.Descriptor.Id);
+            Assert.AreEqual("oauth", result.Command.Descriptor.Name);
         }
 
         [TestMethod]
         public async Task ValidCommandStringWithNoOptionsShouldNotErrorAsync()
         {
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("prefix4_noargs"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNull(result.Command.Options);
@@ -914,7 +914,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task ValidCommandStringWithNoSeparatorShouldErrorAsync()
         {
-            CommandExtractorContext context = new CommandExtractorContext(new CommandString("prefix1-key1=value1-key2=value2"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "prefix1-key1=value1-key2=value2"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
         }
 

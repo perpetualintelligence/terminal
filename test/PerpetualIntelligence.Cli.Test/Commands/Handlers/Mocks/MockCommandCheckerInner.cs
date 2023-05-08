@@ -6,18 +6,27 @@
 */
 
 using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
 {
     internal class MockCommandCheckerInner : ICommandChecker
     {
+        public bool ThrowException { get; set; }
+
+        public bool Called { get; private set; }
+
         public Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {
-            // all ok
-            return Task.FromResult(new CommandCheckerResult()
+            Called = true;
+
+            if (ThrowException)
             {
-            });
+                throw new ErrorException("test_c_error", "test_c_desc");
+            }
+
+            return Task.FromResult(new CommandCheckerResult());
         }
     }
 }

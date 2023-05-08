@@ -17,12 +17,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandDescriptor">The command descriptor.</param>
         /// <param name="command">The command to check.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public CommandCheckerContext(CommandDescriptor commandDescriptor, Command command)
+        public CommandCheckerContext(Command command)
         {
-            CommandDescriptor = commandDescriptor ?? throw new ArgumentNullException(nameof(commandDescriptor));
             Command = command ?? throw new ArgumentNullException(nameof(command));
         }
 
@@ -30,10 +28,5 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// The command to check.
         /// </summary>
         public Command Command { get; set; }
-
-        /// <summary>
-        /// The command descriptor.
-        /// </summary>
-        public CommandDescriptor CommandDescriptor { get; }
     }
 }

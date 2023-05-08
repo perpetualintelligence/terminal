@@ -36,14 +36,14 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             // If the command itself do not support any options then there is nothing much to check. Extractor will
             // reject any unsupported attributes.
-            if (context.CommandDescriptor.OptionDescriptors == null)
+            if (context.Command.Descriptor.OptionDescriptors == null)
             {
                 return new CommandCheckerResult();
             }
 
             // Check the options against the descriptor constraints
             // TODO: process multiple errors.
-            foreach (var argDescriptor in context.CommandDescriptor.OptionDescriptors)
+            foreach (var argDescriptor in context.Command.Descriptor.OptionDescriptors)
             {
                 // Optimize (not all options are required)
                 bool containsArg = context.Command.TryGetOption(argDescriptor.Id, out Option? arg);

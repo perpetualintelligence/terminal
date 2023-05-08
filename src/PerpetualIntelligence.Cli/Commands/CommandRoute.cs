@@ -7,17 +7,22 @@
 
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers
+namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>
-    /// Defines a command route with a unique identifiers for each command run.
+    /// Defines a unique command route.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="CommandRoute"/> implements <see cref="IEquatable{T}"/> with property <see cref="Id"/>.
+    /// </remarks>
     public sealed class CommandRoute : IEquatable<CommandRoute?>
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public CommandRoute(string id)
+        /// <param name="id">The command route identifier.</param>
+        /// <param name="raw">The command string.</param>
+        public CommandRoute(string id, string raw)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -25,12 +30,18 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             }
 
             Id = id;
+            Command = new(raw);
         }
 
         /// <summary>
-        /// The command run id.
+        /// The command route id.
         /// </summary>
         public string Id { get; }
+
+        /// <summary>
+        /// The command string.
+        /// </summary>
+        public CommandString Command { get; }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)

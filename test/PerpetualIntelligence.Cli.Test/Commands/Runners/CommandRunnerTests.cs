@@ -7,6 +7,7 @@
 
 using FluentAssertions;
 using PerpetualIntelligence.Cli.Commands.Handlers.Mocks;
+using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Commands.Runners.Mocks;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -22,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         public async Task HelpShouldThrowIfIHelpProviderIsNullAsync()
         {
             MockDefaultCommandRunner mockCommandRunner = new();
-            Func<Task> act = () => mockCommandRunner.HelpAsync(new CommandRunnerContext(new Command(new CommandDescriptor("id", "name", "prefix", "desc"))));
+            Func<Task> act = () => mockCommandRunner.HelpAsync(new CommandRunnerContext(new Command(new CommandRoute("id1", "test1"), new CommandDescriptor("id", "name", "prefix", "desc"))));
             await act.Should().ThrowAsync<ErrorException>().WithMessage("The help provider is missing in the configured services.");
         }
 
@@ -31,7 +32,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         {
             MockHelpProvider helpProvider = new MockHelpProvider();
             MockDefaultCommandRunner mockCommandRunner = new();
-            var result = await mockCommandRunner.DelegateHelpAsync(new CommandRunnerContext(new Command(new CommandDescriptor("id", "name", "prefix", "desc"))), helpProvider);
+            var result = await mockCommandRunner.DelegateHelpAsync(new CommandRunnerContext(new Command(new CommandRoute("id1", "test1"), new CommandDescriptor("id", "name", "prefix", "desc"))), helpProvider);
             mockCommandRunner.HelpCalled.Should().BeTrue();
             helpProvider.HelpCalled.Should().BeTrue();
             mockCommandRunner.RunCalled.Should().BeFalse();
@@ -42,7 +43,7 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
         public async Task DelegateRunShouldCallRunAsync()
         {
             MockDefaultCommandRunner mockCommandRunner = new();
-            var result = await mockCommandRunner.DelegateRunAsync(new CommandRunnerContext(new Command(new CommandDescriptor("id", "name", "prefix", "desc"))));
+            var result = await mockCommandRunner.DelegateRunAsync(new CommandRunnerContext(new Command(new CommandRoute("id1", "test1"), new CommandDescriptor("id", "name", "prefix", "desc"))));
             mockCommandRunner.RunCalled.Should().BeTrue();
             mockCommandRunner.HelpCalled.Should().BeFalse();
             result.Should().BeOfType<MockCommandRunnerInnerResult>();

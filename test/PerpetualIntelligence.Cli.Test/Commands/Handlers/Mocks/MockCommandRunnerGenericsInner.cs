@@ -6,6 +6,7 @@
 */
 
 using PerpetualIntelligence.Cli.Commands.Runners;
+using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
@@ -14,9 +15,17 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
     {
         public bool Called { get; private set; }
 
+        public bool ThrowException { get; set; }
+
         public override Task<MockGenericCommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
             Called = true;
+
+            if (ThrowException)
+            {
+                throw new ErrorException("test_error", "test_desc");
+            }
+
             return Task.FromResult(new MockGenericCommandRunnerResult());
         }
     }

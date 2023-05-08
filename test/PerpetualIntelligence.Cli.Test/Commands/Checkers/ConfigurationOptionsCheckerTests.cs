@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
+using PerpetualIntelligence.Cli.Commands.Routers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Cli.Stores;
@@ -197,7 +198,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options.Extractor.DefaultOption = true;
 
-            CommandExtractorContext context = new(new CommandString("prefix6_defaultarg"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "prefix6_defaultarg"));
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type=IDefaultOptionProvider");
         }

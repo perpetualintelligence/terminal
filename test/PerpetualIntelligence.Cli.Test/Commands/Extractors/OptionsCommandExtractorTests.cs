@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.DefaultOptionValue = false;
 
-            CommandExtractorContext context = new(new CommandString("pi     -key1_alias   value1  --key2-er  value2   --key6-a-s-xx-s --key9   25.36     -k12     "));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi     -key1_alias   value1  --key2-er  value2   --key6-a-s-xx-s --key9   25.36     -k12     "));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 5);
@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             options.Extractor.DefaultOptionValue = false;
             options.Extractor.OptionValueWithIn = "\"";
 
-            CommandExtractorContext context = new(new CommandString("pi     -key1_alias \"  value1 \"  --key2-er  \"value2     \" --key6-a-s-xx-s --key9   25.36     -k12     "));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi     -key1_alias \"  value1 \"  --key2-er  \"value2     \" --key6-a-s-xx-s --key9   25.36     -k12     "));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 5);
@@ -70,7 +70,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.OptionAlias = false;
 
-            CommandExtractorContext context = new(new CommandString("pi -key1_alias value1"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi -key1_alias value1"));
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
@@ -83,7 +83,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task AliasIdShouldExtractCorrectly()
         {
-            CommandExtractorContext context = new(new CommandString("pi -key1_alias value1"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi -key1_alias value1"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 1);
@@ -95,7 +95,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task AliasIdWithOptionPrefixShouldError()
         {
-            CommandExtractorContext context = new(new CommandString("pi --key1_alias value1"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1_alias value1"));
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                 () => extractor.ExtractAsync(context),
@@ -108,7 +108,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task ArgumentIdShouldExtractCorrectly()
         {
-            CommandExtractorContext context = new(new CommandString("pi --key1 value1"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNotNull(result.Command.Options);
@@ -121,7 +121,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.OptionAlias = false;
 
-            CommandExtractorContext context = new(new CommandString("pi    -key1     value1 "));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi    -key1     value1 "));
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
@@ -136,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.OptionAlias = false;
 
-            CommandExtractorContext context = new(new CommandString("pi -key1 value1"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi -key1 value1"));
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
@@ -149,7 +149,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         [TestMethod]
         public async Task ArgumentIdWithAliasPrefixShouldError()
         {
-            CommandExtractorContext context = new(new CommandString("pi -key1 value1"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi -key1 value1"));
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
@@ -164,7 +164,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.DefaultOptionValue = true;
 
-            CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1 --key2-er value2 --key6-a-s-xx-s"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 6);
@@ -184,7 +184,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.DefaultOptionValue = true;
 
-            CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 6);
@@ -204,7 +204,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.DefaultOptionValue = false;
 
-            CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 4);
@@ -221,7 +221,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.DefaultOptionValue = false;
 
-            CommandExtractorContext context = new(new CommandString("pi --key1 value1 --key2-er value2 -k3 (551) 208 9779 --key6-a-s-xx-s --key9 25.36 -k10 value10 -k11 --key12"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1 --key2-er value2 -k3 (551) 208 9779 --key6-a-s-xx-s --key9 25.36 -k10 value10 -k11 --key12"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 8);
@@ -242,7 +242,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.DefaultOptionValue = false;
 
-            CommandExtractorContext context = new(new CommandString("pi -k11 -k3 (551) 208 9779 --key9 25.36 --key2-er value2 --key12 --key6-a-s-xx-s --key1 value1 -k10 value10"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi -k11 -k3 (551) 208 9779 --key9 25.36 --key2-er value2 --key12 --key6-a-s-xx-s --key1 value1 -k10 value10"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 8);
@@ -263,7 +263,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.DefaultOptionValue = false;
 
-            CommandExtractorContext context = new(new CommandString("pi --key12 -k11 -k10 value10 --key9 25.36 --key6-a-s-xx-s -k3 (551) 208 9779 --key2-er value2 --key1 value1"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key12 -k11 -k10 value10 --key9 25.36 --key6-a-s-xx-s -k3 (551) 208 9779 --key2-er value2 --key1 value1"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", 8);
@@ -284,7 +284,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         {
             options.Extractor.OptionAlias = false;
 
-            CommandExtractorContext context = new(new CommandString("pi"));
+            CommandExtractorContext context = new(new CommandRoute("id1", "pi"));
             var result = await extractor.ExtractAsync(context);
 
             AssertCommand(result.Command, "orgid", "pi", null);

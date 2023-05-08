@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using PerpetualIntelligence.Cli.Commands.Handlers;
 using PerpetualIntelligence.Cli.Commands.Providers;
 using PerpetualIntelligence.Cli.Configuration.Options;
@@ -61,7 +60,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
         public async Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context)
         {
             // Find the command identify by prefix
-            CommandDescriptor commandDescriptor = await MatchByPrefixAsync(context.CommandString);
+            CommandDescriptor commandDescriptor = await MatchByPrefixAsync(context.Route.Command);
 
             // Extract the options. Options are optional for commands.
             Options? options = await ExtractOptionsOrThrowAsync(context, commandDescriptor);
@@ -69,13 +68,13 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             // Merge default option.
             options = await MergeDefaultOptionsOrThrowAsync(commandDescriptor, options);
 
-            return new CommandExtractorResult(new Command(commandDescriptor, options), commandDescriptor);
+            return new CommandExtractorResult(new Command(context.Route, commandDescriptor, options));
         }
 
         private async Task<Options?> ExtractOptionsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
         {
             // Remove the prefix from the start so we can get the option string.
-            string raw = context.CommandString.Raw;
+            string raw = context.Route.Command.Raw;
             string rawArgString = raw.TrimStart(commandDescriptor.Prefix, textHandler.Comparison);
 
             // Commands may not have options.
