@@ -16,6 +16,8 @@ namespace PerpetualIntelligence.Cli.Mocks
 {
     internal class MockAsyncEventHandler : IAsyncEventHandler
     {
+        public Command? PassedCommand { get; private set; }
+        public CommandRouterResult? PassedRouterResult { get; private set; }
         public bool AfterRouteCalled { get; private set; }
         public bool BeforeRouteCalled { get; private set; }
         public bool AfterRunCalled { get; private set; }
@@ -29,15 +31,13 @@ namespace PerpetualIntelligence.Cli.Mocks
             return Task.CompletedTask;
         }
 
-        public Task AfterCommandRouteAsync(Command command, CommandRunnerResult result)
+        public Task AfterCommandRouteAsync(Command? command, CommandRouterResult? result)
         {
+            PassedCommand = command;
+            PassedRouterResult = result;
+
             AfterRouteCalled = true;
             return Task.CompletedTask;
-        }
-
-        public Task AfterCommandRouteAsync(Command command, CommandRouterResult result)
-        {
-            throw new System.NotImplementedException();
         }
 
         public Task AfterCommandRunAsync(Command command, CommandRunnerResult result)
