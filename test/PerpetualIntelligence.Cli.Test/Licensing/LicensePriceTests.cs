@@ -49,13 +49,13 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         [Fact]
-        public void EnterpriseEdition_ShouldSetPriceCorrectly()
+        public void EnterpriseEdition_PriceCorrectly()
         {
             LicensePrice price = LicensePrice.Create(LicensePlans.Enterprise);
             price.Plan.Should().Be(LicensePlans.Enterprise);
             price.Currency.Should().Be("USD");
-            price.Monthly.Should().Be(219);
-            price.Yearly.Should().Be(2309);
+            price.Monthly.Should().Be(699);
+            price.Yearly.Should().Be(7529);
         }
 
         [Fact]
@@ -74,23 +74,23 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         [Fact]
-        public void ISVEdition_PriceCorrectly()
+        public void OnPremiseEdition_PriceCorrectly()
         {
             LicensePrice price = LicensePrice.Create(LicensePlans.OnPremise);
             price.Plan.Should().Be(LicensePlans.OnPremise);
             price.Currency.Should().Be("USD");
-            price.Monthly.Should().Be(619);
-            price.Yearly.Should().Be(6609);
+            price.Monthly.Should().Be(1299);
+            price.Yearly.Should().Be(14029);
         }
 
         [Fact]
-        public void ISVUEdition_PriceCorrectly()
+        public void UnlimitedEdition_PriceCorrectly()
         {
             LicensePrice price = LicensePrice.Create(LicensePlans.Unlimited);
             price.Plan.Should().Be(LicensePlans.Unlimited);
             price.Currency.Should().Be("USD");
-            price.Monthly.Should().Be(1219);
-            price.Yearly.Should().Be(13109);
+            price.Monthly.Should().Be(3299);
+            price.Yearly.Should().Be(35629);
         }
 
         [Fact]
@@ -99,8 +99,8 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicensePrice price = LicensePrice.Create(LicensePlans.Micro);
             price.Plan.Should().Be(LicensePlans.Micro);
             price.Currency.Should().Be("USD");
-            price.Monthly.Should().Be(19);
-            price.Yearly.Should().Be(199);
+            price.Monthly.Should().Be(49);
+            price.Yearly.Should().Be(529);
         }
 
         [Fact]
@@ -109,8 +109,8 @@ namespace PerpetualIntelligence.Cli.Licensing
             LicensePrice price = LicensePrice.Create(LicensePlans.SMB);
             price.Plan.Should().Be(LicensePlans.SMB);
             price.Currency.Should().Be("USD");
-            price.Monthly.Should().Be(119);
-            price.Yearly.Should().Be(1209);
+            price.Monthly.Should().Be(299);
+            price.Yearly.Should().Be(3229);
         }
 
         [Fact]

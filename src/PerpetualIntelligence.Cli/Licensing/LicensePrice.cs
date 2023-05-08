@@ -57,23 +57,23 @@ namespace PerpetualIntelligence.Cli.Licensing
                     }
                 case LicensePlans.Micro:
                     {
-                        return new LicensePrice("USD", 19, 199, saasPlan);
+                        return new LicensePrice("USD", 49, 529, saasPlan);
                     }
                 case LicensePlans.SMB:
                     {
-                        return new LicensePrice("USD", 119, 1209, saasPlan);
+                        return new LicensePrice("USD", 299, 3229, saasPlan);
                     }
                 case LicensePlans.Enterprise:
                     {
-                        return new LicensePrice("USD", 219, 2309, saasPlan);
+                        return new LicensePrice("USD", 699, 7529, saasPlan);
                     }
                 case LicensePlans.OnPremise:
                     {
-                        return new LicensePrice("USD", 619, 6609, saasPlan);
+                        return new LicensePrice("USD", 1299, 14029, saasPlan);
                     }
                 case LicensePlans.Unlimited:
                     {
-                        return new LicensePrice("USD", 1219, 13109, saasPlan);
+                        return new LicensePrice("USD", 3299, 35629, saasPlan);
                     }
                 case LicensePlans.Custom:
                     {

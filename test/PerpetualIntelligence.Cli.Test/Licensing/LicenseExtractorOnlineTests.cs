@@ -473,8 +473,8 @@ namespace PerpetualIntelligence.Cli.Licensing
             // Price
             result.License.Price.Plan.Should().Be("urn:oneimlx:lic:plan:unlimited");
             result.License.Price.Currency.Should().Be("USD");
-            result.License.Price.Monthly.Should().Be(1219.0);
-            result.License.Price.Yearly.Should().Be(13109.0);
+            result.License.Price.Monthly.Should().Be(3299.0);
+            result.License.Price.Yearly.Should().Be(35629.0);
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();
