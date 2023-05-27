@@ -5,28 +5,28 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 using PerpetualIntelligence.Test.Services;
+using Xunit;
 
 namespace PerpetualIntelligence.Cli
 {
-    [TestClass]
     public class HandlersTests
     {
-        [TestMethod]
+        [Fact]
         public void AssertHandlersAreValid()
         {
             TestHelper.AssertConstantCount(typeof(Handlers), 9);
 
-            Assert.AreEqual("boyl", Handlers.BoylHandler);
-            Assert.AreEqual("custom", Handlers.CustomHandler);
-            Assert.AreEqual("default", Handlers.DefaultHandler);
-            Assert.AreEqual("in-memory", Handlers.InMemoryHandler);
-            Assert.AreEqual("json", Handlers.JsonHandler);
-            Assert.AreEqual("offline", Handlers.OfflineHandler);
-            Assert.AreEqual("online", Handlers.OnlineHandler);
-            Assert.AreEqual("unicode", Handlers.UnicodeHandler);
-            Assert.AreEqual("ascii", Handlers.AsciiHandler);
+            Handlers.DevLicenseHandler.Should().Be("dev-license");
+            Handlers.CustomHandler.Should().Be("custom");
+            Handlers.DefaultHandler.Should().Be("default");
+            Handlers.InMemoryHandler.Should().Be("in-memory");
+            Handlers.JsonHandler.Should().Be("json");
+            Handlers.OfflineLicenseHandler.Should().Be("offline-license");
+            Handlers.OnlineLicenseHandler.Should().Be("online-license");
+            Handlers.UnicodeHandler.Should().Be("unicode");
+            Handlers.AsciiHandler.Should().Be("ascii");
         }
     }
 }

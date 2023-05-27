@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions = MockCliOptions.New();
             commandDescriptors = MockCommands.LicensingCommands;
             licenseChecker = new LicenseChecker(commandDescriptors, cliOptions, TestLogger.Create<LicenseChecker>());
-            license = new License("testProviderId2", Handlers.OnlineHandler,  LicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(LicensePlans.Unlimited), LicensePrice.Create(LicensePlans.Unlimited));
+            license = new License("testProviderId2", Handlers.OnlineLicenseHandler,  LicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(LicensePlans.Unlimited), LicensePrice.Create(LicensePlans.Unlimited));
         }
 
         [Fact]
@@ -258,13 +258,13 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public async Task CheckAsync_LicenseHandler_ShouldBehaveCorrectly()
         {
-            cliOptions.Handler.LicenseHandler = "online";
+            cliOptions.Handler.LicenseHandler = "online-license";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
-            cliOptions.Handler.LicenseHandler = "offline";
+            cliOptions.Handler.LicenseHandler = "offline-license";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
-            cliOptions.Handler.LicenseHandler = "byol";
+            cliOptions.Handler.LicenseHandler = "dev-license";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Null not allowed

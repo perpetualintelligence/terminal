@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
 
             options.DataTypeHandler.Should().BeNull();
             options.ErrorHandler.Should().Be(Handlers.DefaultHandler);
-            options.LicenseHandler.Should().Be(Handlers.OnlineHandler);
+            options.LicenseHandler.Should().Be(Handlers.OnlineLicenseHandler);
             options.ServiceHandler.Should().Be(Handlers.DefaultHandler);
             options.StoreHandler.Should().Be(Handlers.InMemoryHandler);
             options.TextHandler.Should().Be(Handlers.UnicodeHandler);

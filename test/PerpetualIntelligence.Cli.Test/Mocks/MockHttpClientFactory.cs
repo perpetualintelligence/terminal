@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Mocks
                 }
                 else if (name == "localhost")
                 {
-                    clients.Add(name, new HttpClient() { BaseAddress = new Uri("http://localhost:7071/api/") });
+                    clients.Add(name, new HttpClient() { BaseAddress = new Uri(" http://localhost:7097/api/") });
                 }
                 else if (name == "prod")
                 {

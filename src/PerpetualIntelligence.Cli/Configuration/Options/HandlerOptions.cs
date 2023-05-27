@@ -43,23 +43,22 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public string ErrorHandler { get; set; } = "default";
 
         /// <summary>
-        /// The license handler. Its value can be <c>online</c>, <c>offline</c>, or <c>byol</c>. The <c>offline</c> or
-        /// <c>byol</c> are reserved for future releases.
+        /// The license handler. Its value can be <c>online-license</c>, <c>offline-license</c>, or <c>dev-license</c>.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// <c>online</c> handler checks your license key online. Your CLI terminal needs network access during startup.
+        /// <c>online-license</c> handler checks your license key online. Your CLI terminal needs network access during startup.
         /// </para>
         /// <para>
-        /// <c>offline</c> handler checks your license key offline. Your CLI terminal does not need network access
+        /// <c>offline-license</c> handler checks your license key offline. Your CLI terminal does not need network access
         /// during startup.
         /// </para>
         /// <para>
-        /// <c>boyl</c> handler allows you to bring you own license certificate to check the license key. Your CLI
+        /// <c>dev-license</c> handler allows you to bring you own license certificate to check the license key. Your CLI
         /// terminal may need network access during startup
         /// </para>
         /// </remarks>
-        public string LicenseHandler { get; set; } = "online";
+        public string LicenseHandler { get; set; } = "online-license";
 
         /// <summary>
         /// The hosting and routing dependency injection services. Its value can be <c>default</c> or <c>custom</c>. The

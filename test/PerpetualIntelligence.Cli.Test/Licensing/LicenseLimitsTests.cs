@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             demoClaims.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online"));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online-license"));
 
             demoClaims.Should().Contain(new KeyValuePair<string, object>("currency", "USD"));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("monthly_price", 0.0));
@@ -150,7 +150,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license" });
         }
 
         [Fact]
@@ -192,7 +192,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline", "byol" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "dev-license" });
         }
 
         [Fact]
@@ -219,7 +219,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline", "byol" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "dev-license" });
         }
 
         [Fact]
@@ -246,7 +246,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
         }
 
         [Fact]
@@ -273,7 +273,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
         }
 
         [Fact]

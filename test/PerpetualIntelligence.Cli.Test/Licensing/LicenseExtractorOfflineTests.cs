@@ -104,7 +104,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online"));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online-license"));
 
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("currency", "USD"));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("monthly_price", 0.0));
@@ -146,7 +146,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "invalid_auth_app";
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
@@ -171,7 +171,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = null;
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
         }
@@ -182,7 +182,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = nonJsonLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
 
             try
             {
@@ -195,14 +195,14 @@ namespace PerpetualIntelligence.Cli.Licensing
         }
 
         [Fact]
-        public async Task ExtractFromJsonAsync_BoylMode_ShouldErrorAsync()
+        public async Task ExtractFromJsonAsync_DevMode_ShouldErrorAsync()
         {
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
 
-            cliOptions.Handler.LicenseHandler = Handlers.BoylHandler;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=boyl");
+            cliOptions.Handler.LicenseHandler = Handlers.DevLicenseHandler;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=dev-license");
         }
 
         [Fact]
@@ -210,7 +210,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "invalid_app";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -224,7 +224,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             cliOptions.Licensing.ConsumerTenantId = "invalid_consumer";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             licenseExtractor = new LicenseExtractor(cliOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -237,7 +237,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -252,7 +252,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         {
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.Subject = "invalid_subject";
@@ -267,7 +267,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
@@ -281,7 +281,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
@@ -299,7 +299,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             cliOptions.Licensing.LicenseKey = testLicPath;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             cliOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             cliOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
@@ -318,7 +318,7 @@ namespace PerpetualIntelligence.Cli.Licensing
 
             // plan, mode and usage
             result.License.ProviderId.Should().Be("urn:oneimlx:lic:pvdr:pi");
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
             result.License.Plan.Should().Be("urn:oneimlx:lic:plan:unlimited");
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:rnd");
 
@@ -363,7 +363,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             cliOptions.Licensing.LicenseKey = null;
             cliOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source=urn:oneimlx:lic:source:jsonfile");
         }
@@ -372,7 +372,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         public async Task UnsupportedKeySource_ShouldErrorAsync()
         {
             cliOptions.Licensing.KeySource = "253";
-            cliOptions.Handler.LicenseHandler = Handlers.OfflineHandler;
+            cliOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source=253");
         }

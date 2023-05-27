@@ -203,11 +203,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             }
 
             // Online lic check
-            if (cliOptions.Handler.LicenseHandler == Handlers.OnlineHandler)
+            if (cliOptions.Handler.LicenseHandler == Handlers.OnlineLicenseHandler)
             {
                 return await EnsureOnlineLicenseAsync(licenseFileModel);
             }
-            else if (cliOptions.Handler.LicenseHandler == Handlers.OfflineHandler)
+            else if (cliOptions.Handler.LicenseHandler == Handlers.OfflineLicenseHandler)
             {
                 return await EnsureOfflineLicenseAsync(licenseFileModel);
             }

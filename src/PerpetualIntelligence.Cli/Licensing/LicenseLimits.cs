@@ -178,12 +178,12 @@ namespace PerpetualIntelligence.Cli.Licensing
                 { "default_argument_value", true },
                 { "strict_data_type", true },
 
-                { "data_type_handlers", "default" },
-                { "text_handlers", new[] { "unicode", "ascii" }.JoinBySpace() },
-                { "error_handlers", "default" },
-                { "store_handlers", "in-memory" },
-                { "service_handlers", "default" },
-                { "license_handlers", "online" },
+                { "data_type_handlers", Handlers.DefaultHandler },
+                { "text_handlers", new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler }.JoinBySpace() },
+                { "error_handlers", Handlers.DefaultHandler },
+                { "store_handlers", Handlers.InMemoryHandler },
+                { "service_handlers", Handlers.DefaultHandler },
+                { "license_handlers", Handlers.OnlineLicenseHandler },
 
                 { "currency", "USD" },
                 { "monthly_price", 0.0 },
@@ -215,11 +215,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 StrictDataType = false,
 
                 DataTypeHandlers = null,
-                TextHandlers = new[] { "unicode", "ascii" },
-                ErrorHandlers = new[] { "default" },
-                StoreHandlers = new[] { "in-memory" },
-                ServiceHandlers = new[] { "default" },
-                LicenseHandlers = new[] { "online" }
+                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
+                ErrorHandlers = new[] { Handlers.DefaultHandler },
+                StoreHandlers = new[] { Handlers.InMemoryHandler },
+                ServiceHandlers = new[] { Handlers.DefaultHandler },
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler }
             };
         }
 
@@ -269,12 +269,12 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { "default", "custom" },
-                TextHandlers = new[] { "unicode", "ascii" },
-                ErrorHandlers = new[] { "default", "custom" },
-                StoreHandlers = new[] { "in-memory", "json", "custom" },
-                ServiceHandlers = new[] { "default", "custom" },
-                LicenseHandlers = new[] { "online", "offline" }
+                DataTypeHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
+                ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
+                ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler }
             };
         }
 
@@ -295,12 +295,12 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { "default", "custom" },
-                TextHandlers = new[] { "unicode", "ascii" },
-                ErrorHandlers = new[] { "default", "custom" },
-                StoreHandlers = new[] { "in-memory", "json", "custom" },
-                ServiceHandlers = new[] { "default", "custom" },
-                LicenseHandlers = new[] { "online", "offline", "byol" }
+                DataTypeHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
+                ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
+                ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.DevLicenseHandler }
             };
         }
 
@@ -321,12 +321,12 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { "default", "custom" },
-                TextHandlers = new[] { "unicode", "ascii" },
-                ErrorHandlers = new[] { "default", "custom" },
-                StoreHandlers = new[] { "in-memory", "json", "custom" },
-                ServiceHandlers = new[] { "default", "custom" },
-                LicenseHandlers = new[] { "online", "offline", "byol" }
+                DataTypeHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
+                ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
+                ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.DevLicenseHandler }
             };
         }
 
@@ -348,11 +348,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 StrictDataType = false,
 
                 DataTypeHandlers = null,
-                TextHandlers = new[] { "unicode", "ascii" },
-                ErrorHandlers = new[] { "default" },
-                StoreHandlers = new[] { "in-memory" },
-                ServiceHandlers = new[] { "default" },
-                LicenseHandlers = new[] { "online" }
+                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
+                ErrorHandlers = new[] { Handlers.DefaultHandler },
+                StoreHandlers = new[] { Handlers.InMemoryHandler },
+                ServiceHandlers = new[] { Handlers.DefaultHandler },
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler }
             };
         }
 
@@ -373,12 +373,12 @@ namespace PerpetualIntelligence.Cli.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { "default" },
-                TextHandlers = new[] { "unicode", "ascii" },
-                ErrorHandlers = new[] { "default" },
-                StoreHandlers = new[] { "in-memory", "json" },
-                ServiceHandlers = new[] { "default" },
-                LicenseHandlers = new[] { "online" }
+                DataTypeHandlers = new[] { Handlers.DefaultHandler },
+                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
+                ErrorHandlers = new[] { Handlers.DefaultHandler },
+                StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler },
+                ServiceHandlers = new[] { Handlers.DefaultHandler },
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler }
             };
         }
     }

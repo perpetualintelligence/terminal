@@ -88,7 +88,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             logger.Messages[0].Should().Be("consumer=test_name (test_tenantid)");
             logger.Messages[1].Should().Be("country=");
             logger.Messages[2].Should().Be("subject=");
-            logger.Messages[3].Should().Be("license_handler=offline");
+            logger.Messages[3].Should().Be("license_handler=offline-license");
             logger.Messages[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
             logger.Messages[5].Should().Be("plan=urn:oneimlx:lic:plan:demo");
             logger.Messages[6].Should().Be("key_source=urn:oneimlx:lic:source:jsonfile");

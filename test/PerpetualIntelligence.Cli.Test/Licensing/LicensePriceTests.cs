@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         [Fact]
         public void CustomEdition_PriceCorrectly()
         {
-            Dictionary<string, object> expected = new Dictionary<string, object>()
+            Dictionary<string, object> expected = new()
             {
                 {"currency", "INR" },
                 {"monthly_price", 36523.36 },

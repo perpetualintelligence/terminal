@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Cli
         /// <summary>
         /// The <c>boyl</c> handler.
         /// </summary>
-        public const string BoylHandler = "boyl";
+        public const string DevLicenseHandler = "dev-license";
 
         /// <summary>
         /// The <c>custom</c> handler.
@@ -45,12 +45,12 @@ namespace PerpetualIntelligence.Cli
         /// <summary>
         /// The <c>offline</c> handler.
         /// </summary>
-        public const string OfflineHandler = "offline";
+        public const string OfflineLicenseHandler = "offline-license";
 
         /// <summary>
         /// The <c>boyl</c> handler.
         /// </summary>
-        public const string OnlineHandler = "online";
+        public const string OnlineLicenseHandler = "online-license";
 
         /// <summary>
         /// The <c>unicode</c> handler.
