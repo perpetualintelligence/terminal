@@ -104,10 +104,7 @@ namespace PerpetualIntelligence.Cli.Hosting
                 IEnumerable<CommandDescriptor> commandDescriptors = serviceProvider.GetServices<CommandDescriptor>();
                 foreach (CommandDescriptor commandDescriptor in commandDescriptors)
                 {
-                    if (commandDescriptor.OptionDescriptors == null)
-                    {
-                        commandDescriptor.OptionDescriptors = new OptionDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
-                    }
+                    commandDescriptor.OptionDescriptors ??= new OptionDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
 
                     OptionDescriptor helpDescriptor = new(options.Help.OptionId, nameof(Boolean), options.Help.OptionDescription) { Alias = options.Help.OptionAlias };
                     commandDescriptor.OptionDescriptors.Add(helpDescriptor);

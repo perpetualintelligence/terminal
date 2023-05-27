@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Cli.Commands.Handlers;
-using System;
 
 namespace PerpetualIntelligence.Cli.Commands.Routers
 {
@@ -24,16 +23,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// The command route.
         /// </summary>
         public CommandRoute Route { get; }
-
-        /// <summary>
-        /// The command route exception.
-        /// </summary>
-        public Exception? RouteException { get; }
-
-        public CommandRouterResult(Exception? routeException)
-        {
-            RouteException = routeException;
-        }
 
         /// <summary>
         /// Initialize a new instance.

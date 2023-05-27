@@ -243,11 +243,7 @@ namespace PerpetualIntelligence.Cli.Licensing
                     throw new ErrorException(error!);
                 }
 
-                LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>(await response.Content.ReadAsStreamAsync());
-                if (claims == null)
-                {
-                    throw new ErrorException(Errors.InvalidLicense, "The license claims are invalid.");
-                }
+                LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>(await response.Content.ReadAsStreamAsync()) ?? throw new ErrorException(Errors.InvalidLicense, "The license claims are invalid.");
 
                 // Check consumer with licensing options.
                 if (claims.TenantId != cliOptions.Licensing.ConsumerTenantId)

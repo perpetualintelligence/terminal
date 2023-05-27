@@ -8,6 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Cli.Commands;
 using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,8 +73,8 @@ namespace PerpetualIntelligence.Cli.Hosting
             }
 
             // Make sure the command runner and checker are added. TODO this may add duplicate types
-            cliBuilder.Services.AddTransient(commandDescriptor.Checker);
-            cliBuilder.Services.AddTransient(commandDescriptor.Runner);
+            cliBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new ErrorException(Errors.InvalidConfiguration, "Checker is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
+            cliBuilder.Services.AddTransient(commandDescriptor.Runner ?? throw new ErrorException(Errors.InvalidConfiguration, "Runner is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
             cliBuilder.Services.AddSingleton(commandDescriptor);
 
             return cliBuilder;

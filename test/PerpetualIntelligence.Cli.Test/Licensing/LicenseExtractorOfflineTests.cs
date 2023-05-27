@@ -380,13 +380,7 @@ namespace PerpetualIntelligence.Cli.Licensing
         private static string GetJsonLicenseFIleForLocalHostGithubSecretForCICD(string env)
         {
             // The demo json is too long for system env, so we use path for system env and json for github
-            string? fileOrJson = Environment.GetEnvironmentVariable(env);
-
-            if (fileOrJson == null)
-            {
-                throw new ErrorException(Errors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
-            }
-
+            string? fileOrJson = Environment.GetEnvironmentVariable(env) ?? throw new ErrorException(Errors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
             string json = fileOrJson;
             if (File.Exists(fileOrJson))
             {

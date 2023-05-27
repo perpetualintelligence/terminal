@@ -73,7 +73,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// <inheritdoc/>
         public static bool operator ==(DataValidationOptionValueChecker? left, DataValidationOptionValueChecker? right)
         {
-            return EqualityComparer<DataValidationOptionValueChecker>.Default.Equals(left, right);
+            return (left == right);
         }
 
         /// <inheritdoc/>

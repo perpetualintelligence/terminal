@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
         public bool RunCalled { get; private set; }
         public bool DelegateHelpCalled { get; private set; }
 
-        private IHelpProvider helpProvider;
+        private IHelpProvider helpProvider = null!;
 
         public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider)
         {

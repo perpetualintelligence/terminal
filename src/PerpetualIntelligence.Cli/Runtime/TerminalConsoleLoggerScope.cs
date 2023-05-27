@@ -10,7 +10,7 @@ using System;
 namespace PerpetualIntelligence.Cli.Runtime
 {
     /// <summary>
-    /// The <see cref="ITerminalLogger"/> scope.
+    /// The <see cref="TerminalLogger"/> scope.
     /// </summary>
     public sealed class TerminalConsoleLoggerScope<TState> : IDisposable
     {
