@@ -88,10 +88,10 @@ namespace PerpetualIntelligence.Cli.Commands.Runners
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "root_command_limit={0}", PrintNumber(license.Limits.RootCommandLimit));
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "grouped_command_limit={0}", PrintNumber(license.Limits.GroupedCommandLimit));
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument_limit={0}", PrintNumber(license.Limits.OptionLimit));
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "argument_alias={0}", license.Limits.OptionAlias.ToString());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_argument={0}", license.Limits.DefaultOption.ToString());
-                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_argument_value={0}", license.Limits.DefaultOptionValue.ToString());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "option_limit={0}", PrintNumber(license.Limits.OptionLimit));
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "option_alias={0}", license.Limits.OptionAlias.ToString());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_option={0}", license.Limits.DefaultOption.ToString());
+                    ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "default_option_value={0}", license.Limits.DefaultOptionValue.ToString());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "data_type_handlers={0}", license.Limits.DataTypeHandlers.JoinBySpace());
                     ConsoleHelper.WriteLineColor(ConsoleColor.Cyan, "test_handlers={0}", license.Limits.TextHandlers.JoinBySpace());

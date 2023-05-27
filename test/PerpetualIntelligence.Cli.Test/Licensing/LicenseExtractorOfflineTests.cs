@@ -92,11 +92,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 15));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("argument_limit", 100));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("option_limit", 100));
 
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("argument_alias", true));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("default_argument", true));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("default_argument_value", true));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("option_alias", true));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("default_option", true));
+            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("default_option_value", true));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
 
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));

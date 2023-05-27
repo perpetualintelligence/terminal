@@ -171,11 +171,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 { "root_command_limit", 1 },
                 { "grouped_command_limit", 2 },
                 { "sub_command_limit", 15 },
-                { "argument_limit", 100 },
+                { "option_limit", 100 },
 
-                { "argument_alias", true },
-                { "default_argument", true },
-                { "default_argument_value", true },
+                { "option_alias", true },
+                { "default_option", true },
+                { "default_option_value", true },
                 { "strict_data_type", true },
 
                 { "data_type_handlers", Handlers.DefaultHandler },
@@ -234,11 +234,11 @@ namespace PerpetualIntelligence.Cli.Licensing
                 RootCommandLimit = Convert.ToInt16(customClaims["root_command_limit"]),
                 GroupedCommandLimit = Convert.ToInt16(customClaims["grouped_command_limit"]),
                 SubCommandLimit = Convert.ToInt16(customClaims["sub_command_limit"]),
-                OptionLimit = Convert.ToInt16(customClaims["argument_limit"]),
+                OptionLimit = Convert.ToInt16(customClaims["option_limit"]),
 
-                OptionAlias = Convert.ToBoolean(customClaims["argument_alias"]),
-                DefaultOption = Convert.ToBoolean(customClaims["default_argument"]),
-                DefaultOptionValue = Convert.ToBoolean(customClaims["default_argument_value"]),
+                OptionAlias = Convert.ToBoolean(customClaims["option_alias"]),
+                DefaultOption = Convert.ToBoolean(customClaims["default_option"]),
+                DefaultOptionValue = Convert.ToBoolean(customClaims["default_option_value"]),
                 StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
 
                 DataTypeHandlers = customClaims["data_type_handlers"].ToString().SplitBySpace(),

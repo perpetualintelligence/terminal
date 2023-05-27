@@ -58,11 +58,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             claims.Add("root_command_limit", 3);
             claims.Add("grouped_command_limit", 4);
             claims.Add("sub_command_limit", 5);
-            claims.Add("argument_limit", 6);
+            claims.Add("option_limit", 6);
 
-            claims.Add("argument_alias", true);
-            claims.Add("default_argument", false);
-            claims.Add("default_argument_value", true);
+            claims.Add("option_alias", true);
+            claims.Add("default_option", false);
+            claims.Add("default_option_value", true);
             claims.Add("strict_data_type", false);
 
             claims.Add("data_type_handlers", "");
@@ -107,11 +107,11 @@ namespace PerpetualIntelligence.Cli.Licensing
             demoClaims.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 15));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("argument_limit", 100));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("option_limit", 100));
 
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("argument_alias", true));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("default_argument", true));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("default_argument_value", true));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("option_alias", true));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("default_option", true));
+            demoClaims.Should().Contain(new KeyValuePair<string, object>("default_option_value", true));
             demoClaims.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
 
             demoClaims.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
