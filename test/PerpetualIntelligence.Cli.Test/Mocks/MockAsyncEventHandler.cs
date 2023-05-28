@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Cli.Mocks
     {
         public Command? PassedCommand { get; private set; }
         public CommandRouterResult? PassedRouterResult { get; private set; }
-        public CommandRoute PassedRoute { get; private set; }
+        public CommandRoute? PassedRoute { get; private set; }
 
         public bool AfterRouteCalled { get; private set; }
         public bool BeforeRouteCalled { get; private set; }

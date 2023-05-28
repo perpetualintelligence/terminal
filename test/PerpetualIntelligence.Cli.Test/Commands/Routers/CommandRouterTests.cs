@@ -78,7 +78,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public async Task RouterShouldCallExtractorAsync()
         {
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
-            var result = await commandRouter.RouteAsync(routerContext);
+            await commandRouter.RouteAsync(routerContext);
             Assert.IsTrue(commandExtractor.Called);
         }
 
@@ -86,7 +86,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public async Task RouterShouldCallHandlerAfterExtractorAsync()
         {
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
-            var result = await commandRouter.RouteAsync(routerContext); ;
+            await commandRouter.RouteAsync(routerContext); ;
 
             Assert.IsTrue(commandExtractor.Called);
             Assert.IsTrue(commandHandler.Called);
@@ -108,7 +108,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public async Task RouterShouldPassExtracterCommandToHandlerAsync()
         {
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
-            var result = await commandRouter.RouteAsync(routerContext);
+            await commandRouter.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
             Assert.AreEqual("test_id", commandHandler.ContextCalled.Command.Descriptor.Id);
@@ -125,7 +125,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             licenseExtractor.NoLicense = false;
 
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
-            var result = await commandRouter.RouteAsync(routerContext);
+            await commandRouter.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
             Assert.AreEqual(licenseExtractor.TestLicense, commandHandler.ContextCalled.License);
@@ -149,7 +149,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public async Task RouterShouldPassRouteToHandler()
         {
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
-            var result = await commandRouter.RouteAsync(routerContext);
+            await commandRouter.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
             commandHandler.Called.Should().BeTrue();
@@ -173,16 +173,16 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
-            var result = await commandRouter.RouteAsync(routerContext);
+            await commandRouter.RouteAsync(routerContext);
 
             eventHandler.BeforeRouteCalled.Should().BeTrue();
             eventHandler.AfterRouteCalled.Should().BeTrue();
 
             eventHandler.PassedRoute.Should().NotBeNull();
+            eventHandler.PassedRoute!.Command.Raw.Should().Be("test_command_string");
+
             eventHandler.PassedCommand.Should().NotBeNull();
             eventHandler.PassedRouterResult.Should().NotBeNull();
-
-            eventHandler.PassedRoute.Command.Raw.Should().Be("test_command_string");
         }
 
         [TestMethod]
@@ -209,10 +209,10 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             eventHandler.AfterRouteCalled.Should().BeTrue();
 
             eventHandler.PassedRoute.Should().NotBeNull();
+            eventHandler.PassedRoute!.Command.Raw.Should().Be("test_command_string");
+
             eventHandler.PassedCommand.Should().BeNull();
             eventHandler.PassedRouterResult.Should().BeNull();
-
-            eventHandler.PassedRoute.Command.Raw.Should().Be("test_command_string");
         }
 
         [TestMethod]
@@ -223,7 +223,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
 
             commandRouter = new CommandRouter(licenseExtractor, commandExtractor, commandHandler, asyncEventHandler: null);
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
-            var result = await commandRouter.RouteAsync(routerContext);
+            await commandRouter.RouteAsync(routerContext);
 
             eventHandler.BeforeRouteCalled.Should().BeFalse();
             eventHandler.AfterRouteCalled.Should().BeFalse();
@@ -235,10 +235,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
 
         protected override void OnTestCleanup()
         {
-            if (host != null)
-            {
-                host.Dispose();
-            }
+            host?.Dispose();
         }
 
         protected override void OnTestInitialize()
@@ -246,7 +243,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>());
             host = hostBuilder.Build();
 
-            options = MockCliOptions.New();
             commandExtractor = new MockCommandExtractorInner();
             commandHandler = new MockCommandHandlerInner();
             licenseExtractor = new MockLicenseExtractorInner();
@@ -261,7 +257,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         private MockAsyncEventHandler eventHandler = null!;
         private IHost host = null!;
         private MockLicenseExtractorInner licenseExtractor = null!;
-        private CliOptions options = null!;
         private CommandRouter commandRouter = null!;
     }
 }
