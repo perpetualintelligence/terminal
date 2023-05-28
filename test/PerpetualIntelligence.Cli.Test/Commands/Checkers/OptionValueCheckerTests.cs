@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
             Option value = new(identity, "invalid_4242424242424242");
 
-            OptionCheckerContext context = new OptionCheckerContext(identity, value);
+            OptionCheckerContext context = new(identity, value);
             await checker.CheckAsync(context);
         }
 
@@ -125,7 +125,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
             Option value = new(identity, "invalid_4242424242424242");
 
-            OptionCheckerContext context = new OptionCheckerContext(identity, value);
+            OptionCheckerContext context = new(identity, value);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option value is not valid. option=arg1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
@@ -136,7 +136,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             Option value = new(identity, "test2");
 
             OptionCheckerContext context = new(identity, value);
-            OptionCheckerResult result = await checker.CheckAsync(context);
+            await checker.CheckAsync(context);
         }
 
         [TestMethod]
@@ -145,7 +145,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1");
             Option value = new(identity, "4242424242424242");
 
-            OptionCheckerContext context = new OptionCheckerContext(identity, value);
+            OptionCheckerContext context = new(identity, value);
             var result = await checker.CheckAsync(context);
             Assert.AreEqual(typeof(string), result.MappedType);
         }
@@ -159,7 +159,7 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         {
             options = MockCliOptions.New();
             mapper = new DataAnnotationsOptionDataTypeMapper(options, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
-            checker = new OptionChecker(mapper, options, TestLogger.Create<OptionChecker>());
+            checker = new OptionChecker(mapper, options);
         }
 
         private IOptionChecker checker = null!;

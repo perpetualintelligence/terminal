@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Cli.Commands.Mappers;
 using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -28,12 +27,10 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
         /// </summary>
         /// <param name="mapper">The option data-type mapper.</param>
         /// <param name="options">The configuration options.</param>
-        /// <param name="logger">The logger.</param>
-        public OptionChecker(IOptionDataTypeMapper mapper, CliOptions options, ILogger<OptionChecker> logger)
+        public OptionChecker(IOptionDataTypeMapper mapper, CliOptions options)
         {
             this.mapper = mapper;
             this.options = options;
-            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -95,7 +92,6 @@ namespace PerpetualIntelligence.Cli.Commands.Checkers
             return Task.FromResult(new OptionCheckerResult(mapperResult.MappedType));
         }
 
-        private readonly ILogger<OptionChecker> logger;
         private readonly IOptionDataTypeMapper mapper;
         private readonly CliOptions options;
     }
