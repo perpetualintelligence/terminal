@@ -28,12 +28,15 @@ namespace PerpetualIntelligence.Cli.Events
         /// <summary>
         /// Override this method if you will perform an asynchronous operation after <see cref="ICommandRouter"/> ends a command route and process the command result.
         /// </summary>
-        /// <param name="command">The command object.</param>
-        /// <param name="result">The command router result.</param>
+        /// <param name="commandRoute">The command route.</param>
+        /// <param name="command">The command object. May be <c>null</c>.</param>
+        /// <param name="result">The command router result. May be <c>null</c>.</param>
         /// <remarks>
-        /// The framework will call <see cref="AfterCommandRouteAsync(Command?, CommandRouterResult?)"/> even if there is an error during command routing.
+        /// The framework will call <see cref="AfterCommandRouteAsync(CommandRoute, Command?, CommandRouterResult?)"/> even if there is an error during command routing.
+        /// The <c>command</c> and <c>result</c> parameters may be <c>null</c>. The router constructs a <c>command</c> object if the parser, handler, and checker pass
+        /// and routes a command to run.
         /// </remarks>
-        public Task AfterCommandRouteAsync(Command? command, CommandRouterResult? result);
+        public Task AfterCommandRouteAsync(CommandRoute commandRoute, Command? command, CommandRouterResult? result);
 
         /// <summary>
         /// Override this method if you will perform an asynchronous operation before <see cref="ICommandHandler"/> starts a command run.

@@ -18,6 +18,8 @@ namespace PerpetualIntelligence.Cli.Mocks
     {
         public Command? PassedCommand { get; private set; }
         public CommandRouterResult? PassedRouterResult { get; private set; }
+        public CommandRoute PassedRoute { get; private set; }
+
         public bool AfterRouteCalled { get; private set; }
         public bool BeforeRouteCalled { get; private set; }
         public bool AfterRunCalled { get; private set; }
@@ -31,8 +33,9 @@ namespace PerpetualIntelligence.Cli.Mocks
             return Task.CompletedTask;
         }
 
-        public Task AfterCommandRouteAsync(Command? command, CommandRouterResult? result)
+        public Task AfterCommandRouteAsync(CommandRoute route, Command? command, CommandRouterResult? result)
         {
+            PassedRoute = route;
             PassedCommand = command;
             PassedRouterResult = result;
 

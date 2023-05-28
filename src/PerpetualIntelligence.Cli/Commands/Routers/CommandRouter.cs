@@ -73,7 +73,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                 // Issue a after route event if configured
                 if (asyncEventHandler != null)
                 {
-                    await asyncEventHandler.AfterCommandRouteAsync(command, result);
+                    await asyncEventHandler.AfterCommandRouteAsync(context.Route, command, result);
                 }
             }
 

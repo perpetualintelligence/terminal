@@ -178,8 +178,11 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeTrue();
             eventHandler.AfterRouteCalled.Should().BeTrue();
 
+            eventHandler.PassedRoute.Should().NotBeNull();
             eventHandler.PassedCommand.Should().NotBeNull();
             eventHandler.PassedRouterResult.Should().NotBeNull();
+
+            eventHandler.PassedRoute.Command.Raw.Should().Be("test_command_string");
         }
 
         [TestMethod]
@@ -205,8 +208,11 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeTrue();
             eventHandler.AfterRouteCalled.Should().BeTrue();
 
+            eventHandler.PassedRoute.Should().NotBeNull();
             eventHandler.PassedCommand.Should().BeNull();
             eventHandler.PassedRouterResult.Should().BeNull();
+
+            eventHandler.PassedRoute.Command.Raw.Should().Be("test_command_string");
         }
 
         [TestMethod]
@@ -222,6 +228,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeFalse();
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
+            eventHandler.PassedRoute.Should().BeNull();
             eventHandler.PassedCommand.Should().BeNull();
             eventHandler.PassedRouterResult.Should().BeNull();
         }
