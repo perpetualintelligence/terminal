@@ -8,13 +8,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Shared.Licensing;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -196,7 +196,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             logger.LogInformation("Demo custom header line-2");
             logger.LogInformation("---------------------------------------------------------------------------------------------");
 
-            logger.LogInformation($"Starting server \"{Shared.Constants.CliUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
+            logger.LogInformation($"Starting server \"{Shared.Constants.TerminalUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
             return Task.CompletedTask;
         }
 
