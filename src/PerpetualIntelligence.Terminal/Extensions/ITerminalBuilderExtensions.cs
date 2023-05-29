@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Declarative;
@@ -21,7 +22,6 @@ using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Terminal.Stores;
-using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
     /// <summary>
     /// The <see cref="ITerminalBuilder"/> extension methods.
     /// </summary>
-    public static class ICliBuilderExtensions
+    public static class ITerminalBuilderExtensions
     {
         /// <summary>
         /// Adds the <see cref="IOptionDataTypeMapper"/> and <see cref="IOptionChecker"/> to the service collection.
@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCliOptions(this ITerminalBuilder builder)
+        public static ITerminalBuilder AddTerminalOptions(this ITerminalBuilder builder)
         {
             // Add options.
             builder.Services.AddOptions();

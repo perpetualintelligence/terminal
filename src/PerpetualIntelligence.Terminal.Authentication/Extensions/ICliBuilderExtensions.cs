@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 {
     /// <summary>
     /// </summary>
-    public static class ICliBuilderExtensions
+    public static class ITerminalBuilderExtensions
     {
         /// <summary>
         /// Adds authentication to the service collection.

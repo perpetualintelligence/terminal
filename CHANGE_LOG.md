@@ -2,7 +2,7 @@
 > Breaking Change
 - Rename `Cli` namespace to `Terminal`
 - Rename `CliOptions` to `TerminalOptions`
-- Rename `CliBuilder` to `TerminalBuilder`
+- Rename `TerminalBuilder` to `TerminalBuilder`
 
 # 4.4.2-rc*
 > Breaking Change

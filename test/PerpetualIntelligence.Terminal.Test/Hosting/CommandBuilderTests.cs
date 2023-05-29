@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         [Fact]
-        public void Build_Returns_Same_CliBuilder()
+        public void Build_Returns_Same_TerminalBuilder()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection);
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");

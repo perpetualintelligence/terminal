@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddCliBuilderShouldPopulateCorrectly()
+        public void AddTerminalBuilderShouldPopulateCorrectly()
         {
             IServiceCollection? serviceDescriptors = null;
 

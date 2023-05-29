@@ -29,9 +29,9 @@ using System.Linq;
 namespace PerpetualIntelligence.Terminal.Extensions
 {
     [TestClass]
-    public class ICliBuilderExtensionsTests : InitializerTests
+    public class ITerminalBuilderExtensionsTests : InitializerTests
     {
-        public ICliBuilderExtensionsTests() : base(TestLogger.Create<ICliBuilderExtensionsTests>())
+        public ITerminalBuilderExtensionsTests() : base(TestLogger.Create<ITerminalBuilderExtensionsTests>())
         {
         }
 
@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCliOptionsShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddCliOptions();
+            terminalBuilder.AddTerminalOptions();
 
             var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalOptions)));
             Assert.IsNotNull(serviceDescriptor);

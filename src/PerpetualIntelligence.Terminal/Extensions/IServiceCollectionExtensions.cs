@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public static ITerminalBuilder AddTerminal(this IServiceCollection services)
         {
             return services.AddTerminalBuilder()
-                .AddCliOptions()
+                .AddTerminalOptions()
                 .AddRouter<CommandRouter, CommandHandler>()
                 .AddLicenseHandler();
         }

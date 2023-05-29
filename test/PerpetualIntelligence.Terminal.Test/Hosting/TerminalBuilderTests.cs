@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         [Fact]
-        public void CliBuilder_ShouldReturn_Same_IServiceCollection()
+        public void TerminalBuilder_ShouldReturn_Same_IServiceCollection()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection);
             terminalBuilder.Services.Should().BeSameAs(serviceCollection);
