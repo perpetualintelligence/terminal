@@ -356,7 +356,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }).Build();
 
             Assert.IsNotNull(serviceDescriptors);
-            terminalBuilder = serviceDescriptors.AddCliBuilder();
+            terminalBuilder = serviceDescriptors.AddTerminalBuilder();
         }
 
         private ITerminalBuilder terminalBuilder = null!;

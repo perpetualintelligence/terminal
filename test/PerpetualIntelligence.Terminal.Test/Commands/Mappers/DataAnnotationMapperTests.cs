@@ -96,7 +96,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
 
         protected override void OnTestInitialize()
         {
-            options = MockCliOptions.New();
+            options = MockTerminalOptions.New();
             mapper = new DataAnnotationsOptionDataTypeMapper(options, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
         }
 

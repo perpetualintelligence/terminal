@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
         /// <returns></returns>
         public Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context)
         {
-            CheckLicenseCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            CheckLicenseCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.FromResult(new LicenseCheckerResult(MockLicenses.TestLicense));
         }
     }

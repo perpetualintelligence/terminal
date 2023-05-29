@@ -5,34 +5,33 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
+using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
-    [TestClass]
     public class TerminalOptionsTests : InitializerTests
     {
         public TerminalOptionsTests() : base(TestLogger.Create<TerminalOptionsTests>())
         {
         }
 
-        [TestMethod]
-        public void CliOptionsShouldHaveCorrectDefaultValues()
+        [Fact]
+        public void TerminalOptionsShouldHaveCorrectDefaultValues()
         {
             TerminalOptions options = new();
 
-            Assert.IsNotNull(options.Authentication);
-            Assert.IsNotNull(options.Checker);
-            Assert.IsNotNull(options.Extractor);
-            Assert.IsNotNull(options.Logging);
-            Assert.IsNotNull(options.Handler);
-            Assert.IsNotNull(options.Licensing);
-            Assert.IsNotNull(options.Router);
-            Assert.IsNotNull(options.Http);
-            Assert.IsNotNull(options.Terminal);
-            Assert.IsNotNull(options.Help);
+            options.Authentication.Should().NotBeNull();
+            options.Checker.Should().NotBeNull();
+            options.Extractor.Should().NotBeNull();
+            options.Logging.Should().NotBeNull();
+            options.Handler.Should().NotBeNull();
+            options.Licensing.Should().NotBeNull();
+            options.Router.Should().NotBeNull();
+            options.Http.Should().NotBeNull();
+            options.Help.Should().NotBeNull();
         }
     }
 }

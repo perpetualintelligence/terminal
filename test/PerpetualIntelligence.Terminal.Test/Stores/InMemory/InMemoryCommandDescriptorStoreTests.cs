@@ -152,7 +152,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
 
         protected override void OnTestInitialize()
         {
-            options = MockCliOptions.New();
+            options = MockTerminalOptions.New();
             textHandler = new UnicodeTextHandler();
 
             cmds = MockCommands.Commands;

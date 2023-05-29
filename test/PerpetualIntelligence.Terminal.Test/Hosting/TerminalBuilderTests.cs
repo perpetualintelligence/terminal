@@ -13,9 +13,9 @@ using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Hosting
 {
-    public class CliBuilderTests
+    public class TerminalBuilderTests
     {
-        public CliBuilderTests()
+        public TerminalBuilderTests()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             terminalBuilder.Services.Should().BeSameAs(serviceCollection);
         }
 
-        ~CliBuilderTests()
+        ~TerminalBuilderTests()
         {
             host.Dispose();
         }

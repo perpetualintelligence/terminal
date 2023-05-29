@@ -9,7 +9,7 @@ using PerpetualIntelligence.Terminal.Configuration.Options;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    public class MockCliOptions
+    public class MockTerminalOptions
     {
         public static TerminalOptions New()
         {

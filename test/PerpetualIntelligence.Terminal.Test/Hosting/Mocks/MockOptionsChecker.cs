@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
         /// <returns></returns>
         public Task CheckAsync(TerminalOptions context)
         {
-            CheckOptionsCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            CheckOptionsCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
     }

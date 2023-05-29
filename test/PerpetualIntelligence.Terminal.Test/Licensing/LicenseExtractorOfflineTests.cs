@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
             File.WriteAllText(nonJsonLicPath, nonJson);
 
-            terminalOptions = MockCliOptions.New();
+            terminalOptions = MockTerminalOptions.New();
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
         }
 

@@ -231,7 +231,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         protected override void OnTestInitialize()
         {
             commandRoute = new CommandRoute(Guid.NewGuid().ToString(), "test_raw");
-            terminalOptions = MockCliOptions.New();
+            terminalOptions = MockTerminalOptions.New();
             textHandler = new UnicodeTextHandler();
             mapper = new DataAnnotationsOptionDataTypeMapper(terminalOptions, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
             valueChecker = new OptionChecker(mapper, terminalOptions);

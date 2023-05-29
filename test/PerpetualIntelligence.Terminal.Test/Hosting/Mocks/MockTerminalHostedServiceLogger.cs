@@ -11,9 +11,9 @@ using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 {
-    internal class MockCliHostedServiceLogger : ILogger<TerminalHostedService>
+    internal class MockTerminalHostedServiceLogger : ILogger<TerminalHostedService>
     {
-        public MockCliHostedServiceLogger()
+        public MockTerminalHostedServiceLogger()
         {
             Messages = new List<string>();
         }

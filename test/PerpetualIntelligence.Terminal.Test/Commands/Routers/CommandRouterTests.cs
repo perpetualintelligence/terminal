@@ -258,7 +258,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             commandHandler = new MockCommandHandlerInner();
             licenseExtractor = new MockLicenseExtractorInner();
             eventHandler = new MockAsyncEventHandler();
-            terminalOptions = MockCliOptions.New();
+            terminalOptions = MockTerminalOptions.New();
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, eventHandler);
             cancellationTokenSource = new CancellationTokenSource();
         }

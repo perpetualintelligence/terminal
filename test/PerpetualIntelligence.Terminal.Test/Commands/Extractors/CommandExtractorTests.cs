@@ -920,7 +920,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         protected override void OnTestInitialize()
         {
-            terminalOptions = MockCliOptions.New();
+            terminalOptions = MockTerminalOptions.New();
             textHandler = new UnicodeTextHandler();
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
             argExtractor = new OptionExtractor(textHandler, terminalOptions, TestLogger.Create<OptionExtractor>());

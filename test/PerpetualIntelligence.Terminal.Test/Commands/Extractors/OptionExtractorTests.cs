@@ -539,7 +539,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             textHandler = new UnicodeTextHandler();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1", MockCommands.TestOptionDescriptors, null, null);
-            options = MockCliOptions.New();
+            options = MockTerminalOptions.New();
             extractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
         }
 

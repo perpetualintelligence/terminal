@@ -53,11 +53,6 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public RouterOptions Router { get; set; } = new RouterOptions();
 
         /// <summary>
-        /// The terminal configuration options.
-        /// </summary>
-        public TerminalOptions Terminal { get; set; } = new TerminalOptions();
-
-        /// <summary>
         /// The help configuration options.
         /// </summary>
         public HelpOptions Help { get; set; } = new HelpOptions();

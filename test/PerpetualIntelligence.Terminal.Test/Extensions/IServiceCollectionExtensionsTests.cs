@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }).Build();
 
             Assert.IsNotNull(serviceDescriptors);
-            ITerminalBuilder? terminalBuilder = serviceDescriptors.AddCliBuilder();
+            ITerminalBuilder? terminalBuilder = serviceDescriptors.AddTerminalBuilder();
             Assert.IsNotNull(terminalBuilder);
             Assert.IsInstanceOfType(terminalBuilder, typeof(TerminalBuilder));
             Assert.IsTrue(ReferenceEquals(serviceDescriptors, terminalBuilder.Services));
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddCli(configuration)
+                arg.AddTerminal(configuration)
                 .AddExtractor<MockCommandExtractor, MockArgumentExtractor>();
             }).Build();
 
@@ -78,7 +78,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddCli()
+                arg.AddTerminal()
                 .AddExtractor<MockCommandExtractor, MockArgumentExtractor>();
             }).Build();
 
@@ -92,7 +92,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddCli(SetupAction)
+                arg.AddTerminal(SetupAction)
                 .AddExtractor<MockCommandExtractor, MockArgumentExtractor>();
             }).Build();
 

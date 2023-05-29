@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 {
-    public class MockCliCustomHostedService : TerminalHostedService
+    public class MockTerminalCustomHostedService : TerminalHostedService
     {
-        public MockCliCustomHostedService(IServiceProvider serviceProvider, TerminalOptions terminalOptions, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, logger)
+        public MockTerminalCustomHostedService(IServiceProvider serviceProvider, TerminalOptions terminalOptions, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, logger)
         {
         }
 
@@ -40,18 +40,18 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 
         internal override Task PrintHostApplicationMandatoryLicensingAsync(License license)
         {
-            PrintMandatoryLicCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            PrintMandatoryLicCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
         internal override Task RegisterHelpAsync()
         {
-            RegisterHelpArgumentCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            RegisterHelpArgumentCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
 
         protected override Task CheckHostApplicationConfigurationAsync(TerminalOptions options)
         {
-            CheckAppConfigCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            CheckAppConfigCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
 
@@ -72,19 +72,19 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 
         protected override Task PrintHostApplicationHeaderAsync()
         {
-            PrintHostAppHeaderCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            PrintHostAppHeaderCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
 
         protected override Task PrintHostApplicationLicensingAsync(License license)
         {
-            PrintHostLicCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            PrintHostLicCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
 
         protected override Task RegisterHostApplicationEventsAsync(IHostApplicationLifetime hostApplicationLifetime)
         {
-            RegisterEventsCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            RegisterEventsCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
     }

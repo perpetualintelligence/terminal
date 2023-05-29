@@ -30,19 +30,19 @@ namespace PerpetualIntelligence.Terminal.Hosting
     /// Run test sequentially because we modify the static Console.SetOut
     /// </summary>
     [Collection("Sequential")]
-    public class CliHostedServiceTests : IAsyncLifetime
+    public class TerminalHostedServiceTests : IAsyncLifetime
     {
-        public CliHostedServiceTests()
+        public TerminalHostedServiceTests()
         {
             cancellationTokenSource = new();
             cancellationToken = cancellationTokenSource.Token;
 
-            TerminalOptions terminalOptions = MockCliOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
             mockLicenseExtractor = new();
             mockLicenseChecker = new();
             mockOptionsChecker = new();
 
-            logger = new MockCliHostedServiceLogger();
+            logger = new MockTerminalHostedServiceLogger();
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
@@ -56,8 +56,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
 
             // Different hosted services to test behaviors
             defaultCliHostedService = new TerminalHostedService(host.Services, terminalOptions, logger);
-            mockCustomCliHostedService = new MockCliCustomHostedService(host.Services, terminalOptions, logger);
-            mockCliEventsHostedService = new MockCliEventsHostedService(host.Services, terminalOptions, logger);
+            mockCustomCliHostedService = new MockTerminalCustomHostedService(host.Services, terminalOptions, logger);
+            mockCliEventsHostedService = new MockTerminalEventsHostedService(host.Services, terminalOptions, logger);
         }
 
         [Fact]
@@ -195,7 +195,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public async Task StartAsync_ShouldCallCustomizationInCorrectOrderAsync()
         {
-            MockCliHostedServiceStaticCounter.Restart();
+            MockTerminalHostedServiceStaticCounter.Restart();
             await mockCustomCliHostedService.StartAsync(cancellationToken);
 
             // #1 call
@@ -283,12 +283,12 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public async void StartAsync_ShouldRegister_HelpArgument_ByDefault()
         {
-            TerminalOptions terminalOptions = MockCliOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddCli()
+                services.AddTerminal()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
                        .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
@@ -323,13 +323,13 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public async void StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
         {
-            TerminalOptions terminalOptions = MockCliOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
             terminalOptions.Help.Disabled = true;
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddCli()
+                services.AddTerminal()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1")
                         .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
                     .Add()
@@ -362,7 +362,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             }
         }
 
-        private MockCliEventsHostedService EventsHostedService(IServiceProvider arg)
+        private MockTerminalEventsHostedService EventsHostedService(IServiceProvider arg)
         {
             return mockCliEventsHostedService;
         }
@@ -387,11 +387,11 @@ namespace PerpetualIntelligence.Terminal.Hosting
         private TerminalHostedService defaultCliHostedService;
         private IHost host;
         private IHostBuilder hostBuilder;
-        private MockCliEventsHostedService mockCliEventsHostedService;
-        private MockCliCustomHostedService mockCustomCliHostedService;
+        private MockTerminalEventsHostedService mockCliEventsHostedService;
+        private MockTerminalCustomHostedService mockCustomCliHostedService;
         private MockLicenseChecker mockLicenseChecker;
         private MockLicenseExtractor mockLicenseExtractor;
         private MockOptionsChecker mockOptionsChecker;
-        private MockCliHostedServiceLogger logger = null!;
+        private MockTerminalHostedServiceLogger logger = null!;
     }
 }

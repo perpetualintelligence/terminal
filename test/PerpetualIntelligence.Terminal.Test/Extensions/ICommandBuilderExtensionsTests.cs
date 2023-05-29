@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }).Build();
 
             serviceDescriptors.Should().NotBeNull();
-            terminalBuilder = serviceDescriptors!.AddCliBuilder();
+            terminalBuilder = serviceDescriptors!.AddTerminalBuilder();
             commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1");
         }
 

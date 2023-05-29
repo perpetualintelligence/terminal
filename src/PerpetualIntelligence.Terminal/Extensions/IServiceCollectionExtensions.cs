@@ -26,10 +26,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="services">The services.</param>
         /// <param name="setupAction">The setup action.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
-        public static ITerminalBuilder AddCli(this IServiceCollection services, Action<TerminalOptions> setupAction)
+        public static ITerminalBuilder AddTerminal(this IServiceCollection services, Action<TerminalOptions> setupAction)
         {
             services.Configure(setupAction);
-            return services.AddCli();
+            return services.AddTerminal();
         }
 
         /// <summary>
@@ -38,10 +38,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
-        public static ITerminalBuilder AddCli(this IServiceCollection services, IConfiguration configuration)
+        public static ITerminalBuilder AddTerminal(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<TerminalOptions>(configuration);
-            return services.AddCli();
+            return services.AddTerminal();
         }
 
         /// <summary>
@@ -49,9 +49,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="services">The services.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
-        public static ITerminalBuilder AddCli(this IServiceCollection services)
+        public static ITerminalBuilder AddTerminal(this IServiceCollection services)
         {
-            return services.AddCliBuilder()
+            return services.AddTerminalBuilder()
                 .AddCliOptions()
                 .AddRouter<CommandRouter, CommandHandler>()
                 .AddLicenseHandler();
@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="services">The services.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
-        public static ITerminalBuilder AddCliBuilder(this IServiceCollection services)
+        public static ITerminalBuilder AddTerminalBuilder(this IServiceCollection services)
         {
             return new TerminalBuilder(services);
         }

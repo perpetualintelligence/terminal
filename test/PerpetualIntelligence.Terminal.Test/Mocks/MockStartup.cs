@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddCli(options => { options.Logging.ObsureInvalidOptions = true; })
+            services.AddTerminal(options => { options.Logging.ObsureInvalidOptions = true; })
                .AddExtractor<CommandExtractor, OptionExtractor>();
         }
     }

@@ -7,7 +7,7 @@
 
 namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 {
-    public static class MockCliHostedServiceStaticCounter
+    public static class MockTerminalHostedServiceStaticCounter
     {
         public static int Increment()
         {

@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 
         public Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
         {
-            ExtractLicenseCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
+            ExtractLicenseCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
 
             if (ThrowError)
             {
