@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("PerpetualIntelligence.Cli.Test")]
-
 namespace PerpetualIntelligence.Cli.Commands
 {
     /// <summary>

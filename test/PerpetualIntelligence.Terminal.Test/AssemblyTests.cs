@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Cli
         [Fact]
         public void TypesNamespaceTest()
         {
-            TestHelper.AssertNamespace(typeof(Errors).Assembly, "PerpetualIntelligence.Cli");
+            TestHelper.AssertNamespace(typeof(Errors).Assembly, "PerpetualIntelligence.Terminal");
         }
 
         [Fact]

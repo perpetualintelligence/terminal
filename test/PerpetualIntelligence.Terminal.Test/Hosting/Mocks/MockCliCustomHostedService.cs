@@ -43,7 +43,6 @@ namespace PerpetualIntelligence.Cli.Hosting.Mocks
             PrintMandatoryLicCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
-
         internal override Task RegisterHelpAsync()
         {
             RegisterHelpArgumentCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);

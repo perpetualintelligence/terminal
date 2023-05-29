@@ -3,7 +3,7 @@
   <Import Project="..\..\build\props\Test.props" />
 
  <ItemGroup>
-    <ProjectReference Include="..\..\src\PerpetualIntelligence.Cli\PerpetualIntelligence.Cli.csproj" />
+    <ProjectReference Include="..\..\src\PerpetualIntelligence.Terminal\PerpetualIntelligence.Terminal.csproj" />
   </ItemGroup>
 
 </Project>
