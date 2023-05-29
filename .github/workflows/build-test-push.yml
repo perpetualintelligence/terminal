@@ -135,11 +135,11 @@ jobs:
       with:
         nuget-version: latest
 
-    # Publish PerpetualIntelligence.Cli
-    - name: PerpetualIntelligence.Cli
+    # Publish PerpetualIntelligence.Terminal
+    - name: PerpetualIntelligence.Terminal
       uses: ./.github/actions/push-package
       with:
-        project: PerpetualIntelligence.Cli
+        project: PerpetualIntelligence.Terminal
         config: Release
         version: ${{ env.PI_CI_PACKAGE_VERSION }}
         ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}

@@ -17,7 +17,7 @@ This workflow folder contains the build and deployment pipelines for generating 
 
 > ***Note: The `build-test-publish` release to Nuget pipeline triggers a deployment approval.***
 
-## Versioning
+## Package Versions
 All packages follow [sematic](https://semver.org/) versioning schemes. The env file *package_version.env* defines the package versions.
 
 ## Project Dependencies
