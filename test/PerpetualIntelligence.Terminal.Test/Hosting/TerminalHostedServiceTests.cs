@@ -73,7 +73,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             logger.Messages[1].Should().Be("Demo custom header line-1");
             logger.Messages[2].Should().Be("Demo custom header line-2");
             logger.Messages[3].Should().Be("---------------------------------------------------------------------------------------------");
-            logger.Messages[4].Should().Be("Starting server \"urn:oneimlx:cli\" version=1.0.2-local");
+            logger.Messages[4].Should().Be("Starting server \"urn:oneimlx:picli\" version=1.0.2-local");
         }
 
         [Fact]
