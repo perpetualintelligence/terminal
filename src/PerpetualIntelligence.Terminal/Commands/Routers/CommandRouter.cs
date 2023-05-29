@@ -25,20 +25,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="cliOptions">The configuration options.</param>
+        /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="licenseExtractor">The license extractor.</param>
         /// <param name="commandExtractor">The command extractor.</param>
         /// <param name="commandHandler">The command handler.</param>
         /// <param name="asyncEventHandler">The event handler.</param>
         public CommandRouter(
-            CliOptions cliOptions,
+            TerminalOptions terminalOptions,
             ILicenseExtractor licenseExtractor,
             ICommandExtractor commandExtractor,
             ICommandHandler commandHandler,
             IAsyncEventHandler? asyncEventHandler = null)
         {
             this.commandExtractor = commandExtractor ?? throw new ArgumentNullException(nameof(commandExtractor));
-            this.cliOptions = cliOptions ?? throw new ArgumentNullException(nameof(cliOptions));
+            this.terminalOptions = terminalOptions ?? throw new ArgumentNullException(nameof(terminalOptions));
             this.licenseExtractor = licenseExtractor ?? throw new ArgumentNullException(nameof(licenseExtractor));
             this.commandHandler = commandHandler ?? throw new ArgumentNullException(nameof(commandHandler));
             this.asyncEventHandler = asyncEventHandler;
@@ -62,9 +62,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 }
 
                 // Honor the max limit
-                if (context.Route.Command.Raw.Length > cliOptions.Router.MaxCommandStringLength)
+                if (context.Route.Command.Raw.Length > terminalOptions.Router.MaxCommandStringLength)
                 {
-                    throw new ErrorException(Error.InvalidConfiguration, "The command string length is over the configured limit. max_length={0}", cliOptions.Router.MaxCommandStringLength);
+                    throw new ErrorException(Error.InvalidConfiguration, "The command string length is over the configured limit. max_length={0}", terminalOptions.Router.MaxCommandStringLength);
                 }
 
                 // Ensure we have the license extracted before routing
@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         private readonly ICommandExtractor commandExtractor;
         private readonly ICommandHandler commandHandler;
         private readonly IAsyncEventHandler? asyncEventHandler;
-        private readonly CliOptions cliOptions;
+        private readonly TerminalOptions terminalOptions;
         private readonly ILicenseExtractor licenseExtractor;
     }
 }

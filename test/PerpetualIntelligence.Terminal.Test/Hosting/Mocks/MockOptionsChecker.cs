@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task CheckAsync(CliOptions context)
+        public Task CheckAsync(TerminalOptions context)
         {
             CheckOptionsCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;

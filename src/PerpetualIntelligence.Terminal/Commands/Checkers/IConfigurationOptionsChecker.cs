@@ -11,9 +11,9 @@ using PerpetualIntelligence.Shared.Abstractions;
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
-    /// An abstraction of <see cref="CliOptions"/> checker.
+    /// An abstraction of <see cref="TerminalOptions"/> checker.
     /// </summary>
-    public interface IConfigurationOptionsChecker : ICheckerNoResult<CliOptions>
+    public interface IConfigurationOptionsChecker : ICheckerNoResult<TerminalOptions>
     {
         
     }

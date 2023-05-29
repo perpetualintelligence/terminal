@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
         private readonly IErrorHandler errorHandler;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
         private readonly ITextHandler textHandler;
         private readonly ILogger<TcpRoutingService> logger;
 
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             ICommandRouter commandRouter,
             IExceptionHandler exceptionHandler,
             IErrorHandler errorHandler,
-            CliOptions options,
+            TerminalOptions options,
             ITextHandler textHandler,
             ILogger<TcpRoutingService> logger)
         {

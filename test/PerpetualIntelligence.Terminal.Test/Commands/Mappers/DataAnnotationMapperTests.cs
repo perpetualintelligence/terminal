@@ -101,6 +101,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         }
 
         private IOptionDataTypeMapper mapper = null!;
-        private CliOptions options = null!;
+        private TerminalOptions options = null!;
     }
 }

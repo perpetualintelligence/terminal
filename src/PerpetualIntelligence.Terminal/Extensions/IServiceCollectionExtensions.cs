@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="services">The services.</param>
         /// <param name="setupAction">The setup action.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
-        public static ITerminalBuilder AddCli(this IServiceCollection services, Action<CliOptions> setupAction)
+        public static ITerminalBuilder AddCli(this IServiceCollection services, Action<TerminalOptions> setupAction)
         {
             services.Configure(setupAction);
             return services.AddCli();
@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
         public static ITerminalBuilder AddCli(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<CliOptions>(configuration);
+            services.Configure<TerminalOptions>(configuration);
             return services.AddCli();
         }
 

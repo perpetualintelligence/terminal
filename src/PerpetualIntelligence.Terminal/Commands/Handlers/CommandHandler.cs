@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// Initialize a news instance.
         /// </summary>
-        public CommandHandler(IServiceProvider services, ILicenseChecker licenseChecker, CliOptions options, ILogger<CommandHandler> logger)
+        public CommandHandler(IServiceProvider services, ILicenseChecker licenseChecker, TerminalOptions options, ILogger<CommandHandler> logger)
         {
             this.services = services ?? throw new ArgumentNullException(nameof(services));
             this.licenseChecker = licenseChecker ?? throw new ArgumentNullException(nameof(licenseChecker));
@@ -154,7 +154,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
         private readonly ILicenseChecker licenseChecker;
         private readonly ILogger<CommandHandler> logger;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
         private readonly IServiceProvider services;
     }
 }

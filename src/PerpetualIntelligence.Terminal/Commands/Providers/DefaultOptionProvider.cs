@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultOptionProvider(CliOptions options, ILogger<DefaultOptionProvider> logger)
+        public DefaultOptionProvider(TerminalOptions options, ILogger<DefaultOptionProvider> logger)
         {
             this.options = options;
             this.logger = logger;
@@ -47,6 +47,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
         }
 
         private readonly ILogger<DefaultOptionProvider> logger;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
     }
 }

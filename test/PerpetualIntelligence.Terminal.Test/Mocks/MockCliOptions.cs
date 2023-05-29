@@ -11,9 +11,9 @@ namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockCliOptions
     {
-        public static CliOptions New()
+        public static TerminalOptions New()
         {
-            return new CliOptions()
+            return new TerminalOptions()
             {
                 Logging = new LoggingOptions()
                 {
@@ -29,9 +29,9 @@ namespace PerpetualIntelligence.Terminal.Mocks
             };
         }
 
-        public static CliOptions NewOptions()
+        public static TerminalOptions NewOptions()
         {
-            return new CliOptions()
+            return new TerminalOptions()
             {
                 Logging = new LoggingOptions()
                 {

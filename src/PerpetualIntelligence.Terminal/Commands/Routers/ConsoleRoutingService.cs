@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
         private readonly IErrorHandler errorHandler;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
         private readonly ILogger<ConsoleRoutingService> logger;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// <param name="errorHandler"></param>
         /// <param name="options"></param>
         /// <param name="logger"></param>
-        public ConsoleRoutingService(IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, CliOptions options, ILogger<ConsoleRoutingService> logger)
+        public ConsoleRoutingService(IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, TerminalOptions options, ILogger<ConsoleRoutingService> logger)
         {
             this.applicationLifetime = applicationLifetime;
             this.commandRouter = commandRouter;

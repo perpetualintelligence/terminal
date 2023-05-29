@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ErrorHandler(CliOptions options, ILogger<ExceptionHandler> logger)
+        public ErrorHandler(TerminalOptions options, ILogger<ExceptionHandler> logger)
         {
             this.options = options;
             this.logger = logger;
@@ -43,6 +43,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         }
 
         private ILogger<ExceptionHandler> logger;
-        private CliOptions options;
+        private TerminalOptions options;
     }
 }

@@ -74,7 +74,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandCheckerContext context = new(argsCommand);
 
-            cliOptions.Checker.AllowObsoleteOption = true;
+            terminalOptions.Checker.AllowObsoleteOption = true;
             await checker.CheckAsync(context);
         }
 
@@ -92,10 +92,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandCheckerContext context = new(argsCommand);
 
-            cliOptions.Checker.AllowObsoleteOption = null;
+            terminalOptions.Checker.AllowObsoleteOption = null;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
 
-            cliOptions.Checker.AllowObsoleteOption = false;
+            terminalOptions.Checker.AllowObsoleteOption = false;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
         }
 
@@ -135,7 +135,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabledInvalidValueTypeShouldNotErrorAsync()
         {
-            cliOptions.Checker.StrictOptionValueType = false;
+            terminalOptions.Checker.StrictOptionValueType = false;
 
             OptionDescriptor optionDescriptor = new("key1", DataType.Date, "desc1");
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { optionDescriptor }));
@@ -155,7 +155,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingWithInvalidValueTypeShouldErrorAsync()
         {
-            cliOptions.Checker.StrictOptionValueType = true;
+            terminalOptions.Checker.StrictOptionValueType = true;
 
             OptionDescriptor optionDescriptor = new("key1", DataType.Date, "desc1");
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { optionDescriptor }));
@@ -173,7 +173,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingWithValidValueTypeShouldChangeTypeCorrectlyAsync()
         {
-            cliOptions.Checker.StrictOptionValueType = true;
+            terminalOptions.Checker.StrictOptionValueType = true;
 
             OptionDescriptor optionDescriptor = new("key1", DataType.Date, "desc1");
             CommandDescriptor descriptor = new("id1", "name1", "prefix1", "desc1", new(textHandler, new[] { optionDescriptor }));
@@ -231,19 +231,19 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         protected override void OnTestInitialize()
         {
             commandRoute = new CommandRoute(Guid.NewGuid().ToString(), "test_raw");
-            cliOptions = MockCliOptions.New();
+            terminalOptions = MockCliOptions.New();
             textHandler = new UnicodeTextHandler();
-            mapper = new DataAnnotationsOptionDataTypeMapper(cliOptions, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
-            valueChecker = new OptionChecker(mapper, cliOptions);
-            checker = new CommandChecker(valueChecker, cliOptions, TestLogger.Create<CommandChecker>());
-            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, cliOptions, TestLogger.Create<InMemoryCommandStore>());
+            mapper = new DataAnnotationsOptionDataTypeMapper(terminalOptions, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
+            valueChecker = new OptionChecker(mapper, terminalOptions);
+            checker = new CommandChecker(valueChecker, terminalOptions, TestLogger.Create<CommandChecker>());
+            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
         }
 
         private CommandRoute commandRoute = null!;
         private CommandChecker checker = null!;
         private ICommandStoreHandler commands = null!;
         private IOptionDataTypeMapper mapper = null!;
-        private CliOptions cliOptions = null!;
+        private TerminalOptions terminalOptions = null!;
         private ITextHandler textHandler = null!;
         private IOptionChecker valueChecker = null!;
     }

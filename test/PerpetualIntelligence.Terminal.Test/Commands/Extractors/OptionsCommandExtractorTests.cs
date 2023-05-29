@@ -343,7 +343,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private IDefaultOptionProvider defaultArgProvider = null!;
         private IDefaultOptionValueProvider defaultArgValueProvider = null!;
         private CommandExtractor extractor = null!;
-        private CliOptions options = null!;
+        private TerminalOptions options = null!;
         private ITextHandler textHandler = null!;
     }
 }

@@ -24,11 +24,11 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         /// Initializes a new instance.
         /// </summary>
         /// <param name="clientApplicationFactory"></param>
-        /// <param name="cliOptions"></param>
-        public MsalInteractiveAuthenticationProvider(IMsalPublicClientApplicationFactory clientApplicationFactory, CliOptions cliOptions)
+        /// <param name="terminalOptions"></param>
+        public MsalInteractiveAuthenticationProvider(IMsalPublicClientApplicationFactory clientApplicationFactory, TerminalOptions terminalOptions)
         {
             this.clientApplicationFactory = clientApplicationFactory;
-            this.cliOptions = cliOptions;
+            this.terminalOptions = terminalOptions;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         /// <returns></returns>
         public async Task<string> GetTokenAsync()
         {            
-            var clientAppResult = await clientApplicationFactory.CreateAsync(new MsalPublicClientApplicationFactoryContext(cliOptions.Authentication));
+            var clientAppResult = await clientApplicationFactory.CreateAsync(new MsalPublicClientApplicationFactoryContext(terminalOptions.Authentication));
             PublicClientApplication publicClientApplication = clientAppResult.As<PublicClientApplication>();
 
             // https://github.com/Azure-Samples/ms-identity-dotnet-desktop-tutorial/tree/master/2-TokenCache
@@ -57,20 +57,20 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             AuthenticationResult result;
             try
             {
-                result = await publicClientApplication.AcquireTokenSilent(cliOptions.Authentication.Scopes, accounts.FirstOrDefault())
+                result = await publicClientApplication.AcquireTokenSilent(terminalOptions.Authentication.Scopes, accounts.FirstOrDefault())
                                                       .ExecuteAsync();
             }
             catch (MsalUiRequiredException)
             {
-                result = await publicClientApplication.AcquireTokenInteractive(cliOptions.Authentication.Scopes)
-                                                      .WithUseEmbeddedWebView(cliOptions.Authentication.UseEmbeddedView.GetValueOrDefault())
+                result = await publicClientApplication.AcquireTokenInteractive(terminalOptions.Authentication.Scopes)
+                                                      .WithUseEmbeddedWebView(terminalOptions.Authentication.UseEmbeddedView.GetValueOrDefault())
                                                       .ExecuteAsync();
             }
 
             return result.AccessToken;
         }
 
-        private readonly CliOptions cliOptions;
+        private readonly TerminalOptions terminalOptions;
         private IMsalPublicClientApplicationFactory clientApplicationFactory;
     }
 }

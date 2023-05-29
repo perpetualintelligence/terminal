@@ -166,7 +166,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         private InMemoryCommandStore cmdStore = null!;
         private IEnumerable<CommandDescriptor> groupedCmds = null!;
         private InMemoryCommandStore groupedCmdStore = null!;
-        private CliOptions options = null!;
+        private TerminalOptions options = null!;
         private ITextHandler textHandler = null!;
     }
 }

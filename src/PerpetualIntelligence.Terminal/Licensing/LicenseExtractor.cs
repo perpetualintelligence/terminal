@@ -32,12 +32,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="cliOptions">The configuration options.</param>
+        /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(CliOptions cliOptions, ILogger<LicenseExtractor> logger, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(TerminalOptions terminalOptions, ILogger<LicenseExtractor> logger, IHttpClientFactory? httpClientFactory = null)
         {
-            this.cliOptions = cliOptions;
+            this.terminalOptions = terminalOptions;
             this.logger = logger;
             this.httpClientFactory = httpClientFactory;
         }
@@ -52,13 +52,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // For singleton DI service we don't extract license keys once extracted.
             if (license == null)
             {
-                if (cliOptions.Licensing.KeySource == LicenseSources.JsonFile)
+                if (terminalOptions.Licensing.KeySource == LicenseSources.JsonFile)
                 {
                     license = await ExtractFromJsonAsync();
                 }
                 else
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source={0}", cliOptions.Licensing.KeySource);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source={0}", terminalOptions.Licensing.KeySource);
                 }
             }
 
@@ -147,38 +147,38 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             if (httpClientFactory == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The IHttpClientFactory is not configured. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
+                throw new ErrorException(Errors.InvalidConfiguration, "The IHttpClientFactory is not configured. licensing_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
 
             // Make sure the HTTP client name is setup
-            if (cliOptions.Http.HttpClientName == null)
+            if (terminalOptions.Http.HttpClientName == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
+                throw new ErrorException(Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
 
             // Setup the HTTP client
-            HttpClient httpClient = httpClientFactory.CreateClient(cliOptions.Http.HttpClientName);
+            HttpClient httpClient = httpClientFactory.CreateClient(terminalOptions.Http.HttpClientName);
             return httpClient;
         }
 
         private async Task<License> ExtractFromJsonAsync()
         {
             // Missing app id
-            if (string.IsNullOrWhiteSpace(cliOptions.Licensing.AuthorizedApplicationId))
+            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.AuthorizedApplicationId))
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
             }
 
             // Missing key
-            if (string.IsNullOrWhiteSpace(cliOptions.Licensing.LicenseKey))
+            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.LicenseKey))
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source={0}", cliOptions.Licensing.KeySource);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source={0}", terminalOptions.Licensing.KeySource);
             }
 
             // Key not a file
-            if (!File.Exists(cliOptions.Licensing.LicenseKey))
+            if (!File.Exists(terminalOptions.Licensing.LicenseKey))
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file={0}", cliOptions.Licensing.LicenseKey);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file={0}", terminalOptions.Licensing.LicenseKey);
             }
 
             // Read the json file
@@ -186,34 +186,34 @@ namespace PerpetualIntelligence.Terminal.Licensing
             try
             {
                 // Make sure the lic stream is disposed to avoid locking.
-                using (Stream licStream = File.OpenRead(cliOptions.Licensing.LicenseKey))
+                using (Stream licStream = File.OpenRead(terminalOptions.Licensing.LicenseKey))
                 {
                     licenseFileModel = await JsonSerializer.DeserializeAsync<LicenseFileModel>(licStream);
                 }
             }
             catch (JsonException ex)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not valid, see licensing options. json_file={0} info={1}", cliOptions.Licensing.LicenseKey, ex.Message);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not valid, see licensing options. json_file={0} info={1}", terminalOptions.Licensing.LicenseKey, ex.Message);
             }
 
             // Make sure the model is valid Why ?
             if (licenseFileModel == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", cliOptions.Licensing.LicenseKey);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", terminalOptions.Licensing.LicenseKey);
             }
 
             // Online lic check
-            if (cliOptions.Handler.LicenseHandler == Handlers.OnlineLicenseHandler)
+            if (terminalOptions.Handler.LicenseHandler == Handlers.OnlineLicenseHandler)
             {
                 return await EnsureOnlineLicenseAsync(licenseFileModel);
             }
-            else if (cliOptions.Handler.LicenseHandler == Handlers.OfflineLicenseHandler)
+            else if (terminalOptions.Handler.LicenseHandler == Handlers.OfflineLicenseHandler)
             {
                 return await EnsureOfflineLicenseAsync(licenseFileModel);
             }
             else
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler={0}", cliOptions.Handler.LicenseHandler);
+                throw new ErrorException(Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
         }
 
@@ -224,7 +224,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             {
                 Issuer = Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
-                AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
+                AuthorizedApplicationId = terminalOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
                 ConsumerObjectId = licenseFileModel.ConsumerObjectId,
                 ConsumerTenantId = licenseFileModel.ConsumerTenantId,
@@ -246,15 +246,15 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>(await response.Content.ReadAsStreamAsync()) ?? throw new ErrorException(Errors.InvalidLicense, "The license claims are invalid.");
 
                 // Check consumer with licensing options.
-                if (claims.TenantId != cliOptions.Licensing.ConsumerTenantId)
+                if (claims.TenantId != terminalOptions.Licensing.ConsumerTenantId)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", cliOptions.Licensing.ConsumerTenantId);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", terminalOptions.Licensing.ConsumerTenantId);
                 }
 
                 // Check subject with licensing options.
-                if (claims.Subject != cliOptions.Licensing.Subject)
+                if (claims.Subject != terminalOptions.Licensing.Subject)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", cliOptions.Licensing.Subject);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", terminalOptions.Licensing.Subject);
                 }
 
                 // Make sure the acr contains the
@@ -269,14 +269,14 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 string providerId = acrValues[2];
 
                 // Make sure the provider tenant id matches
-                if (providerId != cliOptions.Licensing.ProviderId)
+                if (providerId != terminalOptions.Licensing.ProviderId)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", cliOptions.Licensing.ProviderId);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", terminalOptions.Licensing.ProviderId);
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
                 LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
-                return new License(providerId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+                return new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.KeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
             }
         }
 
@@ -287,7 +287,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             {
                 Issuer = Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
-                AuthorizedApplicationId = cliOptions.Licensing.AuthorizedApplicationId!,
+                AuthorizedApplicationId = terminalOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
                 ConsumerTenantId = licenseFileModel.ConsumerTenantId,
                 Key = licenseFileModel.Key,
@@ -301,15 +301,15 @@ namespace PerpetualIntelligence.Terminal.Licensing
             LicenseClaimsModel claims = await CheckOfflineLicenseAsync(checkModel);
 
             // Check consumer with licensing options.
-            if (claims.TenantId != cliOptions.Licensing.ConsumerTenantId)
+            if (claims.TenantId != terminalOptions.Licensing.ConsumerTenantId)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", cliOptions.Licensing.ConsumerTenantId);
+                throw new ErrorException(Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", terminalOptions.Licensing.ConsumerTenantId);
             }
 
             // Check subject with licensing options.
-            if (claims.Subject != cliOptions.Licensing.Subject)
+            if (claims.Subject != terminalOptions.Licensing.Subject)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", cliOptions.Licensing.Subject);
+                throw new ErrorException(Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", terminalOptions.Licensing.Subject);
             }
 
             // Make sure the acr contains the
@@ -324,14 +324,14 @@ namespace PerpetualIntelligence.Terminal.Licensing
             string providerId = acrValues[2];
 
             // Make sure the provider tenant id matches
-            if (providerId != cliOptions.Licensing.ProviderId)
+            if (providerId != terminalOptions.Licensing.ProviderId)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", cliOptions.Licensing.ProviderId);
+                throw new ErrorException(Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", terminalOptions.Licensing.ProviderId);
             }
 
             LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
             LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
-            return new License(providerId, cliOptions.Handler.LicenseHandler, plan, usage, cliOptions.Licensing.KeySource, cliOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+            return new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.KeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
         }
 
         private void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
@@ -352,7 +352,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
-        private readonly CliOptions cliOptions;
+        private readonly TerminalOptions terminalOptions;
         private readonly string fallbackCheckLicUrl = "https://piapim.azure-api.net/public/checklicense";
         private readonly IHttpClientFactory? httpClientFactory;
         private readonly ILogger<LicenseExtractor> logger;

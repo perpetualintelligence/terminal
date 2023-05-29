@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// </summary>
         /// <param name="mapper">The option data-type mapper.</param>
         /// <param name="options">The configuration options.</param>
-        public OptionChecker(IOptionDataTypeMapper mapper, CliOptions options)
+        public OptionChecker(IOptionDataTypeMapper mapper, TerminalOptions options)
         {
             this.mapper = mapper;
             this.options = options;
@@ -93,6 +93,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         private readonly IOptionDataTypeMapper mapper;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
     }
 }

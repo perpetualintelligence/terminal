@@ -104,14 +104,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private static void AssertHostServices(IHost host)
         {
             // Check Options are added
-            CliOptions? cliOptions = host.Services.GetService<CliOptions>();
-            Assert.IsNotNull(cliOptions);
+            TerminalOptions? terminalOptions = host.Services.GetService<TerminalOptions>();
+            Assert.IsNotNull(terminalOptions);
 
             // Options is singleton
-            CliOptions? cliOptions2 = host.Services.GetService<CliOptions>();
-            CliOptions? cliOptions3 = host.Services.GetService<CliOptions>();
-            Assert.IsTrue(ReferenceEquals(cliOptions, cliOptions2));
-            Assert.IsTrue(ReferenceEquals(cliOptions, cliOptions3));
+            TerminalOptions? cliOptions2 = host.Services.GetService<TerminalOptions>();
+            TerminalOptions? cliOptions3 = host.Services.GetService<TerminalOptions>();
+            Assert.IsTrue(ReferenceEquals(terminalOptions, cliOptions2));
+            Assert.IsTrue(ReferenceEquals(terminalOptions, cliOptions3));
 
             // Check ICommandRouter is added as a transient
             ICommandRouter? commandRouter = host.Services.GetService<ICommandRouter>();
@@ -138,7 +138,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Assert.IsTrue(ReferenceEquals(licenseExtractor, host.Services.GetService<ILicenseExtractor>()));
         }
 
-        private void SetupAction(CliOptions obj)
+        private void SetupAction(TerminalOptions obj)
         {
             setupActionCalled = true;
         }

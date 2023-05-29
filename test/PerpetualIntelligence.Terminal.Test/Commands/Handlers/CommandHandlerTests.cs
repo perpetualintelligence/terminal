@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             using var newhost = hostBuilder.Build();
 
             CommandHandlerContext commandContext = new(command.Item2, license);
-            var newHandler = new CommandHandler(newhost.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
+            var newHandler = new CommandHandler(newhost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), Errors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=MockCommandCheckerInner");
         }
 
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             using var newhost = hostBuilder.Build();
-            var newHandler = new CommandHandler(newhost.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
+            var newHandler = new CommandHandler(newhost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
             CommandHandlerContext commandContext = new(command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), Errors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
         }
@@ -190,7 +190,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         [TestMethod]
         public async Task RunShouldBeCalledIfHelpIsDisabled()
         {
-            cliOptions.Help.Disabled = true;
+            terminalOptions.Help.Disabled = true;
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -226,7 +226,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         [TestMethod]
         public async Task HelpShouldNotBeCalledIfDisabledAndRequested()
         {
-            cliOptions.Help.Disabled = true;
+            terminalOptions.Help.Disabled = true;
 
             helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -313,7 +313,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -334,7 +334,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -355,7 +355,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -388,7 +388,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -424,14 +424,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
             host = hostBuilder.Build();
 
-            cliOptions = MockCliOptions.New();
+            terminalOptions = MockCliOptions.New();
             license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1");
 
             OptionDescriptors optionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
-                new OptionDescriptor(cliOptions.Help.OptionId, nameof(Boolean), "Help options")
+                new OptionDescriptor(terminalOptions.Help.OptionId, nameof(Boolean), "Help options")
             });
 
             // This mocks the help requested
@@ -440,7 +440,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             options.Add(helpAttr);
             helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "prefix2", "desc2", optionDescriptors, options: options);
 
-            handler = new CommandHandler(host.Services, licenseChecker, cliOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
         }
 
         private void ConfigureCheckerOnly(IServiceCollection arg2)
@@ -484,6 +484,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         private IHost host = null!;
         private License license = null!;
         private MockLicenseCheckerInner licenseChecker = null!;
-        private CliOptions cliOptions = null!;
+        private TerminalOptions terminalOptions = null!;
     }
 }

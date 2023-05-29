@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public DataAnnotationsOptionDataTypeMapper(CliOptions options, ILogger<DataAnnotationsOptionDataTypeMapper> logger)
+        public DataAnnotationsOptionDataTypeMapper(TerminalOptions options, ILogger<DataAnnotationsOptionDataTypeMapper> logger)
         {
             this.options = options;
             this.logger = logger;
@@ -92,6 +92,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         }
 
         private readonly ILogger<DataAnnotationsOptionDataTypeMapper> logger;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
     }
 }

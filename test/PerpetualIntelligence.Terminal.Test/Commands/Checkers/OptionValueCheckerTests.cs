@@ -164,6 +164,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
         private IOptionChecker checker = null!;
         private IOptionDataTypeMapper mapper = null!;
-        private CliOptions options = null!;
+        private TerminalOptions options = null!;
     }
 }

@@ -73,7 +73,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             cliBuilder.AddCliOptions();
 
-            var serviceDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CliOptions)));
+            var serviceDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalOptions)));
             Assert.IsNotNull(serviceDescriptor);
             Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
         }

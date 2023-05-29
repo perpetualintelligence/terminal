@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 {
     public class MockCliCustomHostedService : TerminalHostedService
     {
-        public MockCliCustomHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<TerminalHostedService> logger) : base(serviceProvider, cliOptions, logger)
+        public MockCliCustomHostedService(IServiceProvider serviceProvider, TerminalOptions terminalOptions, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, logger)
         {
         }
 
@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
             return Task.CompletedTask;
         }
 
-        protected override Task CheckHostApplicationConfigurationAsync(CliOptions options)
+        protected override Task CheckHostApplicationConfigurationAsync(TerminalOptions options)
         {
             CheckAppConfigCalled = new(MockCliHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;

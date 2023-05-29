@@ -277,7 +277,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         private readonly IDefaultOptionValueProvider defaultArgValueProvider = null!;
         private readonly IHost host;
         private readonly IHostBuilder hostBuilder;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
         private readonly IConfigurationOptionsChecker optionsChecker;
         private readonly ITextHandler textHandler;
     }

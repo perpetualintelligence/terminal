@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         /// <param name="commandDescriptors">The command identities.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public InMemoryCommandStore(ITextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors, CliOptions options, ILogger<InMemoryCommandStore> logger)
+        public InMemoryCommandStore(ITextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors, TerminalOptions options, ILogger<InMemoryCommandStore> logger)
         {
             this.textHandler = textHandler;
             this.commandDescriptors = commandDescriptors ?? throw new ArgumentNullException(nameof(commandDescriptors));
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
 
         private readonly IEnumerable<CommandDescriptor> commandDescriptors;
         private readonly ILogger<InMemoryCommandStore> logger;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
         private readonly ITextHandler textHandler;
     }
 }

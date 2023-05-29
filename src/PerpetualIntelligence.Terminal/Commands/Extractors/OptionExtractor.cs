@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// <param name="textHandler">The text handler.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public OptionExtractor(ITextHandler textHandler, CliOptions options, ILogger<OptionExtractor> logger)
+        public OptionExtractor(ITextHandler textHandler, TerminalOptions options, ILogger<OptionExtractor> logger)
         {
             this.textHandler = textHandler;
             this.options = options;
@@ -261,7 +261,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         private readonly ILogger<OptionExtractor> logger;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
         private readonly ITextHandler textHandler;
     }
 }

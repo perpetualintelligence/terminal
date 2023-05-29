@@ -24,10 +24,10 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public LicenseChecker(IEnumerable<CommandDescriptor> commandDescriptors, CliOptions cliOptions, ILogger<LicenseChecker> logger)
+        public LicenseChecker(IEnumerable<CommandDescriptor> commandDescriptors, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
         {
             this.commandDescriptors = commandDescriptors;
-            this.cliOptions = cliOptions;
+            this.terminalOptions = terminalOptions;
             this.logger = logger;
         }
 
@@ -109,63 +109,63 @@ namespace PerpetualIntelligence.Terminal.Licensing
             LicenseLimits limits = context.License.Limits;
 
             // Option alias
-            if (!OptionsValid(limits.OptionAlias, cliOptions.Extractor.OptionAlias))
+            if (!OptionsValid(limits.OptionAlias, terminalOptions.Extractor.OptionAlias))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
             }
 
             // Default options
-            if (!OptionsValid(limits.DefaultOption, cliOptions.Extractor.DefaultOption))
+            if (!OptionsValid(limits.DefaultOption, terminalOptions.Extractor.DefaultOption))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
             }
 
             // Default option value
-            if (!OptionsValid(limits.DefaultOptionValue, cliOptions.Extractor.DefaultOptionValue))
+            if (!OptionsValid(limits.DefaultOptionValue, terminalOptions.Extractor.DefaultOptionValue))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
             }
 
             // Strict Data Type
-            if (!OptionsValid(limits.StrictDataType, cliOptions.Checker.StrictOptionValueType))
+            if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictOptionValueType))
             {
                 throw new ErrorException(Errors.InvalidLicense, "The configured strict option value type option is not allowed for your license edition.");
             }
 
             // Date Type handler, null allowed for data type handler.
-            if (!OptionsValid(limits.DataTypeHandlers, cliOptions.Handler.DataTypeHandler, allowNullActual: true))
+            if (!OptionsValid(limits.DataTypeHandlers, terminalOptions.Handler.DataTypeHandler, allowNullActual: true))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler={0}", cliOptions.Handler.DataTypeHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler={0}", terminalOptions.Handler.DataTypeHandler);
             }
 
             // Unicode handler
-            if (!OptionsValid(limits.TextHandlers, cliOptions.Handler.TextHandler, allowNullActual: false))
+            if (!OptionsValid(limits.TextHandlers, terminalOptions.Handler.TextHandler, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler={0}", cliOptions.Handler.TextHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler={0}", terminalOptions.Handler.TextHandler);
             }
 
             // Error handler
-            if (!OptionsValid(limits.ErrorHandlers, cliOptions.Handler.ErrorHandler, allowNullActual: false))
+            if (!OptionsValid(limits.ErrorHandlers, terminalOptions.Handler.ErrorHandler, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler={0}", cliOptions.Handler.ErrorHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler={0}", terminalOptions.Handler.ErrorHandler);
             }
 
             // Store handler
-            if (!OptionsValid(limits.StoreHandlers, cliOptions.Handler.StoreHandler, allowNullActual: false))
+            if (!OptionsValid(limits.StoreHandlers, terminalOptions.Handler.StoreHandler, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler={0}", cliOptions.Handler.StoreHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler={0}", terminalOptions.Handler.StoreHandler);
             }
 
             // Service handler
-            if (!OptionsValid(limits.ServiceHandlers, cliOptions.Handler.ServiceHandler, allowNullActual: false))
+            if (!OptionsValid(limits.ServiceHandlers, terminalOptions.Handler.ServiceHandler, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler={0}", cliOptions.Handler.ServiceHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler={0}", terminalOptions.Handler.ServiceHandler);
             }
 
             // License handler
-            if (!OptionsValid(limits.LicenseHandlers, cliOptions.Handler.LicenseHandler, allowNullActual: false))
+            if (!OptionsValid(limits.LicenseHandlers, terminalOptions.Handler.LicenseHandler, allowNullActual: false))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler={0}", cliOptions.Handler.LicenseHandler);
+                throw new ErrorException(Errors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
 
             return Task.CompletedTask;
@@ -247,7 +247,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             return true;
         }
 
-        private readonly CliOptions cliOptions;
+        private readonly TerminalOptions terminalOptions;
         private readonly IEnumerable<CommandDescriptor> commandDescriptors;
         private readonly ILogger<LicenseChecker> logger;
 

@@ -1,6 +1,7 @@
 # 4.5.1-rc*
 > Breaking Change
-- Rename `Cli` namespace to `Termianl`
+- Rename `Cli` namespace to `Terminal`
+- Rename `CliOptions` to `TerminalOptions`
 
 # 4.4.2-rc*
 > Breaking Change

@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// <param name="optionChecker">The option checker.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandChecker(IOptionChecker optionChecker, CliOptions options, ILogger<CommandChecker> logger)
+        public CommandChecker(IOptionChecker optionChecker, TerminalOptions options, ILogger<CommandChecker> logger)
         {
             this.optionChecker = optionChecker;
             this.options = options;
@@ -79,6 +79,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
         private readonly IOptionChecker optionChecker;
         private readonly ILogger<CommandChecker> logger;
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
     }
 }

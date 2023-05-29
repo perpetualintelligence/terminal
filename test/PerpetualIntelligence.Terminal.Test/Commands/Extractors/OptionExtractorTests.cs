@@ -545,7 +545,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         private Tuple<CommandDescriptor, Command> command = null!;
         private OptionExtractor extractor = null!;
-        private CliOptions options = null!;
+        private TerminalOptions options = null!;
         private ITextHandler textHandler = null!;
     }
 }

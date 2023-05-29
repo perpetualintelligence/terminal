@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
     /// The default <see cref="IConfigurationOptionsChecker"/>.
     /// </summary>
     /// <remarks>
-    /// The <see cref="CheckAsync(CliOptions)"/> does not return any result. It throws <see cref="ErrorException"/> if
+    /// The <see cref="CheckAsync(TerminalOptions)"/> does not return any result. It throws <see cref="ErrorException"/> if
     /// you do not configure an option correctly.
     /// </remarks>
     public class ConfigurationOptionsChecker : IConfigurationOptionsChecker
@@ -34,12 +34,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         /// <summary>
-        /// Checks the configured <see cref="CliOptions"/>.
+        /// Checks the configured <see cref="TerminalOptions"/>.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task CheckAsync(CliOptions options)
+        public Task CheckAsync(TerminalOptions options)
         {
             ITextHandler textHandler = serviceProvider.GetRequiredService<ITextHandler>();
 

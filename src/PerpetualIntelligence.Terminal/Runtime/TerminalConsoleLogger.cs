@@ -17,14 +17,14 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// </summary>
     public sealed class TerminalConsoleLogger : TerminalLogger
     {
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="name">The logger name.</param>
         /// <param name="options">The configuration options.</param>
-        public TerminalConsoleLogger(string name, CliOptions options)
+        public TerminalConsoleLogger(string name, TerminalOptions options)
         {
             Scopes = new List<IDisposable>();
             this.options = options;

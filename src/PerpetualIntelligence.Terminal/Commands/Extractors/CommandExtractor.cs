@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// <param name="commandStoreHandler">The command store handler.</param>
         /// <param name="optionExtractor">The option extractor.</param>
         /// <param name="textHandler">The text handler.</param>
-        /// <param name="cliOptions">The configuration options.</param>
+        /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="defaultOptionProvider">The optional default option provider.</param>
         /// <param name="defaultOptionValueProvider">The optional option default value provider.</param>
@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             ICommandStoreHandler commandStoreHandler,
             IOptionExtractor optionExtractor,
             ITextHandler textHandler,
-            CliOptions cliOptions,
+            TerminalOptions terminalOptions,
             ILogger<CommandExtractor> logger,
             IDefaultOptionProvider? defaultOptionProvider = null,
             IDefaultOptionValueProvider? defaultOptionValueProvider = null)
@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             this.textHandler = textHandler;
             this.defaultOptionValueProvider = defaultOptionValueProvider;
             this.defaultOptionProvider = defaultOptionProvider;
-            this.cliOptions = cliOptions ?? throw new ArgumentNullException(nameof(cliOptions));
+            this.terminalOptions = terminalOptions ?? throw new ArgumentNullException(nameof(terminalOptions));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 }
 
                 // Make sure there is a separator between the command prefix and options
-                if (!rawArgString.StartsWith(this.cliOptions.Extractor.Separator, textHandler.Comparison))
+                if (!rawArgString.StartsWith(this.terminalOptions.Extractor.Separator, textHandler.Comparison))
                 {
                     throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", raw);
                 }
@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // syntax For e.g. If 'pi format ruc' command has 'i' as a default option then the command string 'pi
             // format ruc remove_underscore_and_capitalize' will be extracted as 'pi format ruc' and
             // remove_underscore_and_capitalize will be added as a value of option 'i'.
-            if (this.cliOptions.Extractor.DefaultOption.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultOption))
+            if (this.terminalOptions.Extractor.DefaultOption.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultOption))
             {
                 // Sanity check
                 if (defaultOptionProvider == null)
@@ -112,8 +112,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 // Options and command supports the default option, but is the default value provided by user ? If yes
                 // then add the default attribute
                 bool proccessDefaultArg = true;
-                string argStringDef = rawArgString.TrimStart(this.cliOptions.Extractor.Separator, textHandler.Comparison);
-                if (argStringDef.StartsWith(this.cliOptions.Extractor.OptionPrefix, textHandler.Comparison))
+                string argStringDef = rawArgString.TrimStart(this.terminalOptions.Extractor.Separator, textHandler.Comparison);
+                if (argStringDef.StartsWith(this.terminalOptions.Extractor.OptionPrefix, textHandler.Comparison))
                 {
                     // Default attribute value should be the first after command prefix User has explicitly passed an option.
                     proccessDefaultArg = false;
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
                     // Convert the arg string to standard format and let the IArgumentExtractor extract the option and
                     // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
-                    rawArgString = $"{this.cliOptions.Extractor.Separator}{this.cliOptions.Extractor.OptionPrefix}{defaultOptionProviderResult.DefaultOptionDescriptor.Id}{this.cliOptions.Extractor.OptionValueSeparator}{argStringDef}";
+                    rawArgString = $"{this.terminalOptions.Extractor.Separator}{this.terminalOptions.Extractor.OptionPrefix}{defaultOptionProviderResult.DefaultOptionDescriptor.Id}{this.terminalOptions.Extractor.OptionValueSeparator}{argStringDef}";
                 }
             }
 
@@ -180,8 +180,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         private OptionStrings ExtractOptionStrings(string raw)
         {
-            string argSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.OptionPrefix);
-            string argAliasSplit = string.Concat(cliOptions.Extractor.Separator, cliOptions.Extractor.OptionAliasPrefix);
+            string argSplit = string.Concat(terminalOptions.Extractor.Separator, terminalOptions.Extractor.OptionPrefix);
+            string argAliasSplit = string.Concat(terminalOptions.Extractor.Separator, terminalOptions.Extractor.OptionAliasPrefix);
 
             // First pass
             int currentPos = 0;
@@ -265,8 +265,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // default option is specified after the command prefix followed by command separator.
             // - E.g. pi auth login {default_arg_value}.
             int[] indices = new int[2];
-            indices[0] = prefix.IndexOf(cliOptions.Extractor.OptionPrefix, textHandler.Comparison);
-            indices[1] = prefix.IndexOf(cliOptions.Extractor.OptionAliasPrefix, textHandler.Comparison);
+            indices[0] = prefix.IndexOf(terminalOptions.Extractor.OptionPrefix, textHandler.Comparison);
+            indices[1] = prefix.IndexOf(terminalOptions.Extractor.OptionAliasPrefix, textHandler.Comparison);
             int minIndex = indices.Where(x => x > 0).DefaultIfEmpty().Min();
             if (minIndex != 0)
             {
@@ -278,7 +278,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             //
             // At this point the prefix may also have default option value.
             // - E.g. pi auth login default_value
-            prefix = prefix.TrimEnd(cliOptions.Extractor.Separator, textHandler.Comparison);
+            prefix = prefix.TrimEnd(terminalOptions.Extractor.Separator, textHandler.Comparison);
             TryResultOrError<CommandDescriptor> result = await commandStore.TryMatchByPrefixAsync(prefix);
             if (result.Error != null)
             {
@@ -292,9 +292,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             }
 
             // Make sure the command id is valid
-            if (!Regex.IsMatch(result.Result.Id, cliOptions.Extractor.CommandIdRegex))
+            if (!Regex.IsMatch(result.Result.Id, terminalOptions.Extractor.CommandIdRegex))
             {
-                throw new ErrorException(Errors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, cliOptions.Extractor.CommandIdRegex);
+                throw new ErrorException(Errors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, terminalOptions.Extractor.CommandIdRegex);
             }
 
             return result.Result;
@@ -312,7 +312,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private async Task<Options?> MergeDefaultOptionsOrThrowAsync(CommandDescriptor commandDescriptor, Options? userOptions)
         {
             // If default option value is disabled or the command itself does not support any options then ignore
-            if (!cliOptions.Extractor.DefaultOptionValue.GetValueOrDefault()
+            if (!terminalOptions.Extractor.DefaultOptionValue.GetValueOrDefault()
                 || commandDescriptor.OptionDescriptors == null
                 || commandDescriptor.OptionDescriptors.Count == 0)
             {
@@ -364,7 +364,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private readonly IDefaultOptionProvider? defaultOptionProvider;
         private readonly IDefaultOptionValueProvider? defaultOptionValueProvider;
         private readonly ILogger<CommandExtractor> logger;
-        private readonly CliOptions cliOptions;
+        private readonly TerminalOptions terminalOptions;
         private readonly ITextHandler textHandler;
     }
 }

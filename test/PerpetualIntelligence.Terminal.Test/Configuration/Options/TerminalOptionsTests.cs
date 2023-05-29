@@ -5,22 +5,34 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
-using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
+    [TestClass]
     public class TerminalOptionsTests : InitializerTests
     {
         public TerminalOptionsTests() : base(TestLogger.Create<TerminalOptionsTests>())
         {
         }
 
-        [Fact]
-        public void TerminalOptionsTests_ShouldHaveCorrectDefaultValues()
+        [TestMethod]
+        public void CliOptionsShouldHaveCorrectDefaultValues()
         {
             TerminalOptions options = new();
+
+            Assert.IsNotNull(options.Authentication);
+            Assert.IsNotNull(options.Checker);
+            Assert.IsNotNull(options.Extractor);
+            Assert.IsNotNull(options.Logging);
+            Assert.IsNotNull(options.Handler);
+            Assert.IsNotNull(options.Licensing);
+            Assert.IsNotNull(options.Router);
+            Assert.IsNotNull(options.Http);
+            Assert.IsNotNull(options.Terminal);
+            Assert.IsNotNull(options.Help);
         }
     }
 }

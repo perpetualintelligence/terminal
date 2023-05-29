@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             cancellationTokenSource = new();
             cancellationToken = cancellationTokenSource.Token;
 
-            CliOptions cliOptions = MockCliOptions.NewOptions();
+            TerminalOptions terminalOptions = MockCliOptions.NewOptions();
             mockLicenseExtractor = new();
             mockLicenseChecker = new();
             mockOptionsChecker = new();
@@ -55,9 +55,9 @@ namespace PerpetualIntelligence.Terminal.Hosting
             host = hostBuilder.Start();
 
             // Different hosted services to test behaviors
-            defaultCliHostedService = new TerminalHostedService(host.Services, cliOptions, logger);
-            mockCustomCliHostedService = new MockCliCustomHostedService(host.Services, cliOptions, logger);
-            mockCliEventsHostedService = new MockCliEventsHostedService(host.Services, cliOptions, logger);
+            defaultCliHostedService = new TerminalHostedService(host.Services, terminalOptions, logger);
+            mockCustomCliHostedService = new MockCliCustomHostedService(host.Services, terminalOptions, logger);
+            mockCliEventsHostedService = new MockCliEventsHostedService(host.Services, terminalOptions, logger);
         }
 
         [Fact]
@@ -283,7 +283,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public async void StartAsync_ShouldRegister_HelpArgument_ByDefault()
         {
-            CliOptions cliOptions = MockCliOptions.NewOptions();
+            TerminalOptions terminalOptions = MockCliOptions.NewOptions();
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
@@ -305,7 +305,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new TerminalHostedService(host.Services, cliOptions, logger);
+            defaultCliHostedService = new TerminalHostedService(host.Services, terminalOptions, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
@@ -313,18 +313,18 @@ namespace PerpetualIntelligence.Terminal.Hosting
             foreach (var commandDescriptor in commandDescriptors)
             {
                 commandDescriptor.OptionDescriptors.Should().NotBeEmpty();
-                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.OptionId));
+                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(terminalOptions.Help.OptionId));
                 helpAttr.Should().NotBeNull();
-                helpAttr!.Alias.Should().Be(cliOptions.Help.OptionAlias);
-                helpAttr.Description.Should().Be(cliOptions.Help.OptionDescription);
+                helpAttr!.Alias.Should().Be(terminalOptions.Help.OptionAlias);
+                helpAttr.Description.Should().Be(terminalOptions.Help.OptionDescription);
             }
         }
 
         [Fact]
         public async void StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
         {
-            CliOptions cliOptions = MockCliOptions.NewOptions();
-            cliOptions.Help.Disabled = true;
+            TerminalOptions terminalOptions = MockCliOptions.NewOptions();
+            terminalOptions.Help.Disabled = true;
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
@@ -350,14 +350,14 @@ namespace PerpetualIntelligence.Terminal.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new TerminalHostedService(host.Services, cliOptions, logger);
+            defaultCliHostedService = new TerminalHostedService(host.Services, terminalOptions, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
             commandDescriptors.Should().NotBeEmpty();
             foreach (var commandDescriptor in commandDescriptors)
             {
-                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(cliOptions.Help.OptionId));
+                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(terminalOptions.Help.OptionId));
                 helpAttr.Should().BeNull();
             }
         }

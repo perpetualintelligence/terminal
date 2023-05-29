@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public TerminalHostedService(IServiceProvider serviceProvider, CliOptions options, ILogger<TerminalHostedService> logger)
+        public TerminalHostedService(IServiceProvider serviceProvider, TerminalOptions options, ILogger<TerminalHostedService> logger)
         {
             this.hostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
             this.serviceProvider = serviceProvider;
@@ -154,7 +154,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         /// Allows the host application to perform additional configuration option checks.
         /// </summary>
         /// <returns></returns>
-        protected virtual Task CheckHostApplicationConfigurationAsync(CliOptions options)
+        protected virtual Task CheckHostApplicationConfigurationAsync(TerminalOptions options)
         {
             return Task.CompletedTask;
         }
@@ -237,11 +237,11 @@ namespace PerpetualIntelligence.Terminal.Hosting
 
         /// <summary>
         /// This method check the mandatory configuration options. Applications cannot customize or change the mandatory
-        /// configuration options, but they can perform additional configuration checks with <see cref="CheckHostApplicationConfigurationAsync(CliOptions)"/>.
+        /// configuration options, but they can perform additional configuration checks with <see cref="CheckHostApplicationConfigurationAsync(TerminalOptions)"/>.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <returns></returns>
-        private async Task CheckHostApplicationMandatoryConfigurationAsync(CliOptions options)
+        private async Task CheckHostApplicationMandatoryConfigurationAsync(TerminalOptions options)
         {
             IConfigurationOptionsChecker optionsChecker = serviceProvider.GetRequiredService<IConfigurationOptionsChecker>();
             await optionsChecker.CheckAsync(options);
@@ -260,7 +260,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             return result;
         }
 
-        private readonly CliOptions options;
+        private readonly TerminalOptions options;
         private readonly IHostApplicationLifetime hostApplicationLifetime;
         private readonly ILogger<TerminalHostedService> logger;
         private readonly IServiceProvider serviceProvider;

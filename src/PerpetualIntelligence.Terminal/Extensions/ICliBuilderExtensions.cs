@@ -61,7 +61,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="CliOptions"/> to the service collection.
+        /// Adds the <see cref="TerminalOptions"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
@@ -69,7 +69,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             // Add options.
             builder.Services.AddOptions();
-            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<CliOptions>>().Value);
+            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TerminalOptions>>().Value);
 
             // Add options checker
             builder.Services.AddSingleton<IConfigurationOptionsChecker, ConfigurationOptionsChecker>();

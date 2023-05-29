@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// Initializes a new instance.
         /// </summary>
         /// <param name="options">The configuration options.</param>
-        public RunRunner(CliOptions options)
+        public RunRunner(TerminalOptions options)
         {
         }
 

@@ -486,9 +486,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton<IRoutingService, ConsoleRoutingService>();
         }
 
-        private CliOptions GetCliOptions(IHost host)
+        private TerminalOptions GetCliOptions(IHost host)
         {
-            return host.Services.GetRequiredService<CliOptions>();
+            return host.Services.GetRequiredService<TerminalOptions>();
         }
 
         private void HostStopRequestCallback(object? state)
