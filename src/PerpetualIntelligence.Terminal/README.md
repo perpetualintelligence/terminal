@@ -4,6 +4,7 @@
 ![ubuntu](https://img.shields.io/badge/ubuntu-grey?style=flat-square&logo=ubuntu)
 ![windows](https://img.shields.io/badge/windows-grey?style=flat-square&logo=windows)
 
+# pi-cli
 ## The most flexible cross-platform framework for modern CLI terminals.
 `pi-cli` is the most flexible cross-platform framework for building modern CLI terminals for your company, product, service, SaaS, development, and testing needs. Users, customers, and enterprises across engineering, manufacturing, technology, digital industries, digital twins, artificial intelligence, machine learning, finance, media, creative design, etc., can create CLI apps with few flags or advanced CLIs with roots, groups, sub-commands, options, and options.
 
