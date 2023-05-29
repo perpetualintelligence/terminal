@@ -2,8 +2,9 @@
 > Breaking Change
 - Rename `Cli` namespace to `Terminal`
 - Rename `CliOptions` to `TerminalOptions`
-- Rename `TerminalBuilder` to `TerminalBuilder`
-- Rename 
+- Rename `*CliBuilder` to `*TerminalBuilder`
+- Rename CICI actions for `PerpetualIntelligence.Cli` to `PerpetualIntelligence.Terminal`
+- Deprecate `PerpetualIntelligence.Cli` in favor of `PerpetualIntelligence.Terminal`
 
 # 4.4.2-rc*
 > Breaking Change
