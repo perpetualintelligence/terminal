@@ -7,14 +7,14 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Runtime
+namespace PerpetualIntelligence.Terminal.Runtime
 {
     [Collection("Sequential")]
     public class TerminalConsoleLoggerTests : IAsyncLifetime

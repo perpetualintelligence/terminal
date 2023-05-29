@@ -5,9 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Mocks;
 
-namespace PerpetualIntelligence.Cli.Commands.Declarative
+namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
     [CommandDescriptor("id5", "name5", "test grp cmd5", "description")]
     [CommandRunner(typeof(MockCommandRunner))]

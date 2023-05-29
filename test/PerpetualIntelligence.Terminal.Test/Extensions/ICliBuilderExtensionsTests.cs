@@ -9,24 +9,24 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Commands.Extractors;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Events;
-using PerpetualIntelligence.Cli.Hosting;
-using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Cli.Stores;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Events;
+using PerpetualIntelligence.Terminal.Hosting;
+using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Stores;
 
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Linq;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     [TestClass]
     public class ICliBuilderExtensionsTests : InitializerTests

@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Runtime;
+using PerpetualIntelligence.Terminal.Runtime;
 using System;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     internal class MockTerminalLogger : TerminalLogger
     {

@@ -8,7 +8,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// An abstraction to check an option value.

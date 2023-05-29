@@ -8,15 +8,15 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Hosting;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Hosting;
+using PerpetualIntelligence.Terminal.Mocks;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     public class ICommandBuilderExtensionsTests
     {

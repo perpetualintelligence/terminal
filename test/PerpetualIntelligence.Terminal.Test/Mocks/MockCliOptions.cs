@@ -5,9 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockCliOptions
     {

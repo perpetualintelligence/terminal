@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Cli.Commands.Providers
+namespace PerpetualIntelligence.Terminal.Commands.Providers
 {
     /// <summary>
     /// The option default provider context.

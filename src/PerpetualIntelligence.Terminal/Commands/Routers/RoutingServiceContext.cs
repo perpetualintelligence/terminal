@@ -8,7 +8,7 @@
 using System.Net;
 using System.Threading;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers
+namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
     /// <summary>
     /// The  <see cref="IRoutingService"/>  context.

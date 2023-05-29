@@ -5,13 +5,13 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Commands.Checkers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// The <see cref="OptionDescriptor"/> class defines the command option identity, data type, and data validation

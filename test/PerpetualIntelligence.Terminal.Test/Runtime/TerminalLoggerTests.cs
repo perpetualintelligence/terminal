@@ -9,12 +9,12 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Extensions;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Extensions;
+using PerpetualIntelligence.Terminal.Mocks;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Runtime
+namespace PerpetualIntelligence.Terminal.Runtime
 {
     public class TerminalLoggerTests : IAsyncLifetime
     {

@@ -5,13 +5,13 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Licensing;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Licensing;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Hosting.Mocks
+namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 {
     public class MockLicenseExtractor : ILicenseExtractor
     {

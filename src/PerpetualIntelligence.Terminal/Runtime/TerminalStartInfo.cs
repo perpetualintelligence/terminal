@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Cli.Runtime
+namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
     /// The terminal start information.

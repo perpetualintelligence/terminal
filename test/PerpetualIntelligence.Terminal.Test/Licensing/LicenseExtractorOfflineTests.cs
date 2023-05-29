@@ -7,8 +7,8 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Json;
@@ -21,7 +21,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     public class LicenseExtractorOfflineTests : IDisposable
     {

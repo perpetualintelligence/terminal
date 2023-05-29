@@ -8,9 +8,9 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Extensions;
-using PerpetualIntelligence.Cli.Hosting;
+using PerpetualIntelligence.Terminal.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Extensions;
+using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
@@ -21,7 +21,7 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Commands.Declarative
+namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
     public class DeclarativeTargetTests : IAsyncDisposable
     {

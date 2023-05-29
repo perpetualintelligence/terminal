@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test.Services;
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     [TestClass]
     public class ExtractorResultTests

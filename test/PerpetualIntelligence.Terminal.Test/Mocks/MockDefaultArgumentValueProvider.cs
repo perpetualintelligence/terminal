@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.Providers;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockDefaultOptionValueProvider : IDefaultOptionValueProvider
     {

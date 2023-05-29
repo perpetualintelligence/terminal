@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Cli
+namespace PerpetualIntelligence.Terminal
 {
     /// <summary>
     /// The errors for the Perpetual Intelligence's <c>pi-cli</c> framework.

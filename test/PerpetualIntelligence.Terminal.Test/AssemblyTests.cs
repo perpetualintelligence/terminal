@@ -8,7 +8,7 @@
 using PerpetualIntelligence.Test.Services;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli
+namespace PerpetualIntelligence.Terminal
 {
     public class AssemblyTests
     {

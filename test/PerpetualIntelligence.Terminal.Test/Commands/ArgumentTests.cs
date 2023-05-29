@@ -11,7 +11,7 @@ using PerpetualIntelligence.Test.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     [TestClass]
     public class ArgumentTests

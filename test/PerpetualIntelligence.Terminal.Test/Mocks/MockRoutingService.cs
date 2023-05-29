@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Routers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     internal class MockRoutingService : IRoutingService
     {

@@ -10,7 +10,7 @@ using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
     /// The <c>pi-cli</c> license price.

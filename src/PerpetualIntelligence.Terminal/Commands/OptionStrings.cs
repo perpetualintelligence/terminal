@@ -7,7 +7,7 @@
 
 using System.Collections.ObjectModel;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// The ordered <see cref="OptionString"/> collection.

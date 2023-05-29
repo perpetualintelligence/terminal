@@ -6,12 +6,12 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Providers
+namespace PerpetualIntelligence.Terminal.Commands.Providers
 {
     /// <summary>
     /// The default option provider.

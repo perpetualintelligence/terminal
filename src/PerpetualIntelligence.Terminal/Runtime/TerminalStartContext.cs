@@ -7,7 +7,7 @@
 
 using System.Threading;
 
-namespace PerpetualIntelligence.Cli.Runtime
+namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
     /// The default <see cref="ITerminalStartContext"/>.

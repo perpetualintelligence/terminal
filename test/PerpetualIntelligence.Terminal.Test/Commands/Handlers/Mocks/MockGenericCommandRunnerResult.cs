@@ -5,9 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Runners;
+using PerpetualIntelligence.Terminal.Commands.Runners;
 
-namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
+namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
 {
     internal class MockGenericCommandRunnerResult : CommandRunnerResult
     {

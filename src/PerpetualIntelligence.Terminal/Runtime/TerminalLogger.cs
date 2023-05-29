@@ -8,7 +8,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace PerpetualIntelligence.Cli.Runtime
+namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
     /// An abstraction of a <see cref="Terminal"/> logger.

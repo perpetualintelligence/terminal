@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Stores
+namespace PerpetualIntelligence.Terminal.Stores
 {
     /// <summary>
     /// A store handler to lookup a <see cref="CommandDescriptor"/>.

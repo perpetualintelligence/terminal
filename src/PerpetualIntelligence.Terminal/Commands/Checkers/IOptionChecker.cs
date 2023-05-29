@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Abstractions;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// An abstraction to check an <see cref="Option"/>.

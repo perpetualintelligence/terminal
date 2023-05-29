@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Shared.Abstractions;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// An abstraction of <see cref="CliOptions"/> checker.

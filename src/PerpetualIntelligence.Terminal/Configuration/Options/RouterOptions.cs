@@ -7,7 +7,7 @@
 
 using System.Threading;
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
     /// The command router options.

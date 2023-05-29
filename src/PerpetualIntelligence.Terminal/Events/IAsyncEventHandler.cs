@@ -5,14 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Commands.Runners;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
+using PerpetualIntelligence.Terminal.Commands.Runners;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Events
+namespace PerpetualIntelligence.Terminal.Events
 {
     /// <summary>
     /// The <c>pi-cli</c> asynchronous event handler.

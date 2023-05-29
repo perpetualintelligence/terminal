@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     /// <summary>
     /// The command extractor context.

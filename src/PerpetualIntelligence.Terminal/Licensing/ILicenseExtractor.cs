@@ -8,7 +8,7 @@
 using PerpetualIntelligence.Shared.Abstractions;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
     /// An abstraction to extract the software <see cref="License"/>.

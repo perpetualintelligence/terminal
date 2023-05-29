@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Extractors;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Events;
-using PerpetualIntelligence.Cli.Licensing;
+using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Events;
+using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers
+namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
     /// <summary>
     /// The default <see cref="ICommandRouter"/>.

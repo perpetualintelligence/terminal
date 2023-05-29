@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 
-namespace PerpetualIntelligence.Cli.Authentication.Msal
+namespace PerpetualIntelligence.Terminal.Authentication.Msal
 {
     /// <summary>
     /// The <see cref="IMsalPublicClientApplicationFactory"/> context.

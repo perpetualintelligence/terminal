@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Routers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Handlers
+namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     /// <summary>
     /// An abstraction to handle a <c>pi-cli</c> command request routed from a <see cref="ICommandRouter"/>.

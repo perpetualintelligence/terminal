@@ -6,16 +6,16 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Mocks;
 using PerpetualIntelligence.Shared.Licensing;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Test.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     public class LicenseCheckerTests
     {
@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions = MockCliOptions.New();
             commandDescriptors = MockCommands.LicensingCommands;
             licenseChecker = new LicenseChecker(commandDescriptors, cliOptions, TestLogger.Create<LicenseChecker>());
-            license = new License("testProviderId2", Handlers.OnlineLicenseHandler,  LicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(LicensePlans.Unlimited), LicensePrice.Create(LicensePlans.Unlimited));
+            license = new License("testProviderId2", Handlers.OnlineLicenseHandler, LicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(LicensePlans.Unlimited), LicensePrice.Create(LicensePlans.Unlimited));
         }
 
         [Fact]
@@ -73,7 +73,6 @@ namespace PerpetualIntelligence.Cli.Licensing
             cliOptions.Extractor.OptionAlias = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
         }
-
 
         [Fact]
         public async Task CheckAsync_DefaultOption_ShouldBehaveCorrectly()
@@ -350,9 +349,9 @@ namespace PerpetualIntelligence.Cli.Licensing
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler=test4");
         }
 
-        private CliOptions cliOptions;
-        private IEnumerable<CommandDescriptor> commandDescriptors;
-        private License license;
-        private ILicenseChecker licenseChecker;
+        private readonly CliOptions cliOptions;
+        private readonly IEnumerable<CommandDescriptor> commandDescriptors;
+        private readonly License license;
+        private readonly ILicenseChecker licenseChecker;
     }
 }

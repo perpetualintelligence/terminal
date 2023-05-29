@@ -6,13 +6,13 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Providers
+namespace PerpetualIntelligence.Terminal.Commands.Providers
 {
     [TestClass]
     public class OptionDefaultValueProviderTests : LoggerTests<OptionDefaultValueProviderTests>

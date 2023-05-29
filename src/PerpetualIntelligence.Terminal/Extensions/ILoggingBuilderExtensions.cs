@@ -8,9 +8,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Runtime;
+using PerpetualIntelligence.Terminal.Runtime;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     /// <summary>
     /// <see cref="ILoggingBuilder"/> extension methods.

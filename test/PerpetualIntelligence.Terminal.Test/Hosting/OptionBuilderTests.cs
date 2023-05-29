@@ -8,12 +8,12 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Cli.Extensions;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Extensions;
+using PerpetualIntelligence.Terminal.Mocks;
 using System;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Hosting
+namespace PerpetualIntelligence.Terminal.Hosting
 {
     public class OptionBuilderTests : IDisposable
     {

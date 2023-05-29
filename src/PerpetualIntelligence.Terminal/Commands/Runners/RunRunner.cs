@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners
+namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
     /// Runs an OS command. This runner will be available in a future release. It does not perform any action right now.

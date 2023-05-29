@@ -5,12 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Stores;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockCommandDescriptorStore : ICommandStoreHandler
     {

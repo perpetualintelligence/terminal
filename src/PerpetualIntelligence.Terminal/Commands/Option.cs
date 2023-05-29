@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// The <see cref="Option"/> class is a runtime validated representation of an actual command option and its

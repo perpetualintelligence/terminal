@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Providers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners
+namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
     /// An abstraction to delegate to <see cref="ICommandRunner{TResult}.RunAsync(CommandRunnerContext)"/>.

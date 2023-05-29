@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Linq;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     /// <summary>
     /// The <see cref="ILogger{T}"/> extension methods.

@@ -8,7 +8,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test.Services;
 
-namespace PerpetualIntelligence.Cli
+namespace PerpetualIntelligence.Terminal
 {
     [TestClass]
     public class ErrorsTest

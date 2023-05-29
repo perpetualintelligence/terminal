@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The default <see cref="IOptionValueChecker"/> that uses <see cref="System.ComponentModel.DataAnnotations.ValidationAttribute"/> to check an option value.

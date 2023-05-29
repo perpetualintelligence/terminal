@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockHttpClientFactory : IHttpClientFactory
     {

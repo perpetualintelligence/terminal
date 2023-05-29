@@ -10,7 +10,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Authentication
+namespace PerpetualIntelligence.Terminal.Authentication
 {
     /// <summary>
     /// Submits an authentication request asynchronously.

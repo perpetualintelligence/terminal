@@ -6,13 +6,13 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Hosting;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Hosting;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     /// <summary>
     /// The <see cref="ICommandBuilder"/> extension methods.

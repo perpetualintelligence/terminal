@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// An immutable option string extracted from the <see cref="CommandString"/>.

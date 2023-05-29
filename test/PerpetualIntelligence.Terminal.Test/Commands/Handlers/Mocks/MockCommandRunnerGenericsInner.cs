@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Runners;
+using PerpetualIntelligence.Terminal.Commands.Runners;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Handlers.Mocks
+namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
 {
     internal class MockGenericCommandRunnerInner : CommandRunner<MockGenericCommandRunnerResult>
     {

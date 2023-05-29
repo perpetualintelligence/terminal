@@ -6,15 +6,15 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The default <see cref="IConfigurationOptionsChecker"/>.

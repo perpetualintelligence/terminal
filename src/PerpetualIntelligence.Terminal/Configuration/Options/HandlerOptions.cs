@@ -5,9 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
     /// The <c>pi-cli</c> handler options.

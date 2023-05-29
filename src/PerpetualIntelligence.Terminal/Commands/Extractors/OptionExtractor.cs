@@ -6,8 +6,8 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -15,7 +15,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     /// <summary>
     /// The default <see cref="IOptionExtractor"/>.

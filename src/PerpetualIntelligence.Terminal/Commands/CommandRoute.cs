@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// Defines a unique command route.

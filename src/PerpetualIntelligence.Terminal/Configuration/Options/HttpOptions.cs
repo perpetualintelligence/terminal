@@ -7,7 +7,7 @@
 
 using System.Net.Http;
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
     /// The HTTP configuration options.

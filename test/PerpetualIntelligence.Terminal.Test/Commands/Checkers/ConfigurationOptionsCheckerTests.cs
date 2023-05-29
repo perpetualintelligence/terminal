@@ -8,19 +8,19 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands.Extractors;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Cli.Stores;
-using PerpetualIntelligence.Cli.Stores.InMemory;
+using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Stores;
+using PerpetualIntelligence.Terminal.Stores.InMemory;
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     [TestClass]
     public class ConfigurationOptionsCheckerTests

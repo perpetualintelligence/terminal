@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Licensing;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
     /// A <c>pi-cli</c> license.

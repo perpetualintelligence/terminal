@@ -5,14 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// The ordered <see cref="OptionDescriptor"/> collection.

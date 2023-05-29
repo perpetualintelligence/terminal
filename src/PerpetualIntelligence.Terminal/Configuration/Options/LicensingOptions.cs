@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Licensing;
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
     /// The licensing configuration options.

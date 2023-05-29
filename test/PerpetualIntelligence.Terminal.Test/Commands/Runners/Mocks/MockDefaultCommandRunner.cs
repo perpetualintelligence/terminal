@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Handlers.Mocks;
+using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners.Mocks
+namespace PerpetualIntelligence.Terminal.Commands.Runners.Mocks
 {
     internal class MockDefaultCommandRunner : CommandRunner<CommandRunnerResult>
     {

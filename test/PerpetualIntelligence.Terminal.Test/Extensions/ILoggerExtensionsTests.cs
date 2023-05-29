@@ -6,11 +6,11 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     [TestClass]
     public class ILoggerExtensionsTests : InitializerTests

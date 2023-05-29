@@ -6,15 +6,15 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
     /// The default <see cref="ILicenseChecker"/> for all <c>pi-cli</c> features.

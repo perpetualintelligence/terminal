@@ -7,14 +7,14 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Graph;
-using PerpetualIntelligence.Cli.Authentication;
-using PerpetualIntelligence.Cli.Authentication.Msal;
-using PerpetualIntelligence.Cli.Hosting;
+using PerpetualIntelligence.Terminal.Authentication;
+using PerpetualIntelligence.Terminal.Authentication.Msal;
+using PerpetualIntelligence.Terminal.Hosting;
 using System;
 using System.Net.Http;
 using System.Threading;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     /// <summary>
     /// </summary>

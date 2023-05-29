@@ -7,8 +7,8 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers
+namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
     /// <summary>
     /// The default <see cref="IRoutingService"/> for TCP client server communication.

@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Extractors.Mocks
+namespace PerpetualIntelligence.Terminal.Commands.Extractors.Mocks
 {
     internal class MockBadOptionExtractor : IOptionExtractor
     {

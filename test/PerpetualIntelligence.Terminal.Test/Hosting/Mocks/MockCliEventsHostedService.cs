@@ -6,10 +6,10 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 
-namespace PerpetualIntelligence.Cli.Hosting.Mocks
+namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 {
     public class MockCliEventsHostedService : TerminalHostedService
     {

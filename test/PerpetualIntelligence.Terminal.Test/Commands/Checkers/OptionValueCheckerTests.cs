@@ -6,16 +6,16 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands.Mappers;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Commands.Mappers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     [TestClass]
     public class OptionValueCheckerTests : InitializerTests

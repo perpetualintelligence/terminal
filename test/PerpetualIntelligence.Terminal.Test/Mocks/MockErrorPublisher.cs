@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockErrorPublisher : IErrorHandler
     {

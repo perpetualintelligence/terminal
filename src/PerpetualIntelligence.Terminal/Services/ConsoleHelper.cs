@@ -8,7 +8,7 @@
 using PerpetualIntelligence.Shared.Attributes;
 using System;
 
-namespace PerpetualIntelligence.Cli.Services
+namespace PerpetualIntelligence.Terminal.Services
 {
     /// <summary>
     /// The <see cref="Console"/> helper methods.

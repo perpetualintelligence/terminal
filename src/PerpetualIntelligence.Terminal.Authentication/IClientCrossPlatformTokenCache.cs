@@ -9,7 +9,7 @@ using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Authentication
+namespace PerpetualIntelligence.Terminal.Authentication
 {
     /// <summary>
     /// An abstraction of a client's cross platform token cache. Client applications (desktop and mobile apps) should

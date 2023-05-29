@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockStringWriterLogger : ILogger
     {

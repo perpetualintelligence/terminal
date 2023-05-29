@@ -6,14 +6,14 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Extensions;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Handlers
+namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     /// <summary>
     /// The default <see cref="IErrorHandler"/> to handle an <see cref="Error"/>.

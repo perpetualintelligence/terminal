@@ -8,7 +8,7 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Providers
+namespace PerpetualIntelligence.Terminal.Commands.Providers
 {
     /// <summary>
     /// The default <see cref="IHelpProvider"/> that logs the command help using <see cref="ILogger"/>.

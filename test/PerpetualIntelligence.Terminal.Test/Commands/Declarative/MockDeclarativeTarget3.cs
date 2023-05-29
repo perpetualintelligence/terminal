@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Mocks;
 using System.ComponentModel.DataAnnotations;
 
-namespace PerpetualIntelligence.Cli.Commands.Declarative
+namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
     [CommandDescriptor("id3", "name3", "test grp cmd3", "description")]
     [CommandRunner(typeof(MockCommandRunner))]

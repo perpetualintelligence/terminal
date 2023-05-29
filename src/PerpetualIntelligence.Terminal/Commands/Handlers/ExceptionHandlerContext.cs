@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Handlers
+namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     /// <summary>
     /// The <see cref="IExceptionHandler"/> context.

@@ -7,7 +7,7 @@
 
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Authentication.Tests
+namespace PerpetualIntelligence.Terminal.Authentication.Tests
 {
     public class UnitTest1
     {

@@ -6,16 +6,16 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Stores.InMemory
+namespace PerpetualIntelligence.Terminal.Stores.InMemory
 {
     [TestClass]
     public class InMemoryCommandDescriptorStoreTests : InitializerTests

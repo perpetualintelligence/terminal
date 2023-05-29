@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Abstractions;
 
-namespace PerpetualIntelligence.Cli.Commands.Mappers
+namespace PerpetualIntelligence.Terminal.Commands.Mappers
 {
     /// <summary>
     /// An abstraction to map an <see cref="Option.DataType"/> to <see cref="System.Type"/>.

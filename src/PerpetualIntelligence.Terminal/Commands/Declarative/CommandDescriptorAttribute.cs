@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Extractors;
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Declarative
+namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
     /// <summary>
     /// Declares a <see cref="CommandDescriptor"/> for a command.

@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
+namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 {
     internal class MockCommandExtractorInner : ICommandExtractor
     {

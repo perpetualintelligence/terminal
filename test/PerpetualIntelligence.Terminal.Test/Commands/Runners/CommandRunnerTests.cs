@@ -6,16 +6,16 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Cli.Commands.Handlers.Mocks;
-using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Commands.Runners.Mocks;
-using PerpetualIntelligence.Cli.Mocks;
+using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
+using PerpetualIntelligence.Terminal.Commands.Routers;
+using PerpetualIntelligence.Terminal.Commands.Runners.Mocks;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners
+namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     public class CommandRunnerTests
     {

@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Declarative
+namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
     /// <summary>
     /// Declares a command checker.

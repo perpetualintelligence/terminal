@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers.Mocks
+namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 {
     internal class MockCommandHandlerInner : ICommandHandler
     {

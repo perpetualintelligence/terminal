@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Commands.Runners;
+using PerpetualIntelligence.Terminal.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Commands.Runners;
 
-namespace PerpetualIntelligence.Cli.Commands.Handlers
+namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     /// <summary>
     /// The command handler result.

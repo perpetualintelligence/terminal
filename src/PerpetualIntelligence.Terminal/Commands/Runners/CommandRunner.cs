@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Providers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners
+namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
     /// The command runner.

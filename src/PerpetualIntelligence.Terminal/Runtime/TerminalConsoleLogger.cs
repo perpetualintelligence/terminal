@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Cli.Runtime
+namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
     /// The default <see cref="ILogger"/> that indents  messages based on scopes to the standard <see cref="Console"/>.

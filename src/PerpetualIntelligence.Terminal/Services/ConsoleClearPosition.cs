@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Cli.Services
+namespace PerpetualIntelligence.Terminal.Services
 {
     /// <summary>
     /// Defines the positioning data to clear the console output.

@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers
+namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
     /// <summary>
     /// An abstraction of a routing service.

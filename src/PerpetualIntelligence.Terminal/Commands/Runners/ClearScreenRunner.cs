@@ -8,7 +8,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners
+namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
     /// The clear screen command runner.

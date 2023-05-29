@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
     /// The logging configuration options.

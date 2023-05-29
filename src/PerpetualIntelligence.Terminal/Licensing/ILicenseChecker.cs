@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Abstractions;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
     /// An abstraction to check the <see cref="License"/> object.

@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Infrastructure;
 
-namespace PerpetualIntelligence.Cli.Commands.Providers
+namespace PerpetualIntelligence.Terminal.Commands.Providers
 {
     /// <summary>
     /// The option default value provider result.

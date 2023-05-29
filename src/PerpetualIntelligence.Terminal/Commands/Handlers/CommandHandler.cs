@@ -7,18 +7,18 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Commands.Checkers;
-using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Commands.Routers;
-using PerpetualIntelligence.Cli.Commands.Runners;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Events;
-using PerpetualIntelligence.Cli.Licensing;
+using PerpetualIntelligence.Terminal.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
+using PerpetualIntelligence.Terminal.Commands.Runners;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Events;
+using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Handlers
+namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     /// <summary>
     /// The default handler to handle a <c>pi-cli</c> command request routed from a <see cref="CommandRouter"/>.
@@ -69,7 +69,7 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             CommandRunnerResult runnerResult;
 
             // Run or Help
-            if (!options.Help.Disabled.GetValueOrDefault() && runnerContext.Command.TryGetOption(options.Help.OptionId, out Option helpArg))
+            if (!options.Help.Disabled.GetValueOrDefault() && runnerContext.Command.TryGetOption(options.Help.OptionId, out _))
             {
                 IHelpProvider helpProvider = services.GetRequiredService<IHelpProvider>();
                 runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, helpProvider);
@@ -121,16 +121,12 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
 
             // Not added to service collection
-            object? checkerObj = services.GetService(context.Command.Descriptor.Checker);
-            if (checkerObj == null)
-            {
-                throw new ErrorException(Errors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.FullName);
-            }
+            object? checkerObj = services.GetService(context.Command.Descriptor.Checker) ?? throw new ErrorException(Errors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.Name);
 
             // Invalid checker configured
             if (checkerObj is not ICommandChecker checker)
             {
-                throw new ErrorException(Errors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.FullName);
+                throw new ErrorException(Errors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.Name);
             }
 
             return Task.FromResult(checker);
@@ -145,16 +141,12 @@ namespace PerpetualIntelligence.Cli.Commands.Handlers
             }
 
             // Not added to service collection
-            object? runnerObj = services.GetService(context.Command.Descriptor.Runner);
-            if (runnerObj == null)
-            {
-                throw new ErrorException(Errors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.FullName);
-            }
+            object? runnerObj = services.GetService(context.Command.Descriptor.Runner) ?? throw new ErrorException(Errors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.Name);
 
             // Invalid runner configured
             if (runnerObj is not IDelegateCommandRunner runnerDelegate)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.FullName);
+                throw new ErrorException(Errors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.Name);
             }
 
             return Task.FromResult(runnerDelegate);

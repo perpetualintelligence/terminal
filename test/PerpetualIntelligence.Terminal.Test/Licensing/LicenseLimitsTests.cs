@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     public class LicenseLimitsTests
     {

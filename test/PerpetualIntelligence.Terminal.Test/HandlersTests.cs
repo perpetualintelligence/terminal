@@ -7,9 +7,11 @@
 
 using FluentAssertions;
 using PerpetualIntelligence.Test.Services;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli
+namespace PerpetualIntelligence.Terminal
 {
     public class HandlersTests
     {
@@ -27,6 +29,14 @@ namespace PerpetualIntelligence.Cli
             Handlers.OnlineLicenseHandler.Should().Be("online-license");
             Handlers.UnicodeHandler.Should().Be("unicode");
             Handlers.AsciiHandler.Should().Be("ascii");
+        }
+
+        [Fact]
+        public void Handler_Defines_InternalVisibleTo_ForUnitTests()
+        {
+            InternalsVisibleToAttribute? internalsVisibleToAttribute = typeof(Handlers).Assembly.GetCustomAttribute<InternalsVisibleToAttribute>();
+            internalsVisibleToAttribute.Should().NotBeNull();
+            internalsVisibleToAttribute!.AssemblyName.Should().Be("PerpetualIntelligence.Terminal.Test");
         }
     }
 }

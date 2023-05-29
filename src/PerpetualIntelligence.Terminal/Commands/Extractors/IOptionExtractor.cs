@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Abstractions;
 
-namespace PerpetualIntelligence.Cli.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     /// <summary>
     /// An abstraction to extract an option.

@@ -7,12 +7,12 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Licensing;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Licensing;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Hosting.Mocks
+namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 {
     public class MockCliCustomHostedService : TerminalHostedService
     {

@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Cli.Extensions;
+using PerpetualIntelligence.Terminal.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners
+namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
     /// The exit command runner.

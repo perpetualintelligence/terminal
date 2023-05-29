@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Exceptions;
 
-namespace PerpetualIntelligence.Cli.Licensing
+namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
     /// The default <see cref="ILicenseChecker"/> result.

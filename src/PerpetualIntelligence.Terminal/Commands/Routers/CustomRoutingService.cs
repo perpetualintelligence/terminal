@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers
+namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
     /// <summary>
     /// The default <see cref="IRoutingService"/> for custom routing.

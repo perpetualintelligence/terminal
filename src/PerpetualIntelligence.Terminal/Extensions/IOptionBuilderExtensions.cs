@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Cli.Hosting;
+using PerpetualIntelligence.Terminal.Hosting;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     /// <summary>
     /// The <see cref="IOptionBuilder"/> extension methods.

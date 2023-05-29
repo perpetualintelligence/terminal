@@ -5,7 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Cli
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("PerpetualIntelligence.Terminal.Test")]
+
+namespace PerpetualIntelligence.Terminal
 {
     /// <summary>
     /// These well-known <c>pi-cli</c> handlers allow app authors to configure the framework and provide custom implementations.

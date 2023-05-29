@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners
+namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
     /// The command runner context.

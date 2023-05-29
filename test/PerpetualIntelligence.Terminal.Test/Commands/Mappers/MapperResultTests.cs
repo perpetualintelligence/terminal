@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test.Services;
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Mappers
+namespace PerpetualIntelligence.Terminal.Commands.Mappers
 {
     [TestClass]
     public class MapperResultTests

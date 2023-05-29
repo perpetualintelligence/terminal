@@ -6,14 +6,14 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Cli.Commands;
-using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PerpetualIntelligence.Cli.Hosting
+namespace PerpetualIntelligence.Terminal.Hosting
 {
     /// <summary>
     /// The default <see cref="ICommandBuilder"/>.

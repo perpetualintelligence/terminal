@@ -6,14 +6,14 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 
 using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Mappers
+namespace PerpetualIntelligence.Terminal.Commands.Mappers
 {
     /// <summary>
     /// The option data type mapper using <see cref="System.ComponentModel.DataAnnotations"/>.

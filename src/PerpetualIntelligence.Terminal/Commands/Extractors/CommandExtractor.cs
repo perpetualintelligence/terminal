@@ -6,10 +6,10 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Stores;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     /// <summary>
     /// The default <see cref="ICommandExtractor"/>.
@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
                 // Sanity check
                 if (defaultOptionProvider == null)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).FullName);
+                    throw new ErrorException(Errors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
                 }
 
                 // Options and command supports the default option, but is the default value provided by user ? If yes

@@ -6,9 +6,9 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Terminal.Commands;
 
-namespace PerpetualIntelligence.Cli.Hosting
+namespace PerpetualIntelligence.Terminal.Hosting
 {
     /// <summary>
     /// An abstraction of <c>pi-cli</c> command builder.

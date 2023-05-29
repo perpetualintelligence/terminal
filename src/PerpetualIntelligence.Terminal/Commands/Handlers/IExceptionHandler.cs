@@ -8,7 +8,7 @@
 using PerpetualIntelligence.Shared.Abstractions;
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Handlers
+namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     /// <summary>
     /// An abstraction to handle <see cref="Exception"/>.

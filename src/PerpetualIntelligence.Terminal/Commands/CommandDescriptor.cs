@@ -5,12 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Extractors;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// The <see cref="CommandDescriptor"/> defines the command identity and its supported options that an end-user or

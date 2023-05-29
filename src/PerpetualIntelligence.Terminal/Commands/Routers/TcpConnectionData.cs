@@ -8,7 +8,7 @@
 using System.Net.Sockets;
 using System.Threading;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers
+namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
     /// <summary>
     /// The TCP connection data.

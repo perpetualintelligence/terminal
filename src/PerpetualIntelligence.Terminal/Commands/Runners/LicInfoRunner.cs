@@ -5,14 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Licensing;
-using PerpetualIntelligence.Cli.Services;
+using PerpetualIntelligence.Terminal.Licensing;
+using PerpetualIntelligence.Terminal.Services;
 using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Runners
+namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
     /// The <c>lic</c> command displays the current licensing information.

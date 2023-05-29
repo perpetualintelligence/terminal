@@ -9,7 +9,7 @@ using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Exceptions;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// An immutable <c>pi-cli</c> command. A command is a specific action or a set of actions that a user or an

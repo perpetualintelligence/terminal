@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Infrastructure;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The command checker result.

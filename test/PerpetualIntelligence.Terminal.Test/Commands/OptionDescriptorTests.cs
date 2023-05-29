@@ -6,10 +6,10 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Commands.Checkers;
 using System.ComponentModel.DataAnnotations;
 
-namespace PerpetualIntelligence.Cli.Commands
+namespace PerpetualIntelligence.Terminal.Commands
 {
     [TestClass]
     public class OptionDescriptorTests

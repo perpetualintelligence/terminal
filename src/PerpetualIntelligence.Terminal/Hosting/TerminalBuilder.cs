@@ -8,7 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace PerpetualIntelligence.Cli.Hosting
+namespace PerpetualIntelligence.Terminal.Hosting
 {
     /// <summary>
     /// The default <see cref="ITerminalBuilder"/>.

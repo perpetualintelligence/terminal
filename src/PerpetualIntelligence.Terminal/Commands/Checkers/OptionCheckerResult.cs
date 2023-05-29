@@ -8,7 +8,7 @@
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Checkers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The option checker result.

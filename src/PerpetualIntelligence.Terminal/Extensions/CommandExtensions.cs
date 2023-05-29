@@ -5,14 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Cli.Commands;
+using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Extensions
+namespace PerpetualIntelligence.Terminal.Extensions
 {
     /// <summary>
     /// The <see cref="Console"/> extension methods.

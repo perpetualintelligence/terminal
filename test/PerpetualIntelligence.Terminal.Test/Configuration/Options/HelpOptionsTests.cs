@@ -10,7 +10,7 @@ using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Configuration.Options
+namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     public class HelpOptionsTests : InitializerTests
     {

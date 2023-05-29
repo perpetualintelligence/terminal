@@ -8,7 +8,7 @@
 using System;
 using System.Threading;
 
-namespace PerpetualIntelligence.Cli.Commands.Routers
+namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
     /// <summary>
     /// The <c>pi-cli</c> generic command router context.

@@ -7,7 +7,7 @@
 
 using System.Security.Claims;
 
-namespace PerpetualIntelligence.Cli.Mocks
+namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockClaimsPrincipal
     {

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 
-namespace PerpetualIntelligence.Cli.Runtime
+namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
     /// The <see cref="ILoggerProvider"/> for <see cref="TerminalLogger"/>.

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using Xunit;
 
-namespace PerpetualIntelligence.Cli.Hosting
+namespace PerpetualIntelligence.Terminal.Hosting
 {
     public class CliBuilderTests
     {

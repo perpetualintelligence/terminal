@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Cli.Commands.Mappers
+namespace PerpetualIntelligence.Terminal.Commands.Mappers
 {
     /// <summary>
     /// The option data-type mapper result.

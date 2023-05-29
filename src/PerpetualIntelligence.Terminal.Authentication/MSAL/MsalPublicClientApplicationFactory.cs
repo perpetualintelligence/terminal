@@ -8,7 +8,7 @@
 using Microsoft.Identity.Client;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Authentication.Msal
+namespace PerpetualIntelligence.Terminal.Authentication.Msal
 {
     /// <summary>
     /// The <see cref="IMsalPublicClientApplicationFactory"/> to create <see cref="IPublicClientApplication"/>.

@@ -7,13 +7,13 @@
 
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
-using PerpetualIntelligence.Cli.Configuration.Options;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Authentication.Msal
+namespace PerpetualIntelligence.Terminal.Authentication.Msal
 {
     /// <summary>
     /// The <c>MSAL</c> authentication provider.

@@ -6,12 +6,12 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Cli.Commands.Handlers;
-using PerpetualIntelligence.Cli.Commands.Providers;
-using PerpetualIntelligence.Cli.Configuration.Options;
-using PerpetualIntelligence.Cli.Mocks;
-using PerpetualIntelligence.Cli.Stores;
-using PerpetualIntelligence.Cli.Stores.InMemory;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Stores;
+using PerpetualIntelligence.Terminal.Stores.InMemory;
 
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
@@ -19,7 +19,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Cli.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     [TestClass]
     public class OptionsCommandExtractorTests : LoggerTests<OptionsCommandExtractorTests>
