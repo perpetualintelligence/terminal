@@ -29,19 +29,19 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public void Build_Adds_Command_To_Global_ServiceCollection()
         {
             // Begin with no command
-            TerminalBuilder cliBuilder = new(serviceCollection);
-            ServiceDescriptor? serviceDescriptor = cliBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            TerminalBuilder terminalBuilder = new(serviceCollection);
+            ServiceDescriptor? serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             serviceDescriptor.Should().BeNull();
 
             // Add command to local
-            ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
 
             // Build
             ITerminalBuilder cliBuilderFromCommandBuilder = commandBuilder.Add();
-            cliBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
+            terminalBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
 
             // Build adds to global
-            serviceDescriptor = cliBuilder.Services.First(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            serviceDescriptor = terminalBuilder.Services.First(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
             CommandDescriptor instance = (CommandDescriptor)serviceDescriptor.ImplementationInstance!;
@@ -54,17 +54,17 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_CliBuilder()
         {
-            TerminalBuilder cliBuilder = new(serviceCollection);
-            ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            TerminalBuilder terminalBuilder = new(serviceCollection);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
             ITerminalBuilder cliBuilderFromCommandBuilder = commandBuilder.Add();
-            cliBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
+            terminalBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
         }
 
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder cliBuilder = new(serviceCollection);
-            CommandBuilder commandBuilder = new(cliBuilder);
+            TerminalBuilder terminalBuilder = new(serviceCollection);
+            CommandBuilder commandBuilder = new(terminalBuilder);
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
         }
 

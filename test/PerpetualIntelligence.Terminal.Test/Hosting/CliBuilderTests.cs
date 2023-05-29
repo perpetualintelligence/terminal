@@ -24,8 +24,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void CliBuilder_ShouldReturn_Same_IServiceCollection()
         {
-            TerminalBuilder cliBuilder = new(serviceCollection);
-            cliBuilder.Services.Should().BeSameAs(serviceCollection);
+            TerminalBuilder terminalBuilder = new(serviceCollection);
+            terminalBuilder.Services.Should().BeSameAs(serviceCollection);
         }
 
         ~CliBuilderTests()

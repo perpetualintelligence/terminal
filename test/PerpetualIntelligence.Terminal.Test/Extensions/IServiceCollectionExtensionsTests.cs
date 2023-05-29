@@ -40,10 +40,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }).Build();
 
             Assert.IsNotNull(serviceDescriptors);
-            ITerminalBuilder? cliBuilder = serviceDescriptors.AddCliBuilder();
-            Assert.IsNotNull(cliBuilder);
-            Assert.IsInstanceOfType(cliBuilder, typeof(TerminalBuilder));
-            Assert.IsTrue(ReferenceEquals(serviceDescriptors, cliBuilder.Services));
+            ITerminalBuilder? terminalBuilder = serviceDescriptors.AddCliBuilder();
+            Assert.IsNotNull(terminalBuilder);
+            Assert.IsInstanceOfType(terminalBuilder, typeof(TerminalBuilder));
+            Assert.IsTrue(ReferenceEquals(serviceDescriptors, terminalBuilder.Services));
 
             Assert.IsFalse(setupActionCalled);
         }

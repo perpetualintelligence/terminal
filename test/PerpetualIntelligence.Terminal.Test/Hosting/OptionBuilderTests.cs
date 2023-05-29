@@ -31,8 +31,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_CommandBuilder()
         {
-            TerminalBuilder cliBuilder = new(serviceCollection);
-            ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            TerminalBuilder terminalBuilder = new(serviceCollection);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
 
             OptionBuilder argumentBuilder = new(commandBuilder);
             ICommandBuilder cmdBuilderFromArgBuilder = argumentBuilder.Add();
@@ -47,8 +47,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder cliBuilder = new(serviceCollection);
-            CommandBuilder commandBuilder = new(cliBuilder);
+            TerminalBuilder terminalBuilder = new(serviceCollection);
+            CommandBuilder commandBuilder = new(terminalBuilder);
             OptionBuilder argumentBuilder = new (commandBuilder);
 
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);

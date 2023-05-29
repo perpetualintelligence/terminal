@@ -23,10 +23,10 @@ namespace PerpetualIntelligence.Terminal.Hosting
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="cliBuilder">The <see cref="ITerminalBuilder"/>.</param>
-        public CommandBuilder(ITerminalBuilder cliBuilder)
+        /// <param name="terminalBuilder">The <see cref="ITerminalBuilder"/>.</param>
+        public CommandBuilder(ITerminalBuilder terminalBuilder)
         {
-            this.cliBuilder = cliBuilder;
+            this.terminalBuilder = terminalBuilder;
             Services = new ServiceCollection();
         }
 
@@ -73,13 +73,13 @@ namespace PerpetualIntelligence.Terminal.Hosting
             }
 
             // Make sure the command runner and checker are added. TODO this may add duplicate types
-            cliBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new ErrorException(Errors.InvalidConfiguration, "Checker is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
-            cliBuilder.Services.AddTransient(commandDescriptor.Runner ?? throw new ErrorException(Errors.InvalidConfiguration, "Runner is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
-            cliBuilder.Services.AddSingleton(commandDescriptor);
+            terminalBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new ErrorException(Errors.InvalidConfiguration, "Checker is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
+            terminalBuilder.Services.AddTransient(commandDescriptor.Runner ?? throw new ErrorException(Errors.InvalidConfiguration, "Runner is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
+            terminalBuilder.Services.AddSingleton(commandDescriptor);
 
-            return cliBuilder;
+            return terminalBuilder;
         }
 
-        private readonly ITerminalBuilder cliBuilder;
+        private readonly ITerminalBuilder terminalBuilder;
     }
 }

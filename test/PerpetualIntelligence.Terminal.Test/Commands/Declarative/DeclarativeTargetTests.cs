@@ -29,14 +29,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
-            cliBuilder = new(serviceCollection);
+            terminalBuilder = new(serviceCollection);
         }
 
         [Fact]
         public void Build_Should_Read_ArgumentValidation_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -69,8 +69,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_NoOptionDescriptor_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -81,8 +81,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_NoCommandTags_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -93,8 +93,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_CommandTags_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -105,8 +105,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_NoArgumentValidaiton_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -126,8 +126,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_ArgumentCustomProperties_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -154,8 +154,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_NoArgumentCustomProperties_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -175,8 +175,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Build_ShouldRead_Options_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -233,11 +233,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Builder_ShouldAdd_Descriptors_To_ServiceCollection()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget3>();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget3>();
 
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(3);
 
@@ -257,8 +257,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Builder_ShouldRead_CustomCommandProps_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -271,8 +271,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Builder_Should_Read_NoCustomCommandProps_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -283,8 +283,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Builder_ShouldRead_NoTags_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -295,8 +295,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void Builder_ShouldRead_Tags_Correctly()
         {
-            cliBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
@@ -307,21 +307,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void TargetMustDefine_CommandChecker()
         {
-            Action act = () => cliBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandChecker>();
+            Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandChecker>();
             act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command checker.");
         }
 
         [Fact]
         public void TargetMustDefine_CommandDescriptor()
         {
-            Action act = () => cliBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandDescriptor>();
+            Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandDescriptor>();
             act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command descriptor.");
         }
 
         [Fact]
         public void TargetMustDefine_CommandRunner()
         {
-            Action act = () => cliBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandRunner>();
+            Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandRunner>();
             act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command runner.");
         }
 
@@ -339,8 +339,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             Type mockType = typeBuilder.CreateType();
 
             // No target will be added as it does not implements IDeclarativeTarget
-            cliBuilder.AddDeclarativeAssembly(mockType);
-            ServiceProvider serviceProvider = cliBuilder.Services.BuildServiceProvider();
+            terminalBuilder.AddDeclarativeAssembly(mockType);
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().BeEmpty();
         }
@@ -359,7 +359,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             Type mockType = typeBuilder.CreateType();
 
             // This means that we tried adding the target as it implements IDeclarativeTarget
-            Action act = () => cliBuilder.AddDeclarativeAssembly(mockType);
+            Action act = () => terminalBuilder.AddDeclarativeAssembly(mockType);
             act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command descriptor.");
         }
 
@@ -374,7 +374,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             return ValueTask.CompletedTask;
         }
 
-        private TerminalBuilder cliBuilder;
+        private TerminalBuilder terminalBuilder;
         private IHost host = null!;
         private IServiceCollection serviceCollection = null!;
     }

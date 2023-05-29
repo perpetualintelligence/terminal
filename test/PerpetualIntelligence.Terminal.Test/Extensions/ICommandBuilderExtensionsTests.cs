@@ -30,8 +30,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }).Build();
 
             serviceDescriptors.Should().NotBeNull();
-            cliBuilder = serviceDescriptors!.AddCliBuilder();
-            commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1");
+            terminalBuilder = serviceDescriptors!.AddCliBuilder();
+            commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1");
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             option.Obsolete.Should().BeTrue();
         }
 
-        private ITerminalBuilder cliBuilder = null!;
+        private ITerminalBuilder terminalBuilder = null!;
         private ICommandBuilder commandBuilder = null!;
     }
 }
