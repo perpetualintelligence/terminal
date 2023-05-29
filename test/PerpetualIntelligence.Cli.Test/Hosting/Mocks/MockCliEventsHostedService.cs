@@ -11,9 +11,9 @@ using System;
 
 namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
-    public class MockCliEventsHostedService : CliHostedService
+    public class MockCliEventsHostedService : TerminalHostedService
     {
-        public MockCliEventsHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<CliHostedService> logger) : base(serviceProvider, cliOptions, logger)
+        public MockCliEventsHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<TerminalHostedService> logger) : base(serviceProvider, cliOptions, logger)
         {
         }
 

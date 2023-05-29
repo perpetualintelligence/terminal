@@ -23,8 +23,8 @@ namespace PerpetualIntelligence.Cli.Hosting
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="cliBuilder">The <see cref="ICliBuilder"/>.</param>
-        public CommandBuilder(ICliBuilder cliBuilder)
+        /// <param name="cliBuilder">The <see cref="ITerminalBuilder"/>.</param>
+        public CommandBuilder(ITerminalBuilder cliBuilder)
         {
             this.cliBuilder = cliBuilder;
             Services = new ServiceCollection();
@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         /// Builds a <see cref="CommandDescriptor"/> and adds it to the service collection.
         /// </summary>
         /// <returns></returns>
-        public ICliBuilder Add()
+        public ITerminalBuilder Add()
         {
             // Add the command descriptor from local to the global CLI builder.
             ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
@@ -80,6 +80,6 @@ namespace PerpetualIntelligence.Cli.Hosting
             return cliBuilder;
         }
 
-        private readonly ICliBuilder cliBuilder;
+        private readonly ITerminalBuilder cliBuilder;
     }
 }

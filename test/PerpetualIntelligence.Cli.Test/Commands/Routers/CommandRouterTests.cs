@@ -160,10 +160,13 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         public void RouteWithNullOptionsShouldThrow()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(null, commandExtractor, commandHandler), "Value cannot be null. (Parameter 'licenseExtractor')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(licenseExtractor, null, commandHandler), "Value cannot be null. (Parameter 'commandExtractor')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(licenseExtractor, commandExtractor, null), "Value cannot be null. (Parameter 'commandHandler')");
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning disable CA1806 // Do not ignore method results
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(null, licenseExtractor, commandExtractor, commandHandler), "Value cannot be null. (Parameter 'cliOptions')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(cliOptions, null, commandExtractor, commandHandler), "Value cannot be null. (Parameter 'licenseExtractor')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(cliOptions, licenseExtractor, null, commandHandler), "Value cannot be null. (Parameter 'commandExtractor')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(cliOptions, licenseExtractor, commandExtractor, null), "Value cannot be null. (Parameter 'commandHandler')");
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type
+#pragma warning restore CA1806 // Do not ignore method results
         }
 
         [TestMethod]
@@ -221,7 +224,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeFalse();
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
-            commandRouter = new CommandRouter(licenseExtractor, commandExtractor, commandHandler, asyncEventHandler: null);
+            commandRouter = new CommandRouter(cliOptions, licenseExtractor, commandExtractor, commandHandler, asyncEventHandler: null);
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
             await commandRouter.RouteAsync(routerContext);
 
@@ -231,6 +234,14 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             eventHandler.PassedRoute.Should().BeNull();
             eventHandler.PassedCommand.Should().BeNull();
             eventHandler.PassedRouterResult.Should().BeNull();
+        }
+
+        [TestMethod]
+        public async Task Router_Throws_On_CommandString_MaxLimitAsync()
+        {
+            cliOptions.Router.MaxCommandStringLength = 30;
+            Func<Task> act = () => commandRouter.RouteAsync(new CommandRouterContext(new string('x', 31), CancellationToken.None));
+            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command string length is over the configured limit. max_length=30");
         }
 
         protected override void OnTestCleanup()
@@ -247,7 +258,8 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
             commandHandler = new MockCommandHandlerInner();
             licenseExtractor = new MockLicenseExtractorInner();
             eventHandler = new MockAsyncEventHandler();
-            commandRouter = new CommandRouter(licenseExtractor, commandExtractor, commandHandler, eventHandler);
+            cliOptions = MockCliOptions.New();
+            commandRouter = new CommandRouter(cliOptions, licenseExtractor, commandExtractor, commandHandler, eventHandler);
             cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -258,5 +270,6 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         private IHost host = null!;
         private MockLicenseExtractorInner licenseExtractor = null!;
         private CommandRouter commandRouter = null!;
+        private CliOptions cliOptions = null!;
     }
 }

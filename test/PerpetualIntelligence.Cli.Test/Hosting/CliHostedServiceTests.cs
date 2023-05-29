@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             host = hostBuilder.Start();
 
             // Different hosted services to test behaviors
-            defaultCliHostedService = new CliHostedService(host.Services, cliOptions, logger);
+            defaultCliHostedService = new TerminalHostedService(host.Services, cliOptions, logger);
             mockCustomCliHostedService = new MockCliCustomHostedService(host.Services, cliOptions, logger);
             mockCliEventsHostedService = new MockCliEventsHostedService(host.Services, cliOptions, logger);
         }
@@ -305,7 +305,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new CliHostedService(host.Services, cliOptions, logger);
+            defaultCliHostedService = new TerminalHostedService(host.Services, cliOptions, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
@@ -350,7 +350,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new CliHostedService(host.Services, cliOptions, logger);
+            defaultCliHostedService = new TerminalHostedService(host.Services, cliOptions, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
@@ -367,7 +367,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             return mockCliEventsHostedService;
         }
 
-        private CliHostedService DefaultHostedService(IServiceProvider arg)
+        private TerminalHostedService DefaultHostedService(IServiceProvider arg)
         {
             return defaultCliHostedService;
         }
@@ -384,7 +384,7 @@ namespace PerpetualIntelligence.Cli.Hosting
 
         private CancellationToken cancellationToken;
         private CancellationTokenSource cancellationTokenSource;
-        private CliHostedService defaultCliHostedService;
+        private TerminalHostedService defaultCliHostedService;
         private IHost host;
         private IHostBuilder hostBuilder;
         private MockCliEventsHostedService mockCliEventsHostedService;

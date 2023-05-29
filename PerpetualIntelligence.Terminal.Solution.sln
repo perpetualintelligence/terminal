@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli.Authentication", "src\PerpetualIntelligence.Cli.Authentication\PerpetualIntelligence.Cli.Authentication.csproj", "{4804D521-6F48-486D-B608-7EDD6CEF1F35}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerpetualIntelligence.Cli.Authentication.Tests", "test\PerpetualIntelligence.Cli.Authentication.Tests\PerpetualIntelligence.Cli.Authentication.Tests.csproj", "{095BC082-EB26-4BBF-A017-8DEB9B76991C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerpetualIntelligence.Cli.Authentication.Tests", "test\PerpetualIntelligence.Cli.Authentication.Tests\PerpetualIntelligence.Cli.Authentication.Tests.csproj", "{095BC082-EB26-4BBF-A017-8DEB9B76991C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

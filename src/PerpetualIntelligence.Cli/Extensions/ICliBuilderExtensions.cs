@@ -31,7 +31,7 @@ using System.Reflection;
 namespace PerpetualIntelligence.Cli.Extensions
 {
     /// <summary>
-    /// The <see cref="ICliBuilder"/> extension methods.
+    /// The <see cref="ITerminalBuilder"/> extension methods.
     /// </summary>
     public static class ICliBuilderExtensions
     {
@@ -41,8 +41,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TMapper">The option mapper type.</typeparam>
         /// <typeparam name="TChecker">The option checker type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddOptionChecker<TMapper, TChecker>(this ICliBuilder builder) where TMapper : class, IOptionDataTypeMapper where TChecker : class, IOptionChecker
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddOptionChecker<TMapper, TChecker>(this ITerminalBuilder builder) where TMapper : class, IOptionDataTypeMapper where TChecker : class, IOptionChecker
         {
             builder.Services.AddTransient<IOptionDataTypeMapper, TMapper>();
             builder.Services.AddTransient<IOptionChecker, TChecker>();
@@ -53,8 +53,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// Adds the <see cref="IAsyncEventHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddEventHandler<TEventHandler>(this ICliBuilder builder) where TEventHandler : class, IAsyncEventHandler
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddEventHandler<TEventHandler>(this ITerminalBuilder builder) where TEventHandler : class, IAsyncEventHandler
         {
             builder.Services.AddTransient<IAsyncEventHandler, TEventHandler>();
             return builder;
@@ -64,8 +64,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// Adds the <see cref="CliOptions"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddCliOptions(this ICliBuilder builder)
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddCliOptions(this ITerminalBuilder builder)
         {
             // Add options.
             builder.Services.AddOptions();
@@ -81,8 +81,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// Adds the command <see cref="IHelpProvider"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddHelpProvider<THelpProvider>(this ICliBuilder builder) where THelpProvider : class, IHelpProvider
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddHelpProvider<THelpProvider>(this ITerminalBuilder builder) where THelpProvider : class, IHelpProvider
         {
             builder.Services.AddSingleton<IHelpProvider, THelpProvider>();
             return builder;
@@ -93,13 +93,13 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="assemblyType">The type whose assembly to inspect and read all the declarative targets.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         /// <remarks>
-        /// The <see cref="AddDeclarativeAssembly(ICliBuilder, Type)"/> reads the target assembly and inspects all the
+        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all the
         /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ICliBuilder, Type)"/>.
+        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ITerminalBuilder, Type)"/>.
         /// </remarks>
-        public static ICliBuilder AddDeclarativeAssembly(this ICliBuilder builder, Type assemblyType)
+        public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Type assemblyType)
         {
             IEnumerable<Type> declarativeTypes = assemblyType.Assembly.GetTypes()
                 .Where(e => typeof(IDeclarativeTarget).IsAssignableFrom(e));
@@ -117,13 +117,13 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TType">The type whose assembly to inspect and read all the declarative targets.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         /// <remarks>
-        /// The <see cref="AddDeclarativeAssembly(ICliBuilder, Type)"/> reads the target assembly and inspects all the
+        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all the
         /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ICliBuilder, Type)"/>.
+        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ITerminalBuilder, Type)"/>.
         /// </remarks>
-        public static ICliBuilder AddDeclarativeAssembly<TType>(this ICliBuilder builder)
+        public static ITerminalBuilder AddDeclarativeAssembly<TType>(this ITerminalBuilder builder)
         {
             return AddDeclarativeAssembly(builder, typeof(TType));
         }
@@ -133,10 +133,10 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>
-        /// The <see cref="AddDeclarativeTarget{TDeclarativeTarget}(ICliBuilder)"/> inspects the declarative target type
+        /// The <see cref="AddDeclarativeTarget{TDeclarativeTarget}(ITerminalBuilder)"/> inspects the declarative target type
         /// using reflection.
         /// </returns>
-        public static ICliBuilder AddDeclarativeTarget<TDeclarativeTarget>(this ICliBuilder builder) where TDeclarativeTarget : IDeclarativeTarget
+        public static ITerminalBuilder AddDeclarativeTarget<TDeclarativeTarget>(this ITerminalBuilder builder) where TDeclarativeTarget : IDeclarativeTarget
         {
             return AddDeclarativeTarget(builder, typeof(TDeclarativeTarget));
         }
@@ -147,8 +147,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TError">The <see cref="IErrorHandler"/> type.</typeparam>
         /// <typeparam name="TException">The <see cref="IExceptionHandler"/> type.</typeparam>
         /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddErrorHandler<TError, TException>(this ICliBuilder builder) where TError : class, IErrorHandler where TException : class, IExceptionHandler
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddErrorHandler<TError, TException>(this ITerminalBuilder builder) where TError : class, IErrorHandler where TException : class, IExceptionHandler
         {
             // Add error publisher
             builder.Services.AddTransient<IErrorHandler, TError>();
@@ -165,8 +165,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
         /// <typeparam name="TOption">The option extractor type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddExtractor<TCommand, TOption>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddExtractor<TCommand, TOption>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
@@ -185,8 +185,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
         /// <typeparam name="TOption">The option extractor type.</typeparam>
         /// <typeparam name="TDefaultOptionValue">The option default value provider type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddExtractor<TCommand, TOption, TDefaultOptionValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor where TDefaultOptionValue : class, IDefaultOptionValueProvider
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddExtractor<TCommand, TOption, TDefaultOptionValue>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor where TDefaultOptionValue : class, IDefaultOptionValueProvider
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
@@ -209,8 +209,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <typeparam name="TOption">The option extractor type.</typeparam>
         /// <typeparam name="TDefaultOption">The default option provider type.</typeparam>
         /// <typeparam name="TDefaultOptionValue">The default option value provider type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddExtractor<TCommand, TOption, TDefaultOption, TDefaultOptionValue>(this ICliBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor where TDefaultOption : class, IDefaultOptionProvider where TDefaultOptionValue : class, IDefaultOptionValueProvider
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddExtractor<TCommand, TOption, TDefaultOption, TDefaultOptionValue>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor where TDefaultOption : class, IDefaultOptionProvider where TDefaultOptionValue : class, IDefaultOptionValueProvider
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
@@ -231,8 +231,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// Adds <c>pi-cli</c> license handler to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddLicenseHandler(this ICliBuilder builder)
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddLicenseHandler(this ITerminalBuilder builder)
         {
             // Add license extractor as singleton
             builder.Services.AddSingleton<ILicenseExtractor, LicenseExtractor>();
@@ -247,8 +247,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// Adds the <see cref="ICommandRouter"/> and <see cref="ICommandHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddRouter<TRouter, THandler>(this ICliBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddRouter<TRouter, THandler>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler
         {
             // Add command router
             builder.Services.AddTransient<ICommandRouter, TRouter>();
@@ -263,8 +263,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// Adds the <see cref="IRoutingService"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddRoutingService<TRService>(this ICliBuilder builder) where TRService : class, IRoutingService
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddRoutingService<TRService>(this ITerminalBuilder builder) where TRService : class, IRoutingService
         {
             // Add command routing service.
             builder.Services.AddTransient<IRoutingService, TRService>();
@@ -277,8 +277,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command descriptor store type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddStoreHandler<TStore>(this ICliBuilder builder) where TStore : class, ICommandStoreHandler
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddStoreHandler<TStore>(this ITerminalBuilder builder) where TStore : class, ICommandStoreHandler
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandStoreHandler, TStore>();
@@ -291,8 +291,8 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TTextHandler">The text handler.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        public static ICliBuilder AddTextHandler<TTextHandler>(this ICliBuilder builder) where TTextHandler : class, ITextHandler
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddTextHandler<TTextHandler>(this ITerminalBuilder builder) where TTextHandler : class, ITextHandler
         {
             builder.Services.AddTransient<ITextHandler, TTextHandler>();
             return builder;
@@ -313,14 +313,14 @@ namespace PerpetualIntelligence.Cli.Extensions
         /// <param name="defaultOption">The default option.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ICliBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
+        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
         {
             return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected, defaultOption);
         }
 
-        private static ICliBuilder AddDeclarativeTarget(this ICliBuilder builder, Type declarativeTarget)
+        private static ITerminalBuilder AddDeclarativeTarget(this ITerminalBuilder builder, Type declarativeTarget)
         {
             // Command descriptor
             CommandDescriptorAttribute cmdAttr = declarativeTarget.GetCustomAttribute<CommandDescriptorAttribute>(false);
@@ -421,7 +421,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             return commandBuilder.Add();
         }
 
-        private static ICommandBuilder DefineCommand(this ICliBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null)
+        private static ICommandBuilder DefineCommand(this ITerminalBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null)
         {
             if (isRoot && !isGroup)
             {

@@ -359,6 +359,6 @@ namespace PerpetualIntelligence.Cli.Extensions
             cliBuilder = serviceDescriptors.AddCliBuilder();
         }
 
-        private ICliBuilder cliBuilder = null!;
+        private ITerminalBuilder cliBuilder = null!;
     }
 }

@@ -11,16 +11,16 @@ using System;
 namespace PerpetualIntelligence.Cli.Hosting
 {
     /// <summary>
-    /// The default <see cref="ICliBuilder"/>.
+    /// The default <see cref="ITerminalBuilder"/>.
     /// </summary>
-    public sealed class CliBuilder : ICliBuilder
+    public sealed class TerminalBuilder : ITerminalBuilder
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="services">The global service collection.</param>
         /// <exception cref="ArgumentNullException">services</exception>
-        public CliBuilder(IServiceCollection services)
+        public TerminalBuilder(IServiceCollection services)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
         }

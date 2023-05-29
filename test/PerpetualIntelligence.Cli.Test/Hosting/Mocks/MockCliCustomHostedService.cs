@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
-    public class MockCliCustomHostedService : CliHostedService
+    public class MockCliCustomHostedService : TerminalHostedService
     {
-        public MockCliCustomHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<CliHostedService> logger) : base(serviceProvider, cliOptions, logger)
+        public MockCliCustomHostedService(IServiceProvider serviceProvider, CliOptions cliOptions, ILogger<TerminalHostedService> logger) : base(serviceProvider, cliOptions, logger)
         {
         }
 

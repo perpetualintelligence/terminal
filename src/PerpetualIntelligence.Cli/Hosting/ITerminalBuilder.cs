@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Cli.Hosting
     /// <summary>
     /// An abstraction of <c>pi-cli</c> service builder.
     /// </summary>
-    public interface ICliBuilder
+    public interface ITerminalBuilder
     {
         /// <summary>
         /// The global service collection.

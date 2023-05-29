@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         /// <summary>
         /// Build a new <see cref="CommandDescriptor"/> and add it to the service collection.
         /// </summary>
-        /// <returns>The configured <see cref="ICliBuilder"/>.</returns>
-        ICliBuilder Add();
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        ITerminalBuilder Add();
     }
 }

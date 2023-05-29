@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
             options.Timeout.Should().Be(25000);
             options.SyncDelay.Should().Be(100);
             options.MaxCommandStringLength.Should().Be(1024);
-            options.MaxClients.Should().Be(5);
+            options.RemoteMaxClients.Should().Be(5);
         }
     }
 }

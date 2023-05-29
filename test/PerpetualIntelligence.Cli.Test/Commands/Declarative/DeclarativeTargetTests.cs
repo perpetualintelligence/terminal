@@ -374,7 +374,7 @@ namespace PerpetualIntelligence.Cli.Commands.Declarative
             return ValueTask.CompletedTask;
         }
 
-        private CliBuilder cliBuilder;
+        private TerminalBuilder cliBuilder;
         private IHost host = null!;
         private IServiceCollection serviceCollection = null!;
     }

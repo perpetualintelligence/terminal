@@ -331,10 +331,7 @@ namespace PerpetualIntelligence.Cli.Commands.Extractors
             if (defaultResult.DefaultValueOptionDescriptors != null && defaultResult.DefaultValueOptionDescriptors.Count > 0)
             {
                 // options can be null here, if the command string did not specify any options
-                if (finalArgs == null)
-                {
-                    finalArgs = new Options(textHandler);
-                }
+                finalArgs ??= new Options(textHandler);
 
                 List<Error> errors = new();
                 foreach (OptionDescriptor optionDescriptor in defaultResult.DefaultValueOptionDescriptors)

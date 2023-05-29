@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         [Fact]
         public void Build_Returns_Same_CommandBuilder()
         {
-            CliBuilder cliBuilder = new(serviceCollection);
+            TerminalBuilder cliBuilder = new(serviceCollection);
             ICommandBuilder commandBuilder = cliBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
 
             OptionBuilder argumentBuilder = new(commandBuilder);
@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            CliBuilder cliBuilder = new(serviceCollection);
+            TerminalBuilder cliBuilder = new(serviceCollection);
             CommandBuilder commandBuilder = new(cliBuilder);
             OptionBuilder argumentBuilder = new (commandBuilder);
 

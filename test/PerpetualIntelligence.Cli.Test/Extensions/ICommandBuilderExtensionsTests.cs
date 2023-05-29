@@ -82,7 +82,7 @@ namespace PerpetualIntelligence.Cli.Extensions
             option.Obsolete.Should().BeTrue();
         }
 
-        private ICliBuilder cliBuilder = null!;
+        private ITerminalBuilder cliBuilder = null!;
         private ICommandBuilder commandBuilder = null!;
     }
 }

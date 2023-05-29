@@ -7,9 +7,11 @@
 
 using PerpetualIntelligence.Cli.Commands.Extractors;
 using PerpetualIntelligence.Cli.Commands.Handlers;
+using PerpetualIntelligence.Cli.Configuration.Options;
 using PerpetualIntelligence.Cli.Events;
 using PerpetualIntelligence.Cli.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
@@ -23,17 +25,20 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
+        /// <param name="cliOptions">The configuration options.</param>
         /// <param name="licenseExtractor">The license extractor.</param>
         /// <param name="commandExtractor">The command extractor.</param>
         /// <param name="commandHandler">The command handler.</param>
         /// <param name="asyncEventHandler">The event handler.</param>
         public CommandRouter(
+            CliOptions cliOptions,
             ILicenseExtractor licenseExtractor,
             ICommandExtractor commandExtractor,
             ICommandHandler commandHandler,
             IAsyncEventHandler? asyncEventHandler = null)
         {
             this.commandExtractor = commandExtractor ?? throw new ArgumentNullException(nameof(commandExtractor));
+            this.cliOptions = cliOptions ?? throw new ArgumentNullException(nameof(cliOptions));
             this.licenseExtractor = licenseExtractor ?? throw new ArgumentNullException(nameof(licenseExtractor));
             this.commandHandler = commandHandler ?? throw new ArgumentNullException(nameof(commandHandler));
             this.asyncEventHandler = asyncEventHandler;
@@ -54,6 +59,12 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                 if (asyncEventHandler != null)
                 {
                     await asyncEventHandler.BeforeCommandRouteAsync(context.Route);
+                }
+
+                // Honor the max limit
+                if (context.Route.Command.Raw.Length > cliOptions.Router.MaxCommandStringLength)
+                {
+                    throw new ErrorException(Error.InvalidConfiguration, "The command string length is over the configured limit. max_length={0}", cliOptions.Router.MaxCommandStringLength);
                 }
 
                 // Ensure we have the license extracted before routing
@@ -83,6 +94,7 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
         private readonly ICommandExtractor commandExtractor;
         private readonly ICommandHandler commandHandler;
         private readonly IAsyncEventHandler? asyncEventHandler;
+        private readonly CliOptions cliOptions;
         private readonly ILicenseExtractor licenseExtractor;
     }
 }

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Cli.Hosting.Mocks
 {
-    internal class MockCliHostedServiceLogger : ILogger<CliHostedService>
+    internal class MockCliHostedServiceLogger : ILogger<TerminalHostedService>
     {
         public MockCliHostedServiceLogger()
         {

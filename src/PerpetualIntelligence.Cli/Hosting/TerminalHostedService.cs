@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Cli.Hosting
     /// <summary>
     /// The <c>pi-cli</c> hosted service to manage the application lifetime and terminal customization.
     /// </summary>
-    public class CliHostedService : IHostedService
+    public class TerminalHostedService : IHostedService
     {
         /// <summary>
         /// Initializes a new instance.
@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Cli.Hosting
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CliHostedService(IServiceProvider serviceProvider, CliOptions options, ILogger<CliHostedService> logger)
+        public TerminalHostedService(IServiceProvider serviceProvider, CliOptions options, ILogger<TerminalHostedService> logger)
         {
             this.hostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
             this.serviceProvider = serviceProvider;
@@ -196,7 +196,7 @@ namespace PerpetualIntelligence.Cli.Hosting
             logger.LogInformation("Demo custom header line-2");
             logger.LogInformation("---------------------------------------------------------------------------------------------");
 
-            logger.LogInformation($"Starting server \"{Shared.Constants.CliUrn}\" version={typeof(CliHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
+            logger.LogInformation($"Starting server \"{Shared.Constants.CliUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
             return Task.CompletedTask;
         }
 
@@ -262,7 +262,7 @@ namespace PerpetualIntelligence.Cli.Hosting
 
         private readonly CliOptions options;
         private readonly IHostApplicationLifetime hostApplicationLifetime;
-        private readonly ILogger<CliHostedService> logger;
+        private readonly ILogger<TerminalHostedService> logger;
         private readonly IServiceProvider serviceProvider;
     }
 }

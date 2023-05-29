@@ -34,14 +34,14 @@ namespace PerpetualIntelligence.Cli.Configuration.Options
         public int? SyncDelay { get; set; } = 100;
 
         /// <summary>
-        /// The maximum number of active client connections the router can accept. The default value is 5.
+        /// The maximum number of active remote client connections the router can accept. The default value is 5.
         /// </summary>
-        public int MaxClients { get; set; } = 5;
+        public int RemoteMaxClients { get; set; } = 5;
 
         /// <summary>
-        /// The read timeout from the network stream. The default value is 5 seconds.
+        /// The read timeout from a remote source such as a network stream. The default value is 5 seconds.
         /// </summary>
-        public int ReadTimeout { get; set; } = 5000;
+        public int RemoteReadTimeout { get; set; } = 5000;
 
         /// <summary>
         /// The maximum length of a command string. The default value is 1024.

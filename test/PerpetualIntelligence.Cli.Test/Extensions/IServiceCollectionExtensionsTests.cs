@@ -40,9 +40,9 @@ namespace PerpetualIntelligence.Cli.Extensions
             }).Build();
 
             Assert.IsNotNull(serviceDescriptors);
-            ICliBuilder? cliBuilder = serviceDescriptors.AddCliBuilder();
+            ITerminalBuilder? cliBuilder = serviceDescriptors.AddCliBuilder();
             Assert.IsNotNull(cliBuilder);
-            Assert.IsInstanceOfType(cliBuilder, typeof(CliBuilder));
+            Assert.IsInstanceOfType(cliBuilder, typeof(TerminalBuilder));
             Assert.IsTrue(ReferenceEquals(serviceDescriptors, cliBuilder.Services));
 
             Assert.IsFalse(setupActionCalled);

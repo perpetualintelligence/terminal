@@ -106,9 +106,9 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                         }
 
                         // Accept a client connections
-                        logger.LogDebug("Initializing {0} client connections.", options.Router.MaxClients);
+                        logger.LogDebug("Initializing {0} client connections.", options.Router.RemoteMaxClients);
                         List<Task> clientConnections = new();
-                        for (int idx = 0; idx < options.Router.MaxClients; ++idx)
+                        for (int idx = 0; idx < options.Router.RemoteMaxClients; ++idx)
                         {
                             int localIdx = idx + 1;
                             clientConnections.Add(Task.Run(async () =>
@@ -156,16 +156,19 @@ namespace PerpetualIntelligence.Cli.Commands.Routers
                 try
                 {
                     // Get a stream object for reading and writing
-                    NetworkStream stream = connectionData.Client.GetStream();
-                    byte[] buffer = new byte[options.Router.MaxCommandStringLength];
-                    int end = stream.Read(buffer, 0, buffer.Length);
-                    if (end == 0)
+                    using (NetworkStream stream = connectionData.Client.GetStream())
                     {
-                        throw new ErrorException(Errors.ConnectionClosed, "The client socket connection is closed.");
+                        byte[] buffer = new byte[options.Router.MaxCommandStringLength];
+                        int end = stream.Read(buffer, 0, buffer.Length);
+                        if (end == 0)
+                        {
+                            throw new ErrorException(Errors.ConnectionClosed, "The client socket connection is closed.");
+                        }
+
+                        // Get command string, Null or empty, ignore
+                        raw = textHandler.Encoding.GetString(buffer, 0, end);
                     }
 
-                    // Get command string, Null or empty, ignore
-                    raw = textHandler.Encoding.GetString(buffer, 0, end);
                     if (string.IsNullOrEmpty(raw))
                     {
                         continue;
