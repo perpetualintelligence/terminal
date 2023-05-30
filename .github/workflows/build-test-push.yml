@@ -129,12 +129,6 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       
-    # Setup Nuget
-    - name: Setup NuGet.exe
-      uses: NuGet/setup-nuget@v1
-      with:
-        nuget-version: latest
-
     # Publish PerpetualIntelligence.Terminal
     - name: PerpetualIntelligence.Terminal
       uses: ./.github/actions/push-package
