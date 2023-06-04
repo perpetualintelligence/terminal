@@ -276,9 +276,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // claims
             result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:demo urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
             result.License.Claims.Audience.Should().Be(AuthEndpoints.PiB2CIssuer(DemoIdentifiers.PiCliDemoConsumerTenantId));
-            result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:cli");
+            result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:picli");
             result.License.Claims.TenantCountry.Should().Be("GLOBAL");
-            result.License.Claims.Custom.Should().NotBeNull();
+            result.License.Claims.Custom.Should().BeNull();
             //result.License.Claims.Expiry.Date.Should().Be(DateTimeOffset.UtcNow.AddYears(1).ToLocalTime().Date);
             //result.License.Claims.IssuedAt.Date.Should().Be(DateTimeOffset.UtcNow.ToLocalTime().Date);
             result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com");
@@ -290,34 +290,28 @@ namespace PerpetualIntelligence.Terminal.Licensing
             result.License.Claims.Subject.Should().Be(DemoIdentifiers.PiCliDemoSubject);
             result.License.Claims.TenantId.Should().Be(DemoIdentifiers.PiCliDemoConsumerTenantId);
 
-            // custom claims
-            result.License.Claims.Custom.Should().HaveCount(19);
+            // Verify limits
+            LicenseLimits limits = result.License.Limits;
+            limits.Plan.Should().Be(LicensePlans.Demo);
 
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("terminal_limit", 1));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 15));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("option_limit", 100));
+            limits.TerminalLimit.Should().Be(1);
+            limits.RedistributionLimit.Should().Be(0);
+            limits.RootCommandLimit.Should().Be(1);
+            limits.GroupedCommandLimit.Should().Be(5);
+            limits.SubCommandLimit.Should().Be(25);
+            limits.OptionLimit.Should().Be(500);
 
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("option_alias", true));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("default_option", true));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("default_option_value", true));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
+            limits.OptionAlias.Should().Be(true);
+            limits.DefaultOption.Should().Be(true);
+            limits.DefaultOptionValue.Should().Be(true);
+            limits.StrictDataType.Should().Be(true);
 
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode ascii"));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online-license"));
-
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("currency", "USD"));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("monthly_price", 0.0));
-            result.License.Claims.Custom.Should().Contain(new KeyValuePair<string, object>("yearly_price", 0.0));
-
-            // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:lic:plan:demo");
+            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", });
+            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
 
             // Price
             result.License.Price.Plan.Should().Be("urn:oneimlx:lic:plan:demo");

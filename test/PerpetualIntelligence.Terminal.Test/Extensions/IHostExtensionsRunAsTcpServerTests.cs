@@ -405,7 +405,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             tokenSource = new CancellationTokenSource();
             arg2.AddSingleton<ICommandRouter>(new MockSocketCommandRouter(null, tokenSource));
-            CliOptions options = MockCliOptions.New();
+            TerminalOptions options = MockCliOptions.New();
             arg2.AddSingleton(options);
 
             // Tells the logger to write to string writer so we can test it,
@@ -565,9 +565,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton<ITextHandler>(new AsciiTextHandler());
         }
 
-        private CliOptions GetCliOptions(IHost host)
+        private TerminalOptions GetCliOptions(IHost host)
         {
-            return host.Services.GetRequiredService<CliOptions>();
+            return host.Services.GetRequiredService<TerminalOptions>();
         }
 
         public Task InitializeAsync()
