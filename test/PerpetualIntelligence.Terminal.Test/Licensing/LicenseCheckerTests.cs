@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.OptionAlias = false;
             terminalOptions.Extractor.OptionAlias = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured option alias is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.OptionAlias = false;
@@ -80,7 +80,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.DefaultOption = false;
             terminalOptions.Extractor.DefaultOption = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.DefaultOption = false;
@@ -109,7 +109,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.DefaultOptionValue = false;
             terminalOptions.Extractor.DefaultOptionValue = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option value is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.DefaultOptionValue = false;
@@ -306,7 +306,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictOptionValueType = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured strict option value type option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
 
             // No error, not allowed configured false
             license.Limits.StrictDataType = false;

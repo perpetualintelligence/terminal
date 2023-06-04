@@ -111,25 +111,25 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Option alias
             if (!OptionsValid(limits.OptionAlias, terminalOptions.Extractor.OptionAlias))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured option alias option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured option alias is not allowed for your license edition.");
             }
 
             // Default options
             if (!OptionsValid(limits.DefaultOption, terminalOptions.Extractor.DefaultOption))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured default option option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured default option is not allowed for your license edition.");
             }
 
             // Default option value
             if (!OptionsValid(limits.DefaultOptionValue, terminalOptions.Extractor.DefaultOptionValue))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured default option value option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured default option value is not allowed for your license edition.");
             }
 
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictOptionValueType))
             {
-                throw new ErrorException(Errors.InvalidLicense, "The configured strict option value type option is not allowed for your license edition.");
+                throw new ErrorException(Errors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
             }
 
             // Date Type handler, null allowed for data type handler.
