@@ -6,8 +6,8 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Licensing;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -16,33 +16,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 {
     public class LicenseLimitsTests
     {
-        [Fact]
-        public void CommunityEdition_ShouldSetLimitsCorrectly()
-        {
-            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Demo);
-
-            limits.Plan.Should().Be(LicensePlans.Demo);
-
-            limits.TerminalLimit.Should().Be(1);
-            limits.RedistributionLimit.Should().Be(0);
-            limits.RootCommandLimit.Should().Be(1);
-            limits.GroupedCommandLimit.Should().Be(5);
-            limits.SubCommandLimit.Should().Be(25);
-            limits.OptionLimit.Should().Be(500);
-
-            limits.OptionAlias.Should().Be(false);
-            limits.DefaultOption.Should().Be(false);
-            limits.DefaultOptionValue.Should().Be(false);
-            limits.StrictDataType.Should().Be(false);
-
-            limits.DataTypeHandlers.Should().BeNull();
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
-        }
-
         [Fact]
         public void CustomEdition_NoCustomClaimsShouldThrow()
         {
@@ -98,32 +71,28 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void DemoClaims_ShouldSetClaimsCorrectly()
         {
-            var demoClaims = LicenseLimits.DemoClaims();
+            LicenseLimits limits = LicenseLimits.Create(LicensePlans.Demo);
 
-            demoClaims.Should().HaveCount(19);
+            limits.Plan.Should().Be(LicensePlans.Demo);
 
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("terminal_limit", 1));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 15));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("option_limit", 100));
+            limits.TerminalLimit.Should().Be(1);
+            limits.RedistributionLimit.Should().Be(0);
+            limits.RootCommandLimit.Should().Be(1);
+            limits.GroupedCommandLimit.Should().Be(5);
+            limits.SubCommandLimit.Should().Be(25);
+            limits.OptionLimit.Should().Be(500);
 
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("option_alias", true));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("default_option", true));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("default_option_value", true));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
+            limits.OptionAlias.Should().Be(true);
+            limits.DefaultOption.Should().Be(true);
+            limits.DefaultOptionValue.Should().Be(true);
+            limits.StrictDataType.Should().Be(true);
 
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode ascii"));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online-license"));
-
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("currency", "USD"));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("monthly_price", 0.0));
-            demoClaims.Should().Contain(new KeyValuePair<string, object>("yearly_price", 0.0));
+            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
+            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", });
+            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
         }
 
         [Fact]
@@ -169,7 +138,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         [Fact]
-        public void ISVEdition_ShouldSetLimitsCorrectly()
+        public void OnPremiseEdition_ShouldSetLimitsCorrectly()
         {
             LicenseLimits limits = LicenseLimits.Create(LicensePlans.OnPremise);
 
@@ -196,7 +165,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         [Fact]
-        public void ISVUEdition_ShouldSetLimitsCorrectly()
+        public void UnlimitedEdition_ShouldSetLimitsCorrectly()
         {
             LicenseLimits limits = LicenseLimits.Create(LicensePlans.Unlimited);
 

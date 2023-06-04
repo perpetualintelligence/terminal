@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
+using PerpetualIntelligence.Shared.Licensing;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 
@@ -107,16 +107,16 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <summary>
         /// Creates a new instance of <see cref="LicenseLimits"/> based on the specified SaaS plan.
         /// </summary>
-        /// <param name="saasPlan">The SaaS plan.</param>
+        /// <param name="licensePlan">The license plan.</param>
         /// <param name="customClaims">The custom claims. Only used if SaaS plan is custom.</param>
-        public static LicenseLimits Create(string saasPlan, IDictionary<string, object>? customClaims = null)
+        public static LicenseLimits Create(string licensePlan, IDictionary<string, object>? customClaims = null)
         {
-            if (string.IsNullOrEmpty(saasPlan))
+            if (string.IsNullOrEmpty(licensePlan))
             {
-                throw new System.ArgumentException($"'{nameof(saasPlan)}' cannot be null or empty.", nameof(saasPlan));
+                throw new System.ArgumentException($"'{nameof(licensePlan)}' cannot be null or empty.", nameof(licensePlan));
             }
 
-            switch (saasPlan)
+            switch (licensePlan)
             {
                 case LicensePlans.Demo:
                     {
@@ -146,51 +146,16 @@ namespace PerpetualIntelligence.Terminal.Licensing
                     {
                         if (customClaims == null)
                         {
-                            throw new ErrorException(Errors.InvalidLicense, "The licensing for the custom SaaS plan requires a custom claims. saas_plan={0}", saasPlan);
+                            throw new ErrorException(Errors.InvalidLicense, "The licensing for the custom SaaS plan requires a custom claims. saas_plan={0}", licensePlan);
                         }
 
                         return ForCustom(customClaims);
                     }
                 default:
                     {
-                        throw new ErrorException(Errors.InvalidLicense, "The licensing for the SaaS plan is not supported. saas_plan={0}", saasPlan);
+                        throw new ErrorException(Errors.InvalidLicense, "The licensing for the SaaS plan is not supported. saas_plan={0}", licensePlan);
                     }
             }
-        }
-
-        /// <summary>
-        /// Gets the demo claims.
-        /// </summary>
-        /// <returns></returns>
-        public static Dictionary<string, object> DemoClaims()
-        {
-            Dictionary<string, object> claims = new()
-            {
-                { "terminal_limit", 1 },
-                { "redistribution_limit", 0 },
-                { "root_command_limit", 1 },
-                { "grouped_command_limit", 2 },
-                { "sub_command_limit", 15 },
-                { "option_limit", 100 },
-
-                { "option_alias", true },
-                { "default_option", true },
-                { "default_option_value", true },
-                { "strict_data_type", true },
-
-                { "data_type_handlers", Handlers.DefaultHandler },
-                { "text_handlers", new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler }.JoinBySpace() },
-                { "error_handlers", Handlers.DefaultHandler },
-                { "store_handlers", Handlers.InMemoryHandler },
-                { "service_handlers", Handlers.DefaultHandler },
-                { "license_handlers", Handlers.OnlineLicenseHandler },
-
-                { "currency", "USD" },
-                { "monthly_price", 0.0 },
-                { "yearly_price", 0.0 }
-            };
-
-            return claims;
         }
 
         internal LicenseLimits()
@@ -209,12 +174,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 SubCommandLimit = 25,
                 OptionLimit = 500,
 
-                OptionAlias = false,
-                DefaultOption = false,
-                DefaultOptionValue = false,
-                StrictDataType = false,
+                OptionAlias = true,
+                DefaultOption = true,
+                DefaultOptionValue = true,
+                StrictDataType = true,
 
-                DataTypeHandlers = null,
+                DataTypeHandlers = new[] { Handlers.DefaultHandler },
                 TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
                 ErrorHandlers = new[] { Handlers.DefaultHandler },
                 StoreHandlers = new[] { Handlers.InMemoryHandler },

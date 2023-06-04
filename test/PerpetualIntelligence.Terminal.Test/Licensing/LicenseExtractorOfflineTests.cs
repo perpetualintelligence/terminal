@@ -7,11 +7,11 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Json;
+using PerpetualIntelligence.Shared.Licensing;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Collections.Generic;
@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 ConsumerTenantCountry = "USA",
                 ConsumerTenantId = "csmr1",
                 ConsumerTenantName = "csmr name",
-                Custom = LicenseLimits.DemoClaims(),
+                Custom = MockCustomLicenseClaims.CustomClaims(),
                 ExpiresIn = 365,
                 Issuer = "https://api.someone.com",
                 BrokerTenantId = "pvdr1",
