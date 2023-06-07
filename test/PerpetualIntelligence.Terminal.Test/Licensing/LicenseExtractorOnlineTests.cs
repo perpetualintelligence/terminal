@@ -292,7 +292,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             // Verify limits
             LicenseLimits limits = result.License.Limits;
-            limits.Plan.Should().Be(LicensePlans.Demo);
+            limits.Plan.Should().Be(PiCliLicensePlans.Demo);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);

@@ -31,10 +31,10 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 {"nbf",  System.DateTimeOffset.UtcNow.AddHours(-0.5).ToUnixTimeSeconds() },
             });
 
-            TestLimits = LicenseLimits.Create(LicensePlans.Demo);
-            TestPrice = LicensePrice.Create(LicensePlans.Demo);
+            TestLimits = LicenseLimits.Create(PiCliLicensePlans.Demo);
+            TestPrice = LicensePrice.Create(PiCliLicensePlans.Demo);
 
-            TestLicense = new License("testProviderId1", Handlers.OfflineLicenseHandler, LicensePlans.Demo, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey1", TestClaims, TestLimits, TestPrice);
+            TestLicense = new License("testProviderId1", Handlers.OfflineLicenseHandler, PiCliLicensePlans.Demo, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey1", TestClaims, TestLimits, TestPrice);
         }
 
         public static LicenseClaimsModel TestClaims = null!;
