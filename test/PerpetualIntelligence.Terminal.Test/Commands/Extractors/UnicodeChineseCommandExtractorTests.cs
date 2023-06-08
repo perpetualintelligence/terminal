@@ -146,12 +146,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             options = MockTerminalOptions.NewAliasOptions();
             textHandler = new UnicodeTextHandler();
-            argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
+            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.UnicodeCommands, options, TestLogger.Create<InMemoryCommandStore>());
-            argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            defaultArgValueProvider = new DefaultOptionValueProvider(textHandler);
-            defaultArgProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
+            defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
+            defaultOptionProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
         }
 
         private void AssertOption(Option arg, string name, DataType dataType, string description, object value)
@@ -172,10 +172,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private OptionExtractor argExtractor = null!;
+        private OptionExtractor optionExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultOptionProvider defaultArgProvider = null!;
-        private IDefaultOptionValueProvider defaultArgValueProvider = null!;
+        private IDefaultOptionProvider defaultOptionProvider = null!;
+        private IDefaultOptionValueProvider defaultOptionValueProvider = null!;
         private CommandExtractor extractor = null!;
         private TerminalOptions options = null!;
         private ITextHandler textHandler = null!;

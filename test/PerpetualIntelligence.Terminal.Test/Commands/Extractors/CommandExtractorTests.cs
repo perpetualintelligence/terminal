@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_invalid_alias=value1 --key2=value2 -key3_alias=value3 --key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -74,7 +74,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 --key2=value2 -key3_alias=value3 --key4_invalid=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -99,7 +99,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_invalid_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2_invalid=value2 -key3_alias=value3 -key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -149,7 +149,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             var result = await extractor.ExtractAsync(context);
@@ -177,7 +177,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
 
             // key1 with alias key1_alias is default arg with default value key1 default value
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key2=value2 -key3_alias=value3 -key4=25.36"));
@@ -203,7 +203,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, null);
 
             // key1 with alias key1_alias is default arg for value1
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
@@ -230,7 +230,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
 
@@ -284,7 +284,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1=value1 -key2=value2"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, $"The command identifier is not valid. command_id={cmdId} regex={terminalOptions.Extractor.CommandIdRegex}");
@@ -544,7 +544,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             terminalOptions.Extractor.DefaultOptionValue = true;
 
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            CommandExtractor noProviderExtrator = new(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
         }
@@ -631,7 +631,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             terminalOptions.Extractor.DefaultOptionValue = false;
 
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            CommandExtractor noProviderExtrator = new(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            CommandExtractor noProviderExtrator = new(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
             await noProviderExtrator.ExtractAsync(context);
         }
 
@@ -651,7 +651,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", "pi auth invalid"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
@@ -862,7 +862,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "pi"));
             var result = await extractor.ExtractAsync(context);
@@ -921,7 +921,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Options_Are_Extracted_Correctly_With_Single_ValueWithInAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+            SetupBasedOnTerminalOptions(terminalOptions);
 
             // No arg id
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\""));
@@ -971,12 +971,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         protected override void OnTestInitialize()
         {
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
+            SetupBasedOnTerminalOptions(terminalOptions);
+        }
+
+        private void SetupBasedOnTerminalOptions(TerminalOptions terminalOptions)
+        {
             textHandler = new UnicodeTextHandler();
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            argExtractor = new OptionExtractor(textHandler, terminalOptions, TestLogger.Create<OptionExtractor>());
-            defaultArgValueProvider = new DefaultOptionValueProvider(textHandler);
-            defaultArgProvider = new DefaultOptionProvider(terminalOptions, TestLogger.Create<DefaultOptionProvider>());
-            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+            optionExtractor = new OptionExtractor(textHandler, terminalOptions, TestLogger.Create<OptionExtractor>());
+            defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
+            defaultOptionProvider = new DefaultOptionProvider(terminalOptions, TestLogger.Create<DefaultOptionProvider>());
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
         }
 
         private void AssertOption(Option arg, string name, string customDataType, string description, object value)
@@ -1017,10 +1022,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CollectionAssert.AreEquivalent(arg.ValueCheckers?.Cast<DataValidationOptionValueChecker>().ToArray(), supportedValues);
         }
 
-        private OptionExtractor argExtractor = null!;
+        private OptionExtractor optionExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultOptionProvider defaultArgProvider = null!;
-        private IDefaultOptionValueProvider defaultArgValueProvider = null!;
+        private IDefaultOptionProvider defaultOptionProvider = null!;
+        private IDefaultOptionValueProvider defaultOptionValueProvider = null!;
         private CommandExtractor extractor = null!;
         private TerminalOptions terminalOptions = null!;
         private ITextHandler textHandler = null!;
