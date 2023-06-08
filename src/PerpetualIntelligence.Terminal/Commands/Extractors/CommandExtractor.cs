@@ -130,13 +130,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 }
             }
 
+            // TODO this should be a regex based parser
             // The argSplit string is used to split the options. This is to avoid splitting the option value
             // containing the separator. If space is the separator and - is the option prefix then the arg split
             // format is " -"
             // - E.g. -key1=val with space -key2=val2
             // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
             // split the arg string into 3 parts but there are only 2 args. May be the string should be in quotes ""
-            var optionStrings = ExtractOptionStrings(rawArgString);
+            OptionStrings optionStrings = ExtractOptionStrings(rawArgString);
 
             List<Error> errors = new();
             Options options = new(textHandler);

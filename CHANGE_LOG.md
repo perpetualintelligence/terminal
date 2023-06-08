@@ -1,3 +1,8 @@
+# 4.5.3-rc*
+> Breaking Change
+- Change the default values for `OptionPrefix`, `OptionAliasPrefix`, and `OptionValueSeparator`
+- Initial support for on-premise licensing 
+
 # 4.5.1-rc*
 > Breaking Change
 - Rename `Cli` namespace to `Terminal`

@@ -351,7 +351,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             tokenSource = new CancellationTokenSource();
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource));
-            arg2.AddSingleton(MockTerminalOptions.New());
+            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
             var loggerFactory = new MockLoggerFactory();
@@ -372,7 +372,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             tokenSource = new CancellationTokenSource();
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter());
-            arg2.AddSingleton(MockTerminalOptions.New());
+            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
             var loggerFactory = new MockLoggerFactory();
@@ -393,7 +393,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             tokenSource = new CancellationTokenSource();
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(3000, tokenSource));
-            arg2.AddSingleton(MockTerminalOptions.New());
+            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
             var loggerFactory = new MockLoggerFactory
@@ -417,7 +417,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             tokenSource = new CancellationTokenSource();
 
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new ErrorException("test_error_code", "test_error_description. arg1={0} arg2={1}", "test1", "test2")));
-            arg2.AddSingleton(MockTerminalOptions.New());
+            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
             var loggerFactory = new MockLoggerFactory
@@ -442,7 +442,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Adding space at the end so that any msg are correctly appended.
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation.")));
-            arg2.AddSingleton(MockTerminalOptions.New());
+            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
             var loggerFactory = new MockLoggerFactory
@@ -467,7 +467,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Adding space at the end so that any msg are correctly appended.
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, new Shared.Infrastructure.Error("explicit_error", "explicit_error_description param1={0} param2={1}.", "test_param1", "test_param2")));
-            arg2.AddSingleton(MockTerminalOptions.New());
+            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
             var loggerFactory = new MockLoggerFactory

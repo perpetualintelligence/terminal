@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             testOnlineLicPath = GetJsonLicenseFileForLocalHostGithubSecretForCICD("PI_CLI_TEST_ONLINE_LIC");
             testOfflineLicPath = GetJsonLicenseFileForLocalHostGithubSecretForCICD("PI_CLI_TEST_OFFLINE_LIC");
 
-            terminalOptions = MockTerminalOptions.New();
+            terminalOptions = MockTerminalOptions.NewLegacyOptions();
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
         }
 

@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
     {
         public ConfigurationOptionsCheckerTests()
         {
-            options = MockTerminalOptions.New();
+            options = MockTerminalOptions.NewLegacyOptions();
             textHandler = new UnicodeTextHandler();
 
             hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services =>

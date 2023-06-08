@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
     {
         public LicenseCheckerTests()
         {
-            terminalOptions = MockTerminalOptions.New();
+            terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandDescriptors = MockCommands.LicensingCommands;
             licenseChecker = new LicenseChecker(commandDescriptors, terminalOptions, TestLogger.Create<LicenseChecker>());
             license = new License("testProviderId2", Handlers.OnlineLicenseHandler, PiCliLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(PiCliLicensePlans.Unlimited), LicensePrice.Create(PiCliLicensePlans.Unlimited));

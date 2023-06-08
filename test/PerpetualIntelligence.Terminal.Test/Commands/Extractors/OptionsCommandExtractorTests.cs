@@ -292,7 +292,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         protected override void OnTestInitialize()
         {
-            options = MockTerminalOptions.NewOptions();
+            options = MockTerminalOptions.NewAliasOptions();
             textHandler = new UnicodeTextHandler();
             argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedOptionsCommands, options, TestLogger.Create<InMemoryCommandStore>());

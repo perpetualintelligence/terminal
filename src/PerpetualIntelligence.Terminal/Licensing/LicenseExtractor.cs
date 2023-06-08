@@ -238,6 +238,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             }
             else
             {
+                // TODO, not used currently.
                 return new LicenseExtractorResult
                 (
                     new License("", Handlers.OnPremiseLicenseHandler, PiCliLicensePlans.OnPremise, LicenseUsages.CommercialBusiness, "null", "asdas", new LicenseClaimsModel(), new LicenseLimits(), LicensePrice.Create(PiCliLicensePlans.OnPremise)),

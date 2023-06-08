@@ -8,10 +8,10 @@
 using FluentAssertions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Routers.Mocks;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
@@ -258,7 +258,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             commandHandler = new MockCommandHandlerInner();
             licenseExtractor = new MockLicenseExtractorInner();
             eventHandler = new MockAsyncEventHandler();
-            terminalOptions = MockTerminalOptions.New();
+            terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, eventHandler);
             cancellationTokenSource = new CancellationTokenSource();
         }

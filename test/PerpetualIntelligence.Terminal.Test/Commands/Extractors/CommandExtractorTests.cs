@@ -6,6 +6,9 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Shared.Attributes;
+using PerpetualIntelligence.Shared.Attributes.Validation;
+using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Extractors.Mocks;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
@@ -15,10 +18,6 @@ using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
-
-using PerpetualIntelligence.Shared.Attributes;
-using PerpetualIntelligence.Shared.Attributes.Validation;
-using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
@@ -918,9 +917,60 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
         }
 
+        [TestMethod]
+        public async Task Options_Are_Extracted_Correctly_With_Single_ValueWithInAsync()
+        {
+            terminalOptions = MockTerminalOptions.NewAliasOptions();
+            extractor = new CommandExtractor(commands, argExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultArgProvider, defaultArgValueProvider);
+
+            // No arg id
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\""));
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+        }
+
+        [TestMethod]
+        public async Task Options_Are_Extracted_Correctly_With_Multiple_ValueWithInAsync()
+        {
+            terminalOptions = MockTerminalOptions.NewAliasOptions();
+
+            // No arg id
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\" --key2 \"key2_value\""));
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "key2_value");
+        }
+
+        [TestMethod]
+        public async Task Options_Are_Extracted_Correctly_With_Single_Alias_ValueWithInAsync()
+        {
+            terminalOptions = MockTerminalOptions.NewAliasOptions();
+
+            // No arg id
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1 \"key1_value\""));
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+        }
+
+        [TestMethod]
+        public async Task Options_Are_Extracted_Correctly_With_Multiple_Alias_ValueWithInAsync()
+        {
+            terminalOptions = MockTerminalOptions.NewAliasOptions();
+
+            // No arg id
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1 \"key1_value\" -key2 \"key2_value\""));
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "key2_value");
+        }
+
         protected override void OnTestInitialize()
         {
-            terminalOptions = MockTerminalOptions.New();
+            terminalOptions = MockTerminalOptions.NewLegacyOptions();
             textHandler = new UnicodeTextHandler();
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
             argExtractor = new OptionExtractor(textHandler, terminalOptions, TestLogger.Create<OptionExtractor>());

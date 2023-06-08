@@ -24,10 +24,10 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public bool? OptionAlias { get; set; }
 
         /// <summary>
-        /// The option alias prefix if <see cref="OptionAlias"/> is enabled. Defaults to <c>-</c>.
+        /// The option alias prefix if <see cref="OptionAlias"/> is enabled. Defaults to <c>--</c>.
         /// </summary>
         /// <remarks>The option alias prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
-        public string OptionAliasPrefix { get; set; } = "-";
+        public string OptionAliasPrefix { get; set; } = "--";
 
         /// <summary>
         /// The option prefix. Defaults to <c>-</c>.
@@ -36,10 +36,10 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public string OptionPrefix { get; set; } = "-";
 
         /// <summary>
-        /// The option value separator. Defaults to <c>=</c>.
+        /// The option value separator. Defaults to <c> </c>.
         /// </summary>
         /// <remarks>The option value separator must be a single Unicode character, and it can be a single whitespace.</remarks>
-        public string OptionValueSeparator { get; set; } = "=";
+        public string OptionValueSeparator { get; set; } = " ";
 
         /// <summary>
         /// An optional token within which to extract an option value. Default to <c>null</c>.
