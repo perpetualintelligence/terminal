@@ -8,12 +8,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Shared.Authorization;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Shared.Licensing;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Services;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -50,11 +51,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
         public async Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
         {
             // For singleton DI service we don't extract license keys once extracted.
-            if (license == null)
+            if (licenseExtractorResult == null)
             {
                 if (terminalOptions.Licensing.KeySource == LicenseSources.JsonFile)
                 {
-                    license = await ExtractFromJsonAsync();
+                    licenseExtractorResult = await ExtractFromJsonAsync();
                 }
                 else
                 {
@@ -62,13 +63,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 }
             }
 
-            return new LicenseExtractorResult(license);
+            return licenseExtractorResult;
         }
 
         /// <inheritdoc/>
         public Task<License?> GetLicenseAsync()
         {
-            return Task.FromResult(license);
+            return Task.FromResult(licenseExtractorResult?.License);
         }
 
         private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseOnlineCheckModel checkModel)
@@ -161,7 +162,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             return httpClient;
         }
 
-        private async Task<License> ExtractFromJsonAsync()
+        private async Task<LicenseExtractorResult> ExtractFromJsonAsync()
         {
             // Missing app id
             if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.AuthorizedApplicationId))
@@ -196,13 +197,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file is not valid, see licensing options. json_file={0} info={1}", terminalOptions.Licensing.LicenseKey, ex.Message);
             }
 
-            // Make sure the model is valid Why ?
+            // Make sure the model is valid.
             if (licenseFileModel == null)
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", terminalOptions.Licensing.LicenseKey);
             }
 
-            // Online lic check
+            // License check based on configured license handler.
             if (terminalOptions.Handler.LicenseHandler == Handlers.OnlineLicenseHandler)
             {
                 return await EnsureOnlineLicenseAsync(licenseFileModel);
@@ -211,13 +212,41 @@ namespace PerpetualIntelligence.Terminal.Licensing
             {
                 return await EnsureOfflineLicenseAsync(licenseFileModel);
             }
+            else if (terminalOptions.Handler.LicenseHandler == Handlers.OnPremiseLicenseHandler)
+            {
+                return await EnsureOnPremiseLicenseAsync(licenseFileModel);
+            }
             else
             {
                 throw new ErrorException(Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
         }
 
-        private async Task<License> EnsureOnlineLicenseAsync(LicenseFileModel licenseFileModel)
+        private async Task<LicenseExtractorResult> EnsureOnPremiseLicenseAsync(LicenseFileModel licenseFileModel)
+        {
+            if (TerminalHelper.IsDevMode())
+            {
+                // On-Premise mode we allow developers to work online and offline.
+                if (licenseFileModel.ValidationKey != null)
+                {
+                    return await EnsureOfflineLicenseAsync(licenseFileModel);
+                }
+                else
+                {
+                    return await EnsureOnlineLicenseAsync(licenseFileModel);
+                }
+            }
+            else
+            {
+                return new LicenseExtractorResult
+                (
+                    new License("", Handlers.OnPremiseLicenseHandler, PiCliLicensePlans.OnPremise, LicenseUsages.CommercialBusiness, "null", "asdas", new LicenseClaimsModel(), new LicenseLimits(), LicensePrice.Create(PiCliLicensePlans.OnPremise)),
+                    Handlers.OnPremiseLicenseHandler
+                );
+            }
+        }
+
+        private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFileModel licenseFileModel)
         {
             // Check JWS signed assertion (JWS key)
             LicenseOnlineCheckModel checkModel = new()
@@ -276,11 +305,15 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
                 LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
-                return new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.KeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+                return new LicenseExtractorResult
+                (
+                    new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.KeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
+                    Handlers.OnlineLicenseHandler
+                );
             }
         }
 
-        private async Task<License> EnsureOfflineLicenseAsync(LicenseFileModel licenseFileModel)
+        private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFileModel licenseFileModel)
         {
             // Check JWS signed assertion (JWS key)
             LicenseOfflineCheckModel checkModel = new()
@@ -331,7 +364,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
             LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
-            return new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.KeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice);
+            return new LicenseExtractorResult
+            (
+                new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.KeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
+                Handlers.OfflineLicenseHandler
+            );
         }
 
         private void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
@@ -356,6 +393,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         private readonly string fallbackCheckLicUrl = "https://piapim.azure-api.net/public/checklicense";
         private readonly IHttpClientFactory? httpClientFactory;
         private readonly ILogger<LicenseExtractor> logger;
-        private License? license;
+        private LicenseExtractorResult? licenseExtractorResult;
     }
 }

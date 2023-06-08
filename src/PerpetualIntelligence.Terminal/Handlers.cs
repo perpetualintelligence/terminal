@@ -22,11 +22,6 @@ namespace PerpetualIntelligence.Terminal
         public const string AsciiHandler = "ascii";
 
         /// <summary>
-        /// The <c>boyl</c> handler.
-        /// </summary>
-        public const string DevLicenseHandler = "dev-license";
-
-        /// <summary>
         /// The <c>custom</c> handler.
         /// </summary>
         public const string CustomHandler = "custom";
@@ -52,9 +47,14 @@ namespace PerpetualIntelligence.Terminal
         public const string OfflineLicenseHandler = "offline-license";
 
         /// <summary>
-        /// The <c>boyl</c> handler.
+        /// The <c>online</c> handler.
         /// </summary>
         public const string OnlineLicenseHandler = "online-license";
+
+        /// <summary>
+        /// The <c>onpremise</c> handler.
+        /// </summary>
+        public const string OnPremiseLicenseHandler = "onpremise-license";
 
         /// <summary>
         /// The <c>unicode</c> handler.

@@ -161,7 +161,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "dev-license" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "onpremise-license" });
         }
 
         [Fact]
@@ -188,7 +188,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "dev-license" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "onpremise-license" });
         }
 
         [Fact]

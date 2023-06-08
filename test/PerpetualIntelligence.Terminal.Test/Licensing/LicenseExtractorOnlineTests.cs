@@ -203,14 +203,14 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         [Fact]
-        public async Task ExtractFromJsonAsync_BoylMode_ShouldErrorAsync()
+        public async Task ExtractFromJsonAsync_Invalid_Handler_ShouldErrorAsync()
         {
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
 
-            terminalOptions.Handler.LicenseHandler = Handlers.DevLicenseHandler;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=dev-license");
+            terminalOptions.Handler.LicenseHandler = "invalid_license_handler";
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=invalid_license_handler");
         }
 
         [Theory]
@@ -426,6 +426,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
+            result.License.Should().NotBeNull();
+
+            // ensure passed and extraction handler
+            result.License.Handler.Should().Be(Handlers.OnlineLicenseHandler);
+            result.ExtractionHandler.Should().Be(Handlers.OnlineLicenseHandler);
+
             result.License.Should().NotBeNull();
             result.License.Claims.Should().NotBeNull();
             result.License.Limits.Should().NotBeNull();

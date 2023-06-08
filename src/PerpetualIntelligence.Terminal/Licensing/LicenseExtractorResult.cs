@@ -18,14 +18,24 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// Initializes a new instance.
         /// </summary>
         /// <param name="license">The extracted license.</param>
-        public LicenseExtractorResult(License license)
+        /// <param name="extractionHandler">The license handler used to extract the license. The value may be different from <see cref="License.Handler"/>. </param>
+        public LicenseExtractorResult(License license, string extractionHandler)
         {
             License = license ?? throw new ErrorException(Errors.InvalidLicense, "The extracted license cannot be null.");
+            ExtractionHandler = extractionHandler ?? throw new ErrorException(Errors.InvalidLicense, "The extraction license handler cannot be null.");
         }
 
         /// <summary>
         /// The valid licenses.
         /// </summary>
         public License License { get; }
+
+        /// <summary>
+        /// The license handler used to extract the license.
+        /// </summary>
+        /// <remarks>
+        /// For <see cref="Handlers.OnPremiseLicenseHandler"/> license this value may be different from <see cref="License.Handler"/>.
+        /// </remarks>
+        public string ExtractionHandler { get; }
     }
 }

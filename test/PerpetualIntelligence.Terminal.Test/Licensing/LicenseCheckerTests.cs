@@ -263,7 +263,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Handler.LicenseHandler = "offline-license";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
-            terminalOptions.Handler.LicenseHandler = "dev-license";
+            terminalOptions.Handler.LicenseHandler = "onpremise-license";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Null not allowed

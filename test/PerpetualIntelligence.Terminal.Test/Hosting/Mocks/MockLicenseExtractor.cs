@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
                 throw new ErrorException("test_error", "test description. arg1={0} arg2={1}", "val1", "val2");
             }
 
-            return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense));
+            return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense, MockLicenses.TestLicense.Handler));
         }
 
         public Task<License?> GetLicenseAsync()

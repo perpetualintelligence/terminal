@@ -5,8 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Shared.Licensing;
+using PerpetualIntelligence.Terminal.Licensing;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
@@ -21,10 +21,10 @@ namespace PerpetualIntelligence.Terminal.Mocks
         {
             if (NoLicense)
             {
-                return Task.FromResult(new LicenseExtractorResult(null!));
+                return Task.FromResult(new LicenseExtractorResult(null!, null!));
             }
 
-            return Task.FromResult(new LicenseExtractorResult(TestLicense));
+            return Task.FromResult(new LicenseExtractorResult(TestLicense, TestLicense.Handler));
         }
 
         public Task<License?> GetLicenseAsync()
