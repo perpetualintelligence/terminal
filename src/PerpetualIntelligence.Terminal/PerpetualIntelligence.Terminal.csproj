@@ -28,7 +28,7 @@
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="PerpetualIntelligence.Shared" Version="4.5.2" />
+                <PackageReference Include="PerpetualIntelligence.Shared" Version="4.5.3" />
             </ItemGroup>
         </Otherwise>
     </Choose>
