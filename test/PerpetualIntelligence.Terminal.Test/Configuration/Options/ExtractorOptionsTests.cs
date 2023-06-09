@@ -24,9 +24,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
             ExtractorOptions options = new();
 
             Assert.IsNull(options.OptionAlias);
-            Assert.AreEqual("-", options.OptionAliasPrefix);
+            Assert.AreEqual("--", options.OptionAliasPrefix);
             Assert.AreEqual("-", options.OptionPrefix);
-            Assert.AreEqual("=", options.OptionValueSeparator);
+            Assert.AreEqual(" ", options.OptionValueSeparator);
             Assert.IsNull(options.OptionValueWithIn);
             Assert.AreEqual("^[A-Za-z0-9_-]*$", options.CommandIdRegex);
             Assert.IsNull(options.DefaultOptionValue);

@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         {
             originalOut = Console.Out;
             stringWriter = new StringWriter();
-            consoleLogger = new TerminalConsoleLogger("test", MockTerminalOptions.NewOptions());
+            consoleLogger = new TerminalConsoleLogger("test", MockTerminalOptions.NewAliasOptions());
         }
 
         [Fact]

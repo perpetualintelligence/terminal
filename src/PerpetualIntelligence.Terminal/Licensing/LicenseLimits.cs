@@ -265,7 +265,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
                 StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
                 ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.DevLicenseHandler }
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.OnPremiseLicenseHandler }
             };
         }
 
@@ -291,7 +291,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
                 StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
                 ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.DevLicenseHandler }
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.OnPremiseLicenseHandler }
             };
         }
 

@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
     {
         public ConfigurationOptionsCheckerTests()
         {
-            options = MockTerminalOptions.New();
+            options = MockTerminalOptions.NewLegacyOptions();
             textHandler = new UnicodeTextHandler();
 
             hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services =>
@@ -39,9 +39,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             optionsChecker = new ConfigurationOptionsChecker(host.Services);
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandStore>());
-            argExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            defaultArgValueProvider = new DefaultOptionValueProvider(textHandler);
-            defaultArgProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
+            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
+            defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
+            defaultOptionProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
         }
 
         [TestMethod]
@@ -271,10 +271,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), Errors.InvalidConfiguration, $"The string with_in token cannot be whitespace.");
         }
 
-        private readonly OptionExtractor argExtractor;
+        private readonly OptionExtractor optionExtractor;
         private readonly ICommandStoreHandler commands;
-        private readonly IDefaultOptionProvider defaultArgProvider = null!;
-        private readonly IDefaultOptionValueProvider defaultArgValueProvider = null!;
+        private readonly IDefaultOptionProvider defaultOptionProvider = null!;
+        private readonly IDefaultOptionValueProvider defaultOptionValueProvider = null!;
         private readonly IHost host;
         private readonly IHostBuilder hostBuilder;
         private readonly TerminalOptions options;

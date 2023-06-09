@@ -119,7 +119,7 @@ jobs:
     
     # Print all env and directory
     - name: Print
-      if: ${{ false }}  # Debug
+      if: ${{ false }}
       run: |
         env
         ls -R

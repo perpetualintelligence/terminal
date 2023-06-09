@@ -5,12 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Commands.Runners;
-using PerpetualIntelligence.Shared.Attributes.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -61,14 +60,16 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
                 new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
                 new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
+                new OptionDescriptor("key5", DataType.Text, "Key5 value text", false),
             };
 
-            TestAliasOptionDescriptors = new(new UnicodeTextHandler())
+            TestAliasDefaultOptionDescriptors = new(new UnicodeTextHandler())
             {
                 new OptionDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
                 new OptionDescriptor("key2", DataType.Text, "Key2 value text", true) { },
                 new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "key3_alias" },
                 new OptionDescriptor("key4", nameof(Double), "Key4 value number", false) { Alias = "key4_alias" },
+                new OptionDescriptor("key5", DataType.Text, "Key5 value text", false) { Alias = "key5_alias" },
             };
 
             TestOptionsDescriptors = new(new UnicodeTextHandler())
@@ -128,6 +129,9 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
                 // Command with default arg
                 NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+
+                // Command with sub cmd and value with in
+                NewCommandDefinition("id9", "name9", "root9 grp9 cmd9", "Value with in", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
             };
 
             GroupedCommands = new()
@@ -154,13 +158,13 @@ namespace PerpetualIntelligence.Terminal.Mocks
             AliasCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestAliasOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestAliasOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestAliasOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
             };
 
             GroupedOptionsCommands = new()
@@ -276,7 +280,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
         public static List<CommandDescriptor> GroupedCommands;
         public static List<CommandDescriptor> GroupedOptionsCommands;
         public static List<CommandDescriptor> LicensingCommands;
-        public static OptionDescriptors TestAliasOptionDescriptors;
+        public static OptionDescriptors TestAliasDefaultOptionDescriptors;
         public static OptionDescriptors TestOptionDescriptors;
         public static OptionDescriptors TestChineseUnicodeOptionDescriptors;
         public static OptionDescriptors TestDefaultOptionDescriptors;

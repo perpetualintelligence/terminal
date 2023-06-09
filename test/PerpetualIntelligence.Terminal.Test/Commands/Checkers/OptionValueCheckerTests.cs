@@ -157,7 +157,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
         protected override void OnTestInitialize()
         {
-            options = MockTerminalOptions.New();
+            options = MockTerminalOptions.NewLegacyOptions();
             mapper = new DataAnnotationsOptionDataTypeMapper(options, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
             checker = new OptionChecker(mapper, options);
         }

@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             cancellationTokenSource = new();
             cancellationToken = cancellationTokenSource.Token;
 
-            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
             mockLicenseExtractor = new();
             mockLicenseChecker = new();
             mockOptionsChecker = new();
@@ -283,7 +283,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public async void StartAsync_ShouldRegister_HelpArgument_ByDefault()
         {
-            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
@@ -323,7 +323,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public async void StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
         {
-            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
             terminalOptions.Help.Disabled = true;
 
             hostBuilder = Host.CreateDefaultBuilder()
