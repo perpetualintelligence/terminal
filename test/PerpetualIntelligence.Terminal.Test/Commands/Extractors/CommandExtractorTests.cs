@@ -917,6 +917,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
         }
 
+
+        [TestMethod]
+        public async Task Options_Are_Extracted_Correctly_With_Single_Value_Has_Another_Option_ValueWithInAsync()
+        {
+            terminalOptions = MockTerminalOptions.NewAliasOptions();
+            SetupBasedOnTerminalOptions(terminalOptions);
+
+            // No arg id
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"cmd --opt1 val1 --opt2 val2 --opt3\""));
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "cmd --opt1 val1 --opt2 val2 --opt3");
+        }
+
         [TestMethod]
         public async Task Options_Are_Extracted_Correctly_With_Single_ValueWithInAsync()
         {
@@ -934,6 +948,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Options_Are_Extracted_Correctly_With_Multiple_ValueWithInAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
+            SetupBasedOnTerminalOptions(terminalOptions);
 
             // No arg id
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\" --key2 \"key2_value\""));
@@ -947,9 +962,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Options_Are_Extracted_Correctly_With_Single_Alias_ValueWithInAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
+            SetupBasedOnTerminalOptions(terminalOptions);
 
             // No arg id
-            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1 \"key1_value\""));
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1_alias \"key1_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
@@ -959,13 +975,28 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Options_Are_Extracted_Correctly_With_Multiple_Alias_ValueWithInAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
+            SetupBasedOnTerminalOptions(terminalOptions);
 
             // No arg id
-            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1 \"key1_value\" -key2 \"key2_value\""));
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1_alias \"key1_value\" -key5_alias \"key5_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command.Options);
             AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
-            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "key2_value");
+            AssertOption(result.Command.Options[1], "key5", DataType.Text, "Key5 value text", "key5_value");
+        }
+
+        [TestMethod]
+        public async Task Options_Are_Extracted_Correctly_With_Mixed_Alias_ValueWithInAsync()
+        {
+            terminalOptions = MockTerminalOptions.NewAliasOptions();
+            SetupBasedOnTerminalOptions(terminalOptions);
+
+            // No arg id
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\" -key5_alias \"key5_value\""));
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+            AssertOption(result.Command.Options[1], "key5", DataType.Text, "Key5 value text", "key5_value");
         }
 
         protected override void OnTestInitialize()
@@ -974,14 +1005,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             SetupBasedOnTerminalOptions(terminalOptions);
         }
 
-        private void SetupBasedOnTerminalOptions(TerminalOptions terminalOptions)
+        private void SetupBasedOnTerminalOptions(TerminalOptions terminalOptionsIpt)
         {
             textHandler = new UnicodeTextHandler();
-            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            optionExtractor = new OptionExtractor(textHandler, terminalOptions, TestLogger.Create<OptionExtractor>());
+            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, terminalOptionsIpt, TestLogger.Create<InMemoryCommandStore>());
+            optionExtractor = new OptionExtractor(textHandler, terminalOptionsIpt, TestLogger.Create<OptionExtractor>());
             defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
-            defaultOptionProvider = new DefaultOptionProvider(terminalOptions, TestLogger.Create<DefaultOptionProvider>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
+            defaultOptionProvider = new DefaultOptionProvider(terminalOptionsIpt, TestLogger.Create<DefaultOptionProvider>());
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptionsIpt, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
         }
 
         private void AssertOption(Option arg, string name, string customDataType, string description, object value)
