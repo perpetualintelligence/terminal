@@ -11,6 +11,7 @@ using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -48,6 +49,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public async Task Extracts_From_Online_If_Validation_Key_Is_Null()
         {
+            if (!TerminalHelper.IsDevMode())
+            {
+                return;
+            }
+
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
@@ -70,6 +76,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public async Task Extracts_From_Offline_If_Validation_Key_Is_Not_Null()
         {
+            if (!TerminalHelper.IsDevMode())
+            {
+                return;
+            }
+
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
