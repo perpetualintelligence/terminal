@@ -1,19 +1,20 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Shared.Services;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Services;
+using PerpetualIntelligence.Terminal.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -130,13 +131,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 }
             }
 
+            // TODO this should be a regex based parser
             // The argSplit string is used to split the options. This is to avoid splitting the option value
             // containing the separator. If space is the separator and - is the option prefix then the arg split
             // format is " -"
             // - E.g. -key1=val with space -key2=val2
             // - TODO: How to handle the arg string -key1=val with space and - in them -key2=value the current algorithm will
             // split the arg string into 3 parts but there are only 2 args. May be the string should be in quotes ""
-            var optionStrings = ExtractOptionStrings(rawArgString);
+            OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(rawArgString, terminalOptions, textHandler);
 
             List<Error> errors = new();
             Options options = new(textHandler);
@@ -176,79 +178,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             }
 
             return options;
-        }
-
-        private OptionStrings ExtractOptionStrings(string raw)
-        {
-            string argSplit = string.Concat(terminalOptions.Extractor.Separator, terminalOptions.Extractor.OptionPrefix);
-            string argAliasSplit = string.Concat(terminalOptions.Extractor.Separator, terminalOptions.Extractor.OptionAliasPrefix);
-
-            // First pass
-            int currentPos = 0;
-            bool currentIsAlias = false;
-            int nextIdx = 0;
-            OptionStrings locations = new();
-            while (true)
-            {
-                // No more matches so break. When the currentPos reaches the end then we have traversed the entire argString.
-                if (currentPos >= raw.Length)
-                {
-                    break;
-                }
-
-                // Initialize the iterators. For each iteration we assume that arg sub string is identifier by an
-                // identifier and not alias so the default value for isAlias is false.
-                int nextArgPos;
-                int nextAliasPos;
-                bool nextIsAlias = false;
-
-                // First pass
-                if (currentPos == 0)
-                {
-                    // First time we have to make multiple passes to determine whether the first is arg prefix or alias prefix
-                    nextArgPos = raw.IndexOf(argSplit, currentPos, textHandler.Comparison);
-                    nextAliasPos = raw.IndexOf(argAliasSplit, currentPos, textHandler.Comparison);
-
-                    // Since this is the first iteration the minimum can be 0
-                    nextIdx = InfraHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
-
-                    // If the min positive is the nextAliasPos then the next option is identified by alias. If there
-                    // is a conflict we give preference to option id not alias.
-                    currentIsAlias = nextIdx != nextArgPos;
-                }
-
-                // Get next positions
-                nextArgPos = raw.IndexOf(argSplit, nextIdx + 1, textHandler.Comparison);
-                nextAliasPos = raw.IndexOf(argAliasSplit, nextIdx + 1, textHandler.Comparison);
-
-                // We reached the end of positions for both, take the remaining string. This condition also help in
-                // breaking the loop since we have traversed the argString now !
-                if (nextArgPos < 0 && nextAliasPos < 0)
-                {
-                    nextIdx = raw.Length;
-                }
-                else
-                {
-                    // Min positive
-                    // TODO: Improve performance
-                    nextIdx = InfraHelper.MinPositiveOrZero(nextArgPos, nextAliasPos);
-
-                    // If the min positive is the nextAliasPos then the next option is identified by alias. If there
-                    // is a conflict we give preference to option id not alias.
-                    nextIsAlias = nextIdx != nextArgPos;
-                }
-
-                // Get the arg substring and record its position and alias
-                // NOTE: This is the current pos and current alias not the next.
-                string kvp = raw.Substring(currentPos, nextIdx - currentPos);
-                locations.Add(new OptionString(kvp, currentIsAlias, currentPos));
-
-                // Move next
-                currentPos = nextIdx;
-                currentIsAlias = nextIsAlias;
-            }
-
-            return locations;
         }
 
         /// <summary>

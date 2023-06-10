@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -539,7 +539,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             textHandler = new UnicodeTextHandler();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1", MockCommands.TestOptionDescriptors, null, null);
-            options = MockTerminalOptions.New();
+            options = MockTerminalOptions.NewLegacyOptions();
             extractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
         }
 

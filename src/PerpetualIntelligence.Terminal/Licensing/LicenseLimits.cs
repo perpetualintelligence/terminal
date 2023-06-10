@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,7 +15,7 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
-    /// Defines the licensing limits based on the <see cref="LicensePlans"/>.
+    /// Defines the licensing limits based on the <see cref="PiCliLicensePlans"/>.
     /// </summary>
     public sealed class LicenseLimits
     {
@@ -118,31 +118,31 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             switch (licensePlan)
             {
-                case LicensePlans.Demo:
+                case PiCliLicensePlans.Demo:
                     {
                         return ForDemo();
                     }
-                case LicensePlans.Micro:
+                case PiCliLicensePlans.Micro:
                     {
                         return ForMicro();
                     }
-                case LicensePlans.SMB:
+                case PiCliLicensePlans.SMB:
                     {
                         return ForSMB();
                     }
-                case LicensePlans.Enterprise:
+                case PiCliLicensePlans.Enterprise:
                     {
                         return ForEnterprise();
                     }
-                case LicensePlans.OnPremise:
+                case PiCliLicensePlans.OnPremise:
                     {
                         return ForOnPremise();
                     }
-                case LicensePlans.Unlimited:
+                case PiCliLicensePlans.Unlimited:
                     {
                         return ForUnlimited();
                     }
-                case LicensePlans.Custom:
+                case PiCliLicensePlans.Custom:
                     {
                         if (customClaims == null)
                         {
@@ -166,7 +166,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = LicensePlans.Demo,
+                Plan = PiCliLicensePlans.Demo,
                 TerminalLimit = 1,
                 RedistributionLimit = 0,
                 RootCommandLimit = 1,
@@ -192,7 +192,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             LicenseLimits limits = new()
             {
-                Plan = LicensePlans.Custom,
+                Plan = PiCliLicensePlans.Custom,
 
                 TerminalLimit = Convert.ToInt16(customClaims["terminal_limit"]),
                 RedistributionLimit = Convert.ToInt16(customClaims["redistribution_limit"]),
@@ -221,7 +221,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = LicensePlans.Enterprise,
+                Plan = PiCliLicensePlans.Enterprise,
                 TerminalLimit = 5,
                 RedistributionLimit = 5000,
                 RootCommandLimit = 3,
@@ -247,7 +247,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = LicensePlans.OnPremise,
+                Plan = PiCliLicensePlans.OnPremise,
                 TerminalLimit = 25,
                 RedistributionLimit = 10000,
                 RootCommandLimit = 5,
@@ -265,7 +265,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
                 StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
                 ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.DevLicenseHandler }
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.OnPremiseLicenseHandler }
             };
         }
 
@@ -273,7 +273,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = LicensePlans.Unlimited,
+                Plan = PiCliLicensePlans.Unlimited,
                 TerminalLimit = null,
                 RedistributionLimit = null,
                 RootCommandLimit = null,
@@ -291,7 +291,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
                 StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
                 ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.DevLicenseHandler }
+                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.OnPremiseLicenseHandler }
             };
         }
 
@@ -299,7 +299,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = LicensePlans.Micro,
+                Plan = PiCliLicensePlans.Micro,
                 TerminalLimit = 1,
                 RedistributionLimit = 0,
                 RootCommandLimit = 1,
@@ -325,7 +325,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = LicensePlans.SMB,
+                Plan = PiCliLicensePlans.SMB,
                 TerminalLimit = 3,
                 RedistributionLimit = 1000,
                 RootCommandLimit = 1,

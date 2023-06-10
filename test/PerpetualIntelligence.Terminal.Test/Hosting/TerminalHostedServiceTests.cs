@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             cancellationTokenSource = new();
             cancellationToken = cancellationTokenSource.Token;
 
-            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
             mockLicenseExtractor = new();
             mockLicenseChecker = new();
             mockOptionsChecker = new();
@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Demo()
         {
-            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            Licensing.License community = new Licensing.License("testp", "testh", PiCliLicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -112,7 +112,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Educational()
         {
-            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Demo, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            Licensing.License community = new Licensing.License("testp", "testh", PiCliLicensePlans.Demo, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
         {
-            Licensing.License community = new Licensing.License("testp", "testh", LicensePlans.Demo, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            Licensing.License community = new Licensing.License("testp", "testh", PiCliLicensePlans.Demo, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -283,7 +283,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public async void StartAsync_ShouldRegister_HelpArgument_ByDefault()
         {
-            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
@@ -323,7 +323,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public async void StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
         {
-            TerminalOptions terminalOptions = MockTerminalOptions.NewOptions();
+            TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
             terminalOptions.Help.Disabled = true;
 
             hostBuilder = Host.CreateDefaultBuilder()
