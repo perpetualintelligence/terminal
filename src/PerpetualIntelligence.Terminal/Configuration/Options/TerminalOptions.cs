@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -12,6 +12,16 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     /// </summary>
     public class TerminalOptions
     {
+        /// <summary>
+        /// Determines if this terminal is linked to the root command. After this, you can execute your terminal commands from a native command prompt by specifying the root and command string.
+        /// </summary>
+        public bool? LinkedToRoot { get; set; }
+
+        /// <summary>
+        /// The terminal name.
+        /// </summary>
+        public string? Name { get; set; }
+
         /// <summary>
         /// The authentication configuration options.
         /// </summary>
