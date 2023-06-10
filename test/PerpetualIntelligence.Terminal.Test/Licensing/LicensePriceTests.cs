@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -19,8 +19,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void CommunityEdition_ShouldSetPriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.Demo);
-            price.Plan.Should().Be(LicensePlans.Demo);
+            LicensePrice price = LicensePrice.Create(PiCliLicensePlans.Demo);
+            price.Plan.Should().Be(PiCliLicensePlans.Demo);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(0);
             price.Yearly.Should().Be(0);
@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void CustomEdition_NoClaimsShouldError()
         {
-            Test.Services.TestHelper.AssertThrowsErrorException(() => LicensePrice.Create(LicensePlans.Custom), "invalid_license", "The pricing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:plan:custom");
+            Test.Services.TestHelper.AssertThrowsErrorException(() => LicensePrice.Create(PiCliLicensePlans.Custom), "invalid_license", "The pricing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:plan:custom");
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 {"yearly_price", 251451544536523.36 },
             };
 
-            LicensePrice price = LicensePrice.Create(LicensePlans.Custom, expected);
+            LicensePrice price = LicensePrice.Create(PiCliLicensePlans.Custom, expected);
             price.Currency.Should().Be("INR");
             price.Monthly.Should().Be(36523.36);
             price.Yearly.Should().Be(251451544536523.36);
@@ -51,8 +51,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void EnterpriseEdition_PriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.Enterprise);
-            price.Plan.Should().Be(LicensePlans.Enterprise);
+            LicensePrice price = LicensePrice.Create(PiCliLicensePlans.Enterprise);
+            price.Plan.Should().Be(PiCliLicensePlans.Enterprise);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(699);
             price.Yearly.Should().Be(7529);
@@ -76,8 +76,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void OnPremiseEdition_PriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.OnPremise);
-            price.Plan.Should().Be(LicensePlans.OnPremise);
+            LicensePrice price = LicensePrice.Create(PiCliLicensePlans.OnPremise);
+            price.Plan.Should().Be(PiCliLicensePlans.OnPremise);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(1299);
             price.Yearly.Should().Be(14029);
@@ -86,8 +86,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void UnlimitedEdition_PriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.Unlimited);
-            price.Plan.Should().Be(LicensePlans.Unlimited);
+            LicensePrice price = LicensePrice.Create(PiCliLicensePlans.Unlimited);
+            price.Plan.Should().Be(PiCliLicensePlans.Unlimited);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(3299);
             price.Yearly.Should().Be(35629);
@@ -96,8 +96,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void MicroEdition_PriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.Micro);
-            price.Plan.Should().Be(LicensePlans.Micro);
+            LicensePrice price = LicensePrice.Create(PiCliLicensePlans.Micro);
+            price.Plan.Should().Be(PiCliLicensePlans.Micro);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(49);
             price.Yearly.Should().Be(529);
@@ -106,8 +106,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void SMBEdition_PriceCorrectly()
         {
-            LicensePrice price = LicensePrice.Create(LicensePlans.SMB);
-            price.Plan.Should().Be(LicensePlans.SMB);
+            LicensePrice price = LicensePrice.Create(PiCliLicensePlans.SMB);
+            price.Plan.Should().Be(PiCliLicensePlans.SMB);
             price.Currency.Should().Be("USD");
             price.Monthly.Should().Be(299);
             price.Yearly.Should().Be(3229);
@@ -123,32 +123,32 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 {"yearly_price", 251451544536523.36 },
             };
 
-            LicensePrice price = LicensePrice.Create(LicensePlans.Demo, expected);
+            LicensePrice price = LicensePrice.Create(PiCliLicensePlans.Demo, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);
 
-            price = LicensePrice.Create(LicensePlans.Micro, expected);
+            price = LicensePrice.Create(PiCliLicensePlans.Micro, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);
 
-            price = LicensePrice.Create(LicensePlans.SMB, expected);
+            price = LicensePrice.Create(PiCliLicensePlans.SMB, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);
 
-            price = LicensePrice.Create(LicensePlans.Enterprise, expected);
+            price = LicensePrice.Create(PiCliLicensePlans.Enterprise, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);
 
-            price = LicensePrice.Create(LicensePlans.OnPremise, expected);
+            price = LicensePrice.Create(PiCliLicensePlans.OnPremise, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);
 
-            price = LicensePrice.Create(LicensePlans.Unlimited, expected);
+            price = LicensePrice.Create(PiCliLicensePlans.Unlimited, expected);
             price.Currency.Should().NotBe("INR");
             price.Monthly.Should().NotBe(36523.36);
             price.Yearly.Should().NotBe(251451544536523.36);

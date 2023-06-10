@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -424,7 +424,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
             host = hostBuilder.Build();
 
-            terminalOptions = MockTerminalOptions.New();
+            terminalOptions = MockTerminalOptions.NewLegacyOptions();
             license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1");

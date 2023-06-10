@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -21,10 +21,10 @@ namespace PerpetualIntelligence.Terminal.Licensing
     {
         public LicenseCheckerTests()
         {
-            terminalOptions = MockTerminalOptions.New();
+            terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandDescriptors = MockCommands.LicensingCommands;
             licenseChecker = new LicenseChecker(commandDescriptors, terminalOptions, TestLogger.Create<LicenseChecker>());
-            license = new License("testProviderId2", Handlers.OnlineLicenseHandler, LicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(LicensePlans.Unlimited), LicensePrice.Create(LicensePlans.Unlimited));
+            license = new License("testProviderId2", Handlers.OnlineLicenseHandler, PiCliLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(PiCliLicensePlans.Unlimited), LicensePrice.Create(PiCliLicensePlans.Unlimited));
         }
 
         [Fact]
@@ -263,7 +263,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Handler.LicenseHandler = "offline-license";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
-            terminalOptions.Handler.LicenseHandler = "dev-license";
+            terminalOptions.Handler.LicenseHandler = "onpremise-license";
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // Null not allowed

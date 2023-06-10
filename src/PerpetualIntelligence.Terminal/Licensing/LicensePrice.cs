@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -51,31 +51,31 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             switch (saasPlan)
             {
-                case LicensePlans.Demo:
+                case PiCliLicensePlans.Demo:
                     {
                         return new LicensePrice("USD", 0, 0, saasPlan);
                     }
-                case LicensePlans.Micro:
+                case PiCliLicensePlans.Micro:
                     {
                         return new LicensePrice("USD", 49, 529, saasPlan);
                     }
-                case LicensePlans.SMB:
+                case PiCliLicensePlans.SMB:
                     {
                         return new LicensePrice("USD", 299, 3229, saasPlan);
                     }
-                case LicensePlans.Enterprise:
+                case PiCliLicensePlans.Enterprise:
                     {
                         return new LicensePrice("USD", 699, 7529, saasPlan);
                     }
-                case LicensePlans.OnPremise:
+                case PiCliLicensePlans.OnPremise:
                     {
                         return new LicensePrice("USD", 1299, 14029, saasPlan);
                     }
-                case LicensePlans.Unlimited:
+                case PiCliLicensePlans.Unlimited:
                     {
                         return new LicensePrice("USD", 3299, 35629, saasPlan);
                     }
-                case LicensePlans.Custom:
+                case PiCliLicensePlans.Custom:
                     {
                         if (customClaims == null)
                         {
