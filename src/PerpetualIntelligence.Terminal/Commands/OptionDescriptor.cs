@@ -101,13 +101,13 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// If <see cref="DefaultValue"/> is set to a non <c>null</c> value, then the option will have
         /// <see cref="DefaultValue"/>, if a user or an app does not specify any value.
         /// </remarks>
-        public object? DefaultValue { get; set; }
+        public object? DefaultValue { get; }
 
         /// <summary>
         /// The option description.
         /// </summary>
         /// <remarks>The option id is unique across all commands.</remarks>
-        public string? Description { get; set; }
+        public string? Description { get; }
 
         /// <summary>
         /// Determines whether the option is disabled
@@ -118,7 +118,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// The option id.
         /// </summary>
         /// <remarks>The option id is unique within a command.</remarks>
-        public string Id { get; set; }
+        public string Id { get; }
 
         /// <summary>
         /// Determines whether the option is obsolete.

@@ -6,10 +6,11 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
+using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,6 +43,18 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         public Task CheckAsync(TerminalOptions options)
         {
             ITextHandler textHandler = serviceProvider.GetRequiredService<ITextHandler>();
+
+            // Terminal
+            {
+                if (options.RootAsDriver)
+                {
+                    // If linked to root command then name is required.
+                    if (options.Name.IsNullOrWhiteSpace())
+                    {
+                        throw new ErrorException(Errors.InvalidConfiguration, "The name is required if terminal root is a program.");
+                    }
+                }
+            }
 
             // Logging
             {

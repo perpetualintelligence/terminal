@@ -8,16 +8,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
-using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Test.Services;
+using System;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
@@ -42,6 +42,34 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
             defaultOptionProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
+        }
+
+        [TestMethod]
+        public async Task LinkedToRoot_Requires_Terminal_Name()
+        {
+            options.RootAsDriver = true;
+
+            Func<Task> act = async () => await optionsChecker.CheckAsync(options);
+
+            options.Name = "";
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a program.");
+
+            options.Name = null;
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a program.");
+
+            options.Name = "   ";
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a program.");
+
+            options.RootAsDriver = false;
+
+            options.Name = "";
+            await act();
+
+            options.Name = null ;
+            await act();
+
+            options.Name = "   ";
+            await act();
         }
 
         [TestMethod]

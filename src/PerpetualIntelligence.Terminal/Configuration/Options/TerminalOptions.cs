@@ -13,9 +13,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     public class TerminalOptions
     {
         /// <summary>
-        /// Determines if this terminal is linked to the root command. After this, you can execute your terminal commands from a native command prompt by specifying the root and command string.
+        /// Determines if this terminal's root command is also a native command prompt driver program. If <c>true</c>, you can execute your commands from a native command prompt by specifying the root and command options.
         /// </summary>
-        public bool? LinkedToRoot { get; set; }
+        public bool RootAsDriver { get; set; } = false;
 
         /// <summary>
         /// The terminal name.

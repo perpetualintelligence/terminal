@@ -5,14 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Abstractions;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     /// <summary>
-    /// An abstraction to extract an option.
+    /// An abstraction to extract an <see cref="Option"/>.
     /// </summary>
-    public interface IOptionExtractor : IExtractor<OptionExtractorContext, OptionExtractorResult>
+    public interface IOptionExtractor
     {
+        /// <summary>
+        /// Extracts <see cref="Option"/> asynchronously.
+        /// </summary>
+        /// <param name="context">The option extraction context.</param>
+        /// <returns>The <see cref="OptionExtractorResult"/> instance.</returns>
+        public Task<OptionExtractorResult> ExtractAsync(OptionExtractorContext context);
     }
 }

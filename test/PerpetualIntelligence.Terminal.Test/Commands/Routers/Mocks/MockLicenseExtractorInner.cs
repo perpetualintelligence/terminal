@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             return Task.FromResult(new LicenseExtractorResult(TestLicense, TestLicense.Handler));
         }
 
-        public Task<License?> GetLicenseAsync()
+        public Task<License?> GetAsync()
         {
             if (NoLicense)
             {

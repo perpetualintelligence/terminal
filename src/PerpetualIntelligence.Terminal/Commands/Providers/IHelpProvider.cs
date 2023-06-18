@@ -25,6 +25,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
         /// Provides help asynchronously.
         /// </summary>
         /// <returns></returns>
-        public Task ProvideHelpAsync(HelpProviderContext context);
+        public Task ProvideAsync(HelpProviderContext context);
     }
 }

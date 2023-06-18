@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         /// <inheritdoc/>
-        public Task<License?> GetLicenseAsync()
+        public Task<License?> GetAsync()
         {
             return Task.FromResult(licenseExtractorResult?.License);
         }

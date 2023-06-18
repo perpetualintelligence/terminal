@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
     /// <summary>
     /// The command runner result.
     /// </summary>
-    public class CommandRunnerResult : IProcessorNoResult<CommandRunnerResultProcessorContext>, IAsyncDisposable
+    public class CommandRunnerResult : IAsyncDisposable
     {
         /// <summary>
         /// Determines whether the result is disposed.

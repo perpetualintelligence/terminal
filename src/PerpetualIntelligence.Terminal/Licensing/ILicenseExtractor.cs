@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Abstractions;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Licensing
@@ -13,11 +12,18 @@ namespace PerpetualIntelligence.Terminal.Licensing
     /// <summary>
     /// An abstraction to extract the software <see cref="License"/>.
     /// </summary>
-    public interface ILicenseExtractor : IExtractor<LicenseExtractorContext, LicenseExtractorResult>
+    public interface ILicenseExtractor
     {
+        /// <summary>
+        /// Extracts the <see cref="License"/> asynchronously.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context);
+
         /// <summary>
         /// Gets the extracted license asynchronously.
         /// </summary>
-        public Task<License?> GetLicenseAsync();
+        public Task<License?> GetAsync();
     }
 }

@@ -1,4 +1,7 @@
-# 4.5.3-rc*
+# 5.0.1-rc*
+> Breaking Change
+- Remove the default option feature capability
+- Introduce the command argument feature capability
 
 # 4.5.2-rc*
 > Breaking Change
