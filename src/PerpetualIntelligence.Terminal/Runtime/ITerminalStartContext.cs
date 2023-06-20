@@ -15,9 +15,9 @@ namespace PerpetualIntelligence.Terminal.Runtime
     public interface ITerminalStartContext
     {
         /// <summary>
-        /// The command line options.
+        /// The terminal driver arguments or the command line arguments.
         /// </summary>
-        string[]? Options { get; }
+        string[]? Arguments { get; }
 
         /// <summary>
         /// The cancellation token.

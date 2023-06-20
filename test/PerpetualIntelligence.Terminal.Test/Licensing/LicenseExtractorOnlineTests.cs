@@ -244,7 +244,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             File.Exists(demoLicPath).Should().BeTrue();
 
             // Before extract get should be null
-            License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            License? licenseFromGet = await licenseExtractor.GetAsync();
             licenseFromGet.Should().BeNull();
 
             terminalOptions.Licensing.LicenseKey = demoLicPath;
@@ -320,7 +320,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             result.License.Price.Yearly.Should().Be(0.0);
 
             // After extract and Get should return the correct license
-            licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            licenseFromGet = await licenseExtractor.GetAsync();
             licenseFromGet.Should().NotBeNull();
             licenseFromGet.Should().BeSameAs(result.License);
         }
@@ -412,7 +412,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         public async Task ExtractFromJsonAsync_OnlineMode_ValidKey_ShouldContainClaimsAsync()
         {
             // Before extract get should be null
-            License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            License? licenseFromGet = await licenseExtractor.GetAsync();
             licenseFromGet.Should().BeNull();
 
             terminalOptions.Licensing.LicenseKey = testLicPath;
@@ -477,7 +477,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             result.License.Price.Yearly.Should().Be(35629.0);
 
             // After extract and Get should return the correct license
-            licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            licenseFromGet = await licenseExtractor.GetAsync();
             licenseFromGet.Should().NotBeNull();
             licenseFromGet.Should().BeSameAs(result.License);
         }

@@ -5,14 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Abstractions;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Providers
 {
     /// <summary>
     /// An abstraction to provide an option's default value.
     /// </summary>
-    public interface IDefaultOptionValueProvider : IProvider<DefaultOptionValueProviderContext, DefaultOptionValueProviderResult>
+    public interface IDefaultOptionValueProvider
     {
+        /// <summary>
+        /// Provides an option's default value asynchronously.
+        /// </summary>
+        /// <param name="defaultOptionValueProviderContext">The option's default value context.</param>
+        /// <returns>The <see cref="DefaultOptionValueProviderResult"/> instance.</returns>
+        Task<DefaultOptionValueProviderResult> ProvideAsync(DefaultOptionValueProviderContext defaultOptionValueProviderContext);
     }
 }

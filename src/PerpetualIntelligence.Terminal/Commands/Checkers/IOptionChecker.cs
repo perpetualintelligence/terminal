@@ -5,14 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Abstractions;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// An abstraction to check an <see cref="Option"/>.
     /// </summary>
-    public interface IOptionChecker : IChecker<OptionCheckerContext, OptionCheckerResult>
+    public interface IOptionChecker
     {
+        /// <summary>
+        /// Checks <see cref="Option"/> asynchronously.
+        /// </summary>
+        /// <param name="context">The option check context.</param>
+        /// <returns>The <see cref="OptionCheckerResult"/> instance.</returns>
+        public Task<OptionCheckerResult> CheckAsync(OptionCheckerContext context);
     }
 }

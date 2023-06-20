@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Initializes a new instance.
         /// </summary>
         /// <param name="startMode">The terminal start mode.</param>
-        /// <param name="port">The optional port number of the endpoint, if the <see cref="TerminalStartMode"/> is <see cref="TerminalStartMode.Server"/>.</param>
+        /// <param name="port">The optional port number of the endpoint, if the <see cref="TerminalStartMode"/> is <see cref="TerminalStartMode.Tcp"/>.</param>
         public TerminalStartInfo(TerminalStartMode startMode, int? port = null)
         {
             Port = port;

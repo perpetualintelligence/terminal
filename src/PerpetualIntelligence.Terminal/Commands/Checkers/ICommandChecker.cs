@@ -5,14 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Abstractions;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
     /// An abstraction to check a <see cref="Command"/>.
     /// </summary>
-    public interface ICommandChecker : IChecker<CommandCheckerContext, CommandCheckerResult>
+    public interface ICommandChecker
     {
+        /// <summary>
+        /// Checks <see cref="Command"/> asynchronously.
+        /// </summary>
+        /// <param name="context">The command check context.</param>
+        /// <returns>The <see cref="CommandCheckerResult"/> instance.</returns>
+        public Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context);
     }
 }

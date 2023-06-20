@@ -13,6 +13,16 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     public class TerminalOptions
     {
         /// <summary>
+        /// The terminal identifier.
+        /// </summary>
+        public string Id { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The driver configuration options.
+        /// </summary>
+        public DriverOptions Driver { get; set; } = new DriverOptions();
+
+        /// <summary>
         /// The authentication configuration options.
         /// </summary>
         public AuthenticationOptions Authentication { get; set; } = new AuthenticationOptions();

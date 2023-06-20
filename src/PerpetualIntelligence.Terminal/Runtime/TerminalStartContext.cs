@@ -24,13 +24,13 @@ namespace PerpetualIntelligence.Terminal.Runtime
         {
             StartInformation = startInformation;
             CancellationTokenSource = cancellationTokenSource;
-            Options = options;
+            Arguments = options;
         }
 
         /// <summary>
-        /// The command line options.
+        /// The terminal driver arguments or command line arguments.
         /// </summary>
-        public string[]? Options { get; }
+        public string[]? Arguments { get; }
 
         /// <summary>
         /// The cancellation token source.

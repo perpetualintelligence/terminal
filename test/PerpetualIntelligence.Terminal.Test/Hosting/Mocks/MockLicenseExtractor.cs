@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
             return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense, MockLicenses.TestLicense.Handler));
         }
 
-        public Task<License?> GetLicenseAsync()
+        public Task<License?> GetAsync()
         {
             return Task.FromResult<License?>(MockLicenses.TestLicense);
         }

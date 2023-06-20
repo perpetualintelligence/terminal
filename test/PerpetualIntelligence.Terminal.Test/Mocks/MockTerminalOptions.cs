@@ -15,6 +15,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
         {
             return new TerminalOptions()
             {
+                Id = "test_id_1",
                 Logging = new LoggingOptions()
                 {
                     ObsureInvalidOptions = false
@@ -34,6 +35,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
         {
             return new TerminalOptions()
             {
+                Id = "test_id_2",
                 Logging = new LoggingOptions()
                 {
                     ObsureInvalidOptions = false

@@ -8,16 +8,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
-using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Test.Services;
+using System;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
@@ -42,6 +42,65 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
             defaultOptionProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
+        }
+
+        [TestMethod]
+        public async Task Terminal_Id_Is_Required()
+        {
+            Func<Task> act = async () => await optionsChecker.CheckAsync(options);
+
+            options.Id = "";
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The terminal identifier is required.");
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            options.Id = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The terminal identifier is required.");
+
+            options.Id = "   ";
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The terminal identifier is required.");
+
+            options.Id = "asasd";
+            await act();
+        }
+
+        [TestMethod]
+        public async Task LinkedToRoot_Requires_Terminal_Name()
+        {
+            options.Driver.Enabled = true;
+
+            Func<Task> act = async () => await optionsChecker.CheckAsync(options);
+
+            options.Driver.Name = "";
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
+
+            options.Driver.Name = null;
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
+
+            options.Driver.Name = "   ";
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
+
+            options.Driver.Enabled = false;
+
+            options.Driver.Name = "";
+            await act();
+
+            options.Driver.Name = null;
+            await act();
+
+            options.Driver.Name = "   ";
+            await act();
+
+            options.Driver.Enabled = null;
+
+            options.Driver.Name = "";
+            await act();
+
+            options.Driver.Name = null;
+            await act();
+
+            options.Driver.Name = "   ";
+            await act();
         }
 
         [TestMethod]

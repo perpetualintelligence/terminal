@@ -23,6 +23,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         {
             TerminalOptions options = new();
 
+            options.Id.Should().BeEmpty();
+
+            options.Driver.Should().NotBeNull();
             options.Authentication.Should().NotBeNull();
             options.Checker.Should().NotBeNull();
             options.Extractor.Should().NotBeNull();

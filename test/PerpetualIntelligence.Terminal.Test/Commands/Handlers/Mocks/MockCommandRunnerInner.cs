@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
 
         public async Task HelpAsync(CommandRunnerContext context)
         {
-            await helpProvider.ProvideHelpAsync(new HelpProviderContext(context.Command));
+            await helpProvider.ProvideAsync(new HelpProviderContext(context.Command));
             HelpCalled = true;
         }
 

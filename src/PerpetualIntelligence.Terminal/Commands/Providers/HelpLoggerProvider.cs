@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
         public ILogger<HelpLoggerProvider> Logger { get; }
 
         /// <inheritdoc/>
-        public Task ProvideHelpAsync(HelpProviderContext context)
+        public Task ProvideAsync(HelpProviderContext context)
         {
             Logger.LogInformation("Command:");
             Logger.LogInformation("    " + context.Command.Descriptor.Name);

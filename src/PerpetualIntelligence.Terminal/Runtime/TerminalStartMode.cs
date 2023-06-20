@@ -13,18 +13,28 @@ namespace PerpetualIntelligence.Terminal.Runtime
     public enum TerminalStartMode
     {
         /// <summary>
-        /// The terminal starts as a server that listens to an incoming connection.
+        /// The terminal starts as a TCP server that listens to an incoming connection.
         /// </summary>
-        Server = 0,
+        Tcp = 1,
+
+        /// <summary>
+        /// The terminal starts as a HTTP server that listens to an incoming message. NOT YET SUPPORTED.
+        /// </summary>
+        Http = 2,
+
+        /// <summary>
+        /// The terminal starts as a gRPC server that listens to an incoming message.  NOT YET SUPPORTED.
+        /// </summary>
+        Grpc = 3,
 
         /// <summary>
         /// The terminal starts as a  console application.
         /// </summary>
-        Console = 1,
+        Console = 100,
 
         /// <summary>
         /// The terminal starts as a custom service.
         /// </summary>
-        Custom = 2
+        Custom = 0
     }
 }

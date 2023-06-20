@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", true, defaultValue: 89568.36) {ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true) { Alias = "k10" },
                 new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", true) { Alias = "k11" },
-                new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true) { Alias = "k12", DefaultValue = true }
+                new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true, defaultValue: true) { Alias = "k12" }
             };
 
             TestHindiUnicodeOptionDescriptors = new(new UnicodeTextHandler())

@@ -5,14 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Abstractions;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
     /// An abstraction to check the <see cref="License"/> object.
     /// </summary>
-    public interface ILicenseChecker : IChecker<LicenseCheckerContext, LicenseCheckerResult>
+    public interface ILicenseChecker
     {
+        /// <summary>
+        /// Checks <see cref="License"/> asynchronously.
+        /// </summary>
+        /// <param name="context">The license check context.</param>
+        /// <returns>The <see cref="LicenseCheckerResult"/> instance.</returns>
+        public Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context);
     }
 }
