@@ -917,6 +917,34 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
         }
 
+        [TestMethod]
+        public async Task Options_Are_Extracted_Correctly_With_Multiple_ValueWithIn_WithQuotes_Async()
+        {
+            terminalOptions = MockTerminalOptions.NewAliasOptions();
+            SetupBasedOnTerminalOptions(terminalOptions);
+
+            // No arg id
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\" --key2 \"date -s '20 JUN 2023 11:06:38'\""));
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "date -s '20 JUN 2023 11:06:38'");
+        }
+
+        [TestMethod]
+        public async Task Options_Are_Extracted_Correctly_With_Multiple_Alias_ValueWithIn_WithQuotes_Async()
+        {
+            terminalOptions = MockTerminalOptions.NewAliasOptions();
+            SetupBasedOnTerminalOptions(terminalOptions);
+
+            // No arg id
+            CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1_alias \"date -s '15 JUN 2023 11:06:38'\" --key2 \"date -s '20 JUN 2023 11:06:38'\""));
+            var result = await extractor.ExtractAsync(context);
+            Assert.IsNotNull(result.Command.Options);
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "date -s '15 JUN 2023 11:06:38'");
+            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "date -s '20 JUN 2023 11:06:38'");
+        }
+
 
         [TestMethod]
         public async Task Options_Are_Extracted_Correctly_With_Single_Value_Has_Another_Option_ValueWithInAsync()
