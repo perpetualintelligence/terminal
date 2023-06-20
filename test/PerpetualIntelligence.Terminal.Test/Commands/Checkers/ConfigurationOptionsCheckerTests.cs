@@ -67,28 +67,39 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task LinkedToRoot_Requires_Terminal_Name()
         {
-            options.RootAsDriver = true;
+            options.Driver.Enabled = true;
 
             Func<Task> act = async () => await optionsChecker.CheckAsync(options);
 
-            options.Name = "";
+            options.Driver.Name = "";
             await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
-            options.Name = null;
+            options.Driver.Name = null;
             await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
-            options.Name = "   ";
+            options.Driver.Name = "   ";
             await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
-            options.RootAsDriver = false;
+            options.Driver.Enabled = false;
 
-            options.Name = "";
+            options.Driver.Name = "";
             await act();
 
-            options.Name = null;
+            options.Driver.Name = null;
             await act();
 
-            options.Name = "   ";
+            options.Driver.Name = "   ";
+            await act();
+
+            options.Driver.Enabled = null;
+
+            options.Driver.Name = "";
+            await act();
+
+            options.Driver.Name = null;
+            await act();
+
+            options.Driver.Name = "   ";
             await act();
         }
 

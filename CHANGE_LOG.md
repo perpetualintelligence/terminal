@@ -1,7 +1,8 @@
 # 5.0.1-rc*
 > Breaking Change
-- Remove the default option feature capability
-- Introduce the command argument feature capability
+- Remove the default option feature
+- Introduce the command argument feature
+- Introduce the terminal driver feature 
 - Enforce terminal identifier
 
 # 4.5.2-rc*

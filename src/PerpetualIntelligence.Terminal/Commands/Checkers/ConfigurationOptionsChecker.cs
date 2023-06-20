@@ -50,11 +50,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 {
                     throw new ErrorException(Errors.InvalidConfiguration, "The terminal identifier is required.");
                 }
+            }
 
-                if (options.RootAsDriver)
+            // Driver
+            {
+                if (options.Driver.Enabled.GetValueOrDefault())
                 {
                     // If linked to root command then name is required.
-                    if (options.Name.IsNullOrWhiteSpace())
+                    if (options.Driver.Name.IsNullOrWhiteSpace())
                     {
                         throw new ErrorException(Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
                     }
