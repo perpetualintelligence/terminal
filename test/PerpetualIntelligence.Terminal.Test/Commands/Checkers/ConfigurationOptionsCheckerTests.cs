@@ -45,6 +45,26 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         [TestMethod]
+        public async Task Terminal_Id_Is_Required()
+        {
+            Func<Task> act = async () => await optionsChecker.CheckAsync(options);
+
+            options.Id = "";
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The terminal identifier is required.");
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            options.Id = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The terminal identifier is required.");
+
+            options.Id = "   ";
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The terminal identifier is required.");
+
+            options.Id = "asasd";
+            await act();
+        }
+
+        [TestMethod]
         public async Task LinkedToRoot_Requires_Terminal_Name()
         {
             options.RootAsDriver = true;
@@ -52,20 +72,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Func<Task> act = async () => await optionsChecker.CheckAsync(options);
 
             options.Name = "";
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a program.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
             options.Name = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a program.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
             options.Name = "   ";
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a program.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(act, Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
             options.RootAsDriver = false;
 
             options.Name = "";
             await act();
 
-            options.Name = null ;
+            options.Name = null;
             await act();
 
             options.Name = "   ";

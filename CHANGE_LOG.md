@@ -2,6 +2,7 @@
 > Breaking Change
 - Remove the default option feature capability
 - Introduce the command argument feature capability
+- Enforce terminal identifier
 
 # 4.5.2-rc*
 > Breaking Change

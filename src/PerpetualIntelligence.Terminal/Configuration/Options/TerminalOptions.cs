@@ -13,6 +13,11 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     public class TerminalOptions
     {
         /// <summary>
+        /// The terminal identifier.
+        /// </summary>
+        public string Id { get; set; } = string.Empty;
+
+        /// <summary>
         /// Determines if this terminal's root command is also a native command prompt driver program. If <c>true</c>, you can execute your commands from a native command prompt by specifying the root and command options.
         /// </summary>
         public bool RootAsDriver { get; set; } = false;

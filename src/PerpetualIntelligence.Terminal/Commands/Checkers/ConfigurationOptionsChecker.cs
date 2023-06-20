@@ -46,12 +46,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             // Terminal
             {
+                if (options.Id.IsNullOrWhiteSpace())
+                {
+                    throw new ErrorException(Errors.InvalidConfiguration, "The terminal identifier is required.");
+                }
+
                 if (options.RootAsDriver)
                 {
                     // If linked to root command then name is required.
                     if (options.Name.IsNullOrWhiteSpace())
                     {
-                        throw new ErrorException(Errors.InvalidConfiguration, "The name is required if terminal root is a program.");
+                        throw new ErrorException(Errors.InvalidConfiguration, "The name is required if terminal root is a driver.");
                     }
                 }
             }
