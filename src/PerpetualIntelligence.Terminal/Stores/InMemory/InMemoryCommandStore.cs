@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
             var command = commandDescriptors.FirstOrDefault(e => textHandler.TextEquals(id, e.Id));
             if (command == null)
             {
-                return Task.FromResult(new TryResultOrError<CommandDescriptor>(new Error(Errors.UnsupportedCommand, "The command id is not valid. id={0}", id)));
+                return Task.FromResult(new TryResultOrError<CommandDescriptor>(new Error(TerminalErrors.UnsupportedCommand, "The command id is not valid. id={0}", id)));
             }
             else
             {
@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
             var command = commandDescriptors.FirstOrDefault(e => textHandler.TextEquals(name, e.Name));
             if (command == null)
             {
-                return Task.FromResult(new TryResultOrError<CommandDescriptor>(new Error(Errors.UnsupportedCommand, "The command name is not valid. name={0}", name)));
+                return Task.FromResult(new TryResultOrError<CommandDescriptor>(new Error(TerminalErrors.UnsupportedCommand, "The command name is not valid. name={0}", name)));
             }
             else
             {
@@ -72,7 +72,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
             var command = commandDescriptors.FirstOrDefault(e => textHandler.TextEquals(prefix, e.Prefix));
             if (command == null)
             {
-                return Task.FromResult(new TryResultOrError<CommandDescriptor>(new Error(Errors.UnsupportedCommand, "The command prefix is not valid. prefix={0}", prefix)));
+                return Task.FromResult(new TryResultOrError<CommandDescriptor>(new Error(TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix={0}", prefix)));
             }
             else
             {
@@ -121,7 +121,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
             else
             {
                 // Error, we did not find a match
-                return Task.FromResult(new TryResultOrError<CommandDescriptor>(new Error(Errors.UnsupportedCommand, "The command prefix is not valid. prefix={0}", prefix)));
+                return Task.FromResult(new TryResultOrError<CommandDescriptor>(new Error(TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix={0}", prefix)));
             }
         }
 

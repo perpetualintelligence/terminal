@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             if (license == null)
             {
-                throw new ErrorException(Errors.InvalidLicense, "The license cannot be null.");
+                throw new ErrorException(TerminalErrors.InvalidLicense, "The license cannot be null.");
             }
 
             License = license;

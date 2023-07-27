@@ -20,6 +20,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// </summary>
     public class ConsoleRouting : ITerminalRouting<ConsoleRoutingContext, ConsoleRoutingResult>
     {
+        private readonly ITerminalConsole terminalConsole;
         private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
@@ -30,14 +31,16 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <summary>
         /// Initialize a new <see cref="ConsoleRouting"/> instance.
         /// </summary>
+        /// <param name="terminalConsole">The terminal console.</param>
         /// <param name="applicationLifetime">The host application lifetime instance.</param>
         /// <param name="commandRouter">The command router.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
         /// <param name="errorHandler">The error handler.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ConsoleRouting(IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, TerminalOptions options, ILogger<ConsoleRouting> logger)
+        public ConsoleRouting(ITerminalConsole terminalConsole, IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, TerminalOptions options, ILogger<ConsoleRouting> logger)
         {
+            this.terminalConsole = terminalConsole;
             this.applicationLifetime = applicationLifetime;
             this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
@@ -66,7 +69,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     // Honor the cancellation request.
                     if (context.StartContext.CancellationToken.IsCancellationRequested)
                     {
-                        ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
+                        ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(TerminalErrors.RequestCanceled, "Received cancellation token, the routing is canceled."));
                         await errorHandler.HandleAsync(errContext);
 
                         // We are done, break the loop.
@@ -76,7 +79,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     // Check if application is stopping
                     if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
                     {
-                        ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
+                        ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(TerminalErrors.RequestCanceled, $"Application is stopping, the routing is canceled."));
                         await errorHandler.HandleAsync(errContext);
 
                         // We are done, break the loop.
@@ -86,14 +89,14 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     // Print the caret
                     if (options.Router.Caret != null)
                     {
-                        Console.Write(options.Router.Caret);
+                        await terminalConsole.WriteAsync(options.Router.Caret);
                     }
 
                     // Read the user input
-                    string? raw = Console.ReadLine();
+                    string? raw = await terminalConsole.ReadLineAsync();
 
                     // Ignore empty commands
-                    if (string.IsNullOrWhiteSpace(raw))
+                    if (terminalConsole.Ignore(raw))
                     {
                         // Wait for next command.
                         continue;

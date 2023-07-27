@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             // Check for null option value
             if (context.Option.Value == null)
             {
-                throw new ErrorException(Errors.InvalidOption, "The option value cannot be null. option={0}", context.Option.Id);
+                throw new ErrorException(TerminalErrors.InvalidOption, "The option value cannot be null. option={0}", context.Option.Id);
             }
 
             // Check option data type and value type
@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             catch
             {
                 // Meaningful error instead of format exception
-                throw new ErrorException(Errors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Option.Id, mapperResult.MappedType, context.Option.DataType, context.Option.Value.GetType().Name, context.Option.Value);
+                throw new ErrorException(TerminalErrors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Option.Id, mapperResult.MappedType, context.Option.DataType, context.Option.Value.GetType().Name, context.Option.Value);
             }
 
             if (context.OptionDescriptor.ValueCheckers != null)
@@ -84,7 +84,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     }
                     catch (Exception ex)
                     {
-                        throw new ErrorException(Errors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", context.Option.Id, context.Option.Value, ex.Message);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", context.Option.Id, context.Option.Value, ex.Message);
                     }
                 }
             }

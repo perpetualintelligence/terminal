@@ -11,7 +11,6 @@ using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -56,7 +55,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -64,13 +63,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
-            terminalOptions.Handler.LicenseHandler = Handlers.OnPremiseLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             LicenseExtractorResult? result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
             result.License.Should().NotBeNull();
 
             // The license is for on-prem but the extraction was done via online
-            result.License.Handler.Should().Be(Handlers.OnPremiseLicenseHandler);
-            result.ExtractionHandler.Should().Be(Handlers.OnlineLicenseHandler);
+            result.License.Handler.Should().Be(TerminalHandlers.OnPremiseLicenseHandler);
+            result.ExtractionHandler.Should().Be(TerminalHandlers.OnlineLicenseHandler);
         }
 
         [Fact]
@@ -83,20 +82,20 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OfflineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             terminalOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
-            terminalOptions.Handler.LicenseHandler = Handlers.OnPremiseLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             LicenseExtractorResult? result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
             result.License.Should().NotBeNull();
 
             // The license is for on-prem but the extraction was done via offline
-            result.License.Handler.Should().Be(Handlers.OnPremiseLicenseHandler);
-            result.ExtractionHandler.Should().Be(Handlers.OfflineLicenseHandler);
+            result.License.Handler.Should().Be(TerminalHandlers.OnPremiseLicenseHandler);
+            result.ExtractionHandler.Should().Be(TerminalHandlers.OfflineLicenseHandler);
         }
 
         private static string GetJsonLicenseFileForLocalHostGithubSecretForCICD(string env)
@@ -106,7 +105,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             if (fileOrJson == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
             }
 
             string json = fileOrJson;

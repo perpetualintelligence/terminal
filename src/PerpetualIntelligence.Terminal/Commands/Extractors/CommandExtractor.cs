@@ -13,7 +13,6 @@ using PerpetualIntelligence.Shared.Services;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Services;
 using PerpetualIntelligence.Terminal.Stores;
 using System;
 using System.Collections.Generic;
@@ -84,13 +83,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 // If options are passed make sure command supports options, exact options are checked later
                 if (commandDescriptor.OptionDescriptors == null || commandDescriptor.OptionDescriptors.Count == 0)
                 {
-                    throw new ErrorException(Errors.UnsupportedOption, "The command does not support any options. command_name={0} command_id={1}", commandDescriptor.Name, commandDescriptor.Id);
+                    throw new ErrorException(TerminalErrors.UnsupportedOption, "The command does not support any options. command_name={0} command_id={1}", commandDescriptor.Name, commandDescriptor.Id);
                 }
 
                 // Make sure there is a separator between the command prefix and options
                 if (!rawArgString.StartsWith(this.terminalOptions.Extractor.Separator, textHandler.Comparison))
                 {
-                    throw new ErrorException(Errors.InvalidCommand, "The command separator is missing. command_string={0}", raw);
+                    throw new ErrorException(TerminalErrors.InvalidCommand, "The command separator is missing. command_string={0}", raw);
                 }
             }
             else
@@ -107,7 +106,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 // Sanity check
                 if (defaultOptionProvider == null)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
                 }
 
                 // Options and command supports the default option, but is the default value provided by user ? If yes
@@ -155,14 +154,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     // Protect for bad custom implementation.
                     if (tryResult.Result == null)
                     {
-                        errors.Add(new Error(Errors.InvalidOption, "The option string did not return an error or extract the option. option_string={0}", argString.Raw));
+                        errors.Add(new Error(TerminalErrors.InvalidOption, "The option string did not return an error or extract the option. option_string={0}", argString.Raw));
                     }
                     else
                     {
                         // Avoid dictionary duplicate key and give meaningful error
                         if (options.Contains(tryResult.Result.Option))
                         {
-                            errors.Add(new Error(Errors.DuplicateOption, "The option is already added to the command. option={0}", tryResult.Result.Option.Id));
+                            errors.Add(new Error(TerminalErrors.DuplicateOption, "The option is already added to the command. option={0}", tryResult.Result.Option.Id));
                         }
                         else
                         {
@@ -217,13 +216,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // Make sure we have the result to proceed. Protect bad custom implementations.
             if (result.Result == null)
             {
-                throw new ErrorException(Errors.InvalidCommand, "The command string did not return an error or match the command prefix. command_string={0}", commandString);
+                throw new ErrorException(TerminalErrors.InvalidCommand, "The command string did not return an error or match the command prefix. command_string={0}", commandString);
             }
 
             // Make sure the command id is valid
             if (!Regex.IsMatch(result.Result.Id, terminalOptions.Extractor.CommandIdRegex))
             {
-                throw new ErrorException(Errors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, terminalOptions.Extractor.CommandIdRegex);
+                throw new ErrorException(TerminalErrors.InvalidCommand, "The command identifier is not valid. command_id={0} regex={1}", result.Result.Id, terminalOptions.Extractor.CommandIdRegex);
             }
 
             return result.Result;
@@ -251,7 +250,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // Sanity check
             if (defaultOptionValueProvider == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
             }
 
             // Get default values. Make sure we take user inputs.
@@ -268,7 +267,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     // Protect against bad implementation, catch all the errors
                     if (optionDescriptor.DefaultValue == null)
                     {
-                        errors.Add(new Error(Errors.InvalidOption, "The option does not have a default value. option={0}", optionDescriptor.Id));
+                        errors.Add(new Error(TerminalErrors.InvalidOption, "The option does not have a default value. option={0}", optionDescriptor.Id));
                         continue;
                     }
 

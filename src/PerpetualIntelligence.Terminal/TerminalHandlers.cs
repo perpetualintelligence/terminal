@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Terminal
     /// <summary>
     /// These well-known <c>pi-cli</c> handlers allow app authors to configure the framework and provide custom implementations.
     /// </summary>
-    public static class Handlers
+    public static class TerminalHandlers
     {
         /// <summary>
         /// The <c>ascii</c> handler.

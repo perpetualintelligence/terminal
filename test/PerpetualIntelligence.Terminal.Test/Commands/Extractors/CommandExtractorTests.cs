@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] {
-                    Errors.UnsupportedOption
+                    TerminalErrors.UnsupportedOption
                },
                new[] {
                     $"The option alias is not supported. option=key1_invalid_alias",
@@ -81,7 +81,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] {
-                    Errors.UnsupportedOption
+                    TerminalErrors.UnsupportedOption
                },
                new[] {
                     $"The option is not supported. option=key4_invalid",
@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] {
-                    Errors.UnsupportedOption
+                    TerminalErrors.UnsupportedOption
                },
                new[] {
                     $"The option or its alias is not supported. option=key1_invalid_alias",
@@ -131,7 +131,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                () => extractor.ExtractAsync(context),
                1,
                new[] {
-                    Errors.UnsupportedOption
+                    TerminalErrors.UnsupportedOption
                },
                new[] {
                     $"The option or its alias is not supported. option=key2_invalid",
@@ -238,8 +238,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 () => extractor.ExtractAsync(context),
                 2,
                 new[] {
-                    Errors.UnsupportedOption,
-                    Errors.UnsupportedOption
+                    TerminalErrors.UnsupportedOption,
+                    TerminalErrors.UnsupportedOption
                 },
                 new[] {
                     $"The option is not supported. option=key1_alias",
@@ -271,7 +271,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandExtractorContext context = new(new CommandRoute("id1", $"prefix4_noargs -key1=hello -key2=mello -key3 -key4=36.69"));
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedOption, "The command does not support any options. command_name=name4 command_id=id4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedOption, "The command does not support any options. command_name=name4 command_id=id4");
         }
 
         [DataTestMethod]
@@ -287,7 +287,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1=value1 -key2=value2"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, $"The command identifier is not valid. command_id={cmdId} regex={terminalOptions.Extractor.CommandIdRegex}");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.InvalidCommand, $"The command identifier is not valid. command_id={cmdId} regex={terminalOptions.Extractor.CommandIdRegex}");
         }
 
         [DataTestMethod]
@@ -511,7 +511,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                 () => extractor.ExtractAsync(context),
                 1,
-                new[] { Errors.DuplicateOption },
+                new[] { TerminalErrors.DuplicateOption },
                 new[] { "The option is already added to the command. option=key1" }
                 );
         }
@@ -546,7 +546,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
             CommandExtractor noProviderExtrator = new(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), Errors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), TerminalErrors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
         }
 
         [TestMethod]
@@ -654,10 +654,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
 
             CommandExtractorContext context = new(new CommandRoute("id1", "pi auth invalid"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
 
             context = new CommandExtractorContext(new CommandRoute("id1", "pi auth invalid -key1=value1"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
         }
 
         [TestMethod]
@@ -669,8 +669,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                () => extractor.ExtractAsync(context),
                2,
                new[] {
-                    Errors.UnsupportedOption,
-                    Errors.UnsupportedOption
+                    TerminalErrors.UnsupportedOption,
+                    TerminalErrors.UnsupportedOption
                },
                new[] {
                     "The option is not supported. option=keyunsupported1",
@@ -726,21 +726,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task PrefixMismatchMultipleWordsShouldError()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "invalid_prefix3 sub3 name3 -key1=value1 -key2=value2"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix3 sub3 name3");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix3 sub3 name3");
         }
 
         [TestMethod]
         public async Task PrefixMismatchShouldError()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "invalidprefix -key1=value1 -key2=value2"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalidprefix");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=invalidprefix");
         }
 
         [TestMethod]
         public async Task TryMatchByPrefixShouldErrorIfNotFoundAsync()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "invalid prefix1"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid prefix1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid prefix1");
         }
 
         [TestMethod]
@@ -748,7 +748,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // Missing name3
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix3 sub3"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=prefix3 sub3");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=prefix3 sub3");
         }
 
         [TestMethod]
@@ -771,9 +771,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 () => extractor.ExtractAsync(context),
                 3,
                 new[] {
-                    Errors.UnsupportedOption,
-                    Errors.UnsupportedOption,
-                    Errors.UnsupportedOption
+                    TerminalErrors.UnsupportedOption,
+                    TerminalErrors.UnsupportedOption,
+                    TerminalErrors.UnsupportedOption
                 },
                 new[] {
                     "The option is not supported. option=invalid_key1",
@@ -787,7 +787,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task UnsupportedCommandShouldErrorAsync()
         {
             CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "invalid_cmd"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_cmd");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_cmd");
         }
 
         [DataTestMethod]
@@ -914,7 +914,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task ValidCommandStringWithNoSeparatorShouldErrorAsync()
         {
             CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "prefix1-key1=value1-key2=value2"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.InvalidCommand, "The command separator is missing. command_string=prefix1-key1=value1-key2=value2");
         }
 
         [TestMethod]

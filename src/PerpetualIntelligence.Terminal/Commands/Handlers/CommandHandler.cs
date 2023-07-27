@@ -117,16 +117,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // No checker configured.
             if (context.Command.Descriptor.Checker == null)
             {
-                throw new ErrorException(Errors.ServerError, "The command checker is not configured. command_name={0} command_id={1}", context.Command.Descriptor.Name, context.Command.Descriptor.Id);
+                throw new ErrorException(TerminalErrors.ServerError, "The command checker is not configured. command_name={0} command_id={1}", context.Command.Descriptor.Name, context.Command.Descriptor.Id);
             }
 
             // Not added to service collection
-            object? checkerObj = services.GetService(context.Command.Descriptor.Checker) ?? throw new ErrorException(Errors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.Name);
+            object? checkerObj = services.GetService(context.Command.Descriptor.Checker) ?? throw new ErrorException(TerminalErrors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.Name);
 
             // Invalid checker configured
             if (checkerObj is not ICommandChecker checker)
             {
-                throw new ErrorException(Errors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.Name);
+                throw new ErrorException(TerminalErrors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Checker.Name);
             }
 
             return Task.FromResult(checker);
@@ -137,16 +137,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // No runner configured.
             if (context.Command.Descriptor.Runner == null)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner is not configured. command_name={0} command_id={1}", context.Command.Descriptor.Name, context.Command.Descriptor.Id);
+                throw new ErrorException(TerminalErrors.ServerError, "The command runner is not configured. command_name={0} command_id={1}", context.Command.Descriptor.Name, context.Command.Descriptor.Id);
             }
 
             // Not added to service collection
-            object? runnerObj = services.GetService(context.Command.Descriptor.Runner) ?? throw new ErrorException(Errors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.Name);
+            object? runnerObj = services.GetService(context.Command.Descriptor.Runner) ?? throw new ErrorException(TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.Name);
 
             // Invalid runner configured
             if (runnerObj is not IDelegateCommandRunner runnerDelegate)
             {
-                throw new ErrorException(Errors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.Name);
+                throw new ErrorException(TerminalErrors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.Command.Descriptor.Name, context.Command.Descriptor.Id, context.Command.Descriptor.Runner.Name);
             }
 
             return Task.FromResult(runnerDelegate);

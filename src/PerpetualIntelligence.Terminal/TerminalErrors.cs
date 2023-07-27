@@ -10,7 +10,7 @@ namespace PerpetualIntelligence.Terminal
     /// <summary>
     /// The errors for the Perpetual Intelligence's <c>pi-cli</c> framework.
     /// </summary>
-    public static class Errors
+    public static class TerminalErrors
     {
         /// <summary>
         /// The network connection is closed.

@@ -146,14 +146,14 @@ namespace PerpetualIntelligence.Terminal.Licensing
                     {
                         if (customClaims == null)
                         {
-                            throw new ErrorException(Errors.InvalidLicense, "The licensing for the custom SaaS plan requires a custom claims. saas_plan={0}", licensePlan);
+                            throw new ErrorException(TerminalErrors.InvalidLicense, "The licensing for the custom SaaS plan requires a custom claims. saas_plan={0}", licensePlan);
                         }
 
                         return ForCustom(customClaims);
                     }
                 default:
                     {
-                        throw new ErrorException(Errors.InvalidLicense, "The licensing for the SaaS plan is not supported. saas_plan={0}", licensePlan);
+                        throw new ErrorException(TerminalErrors.InvalidLicense, "The licensing for the SaaS plan is not supported. saas_plan={0}", licensePlan);
                     }
             }
         }
@@ -179,12 +179,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { Handlers.DefaultHandler },
-                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
-                ErrorHandlers = new[] { Handlers.DefaultHandler },
-                StoreHandlers = new[] { Handlers.InMemoryHandler },
-                ServiceHandlers = new[] { Handlers.DefaultHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler }
+                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler },
+                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
+                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler },
+                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler },
+                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
+                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }
             };
         }
 
@@ -234,12 +234,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
-                ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
-                ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler }
+                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
+                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
+                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler }
             };
         }
 
@@ -260,12 +260,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
-                ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
-                ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.OnPremiseLicenseHandler }
+                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
+                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
+                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler }
             };
         }
 
@@ -286,12 +286,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
-                ErrorHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler, Handlers.CustomHandler },
-                ServiceHandlers = new[] { Handlers.DefaultHandler, Handlers.CustomHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler, Handlers.OfflineLicenseHandler, Handlers.OnPremiseLicenseHandler }
+                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
+                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
+                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
+                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler }
             };
         }
 
@@ -313,11 +313,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 StrictDataType = false,
 
                 DataTypeHandlers = null,
-                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
-                ErrorHandlers = new[] { Handlers.DefaultHandler },
-                StoreHandlers = new[] { Handlers.InMemoryHandler },
-                ServiceHandlers = new[] { Handlers.DefaultHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler }
+                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
+                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler },
+                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler },
+                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
+                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }
             };
         }
 
@@ -338,12 +338,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 DefaultOptionValue = true,
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { Handlers.DefaultHandler },
-                TextHandlers = new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler },
-                ErrorHandlers = new[] { Handlers.DefaultHandler },
-                StoreHandlers = new[] { Handlers.InMemoryHandler, Handlers.JsonHandler },
-                ServiceHandlers = new[] { Handlers.DefaultHandler },
-                LicenseHandlers = new[] { Handlers.OnlineLicenseHandler }
+                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler },
+                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
+                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler },
+                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler },
+                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
+                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }
             };
         }
     }

@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Terminal.Services;
 using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Extensions;
 using System;

@@ -15,7 +15,7 @@ using System;
 using System.Text;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Services
+namespace PerpetualIntelligence.Terminal
 {
     public class TerminalHelperExtractOptionsTests
     {
@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Terminal.Services
             for (int idx = 0; idx < 51; ++idx)
             {
                 sb51.Append($"--opt{idx} val{idx}");
-                sb51.Append(" ");
+                sb51.Append(' ');
             }
 
             Action act = () => TerminalHelper.ExtractOptionStrings(sb51.ToString(), terminalOptions, textHandler);

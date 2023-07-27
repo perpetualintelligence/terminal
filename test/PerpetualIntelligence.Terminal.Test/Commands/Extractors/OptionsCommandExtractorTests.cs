@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
-               new[] { Errors.InvalidConfiguration },
+               new[] { TerminalErrors.InvalidConfiguration },
                new[] { "The option extraction by alias prefix is not configured. option_string=-key1_alias value1" }
            );
         }
@@ -100,7 +100,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                 () => extractor.ExtractAsync(context),
                 1,
-                new[] { Errors.UnsupportedOption },
+                new[] { TerminalErrors.UnsupportedOption },
                 new[] { "The option is not supported. option=key1_alias" }
             );
         }
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
-               new[] { Errors.InvalidConfiguration },
+               new[] { TerminalErrors.InvalidConfiguration },
                new[] { "The option extraction by alias prefix is not configured. option_string=-key1 value1" }
            );
         }
@@ -141,7 +141,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
-               new[] { Errors.InvalidConfiguration },
+               new[] { TerminalErrors.InvalidConfiguration },
                new[] { "The option extraction by alias prefix is not configured. option_string=-key1 value1" }
            );
         }
@@ -154,7 +154,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                () => extractor.ExtractAsync(context),
                1,
-               new[] { Errors.UnsupportedOption },
+               new[] { TerminalErrors.UnsupportedOption },
                new[] { "The option alias is not supported. option=key1" }
            );
         }

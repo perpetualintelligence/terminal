@@ -15,13 +15,13 @@ namespace PerpetualIntelligence.Terminal
         [Fact]
         public void TypesNamespaceTest()
         {
-            TestHelper.AssertNamespace(typeof(Errors).Assembly, "PerpetualIntelligence.Terminal");
+            TestHelper.AssertNamespace(typeof(TerminalErrors).Assembly, "PerpetualIntelligence.Terminal");
         }
 
         [Fact]
         public void TypesLocationTest()
         {
-            TestHelper.AssertAssemblyTypesLocation(typeof(Errors).Assembly);
+            TestHelper.AssertAssemblyTypesLocation(typeof(TerminalErrors).Assembly);
         }
     }
 }

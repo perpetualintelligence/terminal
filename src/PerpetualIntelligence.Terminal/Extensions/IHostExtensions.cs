@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             //  Make sure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Console)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
             }
 
             ConsoleRouting routingService = host.Services.GetRequiredService<ConsoleRouting>();
@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             //  Make sure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
             }
 
             TcpRouting routingService = host.Services.GetRequiredService<TcpRouting>();
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             //  Make sure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Custom)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
             }
 
             CustomRouting routingService = host.Services.GetRequiredService<CustomRouting>();

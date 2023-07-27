@@ -21,8 +21,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <param name="extractionHandler">The license handler used to extract the license. The value may be different from <see cref="License.Handler"/>. </param>
         public LicenseExtractorResult(License license, string extractionHandler)
         {
-            License = license ?? throw new ErrorException(Errors.InvalidLicense, "The extracted license cannot be null.");
-            ExtractionHandler = extractionHandler ?? throw new ErrorException(Errors.InvalidLicense, "The extraction license handler cannot be null.");
+            License = license ?? throw new ErrorException(TerminalErrors.InvalidLicense, "The extracted license cannot be null.");
+            ExtractionHandler = extractionHandler ?? throw new ErrorException(TerminalErrors.InvalidLicense, "The extraction license handler cannot be null.");
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// The license handler used to extract the license.
         /// </summary>
         /// <remarks>
-        /// For <see cref="Handlers.OnPremiseLicenseHandler"/> license this value may be different from <see cref="License.Handler"/>.
+        /// For <see cref="TerminalHandlers.OnPremiseLicenseHandler"/> license this value may be different from <see cref="License.Handler"/>.
         /// </remarks>
         public string ExtractionHandler { get; }
     }

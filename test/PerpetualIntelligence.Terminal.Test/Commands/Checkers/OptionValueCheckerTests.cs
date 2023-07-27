@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, 23.69);
 
             OptionCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.UnsupportedOption, "The option data type is not supported. option=arg1 data_type=2147483647");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=arg1 data_type=2147483647");
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             OptionCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option value cannot be null. option=arg1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value cannot be null. option=arg1");
         }
 
         [TestMethod]
@@ -114,7 +114,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option value is not valid. option=arg1 value=test3 info=The field value must be one of the valid values.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=arg1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option value is not valid. option=arg1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=arg1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]

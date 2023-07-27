@@ -28,12 +28,12 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 { "default_option_value", true },
                 { "strict_data_type", true },
 
-                { "data_type_handlers", Handlers.DefaultHandler },
-                { "text_handlers", new[] { Handlers.UnicodeHandler, Handlers.AsciiHandler }.JoinBySpace() },
-                { "error_handlers", Handlers.DefaultHandler },
-                { "store_handlers", Handlers.InMemoryHandler },
-                { "service_handlers", Handlers.DefaultHandler },
-                { "license_handlers", Handlers.OnlineLicenseHandler },
+                { "data_type_handlers", TerminalHandlers.DefaultHandler },
+                { "text_handlers", new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler }.JoinBySpace() },
+                { "error_handlers", TerminalHandlers.DefaultHandler },
+                { "store_handlers", TerminalHandlers.InMemoryHandler },
+                { "service_handlers", TerminalHandlers.DefaultHandler },
+                { "license_handlers", TerminalHandlers.OnlineLicenseHandler },
 
                 { "currency", "USD" },
                 { "monthly_price", 0.0 },

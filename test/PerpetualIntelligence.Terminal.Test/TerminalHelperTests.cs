@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Services
+namespace PerpetualIntelligence.Terminal
 {
     public class TerminalHelperTests
     {

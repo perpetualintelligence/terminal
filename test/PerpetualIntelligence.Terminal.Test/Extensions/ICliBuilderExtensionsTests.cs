@@ -153,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandDescriptorWithRootAndNoGroupShouldError()
         {
-            TestHelper.AssertThrowsErrorException(() => terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: false, isRoot: true).Add(), Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id=id1 command_name=name1");
+            TestHelper.AssertThrowsErrorException(() => terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: false, isRoot: true).Add(), TerminalErrors.InvalidConfiguration, "The root command must also be a grouped command. command_id=id1 command_name=name1");
         }
 
         [TestMethod]
