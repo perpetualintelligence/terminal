@@ -10,9 +10,9 @@ using System.Threading;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalStartContext"/>.
+    /// The terminal start context.
     /// </summary>
-    public sealed class TerminalStartContext : ITerminalStartContext
+    public sealed class TerminalStartContext
     {
         /// <summary>
         /// Initialize a new instance.

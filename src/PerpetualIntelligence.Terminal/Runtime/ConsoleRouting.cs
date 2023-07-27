@@ -1,4 +1,10 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -8,34 +14,35 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Routers
+namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="IRoutingService"/> for console based terminals.
+    /// The default <see cref="ITerminalRouting{TContext, TResult}"/> for console based terminals.
     /// </summary>
-    public class ConsoleRoutingService : IRoutingService
+    public class ConsoleRouting : ITerminalRouting<ConsoleRoutingContext, ConsoleRoutingResult>
     {
         private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
         private readonly IErrorHandler errorHandler;
         private readonly TerminalOptions options;
-        private readonly ILogger<ConsoleRoutingService> logger;
+        private readonly ILogger<ConsoleRouting> logger;
 
         /// <summary>
-        ///
+        /// Initialize a new <see cref="ConsoleRouting"/> instance.
         /// </summary>
-        /// <param name="applicationLifetime"></param>
-        /// <param name="commandRouter"></param>
-        /// <param name="exceptionHandler"></param>
-        /// <param name="errorHandler"></param>
-        /// <param name="options"></param>
-        /// <param name="logger"></param>
-        public ConsoleRoutingService(IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, TerminalOptions options, ILogger<ConsoleRoutingService> logger)
+        /// <param name="applicationLifetime">The host application lifetime instance.</param>
+        /// <param name="commandRouter">The command router.</param>
+        /// <param name="exceptionHandler">The exception handler.</param>
+        /// <param name="errorHandler">The error handler.</param>
+        /// <param name="options">The configuration options.</param>
+        /// <param name="logger">The logger.</param>
+        public ConsoleRouting(IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, TerminalOptions options, ILogger<ConsoleRouting> logger)
         {
             this.applicationLifetime = applicationLifetime;
             this.commandRouter = commandRouter;
@@ -46,12 +53,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         }
 
         /// <summary>
-        ///
+        /// Routes to the console asynchronously.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">The routing service context.</param>
         /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Task RouteAsync(RoutingServiceContext context)
+        public Task<ConsoleRoutingResult> RunAsync(ConsoleRoutingContext context)
         {
             return Task.Run(async () =>
             {
@@ -122,6 +128,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                         await exceptionHandler.HandleAsync(exContext);
                     }
                 };
+
+                // Return Result
+                return new ConsoleRoutingResult();
             });
         }
     }

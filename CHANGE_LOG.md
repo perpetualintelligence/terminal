@@ -1,3 +1,8 @@
+# 5.1.1-rc*
+> Breaking Change
+- Rename `IRoutingService` to `ITerminalRouting`
+- Move routing service to runtime namespace
+
 # 5.0.1-rc*
 > Breaking Change
 - Remove the default option feature
