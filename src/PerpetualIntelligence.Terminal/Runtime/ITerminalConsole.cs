@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Runtime
@@ -26,10 +27,32 @@ namespace PerpetualIntelligence.Terminal.Runtime
         public Task<string?> ReadLineAsync();
 
         /// <summary>
+        /// Reads the next line of characters to the <see cref="ITerminalConsole"/> input stream asynchronously.
+        /// </summary>
+        /// <returns>The next line of characters from the input stream, or <c>null</c> if no more lines are available.</returns>
+        public Task WriteLineAsync();
+
+        /// <summary>
+        /// Reads the next line of characters to the <see cref="ITerminalConsole"/> input stream asynchronously.
+        /// </summary>
+        /// <returns>The next line of characters from the input stream, or <c>null</c> if no more lines are available.</returns>
+        public Task WriteLineAsync(string value, params object[] args);
+
+        /// <summary>
+        /// Reads the next line of characters to the <see cref="ITerminalConsole"/> input stream asynchronously.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="value"></param>
+        /// <param name="args"></param>
+        /// <returns>The next line of characters from the input stream, or <c>null</c> if no more lines are available.</returns>
+        public Task WriteLineColorAsync(ConsoleColor color, string value, params object[] args);
+
+        /// <summary>
         /// Writes the specified string value to the <see cref="ITerminalConsole"/> standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        public Task WriteAsync(string value);
+        /// <param name="args"></param>
+        public Task WriteAsync(string value, params object[] args);
 
         /// <summary>
         /// Return <c>true</c> if the specified string value is ignored by the <see cref="ITerminalConsole"/>, otherwise <c>false</c>.

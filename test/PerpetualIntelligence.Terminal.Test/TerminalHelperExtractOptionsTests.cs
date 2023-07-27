@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Terminal
             for (int idx = 0; idx < 50; ++idx)
             {
                 sb50.Append($"--opt{idx} val{idx}");
-                sb50.Append(" ");
+                sb50.Append(' ');
             }
 
             OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(sb50.ToString(), terminalOptions, textHandler);

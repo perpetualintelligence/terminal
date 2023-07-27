@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -151,35 +145,6 @@ namespace PerpetualIntelligence.Terminal
 #else
             return true;
 #endif
-        }
-
-        /// <summary>
-        /// Writes the specified string with specified color to the standard output stream.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="WriteColor(ConsoleColor, string, object[])"/> resets the color after writing the string using
-        /// <see cref="Console.ResetColor"/> method.
-        /// </remarks>
-        public static void WriteColor(ConsoleColor color, string value, params object[] args)
-        {
-            Console.ForegroundColor = color;
-            Console.Write(value, args);
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        /// Writes the specified string with specified color followed by the current line terminator to the standard
-        /// output stream.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="WriteLineColor(ConsoleColor, string, object[])"/> resets the color after writing the string using
-        /// <see cref="Console.ResetColor"/> method.
-        /// </remarks>
-        public static void WriteLineColor(ConsoleColor color, string value, params object[] args)
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(value, args);
-            Console.ResetColor();
         }
     }
 }

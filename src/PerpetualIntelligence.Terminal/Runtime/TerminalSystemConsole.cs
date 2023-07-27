@@ -28,9 +28,38 @@ namespace PerpetualIntelligence.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public Task WriteAsync(string value)
+        public Task WriteAsync(string value, params object[] args)
         {
-            return Task.Run(() => { Console.Write(value); });
+            return Task.Run(() => { Console.Write(value, args); });
+        }
+
+        /// <inheritdoc/>
+        public Task WriteLineAsync(string value, params object[] args)
+        {
+            return Task.Run(() => { Console.WriteLine(value, args); });
+        }
+
+        /// <inheritdoc/>
+        public Task WriteLineAsync()
+        {
+            return Task.Run(Console.WriteLine);
+        }
+
+        /// <inheritdoc/>
+        public Task WriteLineColorAsync(ConsoleColor color, string value, params object[] args)
+        {
+            return Task.Run(() => 
+            {
+                try
+                {
+                    Console.ForegroundColor = color;
+                    Console.WriteLine(value, args);
+                }
+                finally
+                {
+                    Console.ResetColor();
+                }
+            });
         }
     }
 }

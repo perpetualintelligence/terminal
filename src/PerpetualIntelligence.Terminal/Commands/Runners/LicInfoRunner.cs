@@ -10,6 +10,7 @@ using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Extensions;
 using System;
 using System.Threading.Tasks;
+using PerpetualIntelligence.Terminal.Runtime;
 
 namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
@@ -21,8 +22,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public LicInfoRunner(ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
+        public LicInfoRunner(ITerminalConsole terminalConsole, ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
         {
+            this.terminalConsole = terminalConsole;
             this.licenseExractor = licenseExractor;
             this.licenseChecker = licenseChecker;
         }
@@ -39,82 +41,82 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
 
                 {
                     // Print Details
-                    TerminalHelper.WriteLineColor(ConsoleColor.Yellow, "License");
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "plan={0}", license.Plan);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "usage={0}", license.Usage);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "handler={0}", license.Handler);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "provider_id={0}", license.ProviderId);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "key_source={0}", license.LicenseKeySource);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "License");
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "plan={0}", license.Plan);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "usage={0}", license.Usage);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "handler={0}", license.Handler);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "provider_id={0}", license.ProviderId);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "key_source={0}", license.LicenseKeySource);
 
                     if (license.LicenseKeySource == LicenseSources.JsonFile)
                     {
                         // Only display key file path
-                        TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "key_file={0}", license.LicenseKey);
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "key_file={0}", license.LicenseKey);
                     }
                 }
 
                 {
                     // Print Claims
-                    TerminalHelper.WriteLineColor(ConsoleColor.Yellow, "Claims");
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "name={0}", license.Claims.Name);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "tenant_id={0}", license.Claims.TenantId);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "tenant_country={0}", license.Claims.TenantCountry);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "object_id={0}", license.Claims.ObjectId ?? "-");
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "object_country={0}", license.Claims.ObjectCountry ?? "-");
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "authorized_party={0}", license.Claims.AuthorizedParty);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "audience={0}", license.Claims.Audience);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "issuer={0}", license.Claims.Issuer);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "subject={0}", license.Claims.Subject);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "jti={0}", license.Claims.Subject);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "expiry={0}", license.Claims.Expiry.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "issued_at={0}", license.Claims.IssuedAt.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "not_before={0}", license.Claims.NotBefore.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Claims");
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "name={0}", license.Claims.Name);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "tenant_id={0}", license.Claims.TenantId);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "tenant_country={0}", license.Claims.TenantCountry);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "object_id={0}", license.Claims.ObjectId ?? "-");
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "object_country={0}", license.Claims.ObjectCountry ?? "-");
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "authorized_party={0}", license.Claims.AuthorizedParty);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "audience={0}", license.Claims.Audience);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "issuer={0}", license.Claims.Issuer);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "subject={0}", license.Claims.Subject);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "jti={0}", license.Claims.Subject);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "expiry={0}", license.Claims.Expiry.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "issued_at={0}", license.Claims.IssuedAt.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "not_before={0}", license.Claims.NotBefore.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
 
                     if (license.Claims.Custom != null)
                     {
                         foreach (var kvp in license.Claims.Custom)
                         {
-                            TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString());
+                            await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString());
                         }
                     }
                 }
 
                 {
                     // Print Limits
-                    TerminalHelper.WriteLineColor(ConsoleColor.Yellow, "Limits");
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "terminal_limit={0}", PrintNumber(license.Limits.RootCommandLimit));
-                    TerminalHelper.WriteLineColor(ConsoleColor.Red, "redistribution_limit={0}", PrintNumber(license.Limits.RedistributionLimit));
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "root_command_limit={0}", PrintNumber(license.Limits.RootCommandLimit));
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "grouped_command_limit={0}", PrintNumber(license.Limits.GroupedCommandLimit));
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "option_limit={0}", PrintNumber(license.Limits.OptionLimit));
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "option_alias={0}", license.Limits.OptionAlias.ToString());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "default_option={0}", license.Limits.DefaultOption.ToString());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "default_option_value={0}", license.Limits.DefaultOptionValue.ToString());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "data_type_handlers={0}", license.Limits.DataTypeHandlers.JoinBySpace());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "test_handlers={0}", license.Limits.TextHandlers.JoinBySpace());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "error_handlers={0}", license.Limits.ErrorHandlers.JoinBySpace());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "store_handlers={0}", license.Limits.StoreHandlers.JoinBySpace());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "service_handlers={0}", license.Limits.ServiceHandlers.JoinBySpace());
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "license_handlers={0}", license.Limits.LicenseHandlers.JoinBySpace());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Limits");
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "terminal_limit={0}", PrintNumber(license.Limits.RootCommandLimit));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "redistribution_limit={0}", PrintNumber(license.Limits.RedistributionLimit));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "root_command_limit={0}", PrintNumber(license.Limits.RootCommandLimit));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "grouped_command_limit={0}", PrintNumber(license.Limits.GroupedCommandLimit));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option_limit={0}", PrintNumber(license.Limits.OptionLimit));
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option_alias={0}", license.Limits.OptionAlias.ToString());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "default_option={0}", license.Limits.DefaultOption.ToString());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "default_option_value={0}", license.Limits.DefaultOptionValue.ToString());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "data_type_handlers={0}", license.Limits.DataTypeHandlers.JoinBySpace());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "test_handlers={0}", license.Limits.TextHandlers.JoinBySpace());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "error_handlers={0}", license.Limits.ErrorHandlers.JoinBySpace());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "store_handlers={0}", license.Limits.StoreHandlers.JoinBySpace());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "service_handlers={0}", license.Limits.ServiceHandlers.JoinBySpace());
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "license_handlers={0}", license.Limits.LicenseHandlers.JoinBySpace());
 
                     if (license.Claims.Custom != null)
                     {
                         foreach (var kvp in license.Claims.Custom)
                         {
-                            TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString());
+                            await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString());
                         }
                     }
                 }
 
                 {
                     // Print Usage
-                    TerminalHelper.WriteLineColor(ConsoleColor.Yellow, "Usage");
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "root_command={0}", checkResult.RootCommandCount);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "grouped_command={0}", checkResult.CommandGroupCount);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "sub_command={0}", checkResult.SubCommandCount);
-                    TerminalHelper.WriteLineColor(ConsoleColor.Cyan, "option={0}", checkResult.OptionCount);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Usage");
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "root_command={0}", checkResult.RootCommandCount);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "grouped_command={0}", checkResult.CommandGroupCount);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "sub_command={0}", checkResult.SubCommandCount);
+                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option={0}", checkResult.OptionCount);
                 }
 
                 return new CommandRunnerResult();
@@ -138,6 +140,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         }
 
         private readonly ILicenseChecker licenseChecker;
+        private readonly ITerminalConsole terminalConsole;
         private readonly ILicenseExtractor licenseExractor;
     }
 }
