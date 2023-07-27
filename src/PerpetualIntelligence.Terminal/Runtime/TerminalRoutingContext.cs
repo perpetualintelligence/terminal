@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Threading;
-
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
@@ -14,11 +12,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// </summary>
     public abstract class TerminalRoutingContext
     {
-        /// <summary>
-        /// The cancellation token.
-        /// </summary>
-        public CancellationToken CancellationToken { get; }
-
         /// <summary>
         /// The terminal start context.
         /// </summary>
@@ -28,11 +21,9 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Initializes a new <see cref="TerminalRoutingContext"/> instance.
         /// </summary>
         /// <param name="startContext">The terminal start context.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        protected TerminalRoutingContext(TerminalStartContext startContext, CancellationToken cancellationToken)
+        protected TerminalRoutingContext(TerminalStartContext startContext)
         {
             StartContext = startContext;
-            CancellationToken = cancellationToken;
         }
     }
 }

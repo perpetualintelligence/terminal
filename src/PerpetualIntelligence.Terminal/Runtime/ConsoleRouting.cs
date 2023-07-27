@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -70,7 +64,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     await Task.Delay(options.Router.SyncDelay.GetValueOrDefault());
 
                     // Honor the cancellation request.
-                    if (context.CancellationToken.IsCancellationRequested)
+                    if (context.StartContext.CancellationToken.IsCancellationRequested)
                     {
                         ErrorHandlerContext errContext = new(new Shared.Infrastructure.Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
                         await errorHandler.HandleAsync(errContext);
@@ -108,10 +102,10 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     try
                     {
                         // Route the request.
-                        CommandRouterContext routerContext = new(raw, context.CancellationToken);
+                        CommandRouterContext routerContext = new(raw, context.StartContext.CancellationToken);
                         Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(routerContext);
 
-                        bool success = routeTask.Wait(options.Router.Timeout, context.CancellationToken);
+                        bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.CancellationToken);
                         if (!success)
                         {
                             throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");

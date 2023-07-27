@@ -6,13 +6,12 @@
 */
 
 using PerpetualIntelligence.Terminal.Runtime;
-using System.Threading;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
     public class MockRoutingContext : TerminalRoutingContext
     {
-        public MockRoutingContext(TerminalStartContext startContext, CancellationToken cancellationToken) : base(startContext, cancellationToken)
+        public MockRoutingContext(TerminalStartContext startContext) : base(startContext)
         {
         }
     }
