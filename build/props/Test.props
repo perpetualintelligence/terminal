@@ -32,24 +32,7 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="FluentAssertions" Version="6.11.0" />
+        <PackageReference Include="PerpetualIntelligence.Test" Version="5.0.1-rc.20623831" />
     </ItemGroup>
-
-
-    <!--
-        CI CONFIG:
-    -->
-    <Choose>
-        <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
-            <ItemGroup>
-                <ProjectReference Include="..\..\..\shared\src\PerpetualIntelligence.Test\PerpetualIntelligence.Test.csproj" />
-            </ItemGroup>
-        </When>
-        <Otherwise>
-            <ItemGroup>
-                <PackageReference Include="PerpetualIntelligence.Test" Version="$(PI_PROTOCOLS_PACKAGE_VERSION)" />
-            </ItemGroup>
-        </Otherwise>
-    </Choose>
-
 </Project>
 
