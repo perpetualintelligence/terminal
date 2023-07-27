@@ -8,7 +8,6 @@
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace PerpetualIntelligence.Terminal.Commands
 {

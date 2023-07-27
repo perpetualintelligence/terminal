@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -21,6 +21,7 @@ using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Licensing;
+using PerpetualIntelligence.Terminal.Runtime;
 using PerpetualIntelligence.Terminal.Stores;
 using System;
 using System.Collections.Generic;
@@ -260,14 +261,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="IRoutingService"/> to the service collection.
+        /// Adds the <see cref="ITerminalRouting{TContext, TResult}"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddRoutingService<TRService>(this ITerminalBuilder builder) where TRService : class, IRoutingService
+        public static ITerminalBuilder AddTerminalRouting<TRouting, TContext, TResult>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
         {
-            // Add command routing service.
-            builder.Services.AddTransient<IRoutingService, TRService>();
+            // Add terminal routing service.
+            builder.Services.AddSingleton<TRouting>();
 
             return builder;
         }

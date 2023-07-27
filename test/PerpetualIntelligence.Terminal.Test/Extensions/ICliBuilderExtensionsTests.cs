@@ -1,4 +1,10 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -305,7 +311,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddRoutingShouldCorrectlyInitialize()
+        public void AddRouterShouldCorrectlyInitialize()
         {
             terminalBuilder.AddRouter<MockCommandRouter, MockCommandHandler>();
 
@@ -321,14 +327,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddRoutingServiceShouldCorrectlyInitialize()
+        public void AddRoutingShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddRoutingService<MockRoutingService>();
+            terminalBuilder.AddTerminalRouting<MockRouting, MockRoutingContext, MockRoutingResult>();
 
-            var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IRoutingService)));
+            var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(MockRouting)));
             Assert.IsNotNull(router);
-            Assert.AreEqual(ServiceLifetime.Transient, router.Lifetime);
-            Assert.AreEqual(typeof(MockRoutingService), router.ImplementationType);
+            Assert.AreEqual(ServiceLifetime.Singleton, router.Lifetime);
+            Assert.AreEqual(typeof(MockRouting), router.ImplementationType);
         }
 
         [TestMethod]
