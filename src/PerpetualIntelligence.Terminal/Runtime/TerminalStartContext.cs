@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -18,12 +18,12 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Initialize a new instance.
         /// </summary>
         /// <param name="startInformation">The terminal start information.</param>
-        /// <param name="cancellationTokenSource">The cancellation token.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="options">The start or command line options.</param>
-        public TerminalStartContext(TerminalStartInfo startInformation, CancellationTokenSource cancellationTokenSource, string[]? options = null)
+        public TerminalStartContext(TerminalStartInfo startInformation, CancellationToken cancellationToken, string[]? options = null)
         {
             StartInformation = startInformation;
-            CancellationTokenSource = cancellationTokenSource;
+            CancellationToken = cancellationToken;
             Arguments = options;
         }
 
@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <summary>
         /// The cancellation token source.
         /// </summary>
-        public CancellationTokenSource CancellationTokenSource { get; }
+        public CancellationToken CancellationToken { get; }
 
         /// <summary>
         /// The terminal start information.

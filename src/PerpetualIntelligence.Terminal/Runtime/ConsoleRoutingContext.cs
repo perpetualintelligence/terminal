@@ -1,11 +1,9 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-
-using System.Threading;
 
 namespace PerpetualIntelligence.Terminal.Runtime
 {
@@ -18,8 +16,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Initialize a new instance.
         /// </summary>
         /// <param name="startContext">The terminal start context.</param>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        public ConsoleRoutingContext(TerminalStartContext startContext, CancellationToken cancellationToken) : base(startContext, cancellationToken)
+        public ConsoleRoutingContext(TerminalStartContext startContext) : base(startContext)
         {
         }
     }

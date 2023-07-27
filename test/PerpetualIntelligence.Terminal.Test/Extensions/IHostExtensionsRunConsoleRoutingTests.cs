@@ -42,8 +42,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Set invalid start mode
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Grpc), tokenSource);
-            Func<Task> act = async () => await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Grpc), tokenSource.Token);
+            Func<Task> act = async () => await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
             await act.Should().ThrowAsync<ErrorException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Grpc");
         }
 
@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             host = newhostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeTrue();
@@ -90,7 +90,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             await Task.Delay(2050);
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             // Canceled task so router will not be called.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -120,7 +120,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = "$";
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             // Check the published error
             MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -150,7 +150,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -184,7 +184,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Run the router for 5 seconds, the callback will stop the host 2 seconds.
             GetCliOptions(host).Router.Timeout = 5000;
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             // Till the timer callback cancel the route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -215,7 +215,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = ">$";
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -243,7 +243,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // We will run in a infinite loop due to empty input so break that after 2 seconds
             tokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeFalse();
@@ -267,7 +267,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
             tokenSource.CancelAfter(3000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             // In 3 seconds the Route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -296,7 +296,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
             tokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             mockCommandRouter.ReturnedRouterResult.Should().NotBeNull();
             mockCommandRouter.ReturnedRouterResult!.HandlerResult.RunnerResult.IsDisposed.Should().BeTrue();
@@ -318,7 +318,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Route delay is set to 3000 and timeout is 2000
             GetCliOptions(host).Router.Timeout = 2000;
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -351,7 +351,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             tokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = "test_caret";
-            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext, tokenSource.Token));
+            await host.RunConsoleRoutingAsync(new ConsoleRoutingContext(startContext));
             titleWriter.ToString().Should().Be("test_caret");
 
             // Check output
@@ -366,7 +366,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private void ConfigureServicesCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource);
+            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource));
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
@@ -391,7 +391,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private void ConfigureServicesDefault(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource);
+            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter());
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
@@ -414,7 +414,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private void ConfigureServicesDelayAndCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource);
+            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(3000, tokenSource));
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
@@ -439,7 +439,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private void ConfigureServicesErrorExceptionAndCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource);
+            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new ErrorException("test_error_code", "test_error_description. arg1={0} arg2={1}", "test1", "test2")));
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
@@ -464,7 +464,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource);
+            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
             // Adding space at the end so that any msg are correctly appended.
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation.")));
@@ -490,7 +490,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
         {
             tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource);
+            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
             // Adding space at the end so that any msg are correctly appended.
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, new Shared.Infrastructure.Error("explicit_error", "explicit_error_description param1={0} param2={1}.", "test_param1", "test_param2")));

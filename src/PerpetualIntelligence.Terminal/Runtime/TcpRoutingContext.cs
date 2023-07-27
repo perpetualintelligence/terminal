@@ -7,7 +7,6 @@
 
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace PerpetualIntelligence.Terminal.Runtime
 {
@@ -36,10 +35,9 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint server will connect.</param>
         /// <param name="terminalStartContext">The terminal start context.</param>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <param name="server">The TCP command server.</param>
         /// <param name="client">The TCP command client.</param>
-        public TcpRoutingContext(IPEndPoint iPEndPoint, TerminalStartContext terminalStartContext, CancellationToken cancellationToken, TcpListener? server = null, TcpClient? client = null) : base(terminalStartContext, cancellationToken)
+        public TcpRoutingContext(IPEndPoint iPEndPoint, TerminalStartContext terminalStartContext, TcpListener? server = null, TcpClient? client = null) : base(terminalStartContext)
         {
             IPEndPoint = iPEndPoint;
             Server = server;

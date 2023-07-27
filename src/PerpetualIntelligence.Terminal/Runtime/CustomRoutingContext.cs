@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Threading;
-
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
@@ -18,8 +16,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Initialize a new instance.
         /// </summary>
         /// <param name="startContext">The terminal start context.</param>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        public CustomRoutingContext(TerminalStartContext startContext, CancellationToken cancellationToken) : base(startContext, cancellationToken)
+        public CustomRoutingContext(TerminalStartContext startContext) : base(startContext)
         {
         }
     }

@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         await Task.Delay(options.Router.SyncDelay.GetValueOrDefault());
 
                         // Honor the cancellation request.
-                        if (tcpContext.CancellationToken.IsCancellationRequested)
+                        if (tcpContext.StartContext.CancellationToken.IsCancellationRequested)
                         {
                             ErrorHandlerContext errContext = new(new Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
                             await errorHandler.HandleAsync(errContext);
@@ -166,7 +166,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
             while (tcpContext.Client.Connected)
             {
                 // Retrieve the TCP connection data, so we can query the connected client.
-                if (tcpContext.CancellationToken.IsCancellationRequested)
+                if (tcpContext.StartContext.CancellationToken.IsCancellationRequested)
                 {
                     break;
                 }
@@ -203,11 +203,11 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 try
                 {
                     // Route the command request to router.
-                    CommandRouterContext context = new(raw!, tcpContext.CancellationToken);
+                    CommandRouterContext context = new(raw!, tcpContext.StartContext.CancellationToken);
                     Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(context);
 
                     // Wait for the router or the timeout.
-                    bool success = routeTask.Wait(options.Router.Timeout, tcpContext.CancellationToken);
+                    bool success = routeTask.Wait(options.Router.Timeout, tcpContext.StartContext.CancellationToken);
                     if (!success)
                     {
                         throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
