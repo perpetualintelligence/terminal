@@ -153,14 +153,14 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.AuthorizedApplicationId = "invalid_auth_app";
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             terminalOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.UnauthorizedAccess, "The application is not authorized. application_id=invalid_auth_app");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.UnauthorizedAccess, "The application is not authorized. application_id=invalid_auth_app");
         }
 
         [Fact]
@@ -170,7 +170,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = "D:\\lic\\path_does_exist\\invalid.lic";
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file=D:\\lic\\path_does_exist\\invalid.lic");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file=D:\\lic\\path_does_exist\\invalid.lic");
         }
 
         [Fact]
@@ -179,9 +179,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.AuthorizedApplicationId = null;
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             terminalOptions.Licensing.LicenseKey = nonJsonLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
             try
             {
@@ -210,7 +210,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
 
             terminalOptions.Handler.LicenseHandler = "invalid_license_handler";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=invalid_license_handler");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler=invalid_license_handler");
         }
 
         [Theory]
@@ -249,7 +249,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = demoLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = DemoIdentifiers.PiCliDemoConsumerTenantId;
             terminalOptions.Licensing.Subject = DemoIdentifiers.PiCliDemoSubject;
@@ -269,7 +269,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             // plan, mode and usage
             result.License.ProviderId.Should().Be("urn:oneimlx:lic:pvdr:pi");
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             result.License.Plan.Should().Be("urn:oneimlx:lic:plan:demo");
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:rnd");
 
@@ -330,7 +330,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.AuthorizedApplicationId = "invalid_app";
@@ -345,13 +345,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "invalid_consumer";
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id=invalid_consumer");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id=invalid_consumer");
         }
 
         [Fact]
@@ -359,7 +359,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
@@ -367,7 +367,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.ProviderId = "invalid_provider";
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id=invalid_provider");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id=invalid_provider");
         }
 
         [Fact]
@@ -375,14 +375,14 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             terminalOptions.Licensing.Subject = "invalid_subject";
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject=invalid_subject");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject=invalid_subject");
         }
 
         [Fact]
@@ -391,9 +391,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The IHttpClientFactory is not configured. licensing_handler=online-license");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The IHttpClientFactory is not configured. licensing_handler=online-license");
         }
 
         [Fact]
@@ -402,10 +402,10 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler=online-license");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler=online-license");
         }
 
         [Fact]
@@ -417,7 +417,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -429,8 +429,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
             result.License.Should().NotBeNull();
 
             // ensure passed and extraction handler
-            result.License.Handler.Should().Be(Handlers.OnlineLicenseHandler);
-            result.ExtractionHandler.Should().Be(Handlers.OnlineLicenseHandler);
+            result.License.Handler.Should().Be(TerminalHandlers.OnlineLicenseHandler);
+            result.ExtractionHandler.Should().Be(TerminalHandlers.OnlineLicenseHandler);
 
             result.License.Should().NotBeNull();
             result.License.Claims.Should().NotBeNull();
@@ -443,7 +443,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             // plan, mode and usage
             result.License.ProviderId.Should().Be("urn:oneimlx:lic:pvdr:pi");
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             result.License.Plan.Should().Be("urn:oneimlx:lic:plan:unlimited");
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:rnd");
 
@@ -488,18 +488,18 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.AuthorizedApplicationId = "0c1a06c9-c0ee-476c-bf54-527bcf71ada2";
             terminalOptions.Licensing.LicenseKey = null;
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source=urn:oneimlx:lic:source:jsonfile");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source=urn:oneimlx:lic:source:jsonfile");
         }
 
         [Fact]
         public async Task UnsupportedKeySource_ShouldErrorAsync()
         {
             terminalOptions.Licensing.KeySource = "253";
-            terminalOptions.Handler.LicenseHandler = Handlers.OnlineLicenseHandler;
+            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), Errors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source=253");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseExtractor.ExtractAsync(new LicenseExtractorContext()), TerminalErrors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source=253");
         }
 
         private static async Task<HttpResponseMessage> GetDemoLicenseAsync()
@@ -526,7 +526,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             if (fileOrJson == null)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
             }
 
             string json = fileOrJson;

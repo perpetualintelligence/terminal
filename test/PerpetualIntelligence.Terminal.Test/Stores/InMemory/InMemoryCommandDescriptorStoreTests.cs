@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         public async Task TryFindByIdShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByIdAsync("invalid_id");
-            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command id is not valid. id=invalid_id");
+            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command id is not valid. id=invalid_id");
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         public async Task TryFindByNameShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByNameAsync("invalid_name");
-            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command name is not valid. name=invalid_name");
+            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command name is not valid. name=invalid_name");
         }
 
         [TestMethod]
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         public async Task TryFindByPrefixShouldErrorIfNotFoundAsync()
         {
             var result = await cmdStore.TryFindByPrefixAsync("invalid_prefix");
-            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix");
+            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix");
         }
 
         [TestMethod]
@@ -100,14 +100,14 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         public async Task TryMatchByPrefixInvalidPrefixShouldError()
         {
             var result = await groupedCmdStore.TryMatchByPrefixAsync("pi_invalid auth slogin");
-            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi_invalid auth slogin");
+            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi_invalid auth slogin");
         }
 
         [TestMethod]
         public async Task TryMatchByPrefixInvalidSubCommandPrefixShouldError()
         {
             var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth loginid invalid_command");
-            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth loginid invalid_command");
+            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth loginid invalid_command");
         }
 
         [TestMethod]
@@ -147,7 +147,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         public async Task TryMatchByPrefixValidTopGroupInvalidSubGroupValidShouldError()
         {
             var result = await groupedCmdStore.TryMatchByPrefixAsync("pi invalid_auth slogin");
-            TestHelper.AssertTryResultError(result, Errors.UnsupportedCommand, "The command prefix is not valid. prefix=pi invalid_auth slogin");
+            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi invalid_auth slogin");
         }
 
         protected override void OnTestInitialize()

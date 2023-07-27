@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandDescriptors = MockCommands.LicensingCommands;
             licenseChecker = new LicenseChecker(commandDescriptors, terminalOptions, TestLogger.Create<LicenseChecker>());
-            license = new License("testProviderId2", Handlers.OnlineLicenseHandler, PiCliLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(PiCliLicensePlans.Unlimited), LicensePrice.Create(PiCliLicensePlans.Unlimited));
+            license = new License("testProviderId2", TerminalHandlers.OnlineLicenseHandler, PiCliLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(PiCliLicensePlans.Unlimited), LicensePrice.Create(PiCliLicensePlans.Unlimited));
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             // Invalid value should error
             terminalOptions.Handler.DataTypeHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler=test4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler=test4");
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.OptionAlias = false;
             terminalOptions.Extractor.OptionAlias = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured option alias is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured option alias is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.OptionAlias = false;
@@ -80,7 +80,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.DefaultOption = false;
             terminalOptions.Extractor.DefaultOption = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured default option is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.DefaultOption = false;
@@ -109,7 +109,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.DefaultOptionValue = false;
             terminalOptions.Extractor.DefaultOptionValue = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured default option value is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured default option value is not allowed for your license edition.");
 
             // No error, not allowed not configured
             license.Limits.DefaultOptionValue = false;
@@ -145,11 +145,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             terminalOptions.Handler.ErrorHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler=");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler=");
 
             // Invalid value should error
             terminalOptions.Handler.ErrorHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler=test4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler=test4");
         }
 
         [Fact]
@@ -157,7 +157,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             // Args 13
             license.Limits.OptionLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The option limit exceeded. max_limit=2 current=13");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit=2 current=13");
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             // grouped commands are 3
             license.Limits.GroupedCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The grouped command limit exceeded. max_limit=2 current=3");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The grouped command limit exceeded. max_limit=2 current=3");
         }
 
         [Fact]
@@ -174,7 +174,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // TODO
             // For now the terminal count are 1 always
             license.Limits.TerminalLimit = 0;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The terminal limit exceeded. max_limit=0 current=1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit=0 current=1");
         }
 
         [Fact]
@@ -182,7 +182,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             // Root Commands are 3
             license.Limits.RootCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The root command limit exceeded. max_limit=2 current=3");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The root command limit exceeded. max_limit=2 current=3");
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             // Subs commands 14
             license.Limits.SubCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The sub command limit exceeded. max_limit=2 current=14");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit=2 current=14");
         }
 
         [Fact]
@@ -226,12 +226,12 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             // Invalid value should error
             terminalOptions.Handler.DataTypeHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler=test4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler=test4");
 
             // Null limit options but configured option should error
             license.Limits.DataTypeHandlers = null;
             terminalOptions.Handler.DataTypeHandler = "test5";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler=test5");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler=test5");
         }
 
         [Fact]
@@ -247,11 +247,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             terminalOptions.Handler.ServiceHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler=");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler=");
 
             // Invalid value should error
             terminalOptions.Handler.ServiceHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler=test4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler=test4");
         }
 
         [Fact]
@@ -270,11 +270,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             terminalOptions.Handler.LicenseHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler=");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler=");
 
             // Invalid value should error
             terminalOptions.Handler.LicenseHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler=test4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler=test4");
         }
 
         [Fact]
@@ -293,11 +293,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             terminalOptions.Handler.StoreHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler=");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler=");
 
             // Invalid value should error
             terminalOptions.Handler.StoreHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler=test4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler=test4");
         }
 
         [Fact]
@@ -306,7 +306,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictOptionValueType = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
 
             // No error, not allowed configured false
             license.Limits.StrictDataType = false;
@@ -342,11 +342,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             terminalOptions.Handler.TextHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler=");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler=");
 
             // Invalid value should error
             terminalOptions.Handler.TextHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), Errors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler=test4");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler=test4");
         }
 
         private readonly TerminalOptions terminalOptions;

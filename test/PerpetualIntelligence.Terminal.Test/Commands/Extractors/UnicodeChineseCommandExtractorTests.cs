@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task UnicodeGroupedCommand_With_Imcomplete_Prefix_ShouldError()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "測試"));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), Errors.UnsupportedCommand, "The command prefix is not valid. prefix=測試");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=測試");
         }
 
         [TestMethod]

@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Command argsCommand = new(commandRoute, disabledArgsDescriptor, options);
 
             CommandCheckerContext context = new(argsCommand);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option is disabled. command_name=name1 command_id=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is disabled. command_name=name1 command_id=id1 option=key1");
         }
 
         [TestMethod]
@@ -93,10 +93,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             CommandCheckerContext context = new(argsCommand);
 
             terminalOptions.Checker.AllowObsoleteOption = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
 
             terminalOptions.Checker.AllowObsoleteOption = false;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
         }
 
         [TestMethod]
@@ -113,7 +113,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Command argsCommand = new(commandRoute, descriptor, options);
 
             CommandCheckerContext context = new(argsCommand);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.MissingOption, "The required option is missing. command_name=name1 command_id=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.MissingOption, "The required option is missing. command_name=name1 command_id=id1 option=key1");
         }
 
         [TestMethod]
@@ -167,7 +167,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Command argsCommand = new(commandRoute, descriptor, options);
 
             CommandCheckerContext context = new(argsCommand);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), Errors.InvalidOption, "The option value does not match the mapped type. option=key1 type=System.DateTime data_type=Date value_type=String value=non-date");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value does not match the mapped type. option=key1 type=System.DateTime data_type=Date value_type=String value=non-date");
         }
 
         [TestMethod]

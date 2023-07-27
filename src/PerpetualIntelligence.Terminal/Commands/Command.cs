@@ -102,7 +102,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         {
             if (Options == null)
             {
-                throw new ErrorException(Errors.UnsupportedOption, "The option is not supported. option={0}", id);
+                throw new ErrorException(TerminalErrors.UnsupportedOption, "The option is not supported. option={0}", id);
             }
 
             return Options.GetValue<TValue>(id);

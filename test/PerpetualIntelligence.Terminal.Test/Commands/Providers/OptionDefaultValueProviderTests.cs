@@ -23,10 +23,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
             DefaultOptionValueProvider provider = new(new UnicodeTextHandler());
 
             DefaultOptionValueProviderContext nullContext = new(new CommandDescriptor("test", "testname", "testprefix", "desc", optionDescriptors: null));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(nullContext), Errors.UnsupportedOption, "The command does not support any options. command_id=test command_name=testname");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(nullContext), TerminalErrors.UnsupportedOption, "The command does not support any options. command_id=test command_name=testname");
 
             DefaultOptionValueProviderContext emptyContext = new(new CommandDescriptor("test_empty", "test_emptyname", "test_emptyprefix", "desc", optionDescriptors: new(new UnicodeTextHandler())));
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(emptyContext), Errors.UnsupportedOption, "The command does not support any options. command_id=test_empty command_name=test_emptyname");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => provider.ProvideAsync(emptyContext), TerminalErrors.UnsupportedOption, "The command does not support any options. command_id=test_empty command_name=test_emptyname");
         }
 
         [TestMethod]

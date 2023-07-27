@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
     {
         public bool NoLicense { get; set; }
 
-        public License TestLicense { get; set; } = new License("testProviderId", Handlers.OnlineLicenseHandler, PiCliLicensePlans.Demo, LicenseUsages.RnD, LicenseSources.JsonFile, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+        public License TestLicense { get; set; } = new License("testProviderId", TerminalHandlers.OnlineLicenseHandler, PiCliLicensePlans.Demo, LicenseUsages.RnD, LicenseSources.JsonFile, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
         public Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
         {

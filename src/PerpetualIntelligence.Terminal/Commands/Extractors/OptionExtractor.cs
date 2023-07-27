@@ -153,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // Sanity check
             if (context.CommandDescriptor.OptionDescriptors == null)
             {
-                throw new ErrorException(Errors.UnsupportedOption, "The command does not support any options. command_id={0} command_name{1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
+                throw new ErrorException(TerminalErrors.UnsupportedOption, "The command does not support any options. command_id={0} command_name{1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
             string rawOptionString = context.OptionString.Raw;
@@ -200,14 +200,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // Not matched
             if (!matched)
             {
-                throw new ErrorException(Errors.InvalidOption, "The option string is not valid. option_string={0}", rawOptionString);
+                throw new ErrorException(TerminalErrors.InvalidOption, "The option string is not valid. option_string={0}", rawOptionString);
             }
 
             // For error handling
             string prefixArgValue = $"{argPrefix}{argIdOrAlias}{options.Extractor.OptionValueSeparator}{argValue}";
             if (argIdOrAlias == null || string.IsNullOrWhiteSpace(argIdOrAlias))
             {
-                throw new ErrorException(Errors.InvalidOption, "The option identifier is null or empty. option_string={0}", prefixArgValue);
+                throw new ErrorException(TerminalErrors.InvalidOption, "The option identifier is null or empty. option_string={0}", prefixArgValue);
             }
 
             // Find by alias only if configured.
@@ -221,7 +221,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             {
                 if (textHandler.TextEquals(options.Extractor.OptionAliasPrefix, argPrefix))
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The option extraction by alias prefix is not configured. option_string={0}", prefixArgValue);
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The option extraction by alias prefix is not configured. option_string={0}", prefixArgValue);
                 }
             }
 
@@ -253,7 +253,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             {
                 if (argValue == null)
                 {
-                    throw new ErrorException(Errors.InvalidOption, "The option value is missing. option_string={0}", prefixArgValue);
+                    throw new ErrorException(TerminalErrors.InvalidOption, "The option value is missing. option_string={0}", prefixArgValue);
                 }
 
                 return Task.FromResult(new OptionExtractorResult(new Option(argDescriptor, argValue)));

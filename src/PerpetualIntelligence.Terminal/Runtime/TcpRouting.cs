@@ -70,19 +70,19 @@ namespace PerpetualIntelligence.Terminal.Runtime
             //  Make sure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
             }
 
             return Task.Run(async () =>
             {
                 if (context is not TcpRoutingContext tcpContext)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The routing service context is not valid for TCP routing service.");
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The routing service context is not valid for TCP routing service.");
                 }
 
                 if (tcpContext.IPEndPoint == null)
                 {
-                    throw new ErrorException(Errors.InvalidConfiguration, "The network IP endpoint is missing in the TCP server routing request.");
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The network IP endpoint is missing in the TCP server routing request.");
                 }
 
                 // Start the server in the specified endpoint.
@@ -100,7 +100,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         // Honor the cancellation request.
                         if (tcpContext.StartContext.CancellationToken.IsCancellationRequested)
                         {
-                            ErrorHandlerContext errContext = new(new Error(Errors.RequestCanceled, "Received cancellation token, the routing is canceled."));
+                            ErrorHandlerContext errContext = new(new Error(TerminalErrors.RequestCanceled, "Received cancellation token, the routing is canceled."));
                             await errorHandler.HandleAsync(errContext);
 
                             // We are done, break the loop and stop the server.
@@ -110,7 +110,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         // Check if application is stopping
                         if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
                         {
-                            ErrorHandlerContext errContext = new(new Error(Errors.RequestCanceled, $"Application is stopping, the routing is canceled."));
+                            ErrorHandlerContext errContext = new(new Error(TerminalErrors.RequestCanceled, $"Application is stopping, the routing is canceled."));
                             await errorHandler.HandleAsync(errContext);
 
                             // We are done, break the loop and stop the server.
@@ -182,7 +182,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         int end = stream.Read(buffer, 0, buffer.Length);
                         if (end == 0)
                         {
-                            throw new ErrorException(Errors.ConnectionClosed, "The client socket connection is closed.");
+                            throw new ErrorException(TerminalErrors.ConnectionClosed, "The client socket connection is closed.");
                         }
 
                         // Get command string, Null or empty, ignore

@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
         {
             if (context.CommandDescriptor.OptionDescriptors == null || context.CommandDescriptor.OptionDescriptors.Count == 0)
             {
-                throw new ErrorException(Errors.UnsupportedOption, "The command does not support any options. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
+                throw new ErrorException(TerminalErrors.UnsupportedOption, "The command does not support any options. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
             return Task.FromResult(new DefaultOptionValueProviderResult(new OptionDescriptors(textHandler, context.CommandDescriptor.OptionDescriptors.Where(a => a.DefaultValue != null))));

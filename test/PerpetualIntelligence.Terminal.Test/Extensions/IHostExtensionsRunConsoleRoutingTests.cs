@@ -386,6 +386,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Add routing service
             arg2.AddSingleton<ConsoleRouting>();
+            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private void ConfigureServicesDefault(IServiceCollection arg2)
@@ -409,6 +410,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Add routing service
             arg2.AddSingleton<ConsoleRouting>();
+            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private void ConfigureServicesDelayAndCancelOnRoute(IServiceCollection arg2)
@@ -434,6 +436,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Add routing service
             arg2.AddSingleton<ConsoleRouting>();
+            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private void ConfigureServicesErrorExceptionAndCancelOnRoute(IServiceCollection arg2)
@@ -459,6 +462,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Add routing service
             arg2.AddSingleton<ConsoleRouting>();
+            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
@@ -485,6 +489,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Add routing service
             arg2.AddSingleton<ConsoleRouting>();
+            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
@@ -511,6 +516,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Add routing service
             arg2.AddSingleton<ConsoleRouting>();
+            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private TerminalOptions GetCliOptions(IHost host)

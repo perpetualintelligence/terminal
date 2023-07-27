@@ -261,6 +261,19 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
+        /// Adds the <see cref="ITerminalConsole"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddTerminalConsole<TConsole>(this ITerminalBuilder builder) where TConsole : class, ITerminalConsole
+        {
+            // Add terminal routing service.
+            builder.Services.AddSingleton<ITerminalConsole, TConsole>();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the <see cref="ITerminalRouting{TContext, TResult}"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -327,21 +340,21 @@ namespace PerpetualIntelligence.Terminal.Extensions
             CommandDescriptorAttribute cmdAttr = declarativeTarget.GetCustomAttribute<CommandDescriptorAttribute>(false);
             if (cmdAttr == null)
             {
-                throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define command descriptor.");
+                throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command descriptor.");
             }
 
             // Command Runner
             CommandRunnerAttribute cmdRunner = declarativeTarget.GetCustomAttribute<CommandRunnerAttribute>(false);
             if (cmdRunner == null)
             {
-                throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define command runner.");
+                throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command runner.");
             }
 
             // Command checker
             CommandCheckerAttribute cmdChecker = declarativeTarget.GetCustomAttribute<CommandCheckerAttribute>(false);
             if (cmdChecker == null)
             {
-                throw new ErrorException(Errors.InvalidDeclaration, "The declarative target does not define command checker.");
+                throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command checker.");
             }
 
             // Establish command builder Default option not set ?
@@ -426,7 +439,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             if (isRoot && !isGroup)
             {
-                throw new ErrorException(Errors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
             }
 
             CommandDescriptor cmd = new(id, name, prefix, description, defaultOption: defaultOption)

@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     // Required option is missing
                     if (argDescriptor.Required.GetValueOrDefault())
                     {
-                        throw new ErrorException(Errors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
                     }
                 }
                 else
@@ -60,13 +60,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     // Check obsolete
                     if (argDescriptor.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
                     {
-                        throw new ErrorException(Errors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
                     }
 
                     // Check disabled
                     if (argDescriptor.Disabled.GetValueOrDefault())
                     {
-                        throw new ErrorException(Errors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
                     }
 
                     // Check arg value

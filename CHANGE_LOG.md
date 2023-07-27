@@ -2,6 +2,9 @@
 > Breaking Change
 - Rename `IRoutingService` to `ITerminalRouting`
 - Move routing service to runtime namespace
+- Introduce ITerminalConsole abstraction
+- Rename Errors, Handlers
+- Remove ConsoleHelper
 
 # 5.0.1-rc*
 > Breaking Change

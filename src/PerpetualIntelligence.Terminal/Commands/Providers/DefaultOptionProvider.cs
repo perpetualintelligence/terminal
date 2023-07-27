@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
         {
             if (context.CommandDescriptor.OptionDescriptors == null || context.CommandDescriptor.DefaultOption == null)
             {
-                throw new ErrorException(Errors.UnsupportedOption, "The command does not support default option. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
+                throw new ErrorException(TerminalErrors.UnsupportedOption, "The command does not support default option. command_id={0} command_name={1}", context.CommandDescriptor.Id, context.CommandDescriptor.Name);
             }
 
             return Task.FromResult(new DefaultOptionProviderResult(context.CommandDescriptor.OptionDescriptors[context.CommandDescriptor.DefaultOption]));

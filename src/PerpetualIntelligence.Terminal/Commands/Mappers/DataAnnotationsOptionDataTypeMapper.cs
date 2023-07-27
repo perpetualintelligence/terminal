@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         {
             if (context.Option.DataType == DataType.Custom && string.IsNullOrWhiteSpace(context.Option.CustomDataType))
             {
-                throw new ErrorException(Errors.InvalidOption, "The option custom data type is null or whitespace. option={0}", context.Option.Id);
+                throw new ErrorException(TerminalErrors.InvalidOption, "The option custom data type is null or whitespace. option={0}", context.Option.Id);
             }
 
             switch (context.Option.DataType)
@@ -75,13 +75,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
                             case nameof(Double): return Valid(typeof(double));
                             default:
                                 {
-                                    throw new ErrorException(Errors.UnsupportedOption, "The option custom data type is not supported. option={0} custom_data_type={1}", context.Option.Id, context.Option.CustomDataType);
+                                    throw new ErrorException(TerminalErrors.UnsupportedOption, "The option custom data type is not supported. option={0} custom_data_type={1}", context.Option.Id, context.Option.CustomDataType);
                                 }
                         }
                     }
                 default:
                     {
-                        throw new ErrorException(Errors.UnsupportedOption, "The option data type is not supported. option={0} data_type={1}", context.Option.Id, context.Option.DataType);
+                        throw new ErrorException(TerminalErrors.UnsupportedOption, "The option data type is not supported. option={0} data_type={1}", context.Option.Id, context.Option.DataType);
                     }
             }
         }

@@ -73,8 +73,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
             }
 
             // Make sure the command runner and checker are added. TODO this may add duplicate types
-            terminalBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new ErrorException(Errors.InvalidConfiguration, "Checker is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
-            terminalBuilder.Services.AddTransient(commandDescriptor.Runner ?? throw new ErrorException(Errors.InvalidConfiguration, "Runner is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
+            terminalBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new ErrorException(TerminalErrors.InvalidConfiguration, "Checker is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
+            terminalBuilder.Services.AddTransient(commandDescriptor.Runner ?? throw new ErrorException(TerminalErrors.InvalidConfiguration, "Runner is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
             terminalBuilder.Services.AddSingleton(commandDescriptor);
 
             return terminalBuilder;
