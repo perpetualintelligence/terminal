@@ -96,7 +96,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     string? raw = await terminalConsole.ReadLineAsync();
 
                     // Ignore empty commands
-                    if (terminalConsole.Ignore(raw))
+                    if (raw == null || terminalConsole.Ignore(raw))
                     {
                         // Wait for next command.
                         continue;

@@ -5,7 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Shared.Extensions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Runtime
@@ -13,8 +15,16 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// <summary>
     /// The default <see cref="ITerminalConsole"/> implementation that use system <see cref="Console"/>.
     /// </summary>
-    public sealed class TerminalSystemConsole : ITerminalConsole
+    public class TerminalSystemConsole : ITerminalConsole
     {
+        /// <summary>
+        /// Clears the <see cref="Console"/> buffer and the corresponding display information.
+        /// </summary>
+        public Task ClearAsync()
+        {
+            return Task.Run(Console.Clear);
+        }
+
         /// <summary>
         /// Return <c>true</c> if the specified string value is ignored by the <see cref="ITerminalConsole"/>, otherwise <c>false</c>.
         /// </summary>
@@ -22,6 +32,47 @@ namespace PerpetualIntelligence.Terminal.Runtime
         public bool Ignore(string? value)
         {
             return string.IsNullOrWhiteSpace(value);
+        }
+
+        /// <summary>
+        /// Prints the question to the <see cref="ITerminalConsole"/> standard output stream and waits for an answer asynchronously.
+        /// </summary>
+        /// <param name="question">The question to print. The <c>?</c> will be appended at the end.</param>
+        /// <param name="answers">
+        /// The allowed answers or <c>null</c> if all answers are allowed. It is recommended to keep the answers short
+        /// for readability. If specified this method will print the answers with question in the format <c>{question} {answer1}/{answer2}/{answer3}?</c>
+        /// </param>
+        /// <returns>The answer for the question or <c>null</c> if canceled.</returns>
+        public virtual async Task<string> ReadAnswerAsync(string question, params string[]? answers)
+        {
+            // Print the question
+            if (answers != null)
+            {
+                Console.Write($"{question} ({string.Join("/", answers)})? ");
+            }
+            else
+            {
+                Console.Write($"{question}? ");
+            }
+
+            // Check answer
+            string? answer = Console.ReadLine();
+            if (answers != null)
+            {
+                if (answers.Contains(answer))
+                {
+                    return answer;
+                }
+                else
+                {
+                    Console.WriteLine($"The answer is not valid. answers={answers.JoinBySpace()}");
+                    return await ReadAnswerAsync(question, answers);
+                }
+            }
+            else
+            {
+                return answer;
+            }
         }
 
         /// <summary>
