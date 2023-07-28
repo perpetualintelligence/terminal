@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -13,21 +13,24 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ILogger"/> that indents  messages based on scopes to the standard <see cref="Console"/>.
+    /// The default <see cref="ILogger"/> that indents  messages based on scopes to the <see cref="ITerminalConsole"/>.
     /// </summary>
     public sealed class TerminalConsoleLogger : TerminalLogger
     {
         private readonly TerminalOptions options;
+        private readonly ITerminalConsole terminalConsole;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="name">The logger name.</param>
         /// <param name="options">The configuration options.</param>
-        public TerminalConsoleLogger(string name, TerminalOptions options)
+        /// <param name="terminalConsole">The terminal console.</param>
+        public TerminalConsoleLogger(string name, TerminalOptions options, ITerminalConsole terminalConsole)
         {
             Scopes = new List<IDisposable>();
             this.options = options;
+            this.terminalConsole = terminalConsole;
         }
 
         /// <summary>
@@ -63,11 +66,11 @@ namespace PerpetualIntelligence.Terminal.Runtime
             // Display the message to console
             if (Scopes.Count > 0)
             {
-                Console.WriteLine(new string(' ', Scopes.Count * options.Logging.LoggerIndent) + formatter.Invoke(state, exception));
+                terminalConsole.WriteLineAsync(new string(' ', Scopes.Count * options.Logging.LoggerIndent) + formatter.Invoke(state, exception)).Wait();
             }
             else
             {
-                Console.WriteLine(formatter.Invoke(state, exception));
+                terminalConsole.WriteLineAsync(formatter.Invoke(state, exception)).Wait();
             }
 
             // Log to standard logger.

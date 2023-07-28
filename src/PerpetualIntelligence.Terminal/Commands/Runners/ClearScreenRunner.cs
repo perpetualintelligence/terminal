@@ -1,10 +1,17 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
@@ -15,18 +22,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
     /// </summary>
     public class ClearScreenRunner : CommandRunner<CommandRunnerResult>
     {
+        private readonly ITerminalConsole terminalConsole;
+
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public ClearScreenRunner()
+        public ClearScreenRunner(ITerminalConsole terminalConsole)
         {
+            this.terminalConsole = terminalConsole;
         }
 
         /// <inheritdoc/>
-        public override Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
-            Console.Clear();
-            return Task.FromResult(new CommandRunnerResult());
+            await terminalConsole.ClearAsync();
+            return new CommandRunnerResult();
         }
     }
 }

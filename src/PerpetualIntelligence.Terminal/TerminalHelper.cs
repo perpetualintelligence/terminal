@@ -20,7 +20,7 @@ using System.Linq;
 namespace PerpetualIntelligence.Terminal
 {
     /// <summary>
-    /// The <see cref="Console"/> helper methods.
+    /// The helper methods.
     /// </summary>
     [WriteUnitTest]
     public static class TerminalHelper
