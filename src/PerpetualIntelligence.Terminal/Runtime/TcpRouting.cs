@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<TcpRoutingResult> RunAsync(TcpRoutingContext context)
+        public virtual Task<TcpRoutingResult> RunAsync(TcpRoutingContext context)
         {
             //  Make sure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)

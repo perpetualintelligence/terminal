@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// </summary>
         /// <param name="context">The routing service context.</param>
         /// <returns></returns>
-        public Task<ConsoleRoutingResult> RunAsync(ConsoleRoutingContext context)
+        public virtual Task<ConsoleRoutingResult> RunAsync(ConsoleRoutingContext context)
         {
             return Task.Run(async () =>
             {
