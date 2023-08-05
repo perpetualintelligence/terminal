@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         }
 
         [TestMethod]
-        public async Task HandlerShouldProcessTheResultCorrectlyAsync()
+        public async Task Handler_Does_Process_And_Dispose_ResultAsync()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -82,7 +82,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                 await handler.HandleAsync(commandContext);
 
                 Assert.IsTrue(MockCommandRunnerInnerResult.ResultProcessed);
-                Assert.IsFalse(MockCommandRunnerInnerResult.ResultDisposed);
+                Assert.IsTrue(MockCommandRunnerInnerResult.ResultDisposed);
             }
             finally
             {
@@ -184,7 +184,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             CommandHandlerContext commandContext = new(helpCommand.Item2, license);
             var result = await handler.HandleAsync(commandContext);
 
-            result.RunnerResult.Should().BeEquivalentTo(CommandRunnerResult.NoProcessing);
+            result.RunnerResult.Should().NotBeEquivalentTo(CommandRunnerResult.NoProcessing);
+
+            result.RunnerResult.IsDisposed.Should().BeTrue();
+            result.RunnerResult.IsProcessed.Should().BeTrue();
         }
 
         [TestMethod]

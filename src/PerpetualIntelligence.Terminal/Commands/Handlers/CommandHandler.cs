@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
@@ -14,7 +15,6 @@ using PerpetualIntelligence.Terminal.Commands.Runners;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Threading.Tasks;
 
@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                 runnerResult = await commandRunner.DelegateRunAsync(runnerContext);
             }
 
-            // Process the result, we don't dispose the result here. It is disposed by the routing service at the end.
+            // Process the result.
             await runnerResult.ProcessAsync(new(runnerContext));
 
             // Issue a after run event if configured
@@ -87,6 +87,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             {
                 await asyncEventHandler.AfterCommandRunAsync(context.Command, runnerResult);
             }
+
+            // Dispose the result.
+            await runnerResult.DisposeAsync();
 
             return runnerResult;
         }

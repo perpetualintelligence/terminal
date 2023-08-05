@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// <summary>
     /// The default <see cref="ITerminalRouting{TContext, TResult}"/> for console based terminals.
     /// </summary>
-    public class ConsoleRouting : ITerminalRouting<ConsoleRoutingContext, ConsoleRoutingResult>
+    public class TerminalConsoleRouting : ITerminalRouting<TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>
     {
         private readonly ITerminalConsole terminalConsole;
         private readonly IHostApplicationLifetime applicationLifetime;
@@ -26,10 +26,10 @@ namespace PerpetualIntelligence.Terminal.Runtime
         private readonly IExceptionHandler exceptionHandler;
         private readonly IErrorHandler errorHandler;
         private readonly TerminalOptions options;
-        private readonly ILogger<ConsoleRouting> logger;
+        private readonly ILogger<TerminalConsoleRouting> logger;
 
         /// <summary>
-        /// Initialize a new <see cref="ConsoleRouting"/> instance.
+        /// Initialize a new <see cref="TerminalConsoleRouting"/> instance.
         /// </summary>
         /// <param name="terminalConsole">The terminal console.</param>
         /// <param name="applicationLifetime">The host application lifetime instance.</param>
@@ -38,7 +38,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <param name="errorHandler">The error handler.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ConsoleRouting(ITerminalConsole terminalConsole, IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, TerminalOptions options, ILogger<ConsoleRouting> logger)
+        public TerminalConsoleRouting(ITerminalConsole terminalConsole, IHostApplicationLifetime applicationLifetime, ICommandRouter commandRouter, IExceptionHandler exceptionHandler, IErrorHandler errorHandler, TerminalOptions options, ILogger<TerminalConsoleRouting> logger)
         {
             this.terminalConsole = terminalConsole;
             this.applicationLifetime = applicationLifetime;
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// </summary>
         /// <param name="context">The routing service context.</param>
         /// <returns></returns>
-        public virtual Task<ConsoleRoutingResult> RunAsync(ConsoleRoutingContext context)
+        public virtual Task<TerminalConsoleRoutingResult> RunAsync(TerminalConsoleRoutingContext context)
         {
             return Task.Run(async () =>
             {
@@ -113,10 +113,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         {
                             throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
                         }
-
-                        // This means a success in command runner. Wait for the next command.
-                        // Dispose the runner result as it is not propagated any further.
-                        await routeTask.Result.HandlerResult.RunnerResult.DisposeAsync();
                     }
                     catch (Exception ex)
                     {
@@ -127,7 +123,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 };
 
                 // Return Result
-                return new ConsoleRoutingResult();
+                return new TerminalConsoleRoutingResult();
             });
         }
     }

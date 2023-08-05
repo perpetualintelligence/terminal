@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// <summary>
     /// The default <see cref="ITerminalRouting{TContext, TResult}"/> for TCP client server communication.
     /// </summary>
-    public class TcpRouting : ITerminalRouting<TcpRoutingContext, TcpRoutingResult>
+    public class TerminalTcpRouting : ITerminalRouting<TerminalTcpRoutingContext, TerminalTcpRoutingResult>
     {
         private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
@@ -30,10 +30,10 @@ namespace PerpetualIntelligence.Terminal.Runtime
         private readonly IErrorHandler errorHandler;
         private readonly TerminalOptions options;
         private readonly ITextHandler textHandler;
-        private readonly ILogger<TcpRouting> logger;
+        private readonly ILogger<TerminalTcpRouting> logger;
 
         /// <summary>
-        /// Initialize a new <see cref="TcpRouting"/> instance.
+        /// Initialize a new <see cref="TerminalTcpRouting"/> instance.
         /// </summary>
         /// <param name="applicationLifetime">The host application lifetime instance.</param>
         /// <param name="commandRouter">The command router.</param>
@@ -42,14 +42,14 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <param name="options">The configuration options.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="logger">The logger.</param>
-        public TcpRouting(
+        public TerminalTcpRouting(
             IHostApplicationLifetime applicationLifetime,
             ICommandRouter commandRouter,
             IExceptionHandler exceptionHandler,
             IErrorHandler errorHandler,
             TerminalOptions options,
             ITextHandler textHandler,
-            ILogger<TcpRouting> logger)
+            ILogger<TerminalTcpRouting> logger)
         {
             this.applicationLifetime = applicationLifetime;
             this.commandRouter = commandRouter;
@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public virtual Task<TcpRoutingResult> RunAsync(TcpRoutingContext context)
+        public virtual Task<TerminalTcpRoutingResult> RunAsync(TerminalTcpRoutingContext context)
         {
             //  Make sure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)
@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
 
             return Task.Run(async () =>
             {
-                if (context is not TcpRoutingContext tcpContext)
+                if (context is not TerminalTcpRoutingContext tcpContext)
                 {
                     throw new ErrorException(TerminalErrors.InvalidConfiguration, "The routing service context is not valid for TCP routing service.");
                 }
@@ -144,11 +144,11 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 }
 
                 // Return the result
-                return new TcpRoutingResult();
+                return new TerminalTcpRoutingResult();
             });
         }
 
-        private async Task HandleClientConnectedAsync(TcpRoutingContext tcpContext)
+        private async Task HandleClientConnectedAsync(TerminalTcpRoutingContext tcpContext)
         {
             if (tcpContext.Server == null || tcpContext.Client == null)
             {
@@ -200,28 +200,13 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     break;
                 }
 
-                try
+                // Route the command request to router. Wait for the router or the timeout.
+                CommandRouterContext context = new(raw!, tcpContext.StartContext.CancellationToken);
+                Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(context);
+                bool success = routeTask.Wait(options.Router.Timeout, tcpContext.StartContext.CancellationToken);
+                if (!success)
                 {
-                    // Route the command request to router.
-                    CommandRouterContext context = new(raw!, tcpContext.StartContext.CancellationToken);
-                    Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(context);
-
-                    // Wait for the router or the timeout.
-                    bool success = routeTask.Wait(options.Router.Timeout, tcpContext.StartContext.CancellationToken);
-                    if (!success)
-                    {
-                        throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
-                    }
-
-                    // This means a success in command runner. Wait for the next command.
-                    // Dispose the runner result, it is not propagated any further.
-                    await routeTask.Result.HandlerResult.RunnerResult.DisposeAsync();
-                }
-                catch (Exception ex)
-                {
-                    // Task.Wait bundles up any exception into Exception.InnerException
-                    ExceptionHandlerContext exContext = new(raw!, ex.InnerException ?? ex);
-                    await exceptionHandler.HandleAsync(exContext);
+                    throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
                 }
             }
         }

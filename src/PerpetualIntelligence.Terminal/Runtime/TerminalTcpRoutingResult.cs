@@ -8,9 +8,9 @@
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The <see cref="TerminalRoutingResult"/> for <see cref="TcpRouting"/>.
+    /// The <see cref="TerminalRoutingResult"/> for <see cref="TerminalTcpRouting"/>.
     /// </summary>
-    public sealed class TcpRoutingResult : TerminalRoutingResult
+    public sealed class TerminalTcpRoutingResult : TerminalRoutingResult
     {
     }
 }
