@@ -117,7 +117,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     catch (Exception ex)
                     {
                         // Task.Wait bundles up any exception into Exception.InnerException
-                        ExceptionHandlerContext exContext = new(raw, ex.InnerException ?? ex);
+                        ExceptionHandlerContext exContext = new(ex.InnerException ?? ex, raw);
                         await exceptionHandler.HandleAsync(exContext);
                     }
                 };

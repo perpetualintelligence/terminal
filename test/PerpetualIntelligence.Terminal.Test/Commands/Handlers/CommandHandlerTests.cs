@@ -42,10 +42,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             // No mock checker added to collection.
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>());
-            using var newhost = hostBuilder.Build();
+            using var newHost = hostBuilder.Build();
 
             CommandHandlerContext commandContext = new(command.Item2, license);
-            var newHandler = new CommandHandler(newhost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
+            var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=MockCommandCheckerInner");
         }
 
@@ -125,8 +125,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // Mock checker configured but not added to service collection
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            using var newhost = hostBuilder.Build();
-            var newHandler = new CommandHandler(newhost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
+            using IHost newHost = hostBuilder.Build();
+            var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
             CommandHandlerContext commandContext = new(command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
         }
@@ -279,7 +279,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         }
 
         [TestMethod]
-        public async Task ValidCheckerAndRunnerShouldlAllowHandlerAsync()
+        public async Task ValidCheckerAndRunnerShouldAllowHandlerAsync()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -294,7 +294,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         }
 
         [TestMethod]
-        public async Task ValidGenericRunnerShouldlAllowHandlerAsync()
+        public async Task ValidGenericRunnerShouldAllowHandlerAsync()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);

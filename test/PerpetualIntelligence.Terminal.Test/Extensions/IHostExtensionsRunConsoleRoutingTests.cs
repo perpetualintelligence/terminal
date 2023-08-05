@@ -36,8 +36,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public async Task Non_Console_Start_Mode_Throws_Invalid_Configuration()
         {
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
@@ -58,8 +58,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetIn(input);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             await host.RunConsoleRoutingAsync(new TerminalConsoleRoutingContext(startContext));
@@ -80,8 +80,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetIn(input);
 
             // Cancel on route
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // send cancellation after 2 seconds
             tokenSource.CancelAfter(2000);
@@ -114,8 +114,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetIn(input);
 
             // Cancel on first route and set delay so we can timeout and break the routing loop.
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesErrorExceptionAndCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesErrorExceptionAndCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
@@ -145,8 +145,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetIn(input);
 
             // Cancel on first route and set delay so we can timeout and break the routing loop.
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExplicitErrorAndCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExplicitErrorAndCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
@@ -175,8 +175,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetIn(input);
 
             // Cancel on route
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newHostBuilder.Build();
             await host.StartAsync();
 
             // Issue a callback after 2 seconds.
@@ -209,8 +209,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetIn(input);
 
             // Cancel on first route and set delay so we can timeout and break the routing loop.
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExceptionAndCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExceptionAndCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
@@ -256,13 +256,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
             using var output = new StringWriter();
             Console.SetOut(output);
 
-            // Mock the multiple lines here so that RunConsoleRoutingAsync can readline multiple times
+            // Mock the multiple lines here so that RunConsoleRoutingAsync can read line multiple times
             using var input = new StringReader("does not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter");
             Console.SetIn(input);
 
             // The default does not have and cancel or timeout
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newHostBuilder.Build();
 
             // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
             tokenSource.CancelAfter(3000);
@@ -282,13 +282,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
             using var output = new StringWriter();
             Console.SetOut(output);
 
-            // Mock the multiple lines here so that RunConsoleRoutingAsync can readline multiple times
+            // Mock the multiple lines here so that RunConsoleRoutingAsync can read line multiple times
             using var input = new StringReader("does not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter");
             Console.SetIn(input);
 
             // The default does not have and cancel or timeout
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newHostBuilder.Build();
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.ReturnedRouterResult.Should().BeNull();
@@ -315,8 +315,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetIn(input);
 
             // Cancel on first route and set delay so we can timeout and break the routing loop.
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelayAndCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelayAndCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // Route delay is set to 3000 and timeout is 2000
             GetCliOptions(host).Router.Timeout = 2000;
@@ -339,15 +339,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public async Task RunConsoleRoutingCaretShouldBeSetCorrectlyAsync()
         {
             // Mock Console read and write
-            using StringWriter titleWriter = new StringWriter();
+            using StringWriter titleWriter = new();
             Console.SetOut(titleWriter);
 
             using var input = new StringReader("does not matter");
             Console.SetIn(input);
 
             // Cancel on first route
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // cancel the token after 2 seconds so routing will be called and it will raise an exception
             tokenSource.CancelAfter(2000);
@@ -374,10 +374,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory
-            {
-                StringWriter = stringWriter
-            };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
@@ -400,8 +396,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory();
-            loggerFactory.StringWriter = stringWriter;
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
@@ -424,10 +418,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory
-            {
-                StringWriter = stringWriter
-            };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
@@ -450,10 +440,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory
-            {
-                StringWriter = stringWriter
-            };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
@@ -477,10 +463,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory
-            {
-                StringWriter = stringWriter
-            };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
@@ -504,10 +486,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            var loggerFactory = new MockLoggerFactory
-            {
-                StringWriter = stringWriter
-            };
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Error publisher
@@ -521,7 +499,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
-        private TerminalOptions GetCliOptions(IHost host)
+        private static TerminalOptions GetCliOptions(IHost host)
         {
             return host.Services.GetRequiredService<TerminalOptions>();
         }
@@ -550,21 +528,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetOut(originalWriter);
             Console.SetIn(originalReader);
 
-            if (host != null)
-            {
-                host.Dispose();
-            }
+            host?.Dispose();
 
-            if (stringWriter != null)
-            {
-                stringWriter.Dispose();
-            }
+            stringWriter?.Dispose();
 
             return Task.CompletedTask;
         }
 
         private IHost host = null!;
-        private StringWriter stringWriter;
+        private readonly StringWriter stringWriter;
         private TextWriter originalWriter = null!;
         private TextReader originalReader = null!;
         private CancellationTokenSource tokenSource = null!;

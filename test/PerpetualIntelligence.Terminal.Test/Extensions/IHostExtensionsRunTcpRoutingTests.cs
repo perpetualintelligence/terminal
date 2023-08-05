@@ -20,8 +20,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public void ShouldContinuteInfiniteLoopIfNotCancelled()
         {
             // Cancel on first route so we can test socket disposed we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newHostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
             Task routerTask = host.RunRouterAsTcpServerAsync(new RoutingServiceContext(new IPEndPoint(IPAddress.Loopback, 12345), CancellationToken.None));
@@ -36,8 +36,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public void ShouldBreakInfiniteLoopIfCancelled()
         {
             // Cancel on first route so we can test socket disposed we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
             Task routerTask = host.RunRouterAsTcpServerAsync(new RoutingServiceContext(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token));
@@ -58,8 +58,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public void RouterShouldBeCalled()
         {
             // Cancel on first route so we can test socket disposed we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
             Task routerTask = host.RunRouterAsTcpServerAsync(new RoutingServiceContext(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token));
@@ -83,8 +83,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public void RouterErrorIfException()
         {
             // Exception is thrown and the routing is canceled
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExceptionAndCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesExceptionAndCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
             Task routerTask = host.RunRouterAsTcpServerAsync(new RoutingServiceContext(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token));
@@ -108,8 +108,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public void RouterErrorIfErrorException()
         {
             // Exception is thrown and the routing is canceled
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesErrorExceptionAndCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesErrorExceptionAndCancelOnRoute);
+            host = newHostBuilder.Build();
 
             // Start sender and receiver communication and wait for 5 secs
             Task routerTask = host.RunRouterAsTcpServerAsync(new RoutingServiceContext(new IPEndPoint(IPAddress.Loopback, 12345), tokenSource.Token));
@@ -136,8 +136,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
@@ -188,8 +188,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
@@ -213,8 +213,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.MaxCommandStringLength = 5005;
@@ -252,8 +252,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDefault);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.ReadTimeout = 1000;
@@ -285,8 +285,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.MaxCommandStringLength = 5005;
@@ -324,8 +324,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Console.SetOut(stringWriter);
 
             // Cancel on first route so we can test user input without this we will go in infinite loop
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesCancelOnRoute);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
@@ -362,8 +362,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Router adds an explicit delay of 3000 milliseconds
             // Within 3 secs we will fire 5 sender request, with limit set to 3, 2 should be ignored
-            var newhostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelayAndCancelOnRoute);
-            host = newhostBuilder.Build();
+            var newHostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelayAndCancelOnRoute);
+            host = newHostBuilder.Build();
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 

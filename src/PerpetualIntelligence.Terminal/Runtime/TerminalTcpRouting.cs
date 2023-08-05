@@ -90,7 +90,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 try
                 {
                     server.Start();
-                    logger.LogDebug("TCP Server started. endpoint={0} timestamp={1}", tcpContext.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                    logger.LogDebug("TCP Server started. endpoint={0} timestamp_utc={1}", tcpContext.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
 
                     // Accept messages till cancellation token
                     while (true)
@@ -129,7 +129,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                                 using (TcpClient tcpClient = await server.AcceptTcpClientAsync())
                                 {
                                     tcpContext.Setup(server, tcpClient);
-                                    await HandleClientConnectedAsync(tcpContext);
+                                    HandleClientConnected(tcpContext);
                                 }
                             }));
                         }
@@ -137,10 +137,14 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         logger.LogWarning("All client connection tasks are exhausted.");
                     }
                 }
+                catch(Exception ex)
+                {
+                    await exceptionHandler.HandleAsync(new ExceptionHandlerContext(ex, null));
+                }
                 finally
                 {
                     server.Stop();
-                    logger.LogDebug("TCP server stopped. endpoint={0} timestamp={1}", tcpContext.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                    logger.LogDebug("TCP server stopped. endpoint={0} timestamp_utc={1}", tcpContext.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
                 }
 
                 // Return the result
@@ -148,7 +152,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
             });
         }
 
-        private async Task HandleClientConnectedAsync(TerminalTcpRoutingContext tcpContext)
+        private void HandleClientConnected(TerminalTcpRoutingContext tcpContext)
         {
             if (tcpContext.Server == null || tcpContext.Client == null)
             {
