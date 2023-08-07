@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <param name="rawCommandString">The raw command string.</param>
         public ExceptionHandlerContext(Exception exception, string? rawCommandString)
         {
-            RawCommandString = rawCommandString ?? throw new ArgumentNullException(nameof(rawCommandString));
+            RawCommandString = rawCommandString;
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
 

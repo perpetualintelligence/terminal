@@ -105,7 +105,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         }
 
         [TestMethod]
-        public async Task RouterShouldPassExtracterCommandToHandlerAsync()
+        public async Task RouterShouldPassExtractorCommandToHandlerAsync()
         {
             CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
             await commandRouter.RouteAsync(routerContext);

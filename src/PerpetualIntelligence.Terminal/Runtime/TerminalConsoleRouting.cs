@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -58,14 +59,15 @@ namespace PerpetualIntelligence.Terminal.Runtime
         {
             return Task.Run(async () =>
             {
+                //  Make sure we have supported start context
+                if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Console)
+                {
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                }
+
                 // Track the application lifetime so we can know whether cancellation is requested.
                 while (true)
                 {
-                    // Avoid blocking threads during cancellation and let the
-                    // applicationLifetime.ApplicationStopping.IsCancellationRequested get synchronized so we can honor the
-                    // app shutdown
-                    await Task.Delay(options.Router.SyncDelay.GetValueOrDefault());
-
                     // Honor the cancellation request.
                     if (context.StartContext.CancellationToken.IsCancellationRequested)
                     {

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -8,6 +8,7 @@
 using FluentAssertions;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
+using System;
 using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
@@ -25,9 +26,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
 
             options.Caret.Should().Be(">");
             options.Timeout.Should().Be(25000);
-            options.SyncDelay.Should().Be(100);
             options.MaxCommandStringLength.Should().Be(1024);
             options.RemoteMaxClients.Should().Be(5);
+            options.CommandStringDelimiter.Should().Be(Environment.NewLine);
         }
     }
 }

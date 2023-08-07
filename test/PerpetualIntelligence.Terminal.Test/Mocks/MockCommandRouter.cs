@@ -10,6 +10,7 @@ using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +24,10 @@ namespace PerpetualIntelligence.Terminal.Mocks
             this.cancelOnRouteCalled = cancelOnRouteCalled;
             this.exception = exception;
             this.explicitError = explicitError;
+            MultipleRawString = new List<string>();
         }
+
+        public List<string> MultipleRawString { get; set; }
 
         public string? RawCommandString { get; set; }
 
@@ -41,6 +45,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             // Stats
             RouteCalled = true;
             RawCommandString = context.Route.Command.Raw;
+            MultipleRawString.Add(context.Route.Command.Raw);
             RouteCounter += 1;
 
             // Add delay

@@ -1,10 +1,11 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
 using System.Threading;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
@@ -29,11 +30,6 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public int Timeout { get; set; } = 25000;
 
         /// <summary>
-        /// Allows threads or tasks to sync during command routing. The default value is 100 milliseconds.
-        /// </summary>
-        public int? SyncDelay { get; set; } = 100;
-
-        /// <summary>
         /// The maximum number of active remote client connections the router can accept. The default value is 5.
         /// </summary>
         public int RemoteMaxClients { get; set; } = 5;
@@ -47,5 +43,10 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// The maximum length of a command string. The default value is 1024.
         /// </summary>
         public int MaxCommandStringLength { get; set; } = 1024;
+
+        /// <summary>
+        /// The delimiter to identify a complete command string. The default value is <see cref="Environment.NewLine"/>.
+        /// </summary>
+        public string CommandStringDelimiter { get; set; } = Environment.NewLine;
     }
 }
