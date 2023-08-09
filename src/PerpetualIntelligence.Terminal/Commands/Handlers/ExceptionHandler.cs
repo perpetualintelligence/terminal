@@ -1,16 +1,15 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Extensions;
-using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 

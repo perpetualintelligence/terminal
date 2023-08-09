@@ -97,7 +97,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             mockCommandRouter.RouteCalled.Should().BeFalse();
 
             // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
+            MockExceptionPublisher errorPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
             errorPublisher.Called.Should().BeTrue();
             errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
             stringWriter.ToString().Should().BeNullOrWhiteSpace();
@@ -123,14 +123,12 @@ namespace PerpetualIntelligence.Terminal.Extensions
             await host.RunConsoleRoutingAsync(new TerminalConsoleRoutingContext(startContext));
 
             // Check the published error
-            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
-            exPublisher.Called.Should().BeTrue();
-            exPublisher.PublishedMessage.Should().Be("test_error_description. arg1=test1 arg2=test2");
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            errorPublisher.Called.Should().BeTrue();
-            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            publisher.Called.Should().BeTrue();
+            publisher.MultiplePublishedMessages.Count.Should().Be(2);
+            publisher.MultiplePublishedMessages[0].Should().Be("test_error_description. arg1=test1 arg2=test2");
+            publisher.MultiplePublishedMessages[1].Should().Be("Received cancellation token, the routing is canceled.");
+            publisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
             new string(stringWriter.ToString().Distinct().ToArray()).Should().Be("$");
         }
 
@@ -155,12 +153,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
             publisher.Called.Should().BeTrue();
-            publisher.PublishedMessage.Should().Be("explicit_error_description param1=test_param1 param2=test_param2.");
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            errorPublisher.Called.Should().BeTrue();
-            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            publisher.MultiplePublishedMessages.Count.Should().Be(2);
+            publisher.MultiplePublishedMessages[0].Should().Be("explicit_error_description param1=test_param1 param2=test_param2.");
+            publisher.MultiplePublishedMessages[1].Should().Be("Received cancellation token, the routing is canceled.");
+            publisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
             new string(stringWriter.ToString().Distinct().ToArray()).Should().Be(">");
         }
 
@@ -190,11 +186,12 @@ namespace PerpetualIntelligence.Terminal.Extensions
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeTrue();
 
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            errorPublisher.Called.Should().BeTrue();
-            errorPublisher.PublishedMessage.Should().NotBeNull();
-            errorPublisher.PublishedMessage.Should().Be("Application is stopping, the routing is canceled.");
+            // Check the published error
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            publisher.Called.Should().BeTrue();
+            publisher.MultiplePublishedMessages.Count.Should().Be(1);
+            publisher.MultiplePublishedMessages[0].Should().Be("Application is stopping, the routing is canceled.");
+            publisher.PublishedMessage.Should().Be("Application is stopping, the routing is canceled.");
             stringWriter.ToString().Should().NotBeNullOrWhiteSpace();
         }
 
@@ -220,13 +217,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
             publisher.Called.Should().BeTrue();
-            publisher.PublishedMessage.Should().Be("Test invalid operation.");
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            errorPublisher.Called.Should().BeTrue();
-            errorPublisher.PublishedMessage.Should().NotBeNull();
-            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            publisher.MultiplePublishedMessages.Count.Should().Be(2);
+            publisher.MultiplePublishedMessages[0].Should().Be("Test invalid operation.");
+            publisher.MultiplePublishedMessages[1].Should().Be("Received cancellation token, the routing is canceled.");
+            publisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
             new string(stringWriter.ToString().Distinct().ToArray()).Should().Be(">$");
         }
 
@@ -325,13 +319,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
             publisher.Called.Should().BeTrue();
-            publisher.PublishedMessage.Should().Be("The command router timed out in 2000 milliseconds.");
-
-            // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
-            errorPublisher.Called.Should().BeTrue();
-            errorPublisher.PublishedMessage.Should().NotBeNull();
-            errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
+            publisher.MultiplePublishedMessages.Count.Should().Be(2);
+            publisher.MultiplePublishedMessages[0].Should().Be("The command router timed out in 2000 milliseconds.");
+            publisher.MultiplePublishedMessages[1].Should().Be("Received cancellation token, the routing is canceled.");
+            publisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
             new string(stringWriter.ToString().Distinct().ToArray()).Should().Be(">");
         }
 
@@ -357,7 +348,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             titleWriter.ToString().Should().Be("test_caret");
 
             // Check output
-            MockErrorPublisher errorPublisher = (MockErrorPublisher)host.Services.GetRequiredService<IErrorHandler>();
+            MockExceptionPublisher errorPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
             errorPublisher.Called.Should().BeTrue();
             errorPublisher.PublishedMessage.Should().NotBeNull();
             errorPublisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
@@ -375,9 +366,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Tells the logger to write to string writer so we can test it,
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-
-            // Add Error publisher
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
@@ -398,9 +386,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Tells the logger to write to string writer so we can test it,
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
-            // Add Error publisher
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
@@ -420,9 +405,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Tells the logger to write to string writer so we can test it,
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
-            // Add Error publisher
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
@@ -441,9 +423,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Tells the logger to write to string writer so we can test it,
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-
-            // Add Error publisher
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
@@ -465,9 +444,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Tells the logger to write to string writer so we can test it,
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
-            // Add Error publisher
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
@@ -487,9 +463,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Tells the logger to write to string writer so we can test it,
             arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-
-            // Add Error publisher
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
 
             // Add Exception publisher
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
