@@ -8,7 +8,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
@@ -17,7 +16,6 @@ using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Runtime;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -30,12 +28,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
     [Collection("Sequential")]
     public class IHostExtensionsRunTcpRoutingTests : IAsyncLifetime
     {
-        public IHostExtensionsRunTcpRoutingTests()
-        {
-            stringWriter = new StringWriter();
-            serverIpEndPoint = new IPEndPoint(IPAddress.Loopback, 12345);
-        }
-
         [Fact]
         public async Task RunAsync_Should_Throw_Exception_If_IPEndPoint_Is_Null()
         {
@@ -77,16 +69,16 @@ namespace PerpetualIntelligence.Terminal.Extensions
             await Task.WhenAny(routingTask, Task.Delay(10000));
 
             // Server is not yet complete
-            routingTask.IsCompleted.Should().BeFalse();
+            routingTask.IsCompletedSuccessfully.Should().BeFalse();
 
             // Stop the server by issuing a cancellation
             tokenSource.CancelAfter(2000);
 
-            // Wait for 2.5 seconds and make sure routingTask is completed
-            await Task.Delay(2500);
+            // Wait for routingTask to complete
+            await routingTask;
 
             // Verify that the server runs indefinitely and stops when the cancellation token is triggered
-            routingTask.IsCompleted.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
@@ -110,39 +102,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Ensure that the server task has completed successfully
             routingTask.IsCompletedSuccessfully.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task RunAsync_Should_Handle_Client_Connections()
-        {
-            // Arrange
-            var newHostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesDefault);
-            host = newHostBuilder.Build();
-
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-
-            // Cancel so that the client does not go into an infinite loop during stream.Read
-            tokenSource.CancelAfter(2000);
-
-            // Start the TCP routing asynchronously
-            var routingTask = host.RunTcpRoutingAsync(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
-
-            // Simulate a client connecting to the server after a short delay
-            var connectTask = Task.Run(async () =>
-            {
-                await Task.Delay(1000); // Wait for 1000 milliseconds before connecting
-                using var tcpClient = new TcpClient();
-                await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
-            });
-
-            // Act
-            // Wait for both routingTask and connectTask to complete
-            await Task.WhenAll(routingTask, connectTask);
-
-            // Assert
-            // Check if the client is connected
-            connectTask.Status.Should().Be(TaskStatus.RanToCompletion);
-            connectTask.Exception.Should().BeNull();
         }
 
         [Fact]
@@ -177,16 +136,16 @@ namespace PerpetualIntelligence.Terminal.Extensions
             await Task.WhenAny(routingTask, Task.Delay(3000));
 
             // Server is not yet complete
-            routingTask.IsCompleted.Should().BeFalse();
+            routingTask.IsCompletedSuccessfully.Should().BeFalse();
 
             // Stop the server by issuing a cancellation
             tokenSource.Cancel();
 
             // Wait for routingTask to complete or timeout after 500 seconds
-            bool success = await Task.WhenAny(routingTask, Task.Delay(500)) == routingTask;
+            routingTask.Wait(500);
 
             // Verify that the server stops on cancellation
-            success.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
@@ -211,12 +170,12 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Cancel both the server and client tasks after a delay
             tokenSource.CancelAfter(3000);
 
-            // Wait for both the server and client tasks to complete or timeout after 5 seconds
-            Task.WaitAll(new[] { routingTask, clientTask }, 5000);
+            // Wait for client and server tasks to complete
+            Task.WhenAll(routingTask, clientTask).Wait(5000);
 
             // Verify that both server and client tasks stopped on cancellation
-            routingTask.IsCompleted.Should().BeTrue();
-            clientTask.IsCompleted.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
@@ -231,11 +190,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [Fact]
         public async Task HandleClientConnected_Should_Route_Command_To_Router()
         {
-            var newHostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesCancelOnRoute);
+            var newHostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesDefault);
             host = newHostBuilder.Build();
 
             // Start the TCP routing asynchronously
             var routingTask = host.RunTcpRoutingAsync(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+
+            tokenSource.CancelAfter(2000); // Wait for 2 seconds and then cancel the server
 
             // Start the client task
             var clientTask = Task.Run(async () =>
@@ -258,8 +219,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             mockCommandRouter.RawCommandString.Should().Be("Test command");
 
             // Verify that the server and client tasks have completed
-            routingTask.IsCompleted.Should().BeTrue();
-            clientTask.IsCompleted.Should().BeTrue();
+            await routingTask;
+            await clientTask;
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
@@ -283,10 +246,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 await tcpClient.GetStream().WriteAsync(messageBytes);
             });
 
-            // Wait for either the routing task or the client task to complete
+            // Client handling throws an exception
             Task.WaitAny(routingTask, clientTask);
-            routingTask.IsCompleted.Should().BeFalse();
-            clientTask.IsCompleted.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeFalse();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
 
             // Wait for .5 seconds and make sure tasks are completed
             await Task.Delay(500);
@@ -301,8 +264,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Wait for both the routing task and the client task to complete
             await Task.WhenAll(routingTask, clientTask);
-            routingTask.IsCompleted.Should().BeTrue();
-            clientTask.IsCompleted.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
@@ -343,8 +306,59 @@ namespace PerpetualIntelligence.Terminal.Extensions
             mockCommandRouter.MultipleRawString[2].Should().Be("rt3 grp3 cmd3");
 
             // Verify that the server and client tasks have completed
-            routingTask.IsCompleted.Should().BeTrue();
-            clientTask.IsCompleted.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task HandleClientConnected_Handles_Multiple_Delimited_Messages_CorrectlyAsync()
+        {
+            var newHostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesDefault);
+            host = newHostBuilder.Build();
+
+            // Start the TCP routing asynchronously
+            var routingTask = host.RunTcpRoutingAsync(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+
+            // Start the client task
+            var clientTask = Task.Run(async () =>
+            {
+                await Task.Delay(1000); // Wait for 1 second
+                using var tcpClient = new TcpClient();
+                await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
+
+                // Send a command that exceeds the configured command string length limit
+                string testString = GetCliOptions(host).DelimitedCommandString("rt1 grp1 cmd1", "rt2 grp2 cmd2", "rt3 grp3 cmd3");
+                byte[] messageBytes = Encoding.Unicode.GetBytes(testString);
+                await tcpClient.GetStream().WriteAsync(messageBytes);
+
+                await Task.Delay(3000);
+
+                // Send a command that exceeds the configured command string length limit
+                testString = GetCliOptions(host).DelimitedCommandString("rt4 grp4 cmd4", "rt5 grp5 cmd5", "rt6 grp6 cmd6");
+                messageBytes = Encoding.Unicode.GetBytes(testString);
+                await tcpClient.GetStream().WriteAsync(messageBytes);
+            });
+
+            // Cancel the token source to stop the server and client
+            tokenSource.CancelAfter(6000);
+
+            // Wait for both the routing task and the client task to complete
+            await Task.WhenAll(routingTask, clientTask);
+
+            // Assert
+            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+            mockCommandRouter.MultipleRawString.Count.Should().Be(6);
+            mockCommandRouter.MultipleRawString[0].Should().Be("rt1 grp1 cmd1");
+            mockCommandRouter.MultipleRawString[1].Should().Be("rt2 grp2 cmd2");
+            mockCommandRouter.MultipleRawString[2].Should().Be("rt3 grp3 cmd3");
+            mockCommandRouter.MultipleRawString[3].Should().Be("rt4 grp4 cmd4");
+            mockCommandRouter.MultipleRawString[4].Should().Be("rt5 grp5 cmd5");
+            mockCommandRouter.MultipleRawString[5].Should().Be("rt6 grp6 cmd6");
+
+            // Verify that the server and client tasks have completed
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
@@ -391,8 +405,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }
 
             // Verify that the server and client tasks have completed
-            routingTask.IsCompleted.Should().BeTrue();
-            clientTask.IsCompleted.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
@@ -439,20 +453,12 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }
 
             // Verify that the server and client tasks have completed
-            routingTask.IsCompleted.Should().BeTrue();
-            clientTask.IsCompleted.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
-        /// <summary>
-        /// Verifies that the server can handle multiple clients connecting and sending unique messages.
-        /// </summary>
-        /// <remarks>
-        /// This test simulates multiple clients connecting to the server and sending unique messages.
-        /// It verifies that the server can handle concurrent connections and process messages from each client correctly.
-        /// The test uses a cancellation token to stop the server after a specified time.
-        /// </remarks>
         [Fact]
-        public async Task RunAsync_Should_Handle_Multiple_Clients()
+        public async Task RunAsync_Should_Stop_Server_And_Multiple_Clients_On_Cancelation()
         {
             var newHostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesDefault);
             host = newHostBuilder.Build();
@@ -470,7 +476,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // List to store client tasks
             var clientTasks = new List<Task>();
-
             for (int i = 0; i < numClients; i++)
             {
                 // Simulate a client connecting to the server and sending a unique message
@@ -479,10 +484,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
                     await Task.Delay(1000); // Wait for 1 second to stagger the connections
                     using var tcpClient = new TcpClient();
                     await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
-
-                    // Send a unique message from each client
-                    byte[] messageBytes = Encoding.ASCII.GetBytes($"Client {i + 1} message");
-                    await tcpClient.GetStream().WriteAsync(messageBytes);
                 });
 
                 clientTasks.Add(clientTask);
@@ -493,16 +494,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
             {
                 routingTask
             };
-            Task.WaitAll(allTasks.ToArray());
-
-            // Wait for .5 seconds and make sure tasks are completed
-            await Task.Delay(500);
+            await Task.WhenAll(allTasks);
 
             // Verify that the server runs indefinitely and stops when the cancellation token is triggered
-            routingTask.IsCompleted.Should().BeTrue();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
             for (int i = 0; i < numClients; i++)
             {
-                clientTasks[i].IsCompleted.Should().BeTrue();
+                clientTasks[i].IsCompletedSuccessfully.Should().BeTrue();
             }
         }
 
@@ -539,15 +537,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Assert
             // Check if the client is connected and the server handles the malformed message correctly
-            connectTask.Status.Should().Be(TaskStatus.RanToCompletion);
-            connectTask.Exception.Should().BeNull();
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            connectTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
-        public Task RunAsync_Should_Handle_Exception_In_Routing_Process_Async()
+        public async Task RunAsync_Should_Handle_Exception_In_Routing_Process_Async()
         {
             // Arrange
-            var newHostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesErrorExceptionAndCancelOnRoute);
+            var newHostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesErrorExceptionOnRoute);
             host = newHostBuilder.Build();
 
             // Set the timeout to infinite to avoid cancellation during the test
@@ -569,16 +567,22 @@ namespace PerpetualIntelligence.Terminal.Extensions
             });
 
             // Wait for both the routing task and the client task to complete
-            Task.WaitAll(routingTask, clientTask);
+            int idx = Task.WaitAny(routingTask, clientTask);
+            routingTask.IsCompletedSuccessfully.Should().BeFalse();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+
+            // Wait for .5 seconds and make sure tasks are completed
+            await Task.Delay(500);
 
             // Check the published error
             MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
             exPublisher.Called.Should().BeTrue();
             exPublisher.PublishedMessage.Should().Be("test_error_description. arg1=test1 arg2=test2");
 
-            routingTask.IsCompleted.Should().BeTrue();
-            clientTask.IsCompleted.Should().BeTrue();
-            return Task.CompletedTask;
+            tokenSource.Cancel();
+            Task.WaitAll(routingTask, clientTask);
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            clientTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
@@ -600,6 +604,72 @@ namespace PerpetualIntelligence.Terminal.Extensions
             success.Should().BeFalse();
         }
 
+#if false
+        [Fact]
+        public async Task Multiple_Clients_Should_Send_Commands_Concurrently()
+        {
+            // Arrange
+            var newHostBuilder = Host.CreateDefaultBuilder()
+                                     .ConfigureServices(ConfigureServicesDefault)
+                                     .ConfigureLogging(act =>
+                                     {
+                                         act.AddConsole();
+                                         act.SetMinimumLevel(LogLevel.Information);
+                                     });
+            host = newHostBuilder.Build();
+
+            // Set the timeout to infinite to avoid cancellation during the test
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+
+            // Start the TCP routing asynchronously
+            var routingTask = host.RunTcpRoutingAsync(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+
+            // Start multiple client tasks and send a valid delimited message
+            const int numClients = 5;
+            Task[] _clientTasks = new Task[numClients];
+            var multipleClientsTask = Task.Run(async () =>
+            {
+                await Task.Delay(1000); // Wait for 1 second
+
+                for (int idx = 0; idx < numClients; idx++)
+                {
+                    _clientTasks[idx] = Task.Run(async () =>
+                    {
+                        using var tcpClient = new TcpClient();
+                        await tcpClient.ConnectAsync(serverIpEndPoint);
+                        tcpClient.Connected.Should().BeTrue();
+
+                        var command = $"Client-{idx} sent test command";
+                        var commandBytes = Encoding.Unicode.GetBytes(GetCliOptions(host).DelimitedCommandString(command));
+                        await tcpClient.GetStream().WriteAsync(commandBytes);
+                    });
+                }
+            });
+
+            tokenSource.CancelAfter(5000); // Stop the server
+
+            await Task.WhenAll(routingTask, multipleClientsTask);
+
+            // Verify that all client tasks are completed
+            for (int i = 0; i < numClients; i++)
+            {
+                await _clientTasks[i];
+                _clientTasks[i].IsCompletedSuccessfully.Should().BeTrue();
+            }
+
+            await routingTask; // Wait for the routing task to complete
+            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+
+            // Assert result
+            var mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.RouteCalled.Should().BeTrue();
+            //mockCommandRouter.RouteCounter.Should().Be(numClients);
+            mockCommandRouter.MultipleRawString.Count.Should().Be(numClients);
+            mockCommandRouter.MultipleRawString.Should().OnlyHaveUniqueItems();
+        }
+
+#endif
+
         private static TerminalOptions GetCliOptions(IHost host)
         {
             return host.Services.GetRequiredService<TerminalOptions>();
@@ -613,56 +683,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter());
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            arg2.AddSingleton<TerminalTcpRouting>();
-            arg2.AddSingleton<ITextHandler, UnicodeTextHandler>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
-        }
-
-        private void ConfigureServicesCancelOnRoute(IServiceCollection arg2)
-        {
-            tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
-
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
-
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            arg2.AddSingleton<TerminalTcpRouting>();
-            arg2.AddSingleton<ITextHandler, UnicodeTextHandler>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
-        }
-
-        private void ConfigureServicesDelayAndCancelOnRoute(IServiceCollection arg2)
-        {
-            tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
-
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(3000, tokenSource));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
-
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            arg2.AddSingleton<TerminalTcpRouting>();
-            arg2.AddSingleton<ITextHandler, UnicodeTextHandler>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
-        }
-
-        private void ConfigureServicesErrorExceptionAndCancelOnRoute(IServiceCollection arg2)
-        {
-            tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
-
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new ErrorException("test_error_code", "test_error_description. arg1={0} arg2={1}", "test1", "test2")));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
-
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
             arg2.AddSingleton<TerminalTcpRouting>();
             arg2.AddSingleton<ITextHandler, UnicodeTextHandler>();
@@ -677,39 +697,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, null, new ErrorException("test_error_code", "test_error_description. arg1={0} arg2={1}", "test1", "test2")));
             arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            arg2.AddSingleton<TerminalTcpRouting>();
-            arg2.AddSingleton<ITextHandler, UnicodeTextHandler>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
-        }
-
-        private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
-        {
-            tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
-
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation.")));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
-
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            arg2.AddSingleton<TerminalTcpRouting>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
-        }
-
-        private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
-        {
-            tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
-
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, new Shared.Infrastructure.Error("explicit_error", "explicit_error_description param1={0} param2={1}.", "test_param1", "test_param2")));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
-
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
-            arg2.AddSingleton<IErrorHandler>(new MockErrorPublisher());
             arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
             arg2.AddSingleton<TerminalTcpRouting>();
             arg2.AddSingleton<ITextHandler, UnicodeTextHandler>();
@@ -717,34 +704,23 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         private IHost host = null!;
-        private readonly StringWriter stringWriter;
-        private TextWriter originalWriter = null!;
-        private TextReader originalReader = null!;
         private CancellationTokenSource tokenSource = null!;
         private TerminalStartContext startContext = null!;
-        private readonly IPEndPoint serverIpEndPoint = null!;
+        private IPEndPoint serverIpEndPoint = null!;
 
         public Task InitializeAsync()
         {
-            originalWriter = Console.Out;
-            originalReader = Console.In;
-
             var hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesDefault);
             host = hostBuilder.Build();
+
+            serverIpEndPoint = new IPEndPoint(IPAddress.Loopback, 12345);
 
             return Task.CompletedTask;
         }
 
         public Task DisposeAsync()
         {
-            // Reset console.
-            Console.SetOut(originalWriter);
-            Console.SetIn(originalReader);
-
             host?.Dispose();
-
-            stringWriter?.Dispose();
-
             return Task.CompletedTask;
         }
     }

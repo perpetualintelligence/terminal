@@ -28,16 +28,13 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// <para>This class implements the <see cref="ITerminalRouting{TContext, TResult}"/> interface and is responsible for handling
     /// TCP client-server communication. It runs a TCP server on the specified IP endpoint and waits for incoming client connections.
     /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
-    /// If an exception is encountered while handling client connections, the method will stop and log the exception.
     /// </para>
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "DI fields.")]
     public class TerminalTcpRouting : ITerminalRouting<TerminalTcpRoutingContext, TerminalTcpRoutingResult>
     {
         private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
-        private readonly IErrorHandler errorHandler;
         private readonly TerminalOptions options;
         private readonly ITextHandler textHandler;
         private readonly ILogger<TerminalTcpRouting> logger;
@@ -48,7 +45,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <param name="applicationLifetime">The host application lifetime instance.</param>
         /// <param name="commandRouter">The command router.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
-        /// <param name="errorHandler">The error handler.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="logger">The logger.</param>
@@ -60,7 +56,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
             IHostApplicationLifetime applicationLifetime,
             ICommandRouter commandRouter,
             IExceptionHandler exceptionHandler,
-            IErrorHandler errorHandler,
             TerminalOptions options,
             ITextHandler textHandler,
             ILogger<TerminalTcpRouting> logger)
@@ -68,7 +63,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
             this.applicationLifetime = applicationLifetime;
             this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
-            this.errorHandler = errorHandler;
             this.options = options;
             this.textHandler = textHandler;
             this.logger = logger;
@@ -80,14 +74,10 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <param name="context">The routing context.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         /// <remarks>
-        /// <para>This method starts a TCP server on the specified IP endpoint and waits for incoming client connections.
+        /// This method starts a TCP server on the specified IP endpoint and waits for incoming client connections.
         /// It handles the client connections asynchronously by creating a task for each incoming connection.
         /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
         /// The method will also stop if an exception is encountered while handling client connections.
-        /// </para>
-        /// <para>Exceptions:</para>
-        /// <para><see cref="ErrorException"/>: Thrown when the requested start mode is not valid for console routing.</para>
-        /// <para><see cref="ErrorException"/>: Thrown when the network IP endpoint is missing in the TCP server routing request.</para>
         /// </remarks>
         public async Task<TerminalTcpRoutingResult> RunAsync(TerminalTcpRoutingContext context)
         {
@@ -110,14 +100,18 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 server.Start();
                 logger.LogDebug("TCP Server started. endpoint={0} timestamp_utc={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
 
-                // Wait for the cancellation token or the AcceptClientConnectionsAsync method to complete. A cancellation token stops the entire routing service.
-                await Task.WhenAny(AcceptClientConnectionsAsync(server, context), Task.Delay(Timeout.Infinite, context.StartContext.CancellationToken));
-            }
-            catch (OperationCanceledException cex)
-            {
-                // The default exception handler will log the exception and return a generic error message to the client.
-                logger.LogDebug("Cancellation requested. endpoint={0} timestamp_utc={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
-                await exceptionHandler.HandleAsync(new ExceptionHandlerContext(cex, null));
+                // Indefinitely wait for incoming clients till a cancellation token.
+                while (true)
+                {
+                    // Break if cancellation is requested
+                    if (context.StartContext.CancellationToken.IsCancellationRequested)
+                    {
+                        logger.LogDebug("TCP Server is canceled. endpoint={0} timestamp_utc={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                        break;
+                    }
+
+                    await AcceptClientConnectionsAsync(server, context);
+                }
             }
             catch (Exception ex)
             {
@@ -137,28 +131,13 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <summary>
         /// Accepts multiple client connections asynchronously and handles each connection in a separate background task.
         /// </summary>
-        /// <param name="server">The TCP listener that is waiting for incoming client connections.</param>
-        /// <param name="context">The routing context containing the server's configuration and start context.</param>
+        /// <param name="server">The TCP listener waiting for incoming client connections.</param>
+        /// <param name="context">The routing context.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         /// <remarks>
-        /// <para>This method sets up a TCP listener to accept incoming client connections asynchronously. It waits for the specified
-        /// synchronization delay before accepting connections. For each accepted client connection, it creates a separate background
-        /// task using <see cref="Task.Run(Action)"/> to handle the connection asynchronously.
-        /// </para>
-        /// <para>The method attempts to accept the configured maximum number of client connections concurrently. If any exception occurs
-        /// while accepting a client connection, it will be caught and logged, and the method will proceed with accepting other connections.
-        /// </para>
-        /// <para>The try-catch block within this method is used to handle exceptions that may occur during the process of accepting client connections.
-        /// Since client connections are accepted concurrently in separate background tasks, individual client connections might encounter
-        /// exceptions or fail to connect. The try-catch block ensures that any exception encountered during the acceptance process does not
-        /// disrupt the overall server operation or the acceptance of other client connections.
-        /// </para>
-        /// <para>By logging the exception and continuing with accepting other connections, the method ensures that the server remains robust and
-        /// can handle potential issues gracefully. Any exceptions logged here should be further investigated to identify and resolve the root cause.
-        /// </para>
-        /// <para>The method ensures that the server continues to accept new client connections and run its core logic, even if individual
-        /// client connections encounter exceptions or fail to connect.
-        /// </para>
+        /// This method sets up a TCP listener to accept incoming client connections asynchronously.
+        /// It handles the accepted connections concurrently by creating separate background tasks.
+        /// Exceptions encountered during acceptance are logged, and the method continues accepting other connections.
         /// </remarks>
         private async Task AcceptClientConnectionsAsync(TcpListener server, TerminalTcpRoutingContext context)
         {
@@ -169,35 +148,42 @@ namespace PerpetualIntelligence.Terminal.Runtime
             {
                 // Create a local copy of the index for the task
                 int localIdx = idx + 1;
-
-                logger.LogDebug("Waiting for client to connect on task {0}", localIdx);
                 clientConnections.Add(AcceptClientAsync(server, context, localIdx));
             }
 
             // Wait for all client connections to complete
             await Task.WhenAll(clientConnections);
-            logger.LogWarning("All client connection tasks are exhausted.");
+            logger.LogWarning("All {0} client connection tasks are exhausted.", options.Router.RemoteMaxClients);
         }
 
         /// <summary>
         /// Accepts a client connection asynchronously and handles the connection.
         /// </summary>
-        /// <param name="server">The TCP listener that is waiting for incoming client connections.</param>
-        /// <param name="context">The routing context containing the server's configuration and start context.</param>
-        /// <param name="taskIdx">The task index that is accepting a client connection.</param>
+        /// <param name="server">The TCP listener waiting for incoming client connections.</param>
+        /// <param name="context">The routing context.</param>
+        /// <param name="taskIdx">The task index accepting a client connection.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         /// <remarks>
-        /// <para>This method is called for each accepted client connection. It sets up a new TCP client connection (<see cref="TcpClient"/>)
-        /// and then calls the <see cref="HandleClientConnected"/> method to process the client's commands.
-        /// </para>
+        /// This method is responsible for accepting a single client connection asynchronously.
+        /// It sets up a TCP client connection and delegates the connection handling to the HandleClientConnected method.
         /// </remarks>
         private async Task AcceptClientAsync(TcpListener server, TerminalTcpRoutingContext context, int taskIdx)
         {
             try
             {
-                using TcpClient tcpClient = await server.AcceptTcpClientAsync();
+                // Ensure that AcceptTcpClientAsync is canceled when the cancellation token is signaled.
+                logger.LogDebug("Waiting for client to connect on task {0}", taskIdx);
+                Task<TcpClient> tcpClientTask = server.AcceptTcpClientAsync();
+                await Task.WhenAny(tcpClientTask, Task.Delay(Timeout.Infinite, context.StartContext.CancellationToken));
+                context.StartContext.CancellationToken.ThrowIfCancellationRequested();
+
+                // Setup the context and handle the client connection
+                using TcpClient tcpClient = tcpClientTask.Result;
                 context.Setup(server, tcpClient);
-                await HandleClientConnected(context);
+                logger.LogDebug("Client connected on task {0}", taskIdx);
+
+                await HandleClientConnected(context, taskIdx);
+                logger.LogDebug("Client connection handled on task {0}", taskIdx);
             }
             catch (Exception ex)
             {
@@ -205,6 +191,16 @@ namespace PerpetualIntelligence.Terminal.Runtime
             }
         }
 
+        /// <summary>
+        /// Processes the raw data received from the client asynchronously.
+        /// </summary>
+        /// <param name="tcpContext">The <see cref="TerminalTcpRoutingContext"/> representing the TCP client and server setup.</param>
+        /// <param name="raw">The raw data received from the client.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// This method routes the command request to the router. It waits for the router or the timeout.
+        /// The task completed within the timeout. If it faults or is canceled, the exception is re-thrown.
+        /// </remarks>
         private async Task ProcessRawDataAsync(TerminalTcpRoutingContext tcpContext, string raw)
         {
             // Route the command request to router. Wait for the router or the timeout.
@@ -226,36 +222,13 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <summary>
         /// Handles the communication with a connected TCP client asynchronously.
         /// </summary>
-        /// <param name="tcpContext">The TerminalTcpRoutingContext representing the TCP client and server setup.</param>
+        /// <param name="tcpContext">The <see cref="TerminalTcpRoutingContext"/> representing the TCP client and server setup.</param>
+        /// <param name="taskIdx">The task index executing the client handling.</param>
         /// <remarks>
-        /// <para>This method is executed asynchronously for each connected TCP client. It first checks if the TCP client and server
-        /// are set up correctly. If not, it throws an ErrorException with an appropriate error message.
-        /// </para>
-        /// <para>Next, the method checks if the client is connected. If the client is not connected, it throws an ErrorException
-        /// indicating that the TCP client is not connected.
-        /// </para>
-        /// <para>If the TCP client is properly set up and connected, it reads data from the client's NetworkStream asynchronously
-        /// until either the client is disconnected or the cancellation token is triggered. If the client is disconnected,
-        /// the method logs a debug message and exits the loop.
-        /// </para>
-        /// <para>For each read operation, the received data is appended to a StringBuilder, as the data may not arrive as complete
-        /// packages. The received data is then split using the configured CommandStringDelimiter to identify complete data packages.
-        /// </para>
-        /// <para>If no complete data package is found, the method continues reading from the stream. Once a complete data package is
-        /// identified, the method processes the data package and moves to the next one until all received data is processed.
-        /// </para>
-        /// <para>Before processing each data package, the method checks if the data package size is over the configured limit. If the
-        /// package size exceeds the limit, it throws an ErrorException indicating that the command string length is over the
-        /// configured limit.
-        /// </para>
-        /// <para>If the last data package is not complete, the method stores the incomplete part in the StringBuilder to be processed
-        /// along with the next incoming data.
-        /// </para>
-        /// <para>The method is designed to avoid blocking indefinitely by using the CancellationToken from the provided TerminalTcpRoutingContext's
-        /// StartContext. When the CancellationToken is triggered, the method stops reading data and returns.
-        /// </para>
+        /// This method is executed asynchronously for each connected TCP client.
+        /// It reads data from the client's network stream, processes the received data, and manages communication asynchronously.
         /// </remarks>
-        private async Task HandleClientConnected(TerminalTcpRoutingContext tcpContext)
+        private async Task HandleClientConnected(TerminalTcpRoutingContext tcpContext, int taskIdx)
         {
             // Check if the TCP client and server are set up correctly
             if (tcpContext.Server == null || tcpContext.Client == null)
@@ -277,12 +250,18 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 StringBuilder receivedData = new();
 
                 // Read data from the client stream asynchronously until the client is disconnected or the cancellation token is triggered
-                while (!tcpContext.StartContext.CancellationToken.IsCancellationRequested)
+                while (true)
                 {
+                    if (tcpContext.StartContext.CancellationToken.IsCancellationRequested)
+                    {
+                        logger.LogDebug("Client request is canceled. task_idx={0} timestamp_utc={1}", taskIdx, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                        break;
+                    }
+
                     // The stream is closed, the client is disconnected.
                     if (!tcpContext.Client.Connected)
                     {
-                        logger.LogDebug("Client is disconnected. client_endpoint={0} server_endpoint={1}", tcpContext.Client.Client.LocalEndPoint.ToString(), tcpContext.Server.LocalEndpoint.ToString());
+                        logger.LogDebug("Client is disconnected. task_idx={0} timestamp_utc={1}", taskIdx, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
                         break;
                     }
 
