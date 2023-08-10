@@ -104,7 +104,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         }
 
                         // Route the request.
-                        CommandRouterContext routerContext = new(raw, context.StartContext.CancellationToken);
+                        CommandRouterContext routerContext = new(raw, context);
                         Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(routerContext);
 
                         bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.CancellationToken);

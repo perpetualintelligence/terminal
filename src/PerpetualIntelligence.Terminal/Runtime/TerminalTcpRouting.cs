@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
         /// The method will also stop if an exception is encountered while handling client connections.
         /// </remarks>
-        public async Task<TerminalTcpRoutingResult> RunAsync(TerminalTcpRoutingContext context)
+        public virtual async Task<TerminalTcpRoutingResult> RunAsync(TerminalTcpRoutingContext context)
         {
             // Ensure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)
@@ -204,7 +204,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         private async Task ProcessRawDataAsync(TerminalTcpRoutingContext tcpContext, string raw)
         {
             // Route the command request to router. Wait for the router or the timeout.
-            CommandRouterContext context = new(raw, tcpContext.StartContext.CancellationToken);
+            CommandRouterContext context = new(raw, tcpContext);
             Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(context);
             if (await Task.WhenAny(routeTask, Task.Delay(options.Router.Timeout, tcpContext.StartContext.CancellationToken)) == routeTask)
             {

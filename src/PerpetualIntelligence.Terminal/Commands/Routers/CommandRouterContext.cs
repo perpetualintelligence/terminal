@@ -1,12 +1,12 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Runtime;
 using System;
-using System.Threading;
 
 namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
@@ -19,22 +19,22 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// The command string.
         /// </summary>
         /// <param name="rawCommandString">The raw command string.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public CommandRouterContext(string rawCommandString, CancellationToken cancellationToken)
+        /// <param name="routingContext">The terminal routing context.</param>
+        public CommandRouterContext(string rawCommandString, TerminalRoutingContext routingContext)
         {
             if (string.IsNullOrWhiteSpace(rawCommandString))
             {
                 throw new ArgumentException($"'{nameof(rawCommandString)}' cannot be null or whitespace.", nameof(rawCommandString));
             }
 
-            CancellationToken = cancellationToken;
+            RoutingContext = routingContext;
             Route = new CommandRoute(Guid.NewGuid().ToString(), rawCommandString);
         }
 
         /// <summary>
-        /// The cancellation token.
+        /// The terminal routing context.
         /// </summary>
-        public CancellationToken CancellationToken { get; }
+        public TerminalRoutingContext RoutingContext { get; }
 
         /// <summary>
         /// The command route.
