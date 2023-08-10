@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             if (string.IsNullOrWhiteSpace(rawCommandString))
             {
-                throw new System.ArgumentException($"'{nameof(rawCommandString)}' cannot be null or whitespace.", nameof(rawCommandString));
+                throw new ArgumentException($"'{nameof(rawCommandString)}' cannot be null or whitespace.", nameof(rawCommandString));
             }
 
             CancellationToken = cancellationToken;

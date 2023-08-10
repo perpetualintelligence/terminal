@@ -45,11 +45,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// <summary>
         /// Processes the runner result asynchronously.
         /// </summary>
-        /// <param name="context">The runner result context.</param>
+        /// <param name="context">The runner context.</param>
         /// <remarks>
         /// Derived implementation should call base class implementation to mark the result as processed, see <see cref="IsProcessed"/>.
         /// </remarks>
-        public virtual Task ProcessAsync(CommandRunnerResultProcessorContext context)
+        public virtual Task ProcessAsync(CommandRunnerContext context)
         {
             IsProcessed = true;
             return Task.CompletedTask;

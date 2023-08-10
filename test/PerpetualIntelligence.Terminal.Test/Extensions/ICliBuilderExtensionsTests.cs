@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddCliOptionsShouldCorrectlyInitialize()
+        public void AddTerminalOptionsShouldCorrectlyInitialize()
         {
             terminalBuilder.AddTerminalOptions();
 

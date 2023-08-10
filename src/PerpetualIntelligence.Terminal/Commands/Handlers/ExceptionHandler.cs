@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                     logger.FormatAndLog(LogLevel.Error, options.Logging, err.ErrorDescription ?? "", err.Args ?? Array.Empty<object?>());
                 }
             }
-            else if (context.Exception is OperationCanceledException oe)
+            else if (context.Exception is OperationCanceledException)
             {
                 logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. command_string={0}", context.RawCommandString);
             }

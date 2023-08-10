@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
             return new ValueTask();
         }
 
-        public override Task ProcessAsync(CommandRunnerResultProcessorContext context)
+        public override Task ProcessAsync(CommandRunnerContext context)
         {
             ResultProcessed = true;
             return Task.CompletedTask;

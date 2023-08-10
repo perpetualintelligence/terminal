@@ -80,7 +80,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             }
 
             // Process the result.
-            await runnerResult.ProcessAsync(new(runnerContext));
+            await runnerResult.ProcessAsync(runnerContext);
 
             // Issue a after run event if configured
             if (asyncEventHandler != null)
