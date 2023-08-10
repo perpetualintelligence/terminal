@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -8,8 +8,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Runtime;
 using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
 
@@ -17,6 +19,7 @@ using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
@@ -40,7 +43,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, disabledArgsDescriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is disabled. command_name=name1 command_id=id1 option=key1");
         }
 
@@ -56,7 +60,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
         }
 
@@ -72,7 +77,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
 
             terminalOptions.Checker.AllowObsoleteOption = true;
             await checker.CheckAsync(context);
@@ -90,7 +96,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
 
             terminalOptions.Checker.AllowObsoleteOption = null;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
@@ -112,7 +119,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.MissingOption, "The required option is missing. command_name=name1 command_id=id1 option=key1");
         }
 
@@ -128,7 +136,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
         }
 
@@ -146,7 +155,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
 
             Assert.AreEqual("non-date", options[0].Value);
@@ -166,7 +176,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value does not match the mapped type. option=key1 type=System.DateTime data_type=Date value_type=String value=non-date");
         }
 
@@ -188,7 +199,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Assert.IsInstanceOfType(oldValue, typeof(string));
 
             // Value should pass and converted to date
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
 
             object newValue = options[0].Value;
@@ -208,7 +220,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             var result = await checker.CheckAsync(context);
         }
 
@@ -224,7 +237,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             };
             Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandCheckerContext context = new(argsCommand);
+            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
         }
 
@@ -237,6 +251,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             valueChecker = new OptionChecker(mapper, terminalOptions);
             checker = new CommandChecker(valueChecker, terminalOptions, TestLogger.Create<CommandChecker>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
+            tokenSource = new CancellationTokenSource();
+            routingContext = new MockTerminalRoutingContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token));
+            routerContext = new CommandRouterContext("test", routingContext);
         }
 
         private CommandRoute commandRoute = null!;
@@ -246,5 +263,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         private TerminalOptions terminalOptions = null!;
         private ITextHandler textHandler = null!;
         private IOptionChecker valueChecker = null!;
+        private CommandRouterContext routerContext = null!;
+        private TerminalRoutingContext routingContext = null!;
+        private CancellationTokenSource tokenSource = null!;
+        private readonly CommandHandlerContext handlerContext = null!;
     }
 }

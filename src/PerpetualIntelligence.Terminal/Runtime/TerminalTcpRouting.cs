@@ -32,7 +32,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// </remarks>
     public class TerminalTcpRouting : ITerminalRouting<TerminalTcpRoutingContext, TerminalTcpRoutingResult>
     {
-        private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
         private readonly TerminalOptions options;
@@ -60,7 +59,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
             ITextHandler textHandler,
             ILogger<TerminalTcpRouting> logger)
         {
-            this.applicationLifetime = applicationLifetime;
             this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
             this.options = options;

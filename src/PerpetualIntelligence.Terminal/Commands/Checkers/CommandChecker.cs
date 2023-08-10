@@ -1,14 +1,13 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-
 using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
@@ -36,23 +35,23 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             // If the command itself do not support any options then there is nothing much to check. Extractor will
             // reject any unsupported attributes.
-            if (context.Command.Descriptor.OptionDescriptors == null)
+            if (context.HandlerContext.Command.Descriptor.OptionDescriptors == null)
             {
                 return new CommandCheckerResult();
             }
 
             // Check the options against the descriptor constraints
             // TODO: process multiple errors.
-            foreach (var argDescriptor in context.Command.Descriptor.OptionDescriptors)
+            foreach (var argDescriptor in context.HandlerContext.Command.Descriptor.OptionDescriptors)
             {
                 // Optimize (not all options are required)
-                bool containsArg = context.Command.TryGetOption(argDescriptor.Id, out Option? arg);
+                bool containsArg = context.HandlerContext.Command.TryGetOption(argDescriptor.Id, out Option? arg);
                 if (!containsArg)
                 {
                     // Required option is missing
                     if (argDescriptor.Required.GetValueOrDefault())
                     {
-                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.HandlerContext.Command.Name, context.HandlerContext.Command.Id, argDescriptor.Id);
                     }
                 }
                 else
@@ -60,13 +59,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     // Check obsolete
                     if (argDescriptor.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.HandlerContext.Command.Name, context.HandlerContext.Command.Id, argDescriptor.Id);
                     }
 
                     // Check disabled
                     if (argDescriptor.Disabled.GetValueOrDefault())
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.Command.Name, context.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.HandlerContext.Command.Name, context.HandlerContext.Command.Id, argDescriptor.Id);
                     }
 
                     // Check arg value
