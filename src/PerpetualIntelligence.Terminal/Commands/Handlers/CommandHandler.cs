@@ -65,11 +65,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             // Find the runner to run the command
             IDelegateCommandRunner commandRunner = await FindRunnerOrThrowAsync(context);
-            CommandRunnerContext runnerContext = new(context.Command);
+            CommandRunnerContext runnerContext = new(context);
             CommandRunnerResult runnerResult;
 
             // Run or Help
-            if (!options.Help.Disabled.GetValueOrDefault() && runnerContext.Command.TryGetOption(options.Help.OptionId, out _))
+            if (!options.Help.Disabled.GetValueOrDefault() && context.Command.TryGetOption(options.Help.OptionId, out _))
             {
                 IHelpProvider helpProvider = services.GetRequiredService<IHelpProvider>();
                 runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, helpProvider);
@@ -104,7 +104,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             // Find the checker and check the command
             ICommandChecker commandChecker = await FindCheckerOrThrowAsync(context);
-            var result = await commandChecker.CheckAsync(new CommandCheckerContext(context.Command));
+            var result = await commandChecker.CheckAsync(new CommandCheckerContext(context));
 
             // Issue a after check event if configured
             if (asyncEventHandler != null)

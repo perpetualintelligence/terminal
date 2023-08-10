@@ -1,17 +1,17 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 command = extractorResult.Command;
 
                 // Delegate to handler
-                CommandHandlerContext handlerContext = new(command, license);
+                CommandHandlerContext handlerContext = new(context, command, license);
                 var handlerResult = await commandHandler.HandleAsync(handlerContext);
                 result = new CommandRouterResult(handlerResult, context.Route);
             }

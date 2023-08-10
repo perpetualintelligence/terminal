@@ -38,6 +38,6 @@ namespace PerpetualIntelligence.Terminal.Authentication
             return await base.SendAsync(request, cancellationToken);
         }
 
-        private IAuthenticationProvider _authenticationProvider;
+        private readonly IAuthenticationProvider _authenticationProvider;
     }
 }

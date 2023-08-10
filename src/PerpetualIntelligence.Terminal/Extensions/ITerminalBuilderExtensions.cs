@@ -333,25 +333,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private static ITerminalBuilder AddDeclarativeTarget(this ITerminalBuilder builder, Type declarativeTarget)
         {
             // Command descriptor
-            CommandDescriptorAttribute cmdAttr = declarativeTarget.GetCustomAttribute<CommandDescriptorAttribute>(false);
-            if (cmdAttr == null)
-            {
-                throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command descriptor.");
-            }
+            CommandDescriptorAttribute cmdAttr = declarativeTarget.GetCustomAttribute<CommandDescriptorAttribute>(false) ?? throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command descriptor.");
 
             // Command Runner
-            CommandRunnerAttribute cmdRunner = declarativeTarget.GetCustomAttribute<CommandRunnerAttribute>(false);
-            if (cmdRunner == null)
-            {
-                throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command runner.");
-            }
+            CommandRunnerAttribute cmdRunner = declarativeTarget.GetCustomAttribute<CommandRunnerAttribute>(false) ?? throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command runner.");
 
             // Command checker
-            CommandCheckerAttribute cmdChecker = declarativeTarget.GetCustomAttribute<CommandCheckerAttribute>(false);
-            if (cmdChecker == null)
-            {
-                throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command checker.");
-            }
+            CommandCheckerAttribute cmdChecker = declarativeTarget.GetCustomAttribute<CommandCheckerAttribute>(false) ?? throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command checker.");
 
             // Establish command builder Default option not set ?
             ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Prefix, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.IsGroup, cmdAttr.IsRoot, cmdAttr.IsProtected);

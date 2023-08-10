@@ -1,10 +1,11 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using System;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
@@ -17,16 +18,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="command">The command to check.</param>
+        /// <param name="handlerContext">The command handler context.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public CommandCheckerContext(Command command)
+        public CommandCheckerContext(CommandHandlerContext handlerContext)
         {
-            Command = command ?? throw new ArgumentNullException(nameof(command));
+            HandlerContext = handlerContext ?? throw new ArgumentNullException(nameof(handlerContext));
         }
 
         /// <summary>
-        /// The command to check.
+        /// The command handler context.
         /// </summary>
-        public Command Command { get; set; }
+        public CommandHandlerContext HandlerContext { get; }
     }
 }

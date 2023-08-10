@@ -13,16 +13,19 @@ using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
 using PerpetualIntelligence.Terminal.Commands.Providers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Commands.Runners;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Runtime;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Handlers
@@ -44,7 +47,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>());
             using var newHost = hostBuilder.Build();
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=MockCommandCheckerInner");
         }
@@ -54,14 +57,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         {
             command.Item1.Checker = typeof(MockErrorCommandCheckerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_checker_error", "test_checker_error_desc");
         }
 
         [TestMethod]
         public async Task CheckerNotConfiguredShouldError()
         {
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not configured. command_name=name1 command_id=id1");
         }
 
@@ -78,7 +81,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                 Assert.IsFalse(MockCommandRunnerInnerResult.ResultProcessed);
                 Assert.IsFalse(MockCommandRunnerInnerResult.ResultDisposed);
 
-                CommandHandlerContext commandContext = new(command.Item2, license);
+                CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
                 await handler.HandleAsync(commandContext);
 
                 Assert.IsTrue(MockCommandRunnerInnerResult.ResultProcessed);
@@ -97,7 +100,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // Not a ICommandChecker
             command.Item1.Checker = typeof(MockNotCheckerOrRunner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not valid. command_name=name1 command_id=id1 checker=MockNotCheckerOrRunner");
         }
 
@@ -110,7 +113,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // Not a ICommandChecker
             command.Item1.Runner = typeof(MockNotCheckerOrRunner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner delegate is not configured. command_name=name1 command_id=id1 runner=MockNotCheckerOrRunner");
         }
 
@@ -127,7 +130,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             using IHost newHost = hostBuilder.Build();
             var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
         }
 
@@ -139,7 +142,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             command.Item1.Runner = typeof(MockErrorCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_runner_error", "test_runner_error_desc");
         }
 
@@ -151,7 +154,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             helpCommand.Item1.Runner = typeof(MockErrorCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(helpCommand.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, helpCommand.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_runner_help_error", "test_runner_help_error_desc");
         }
 
@@ -161,7 +164,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(helpCommand.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, helpCommand.Item2, license);
             await handler.HandleAsync(commandContext);
 
             MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
@@ -181,7 +184,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(helpCommand.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, helpCommand.Item2, license);
             var result = await handler.HandleAsync(commandContext);
 
             result.RunnerResult.Should().NotBeEquivalentTo(CommandRunnerResult.NoProcessing);
@@ -198,7 +201,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await handler.HandleAsync(commandContext);
 
             MockCommandRunnerInner commandRunnerInner = host.Services.GetRequiredService<MockCommandRunnerInner>();
@@ -215,7 +218,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await handler.HandleAsync(commandContext);
 
             MockCommandRunnerInner commandRunnerInner = host.Services.GetRequiredService<MockCommandRunnerInner>();
@@ -234,7 +237,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             helpCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(helpCommand.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, helpCommand.Item2, license);
             await handler.HandleAsync(commandContext);
 
             MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
@@ -247,7 +250,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await handler.HandleAsync(commandContext);
 
             MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
@@ -260,7 +263,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // Make sure checker pass so runner can fail
             command.Item1.Checker = typeof(MockCommandCheckerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not configured. command_name=name1 command_id=id1");
         }
 
@@ -270,7 +273,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             await handler.HandleAsync(commandContext);
 
             Assert.IsTrue(licenseChecker.Called);
@@ -284,7 +287,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             var result = await handler.HandleAsync(commandContext);
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType<CommandHandlerResult>(result);
@@ -299,7 +302,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             var result = await handler.HandleAsync(commandContext);
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType<CommandHandlerResult>(result);
@@ -325,7 +328,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             asyncEventHandler.BeforeCheckCalled.Should().Be(false);
             asyncEventHandler.AfterCheckCalled.Should().Be(false);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             var result = await handler.HandleAsync(commandContext);
 
             asyncEventHandler.BeforeCheckCalled.Should().Be(true);
@@ -346,7 +349,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             asyncEventHandler.BeforeRunCalled.Should().Be(false);
             asyncEventHandler.AfterRunCalled.Should().Be(false);
 
-            CommandHandlerContext commandContext = new(command.Item2, license);
+            CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
             var result = await handler.HandleAsync(commandContext);
 
             asyncEventHandler.BeforeRunCalled.Should().Be(true);
@@ -373,7 +376,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             try
             {
-                CommandHandlerContext commandContext = new(command.Item2, license);
+                CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
                 var result = await handler.HandleAsync(commandContext);
             }
             catch (ErrorException eex)
@@ -406,7 +409,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             try
             {
-                CommandHandlerContext commandContext = new(command.Item2, license);
+                CommandHandlerContext commandContext = new(routerContext, command.Item2, license);
                 var result = await handler.HandleAsync(commandContext);
             }
             catch (ErrorException eex)
@@ -427,10 +430,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
             host = hostBuilder.Build();
 
+            tokenSource = new CancellationTokenSource();
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1");
+            routingContext = new MockTerminalRoutingContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token));
+            routerContext = new CommandRouterContext("test", routingContext);
 
             OptionDescriptors optionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
@@ -488,5 +494,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         private License license = null!;
         private MockLicenseCheckerInner licenseChecker = null!;
         private TerminalOptions terminalOptions = null!;
+        private CommandRouterContext routerContext = null!;
+        private TerminalRoutingContext routingContext = null!;
+        private CancellationTokenSource tokenSource = null!;
     }
 }

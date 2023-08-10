@@ -4,13 +4,8 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using System;
 using System.Collections.Generic;
 
@@ -24,19 +19,19 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="command">The command to run.</param>
+        /// <param name="handlerContext">The command hander context.</param>
         /// <param name="custom">The custom data for the command to run.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public CommandRunnerContext(Command command, Dictionary<string, object>? custom = null)
+        public CommandRunnerContext(CommandHandlerContext handlerContext, Dictionary<string, object>? custom = null)
         {
-            Command = command ?? throw new ArgumentNullException(nameof(command));
+            HandlerContext = handlerContext;
             Custom = custom;
         }
 
         /// <summary>
-        /// The checked command to run.
+        /// The command hander context.
         /// </summary>
-        public Command Command { get; }
+        public CommandHandlerContext HandlerContext { get; }
 
         /// <summary>
         /// The custom data for the command.
