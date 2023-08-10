@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+#if false
+
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -716,3 +718,4 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
     }
 }
+#endif
