@@ -1,15 +1,16 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +24,10 @@ namespace PerpetualIntelligence.Terminal.Mocks
             this.cancelOnRouteCalled = cancelOnRouteCalled;
             this.exception = exception;
             this.explicitError = explicitError;
+            MultipleRawString = new List<string>();
         }
+
+        public List<string> MultipleRawString { get; set; }
 
         public string? RawCommandString { get; set; }
 
@@ -41,6 +45,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             // Stats
             RouteCalled = true;
             RawCommandString = context.Route.Command.Raw;
+            MultipleRawString.Add(context.Route.Command.Raw);
             RouteCounter += 1;
 
             // Add delay
@@ -50,10 +55,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             }
 
             // Cancel on route first
-            if (cancelOnRouteCalled != null)
-            {
-                cancelOnRouteCalled.Cancel();
-            }
+            cancelOnRouteCalled?.Cancel();
 
             // Raise exception
             if (exception != null)
@@ -69,12 +71,6 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
             ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()), context.Route);
             return ReturnedRouterResult;
-        }
-
-        public Task<TryResultOrError<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
-        {
-            FindCalled = true;
-            return Task.FromResult(new TryResultOrError<ICommandHandler>(new MockCommandHandler()));
         }
 
         private readonly CancellationTokenSource? cancelOnRouteCalled;

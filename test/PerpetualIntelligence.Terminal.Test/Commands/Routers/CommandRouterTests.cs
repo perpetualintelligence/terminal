@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             commandExtractor.IsExplicitError = true;
 
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => commandRouter.RouteAsync(routerContext), "test_extractor_error", "test_extractor_error_desc");
             Assert.IsTrue(commandExtractor.Called);
@@ -44,7 +44,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             commandExtractor.IsExplicitNoCommandDescriptor = true;
 
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
 
             await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => commandRouter.RouteAsync(routerContext), "Value cannot be null. (Parameter 'commandDescriptor')");
             Assert.IsTrue(commandExtractor.Called);
@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             commandExtractor.IsExplicitNoCommand = true;
 
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
 
             await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => commandRouter.RouteAsync(routerContext), "Value cannot be null. (Parameter 'command')");
             Assert.IsTrue(commandExtractor.Called);
@@ -68,7 +68,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             commandHandler.IsExplicitError = true;
 
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
 
             await TestHelper.AssertThrowsErrorExceptionAsync(() => commandRouter.RouteAsync(routerContext), "test_handler_error", "test_handler_error_desc");
             Assert.IsTrue(commandHandler.Called);
@@ -77,7 +77,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         [TestMethod]
         public async Task RouterShouldCallExtractorAsync()
         {
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteAsync(routerContext);
             Assert.IsTrue(commandExtractor.Called);
         }
@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         [TestMethod]
         public async Task RouterShouldCallHandlerAfterExtractorAsync()
         {
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteAsync(routerContext); ;
 
             Assert.IsTrue(commandExtractor.Called);
@@ -97,7 +97,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             licenseExtractor.NoLicense = true;
 
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => commandRouter.RouteAsync(routerContext), "invalid_license", "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
             Assert.IsFalse(commandExtractor.Called);
@@ -105,9 +105,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         }
 
         [TestMethod]
-        public async Task RouterShouldPassExtracterCommandToHandlerAsync()
+        public async Task RouterShouldPassExtractorCommandToHandlerAsync()
         {
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             licenseExtractor.NoLicense = false;
 
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
@@ -136,9 +136,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         [TestMethod]
         public void EachContextShouldBeUnique()
         {
-            CommandRouterContext context1 = new("test", CancellationToken.None);
-            CommandRouterContext context2 = new("test", CancellationToken.None);
-            CommandRouterContext context3 = new("test", CancellationToken.None);
+            CommandRouterContext context1 = new("test", routingContext);
+            CommandRouterContext context2 = new("test", routingContext);
+            CommandRouterContext context3 = new("test", routingContext);
 
             context1.Route.Id.Should().NotBe(context2.Route.Id);
             context2.Route.Id.Should().NotBe(context3.Route.Id);
@@ -148,7 +148,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         [TestMethod]
         public async Task RouterShouldPassRouteToHandler()
         {
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
@@ -175,7 +175,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeFalse();
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteAsync(routerContext);
 
             eventHandler.BeforeRouteCalled.Should().BeTrue();
@@ -198,7 +198,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
             try
             {
-                CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+                CommandRouterContext routerContext = new("test_command_string", routingContext);
                 var result = await commandRouter.RouteAsync(routerContext);
             }
             catch (ErrorException eex)
@@ -225,7 +225,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, asyncEventHandler: null);
-            CommandRouterContext routerContext = new("test_command_string", cancellationTokenSource.Token);
+            CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteAsync(routerContext);
 
             eventHandler.BeforeRouteCalled.Should().BeFalse();
@@ -240,7 +240,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         public async Task Router_Throws_On_CommandString_MaxLimitAsync()
         {
             terminalOptions.Router.MaxCommandStringLength = 30;
-            Func<Task> act = () => commandRouter.RouteAsync(new CommandRouterContext(new string('x', 31), CancellationToken.None));
+            Func<Task> act = () => commandRouter.RouteAsync(new CommandRouterContext(new string('x', 31), routingContext));
             await act.Should().ThrowAsync<ErrorException>().WithMessage("The command string length is over the configured limit. max_length=30");
         }
 
@@ -261,12 +261,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, eventHandler);
             cancellationTokenSource = new CancellationTokenSource();
+            routingContext = new MockTerminalRoutingContext(new Runtime.TerminalStartContext(new Runtime.TerminalStartInfo(Runtime.TerminalStartMode.Custom), cancellationTokenSource.Token));
         }
 
         private CancellationTokenSource cancellationTokenSource = null!;
         private MockCommandExtractorInner commandExtractor = null!;
         private MockCommandHandlerInner commandHandler = null!;
         private MockAsyncEventHandler eventHandler = null!;
+        private MockTerminalRoutingContext routingContext = null!;
         private IHost host = null!;
         private MockLicenseExtractorInner licenseExtractor = null!;
         private CommandRouter commandRouter = null!;

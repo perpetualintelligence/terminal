@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -17,11 +17,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="rawCommandString">The raw command string.</param>
         /// <param name="exception">The exception.</param>
-        public ExceptionHandlerContext(string rawCommandString, Exception exception)
+        /// <param name="rawCommandString">The raw command string.</param>
+        public ExceptionHandlerContext(Exception exception, string? rawCommandString)
         {
-            RawCommandString = rawCommandString ?? throw new ArgumentNullException(nameof(rawCommandString));
+            RawCommandString = rawCommandString;
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
 
@@ -33,6 +33,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// The command string.
         /// </summary>
-        public string RawCommandString { get; set; }
+        public string? RawCommandString { get; set; }
     }
 }

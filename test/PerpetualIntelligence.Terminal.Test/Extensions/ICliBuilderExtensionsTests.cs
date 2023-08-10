@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddCliOptionsShouldCorrectlyInitialize()
+        public void AddTerminalOptionsShouldCorrectlyInitialize()
         {
             terminalBuilder.AddTerminalOptions();
 
@@ -297,12 +297,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddPublisherShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddErrorHandler<MockErrorPublisher, MockExceptionPublisher>();
-
-            var err = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IErrorHandler)));
-            Assert.IsNotNull(err);
-            Assert.AreEqual(ServiceLifetime.Transient, err.Lifetime);
-            Assert.AreEqual(typeof(MockErrorPublisher), err.ImplementationType);
+            terminalBuilder.AddExceptionHandler<MockExceptionPublisher>();
 
             var exe = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IExceptionHandler)));
             Assert.IsNotNull(exe);

@@ -19,46 +19,37 @@ namespace PerpetualIntelligence.Terminal.Extensions
     public static class IHostExtensions
     {
         /// <summary>
-        /// Returns a task that runs the <see cref="ConsoleRouting"/> that blocks the calling thread till a cancellation request.
+        /// Runs the <see cref="TerminalConsoleRouting"/> asynchronously, blocking the calling thread until a cancellation request.
         /// </summary>
         /// <param name="host">The host.</param>
-        /// <param name="context"></param>
-        public static Task<ConsoleRoutingResult> RunConsoleRoutingAsync(this IHost host, ConsoleRoutingContext context)
+        /// <param name="context">The routing context for terminal console routing.</param>
+        /// <returns>A task representing the asynchronous operation with a result of <see cref="TerminalConsoleRoutingResult"/>.</returns>
+        public static Task<TerminalConsoleRoutingResult> RunConsoleRoutingAsync(this IHost host, TerminalConsoleRoutingContext context)
         {
-            //  Make sure we have supported start context
-            if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Console)
-            {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
-            }
-
-            ConsoleRouting routingService = host.Services.GetRequiredService<ConsoleRouting>();
+            TerminalConsoleRouting routingService = host.Services.GetRequiredService<TerminalConsoleRouting>();
             return routingService.RunAsync(context);
         }
 
         /// <summary>
-        /// Returns a task that runs the <see cref="TcpRouting"/> that blocks the calling thread till a cancellation request.
+        /// Runs the <see cref="TerminalTcpRouting"/> asynchronously, blocking the calling thread until a cancellation request.
         /// </summary>
         /// <param name="host">The host.</param>
-        /// <param name="context"></param>
-        public static Task<TcpRoutingResult> RunTcpRoutingAsync(this IHost host, TcpRoutingContext context)
+        /// <param name="context">The routing context for terminal TCP routing.</param>
+        /// <returns>A task representing the asynchronous operation with a result of <see cref="TerminalTcpRoutingResult"/>.</returns>
+        public static Task<TerminalTcpRoutingResult> RunTcpRoutingAsync(this IHost host, TerminalTcpRoutingContext context)
         {
-            //  Make sure we have supported start context
-            if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)
-            {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
-            }
-
-            TcpRouting routingService = host.Services.GetRequiredService<TcpRouting>();
+            TerminalTcpRouting routingService = host.Services.GetRequiredService<TerminalTcpRouting>();
             return routingService.RunAsync(context);
         }
 
         /// <summary>
-        /// Returns a task that runs the <see cref="CustomRouting"/> that blocks the calling thread till a cancellation token.
+        /// Runs the <see cref="TerminalCustomRouting"/> asynchronously, blocking the calling thread until a cancellation token.
         /// </summary>
-        /// <param name="host"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public static Task RunCustomRoutingAsync(this IHost host, CustomRoutingContext context)
+        /// <param name="host">The host.</param>
+        /// <param name="context">The routing context for terminal custom routing.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="ErrorException">Thrown when the requested start mode is not valid for custom routing.</exception>
+        public static Task RunCustomRoutingAsync(this IHost host, TerminalCustomRoutingContext context)
         {
             //  Make sure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Custom)
@@ -66,7 +57,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
             }
 
-            CustomRouting routingService = host.Services.GetRequiredService<CustomRouting>();
+            TerminalCustomRouting routingService = host.Services.GetRequiredService<TerminalCustomRouting>();
             return routingService.RunAsync(context);
         }
     }

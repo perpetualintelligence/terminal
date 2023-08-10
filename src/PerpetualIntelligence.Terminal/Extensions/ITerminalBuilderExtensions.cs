@@ -143,19 +143,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="IErrorHandler"/> and <see cref="IExceptionHandler"/> to the service collection.
+        /// Adds the <see cref="IExceptionHandler"/> to the service collection.
         /// </summary>
-        /// <typeparam name="TError">The <see cref="IErrorHandler"/> type.</typeparam>
-        /// <typeparam name="TException">The <see cref="IExceptionHandler"/> type.</typeparam>
+        /// <typeparam name="THandler">The <see cref="IExceptionHandler"/> type.</typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddErrorHandler<TError, TException>(this ITerminalBuilder builder) where TError : class, IErrorHandler where TException : class, IExceptionHandler
+        public static ITerminalBuilder AddExceptionHandler<THandler>(this ITerminalBuilder builder) where THandler : class, IExceptionHandler
         {
-            // Add error publisher
-            builder.Services.AddTransient<IErrorHandler, TError>();
-
             // Add exception publisher
-            builder.Services.AddTransient<IExceptionHandler, TException>();
+            builder.Services.AddTransient<IExceptionHandler, THandler>();
 
             return builder;
         }

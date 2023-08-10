@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -28,18 +28,16 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// <summary>
         /// The hosting and routing error handler. Its value can be <c>default</c> or <c>custom</c>. The command router
         /// receives an error or exception during the command routing, extraction, checker, or execution. On error, it
-        /// forwards it to the <see cref="IErrorHandler"/> or <see cref="IExceptionHandler"/>.
+        /// forwards it to <see cref="IExceptionHandler"/>.
         /// </summary>
         /// <remarks>
         /// <para><c>default</c> handler prints the error information in the CLI terminal.</para>
         /// <para>
         /// <c>custom</c> handler allows application authors to define a custom error handler to process and publish the
         /// error according to their needs. E.g., app authors can publish the errors to a central log or on their cloud
-        /// backend for audit purposes.
+        /// back-end for audit purposes.
         /// </para>
         /// </remarks>
-        /// <seealso cref="IErrorHandler"/>
-        /// <seealso cref="Commands.Handlers.ErrorHandler"/>
         public string ErrorHandler { get; set; } = "default";
 
         /// <summary>
