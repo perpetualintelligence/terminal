@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -43,5 +43,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// Returns the text length.
         /// </summary>
         public int TextLength(string? s1);
+
+        /// <summary>
+        /// Returns the regex pattern to extract a command string..
+        /// </summary>
+        public string ExtractionRegex();
     }
 }

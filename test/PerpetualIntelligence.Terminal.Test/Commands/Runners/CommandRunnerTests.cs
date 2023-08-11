@@ -65,6 +65,5 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         private CommandRouterContext routerContext = null!;
         private TerminalRoutingContext routingContext = null!;
         private CancellationTokenSource tokenSource = null!;
-        private readonly CommandHandlerContext handlerContext = null!;
     }
 }
