@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -11,7 +11,6 @@ using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Shared.Services;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Stores;
 using System;
@@ -36,22 +35,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// <param name="textHandler">The text handler.</param>
         /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        /// <param name="defaultOptionProvider">The optional default option provider.</param>
-        /// <param name="defaultOptionValueProvider">The optional option default value provider.</param>
         public CommandExtractor(
             ICommandStoreHandler commandStoreHandler,
             IOptionExtractor optionExtractor,
             ITextHandler textHandler,
             TerminalOptions terminalOptions,
-            ILogger<CommandExtractor> logger,
-            IDefaultOptionProvider? defaultOptionProvider = null,
-            IDefaultOptionValueProvider? defaultOptionValueProvider = null)
+            ILogger<CommandExtractor> logger)
         {
             this.commandStore = commandStoreHandler ?? throw new ArgumentNullException(nameof(commandStoreHandler));
             this.optionExtractor = optionExtractor ?? throw new ArgumentNullException(nameof(optionExtractor));
             this.textHandler = textHandler;
-            this.defaultOptionValueProvider = defaultOptionValueProvider;
-            this.defaultOptionProvider = defaultOptionProvider;
             this.terminalOptions = terminalOptions ?? throw new ArgumentNullException(nameof(terminalOptions));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -64,9 +57,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Extract the options. Options are optional for commands.
             Options? options = await ExtractOptionsOrThrowAsync(context, commandDescriptor);
-
-            // Merge default option.
-            options = await MergeDefaultOptionsOrThrowAsync(commandDescriptor, options);
 
             return new CommandExtractorResult(new Command(context.Route, commandDescriptor, options));
         }
@@ -95,39 +85,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             else
             {
                 return null;
-            }
-
-            // Check if the command supports default option. The default option does not have standard option
-            // syntax For e.g. If 'pi format ruc' command has 'i' as a default option then the command string 'pi
-            // format ruc remove_underscore_and_capitalize' will be extracted as 'pi format ruc' and
-            // remove_underscore_and_capitalize will be added as a value of option 'i'.
-            if (this.terminalOptions.Extractor.DefaultOption.GetValueOrDefault() && !string.IsNullOrWhiteSpace(commandDescriptor.DefaultOption))
-            {
-                // Sanity check
-                if (defaultOptionProvider == null)
-                {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
-                }
-
-                // Options and command supports the default option, but is the default value provided by user ? If yes
-                // then add the default attribute
-                bool proccessDefaultArg = true;
-                string argStringDef = rawArgString.TrimStart(this.terminalOptions.Extractor.Separator, textHandler.Comparison);
-                if (argStringDef.StartsWith(this.terminalOptions.Extractor.OptionPrefix, textHandler.Comparison))
-                {
-                    // Default attribute value should be the first after command prefix User has explicitly passed an option.
-                    proccessDefaultArg = false;
-                }
-
-                if (proccessDefaultArg)
-                {
-                    // Get the default option
-                    DefaultOptionProviderResult defaultOptionProviderResult = await defaultOptionProvider.ProvideAsync(new DefaultOptionProviderContext(commandDescriptor));
-
-                    // Convert the arg string to standard format and let the IArgumentExtractor extract the option and
-                    // its value. E.g. pi format ruc remove_underscore_and_capitalize -> pi format ruc -i=remove_underscore_and_capitalize
-                    rawArgString = $"{this.terminalOptions.Extractor.Separator}{this.terminalOptions.Extractor.OptionPrefix}{defaultOptionProviderResult.DefaultOptionDescriptor.Id}{this.terminalOptions.Extractor.OptionValueSeparator}{argStringDef}";
-                }
             }
 
             // TODO this should be a regex based parser
@@ -228,69 +185,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             return result.Result;
         }
 
-        /// <summary>
-        /// Check for default options if enabled and merges then. Default values are added at the end if there is no
-        /// explicit user input.
-        /// </summary>
-        /// <param name="commandDescriptor"></param>
-        /// <param name="userOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="ErrorException"></exception>
-        /// <exception cref="MultiErrorException"></exception>
-        private async Task<Options?> MergeDefaultOptionsOrThrowAsync(CommandDescriptor commandDescriptor, Options? userOptions)
-        {
-            // If default option value is disabled or the command itself does not support any options then ignore
-            if (!terminalOptions.Extractor.DefaultOptionValue.GetValueOrDefault()
-                || commandDescriptor.OptionDescriptors == null
-                || commandDescriptor.OptionDescriptors.Count == 0)
-            {
-                return userOptions;
-            }
-
-            // Sanity check
-            if (defaultOptionValueProvider == null)
-            {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
-            }
-
-            // Get default values. Make sure we take user inputs.
-            Options? finalArgs = userOptions;
-            DefaultOptionValueProviderResult defaultResult = await defaultOptionValueProvider.ProvideAsync(new DefaultOptionValueProviderContext(commandDescriptor));
-            if (defaultResult.DefaultValueOptionDescriptors != null && defaultResult.DefaultValueOptionDescriptors.Count > 0)
-            {
-                // options can be null here, if the command string did not specify any options
-                finalArgs ??= new Options(textHandler);
-
-                List<Error> errors = new();
-                foreach (OptionDescriptor optionDescriptor in defaultResult.DefaultValueOptionDescriptors)
-                {
-                    // Protect against bad implementation, catch all the errors
-                    if (optionDescriptor.DefaultValue == null)
-                    {
-                        errors.Add(new Error(TerminalErrors.InvalidOption, "The option does not have a default value. option={0}", optionDescriptor.Id));
-                        continue;
-                    }
-
-                    // If user already specified the value then disregard the default value
-                    if (userOptions == null || !userOptions.Contains(optionDescriptor.Id))
-                    {
-                        finalArgs.Add(new Option(optionDescriptor, optionDescriptor.DefaultValue));
-                    }
-                }
-
-                if (errors.Count > 0)
-                {
-                    throw new MultiErrorException(errors);
-                }
-            }
-
-            return finalArgs;
-        }
-
         private readonly IOptionExtractor optionExtractor;
         private readonly ICommandStoreHandler commandStore;
-        private readonly IDefaultOptionProvider? defaultOptionProvider;
-        private readonly IDefaultOptionValueProvider? defaultOptionValueProvider;
         private readonly ILogger<CommandExtractor> logger;
         private readonly TerminalOptions terminalOptions;
         private readonly ITextHandler textHandler;

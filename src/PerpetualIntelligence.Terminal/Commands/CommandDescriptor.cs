@@ -1,11 +1,10 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Extractors;
 using System;
 using System.Collections.Generic;
 
@@ -54,7 +53,6 @@ namespace PerpetualIntelligence.Terminal.Commands
             Description = description;
             OptionDescriptors = optionDescriptors;
             CustomProperties = customProperties;
-            DefaultOption = defaultOption;
             Tags = tags;
         }
 
@@ -72,20 +70,6 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// The custom properties.
         /// </summary>
         public Dictionary<string, object>? CustomProperties { get; internal set; }
-
-        /// <summary>
-        /// The default option. <c>null</c> means the command does not support a default option.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="DefaultOption"/> is not the default option value (see
-        /// <see cref="OptionDescriptor.DefaultValue"/>), it is the default option identifier (see
-        /// <see cref="OptionDescriptor.Id"/>) whose value is populated automatically based on the
-        /// <see cref="CommandString"/>. If <see cref="DefaultOption"/> is set to a non <c>null</c> value, then the
-        /// <see cref="ICommandExtractor"/> will attempt to extract the value from the <see cref="CommandString"/> and
-        /// put it in an <see cref="Option"/> identified by <see cref="DefaultOption"/>.
-        /// </remarks>
-        /// <seealso cref="OptionDescriptor.DefaultValue"/>
-        public string? DefaultOption { get; internal set; }
 
         /// <summary>
         /// The command description.

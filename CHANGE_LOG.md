@@ -1,5 +1,6 @@
 # 5.1.1-rc*
 > Breaking Change
+- Remove default option and default option value feature in favor of command argument feature
 - Remove `IErrorHandler` in favor of `IExceptionHandler`
 - Rename `IRoutingService` to `ITerminalRouting`
 - Move routing service to runtime namespace

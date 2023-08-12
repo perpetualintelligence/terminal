@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -12,7 +12,6 @@ using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Extractors.Mocks;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Runners;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
@@ -47,7 +46,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_invalid_alias=value1 --key2=value2 -key3_alias=value3 --key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -74,7 +73,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 --key2=value2 -key3_alias=value3 --key4_invalid=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -99,7 +98,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_invalid_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -124,7 +123,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2_invalid=value2 -key3_alias=value3 -key4=25.36"));
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
@@ -149,64 +148,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
-            var result = await extractor.ExtractAsync(context);
-
-            Assert.AreEqual(prefix, result.Command.Descriptor.Prefix);
-            Assert.AreEqual(cmdId, result.Command.Id);
-
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1");
-            AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "value2");
-            AssertOption(result.Command.Options[2], "key3", DataType.PhoneNumber, "Key3 value phone", "value3");
-            AssertOption(result.Command.Options[3], "key4", nameof(Double), "Key4 value number", "25.36");
-        }
-
-        [DataTestMethod]
-        [DataRow("pi", "orgid")]
-        [DataRow("pi auth", "orgid:authid")]
-        [DataRow("pi auth login", "orgid:authid:loginid")]
-        public async Task AliasConfiguredWithDefaultArgAndDefaultValueShouldNotErrorAsync(string prefix, string cmdId)
-        {
-            // Enable alias
-            terminalOptions.Extractor.OptionAlias = true;
-            terminalOptions.Extractor.DefaultOption = true;
-            terminalOptions.Extractor.DefaultOptionValue = true;
-
-            // Reset commands
-            commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
-
-            // key1 with alias key1_alias is default arg with default value key1 default value
-            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key2=value2 -key3_alias=value3 -key4=25.36"));
-            var result = await extractor.ExtractAsync(context);
-
-            Assert.AreEqual(prefix, result.Command.Descriptor.Prefix);
-            Assert.AreEqual(cmdId, result.Command.Id);
-
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "value2");
-            AssertOption(result.Command.Options[1], "key3", DataType.PhoneNumber, "Key3 value phone", "value3");
-            AssertOption(result.Command.Options[2], "key4", nameof(Double), "Key4 value number", "25.36");
-            AssertOption(result.Command.Options[3], "key1", DataType.Text, "Key1 value text", "key1 default value");
-        }
-
-        [DataTestMethod]
-        [DataRow("pi", "orgid")]
-        public async Task AliasConfiguredWithDefaultArgShouldNotErrorAsync(string prefix, string cmdId)
-        {
-            // Enable alias
-            terminalOptions.Extractor.OptionAlias = true;
-            terminalOptions.Extractor.DefaultOption = true;
-
-            // Reset commands
-            commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, null);
-
-            // key1 with alias key1_alias is default arg for value1
-            CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.AreEqual(prefix, result.Command.Descriptor.Prefix);
@@ -230,7 +174,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1_alias=value1 -key2=value2 -key3_alias=value3 -key4=25.36"));
 
@@ -251,7 +195,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task BadCustomArgExtractorShouldErrorAsync()
         {
             CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "prefix1 -key1=value1 -key2=value2"));
-            var badExtractor = new CommandExtractor(commands, new MockBadOptionExtractor(), textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            var badExtractor = new CommandExtractor(commands, new MockBadOptionExtractor(), textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             await TestHelper.AssertThrowsMultiErrorExceptionAsync(
                 () => badExtractor.ExtractAsync(context),
@@ -284,7 +228,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.AliasCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new(new CommandRoute("id1", $"{prefix} -key1=value1 -key2=value2"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.InvalidCommand, $"The command identifier is not valid. command_id={cmdId} regex={terminalOptions.Extractor.CommandIdRegex}");
@@ -374,22 +318,22 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldAllowCommandSeparatorInOptionValueAsync(string seperator)
+        public async Task CommandStringShouldAllowCommandSeparatorInOptionValueAsync(string separator)
         {
             // E.g. if ' ' space is used as a command separator then the command string should allow spaces in the
             // option values
             // -> prefix1 -key=Test space message -key2=nospacemessage -key3=Again with space
-            terminalOptions.Extractor.Separator = seperator;
+            terminalOptions.Extractor.Separator = separator;
 
-            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1{seperator}-key1=Test{seperator}space{seperator}message{seperator}-key2=nospacemessage{seperator}-key6{seperator}-key10=Again{seperator}with{seperator}space"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1{separator}-key1=Test{separator}space{separator}message{separator}-key2=nospacemessage{separator}-key6{separator}-key10=Again{separator}with{separator}space"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}space{seperator}message");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{separator}space{separator}message");
             AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
             AssertOption(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertOption(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}space");
+            AssertOption(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}space");
         }
 
         [DataTestMethod]
@@ -400,22 +344,22 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task CommandStringShouldAllowMultipleSeparatorForArgumentAndOptionValueAsync(string seperator)
+        public async Task CommandStringShouldAllowMultipleSeparatorForArgumentAndOptionValueAsync(string separator)
         {
             // E.g. if ' ' space is used as a command separator then the command string should allow multiple spaces in
             // the option and spaces in option values
             // -> "prefix1 -key1=Test space message -key2=nospacemessage -key6 -key10=Again with space"
-            terminalOptions.Extractor.Separator = seperator;
+            terminalOptions.Extractor.Separator = separator;
 
-            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1{seperator}{seperator}{seperator}-key1=Test{seperator}{seperator}space{seperator}{seperator}{seperator}{seperator}message{seperator}{seperator}{seperator}-key2=nospacemessage{seperator}{seperator}-key6{seperator}{seperator}{seperator}{seperator}-key10=Again{seperator}with{seperator}{seperator}space"));
+            CommandExtractorContext context = new(new CommandRoute("id1", $"prefix1{separator}{separator}{separator}-key1=Test{separator}{separator}space{separator}{separator}{separator}{separator}message{separator}{separator}{separator}-key2=nospacemessage{separator}{separator}-key6{separator}{separator}{separator}{separator}-key10=Again{separator}with{separator}{separator}space"));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Command);
             Assert.IsNotNull(result.Command.Options);
             Assert.AreEqual(4, result.Command.Options.Count);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{seperator}{seperator}space{seperator}{seperator}{seperator}{seperator}message");
+            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", $"Test{separator}{separator}space{separator}{separator}{separator}{separator}message");
             AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "nospacemessage");
             AssertOption(result.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertOption(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{seperator}with{seperator}{seperator}space");
+            AssertOption(result.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}{separator}space");
         }
 
         [TestMethod]
@@ -440,52 +384,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task DefaultOptionShouldWorkCorrectlyWithItsValueAndWithInConfiguredAsync()
-        {
-            terminalOptions.Extractor.DefaultOption = true;
-            terminalOptions.Extractor.OptionValueWithIn = "\"";
-
-            // No arg id
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix7_defaultarg \"key1_value\""));
-            var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
-
-            // with arg id
-            context = new(new CommandRoute("id1", "prefix7_defaultarg -key1=\"key1_value\""));
-            result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
-        }
-
-        [TestMethod]
-        [WriteDocumentation]
-        public async Task DefaultOptionShouldWorkCorrectlyWithItsValueAsync()
-        {
-            terminalOptions.Extractor.DefaultOption = true;
-            terminalOptions.Extractor.OptionValueWithIn = null;
-
-            // value without arg id
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix7_defaultarg key1_value"));
-            var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Command.Options);
-            Assert.AreEqual(1, result.Command.Options.Count);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
-
-            // value with arg id
-            context = new(new CommandRoute("id1", "prefix7_defaultarg -key1=key1_value"));
-            result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Command.Options);
-            Assert.AreEqual(1, result.Command.Options.Count);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1_value");
-        }
-
-        [TestMethod]
-        [WriteDocumentation]
         public async Task DefaultOptionShouldWorkCorrectlyWithoutItsValueAsync()
         {
-            terminalOptions.Extractor.DefaultOption = true;
-
             // No default arg value
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix7_defaultarg"));
             var result = await extractor.ExtractAsync(context);
@@ -501,101 +401,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        [WriteDocumentation]
-        public async Task DefaultOptionWithBothExplicitAndImplicitOptionValueShouldError()
+        public async Task UnspecifiedRequiredValuesShouldNotPopulateIfDisabled()
         {
-            terminalOptions.Extractor.DefaultOption = true;
-            terminalOptions.Extractor.DefaultOptionValue = true;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix8_defaultarg_defaultvalue implitcit_default_value -key1=explicit_default_value"));
-            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
-                () => extractor.ExtractAsync(context),
-                1,
-                new[] { TerminalErrors.DuplicateOption },
-                new[] { "The option is already added to the command. option=key1" }
-                );
-        }
-
-        [TestMethod]
-        [WriteDocumentation]
-        public async Task DefaultOptionWithDefaultValueNotSpecifiedShouldWorkCorrectly()
-        {
-            terminalOptions.Extractor.DefaultOption = true;
-            terminalOptions.Extractor.DefaultOptionValue = true;
-
-            // No default arg, but it will be added because it has a default value
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix8_defaultarg_defaultvalue"));
-            var result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "key1 default value");
-
-            // with arg id
-            context = new(new CommandRoute("id1", "prefix8_defaultarg_defaultvalue -key2=key2_value -key3=3652669856"));
-            result = await extractor.ExtractAsync(context);
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key2", DataType.Text, "Key2 value text", "key2_value");
-            AssertOption(result.Command.Options[1], "key3", DataType.PhoneNumber, "Key3 value phone", "3652669856");
-            AssertOption(result.Command.Options[2], "key1", DataType.Text, "Key1 value text", "key1 default value");
-        }
-
-        [TestMethod]
-        public async Task DefaultValueConfiguredButProviderNotConfiguredShouldThrow()
-        {
-            terminalOptions.Extractor.DefaultOptionValue = true;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            CommandExtractor noProviderExtrator = new(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
-
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => noProviderExtrator.ExtractAsync(context), TerminalErrors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
-        }
-
-        [TestMethod]
-        public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotError()
-        {
-            terminalOptions.Extractor.DefaultOptionValue = true;
-
-            // This is just extracting no checking
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            var result = await extractor.ExtractAsync(context);
-
-            Assert.IsNotNull(result.Command.Options);
-            Assert.AreEqual(4, result.Command.Options.Count);
-            Assert.AreEqual("44444444444", result.Command.Options[0].Value);
-            Assert.AreEqual(false, result.Command.Options[1].Value);
-            Assert.AreEqual(25.36, result.Command.Options[2].Value);
-            Assert.AreEqual("mello default", result.Command.Options[3].Value);
-        }
-
-        [TestMethod]
-        public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotOverrideUserValues()
-        {
-            terminalOptions.Extractor.DefaultOptionValue = true;
-
-            // This is just extracting no checking
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default -key6 -key10=user value"));
-            var result = await extractor.ExtractAsync(context);
-
-            Assert.IsNotNull(result.Command.Options);
-            Assert.AreEqual(4, result.Command.Options.Count);
-
-            // Option values are processed sequentially and default values are added at the end User values
-            Assert.AreEqual("key6", result.Command.Options[0].Id);
-            Assert.AreEqual("True", result.Command.Options[0].Value);
-            Assert.AreEqual("key10", result.Command.Options[1].Id);
-            Assert.AreEqual("user value", result.Command.Options[1].Value);
-
-            // Default value are added in the end
-            Assert.AreEqual("key3", result.Command.Options[2].Id);
-            Assert.AreEqual("44444444444", result.Command.Options[2].Value);
-            Assert.AreEqual("key9", result.Command.Options[3].Id);
-            Assert.AreEqual(25.36, result.Command.Options[3].Value);
-        }
-
-        [TestMethod]
-        public async Task DefaultValueConfiguredButUnspecifiedRequiredValuesShouldNotPopulateIfDisabled()
-        {
-            terminalOptions.Extractor.DefaultOptionValue = false;
-
             // This is just extracting no checking
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
             var result = await extractor.ExtractAsync(context);
@@ -604,10 +411,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task DefaultValueConfiguredCommandWithEmptyArgsShouldNotErrorAsync()
+        public async Task CommandWithEmptyArgsShouldNotErrorAsync()
         {
-            terminalOptions.Extractor.DefaultOptionValue = true;
-
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix6_empty_args"));
             var result = await extractor.ExtractAsync(context);
 
@@ -615,10 +420,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task DefaultValueConfiguredCommandWithNoArgsShouldNotErrorAsync()
+        public async Task ConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
-            terminalOptions.Extractor.DefaultOptionValue = true;
-
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);
 
@@ -626,20 +429,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task DefaultValueDisabledButProviderNotConfiguredShouldNotThrow()
+        public async Task DisabledButProviderNotConfiguredShouldNotThrow()
         {
-            terminalOptions.Extractor.DefaultOptionValue = false;
-
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            CommandExtractor noProviderExtrator = new(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            CommandExtractor noProviderExtrator = new(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
             await noProviderExtrator.ExtractAsync(context);
         }
 
         [TestMethod]
-        public async Task DefaultValueNotConfiguredCommandWithNoArgsShouldNotErrorAsync()
+        public async Task CommandWithNoArgsShouldNotErrorAsync()
         {
-            terminalOptions.Extractor.DefaultOptionValue = false;
-
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
             var result = await extractor.ExtractAsync(context);
 
@@ -651,7 +450,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new(new CommandRoute("id1", "pi auth invalid"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth invalid");
@@ -744,7 +543,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task TryMatchByPrefixWithInsufficientPharasesShouldErrorAsync()
+        public async Task TryMatchByPrefixWithInsufficientPhrasesShouldErrorAsync()
         {
             // Missing name3
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix3 sub3"));
@@ -752,7 +551,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task TryMatchByPrefixWithMultiplePharasesShouldNotErrorIfMatchedAsync()
+        public async Task TryMatchByPrefixWithMultiplePhrasesShouldNotErrorIfMatchedAsync()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix3 sub3 name3"));
             var result = await extractor.ExtractAsync(context);
@@ -798,11 +597,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("öö")]
         [DataRow("माणूस")]
         [DataRow("女性")]
-        public async Task ValidCommandStringShouldNotErrorAndPopulateCorrectly(string seperator)
+        public async Task ValidCommandStringShouldNotErrorAndPopulateCorrectly(string separator)
         {
-            terminalOptions.Extractor.Separator = seperator;
+            terminalOptions.Extractor.Separator = separator;
 
-            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", $"name2{seperator}-key1=value1{seperator}-key2=value2{seperator}-key3=+1-2365985632{seperator}-key4=testmail@gmail.com{seperator}-key5=C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt{seperator}-key6{seperator}-key9=33.368"));
+            CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", $"name2{separator}-key1=value1{separator}-key2=value2{separator}-key3=+1-2365985632{separator}-key4=testmail@gmail.com{separator}-key5=C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt{separator}-key6{separator}-key9=33.368"));
             var result = await extractor.ExtractAsync(context);
 
             Assert.IsNotNull(result.Command.Descriptor);
@@ -862,7 +661,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // Reset commands
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedCommands, terminalOptions, TestLogger.Create<InMemoryCommandStore>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>(), null, null);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptions, TestLogger.Create<CommandExtractor>());
 
             CommandExtractorContext context = new CommandExtractorContext(new CommandRoute("id1", "pi"));
             var result = await extractor.ExtractAsync(context);
@@ -944,7 +743,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "date -s '15 JUN 2023 11:06:38'");
             AssertOption(result.Command.Options[1], "key2", DataType.Text, "Key2 value text", "date -s '20 JUN 2023 11:06:38'");
         }
-
 
         [TestMethod]
         public async Task Options_Are_Extracted_Correctly_With_Single_Value_Has_Another_Option_ValueWithInAsync()
@@ -1038,9 +836,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             textHandler = new UnicodeTextHandler();
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, terminalOptionsIpt, TestLogger.Create<InMemoryCommandStore>());
             optionExtractor = new OptionExtractor(textHandler, terminalOptionsIpt, TestLogger.Create<OptionExtractor>());
-            defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
-            defaultOptionProvider = new DefaultOptionProvider(terminalOptionsIpt, TestLogger.Create<DefaultOptionProvider>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptionsIpt, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, terminalOptionsIpt, TestLogger.Create<CommandExtractor>());
         }
 
         private void AssertOption(Option arg, string name, string customDataType, string description, object value)
@@ -1083,8 +879,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         private OptionExtractor optionExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultOptionProvider defaultOptionProvider = null!;
-        private IDefaultOptionValueProvider defaultOptionValueProvider = null!;
         private CommandExtractor extractor = null!;
         private TerminalOptions terminalOptions = null!;
         private ITextHandler textHandler = null!;

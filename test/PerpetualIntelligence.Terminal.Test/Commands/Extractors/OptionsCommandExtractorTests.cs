@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,7 +7,6 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
@@ -31,8 +30,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [TestMethod]
         public async Task AdditionalSeparatorsShouldBeIgnored()
         {
-            options.Extractor.DefaultOptionValue = false;
-
             CommandExtractorContext context = new(new CommandRoute("id1", "pi     -key1_alias   value1  --key2-er  value2   --key6-a-s-xx-s --key9   25.36     -k12     "));
             var result = await extractor.ExtractAsync(context);
 
@@ -49,7 +46,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [TestMethod]
         public async Task AdditionalSeparatorsWithinValueShouldNotBeIgnored()
         {
-            options.Extractor.DefaultOptionValue = false;
             options.Extractor.OptionValueWithIn = "\"";
 
             CommandExtractorContext context = new(new CommandRoute("id1", "pi     -key1_alias \"  value1 \"  --key2-er  \"value2     \" --key6-a-s-xx-s --key9   25.36     -k12     "));
@@ -160,67 +156,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task DefaultOptionValueConfiguredShouldExtractCorrectly()
-        {
-            options.Extractor.DefaultOptionValue = true;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1 --key2-er value2 --key6-a-s-xx-s"));
-            var result = await extractor.ExtractAsync(context);
-
-            AssertCommand(result.Command, "orgid", "pi", 6);
-
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-
-            AssertOption(result.Command.Options[3], "key7", DataType.Currency, "Key7 value currency", "INR", null);
-            AssertOption(result.Command.Options[4], "key9", nameof(Double), "Key9 invalid default value", 89568.36, null);
-            AssertOption(result.Command.Options[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
-        }
-
-        [TestMethod]
-        public async Task DefaultOptionValueConfiguredShouldOverrideCorrectly()
-        {
-            options.Extractor.DefaultOptionValue = true;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
-            var result = await extractor.ExtractAsync(context);
-
-            AssertCommand(result.Command, "orgid", "pi", 6);
-
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null); // Override default value
-
-            AssertOption(result.Command.Options[4], "key7", DataType.Currency, "Key7 value currency", "INR", null);
-            AssertOption(result.Command.Options[5], "key12", nameof(Boolean), "Key12 value default boolean", true, "k12");
-        }
-
-        [TestMethod]
-        public async Task DefaultOptionValueNotConfiguredShouldExtractCorrectly()
-        {
-            options.Extractor.DefaultOptionValue = false;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1 --key2-er value2 --key6-a-s-xx-s --key9 25.36"));
-            var result = await extractor.ExtractAsync(context);
-
-            AssertCommand(result.Command, "orgid", "pi", 4);
-
-            Assert.IsNotNull(result.Command.Options);
-            AssertOption(result.Command.Options[0], "key1", DataType.Text, "Key1 value text", "value1", "key1_alias");
-            AssertOption(result.Command.Options[1], "key2-er", DataType.Text, "Key2 value text", "value2", null);
-            AssertOption(result.Command.Options[2], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertOption(result.Command.Options[3], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-        }
-
-        [TestMethod]
         public async Task MixedOptionsAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaultOptionValue = false;
-
             CommandExtractorContext context = new(new CommandRoute("id1", "pi --key1 value1 --key2-er value2 -k3 (551) 208 9779 --key6-a-s-xx-s --key9 25.36 -k10 value10 -k11 --key12"));
             var result = await extractor.ExtractAsync(context);
 
@@ -240,8 +177,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [TestMethod]
         public async Task MixedOptionsInRandomOrderAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaultOptionValue = false;
-
             CommandExtractorContext context = new(new CommandRoute("id1", "pi -k11 -k3 (551) 208 9779 --key9 25.36 --key2-er value2 --key12 --key6-a-s-xx-s --key1 value1 -k10 value10"));
             var result = await extractor.ExtractAsync(context);
 
@@ -261,8 +196,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [TestMethod]
         public async Task MixedOptionsInReverseAndAliasShouldExtractCorrectly()
         {
-            options.Extractor.DefaultOptionValue = false;
-
             CommandExtractorContext context = new(new CommandRoute("id1", "pi --key12 -k11 -k10 value10 --key9 25.36 --key6-a-s-xx-s -k3 (551) 208 9779 --key2-er value2 --key1 value1"));
             var result = await extractor.ExtractAsync(context);
 
@@ -297,9 +230,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.GroupedOptionsCommands, options, TestLogger.Create<InMemoryCommandStore>());
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
-            defaultOptionProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>());
         }
 
         private void AssertOption(Option arg, string name, string customDataType, string description, object value, string? alias)
@@ -340,8 +271,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         private OptionExtractor optionExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultOptionProvider defaultOptionProvider = null!;
-        private IDefaultOptionValueProvider defaultOptionValueProvider = null!;
         private CommandExtractor extractor = null!;
         private TerminalOptions options = null!;
         private ITextHandler textHandler = null!;

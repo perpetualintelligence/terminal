@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -53,16 +53,6 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// The Regex pattern for command identifier. Defaults to <c>^[A-Za-z0-9_-]*$</c>.
         /// </summary>
         public string CommandIdRegex { get; set; } = "^[A-Za-z0-9_-]*$";
-
-        /// <summary>
-        /// Determines whether command supports default option.
-        /// </summary>
-        public bool? DefaultOption { get; set; }
-
-        /// <summary>
-        /// Determines whether option support default value.
-        /// </summary>
-        public bool? DefaultOptionValue { get; set; }
 
         /// <summary>
         /// The command string separator. Defaults to a single whitespace.

@@ -196,7 +196,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             argDescs[0].CustomProperties!.Keys.Should().Equal(new string[] { "a1Key1", "a1Key2", "a1Key3" });
             argDescs[0].CustomProperties!.Values.Should().Equal(new string[] { "a1Value1", "a1Value2", "a1Value3" });
             argDescs[0].ValueCheckers.Should().BeNull();
-            argDescs[0].DefaultValue.Should().BeNull();
 
             argDescs[1].Id.Should().Be("arg2");
             argDescs[1].DataType.Should().Be(DataType.Text);
@@ -213,7 +212,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             argDescs[1].ValueCheckers.Should().HaveCount(2);
             argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
             argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
-            argDescs[1].DefaultValue.Should().Be("arg1 default val");
 
             argDescs[2].Id.Should().Be("arg3");
             argDescs[2].DataType.Should().Be(DataType.Custom);
@@ -227,7 +225,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             argDescs[2].ValueCheckers.Should().NotBeNull();
             argDescs[2].ValueCheckers.Should().HaveCount(1);
             argDescs[2].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
-            argDescs[2].DefaultValue.Should().BeNull();
         }
 
         [Fact]

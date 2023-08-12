@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -44,19 +44,19 @@ namespace PerpetualIntelligence.Terminal.Mocks
             {
                 new OptionDescriptor("key1", DataType.Text, "Key1 value text", false),
                 new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
-                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false, defaultValue: "44444444444"),
+                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
                 new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
                 new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
-                new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", false, defaultValue: false),
+                new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", false),
                 new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) {ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
                 new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
-                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true, defaultValue: 25.36) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true, defaultValue: "mello default")
+                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true)
             };
 
             TestDefaultOptionValueDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value"),
+                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false),
                 new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
                 new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
                 new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
             TestAliasDefaultOptionDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
+                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false) { Alias = "key1_alias" },
                 new OptionDescriptor("key2", DataType.Text, "Key2 value text", true) { },
                 new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "key3_alias" },
                 new OptionDescriptor("key4", nameof(Double), "Key4 value number", false) { Alias = "key4_alias" },
@@ -74,23 +74,23 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
             TestOptionsDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false, defaultValue: "key1 default value") { Alias = "key1_alias" },
-                new OptionDescriptor("key2-er", DataType.Text, "Key2 value text", true, defaultValue: "key2 default value"),
+                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false) { Alias = "key1_alias" },
+                new OptionDescriptor("key2-er", DataType.Text, "Key2 value text", true),
                 new OptionDescriptor("key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "k3" },
                 new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
                 new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
                 new OptionDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", false),
-                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true, defaultValue: "INR") { ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
+                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) { ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
                 new OptionDescriptor("key8", nameof(Int32), "Key8 value int", false),
-                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", true, defaultValue: 89568.36) {ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", true) {ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true) { Alias = "k10" },
                 new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", true) { Alias = "k11" },
-                new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true, defaultValue: true) { Alias = "k12" }
+                new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true) { Alias = "k12" }
             };
 
             TestHindiUnicodeOptionDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("एक", DataType.Text, "पहला तर्क", false, defaultValue: "डिफ़ॉल्ट मान") { Alias = "एकहै" },
+                new OptionDescriptor("एक", DataType.Text, "पहला तर्क", false) { Alias = "एकहै" },
                 new OptionDescriptor("दो", nameof(Boolean), "दूसरा तर्क", true) { },
                 new OptionDescriptor("तीन", DataType.Text, "तीसरा तर्क", false) { Alias = "तीनहै" },
                 new OptionDescriptor("चार", nameof(Double), "चौथा तर्क", false) { Alias = "चारहै" },
@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
             TestChineseUnicodeOptionDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("第一的", DataType.Text, "第一個命令參數", false, defaultValue: "默認值") { Alias = "第一" },
+                new OptionDescriptor("第一的", DataType.Text, "第一個命令參數", false) { Alias = "第一" },
                 new OptionDescriptor("第二", nameof(Boolean), "第二個命令參數", true) { },
                 new OptionDescriptor("第三", DataType.Text, "第三個命令參數", false),
                 new OptionDescriptor("第四", nameof(Double), "第四個命令參數", false)

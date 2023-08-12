@@ -1,14 +1,14 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,18 +112,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             if (!OptionsValid(limits.OptionAlias, terminalOptions.Extractor.OptionAlias))
             {
                 throw new ErrorException(TerminalErrors.InvalidLicense, "The configured option alias is not allowed for your license edition.");
-            }
-
-            // Default options
-            if (!OptionsValid(limits.DefaultOption, terminalOptions.Extractor.DefaultOption))
-            {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured default option is not allowed for your license edition.");
-            }
-
-            // Default option value
-            if (!OptionsValid(limits.DefaultOptionValue, terminalOptions.Extractor.DefaultOptionValue))
-            {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured default option value is not allowed for your license edition.");
             }
 
             // Strict Data Type

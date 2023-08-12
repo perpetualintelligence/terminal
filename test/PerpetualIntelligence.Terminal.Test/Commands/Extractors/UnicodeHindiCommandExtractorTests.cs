@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,7 +7,6 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
@@ -46,7 +45,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task UnicodeGroupedCommand_With_Imcomplete_Prefix_ShouldError()
+        public async Task UnicodeGroupedCommand_With_Incomplete_Prefix_ShouldError()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "परीक्षण"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=परीक्षण");
@@ -114,34 +113,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             AssertOption(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
-        [TestMethod]
-        public async Task UnicodeSubCommand_Default_Should_Extract_Correctly()
-        {
-            options.Extractor.DefaultOptionValue = true;
-            options.Extractor.DefaultOption = true;
-
-            // एक is required and has default value
-            CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड परीक्षण दूसरा --दो --तीन तीसरा मूल्य -चारहै 253.36"));
-            var result = await extractor.ExtractAsync(context);
-
-            Assert.IsNotNull(result.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड परीक्षण दूसरा", result.Command.Descriptor.Prefix);
-
-            Assert.IsNotNull(result.Command);
-            Assert.AreEqual("uc4", result.Command.Id);
-            Assert.AreEqual("दूसरा", result.Command.Name);
-            Assert.AreEqual("दूसरा आदेश", result.Command.Description);
-            Assert.IsNotNull(result.Command.Options);
-            Assert.AreEqual(4, result.Command.Options.Count);
-
-            AssertOption(result.Command.Options[0], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertOption(result.Command.Options[1], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertOption(result.Command.Options[2], "चार", nameof(Double), "चौथा तर्क", "253.36");
-
-            // Default added at the end
-            AssertOption(result.Command.Options[3], "एक", DataType.Text, "पहला तर्क", "डिफ़ॉल्ट मान");
-        }
-
         protected override void OnTestInitialize()
         {
             options = MockTerminalOptions.NewAliasOptions();
@@ -149,9 +120,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.UnicodeCommands, options, TestLogger.Create<InMemoryCommandStore>());
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
-            defaultOptionProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>(), defaultOptionProvider, defaultOptionValueProvider);
+            extractor = new CommandExtractor(commands, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>());
         }
 
         private void AssertOption(Option arg, string name, DataType dataType, string description, object value)
@@ -174,8 +143,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         private OptionExtractor optionExtractor = null!;
         private ICommandStoreHandler commands = null!;
-        private IDefaultOptionProvider defaultOptionProvider = null!;
-        private IDefaultOptionValueProvider defaultOptionValueProvider = null!;
         private CommandExtractor extractor = null!;
         private TerminalOptions options = null!;
         private ITextHandler textHandler = null!;
