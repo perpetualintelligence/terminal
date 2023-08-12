@@ -35,7 +35,7 @@ on:
         
 jobs:
   setup:    
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: github-release
     timeout-minutes: 10
     
@@ -128,15 +128,36 @@ jobs:
     # Setup .Net with global.json
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
+
+    # Restore
+    - name: Restore
+      run: dotnet restore --verbosity minimal
+
+    # Build
+    - name: Build
+      run: dotnet build -c Release --no-restore --verbosity minimal
       
-    # Publish PerpetualIntelligence.Terminal
-    - name: PerpetualIntelligence.Terminal
-      uses: ./.github/actions/push-package
-      with:
-        project: PerpetualIntelligence.Terminal
-        config: Release
-        version: ${{ env.PI_CI_PACKAGE_VERSION }}
-        ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
-        nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
-        registry: ${{ env.PI_PUBLISH_REGISTRY }}
-        testLicJson: ${{ env.PI_GITHUB_TEST_LIC }}
+    # Test
+    - name: Test
+      run: dotnet test --no-build --verbosity minimal
+
+    # Pack
+    - name: Pack
+      run: dotnet pack -p:PackageVersion=${{ env.PI_CI_PACKAGE_VERSION }} --no-build -c Release -o _packages -v minimal
+      
+    # GITHUB
+    - name: Github Push
+      if: ${{ env.PI_PUBLISH_REGISTRY == 'github' }}
+      run: dotnet nuget push --skip-duplicate --no-symbols --api-key ${{ env.PI_GITHUB_PAT_ENV }} --source github
+
+    # NUGET - 1
+    # First push to github (for package cadence, Nuget requires package verification)
+    - name: Github Push
+      if: ${{ env.PI_PUBLISH_REGISTRY == 'nuget' }}
+      run: dotnet nuget push --skip-duplicate --no-symbols --api-key ${{ env.PI_GITHUB_PAT_ENV }} --source github
+      
+    # NUGET - 2
+    # Second push to Nuget (for package cadence, Github will be used and in production Nuget after package verification)
+    - name: Nuget Push
+      if: ${{ env.PI_PUBLISH_REGISTRY == 'nuget' }}
+      run: dotnet nuget push --skip-duplicate --no-symbols --api-key ${{ env.PI_NUGET_PAT_ENV }} --source nuget.org
