@@ -26,6 +26,7 @@ using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Licensing
 {
+    [Collection("Sequential")]
     public class LicenseExtractorOnlineTests : IDisposable
     {
         public LicenseExtractorOnlineTests()
