@@ -5,34 +5,37 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test.Services;
+using Xunit;
 
 namespace PerpetualIntelligence.Terminal
 {
     [TestClass]
     public class TerminalErrorsTest
     {
-        [TestMethod]
+        [Fact]
         public void AssertErrorsAreValid()
         {
-            TestHelper.AssertConstantCount(typeof(TerminalErrors), 15);
+            TestHelper.AssertConstantCount(typeof(TerminalErrors), 16);
 
-            Assert.AreEqual("connection_closed", TerminalErrors.ConnectionClosed);
-            Assert.AreEqual("invalid_command", TerminalErrors.InvalidCommand);
-            Assert.AreEqual("invalid_configuration", TerminalErrors.InvalidConfiguration);
-            Assert.AreEqual("invalid_option", TerminalErrors.InvalidOption);
-            Assert.AreEqual("duplicate_option", TerminalErrors.DuplicateOption);
-            Assert.AreEqual("invalid_request", TerminalErrors.InvalidRequest);
-            Assert.AreEqual("unsupported_option", TerminalErrors.UnsupportedOption);
-            Assert.AreEqual("unsupported_command", TerminalErrors.UnsupportedCommand);
-            Assert.AreEqual("server_error", TerminalErrors.ServerError);
-            Assert.AreEqual("missing_option", TerminalErrors.MissingOption);
-            Assert.AreEqual("missing_claim", TerminalErrors.MissingClaim);
-            Assert.AreEqual("request_canceled", TerminalErrors.RequestCanceled);
-            Assert.AreEqual("invalid_license", TerminalErrors.InvalidLicense);
-            Assert.AreEqual("unauthorized_access", TerminalErrors.UnauthorizedAccess);
-            Assert.AreEqual("invalid_declaration", TerminalErrors.InvalidDeclaration);
+            TerminalErrors.ConnectionClosed.Should().Be("connection_closed");
+            TerminalErrors.UnsupportedArgument.Should().Be("unsupported_argument");
+            TerminalErrors.InvalidCommand.Should().Be("invalid_command");
+            TerminalErrors.InvalidConfiguration.Should().Be("invalid_configuration");
+            TerminalErrors.InvalidOption.Should().Be("invalid_option");
+            TerminalErrors.DuplicateOption.Should().Be("duplicate_option");
+            TerminalErrors.InvalidRequest.Should().Be("invalid_request");
+            TerminalErrors.UnsupportedOption.Should().Be("unsupported_option");
+            TerminalErrors.UnsupportedCommand.Should().Be("unsupported_command");
+            TerminalErrors.ServerError.Should().Be("server_error");
+            TerminalErrors.MissingOption.Should().Be("missing_option");
+            TerminalErrors.MissingClaim.Should().Be("missing_claim");
+            TerminalErrors.RequestCanceled.Should().Be("request_canceled");
+            TerminalErrors.InvalidLicense.Should().Be("invalid_license");
+            TerminalErrors.UnauthorizedAccess.Should().Be("unauthorized_access");
+            TerminalErrors.InvalidDeclaration.Should().Be("invalid_declaration");
         }
     }
 }
