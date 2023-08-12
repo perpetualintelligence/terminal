@@ -67,15 +67,15 @@ jobs:
       continue-on-error: false
       
     # Protocols package version
-    # E.g. 2.3.8-preview.221225369 (latest build version including preview)
-    # PI_DEPENDENCIES_SUFFIX will be empty for release version
+    # E.g., 2.3.8-preview.221225369 (latest build version including preview)
+    # PI_DEPENDENCIES_SUFFIX will be empty for the release version
     - name: Dependencies
       run: |
         echo "PI_PROTOCOLS_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $GITHUB_ENV
       continue-on-error: false
     
     # Build Number
-    # Establish a unique build number for current run DMYY{RUN_NUMBER}{RUN_ATTEMPT} e.g. 11223234
+    # Establish a unique build number for the current run DMYY{RUN_NUMBER}{RUN_ATTEMPT} e.g. 11223234
     # Ignore leading 0 in day and month.
     # https://stackoverflow.com/questions/54066437/date-month-in-bash-without-leading-0-or-space
     - name: Build Number
@@ -110,7 +110,7 @@ jobs:
       run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}" >> $GITHUB_ENV
       continue-on-error: false
 
-    # Setup publish registry (github or nuget)
+    # Setup publish registry (github or Nuget)
     # PI_PUBLISH_REGISTRY defaults to github
     - name: Registry metadata
       if: ${{ github.event.inputs.registry != '' }}
@@ -139,11 +139,11 @@ jobs:
       
     # Test
     - name: Test
-      run: dotnet test --no-build --verbosity minimal
+      run: dotnet test -c Release --no-build --verbosity minimal
 
     # Pack
     - name: Pack
-      run: dotnet pack -p:PackageVersion=${{ env.PI_CI_PACKAGE_VERSION }} --no-build -c Release -o _packages -v minimal
+      run: dotnet pack -c Release -p:PackageVersion=${{ env.PI_CI_PACKAGE_VERSION }} --no-build -c Release -o _packages -v minimal
       
     # GITHUB
     - name: Github Push
