@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
     /// <summary>
     /// The default <see cref="ITextHandler"/> for <see cref="Encoding.Unicode"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.
     /// </summary>
-    public class UnicodeTextHandler : ITextHandler
+    public sealed class UnicodeTextHandler : ITextHandler
     {
         /// <summary>
         /// The <see cref="StringComparison.OrdinalIgnoreCase"/> string comparison.
@@ -26,6 +26,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// The Unicode text encoding.
         /// </summary>
         public Encoding Encoding => Encoding.Unicode;
+
+        /// <summary>
+        /// Returns the default extraction regex pattern for Unicode command string.
+        /// </summary>
+        public string ExtractionRegex()
+        {
+            return @"^(\p{L}+)\s+((?:\p{L}+\s+)*)(\p{L}+)((?:\s+-{1,2}\p{L}+(?:\s+(?:'[^']*'|[^\s']+(?=\s+|$)))*)+)$";
+        }
 
         /// <summary>
         /// Returns the <see cref="StringComparer.OrdinalIgnoreCase"/> equality comparer.

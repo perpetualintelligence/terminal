@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -76,24 +76,6 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
             Assert.AreEqual("id1", result.Result.Id);
             Assert.AreEqual("name1", result.Result.Name);
             Assert.AreEqual("prefix1", result.Result.Prefix);
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixGroupAndNestedOAuthWithDefaultArgValueShouldMatchExact()
-        {
-            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin defaultargvalue1");
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("orgid:authid:sloginid", result.Result.Id);
-            Assert.AreEqual("slogin", result.Result.Name);
-            Assert.AreEqual("pi auth slogin", result.Result.Prefix); // Exact match
-
-            result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin oauth defaultargvalue2");
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("orgid:authid:sloginid:oauth", result.Result.Id);
-            Assert.AreEqual("oauth", result.Result.Name);
-            Assert.AreEqual("pi auth slogin oauth", result.Result.Prefix); // Exact match
         }
 
         [TestMethod]

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -71,64 +71,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // No error, allowed and configured
             license.Limits.OptionAlias = true;
             terminalOptions.Extractor.OptionAlias = true;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-        }
-
-        [Fact]
-        public async Task CheckAsync_DefaultOption_ShouldBehaveCorrectly()
-        {
-            // Error, not allowed but configured
-            license.Limits.DefaultOption = false;
-            terminalOptions.Extractor.DefaultOption = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured default option is not allowed for your license edition.");
-
-            // No error, not allowed not configured
-            license.Limits.DefaultOption = false;
-            terminalOptions.Extractor.DefaultOption = false;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, not allowed not configured
-            license.Limits.DefaultOption = false;
-            terminalOptions.Extractor.DefaultOption = null;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, allowed not configured
-            license.Limits.DefaultOption = true;
-            terminalOptions.Extractor.DefaultOption = false;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, allowed and configured
-            license.Limits.DefaultOption = true;
-            terminalOptions.Extractor.DefaultOption = true;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-        }
-
-        [Fact]
-        public async Task CheckAsync_DefaultOptionValue_ShouldBehaveCorrectly()
-        {
-            // Error, not allowed but configured
-            license.Limits.DefaultOptionValue = false;
-            terminalOptions.Extractor.DefaultOptionValue = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured default option value is not allowed for your license edition.");
-
-            // No error, not allowed not configured
-            license.Limits.DefaultOptionValue = false;
-            terminalOptions.Extractor.DefaultOptionValue = false;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, not allowed not configured
-            license.Limits.DefaultOptionValue = false;
-            terminalOptions.Extractor.DefaultOptionValue = null;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, allowed not configured
-            license.Limits.DefaultOptionValue = true;
-            terminalOptions.Extractor.DefaultOptionValue = false;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, allowed and configured
-            license.Limits.DefaultOptionValue = true;
-            terminalOptions.Extractor.DefaultOptionValue = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
         }
 

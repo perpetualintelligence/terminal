@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -11,13 +11,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
 using PerpetualIntelligence.Test.Services;
-using System;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
@@ -40,14 +38,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             optionsChecker = new ConfigurationOptionsChecker(host.Services);
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandStore>());
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            defaultOptionValueProvider = new DefaultOptionValueProvider(textHandler);
-            defaultOptionProvider = new DefaultOptionProvider(options, TestLogger.Create<DefaultOptionProvider>());
         }
 
         [TestMethod]
         public async Task Terminal_Id_Is_Required()
         {
-            Func<Task> act = async () => await optionsChecker.CheckAsync(options);
+            async Task act() => await optionsChecker.CheckAsync(options);
 
             options.Id = "";
             await TestHelper.AssertThrowsErrorExceptionAsync(act, TerminalErrors.InvalidConfiguration, "The terminal identifier is required.");
@@ -69,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Driver.Enabled = true;
 
-            Func<Task> act = async () => await optionsChecker.CheckAsync(options);
+            async Task act() => await optionsChecker.CheckAsync(options);
 
             options.Driver.Name = "";
             await TestHelper.AssertThrowsErrorExceptionAsync(act, TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
@@ -253,32 +249,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
         [TestMethod]
         [WriteDocumentation]
-        public async Task DefaultOptionConfiguredButProviderNotConfiguredShouldThrow()
-        {
-            options.Extractor.DefaultOption = true;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix6_defaultarg"));
-
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type=IDefaultOptionProvider");
-        }
-
-        [TestMethod]
-        [WriteDocumentation]
-        public async Task LoggerIndentLessThanOrEqualToZeroShouldThtow()
+        public async Task LoggerIndentLessThanOrEqualToZeroShouldThrow()
         {
             options.Logging.LoggerIndent = -3;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=-3");
 
             options.Logging.LoggerIndent = 0;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=0");
-        }
-
-        [TestMethod]
-        public async Task DefaultValueConfiguredButProviderNotConfiguredShouldThrow()
-        {
-            options.Extractor.DefaultOptionValue = true;
-
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type=IDefaultOptionValueProvider");
         }
 
         [TestMethod]
@@ -332,8 +309,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
         private readonly OptionExtractor optionExtractor;
         private readonly ICommandStoreHandler commands;
-        private readonly IDefaultOptionProvider defaultOptionProvider = null!;
-        private readonly IDefaultOptionValueProvider defaultOptionValueProvider = null!;
         private readonly IHost host;
         private readonly IHostBuilder hostBuilder;
         private readonly TerminalOptions options;

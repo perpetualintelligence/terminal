@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -29,8 +29,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="dataType">The option data type.</param>
         /// <param name="description">The option description.</param>
         /// <param name="required">The option is required.</param>
-        /// <param name="defaultValue">The option default value.</param>
-        public OptionDescriptor(string id, DataType dataType, string description, bool? required = null, object? defaultValue = null)
+        public OptionDescriptor(string id, DataType dataType, string description, bool? required = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -40,7 +39,6 @@ namespace PerpetualIntelligence.Terminal.Commands
             Id = id;
             DataType = dataType;
             Description = description;
-            DefaultValue = defaultValue;
             Required = required;
         }
 
@@ -51,8 +49,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="customDataType">The option custom data type.</param>
         /// <param name="description">The option description.</param>
         /// <param name="required">The option is required.</param>
-        /// <param name="defaultValue">The option default value.</param>
-        public OptionDescriptor(string id, string customDataType, string description, bool? required = null, object? defaultValue = null)
+        public OptionDescriptor(string id, string customDataType, string description, bool? required = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -63,7 +60,6 @@ namespace PerpetualIntelligence.Terminal.Commands
             DataType = DataType.Custom;
             CustomDataType = customDataType;
             Description = description;
-            DefaultValue = defaultValue;
             Required = required;
         }
 
@@ -93,15 +89,6 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// The option data type.
         /// </summary>
         public DataType DataType { get; set; }
-
-        /// <summary>
-        /// The default option value. <c>null</c> means the option does not support a default value.
-        /// </summary>
-        /// <remarks>
-        /// If <see cref="DefaultValue"/> is set to a non <c>null</c> value, then the option will have
-        /// <see cref="DefaultValue"/>, if a user or an app does not specify any value.
-        /// </remarks>
-        public object? DefaultValue { get; }
 
         /// <summary>
         /// The option description.

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -64,15 +64,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// The option data type.
         /// </summary>
         public DataType DataType { get; }
-
-        /// <summary>
-        /// The default option value. <c>null</c> means the option does not support a default value.
-        /// </summary>
-        /// <remarks>
-        /// If <see cref="DefaultValue"/> is set to a non <c>null</c> value, then the option will have
-        /// <see cref="DefaultValue"/>, if a user or an app does not specify any value.
-        /// </remarks>
-        public object? DefaultValue { get; set; }
 
         /// <summary>
         /// The option description.

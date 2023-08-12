@@ -1,12 +1,12 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Shared.Attributes.Validation;
+using PerpetualIntelligence.Terminal.Mocks;
 using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
     [OptionCustomProperty("arg1", "a1Key1", "a1Value1")]
     [OptionCustomProperty("arg1", "a1Key2", "a1Value2")]
     [OptionCustomProperty("arg1", "a1Key3", "a1Value3")]
-    [OptionDescriptor("arg2", DataType.Text, "test arg desc2", DefaultValue = "arg1 default val", Disabled = true, Alias = "arg2_alias")]
+    [OptionDescriptor("arg2", DataType.Text, "test arg desc2", Disabled = true, Alias = "arg2_alias")]
     [OptionValidation("arg2", typeof(RequiredAttribute))]
     [OptionValidation("arg2", typeof(OneOfAttribute), "test1", "test2", "test3")]
     [OptionCustomProperty("arg2", "a2Key1", "a2Value1")]

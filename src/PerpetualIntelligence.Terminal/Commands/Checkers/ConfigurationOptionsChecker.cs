@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Linq;
@@ -175,24 +174,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 if (textHandler.TextEquals(options.Extractor.OptionValueSeparator, options.Extractor.OptionValueWithIn))
                 {
                     throw new ErrorException(TerminalErrors.InvalidConfiguration, "The string with_in token and option separator cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
-                }
-            }
-
-            // Default option and values
-            {
-                IDefaultOptionProvider? defaultOptionProvider = serviceProvider.GetService<IDefaultOptionProvider>();
-                IDefaultOptionValueProvider? defaultOptionValueProvider = serviceProvider.GetService<IDefaultOptionValueProvider>();
-
-                // Command default option provider is missing
-                if (options.Extractor.DefaultOption.GetValueOrDefault() && defaultOptionProvider == null)
-                {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The command default option provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionProvider).Name);
-                }
-
-                // Option default value provider is missing
-                if (options.Extractor.DefaultOptionValue.GetValueOrDefault() && defaultOptionValueProvider == null)
-                {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The option default value provider is missing in the service collection. provider_type={0}", typeof(IDefaultOptionValueProvider).Name);
                 }
             }
 

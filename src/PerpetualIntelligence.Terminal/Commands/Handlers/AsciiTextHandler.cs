@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -12,9 +12,9 @@ using System.Text;
 namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     /// <summary>
-    /// The default <see cref="ITextHandler"/> for <see cref="Encoding.Unicode"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// The default <see cref="ITextHandler"/> for <see cref="Encoding.ASCII"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.
     /// </summary>
-    public class AsciiTextHandler : ITextHandler
+    public sealed class AsciiTextHandler : ITextHandler
     {
         /// <summary>
         /// The <see cref="StringComparison.InvariantCultureIgnoreCase"/> string comparison.
@@ -32,6 +32,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         public IEqualityComparer<string> EqualityComparer()
         {
             return StringComparer.OrdinalIgnoreCase;
+        }
+
+        /// <summary>
+        /// Returns the default extraction regex pattern for ASCII command string.
+        /// </summary>
+        public string ExtractionRegex()
+        {
+            return @"^(\w+)\s+((?:\w+\s+)*)(\w+)((?:\s+-{1,2}\w+(?:\s+(?:'[^']*'|[^\s']+(?=\s+|$)))*)+)$";
         }
 
         /// <summary>

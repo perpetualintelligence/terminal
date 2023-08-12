@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -40,14 +40,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="dataType">The option data type.</param>
         /// <param name="description">The option description.</param>
         /// <param name="alias">The option alias.</param>
-        /// <param name="defaultValue">The option default value.</param>
         /// <param name="required">The option is required.</param>
         /// <param name="disabled">The option is disabled.</param>
         /// <param name="obsolete">The option is obsolete.</param>
         /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
-        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
-            OptionDescriptor option = new(id, dataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
+            OptionDescriptor option = new(id, dataType, description, required) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
             OptionBuilder argumentBuilder = new(builder);
             argumentBuilder.Services.AddSingleton(option);
             return argumentBuilder;
@@ -61,14 +60,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="customDataType">The option custom data type.</param>
         /// <param name="description">The option description.</param>
         /// <param name="alias">The option alias.</param>
-        /// <param name="defaultValue">The option default value.</param>
         /// <param name="required">The option is required.</param>
         /// <param name="disabled">The option is disabled.</param>
         /// <param name="obsolete">The option is obsolete.</param>
         /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
-        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, object? defaultValue = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
         {
-            OptionDescriptor option = new(id, customDataType, description, required, defaultValue) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
+            OptionDescriptor option = new(id, customDataType, description, required) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
             OptionBuilder argumentBuilder = new(builder);
             argumentBuilder.Services.AddSingleton(option);
             return argumentBuilder;

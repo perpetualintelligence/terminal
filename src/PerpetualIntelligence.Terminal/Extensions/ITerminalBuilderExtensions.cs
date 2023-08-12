@@ -175,56 +175,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ICommandExtractor"/>, <see cref="IOptionExtractor"/> and
-        /// <see cref="IDefaultOptionValueProvider"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <typeparam name="TCommand">The command extractor type.</typeparam>
-        /// <typeparam name="TOption">The option extractor type.</typeparam>
-        /// <typeparam name="TDefaultOptionValue">The option default value provider type.</typeparam>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddExtractor<TCommand, TOption, TDefaultOptionValue>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor where TDefaultOptionValue : class, IDefaultOptionValueProvider
-        {
-            // Add command extractor
-            builder.Services.AddTransient<ICommandExtractor, TCommand>();
-
-            // Add option extractor
-            builder.Services.AddTransient<IOptionExtractor, TOption>();
-
-            // Add default option value provider
-            builder.Services.AddTransient<IDefaultOptionValueProvider, TDefaultOptionValue>();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the <see cref="ICommandExtractor"/>, <see cref="IOptionExtractor"/>,
-        /// <see cref="IDefaultOptionProvider"/> and <see cref="IDefaultOptionValueProvider"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <typeparam name="TCommand">The command extractor type.</typeparam>
-        /// <typeparam name="TOption">The option extractor type.</typeparam>
-        /// <typeparam name="TDefaultOption">The default option provider type.</typeparam>
-        /// <typeparam name="TDefaultOptionValue">The default option value provider type.</typeparam>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddExtractor<TCommand, TOption, TDefaultOption, TDefaultOptionValue>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor where TDefaultOption : class, IDefaultOptionProvider where TDefaultOptionValue : class, IDefaultOptionValueProvider
-        {
-            // Add command extractor
-            builder.Services.AddTransient<ICommandExtractor, TCommand>();
-
-            // Add option extractor
-            builder.Services.AddTransient<IOptionExtractor, TOption>();
-
-            // Add default option provider
-            builder.Services.AddTransient<IDefaultOptionProvider, TDefaultOption>();
-
-            // Add default option value provider
-            builder.Services.AddTransient<IDefaultOptionValueProvider, TDefaultOptionValue>();
-
-            return builder;
-        }
-
-        /// <summary>
         /// Adds <c>pi-cli</c> license handler to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -356,11 +306,11 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 IOptionBuilder argumentBuilder;
                 if (argAttr.CustomDataType != null)
                 {
-                    argumentBuilder = commandBuilder.DefineOption(argAttr.Id, argAttr.CustomDataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
+                    argumentBuilder = commandBuilder.DefineOption(argAttr.Id, argAttr.CustomDataType, argAttr.Description, argAttr.Alias, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
                 }
                 else
                 {
-                    argumentBuilder = commandBuilder.DefineOption(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Alias, argAttr.DefaultValue, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
+                    argumentBuilder = commandBuilder.DefineOption(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Alias, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
                 }
 
                 // Option validation attribute

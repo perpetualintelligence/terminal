@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -245,53 +239,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
-        }
-
-        [TestMethod]
-        public void AddExtractorWithDefaultArgValueProviderShouldCorrectlyInitialize()
-        {
-            terminalBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor, MockDefaultOptionValueProvider>();
-
-            var cmd = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandExtractor)));
-            Assert.IsNotNull(cmd);
-            Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
-            Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
-
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
-            Assert.IsNotNull(arg);
-            Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
-            Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
-
-            var def = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionValueProvider)));
-            Assert.IsNotNull(def);
-            Assert.AreEqual(ServiceLifetime.Transient, def.Lifetime);
-            Assert.AreEqual(typeof(MockDefaultOptionValueProvider), def.ImplementationType);
-        }
-
-        [TestMethod]
-        public void AddExtractorWithDefaultProviderShouldCorrectlyInitialize()
-        {
-            terminalBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor, MockDefaultOptionProvider, MockDefaultOptionValueProvider>();
-
-            var cmd = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandExtractor)));
-            Assert.IsNotNull(cmd);
-            Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
-            Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
-
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
-            Assert.IsNotNull(arg);
-            Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
-            Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
-
-            var def = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionProvider)));
-            Assert.IsNotNull(def);
-            Assert.AreEqual(ServiceLifetime.Transient, def.Lifetime);
-            Assert.AreEqual(typeof(MockDefaultOptionProvider), def.ImplementationType);
-
-            var defValue = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDefaultOptionValueProvider)));
-            Assert.IsNotNull(defValue);
-            Assert.AreEqual(ServiceLifetime.Transient, defValue.Lifetime);
-            Assert.AreEqual(typeof(MockDefaultOptionValueProvider), defValue.ImplementationType);
         }
 
         [TestMethod]

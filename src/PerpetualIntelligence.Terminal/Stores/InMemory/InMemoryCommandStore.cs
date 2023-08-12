@@ -1,15 +1,15 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,27 +86,11 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
             Dictionary<CommandDescriptor, int> matches = new();
             foreach (var cmd in commandDescriptors)
             {
-                // If the command does not support default option then match the exact prefix.
-                if (cmd.DefaultOption == null)
+                string regEx = $"^{cmd.Prefix}$";
+                Match match = Regex.Match(prefix, regEx);
+                if (match.Success)
                 {
-                    string regEx = $"^{cmd.Prefix}$";
-                    Match match = Regex.Match(prefix, regEx);
-                    if (match.Success)
-                    {
-                        return Task.FromResult(new TryResultOrError<CommandDescriptor>(cmd));
-                    }
-                }
-                else
-                {
-                    // Match the command that starts with the prefix. This can match multiple grouped commands e.g. pi,
-                    // pi auth, pi auth login, pi auth login oauth, pi auth login saml
-                    // - https://stackoverflow.com/questions/6298566/match-exact-string
-                    string regEx = $"^{cmd.Prefix}";
-                    Match match = Regex.Match(prefix, regEx);
-                    if (match.Success)
-                    {
-                        matches.Add(cmd, match.Length);
-                    }
+                    return Task.FromResult(new TryResultOrError<CommandDescriptor>(cmd));
                 }
             }
 

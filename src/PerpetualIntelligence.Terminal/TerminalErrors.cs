@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -81,6 +81,11 @@ namespace PerpetualIntelligence.Terminal
         /// The option is not supported.
         /// </summary>
         public const string UnsupportedOption = "unsupported_option";
+
+        /// <summary>
+        /// The argument is not supported.
+        /// </summary>
+        public const string UnsupportedArgument = "unsupported_argument";
 
         /// <summary>
         /// The command is not supported.
