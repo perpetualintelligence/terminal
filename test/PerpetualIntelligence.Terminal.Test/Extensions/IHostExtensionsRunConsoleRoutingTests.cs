@@ -27,11 +27,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
     [Collection("Sequential")]
     public class IHostExtensionsRunConsoleRoutingTests : IAsyncLifetime
     {
-        public IHostExtensionsRunConsoleRoutingTests()
-        {
-            stringWriter = new StringWriter();
-        }
-
         [Fact]
         public async Task Non_Console_Start_Mode_Throws_Invalid_Configuration()
         {
@@ -486,6 +481,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
         public Task InitializeAsync()
         {
+            stringWriter = new StringWriter();
+
             originalWriter = Console.Out;
             originalReader = Console.In;
 
@@ -509,7 +506,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         private IHost host = null!;
-        private readonly StringWriter stringWriter;
+        private StringWriter stringWriter = null!;
         private TextWriter originalWriter = null!;
         private TextReader originalReader = null!;
         private CancellationTokenSource tokenSource = null!;
