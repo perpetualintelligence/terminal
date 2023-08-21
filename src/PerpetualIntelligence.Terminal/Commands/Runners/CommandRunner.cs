@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Providers;
@@ -52,7 +46,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
                 throw new ErrorException(TerminalErrors.InvalidConfiguration, "The help provider is missing in the configured services.");
             }
 
-            return helpProvider.ProvideAsync(new HelpProviderContext(context.HandlerContext.Command));
+            return helpProvider.ProvideAsync(new HelpProviderContext(context.HandlerContext.ExtractedCommand.Command));
         }
 
         /// <inheritdoc/>

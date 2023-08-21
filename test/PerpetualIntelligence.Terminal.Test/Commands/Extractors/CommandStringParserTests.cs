@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("root1 grp1 grp2 cmd1 val1 val2 \"string value within\" --opt1 v1 -o2 v2 --opt3 v3 --opt4 \"string option value within\" --opt7 -o5 sad -o6 34.56 -o8")]
         public async Task ParseAsync_Should_Parse_Simple_Command_Strings(string commandString)
         {
-            var parser = new CommandStringParser(_textHandlerMock, _commandDescriptors, _terminalOptions);
+            var parser = new CommandRouteParser(_textHandlerMock, _commandDescriptors, _terminalOptions);
             Root root = await parser.ParseAsync(new CommandRoute(Guid.NewGuid().ToString(), commandString));
             root.Should().NotBeNull();
         }

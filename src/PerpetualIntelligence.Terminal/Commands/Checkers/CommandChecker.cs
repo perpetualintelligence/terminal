@@ -35,41 +35,42 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             // If the command itself do not support any options then there is nothing much to check. Extractor will
             // reject any unsupported attributes.
-            if (context.HandlerContext.Command.Descriptor.OptionDescriptors == null)
+            OptionDescriptors? optionDescriptors = context.HandlerContext.ExtractedCommand.Command.Descriptor.OptionDescriptors;
+            if (optionDescriptors == null)
             {
                 return new CommandCheckerResult();
             }
 
             // Check the options against the descriptor constraints
             // TODO: process multiple errors.
-            foreach (var argDescriptor in context.HandlerContext.Command.Descriptor.OptionDescriptors)
+            foreach (var optDescriptor in optionDescriptors)
             {
                 // Optimize (not all options are required)
-                bool containsArg = context.HandlerContext.Command.TryGetOption(argDescriptor.Id, out Option? arg);
+                bool containsArg = context.HandlerContext.ExtractedCommand.Command.TryGetOption(optDescriptor.Id, out Option? arg);
                 if (!containsArg)
                 {
                     // Required option is missing
-                    if (argDescriptor.Required.GetValueOrDefault())
+                    if (optDescriptor.Required.GetValueOrDefault())
                     {
-                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.HandlerContext.Command.Name, context.HandlerContext.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
                     }
                 }
                 else
                 {
                     // Check obsolete
-                    if (argDescriptor.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
+                    if (optDescriptor.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.HandlerContext.Command.Name, context.HandlerContext.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
                     }
 
                     // Check disabled
-                    if (argDescriptor.Disabled.GetValueOrDefault())
+                    if (optDescriptor.Disabled.GetValueOrDefault())
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.HandlerContext.Command.Name, context.HandlerContext.Command.Id, argDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
                     }
 
                     // Check arg value
-                    await optionChecker.CheckAsync(new OptionCheckerContext(argDescriptor, arg!));
+                    await optionChecker.CheckAsync(new OptionCheckerContext(optDescriptor, arg!));
                 }
             }
 

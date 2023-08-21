@@ -1,12 +1,12 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Terminal.Commands.Extractors;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 
         public bool IsExplicitError { get; set; }
 
-        public bool IsExplicitNoCommand { get; set; }
+        public bool IsExplicitNoExtractedCommand { get; set; }
 
         public bool IsExplicitNoCommandDescriptor { get; set; }
 
@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
             }
             else
             {
-                if (IsExplicitNoCommand)
+                if (IsExplicitNoExtractedCommand)
                 {
                     // No error but no command
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -42,13 +42,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
                 {
                     // No error but no command descriptor
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                    return Task.FromResult(new CommandExtractorResult(new Command(new CommandRoute("id1", "test1"), null)));
+                    return Task.FromResult(new CommandExtractorResult(new ExtractedCommand(new CommandRoute("id1", "test1"), new Command(null), Root.Default())));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 else
                 {
                     // all ok
-                    return Task.FromResult(new CommandExtractorResult(new Command(new CommandRoute("id1", "test1"), new CommandDescriptor("test_id", "test_name", "test_prefix", "desc"), null)));
+                    return Task.FromResult(new CommandExtractorResult(new ExtractedCommand(new CommandRoute("id1", "test1"), new Command(new CommandDescriptor("test_id", "test_name", "test_prefix", "desc")), Root.Default())));
                 }
             }
         }

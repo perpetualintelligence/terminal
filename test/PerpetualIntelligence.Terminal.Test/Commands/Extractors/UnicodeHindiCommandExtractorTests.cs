@@ -32,16 +32,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड परीक्षण"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड परीक्षण", result.Command.Descriptor.Prefix);
-            Assert.IsFalse(result.Command.Descriptor.IsRoot);
-            Assert.IsTrue(result.Command.Descriptor.IsGroup);
+            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
+            Assert.AreEqual("यूनिकोड परीक्षण", result.ExtractedCommand.Command.Descriptor.Prefix);
+            Assert.IsFalse(result.ExtractedCommand.Command.Descriptor.IsRoot);
+            Assert.IsTrue(result.ExtractedCommand.Command.Descriptor.IsGroup);
 
-            Assert.IsNotNull(result.Command);
-            Assert.AreEqual("uc2", result.Command.Id);
-            Assert.AreEqual("परीक्षण", result.Command.Name);
-            Assert.AreEqual("यूनिकोड समूहीकृत कमांड", result.Command.Description);
-            Assert.IsNull(result.Command.Options);
+            Assert.IsNotNull(result.ExtractedCommand);
+            Assert.AreEqual("uc2", result.ExtractedCommand.Command.Id);
+            Assert.AreEqual("परीक्षण", result.ExtractedCommand.Command.Name);
+            Assert.AreEqual("यूनिकोड समूहीकृत कमांड", result.ExtractedCommand.Command.Description);
+            Assert.IsNull(result.ExtractedCommand.Command.Options);
         }
 
         [TestMethod]
@@ -57,15 +57,15 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड", result.Command.Descriptor.Prefix);
-            Assert.IsTrue(result.Command.Descriptor.IsRoot);
+            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
+            Assert.AreEqual("यूनिकोड", result.ExtractedCommand.Command.Descriptor.Prefix);
+            Assert.IsTrue(result.ExtractedCommand.Command.Descriptor.IsRoot);
 
-            Assert.IsNotNull(result.Command);
-            Assert.AreEqual("uc1", result.Command.Id);
-            Assert.AreEqual("यूनिकोड", result.Command.Name);
-            Assert.AreEqual("यूनिकोड रूट कमांड", result.Command.Description);
-            Assert.IsNull(result.Command.Options);
+            Assert.IsNotNull(result.ExtractedCommand);
+            Assert.AreEqual("uc1", result.ExtractedCommand.Command.Id);
+            Assert.AreEqual("यूनिकोड", result.ExtractedCommand.Command.Name);
+            Assert.AreEqual("यूनिकोड रूट कमांड", result.ExtractedCommand.Command.Description);
+            Assert.IsNull(result.ExtractedCommand.Command.Options);
         }
 
         [TestMethod]
@@ -74,20 +74,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड परीक्षण प्रिंट --एक पहला मूल्य --दो --तीन तीसरा मूल्य --चार 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड परीक्षण प्रिंट", result.Command.Descriptor.Prefix);
+            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
+            Assert.AreEqual("यूनिकोड परीक्षण प्रिंट", result.ExtractedCommand.Command.Descriptor.Prefix);
 
-            Assert.IsNotNull(result.Command);
-            Assert.AreEqual("uc3", result.Command.Id);
-            Assert.AreEqual("प्रिंट", result.Command.Name);
-            Assert.AreEqual("प्रिंट कमांड", result.Command.Description);
-            Assert.IsNotNull(result.Command.Options);
-            Assert.AreEqual(4, result.Command.Options.Count);
+            Assert.IsNotNull(result.ExtractedCommand);
+            Assert.AreEqual("uc3", result.ExtractedCommand.Command.Id);
+            Assert.AreEqual("प्रिंट", result.ExtractedCommand.Command.Name);
+            Assert.AreEqual("प्रिंट कमांड", result.ExtractedCommand.Command.Description);
+            Assert.IsNotNull(result.ExtractedCommand.Command.Options);
+            Assert.AreEqual(4, result.ExtractedCommand.Command.Options.Count);
 
-            AssertOption(result.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
-            AssertOption(result.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertOption(result.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertOption(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertOption(result.ExtractedCommand.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
+            AssertOption(result.ExtractedCommand.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertOption(result.ExtractedCommand.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertOption(result.ExtractedCommand.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
         [TestMethod]
@@ -97,20 +97,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड परीक्षण प्रिंट -एकहै पहला मूल्य --दो --तीन तीसरा मूल्य -चारहै 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड परीक्षण प्रिंट", result.Command.Descriptor.Prefix);
+            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
+            Assert.AreEqual("यूनिकोड परीक्षण प्रिंट", result.ExtractedCommand.Command.Descriptor.Prefix);
 
-            Assert.IsNotNull(result.Command);
-            Assert.AreEqual("uc3", result.Command.Id);
-            Assert.AreEqual("प्रिंट", result.Command.Name);
-            Assert.AreEqual("प्रिंट कमांड", result.Command.Description);
-            Assert.IsNotNull(result.Command.Options);
-            Assert.AreEqual(4, result.Command.Options.Count);
+            Assert.IsNotNull(result.ExtractedCommand);
+            Assert.AreEqual("uc3", result.ExtractedCommand.Command.Id);
+            Assert.AreEqual("प्रिंट", result.ExtractedCommand.Command.Name);
+            Assert.AreEqual("प्रिंट कमांड", result.ExtractedCommand.Command.Description);
+            Assert.IsNotNull(result.ExtractedCommand.Command.Options);
+            Assert.AreEqual(4, result.ExtractedCommand.Command.Options.Count);
 
-            AssertOption(result.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
-            AssertOption(result.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertOption(result.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertOption(result.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertOption(result.ExtractedCommand.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
+            AssertOption(result.ExtractedCommand.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertOption(result.ExtractedCommand.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
+            AssertOption(result.ExtractedCommand.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
         protected override void OnTestInitialize()
@@ -118,9 +118,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             options = MockTerminalOptions.NewAliasOptions();
             textHandler = new UnicodeTextHandler();
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            commands = new InMemoryCommandStore(textHandler, MockCommands.UnicodeCommands, options, TestLogger.Create<InMemoryCommandStore>());
+            routeParser = new MockCommandRouteParser();
+            commandStore = new InMemoryCommandStore(textHandler, MockCommands.UnicodeCommands, options, TestLogger.Create<InMemoryCommandStore>());
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            extractor = new CommandExtractor(commands, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>());
+            extractor = new CommandExtractor(routeParser, commandStore, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>());
         }
 
         private void AssertOption(Option arg, string name, DataType dataType, string description, object value)
@@ -142,7 +143,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         private OptionExtractor optionExtractor = null!;
-        private ICommandStoreHandler commands = null!;
+        private ICommandRouteParser routeParser = null!;
+        private ICommandStoreHandler commandStore = null!;
         private CommandExtractor extractor = null!;
         private TerminalOptions options = null!;
         private ITextHandler textHandler = null!;

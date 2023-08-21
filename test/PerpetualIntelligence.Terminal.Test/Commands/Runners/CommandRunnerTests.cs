@@ -32,7 +32,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         [Fact]
         public async Task HelpShouldThrowIfIHelpProviderIsNullAsync()
         {
-            CommandHandlerContext handlerContext = new(routerContext, new Command(new CommandRoute("id1", "test1"), new CommandDescriptor("id", "name", "prefix", "desc")), MockLicenses.TestLicense);
+            CommandRoute commandRoute = new("id1", "test1");
+            Command command = new(new CommandDescriptor("id", "name", "prefix", "desc"));
+            ExtractedCommand extractedCommand = new(commandRoute, command, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockDefaultCommandRunner mockCommandRunner = new();
             Func<Task> act = () => mockCommandRunner.HelpAsync(new CommandRunnerContext(handlerContext));
             await act.Should().ThrowAsync<ErrorException>().WithMessage("The help provider is missing in the configured services.");
@@ -41,7 +45,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         [Fact]
         public async Task DelegateHelpShouldCallHelpAsync()
         {
-            CommandHandlerContext handlerContext = new(routerContext, new Command(new CommandRoute("id1", "test1"), new CommandDescriptor("id", "name", "prefix", "desc")), MockLicenses.TestLicense);
+            CommandRoute commandRoute = new("id1", "test1");
+            Command command = new(new CommandDescriptor("id", "name", "prefix", "desc"));
+            ExtractedCommand extractedCommand = new(commandRoute, command, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockHelpProvider helpProvider = new();
             MockDefaultCommandRunner mockCommandRunner = new();
             var result = await mockCommandRunner.DelegateHelpAsync(new CommandRunnerContext(handlerContext), helpProvider);
@@ -54,7 +62,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         [Fact]
         public async Task DelegateRunShouldCallRunAsync()
         {
-            CommandHandlerContext handlerContext = new(routerContext, new Command(new CommandRoute("id1", "test1"), new CommandDescriptor("id", "name", "prefix", "desc")), MockLicenses.TestLicense);
+            CommandRoute commandRoute = new("id1", "test1");
+            Command command = new(new CommandDescriptor("id", "name", "prefix", "desc"));
+            ExtractedCommand extractedCommand = new(commandRoute, command, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockDefaultCommandRunner mockCommandRunner = new();
             var result = await mockCommandRunner.DelegateRunAsync(new CommandRunnerContext(handlerContext));
             mockCommandRunner.RunCalled.Should().BeTrue();

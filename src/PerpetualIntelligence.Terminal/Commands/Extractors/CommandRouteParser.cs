@@ -18,21 +18,21 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     /// <summary>
-    /// The <see cref="CommandStringParser"/> class parses a command string into a <see cref="Root"/> object.
+    /// The <see cref="CommandRouteParser"/> class parses a command string into a <see cref="Root"/> object.
     /// </summary>
-    public class CommandStringParser
+    public class CommandRouteParser : ICommandRouteParser
     {
         private readonly ITextHandler textHandler;
         private readonly CommandDescriptors commandDescriptors;
         private readonly TerminalOptions terminalOptions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandStringParser"/> class.
+        /// Initializes a new instance of the <see cref="CommandRouteParser"/> class.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="commandDescriptors">The command descriptors.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
-        public CommandStringParser(ITextHandler textHandler, CommandDescriptors commandDescriptors, TerminalOptions terminalOptions)
+        public CommandRouteParser(ITextHandler textHandler, CommandDescriptors commandDescriptors, TerminalOptions terminalOptions)
         {
             this.textHandler = textHandler;
             this.commandDescriptors = commandDescriptors;
@@ -72,12 +72,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Root root;
             if (command.Descriptor.IsRoot)
             {
-                root = new Root(false, linkedCommand: command);
+                root = new Root(linkedCommand: command);
             }
             else if (command.Descriptor.IsSubCommand)
             {
                 // First element is a sub-command, so we create a dummy root for execution.
-                root = new Root(true, linkedCommand: command);
+                SubCommand subCommand = new(command);
+                root = Root.Default(subCommand);
             }
             else
             {
@@ -104,7 +105,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 throw new ErrorException(TerminalErrors.InvalidCommand, $"The command is not a root. command={0}", rootCommand.Id);
             }
 
-            return new Root(isDummy: false, linkedCommand: rootCommand);
+            return new Root(linkedCommand: rootCommand);
         }
 
         private void ThrowIfNotGroup(Command grpCommand)
@@ -152,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private Command GetCommandOrThrow(CommandRoute commandRoute, string commandId)
         {
             CommandDescriptor commandDescriptor = GetCommandDescriptorOrThrow(commandId);
-            return new Command(commandRoute, commandDescriptor);
+            return new Command(commandDescriptor);
         }
 
         private Task<Command> ExtractCommandAsync(Match match, CommandRoute commandRoute, Root? root, Group? group)

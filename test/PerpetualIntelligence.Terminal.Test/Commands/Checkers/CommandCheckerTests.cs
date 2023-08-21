@@ -41,9 +41,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, "value1")
             };
-            Command argsCommand = new(commandRoute, disabledArgsDescriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(disabledArgsDescriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is disabled. command_name=name1 command_id=id1 option=key1");
         }
@@ -58,9 +60,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, "value1")
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
         }
@@ -75,9 +79,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, "value1")
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
 
             terminalOptions.Checker.AllowObsoleteOption = true;
@@ -94,9 +100,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, "value1")
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
 
             terminalOptions.Checker.AllowObsoleteOption = null;
@@ -117,9 +125,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor2, "value2")
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.MissingOption, "The required option is missing. command_name=name1 command_id=id1 option=key1");
         }
@@ -134,9 +144,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, "value1")
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
         }
@@ -153,9 +165,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, "non-date")
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
 
@@ -174,9 +188,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, "non-date")
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value does not match the mapped type. option=key1 type=System.DateTime data_type=Date value_type=String value=non-date");
         }
@@ -193,13 +209,15 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, "25-Mar-2021")
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
+
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             object oldValue = options[0].Value;
             Assert.IsInstanceOfType(oldValue, typeof(string));
 
             // Value should pass and converted to date
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
 
@@ -218,9 +236,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, 25.36)
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             var result = await checker.CheckAsync(context);
         }
@@ -235,9 +255,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 new Option(optionDescriptor, DateTime.Now)
             };
-            Command argsCommand = new(commandRoute, descriptor, options);
 
-            CommandHandlerContext handlerContext = new(routerContext, argsCommand, MockLicenses.TestLicense);
+            Command argsCommand = new(descriptor, options);
+            ExtractedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
         }

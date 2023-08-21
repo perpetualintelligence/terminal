@@ -15,11 +15,10 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="isDummy"></param>
         /// <param name="linkedCommand">The command linked to the root.</param>
         /// <param name="childGroup">The child group.</param>
         /// <param name="childSubCommand">The child sub-command.</param>
-        public Root(bool isDummy, Command linkedCommand, Group? childGroup = null, SubCommand? childSubCommand = null)
+        public Root(Command linkedCommand, Group? childGroup = null, SubCommand? childSubCommand = null)
         {
             LinkedCommand = linkedCommand ?? throw new System.ArgumentNullException(nameof(linkedCommand));
 
@@ -29,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Commands
             }
             ChildGroup = childGroup;
             ChildSubCommand = childSubCommand;
-            IsDummy = isDummy;
+            IsDefault = false;
         }
 
         /// <summary>
@@ -48,8 +47,21 @@ namespace PerpetualIntelligence.Terminal.Commands
         public Command LinkedCommand { get; }
 
         /// <summary>
-        /// Indicates whether this root is a dummy root.
+        /// Indicates whether this root is a default root.
         /// </summary>
-        public bool IsDummy { get; set; }
+        public bool IsDefault { get; private set; }
+
+        /// <summary>
+        /// Returns the default root.
+        /// </summary>
+        /// <param name="subCommand">The child sub-command.</param>
+        public static Root Default(SubCommand? subCommand = null)
+        {
+            Root root = new(new Command(new CommandDescriptor("default", "default", "default", "Default root command.")), childGroup: null, childSubCommand: subCommand)
+            {
+                IsDefault = true
+            };
+            return root;
+        }
     }
 }

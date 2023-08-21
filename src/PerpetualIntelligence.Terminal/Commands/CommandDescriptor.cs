@@ -27,10 +27,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="prefix">The command prefix to map the command string.</param>
         /// <param name="description">The command description.</param>
         /// <param name="optionDescriptors">The option descriptors.</param>
-        /// <param name="customProperties">The custom properties.</param>
-        /// <param name="defaultOption">The default option.</param>
-        /// <param name="tags">The tags to find a command.</param>
-        public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? optionDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultOption = null, string[]? tags = null)
+        public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? optionDescriptors = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -52,8 +49,6 @@ namespace PerpetualIntelligence.Terminal.Commands
             Prefix = prefix;
             Description = description;
             OptionDescriptors = optionDescriptors;
-            CustomProperties = customProperties;
-            Tags = tags;
         }
 
         /// <summary>

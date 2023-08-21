@@ -125,13 +125,13 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with sub cmd and value with in
-                NewCommandDefinition("id9", "name9", "root9 grp9 cmd9", "Value with in", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("id9", "name9", "root9 grp9 cmd9", "Value with in", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
             };
 
             GroupedCommands = new()
@@ -146,19 +146,19 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "the silent login command within the auth group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key2").Item1,
+                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "the silent login command within the auth group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "the slient oidc login command within the slogin group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "the slient oauth login command within the slogin group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "the slient oauth login command within the slogin group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
             };
 
             AliasCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
@@ -179,13 +179,13 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "org auth login cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "org auth slogin cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key2").Item1,
+                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "org auth slogin cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "org auth slogin oidc cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "org auth slogin oauth cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "org auth slogin oauth cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
             };
 
             LicensingCommands = new()
@@ -227,10 +227,10 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // Command with default arg
-                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
             };
 
             UnicodeCommands = new()
@@ -245,7 +245,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 NewCommandDefinition("uc3", "प्रिंट", "यूनिकोड परीक्षण प्रिंट", "प्रिंट कमांड", TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // subcommand with default option
-                NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "एक").Item1,
+                NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // --- Chinese --- Root command
                 NewCommandDefinition("uc5", "統一碼", "統一碼", "示例根命令描述", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
@@ -257,13 +257,13 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 NewCommandDefinition("uc7", "打印", "統一碼 測試 打印", "測試命令", TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
                 // subcommand with default option
-                NewCommandDefinition("uc8", "備用", "統一碼 測試 備用", "替代描述", TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "第一的").Item1,
+                NewCommandDefinition("uc8", "備用", "統一碼 測試 備用", "替代描述", TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
             };
         }
 
-        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, OptionDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false, Options? options = null)
+        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, OptionDescriptors? args = null, Type? checker = null, Type? runner = null, bool? isRoot = false, bool? isGroup = false, Options? options = null)
         {
-            var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultOption: defaultArg)
+            var cmd1 = new CommandDescriptor(id, name, prefix, desc, args)
             {
                 // Internal set, in prod apps this will be set by DI Addxxx methods
                 Checker = checker,
@@ -272,7 +272,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 IsRoot = isRoot.GetValueOrDefault()
             };
 
-            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(new CommandRoute("id1", "test"), cmd1, options));
+            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options));
         }
 
         public static List<CommandDescriptor> AliasCommands;

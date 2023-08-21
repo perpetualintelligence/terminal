@@ -15,13 +15,20 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
+        /// <param name="commandRoute">The command route.</param>
         /// <param name="command">The command.</param>
         /// <param name="hierarchy">The command hierarchy.</param>
-        public ExtractedCommand(Command command, Root hierarchy)
+        public ExtractedCommand(CommandRoute commandRoute, Command command, Root hierarchy)
         {
-            Command = command;
-            Hierarchy = hierarchy;
+            CommandRoute = commandRoute ?? throw new System.ArgumentNullException(nameof(commandRoute));
+            Command = command ?? throw new System.ArgumentNullException(nameof(command));
+            Hierarchy = hierarchy ?? throw new System.ArgumentNullException(nameof(hierarchy));
         }
+
+        /// <summary>
+        /// The command route.
+        /// </summary>
+        public CommandRoute CommandRoute { get; }
 
         /// <summary>
         /// The command.

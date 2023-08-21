@@ -270,14 +270,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
         /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
         /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
-        /// <param name="defaultOption">The default option.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
+        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
         {
-            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected, defaultOption);
+            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected);
         }
 
         private static ITerminalBuilder AddDeclarativeTarget(this ITerminalBuilder builder, Type declarativeTarget)
@@ -369,14 +368,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
             return commandBuilder.Add();
         }
 
-        private static ICommandBuilder DefineCommand(this ITerminalBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null)
+        private static ICommandBuilder DefineCommand(this ITerminalBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false)
         {
             if (isRoot && !isGroup)
             {
                 throw new ErrorException(TerminalErrors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
             }
 
-            CommandDescriptor cmd = new(id, name, prefix, description, defaultOption: defaultOption)
+            CommandDescriptor cmd = new(id, name, prefix, description)
             {
                 Checker = checker,
                 Runner = runner,

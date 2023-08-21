@@ -25,22 +25,15 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
         /// <param name="commandDescriptor">The command descriptor.</param>
         /// <param name="options">The command options.</param>
         /// <param name="arguments">The command arguments.</param>
-        public Command(CommandRoute commandRoute, CommandDescriptor commandDescriptor, Options? options = null, Arguments? arguments = null)
+        public Command(CommandDescriptor commandDescriptor, Options? options = null, Arguments? arguments = null)
         {
-            Route = commandRoute ?? throw new System.ArgumentNullException(nameof(commandRoute));
             Descriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
             Options = options;
             Arguments = arguments;
         }
-
-        /// <summary>
-        /// The command route.
-        /// </summary>
-        public CommandRoute Route { get; }
 
         /// <summary>
         /// The command descriptor.

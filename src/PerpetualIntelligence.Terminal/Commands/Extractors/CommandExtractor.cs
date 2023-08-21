@@ -30,19 +30,22 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
+        /// <param name="commandRouteParser">The command route parser.</param>
         /// <param name="commandStoreHandler">The command store handler.</param>
         /// <param name="optionExtractor">The option extractor.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         public CommandExtractor(
+            ICommandRouteParser commandRouteParser,
             ICommandStoreHandler commandStoreHandler,
             IOptionExtractor optionExtractor,
             ITextHandler textHandler,
             TerminalOptions terminalOptions,
             ILogger<CommandExtractor> logger)
         {
-            this.commandStore = commandStoreHandler ?? throw new ArgumentNullException(nameof(commandStoreHandler));
+            this.commandRouteParser = commandRouteParser ?? throw new ArgumentNullException(nameof(commandRouteParser));
+            this.commandStoreHandler = commandStoreHandler ?? throw new ArgumentNullException(nameof(commandStoreHandler));
             this.optionExtractor = optionExtractor ?? throw new ArgumentNullException(nameof(optionExtractor));
             this.textHandler = textHandler;
             this.terminalOptions = terminalOptions ?? throw new ArgumentNullException(nameof(terminalOptions));
@@ -58,7 +61,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // Extract the options. Options are optional for commands.
             Options? options = await ExtractOptionsOrThrowAsync(context, commandDescriptor);
 
-            return new CommandExtractorResult(new Command(context.Route, commandDescriptor, options));
+            // This will be the new implementation
+            Root root = await commandRouteParser.ParseAsync(context.Route);
+
+            return new CommandExtractorResult(new ExtractedCommand(context.Route, new Command(commandDescriptor, options), root));
         }
 
         private async Task<Options?> ExtractOptionsOrThrowAsync(CommandExtractorContext context, CommandDescriptor commandDescriptor)
@@ -164,7 +170,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // At this point the prefix may also have default option value.
             // - E.g. pi auth login default_value
             prefix = prefix.TrimEnd(terminalOptions.Extractor.Separator, textHandler.Comparison);
-            TryResultOrError<CommandDescriptor> result = await commandStore.TryMatchByPrefixAsync(prefix);
+            TryResultOrError<CommandDescriptor> result = await commandStoreHandler.TryMatchByPrefixAsync(prefix);
             if (result.Error != null)
             {
                 throw new ErrorException(result.Error);
@@ -186,7 +192,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         private readonly IOptionExtractor optionExtractor;
-        private readonly ICommandStoreHandler commandStore;
+        private readonly ICommandRouteParser commandRouteParser;
+        private readonly ICommandStoreHandler commandStoreHandler;
         private readonly ILogger<CommandExtractor> logger;
         private readonly TerminalOptions terminalOptions;
         private readonly ITextHandler textHandler;
