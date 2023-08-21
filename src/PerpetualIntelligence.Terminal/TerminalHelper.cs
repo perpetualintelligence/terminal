@@ -44,18 +44,18 @@ namespace PerpetualIntelligence.Terminal
 
             // Populate the range
             SortedDictionary<int, int> withInRanges = new();
-            if (terminalOptions.Extractor.OptionValueWithIn != null)
+            if (terminalOptions.Extractor.ValueDelimiter != null)
             {
                 int withInIdx = 0;
                 while (true)
                 {
-                    int startIdx = trimmedRaw.IndexOf(terminalOptions.Extractor.OptionValueWithIn, withInIdx, textHandler.Comparison);
+                    int startIdx = trimmedRaw.IndexOf(terminalOptions.Extractor.ValueDelimiter, withInIdx, textHandler.Comparison);
                     if (startIdx < 0)
                     {
                         break;
                     }
 
-                    int endIdx = trimmedRaw.IndexOf(terminalOptions.Extractor.OptionValueWithIn, startIdx + 1, textHandler.Comparison);
+                    int endIdx = trimmedRaw.IndexOf(terminalOptions.Extractor.ValueDelimiter, startIdx + 1, textHandler.Comparison);
                     if (endIdx < 0)
                     {
                         throw new ErrorException(TerminalErrors.InvalidRequest, "The option value within end token is not specified.");

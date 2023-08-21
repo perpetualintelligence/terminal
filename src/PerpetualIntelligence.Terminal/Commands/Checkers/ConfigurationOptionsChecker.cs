@@ -11,7 +11,6 @@ using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
@@ -147,33 +146,33 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             // String with in
             {
                 // Option prefix cannot be null, empty or whitespace
-                if (options.Extractor.OptionValueWithIn != null && options.Extractor.OptionValueWithIn.All(e => char.IsWhiteSpace(e)))
+                if (string.IsNullOrWhiteSpace(options.Extractor.ValueDelimiter))
                 {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The string with_in token cannot be whitespace.", options.Extractor.OptionValueWithIn);
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be null or whitespace.", options.Extractor.ValueDelimiter);
                 }
 
                 // with_in cannot be same as OptionPrefix
-                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.OptionValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.Separator, options.Extractor.ValueDelimiter))
                 {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The string with_in token and separator cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be same as the separator. delimiter={0}", options.Extractor.ValueDelimiter);
                 }
 
                 // with_in cannot be same as OptionPrefix
-                if (textHandler.TextEquals(options.Extractor.OptionPrefix, options.Extractor.OptionValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.OptionPrefix, options.Extractor.ValueDelimiter))
                 {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The string with_in token and option prefix cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be same as the option prefix. delimiter={0}", options.Extractor.ValueDelimiter);
                 }
 
                 // with_in cannot be same as OptionAliasPrefix
-                if (textHandler.TextEquals(options.Extractor.OptionAliasPrefix, options.Extractor.OptionValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.OptionAliasPrefix, options.Extractor.ValueDelimiter))
                 {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The string with_in token and option alias prefix cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be same as the option alias prefix. delimiter={0}", options.Extractor.ValueDelimiter);
                 }
 
                 // with_in cannot be same as OptionSeparator
-                if (textHandler.TextEquals(options.Extractor.OptionValueSeparator, options.Extractor.OptionValueWithIn))
+                if (textHandler.TextEquals(options.Extractor.OptionValueSeparator, options.Extractor.ValueDelimiter))
                 {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The string with_in token and option separator cannot be same. with_in={0}", options.Extractor.OptionValueWithIn);
+                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be same as the option value separator. delimiter={0}", options.Extractor.ValueDelimiter);
                 }
             }
 

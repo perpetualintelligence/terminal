@@ -5,10 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
@@ -30,9 +32,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// Returns the default extraction regex pattern for Unicode command string.
         /// </summary>
-        public string ExtractionRegex()
+        /// <param name="terminalOptions">The terminal configuration options.</param>
+        public string ExtractionRegex(TerminalOptions terminalOptions)
         {
-            return @"^(\p{L}+)\s+((?:\p{L}+\s+)*)(\p{L}+)((?:\s+-{1,2}\p{L}+(?:\s+(?:'[^']*'|[^\s']+(?=\s+|$)))*)+)$";
+            string pattern = $@"(\w+)|((?:{Regex.Escape(terminalOptions.Extractor.OptionPrefix)}|{Regex.Escape(terminalOptions.Extractor.OptionAliasPrefix)})\w+(?:\s+{terminalOptions.Extractor.ValueDelimiter}[^{terminalOptions.Extractor.ValueDelimiter}]*{terminalOptions.Extractor.ValueDelimiter})*)";
+            return pattern;
         }
 
         /// <summary>

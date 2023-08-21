@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using PerpetualIntelligence.Terminal.Mocks;
 using System;
 using System.Text;
 using Xunit;
@@ -60,13 +61,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         [Fact]
         public void ExtractionRegex_Should_Return_Default_Extraction_Regex()
         {
-            //Arrange
-
-            //Act
-            var result = _handler.ExtractionRegex();
-
-            //Assert
-            result.Should().Be(@"^(\w+)\s+((?:\w+\s+)*)(\w+)((?:\s+-{1,2}\w+(?:\s+(?:'[^']*'|[^\s']+(?=\s+|$)))*)+)$");
+            var result = _handler.ExtractionRegex(MockTerminalOptions.NewAliasOptions());
+            result.Should().Be("(\"[^\"]*\"|[^\\ ]+)");
         }
 
         [Theory]

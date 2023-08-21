@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [TestMethod]
         public async Task AdditionalSeparatorsWithinValueShouldNotBeIgnored()
         {
-            options.Extractor.OptionValueWithIn = "\"";
+            options.Extractor.ValueDelimiter = "\"";
 
             CommandExtractorContext context = new(new CommandRoute("id1", "pi     -key1_alias \"  value1 \"  --key2-er  \"value2     \" --key6-a-s-xx-s --key9   25.36     -k12     "));
             var result = await extractor.ExtractAsync(context);

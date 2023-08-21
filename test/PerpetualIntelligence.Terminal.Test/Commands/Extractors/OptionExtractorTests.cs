@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.AreEqual("^[ ]*(-)+(.+?)=+(.*?)[ ]*$", extractor.OptionAliasValueRegexPattern);
             Assert.AreEqual("^[ ]*(-)+(.+?)[ ]*$", extractor.OptionIdNoValueRegexPattern);
             Assert.AreEqual("^[ ]*(-)+(.+?)=+(.*?)[ ]*$", extractor.OptionIdValueRegexPattern);
-            Assert.AreEqual("^(.*)$", extractor.OptionValueWithinRegexPattern);
+            Assert.AreEqual("^\"(.*)\"$", extractor.OptionValueWithinRegexPattern);
         }
 
         [DataTestMethod]
@@ -90,7 +90,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task AttrubuteShouldSetTheArgumentIdCorrectlyAsync()
+        public async Task AttributeShouldSetTheArgumentIdCorrectlyAsync()
         {
             OptionExtractorContext context = new(new OptionString("-key6"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -111,7 +111,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("öö", "मा")]
         [DataRow("öö", "-")]
         [DataRow("मासे", "#")]
-        public async Task InvalidOptionValueSepratorShouldErrorAsync(string valid, string invalid)
+        public async Task InvalidOptionValueSeparatorShouldErrorAsync(string valid, string invalid)
         {
             // Set the correct separator
             options.Extractor.OptionValueSeparator = valid;
@@ -146,7 +146,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task KeyValueArgumentShouldSetTheArgumentIdAndValueCorrecltyAsync()
+        public async Task KeyValueArgumentShouldSetTheArgumentIdAndValueCorrectlyAsync()
         {
             OptionExtractorContext context = new(new OptionString($"-key5=htts://google.com"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -206,7 +206,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public void NullOrWhiteSpaceOptionStringshouldError()
+        public void NullOrWhiteSpaceOptionStringShouldError()
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -228,12 +228,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("女性")]
         public async Task PrefixEmptyButArgumentIdWithPrefixShouldNotErrorAsync(string prefix)
         {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.OptionPrefix = "";
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor($"{prefix}key", System.ComponentModel.DataAnnotations.DataType.Text, "desc1") }));
-            OptionExtractorContext context = new OptionExtractorContext(new OptionString($"{prefix}key=value"), cmd);
+            OptionExtractorContext context = new(new OptionString($"{prefix}key=value"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Option);
             Assert.AreEqual($"{prefix}key", result.Option.Id);
@@ -376,7 +373,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             options.Extractor.Separator = "स";
             options.Extractor.OptionPrefix = "ई";
             options.Extractor.OptionValueSeparator = "र";
-            options.Extractor.OptionValueWithIn = "बी";
+            options.Extractor.ValueDelimiter = "बी";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षीरप्राणीप्रेमबी"), cmd);
@@ -392,7 +389,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             options.Extractor.Separator = "स";
             options.Extractor.OptionPrefix = "ई";
             options.Extractor.OptionValueSeparator = "र";
-            options.Extractor.OptionValueWithIn = "बी";
+            options.Extractor.ValueDelimiter = "बी";
 
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor("पक्षी", System.ComponentModel.DataAnnotations.DataType.Text, "पक्षी वर्णन") }));
             OptionExtractorContext context = new(new OptionString("ईपक्षीरबीप्राणीप्रेमबी"), cmd);
@@ -431,9 +428,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task UsupportedArgumentShouldErrorAsync()
+        public async Task UnsupportedArgumentShouldErrorAsync()
         {
-            OptionExtractorContext context = new OptionExtractorContext(new OptionString("-invalid=value"), command.Item1);
+            OptionExtractorContext context = new (new OptionString("-invalid=value"), command.Item1);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedOption, "The option is not supported. option=invalid");
         }
 
@@ -466,7 +463,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task ValidArgIdOnlyShouldNotErrorAsync(string key)
         {
             CommandDescriptor cmd = new("i1", "n1", "p1", "desc1", new OptionDescriptors(textHandler, new[] { new OptionDescriptor(key, nameof(Boolean), "test desc") }));
-            OptionExtractorContext context = new OptionExtractorContext(new OptionString($"-{key}"), cmd);
+            OptionExtractorContext context = new (new OptionString($"-{key}"), cmd);
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.Option);
             Assert.AreEqual(key, result.Option.Id);
@@ -484,9 +481,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("öö")]
         [DataRow("मासे")]
         [DataRow("女性")]
-        public async Task WithInConfiguredButNotUsedShouldExtractCorrectlyAsync(string withIn)
+        public async Task ValueDelimiterConfiguredButNotUsedShouldExtractCorrectlyAsync(string withIn)
         {
-            options.Extractor.OptionValueWithIn = withIn;
+            options.Extractor.ValueDelimiter = withIn;
 
             OptionExtractorContext context = new(new OptionString($"-key1=test string with {withIn} in between and end but not at start {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -504,9 +501,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("öö")]
         [DataRow("मासे")]
         [DataRow("女性")]
-        public async Task WithInConfiguredShouldExtractCorrectlyAsync(string withIn)
+        public async Task ValueDelimiterConfiguredShouldExtractCorrectlyAsync(string withIn)
         {
-            options.Extractor.OptionValueWithIn = withIn;
+            options.Extractor.ValueDelimiter = withIn;
 
             OptionExtractorContext context = new(new OptionString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);
@@ -524,9 +521,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("öö")]
         [DataRow("मासे")]
         [DataRow("女性")]
-        public async Task WithInNotConfiguredShouldExtractCorrectlyAsync(string withIn)
+        public async Task ValueDelimiterNotConfiguredShouldExtractCorrectlyAsync(string withIn)
         {
-            options.Extractor.OptionValueWithIn = null;
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            options.Extractor.ValueDelimiter = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             OptionExtractorContext context = new(new OptionString($"-key1={withIn}test string with {withIn} in between {withIn}"), command.Item1);
             var result = await extractor.ExtractAsync(context);

@@ -42,12 +42,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public string OptionValueSeparator { get; set; } = " ";
 
         /// <summary>
-        /// An optional token within which to extract an option value. Default to <c>null</c>.
+        /// An argument or option value delimiter. It is used to extract a value within the configured delimiter.
         /// </summary>
-        /// <remarks>
-        /// The optional option within token must be a single Unicode character. If set it cannot be <c>null</c> or whitespace.
-        /// </remarks>
-        public string? OptionValueWithIn { get; set; }
+        public string ValueDelimiter { get; set; } = "\"";
 
         /// <summary>
         /// The Regex pattern for command identifier. Defaults to <c>^[A-Za-z0-9_-]*$</c>.

@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("pi", "orgid", "pi")]
         [DataRow("pi auth", "orgid:authid", "auth")]
         [DataRow("pi auth login", "orgid:authid:loginid", "login")]
-        public async Task AliasConfiguredDifferentPrefixWithInvalidAliasShouldError(string prefix, string cmdId, string cmdName)
+        public async Task AliasConfiguredDifferentPrefixValueDelimitervalidAliasShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
             terminalOptions.Extractor.OptionAlias = true;
@@ -64,7 +64,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("pi", "orgid", "pi")]
         [DataRow("pi auth", "orgid:authid", "auth")]
         [DataRow("pi auth login", "orgid:authid:loginid", "login")]
-        public async Task AliasConfiguredDifferentPrefixWithInvalidArgShouldError(string prefix, string cmdId, string cmdName)
+        public async Task AliasConfiguredDifferentPrefixValueDelimitervalidArgShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
             terminalOptions.Extractor.OptionAlias = true;
@@ -91,7 +91,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("pi", "orgid", "pi")]
         [DataRow("pi auth", "orgid:authid", "auth")]
         [DataRow("pi auth login", "orgid:authid:loginid", "login")]
-        public async Task AliasConfiguredSamePrefixWithInvalidAliasShouldError(string prefix, string cmdId, string cmdName)
+        public async Task AliasConfiguredSamePrefixValueDelimitervalidAliasShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
             terminalOptions.Extractor.OptionAlias = true;
@@ -116,7 +116,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [DataRow("pi", "orgid", "pi")]
         [DataRow("pi auth", "orgid:authid", "auth")]
         [DataRow("pi auth login", "orgid:authid:loginid", "login")]
-        public async Task AliasConfiguredSamePrefixWithInvalidArgShouldError(string prefix, string cmdId, string cmdName)
+        public async Task AliasConfiguredSamePrefixValueDelimitervalidArgShouldError(string prefix, string cmdId, string cmdName)
         {
             // Enable alias
             terminalOptions.Extractor.OptionAlias = true;
@@ -543,7 +543,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task TryMatchByPrefixWithInsufficientPhrasesShouldErrorAsync()
+        public async Task TryMatchByPrefixValueDelimitersufficientPhrasesShouldErrorAsync()
         {
             // Missing name3
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix3 sub3"));
@@ -717,7 +717,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task Options_Are_Extracted_Correctly_With_Multiple_ValueWithIn_WithQuotes_Async()
+        public async Task Options_Are_Extracted_Correctly_With_Multiple_ValueValueDelimiter_WithQuotes_Async()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             SetupBasedOnTerminalOptions(terminalOptions);
@@ -731,7 +731,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task Options_Are_Extracted_Correctly_With_Multiple_Alias_ValueWithIn_WithQuotes_Async()
+        public async Task Options_Are_Extracted_Correctly_With_Multiple_Alias_ValueValueDelimiter_WithQuotes_Async()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             SetupBasedOnTerminalOptions(terminalOptions);
@@ -745,7 +745,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task Options_Are_Extracted_Correctly_With_Single_Value_Has_Another_Option_ValueWithInAsync()
+        public async Task Options_Are_Extracted_Correctly_With_Single_Value_Has_Another_Option_ValueValueDelimiterAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             SetupBasedOnTerminalOptions(terminalOptions);
@@ -758,7 +758,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task Options_Are_Extracted_Correctly_With_Single_ValueWithInAsync()
+        public async Task Options_Are_Extracted_Correctly_With_Single_ValueValueDelimiterAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             SetupBasedOnTerminalOptions(terminalOptions);
@@ -771,7 +771,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task Options_Are_Extracted_Correctly_With_Multiple_ValueWithInAsync()
+        public async Task Options_Are_Extracted_Correctly_With_Multiple_ValueValueDelimiterAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             SetupBasedOnTerminalOptions(terminalOptions);
@@ -785,7 +785,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task Options_Are_Extracted_Correctly_With_Single_Alias_ValueWithInAsync()
+        public async Task Options_Are_Extracted_Correctly_With_Single_Alias_ValueValueDelimiterAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             SetupBasedOnTerminalOptions(terminalOptions);
@@ -798,7 +798,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task Options_Are_Extracted_Correctly_With_Multiple_Alias_ValueWithInAsync()
+        public async Task Options_Are_Extracted_Correctly_With_Multiple_Alias_ValueValueDelimiterAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             SetupBasedOnTerminalOptions(terminalOptions);
@@ -812,7 +812,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [TestMethod]
-        public async Task Options_Are_Extracted_Correctly_With_Mixed_Alias_ValueWithInAsync()
+        public async Task Options_Are_Extracted_Correctly_With_Mixed_Alias_ValueValueDelimiterAsync()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             SetupBasedOnTerminalOptions(terminalOptions);

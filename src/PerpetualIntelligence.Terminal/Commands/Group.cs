@@ -8,41 +8,42 @@
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// Represents a command group descriptor.
+    /// Represents a group within a <see cref="Root"/>.
     /// </summary>
-    public sealed class GroupDescriptor : IChildCommand, ILinkedCommand
+    public sealed class Group
     {
         /// <summary>
         /// The immediate child group.
         /// </summary>
-        public GroupDescriptor? ChildGroup { get; set; }
+        public Group? ChildGroup { get; set; }
 
         /// <summary>
-        /// The child command.
+        /// The child sub-command.
         /// </summary>
-        public CommandDescriptor? ChildCommand { get; set; }
+        public SubCommand? ChildSubCommand { get; set; }
 
         /// <summary>
-        /// The linked command of this root.
+        /// The linked command of this group.
         /// </summary>
-        public CommandDescriptor LinkedCommand { get; }
+        public Command LinkedCommand { get; set; }
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="linkedCommand">The command linked to the root.</param>
         /// <param name="childGroup">The child group.</param>
-        /// <param name="childCommand">The child command.</param>
-        public GroupDescriptor(CommandDescriptor linkedCommand, GroupDescriptor? childGroup = null, CommandDescriptor? childCommand = null)
+        /// <param name="childSubCommand">The child sub-command.</param>
+        public Group(Command linkedCommand, Group? childGroup = null, SubCommand? childSubCommand = null)
         {
             LinkedCommand = linkedCommand ?? throw new System.ArgumentNullException(nameof(linkedCommand));
 
-            if (linkedCommand.IsGroup)
+            if (linkedCommand.Descriptor.IsGroup)
             {
                 throw new System.ArgumentException("The command is not a group.", nameof(linkedCommand));
             }
+
             ChildGroup = childGroup;
-            ChildCommand = childCommand;
+            ChildSubCommand = childSubCommand;
         }
     }
 }

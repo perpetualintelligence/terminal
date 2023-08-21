@@ -5,9 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
@@ -37,9 +39,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// Returns the default extraction regex pattern for ASCII command string.
         /// </summary>
-        public string ExtractionRegex()
+        /// <param name="terminalOptions">The terminal configuration options.</param>
+        public string ExtractionRegex(TerminalOptions terminalOptions)
         {
-            return @"^(\w+)\s+((?:\w+\s+)*)(\w+)((?:\s+-{1,2}\w+(?:\s+(?:'[^']*'|[^\s']+(?=\s+|$)))*)+)$";
+            string separator = " "; // Replace this with your configurable separator
+            string delimiter = "\""; // Replace this with your configurable string delimiter
+
+            // - Sample Pattern
+            // string pattern = $@"('[^']*'|[^{Regex.Escape(separator)}]+)";
+            string pattern = $@"({Regex.Escape(delimiter)}[^{Regex.Escape(delimiter)}]*{Regex.Escape(delimiter)}|[^{Regex.Escape(separator)}]+)";
+            return pattern;
         }
 
         /// <summary>

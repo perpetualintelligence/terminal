@@ -62,6 +62,11 @@ namespace PerpetualIntelligence.Terminal.Commands
         public OptionDescriptors? OptionDescriptors { get; internal set; }
 
         /// <summary>
+        /// The command argument descriptors.
+        /// </summary>
+        public ArgumentDescriptors? ArgumentDescriptors { get; internal set; }
+
+        /// <summary>
         /// The command checker.
         /// </summary>
         public Type? Checker { get; internal set; }
@@ -101,6 +106,11 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// Returns <c>true</c> if this descriptor represents a root command; otherwise, <c>false</c>.
         /// </summary>
         public bool IsRoot { get; internal set; }
+
+        /// <summary>
+        /// Returns <c>true</c> if this descriptor represents a sub command; otherwise, <c>false</c>.
+        /// </summary>
+        public bool IsSubCommand { get; internal set; }
 
         /// <summary>
         /// The command name.

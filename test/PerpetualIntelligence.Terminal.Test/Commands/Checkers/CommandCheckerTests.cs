@@ -163,7 +163,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task StrictTypeCheckingWithInvalidValueTypeShouldErrorAsync()
+        public async Task StrictTypeCheckingValueDelimiterValidValueTypeShouldErrorAsync()
         {
             terminalOptions.Checker.StrictOptionValueType = true;
 
@@ -266,6 +266,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         private CommandRouterContext routerContext = null!;
         private TerminalRoutingContext routingContext = null!;
         private CancellationTokenSource tokenSource = null!;
-        private readonly CommandHandlerContext handlerContext = null!;
+        private CommandHandlerContext handlerContext = null!;
     }
 }
