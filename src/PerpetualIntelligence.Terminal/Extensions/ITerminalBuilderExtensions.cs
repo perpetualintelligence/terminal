@@ -277,7 +277,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
         public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string prefix, string description, bool isRoot = false, bool isGroup = false, bool isSubCommand = false, bool isProtected = false) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
         {
-            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isRoot, isGroup, isProtected);
+            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isRoot, isGroup, isSubCommand, isProtected);
         }
 
         private static ITerminalBuilder AddDeclarativeTarget(this ITerminalBuilder builder, Type declarativeTarget)

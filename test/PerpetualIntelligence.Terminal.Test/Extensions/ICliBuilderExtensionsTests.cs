@@ -153,13 +153,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandDescriptorWithSpecialAnnotationsShouldNotError()
         {
-            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isRoot: true, isGroup: true, isProtected: true).Add();
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isRoot: true, isGroup: true, isSubCommand: true, isProtected: true).Add();
 
             IServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
 
-            Assert.IsTrue(cmd.IsGroup);
             Assert.IsTrue(cmd.IsRoot);
+            Assert.IsTrue(cmd.IsGroup);
+            Assert.IsTrue(cmd.IsSubCommand);
             Assert.IsTrue(cmd.IsProtected);
         }
 
@@ -189,8 +190,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Assert.AreEqual("description1", instance.Description);
             Assert.AreEqual(typeof(MockCommandChecker), instance.Checker);
             Assert.AreEqual(typeof(MockCommandRunner), instance.Runner);
-            Assert.IsFalse(instance.IsGroup);
             Assert.IsFalse(instance.IsRoot);
+            Assert.IsFalse(instance.IsGroup);
+            Assert.IsFalse(instance.IsSubCommand);
             Assert.IsFalse(instance.IsProtected);
         }
 
