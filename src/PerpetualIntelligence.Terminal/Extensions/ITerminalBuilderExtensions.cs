@@ -267,16 +267,17 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="name">The command name.</param>
         /// <param name="prefix">The command string prefix.</param>
         /// <param name="description">The command description.</param>
-        /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
         /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
+        /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
+        /// <param name="isSubCommand"><c>true</c> if the descriptor represents a sub-command; otherwise, <c>false</c>.</param>
         /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
+        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string prefix, string description, bool isRoot = false, bool isGroup = false, bool isSubCommand = false, bool isProtected = false) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
         {
-            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected);
+            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isRoot, isGroup, isProtected);
         }
 
         private static ITerminalBuilder AddDeclarativeTarget(this ITerminalBuilder builder, Type declarativeTarget)
@@ -291,7 +292,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             CommandCheckerAttribute cmdChecker = declarativeTarget.GetCustomAttribute<CommandCheckerAttribute>(false) ?? throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command checker.");
 
             // Establish command builder Default option not set ?
-            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Prefix, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.IsGroup, cmdAttr.IsRoot, cmdAttr.IsProtected);
+            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Prefix, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.IsRoot, cmdAttr.IsGroup, cmdAttr.IsSubCommand, cmdAttr.IsProtected);
 
             // Optional
             IEnumerable<OptionDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<OptionDescriptorAttribute>(false);
@@ -368,7 +369,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             return commandBuilder.Add();
         }
 
-        private static ICommandBuilder DefineCommand(this ITerminalBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false)
+        private static ICommandBuilder DefineCommand(this ITerminalBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isRoot = false, bool isGroup = false, bool isSubCommand = false, bool isProtected = false)
         {
             if (isRoot && !isGroup)
             {
@@ -380,8 +381,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 Checker = checker,
                 Runner = runner,
                 IsGroup = isGroup,
-                IsProtected = isProtected,
                 IsRoot = isRoot,
+                IsSubCommand = isSubCommand,
+                IsProtected = isProtected,
             };
 
             ICommandBuilder commandBuilder = new CommandBuilder(builder);

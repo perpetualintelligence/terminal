@@ -86,5 +86,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// The prefix to match the command string.
         /// </summary>
         public string Prefix { get; }
+
+        /// <summary>
+        /// Returns <c>true</c> if this descriptor represents a sub-command; otherwise, <c>false</c>.
+        /// </summary>
+        public bool IsSubCommand { get; set; }
     }
 }

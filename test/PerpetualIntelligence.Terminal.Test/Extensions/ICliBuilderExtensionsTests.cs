@@ -133,7 +133,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandDescriptorWithGroupAndNoRootShouldNotError()
         {
-            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: true, isRoot: false).Add();
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isRoot: false, isGroup: true).Add();
 
             IServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
@@ -147,13 +147,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandDescriptorWithRootAndNoGroupShouldError()
         {
-            TestHelper.AssertThrowsErrorException(() => terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: false, isRoot: true).Add(), TerminalErrors.InvalidConfiguration, "The root command must also be a grouped command. command_id=id1 command_name=name1");
+            TestHelper.AssertThrowsErrorException(() => terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isRoot: true, isGroup: false).Add(), TerminalErrors.InvalidConfiguration, "The root command must also be a grouped command. command_id=id1 command_name=name1");
         }
 
         [TestMethod]
         public void AddCommandDescriptorWithSpecialAnnotationsShouldNotError()
         {
-            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: true, isRoot: true, isProtected: true).Add();
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isRoot: true, isGroup: true, isProtected: true).Add();
 
             IServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
@@ -197,7 +197,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandSpecialAnnotationsShouldCorrectlyInitialize()
         {
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1", isGroup: true, isRoot: true, isProtected: true);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1", isRoot: true, isGroup: true, isProtected: true);
 
             // AddCommand does not add ICommandBuilder to service collection.
             var servicesCmdBuilder = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));

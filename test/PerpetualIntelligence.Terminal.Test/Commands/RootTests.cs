@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Commands
             root1.LinkedCommand.Descriptor.Description.Should().Be("Default root command.");
             root1.ChildSubCommand.Should().BeNull();
 
-            var cmd = new Command(new CommandDescriptor("cmd", "cmd", "cmd", "just a command"));
+            var cmd = new Command(new CommandDescriptor("cmd", "cmd", "cmd", "just a command") { IsSubCommand = true });
             var subCommand = new SubCommand(cmd);
             var root2 = Root.Default(subCommand);
             root2.IsDefault.Should().BeTrue();
