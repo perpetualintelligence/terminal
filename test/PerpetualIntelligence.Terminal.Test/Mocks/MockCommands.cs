@@ -87,19 +87,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 { "id4", NewCommandDefinition("id4", "name4", "desc4", CommandType.SubCommand, CommandFlags.None).Item1 },
 
                 // Command with no default arg
-                { "id5", NewCommandDefinition("id5", "name5", "desc5", CommandType.SubCommand, CommandFlags.None, TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Command with no default arg
-                { "id6", NewCommandDefinition("id6", "name6", "desc6",   CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Command with default arg
-                { "id7", NewCommandDefinition("id7", "name7", "desc7", CommandType.SubCommand, CommandFlags.None, TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Command with default arg
-                { "id8", NewCommandDefinition("id8", "name8", "desc8",   CommandType.SubCommand, CommandFlags.None, TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Command with sub cmd and value with in
-                { "id9", NewCommandDefinition("id9", "name9", "Value with in",  CommandType.SubCommand, CommandFlags.None, TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
+                { "id5", NewCommandDefinition("id5", "name5", "desc5",   CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
 
             GroupedCommands = new()
@@ -121,18 +109,6 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
                 // Same name and prefix with args
                 { "orgid:authid:sloginid:oauth", NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "the slient oauth login command within the slogin group",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-            };
-
-            AliasCommands = new()
-            {
-                // Different name and prefix
-                { "orgid", NewCommandDefinition("orgid", "pi", "the top org grouped command",CommandType.SubCommand, CommandFlags.None, TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Same name and prefix with args
-                { "orgid:authid", NewCommandDefinition("orgid:authid", "auth", "the auth grouped command",CommandType.SubCommand, CommandFlags.None, TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Same name and prefix with args
-                { "orgid:authid:loginid", NewCommandDefinition("orgid:authid:loginid", "login", "the login command within the auth group",CommandType.SubCommand, CommandFlags.None, TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
 
             GroupedOptionsCommands = new()
@@ -189,16 +165,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 {"id4", NewCommandDefinition("id4", "name4", "desc4",CommandType.SubCommand, CommandFlags.None).Item1 },
 
                 // Command with no default arg
-                { "id5", NewCommandDefinition("id5", "name5", "desc5",CommandType.SubCommand, CommandFlags.None, TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Command with no default arg
-                { "id6", NewCommandDefinition("id6", "name6", "desc6",CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Command with default arg
-                { "id7", NewCommandDefinition("id7", "name7", "desc7",CommandType.SubCommand, CommandFlags.None, TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Command with default arg
-                { "id8", NewCommandDefinition("id8", "name8", "desc8",CommandType.SubCommand, CommandFlags.None, TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
+                { "id5", NewCommandDefinition("id5", "name5", "desc5",CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
 
             UnicodeCommands = new()
@@ -240,18 +207,15 @@ namespace PerpetualIntelligence.Terminal.Mocks
             return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options));
         }
 
-        public static Dictionary<string, CommandDescriptor> AliasCommands;
         public static Dictionary<string, CommandDescriptor> Commands;
         public static Dictionary<string, CommandDescriptor> GroupedCommands;
         public static Dictionary<string, CommandDescriptor> GroupedOptionsCommands;
         public static Dictionary<string, CommandDescriptor> LicensingCommands;
         public static Dictionary<string, CommandDescriptor> UnicodeCommands;
-        public static OptionDescriptors TestAliasDefaultOptionDescriptors;
         public static OptionDescriptors TestOptionDescriptors;
         public static OptionDescriptors TestChineseUnicodeOptionDescriptors;
-        public static OptionDescriptors TestDefaultOptionDescriptors;
-        public static OptionDescriptors TestDefaultOptionValueDescriptors;
         public static OptionDescriptors TestHindiUnicodeOptionDescriptors;
         public static OptionDescriptors TestOptionsDescriptors;
+        public static Dictionary<string, CommandDescriptor> AliasCommands;
     }
 }
