@@ -7,11 +7,11 @@
 
 using FluentAssertions;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Stores;
+using PerpetualIntelligence.Terminal.Stores.InMemory;
 using PerpetualIntelligence.Test.Services;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,8 +22,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         public LicenseCheckerTests()
         {
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            commandDescriptors = MockCommands.LicensingCommands;
-            licenseChecker = new LicenseChecker(commandDescriptors, terminalOptions, TestLogger.Create<LicenseChecker>());
+            commandStoreHandler = new InMemoryCommandStore(MockCommands.LicensingCommands);
+            licenseChecker = new LicenseChecker(commandStoreHandler, terminalOptions, TestLogger.Create<LicenseChecker>());
             license = new License("testProviderId2", TerminalHandlers.OnlineLicenseHandler, PiCliLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(PiCliLicensePlans.Unlimited), LicensePrice.Create(PiCliLicensePlans.Unlimited));
         }
 
@@ -132,7 +132,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             // Subs commands 14
             license.Limits.SubCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit=2 current=14");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit=2 current=8");
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             result.TerminalCount.Should().Be(1);
             result.RootCommandCount.Should().Be(3);
             result.CommandGroupCount.Should().Be(3);
-            result.SubCommandCount.Should().Be(14);
+            result.SubCommandCount.Should().Be(8);
             result.OptionCount.Should().Be(13);
         }
 
@@ -292,7 +292,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private readonly IEnumerable<CommandDescriptor> commandDescriptors;
+        private ICommandStoreHandler commandStoreHandler;
         private readonly License license;
         private readonly ILicenseChecker licenseChecker;
     }

@@ -54,11 +54,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         [TestMethod]
         public async Task ExtractorNoExtractedCommandShouldNotRouteFurtherAsync()
         {
-            commandExtractor.IsExplicitNoCommand = true;
+            commandExtractor.IsExplicitNoExtractedCommand = true;
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
-            await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => commandRouter.RouteAsync(routerContext), "Value cannot be null. (Parameter 'command')");
+            await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => commandRouter.RouteAsync(routerContext), "Value cannot be null. (Parameter 'parsedCommand')");
             Assert.IsTrue(commandExtractor.Called);
             Assert.IsFalse(commandHandler.Called);
         }
@@ -111,12 +111,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             await commandRouter.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
-            Assert.AreEqual("test_id", commandHandler.ContextCalled.Command.Descriptor.Id);
-            Assert.AreEqual("test_name", commandHandler.ContextCalled.Command.Descriptor.Name);
-            Assert.AreEqual("test_prefix", commandHandler.ContextCalled.Command.Descriptor.Prefix);
+            Assert.AreEqual("test_id", commandHandler.ContextCalled.ExtractedCommand.Command.Descriptor.Id);
+            Assert.AreEqual("test_name", commandHandler.ContextCalled.ExtractedCommand.Command.Descriptor.Name);
 
-            Assert.AreEqual("test_id", commandHandler.ContextCalled.Command.Id);
-            Assert.AreEqual("test_name", commandHandler.ContextCalled.Command.Name);
+            Assert.AreEqual("test_id", commandHandler.ContextCalled.ExtractedCommand.Command.Id);
+            Assert.AreEqual("test_name", commandHandler.ContextCalled.ExtractedCommand.Command.Name);
         }
 
         [TestMethod]
@@ -143,17 +142,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             context1.Route.Id.Should().NotBe(context2.Route.Id);
             context2.Route.Id.Should().NotBe(context3.Route.Id);
             context1.Route.Id.Should().NotBe(context3.Route.Id);
-        }
-
-        [TestMethod]
-        public async Task RouterShouldPassRouteToHandler()
-        {
-            CommandRouterContext routerContext = new("test_command_string", routingContext);
-            await commandRouter.RouteAsync(routerContext);
-
-            Assert.IsNotNull(commandHandler.ContextCalled);
-            commandHandler.Called.Should().BeTrue();
-            commandHandler.ContextCalled.Command.Route.Id.Should().Be("id1");
         }
 
         [TestMethod]

@@ -1,5 +1,6 @@
 # 5.1.1-rc*
 > Breaking Change
+- Rename `OptionValueWithIn` to `ValueDelimiter` in extractor options
 - Remove default option and default option value feature in favor of command argument feature
 - Remove `IErrorHandler` in favor of `IExceptionHandler`
 - Rename `IRoutingService` to `ITerminalRouting`

@@ -17,6 +17,7 @@ namespace PerpetualIntelligence.Terminal.Commands
     /// </summary>
     /// <seealso cref="Command"/>
     /// <seealso cref="OptionDescriptor"/>
+    /// <seealso cref="ArgumentDescriptor"/>
     public sealed class CommandDescriptor
     {
         /// <summary>
@@ -24,13 +25,13 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// </summary>
         /// <param name="id">The command id.</param>
         /// <param name="name">The command name.</param>
-        /// <param name="prefix">The command prefix to map the command string.</param>
         /// <param name="description">The command description.</param>
+        /// <param name="type">The command type.</param>
+        /// <param name="flags">The command flags.</param>
+        /// <param name="owners">The command owners.</param>
         /// <param name="optionDescriptors">The option descriptors.</param>
-        /// <param name="customProperties">The custom properties.</param>
-        /// <param name="defaultOption">The default option.</param>
-        /// <param name="tags">The tags to find a command.</param>
-        public CommandDescriptor(string id, string name, string prefix, string description, OptionDescriptors? optionDescriptors = null, Dictionary<string, object>? customProperties = null, string? defaultOption = null, string[]? tags = null)
+        /// <param name="argumentDescriptors">The argument descriptors.</param>
+        public CommandDescriptor(string id, string name, string description, CommandType type, CommandFlags flags, OwnerCollection? owners = null, OptionDescriptors? optionDescriptors = null, ArgumentDescriptors? argumentDescriptors = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -42,24 +43,25 @@ namespace PerpetualIntelligence.Terminal.Commands
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
             }
 
-            if (string.IsNullOrEmpty(prefix))
-            {
-                throw new ArgumentException($"'{nameof(prefix)}' cannot be null or empty.", nameof(prefix));
-            }
-
             Id = id;
             Name = name;
-            Prefix = prefix;
             Description = description;
+            Type = type;
+            Flags = flags;
+            Owners = owners;
             OptionDescriptors = optionDescriptors;
-            CustomProperties = customProperties;
-            Tags = tags;
+            ArgumentDescriptors = argumentDescriptors;
         }
 
         /// <summary>
         /// The command option descriptors.
         /// </summary>
         public OptionDescriptors? OptionDescriptors { get; internal set; }
+
+        /// <summary>
+        /// The command argument descriptors.
+        /// </summary>
+        public ArgumentDescriptors? ArgumentDescriptors { get; internal set; }
 
         /// <summary>
         /// The command checker.
@@ -77,41 +79,38 @@ namespace PerpetualIntelligence.Terminal.Commands
         public string Description { get; }
 
         /// <summary>
+        /// The command type.
+        /// </summary>
+        public CommandType Type { get; }
+
+        /// <summary>
+        /// The command flags.
+        /// </summary>
+        public CommandFlags Flags { get; }
+
+        /// <summary>
         /// The command usage.
         /// </summary>
         public string? Usage { get; }
 
         /// <summary>
+        /// The command owner identifiers.
+        /// </summary>
+        /// <remarks>
+        /// The root command will not have any owner.
+        /// </remarks>
+        public OwnerCollection? Owners { get; internal set; }
+
+        /// <summary>
         /// The command id.
         /// </summary>
-        /// <remarks>The command id is unique across all commands.</remarks>
+        /// <remarks>The command id is unique across all commands within a group or a root.</remarks>
         public string Id { get; }
 
         /// <summary>
-        /// Returns <c>true</c> if this descriptor represents a grouped command; otherwise, <c>false</c>.
+        /// The command display name.
         /// </summary>
-        public bool IsGroup { get; internal set; }
-
-        /// <summary>
-        /// Returns <c>true</c> if this descriptor represents a protected command; otherwise, <c>false</c>.
-        /// </summary>
-        public bool IsProtected { get; internal set; }
-
-        /// <summary>
-        /// Returns <c>true</c> if this descriptor represents a root command; otherwise, <c>false</c>.
-        /// </summary>
-        public bool IsRoot { get; internal set; }
-
-        /// <summary>
-        /// The command name.
-        /// </summary>
-        /// <remarks>The command name is unique within a grouped command.</remarks>
         public string Name { get; }
-
-        /// <summary>
-        /// The prefix to match the command string.
-        /// </summary>
-        public string Prefix { get; }
 
         /// <summary>
         /// The command runner.
@@ -121,15 +120,15 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The tags to find the command.
         /// </summary>
-        public string[]? Tags { get; internal set; }
+        public TagCollection? Tags { get; internal set; }
 
         /// <summary>
         /// Attempts to find an option descriptor.
         /// </summary>
-        /// <param name="argId">The option descriptor identifier.</param>
+        /// <param name="optionId">The option descriptor identifier.</param>
         /// <param name="optionDescriptor">The option descriptor if found.</param>
         /// <returns><c>true</c> if an option descriptor exist in the collection, otherwise <c>false</c>.</returns>
-        public bool TryGetOptionDescriptor(string argId, out OptionDescriptor optionDescriptor)
+        public bool TryGetOptionDescriptor(string optionId, out OptionDescriptor optionDescriptor)
         {
             if (OptionDescriptors == null)
             {
@@ -140,11 +139,11 @@ namespace PerpetualIntelligence.Terminal.Commands
             }
 
 #if NETSTANDARD2_1_OR_GREATER
-            return OptionDescriptors.TryGetValue(argId, out optionDescriptor);
+            return OptionDescriptors.TryGetValue(optionId, out optionDescriptor);
 #else
-            if (OptionDescriptors.Contains(argId))
+            if (OptionDescriptors.Contains(optionId))
             {
-                optionDescriptor = OptionDescriptors[argId];
+                optionDescriptor = OptionDescriptors[optionId];
                 return true;
             }
             else

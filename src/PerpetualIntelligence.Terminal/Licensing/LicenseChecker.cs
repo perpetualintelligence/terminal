@@ -7,11 +7,11 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Stores;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Licensing
@@ -24,9 +24,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public LicenseChecker(IEnumerable<CommandDescriptor> commandDescriptors, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
+        public LicenseChecker(ICommandStoreHandler commandStoreHandler, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
         {
-            this.commandDescriptors = commandDescriptors;
+            this.commandStoreHandler = commandStoreHandler;
             this.terminalOptions = terminalOptions;
             this.logger = logger;
         }
@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         public async Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context)
         {
             // Initialize if needed
-            InitializeLock(context.License);
+            await InitializeLockAsync(context.License);
 
             // Check Limits
             await CheckLimitsAsync(context);
@@ -159,12 +159,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
             return Task.CompletedTask;
         }
 
-        private void InitializeLock(License license)
+        private async Task InitializeLockAsync(License license)
         {
             // Make sure the initialization is thread safe
-            lock (lockObject)
+            await semaphoreSlim.WaitAsync();
+            try
             {
-                // Make sure we down double down on limits.
+                // Make sure we don't double down on limits.
                 if (initialized)
                 {
                     return;
@@ -173,29 +174,39 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 // TODO, how do we sync terminal count across apps
                 terminalCount = 1;
 
-                foreach (CommandDescriptor cmd in commandDescriptors)
+                var commandDescriptors = await commandStoreHandler.AllAsync();
+                foreach (var kvpCmd in commandDescriptors)
                 {
                     // Register the commands
-                    if (cmd.IsRoot)
+                    if (kvpCmd.Value.Type == Commands.CommandType.Root)
                     {
                         rootCommandCount += 1;
                     }
-                    else if (cmd.IsGroup)
+                    else if (kvpCmd.Value.Type == Commands.CommandType.Group)
                     {
                         commandGroupCount += 1;
                     }
-
-                    // All are commands
-                    subCommandCount += 1;
+                    else if (kvpCmd.Value.Type == Commands.CommandType.SubCommand)
+                    {
+                        subCommandCount += 1;
+                    }
+                    else
+                    {
+                        throw new ErrorException(TerminalErrors.InvalidCommand, "The command type is not supported. type={0}", kvpCmd.Value.Type);
+                    }
 
                     // For now we only care about option count.
-                    if (cmd.OptionDescriptors != null)
+                    if (kvpCmd.Value.OptionDescriptors != null)
                     {
                         optionCount += 1;
                     }
                 }
 
                 initialized = true;
+            }
+            finally
+            {
+                semaphoreSlim.Release();
             }
         }
 
@@ -236,13 +247,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private readonly IEnumerable<CommandDescriptor> commandDescriptors;
+        private readonly ICommandStoreHandler commandStoreHandler;
         private readonly ILogger<LicenseChecker> logger;
 
         private long optionCount;
         private long commandGroupCount;
         private bool initialized;
-        private object lockObject = new();
+        private SemaphoreSlim semaphoreSlim = new(1, 1);
         private long rootCommandCount;
         private long subCommandCount;
         private int terminalCount;

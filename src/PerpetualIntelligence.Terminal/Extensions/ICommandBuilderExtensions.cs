@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Hosting;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace PerpetualIntelligence.Terminal.Extensions
@@ -19,6 +18,23 @@ namespace PerpetualIntelligence.Terminal.Extensions
     /// </summary>
     public static class ICommandBuilderExtensions
     {
+        /// <summary>
+        /// Adds a command owners to the <see cref="ICommandBuilder"/>.
+        /// </summary>
+        /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
+        /// <param name="owners">The owner identifiers.</param>
+        /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
+        public static ICommandBuilder Owners(this ICommandBuilder builder, OwnerCollection owners)
+        {
+            if (!owners.Any())
+            {
+                throw new InvalidOperationException("The owners cannot be null or empty.");
+            }
+
+            builder.Services.AddSingleton(owners);
+            return builder;
+        }
+
         /// <summary>
         /// Adds a command custom property to the <see cref="ICommandBuilder"/>.
         /// </summary>
@@ -39,34 +55,12 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="id">The option id.</param>
         /// <param name="dataType">The option data type.</param>
         /// <param name="description">The option description.</param>
+        /// <param name="optionFlags">The option flags.</param>
         /// <param name="alias">The option alias.</param>
-        /// <param name="required">The option is required.</param>
-        /// <param name="disabled">The option is disabled.</param>
-        /// <param name="obsolete">The option is obsolete.</param>
         /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
-        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, DataType dataType, string description, string? alias = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
+        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, string dataType, string description, OptionFlags optionFlags, string? alias = null)
         {
-            OptionDescriptor option = new(id, dataType, description, required) { Alias = alias, Disabled = disabled, Obsolete = obsolete };
-            OptionBuilder argumentBuilder = new(builder);
-            argumentBuilder.Services.AddSingleton(option);
-            return argumentBuilder;
-        }
-
-        /// <summary>
-        /// Starts a new <see cref="IOptionBuilder"/> definition.
-        /// </summary>
-        /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
-        /// <param name="id">The option id.</param>
-        /// <param name="customDataType">The option custom data type.</param>
-        /// <param name="description">The option description.</param>
-        /// <param name="alias">The option alias.</param>
-        /// <param name="required">The option is required.</param>
-        /// <param name="disabled">The option is disabled.</param>
-        /// <param name="obsolete">The option is obsolete.</param>
-        /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
-        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, string customDataType, string description, string? alias = null, bool? required = null, bool? disabled = null, bool? obsolete = null)
-        {
-            OptionDescriptor option = new(id, customDataType, description, required) { Alias = alias, Disabled = disabled, Obsolete = obsolete }; ;
+            OptionDescriptor option = new(id, dataType, description, optionFlags, alias);
             OptionBuilder argumentBuilder = new(builder);
             argumentBuilder.Services.AddSingleton(option);
             return argumentBuilder;
@@ -78,7 +72,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="tags">The tags.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder Tags(this ICommandBuilder builder, params string[] tags)
+        public static ICommandBuilder Tags(this ICommandBuilder builder, TagCollection tags)
         {
             if (!tags.Any())
             {

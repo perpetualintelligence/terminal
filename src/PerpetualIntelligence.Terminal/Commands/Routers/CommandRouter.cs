@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
             CommandRouterResult? result = null;
-            Command? command = null;
+            ParsedCommand? extractedCommand = null;
             try
             {
                 // Issue a before route event if configured
@@ -68,14 +68,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 }
 
                 // Ensure we have the license extracted before routing
-                Licensing.License? license = await licenseExtractor.GetAsync() ?? throw new ErrorException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
+                License? license = await licenseExtractor.GetAsync() ?? throw new ErrorException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
                 // Extract the command
                 CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(context.Route));
-                command = extractorResult.Command;
+                extractedCommand = extractorResult.ParsedCommand;
 
                 // Delegate to handler
-                CommandHandlerContext handlerContext = new(context, command, license);
+                CommandHandlerContext handlerContext = new(context, extractorResult.ParsedCommand, license);
                 var handlerResult = await commandHandler.HandleAsync(handlerContext);
                 result = new CommandRouterResult(handlerResult, context.Route);
             }
@@ -84,7 +84,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 // Issue a after route event if configured
                 if (asyncEventHandler != null)
                 {
-                    await asyncEventHandler.AfterCommandRouteAsync(context.Route, command, result);
+                    await asyncEventHandler.AfterCommandRouteAsync(context.Route, extractedCommand?.Command, result);
                 }
             }
 

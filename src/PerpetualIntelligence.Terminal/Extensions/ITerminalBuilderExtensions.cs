@@ -161,15 +161,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
-        /// <typeparam name="TOption">The option extractor type.</typeparam>
+        /// <typeparam name="TParser">The command route parser type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddExtractor<TCommand, TOption>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TOption : class, IOptionExtractor
+        public static ITerminalBuilder AddExtractor<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TParser : class, ICommandRouteParser
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
 
             // Add option extractor
-            builder.Services.AddTransient<IOptionExtractor, TOption>();
+            builder.Services.AddTransient<ICommandRouteParser, TParser>();
 
             return builder;
         }
@@ -265,19 +265,16 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="builder">The builder.</param>
         /// <param name="id">The command id.</param>
         /// <param name="name">The command name.</param>
-        /// <param name="prefix">The command string prefix.</param>
         /// <param name="description">The command description.</param>
-        /// <param name="isGroup"><c>true</c> if the descriptor represents a grouped command; otherwise, <c>false</c>.</param>
-        /// <param name="isRoot"><c>true</c> if the descriptor represents a root command; otherwise, <c>false</c>.</param>
-        /// <param name="isProtected"><c>true</c> if the descriptor represents a protected command; otherwise, <c>false</c>.</param>
-        /// <param name="defaultOption">The default option.</param>
+        /// <param name="commandType">The command type.</param>
+        /// <param name="commandFlags">The command flags.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
         /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string prefix, string description, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
+        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string description, CommandType commandType, CommandFlags commandFlags) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
         {
-            return DefineCommand(builder, id, name, prefix, description, typeof(TChecker), typeof(TRunner), isGroup, isRoot, isProtected, defaultOption);
+            return DefineCommand(builder, id, name, description, typeof(TChecker), typeof(TRunner), commandType, commandFlags);
         }
 
         private static ITerminalBuilder AddDeclarativeTarget(this ITerminalBuilder builder, Type declarativeTarget)
@@ -292,37 +289,29 @@ namespace PerpetualIntelligence.Terminal.Extensions
             CommandCheckerAttribute cmdChecker = declarativeTarget.GetCustomAttribute<CommandCheckerAttribute>(false) ?? throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command checker.");
 
             // Establish command builder Default option not set ?
-            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Prefix, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.IsGroup, cmdAttr.IsRoot, cmdAttr.IsProtected);
+            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.CommandType, cmdAttr.CommandFlags);
 
             // Optional
-            IEnumerable<OptionDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<OptionDescriptorAttribute>(false);
-            IEnumerable<OptionValidationAttribute> argVdls = declarativeTarget.GetCustomAttributes<OptionValidationAttribute>(false);
+            IEnumerable<OptionDescriptorAttribute> optAttrs = declarativeTarget.GetCustomAttributes<OptionDescriptorAttribute>(false);
+            IEnumerable<OptionValidationAttribute> optVdls = declarativeTarget.GetCustomAttributes<OptionValidationAttribute>(false);
             IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeTarget.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
             IEnumerable<OptionCustomPropertyAttribute> argPropAttrs = declarativeTarget.GetCustomAttributes<OptionCustomPropertyAttribute>(false);
 
             // Options Descriptors
-            foreach (OptionDescriptorAttribute argAttr in argAttrs)
+            foreach (OptionDescriptorAttribute optAttr in optAttrs)
             {
-                IOptionBuilder argumentBuilder;
-                if (argAttr.CustomDataType != null)
-                {
-                    argumentBuilder = commandBuilder.DefineOption(argAttr.Id, argAttr.CustomDataType, argAttr.Description, argAttr.Alias, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
-                }
-                else
-                {
-                    argumentBuilder = commandBuilder.DefineOption(argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Alias, argAttr.Required, argAttr.Disabled, argAttr.Obsolete);
-                }
+                IOptionBuilder optBuilder = commandBuilder.DefineOption(optAttr.Id, optAttr.DataType, optAttr.Description, optAttr.Flags, optAttr.Alias);
 
                 // Option validation attribute
                 List<ValidationAttribute>? validationAttributes = null;
-                if (argVdls.Any())
+                if (optVdls.Any())
                 {
                     validationAttributes = new List<ValidationAttribute>();
-                    argVdls.All(e =>
+                    optVdls.All(e =>
                     {
-                        if (e.ArgId.Equals(argAttr.Id))
+                        if (e.OptionId.Equals(optAttr.Id))
                         {
-                            argumentBuilder.ValidationAttribute(e.ValidationAttribute, e.ValidationArgs);
+                            optBuilder.ValidationAttribute(e.ValidationAttribute, e.ValidationArgs);
                         }
                         return true;
                     });
@@ -335,16 +324,16 @@ namespace PerpetualIntelligence.Terminal.Extensions
                     argCustomProps = new Dictionary<string, object>();
                     argPropAttrs.All(e =>
                     {
-                        if (e.ArgId.Equals(argAttr.Id))
+                        if (e.ArgId.Equals(optAttr.Id))
                         {
-                            argumentBuilder.CustomProperty(e.Key, e.Value);
+                            optBuilder.CustomProperty(e.Key, e.Value);
                         }
                         return true;
                     });
                 }
 
                 // Add an option descriptor.
-                argumentBuilder.Add();
+                optBuilder.Add();
             }
 
             // Command custom properties
@@ -366,23 +355,27 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 commandBuilder.Tags(tagsAttr.Tags);
             }
 
+            // Command owners
+            // Command owners
+            CommandOwnersAttribute ownersAttr = declarativeTarget.GetCustomAttribute<CommandOwnersAttribute>(false);
+            if (ownersAttr != null)
+            {
+                commandBuilder.Owners(ownersAttr.Owners);
+            }
+            else if (cmdAttr.CommandType != CommandType.Root)
+            {
+                throw new ErrorException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command owner.");
+            }
+
             return commandBuilder.Add();
         }
 
-        private static ICommandBuilder DefineCommand(this ITerminalBuilder builder, string id, string name, string prefix, string description, Type checker, Type runner, bool isGroup = false, bool isRoot = false, bool isProtected = false, string? defaultOption = null)
+        private static ICommandBuilder DefineCommand(this ITerminalBuilder builder, string id, string name, string description, Type checker, Type runner, CommandType commandType, CommandFlags commandFlags)
         {
-            if (isRoot && !isGroup)
-            {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The root command must also be a grouped command. command_id={0} command_name={1}", id, name);
-            }
-
-            CommandDescriptor cmd = new(id, name, prefix, description, defaultOption: defaultOption)
+            CommandDescriptor cmd = new(id, name, description, commandType, commandFlags)
             {
                 Checker = checker,
                 Runner = runner,
-                IsGroup = isGroup,
-                IsProtected = isProtected,
-                IsRoot = isRoot,
             };
 
             ICommandBuilder commandBuilder = new CommandBuilder(builder);

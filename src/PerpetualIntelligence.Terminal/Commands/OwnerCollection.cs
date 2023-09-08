@@ -5,16 +5,21 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Collections.Generic;
+
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// An abstraction that may have child command.
+    /// Defines a collection of owners for a command.
     /// </summary>
-    public interface IChildCommand
+    public sealed class OwnerCollection : List<string>
     {
         /// <summary>
-        /// The child command.
+        /// Initializes a new instance.
         /// </summary>
-        public CommandDescriptor? ChildCommand { get; }
+        /// <param name="owners">The owner identifiers.</param>
+        public OwnerCollection(string[] owners) : base(owners)
+        {
+        }
     }
 }

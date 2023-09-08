@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 Extractor = new ExtractorOptions()
                 {
                     OptionAlias = true,
-                    OptionValueWithIn = "\"",
+                    ValueDelimiter = "\"",
                     OptionPrefix = "--",
                     OptionAliasPrefix = "-",
                     OptionValueSeparator = " ",

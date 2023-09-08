@@ -6,7 +6,6 @@
 */
 
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
@@ -22,25 +21,15 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// <param name="id">The option id.</param>
         /// <param name="dataType">The option data type.</param>
         /// <param name="description">The option description.</param>
-        public OptionDescriptorAttribute(string id, DataType dataType, string description)
+        /// <param name="flags">The option flags.</param>
+        /// <param name="alias">The option alias.</param>
+        public OptionDescriptorAttribute(string id, string dataType, string description, OptionFlags flags, string? alias = null)
         {
             Id = id;
             DataType = dataType;
             Description = description;
-        }
-
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        /// <param name="id">The option id.</param>
-        /// <param name="customDataType">The option custom data type.</param>
-        /// <param name="description">The option description.</param>
-        public OptionDescriptorAttribute(string id, string customDataType, string description)
-        {
-            Id = id;
-            CustomDataType = customDataType;
-            DataType = DataType.Custom;
-            Description = description;
+            Flags = flags;
+            Alias = alias;
         }
 
         /// <summary>
@@ -52,18 +41,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// option identifier. The core data model is optimized to work with option id. In general, an app should
         /// not identify the same option with multiple strings.
         /// </remarks>
-        public string? Alias { get; set; }
-
-        /// <summary>
-        /// The option custom data type.
-        /// </summary>
-        /// <remarks>This custom data type is used only if the <see cref="DataType"/> property is set to <see cref="DataType.Custom"/>.</remarks>
-        public string? CustomDataType { get; }
+        public string? Alias { get; }
 
         /// <summary>
         /// The option data type.
         /// </summary>
-        public DataType DataType { get; }
+        public string DataType { get; }
 
         /// <summary>
         /// The option description.
@@ -72,24 +55,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         public string Description { get; }
 
         /// <summary>
-        /// Determines whether the option is disabled
-        /// </summary>
-        public bool Disabled { get; set; }
-
-        /// <summary>
         /// The option id.
         /// </summary>
         /// <remarks>The option id is unique within a command.</remarks>
         public string Id { get; }
 
         /// <summary>
-        /// Determines whether the option is obsolete.
+        /// The option flags.
         /// </summary>
-        public bool Obsolete { get; set; }
-
-        /// <summary>
-        /// Determines is the option is required.
-        /// </summary>
-        public bool Required { get; set; }
+        public OptionFlags Flags { get; }
     }
 }

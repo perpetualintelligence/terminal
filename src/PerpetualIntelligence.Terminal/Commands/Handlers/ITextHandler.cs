@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -47,6 +48,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// Returns the regex pattern to extract a command string..
         /// </summary>
-        public string ExtractionRegex();
+        /// <param name="terminalOptions">The terminal configuration options.</param>
+        public string ExtractionRegex(TerminalOptions terminalOptions);
     }
 }

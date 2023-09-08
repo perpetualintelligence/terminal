@@ -25,20 +25,15 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
         /// <param name="commandDescriptor">The command descriptor.</param>
         /// <param name="options">The command options.</param>
-        public Command(CommandRoute commandRoute, CommandDescriptor commandDescriptor, Options? options = null)
+        /// <param name="arguments">The command arguments.</param>
+        public Command(CommandDescriptor commandDescriptor, Options? options = null, Arguments? arguments = null)
         {
-            Route = commandRoute ?? throw new System.ArgumentNullException(nameof(commandRoute));
             Descriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
             Options = options;
+            Arguments = arguments;
         }
-
-        /// <summary>
-        /// The command route.
-        /// </summary>
-        public CommandRoute Route { get; }
 
         /// <summary>
         /// The command descriptor.
@@ -48,7 +43,12 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The command options.
         /// </summary>
-        public Options? Options { get; }
+        public Options? Options { get; set; }
+
+        /// <summary>
+        /// The command arguments.
+        /// </summary>
+        public Arguments? Arguments { get; set; }
 
         /// <summary>
         /// The command custom properties.
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The command id unique.
         /// </summary>
-        public string? Id => Descriptor.Id;
+        public string Id => Descriptor.Id;
 
         /// <summary>
         /// The command name.

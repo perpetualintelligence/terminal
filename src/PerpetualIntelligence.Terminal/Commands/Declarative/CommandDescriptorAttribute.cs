@@ -20,9 +20,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// </summary>
         /// <param name="id">The command id.</param>
         /// <param name="name">The command name.</param>
-        /// <param name="prefix">The command prefix to map the command string.</param>
         /// <param name="description">The command description.</param>
-        public CommandDescriptorAttribute(string id, string name, string prefix, string description)
+        /// <param name="commandType">The command type.</param>
+        /// <param name="commandFlags">The command flags.</param>
+        public CommandDescriptorAttribute(string id, string name, string description, CommandType commandType, CommandFlags commandFlags)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -34,20 +35,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
             }
 
-            if (string.IsNullOrEmpty(prefix))
-            {
-                throw new ArgumentException($"'{nameof(prefix)}' cannot be null or empty.", nameof(prefix));
-            }
-
             if (string.IsNullOrEmpty(description))
             {
-                throw new ArgumentException($"'{nameof(description)}' cannot be null or empty.", nameof(prefix));
+                throw new ArgumentException($"'{nameof(description)}' cannot be null or empty.", nameof(description));
             }
 
             Id = id;
             Name = name;
-            Prefix = prefix;
             Description = description;
+            CommandType = commandType;
+            CommandFlags = commandFlags;
         }
 
         /// <summary>
@@ -56,35 +53,25 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         public string Description { get; }
 
         /// <summary>
+        /// The command type.
+        /// </summary>
+        public CommandType CommandType { get; }
+
+        /// <summary>
+        /// The command flags.
+        /// </summary>
+        public CommandFlags CommandFlags { get; }
+
+        /// <summary>
         /// The command id.
         /// </summary>
         /// <remarks>The command id is unique across all commands.</remarks>
         public string Id { get; }
 
         /// <summary>
-        /// <c>true</c> if this descriptor represents a grouped command; otherwise, <c>false</c>.
-        /// </summary>
-        public bool IsGroup { get; set; }
-
-        /// <summary>
-        /// Returns <c>true</c> if this descriptor represents a protected command; otherwise, <c>false</c>.
-        /// </summary>
-        public bool IsProtected { get; set; }
-
-        /// <summary>
-        /// Returns <c>true</c> if this descriptor represents a root command; otherwise, <c>false</c>.
-        /// </summary>
-        public bool IsRoot { get; set; }
-
-        /// <summary>
         /// The command name.
         /// </summary>
         /// <remarks>The command name is unique within a grouped command.</remarks>
         public string Name { get; }
-
-        /// <summary>
-        /// The prefix to match the command string.
-        /// </summary>
-        public string Prefix { get; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -10,20 +10,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
     /// <summary>
     /// The command extractor result.
     /// </summary>
-    public class CommandExtractorResult
+    public sealed class CommandExtractorResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="command">The extracted command.</param>
-        public CommandExtractorResult(Command command)
+        /// <param name="parsedCommand">The parsed command.</param>
+        public CommandExtractorResult(ParsedCommand parsedCommand)
         {
-            Command = command ?? throw new System.ArgumentNullException(nameof(command));
+            ParsedCommand = parsedCommand ?? throw new System.ArgumentNullException(nameof(parsedCommand));
         }
 
         /// <summary>
-        /// The extracted command.
+        /// The parsed command.
         /// </summary>
-        public Command Command { get; }
+        public ParsedCommand ParsedCommand { get; }
     }
 }

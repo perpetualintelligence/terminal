@@ -12,7 +12,6 @@ using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Mocks;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Xunit;
 
@@ -30,14 +29,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }).Build();
 
             serviceDescriptors.Should().NotBeNull();
-            terminalBuilder = serviceDescriptors!.AddTerminalBuilder();
-            commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1");
+            terminalBuilder = serviceDescriptors!.CreateTerminalBuilder();
+            commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "description1", CommandType.SubCommand, CommandFlags.None);
         }
 
         [Fact]
         public void AddArgument_Adds_Custom_DataType_Correctly()
         {
-            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("arg1", "custom-dt", "description1", alias: null, required: false, disabled: true, obsolete: false);
+            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("arg1", "custom-dt", "description1", OptionFlags.Disabled, alias: null);
 
             // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
@@ -48,19 +47,16 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
             option.Id.Should().Be("arg1");
-            option.DataType.Should().Be(DataType.Custom);
-            option.CustomDataType.Should().Be("custom-dt");
+            option.DataType.Should().Be("custom-dt");
             option.Description.Should().Be("description1");
             option.Alias.Should().BeNull();
-            option.Required.Should().BeFalse();
-            option.Disabled.Should().BeTrue();
-            option.Obsolete.Should().BeFalse();
+            option.Flags.Should().Be(OptionFlags.Disabled);
         }
 
         [Fact]
         public void AddArgument_Adds_Std_DataType_Correctly()
         {
-            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("arg1", DataType.CreditCard, "description1", alias: "arg-alias1", required: true, disabled: false, obsolete: true);
+            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("arg1", nameof(Int32), "description1", OptionFlags.Required | OptionFlags.Obsolete, alias: "arg-alias1");
 
             // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
@@ -71,13 +67,11 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
             option.Id.Should().Be("arg1");
-            option.DataType.Should().Be(DataType.CreditCard);
-            option.CustomDataType.Should().BeNull();
+            option.DataType.Should().Be(nameof(Int32));
+            option.DataType.Should().BeNull();
             option.Description.Should().Be("description1");
             option.Alias.Should().Be("arg-alias1");
-            option.Required.Should().BeTrue();
-            option.Disabled.Should().BeFalse();
-            option.Obsolete.Should().BeTrue();
+            option.Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
         }
 
         private ITerminalBuilder terminalBuilder = null!;

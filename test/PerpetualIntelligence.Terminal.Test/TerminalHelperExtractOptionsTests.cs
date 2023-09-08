@@ -72,7 +72,7 @@ namespace PerpetualIntelligence.Terminal
         }
 
         [Fact]
-        public void Extracts_ValueWithIn_With_Options_In_Value()
+        public void Extracts_ValueValueDelimiter_With_Options_In_Value()
         {
             OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(" --opt1 val1 -opt2 \"run -o1 v1 --o2 v2\" --opt3 --opt4 \"run2 -o4.1 v1 --o4.2 v2\" -opt5", terminalOptions, textHandler);
 
@@ -100,7 +100,7 @@ namespace PerpetualIntelligence.Terminal
         }
 
         [Fact]
-        public void Extracts_ValueWithIn_With_Options_In_Value_Single()
+        public void Extracts_ValueValueDelimiter_With_Options_In_Value_Single()
         {
             OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(" --opt1 \"run -o1 v1 --o2 v2\"", terminalOptions, textHandler);
 
@@ -110,7 +110,7 @@ namespace PerpetualIntelligence.Terminal
         }
 
         [Fact]
-        public void Extracts_ValueWithIn_Single()
+        public void Extracts_ValueValueDelimiter_Single()
         {
             OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(" --opt1 \"val1\"", terminalOptions, textHandler);
 
@@ -180,7 +180,7 @@ namespace PerpetualIntelligence.Terminal
         }
 
         [Fact]
-        public void Extracts_ValueWithIn_With_Alias_Multiple_Options()
+        public void Extracts_ValueValueDelimiter_With_Alias_Multiple_Options()
         {
             OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(" --opt1 \"val1\" -opt2 val2 --opt3 -opt4 -opt5 \"val5\" -opt6", terminalOptions, textHandler);
 

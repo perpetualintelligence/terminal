@@ -137,13 +137,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         /// <summary>
-        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.OptionValueWithIn"/>.
+        /// Gets the REGEX pattern to match the option alias and value using <see cref="ExtractorOptions.ValueDelimiter"/>.
         /// </summary>
         public virtual string OptionValueWithinRegexPattern
         {
             get
             {
-                return $"^{options.Extractor.OptionValueWithIn}(.*){options.Extractor.OptionValueWithIn}$";
+                return $"^{options.Extractor.ValueDelimiter}(.*){options.Extractor.ValueDelimiter}$";
             }
         }
 
@@ -173,13 +173,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 argValue = argIdValueMatch.Groups[3].Value;
 
                 // Check if we need to extract the value with_in a token
-                if (options.Extractor.OptionValueWithIn != null)
+                if (options.Extractor.ValueDelimiter != null)
                 {
-                    Match argValueWithInMatch = Regex.Match(argValue, OptionValueWithinRegexPattern);
-                    if (argValueWithInMatch.Success)
+                    Match argValueValueDelimiterMatch = Regex.Match(argValue, OptionValueWithinRegexPattern);
+                    if (argValueValueDelimiterMatch.Success)
                     {
                         // (.*) captures the group so we can get the string with_in
-                        argValue = argValueWithInMatch.Groups[1].Value;
+                        argValue = argValueValueDelimiterMatch.Groups[1].Value;
                     }
                 }
 
@@ -243,7 +243,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             }
 
             // Key only (treat it as a boolean) value=true
-            if (nameof(Boolean).Equals(argDescriptor.CustomDataType))
+            if (nameof(Boolean).Equals(argDescriptor.DataType))
             {
                 // The value will not be white space because we have already removed all the separators.
                 string value = (argValue == null || textHandler.TextEquals(argValue, string.Empty)) ? true.ToString() : argValue;

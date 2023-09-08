@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using PerpetualIntelligence.Terminal.Mocks;
 using System;
 using System.Text;
 using Xunit;
@@ -14,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     public class UnicodeTextHandlerTests
     {
-        private readonly UnicodeTextHandler _textHandler = new UnicodeTextHandler();
+        private readonly UnicodeTextHandler _textHandler = new();
 
         [Theory]
         [InlineData("नमस्ते", "नमस्ते", true)] // Equal
@@ -51,8 +52,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         [Fact]
         public void ExtractionRegex_ShouldReturnValidPattern()
         {
-            string pattern = _textHandler.ExtractionRegex();
-            pattern.Should().Be("^(\\p{L}+)\\s+((?:\\p{L}+\\s+)*)(\\p{L}+)((?:\\s+-{1,2}\\p{L}+(?:\\s+(?:'[^']*'|[^\\s']+(?=\\s+|$)))*)+)$");
+            string pattern = _textHandler.ExtractionRegex(MockTerminalOptions.NewAliasOptions());
+            pattern.Should().Be("(\\w+)|((?:--|-)\\w+(?:\\s+\"[^\"]*\")*)");
         }
 
         [Fact]

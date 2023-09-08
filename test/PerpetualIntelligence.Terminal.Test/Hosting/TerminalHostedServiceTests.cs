@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -8,6 +8,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
@@ -16,7 +17,6 @@ using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Terminal.Hosting.Mocks;
 using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Shared.Licensing;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -61,7 +61,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         [Fact]
-        public void StartAsync_Default_ShouldPrint_AppHeader()
+        public void StartAsync_Default_ShouldPrint_Application_Header()
         {
             // use reflection to call
             MethodInfo? printAppHeader = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationHeaderAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Demo()
         {
-            Licensing.License community = new Licensing.License("testp", "testh", PiCliLicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            License community = new("testp", "testh", PiCliLicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -112,7 +112,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Educational()
         {
-            Licensing.License community = new Licensing.License("testp", "testh", PiCliLicensePlans.Demo, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            License community = new("testp", "testh", PiCliLicensePlans.Demo, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
         {
-            Licensing.License community = new Licensing.License("testp", "testh", PiCliLicensePlans.Demo, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            License community = new("testp", "testh", PiCliLicensePlans.Demo, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -255,7 +255,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         [Fact]
-        public async Task StartAsync_ShouldRegister_AppEventsAsync()
+        public async Task StartAsync_ShouldRegister_Application_EventsAsync()
         {
             IHostApplicationLifetime hostApplicationLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
 
@@ -289,13 +289,13 @@ namespace PerpetualIntelligence.Terminal.Hosting
             .ConfigureServices(services =>
             {
                 services.AddTerminal()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
-                       .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
-                       .DefineOption("id2", nameof(Int32), "test arg2", "alais_id2").Add()
-                       .DefineOption("id3", nameof(Boolean), "test arg3").Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
+                       .DefineOption("id1", nameof(Int32), "test arg1", OptionFlags.None, "alias_id1").Add()
+                       .DefineOption("id2", nameof(Int32), "test arg2", OptionFlags.None, "alias_id2").Add()
+                       .DefineOption("id3", nameof(Boolean), "test arg3", OptionFlags.None).Add()
                    .Add()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1").Add();
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add();
 
                 // Replace with Mock DIs
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
@@ -330,16 +330,16 @@ namespace PerpetualIntelligence.Terminal.Hosting
             .ConfigureServices(services =>
             {
                 services.AddTerminal()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "cmd1", "test1")
-                        .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
+                        .DefineOption("id1", nameof(Int32), "test arg1", OptionFlags.None, "alias_id1").Add()
                     .Add()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "cmd2", "test2")
-                       .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
-                       .DefineOption("id2", nameof(Int32), "test arg2", "alais_id2").Add()
-                       .DefineOption("id3", nameof(Boolean), "test arg3").Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
+                       .DefineOption("id1", nameof(Int32), "test arg1", OptionFlags.None, "alias_id1").Add()
+                       .DefineOption("id2", nameof(Int32), "test arg2", OptionFlags.None, "alias_id2").Add()
+                       .DefineOption("id3", nameof(Boolean), "test arg3", OptionFlags.None).Add()
                    .Add()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd3", "cmd3", "cmd3", "test1")
-                        .DefineOption("id1", nameof(Int32), "test arg1", "alais_id1").Add()
+                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd3", "cmd3", "test1", CommandType.SubCommand, CommandFlags.None)
+                        .DefineOption("id1", nameof(Int32), "test arg1", OptionFlags.None, "alias_id1").Add()
                     .Add();
 
                 // Replace with Mock DIs

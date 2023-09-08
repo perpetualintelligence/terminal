@@ -9,12 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Shared.Attributes;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Stores;
-using PerpetualIntelligence.Terminal.Stores.InMemory;
 using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
 
@@ -36,8 +33,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             host = hostBuilder.Start();
 
             optionsChecker = new ConfigurationOptionsChecker(host.Services);
-            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands, options, TestLogger.Create<InMemoryCommandStore>());
-            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
         }
 
         [TestMethod]
@@ -259,56 +254,59 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task WithInStringCannotBeSameAsArgAliasPrefix()
+        public async Task ValueDelimiterStringCannotBeSameAsArgAliasPrefix()
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Extractor.OptionPrefix = "#";
-            options.Extractor.OptionValueWithIn = "^";
+            options.Extractor.ValueDelimiter = "^";
             options.Extractor.OptionAliasPrefix = "^";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The string with_in token and option alias prefix cannot be same. with_in=^");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option alias prefix. delimiter=^");
         }
 
         [TestMethod]
-        public async Task WithInStringCannotBeSameAsArgPrefix()
+        public async Task ValueDelimiterStringCannotBeSameAsArgPrefix()
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Extractor.OptionPrefix = "^";
-            options.Extractor.OptionValueWithIn = "^";
+            options.Extractor.ValueDelimiter = "^";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The string with_in token and option prefix cannot be same. with_in=^");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option prefix. delimiter=^");
         }
 
         [TestMethod]
-        public async Task WithInStringCannotBeSameAsArgSeparator()
+        public async Task ValueDelimiterStringCannotBeSameAsArgSeparator()
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Extractor.OptionValueSeparator = "^";
-            options.Extractor.OptionValueWithIn = "^";
+            options.Extractor.ValueDelimiter = "^";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The string with_in token and option separator cannot be same. with_in=^");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option value separator. delimiter=^");
         }
 
         [TestMethod]
-        public async Task WithInStringCannotBeSameAsSeparator()
+        public async Task ValueDelimiterStringCannotBeSameAsSeparator()
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Extractor.Separator = "^";
-            options.Extractor.OptionValueWithIn = "^";
+            options.Extractor.ValueDelimiter = "^";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The string with_in token and separator cannot be same. with_in=^");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the separator. delimiter=^");
         }
 
         [TestMethod]
-        public async Task WithInStringCannotBeWhitespace()
+        public async Task ValueDelimiterStringCannotBeNullOrWhitespace()
         {
             // Make sure command separator is different so we can fail for option separator below.
-            options.Extractor.OptionValueWithIn = "   ";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The string with_in token cannot be whitespace.");
+            options.Extractor.ValueDelimiter = "   ";
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be null or whitespace.");
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            options.Extractor.ValueDelimiter = null;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be null or whitespace.");
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
-        private readonly OptionExtractor optionExtractor;
-        private readonly ICommandStoreHandler commands;
         private readonly IHost host;
         private readonly IHostBuilder hostBuilder;
         private readonly TerminalOptions options;

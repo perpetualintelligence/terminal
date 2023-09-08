@@ -5,150 +5,53 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using FluentAssertions;
 using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Stores.InMemory
 {
-    [TestClass]
-    public class InMemoryCommandDescriptorStoreTests : InitializerTests
+    public class InMemoryCommandDescriptorStoreTests
     {
-        public InMemoryCommandDescriptorStoreTests() : base(TestLogger.Create<InMemoryCommandDescriptorStoreTests>())
+        public InMemoryCommandDescriptorStoreTests()
         {
+            cmdStore = new InMemoryCommandStore(MockCommands.Commands);
         }
 
-        [TestMethod]
-        public async Task TryFindByIdShouldErrorIfNotFoundAsync()
+        [Fact]
+        public async Task FindByIdShouldErrorIfNotFoundAsync()
         {
-            var result = await cmdStore.TryFindByIdAsync("invalid_id");
-            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command id is not valid. id=invalid_id");
+            Func<Task> act = async () => await cmdStore.FindByIdAsync("invalid_id");
+            await act.Should().ThrowAsync<Exception>().WithMessage("The given key 'invalid_id' was not present in the dictionary.");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TryFindByIdShouldNotErrorIfFoundAsync()
         {
-            var result = await cmdStore.TryFindByIdAsync("id1");
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("id1", result.Result.Id);
-            Assert.AreEqual("name1", result.Result.Name);
-            Assert.AreEqual("prefix1", result.Result.Prefix);
+            var result = await cmdStore.FindByIdAsync("id1");
+            result.Should().NotBeNull();
+            result.Id.Should().Be("id1");
         }
 
-        [TestMethod]
-        public async Task TryFindByNameShouldErrorIfNotFoundAsync()
+        [Fact]
+        public async Task AllShouldReturnAllCommands()
         {
-            var result = await cmdStore.TryFindByNameAsync("invalid_name");
-            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command name is not valid. name=invalid_name");
+            var result = await cmdStore.AllAsync();
+            result.Should().NotBeNull();
+            result.Count.Should().Be(9);
+            result.Keys.Should().Contain("id1");
+            result.Keys.Should().Contain("id2");
+            result.Keys.Should().Contain("id3");
+            result.Keys.Should().Contain("id4");
+            result.Keys.Should().Contain("id5");
+            result.Keys.Should().Contain("id6");
+            result.Keys.Should().Contain("id7");
+            result.Keys.Should().Contain("id8");
+            result.Keys.Should().Contain("id9");
         }
 
-        [TestMethod]
-        public async Task TryFindByNameShouldNotErrorIfFoundAsync()
-        {
-            var result = await cmdStore.TryFindByNameAsync("name1");
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("id1", result.Result.Id);
-            Assert.AreEqual("name1", result.Result.Name);
-            Assert.AreEqual("prefix1", result.Result.Prefix);
-        }
-
-        [TestMethod]
-        public async Task TryFindByPrefixShouldErrorIfNotFoundAsync()
-        {
-            var result = await cmdStore.TryFindByPrefixAsync("invalid_prefix");
-            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=invalid_prefix");
-        }
-
-        [TestMethod]
-        public async Task TryFindByPrefixShouldNotErrorIfFoundAsync()
-        {
-            var result = await cmdStore.TryFindByPrefixAsync("prefix1");
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("id1", result.Result.Id);
-            Assert.AreEqual("name1", result.Result.Name);
-            Assert.AreEqual("prefix1", result.Result.Prefix);
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixInvalidPrefixShouldError()
-        {
-            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi_invalid auth slogin");
-            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi_invalid auth slogin");
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixInvalidSubCommandPrefixShouldError()
-        {
-            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth loginid invalid_command");
-            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi auth loginid invalid_command");
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixNestedOAuthShouldMatchExact()
-        {
-            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin oauth");
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("orgid:authid:sloginid:oauth", result.Result.Id);
-            Assert.AreEqual("oauth", result.Result.Name);
-            Assert.AreEqual("pi auth slogin oauth", result.Result.Prefix); // Exact match
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixNestedOidcShouldMatchExact()
-        {
-            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin oidc");
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("orgid:authid:sloginid:oidc", result.Result.Id);
-            Assert.AreEqual("oidc", result.Result.Name);
-            Assert.AreEqual("pi auth slogin oidc", result.Result.Prefix); // Exact match
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixShouldMatchExact()
-        {
-            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi auth slogin");
-            Assert.IsNull(result.Error);
-            Assert.IsNotNull(result.Result);
-            Assert.AreEqual("orgid:authid:sloginid", result.Result.Id);
-            Assert.AreEqual("slogin", result.Result.Name);
-            Assert.AreEqual("pi auth slogin", result.Result.Prefix); // Exact match
-        }
-
-        [TestMethod]
-        public async Task TryMatchByPrefixValidTopGroupInvalidSubGroupValidShouldError()
-        {
-            var result = await groupedCmdStore.TryMatchByPrefixAsync("pi invalid_auth slogin");
-            TestHelper.AssertTryResultError(result, TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=pi invalid_auth slogin");
-        }
-
-        protected override void OnTestInitialize()
-        {
-            options = MockTerminalOptions.NewLegacyOptions();
-            textHandler = new UnicodeTextHandler();
-
-            cmds = MockCommands.Commands;
-            cmdStore = new InMemoryCommandStore(textHandler, cmds, options, TestLogger.Create<InMemoryCommandStore>());
-
-            groupedCmds = MockCommands.GroupedCommands;
-            groupedCmdStore = new InMemoryCommandStore(textHandler, groupedCmds, options, TestLogger.Create<InMemoryCommandStore>());
-        }
-
-        private IEnumerable<CommandDescriptor> cmds = null!;
         private InMemoryCommandStore cmdStore = null!;
-        private IEnumerable<CommandDescriptor> groupedCmds = null!;
-        private InMemoryCommandStore groupedCmdStore = null!;
-        private TerminalOptions options = null!;
-        private ITextHandler textHandler = null!;
     }
 }

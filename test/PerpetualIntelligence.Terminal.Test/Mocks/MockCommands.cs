@@ -28,265 +28,194 @@ namespace PerpetualIntelligence.Terminal.Mocks
         {
             TestOptionDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false),
-                new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
-                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
-                new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
-                new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
-                new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", false),
-                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
-                new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
-                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true) {ValueCheckers = new []{ new DataValidationOptionValueChecker(new RequiredAttribute()), new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true)
-            };
-
-            TestDefaultOptionDescriptors = new(new UnicodeTextHandler())
-            {
-                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false),
-                new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
-                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
-                new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
-                new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
-                new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", false),
-                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) {ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
-                new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", false),
-                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", true) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true)
-            };
-
-            TestDefaultOptionValueDescriptors = new(new UnicodeTextHandler())
-            {
-                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false),
-                new OptionDescriptor("key2", DataType.Text, "Key2 value text", true),
-                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false),
-                new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
-                new OptionDescriptor("key5", DataType.Text, "Key5 value text", false),
-            };
-
-            TestAliasDefaultOptionDescriptors = new(new UnicodeTextHandler())
-            {
-                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false) { Alias = "key1_alias" },
-                new OptionDescriptor("key2", DataType.Text, "Key2 value text", true) { },
-                new OptionDescriptor("key3", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "key3_alias" },
-                new OptionDescriptor("key4", nameof(Double), "Key4 value number", false) { Alias = "key4_alias" },
-                new OptionDescriptor("key5", DataType.Text, "Key5 value text", false) { Alias = "key5_alias" },
+                new OptionDescriptor("key1", nameof(String), "Key1 value text", OptionFlags.None),
+                new OptionDescriptor("key2", nameof(String), "Key2 value text", OptionFlags.Required),
+                new OptionDescriptor("key3", nameof(Int64), "Key3 value phone", OptionFlags.None),
+                new OptionDescriptor("key4", nameof(String), "Key4 value email", OptionFlags.None),
+                new OptionDescriptor("key5", nameof(String), "Key5 value url", OptionFlags.None),
+                new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", OptionFlags.None),
+                new OptionDescriptor("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
+                new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", OptionFlags.None),
+                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", OptionFlags.Required) {ValueCheckers = new []{ new DataValidationOptionValueChecker(new RequiredAttribute()), new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", OptionFlags.Required)
             };
 
             TestOptionsDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("key1", DataType.Text, "Key1 value text", false) { Alias = "key1_alias" },
-                new OptionDescriptor("key2-er", DataType.Text, "Key2 value text", true),
-                new OptionDescriptor("key3-a-z-d", DataType.PhoneNumber, "Key3 value phone", false) { Alias = "k3" },
-                new OptionDescriptor("key4", DataType.EmailAddress, "Key4 value email", false),
-                new OptionDescriptor("key5", DataType.Url, "Key5 value url", false),
-                new OptionDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", false),
-                new OptionDescriptor("key7", DataType.Currency, "Key7 value currency", true) { ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
-                new OptionDescriptor("key8", nameof(Int32), "Key8 value int", false),
-                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", true) {ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", true) { Alias = "k10" },
-                new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", true) { Alias = "k11" },
-                new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", true) { Alias = "k12" }
+                new OptionDescriptor("key1", nameof(String), "Key1 value text", OptionFlags.None, "key1_alias"),
+                new OptionDescriptor("key2-er", nameof(String), "Key2 value text", OptionFlags.Required),
+                new OptionDescriptor("key3-a-z-d", nameof(Int64), "Key3 value phone", OptionFlags.None, "k3"),
+                new OptionDescriptor("key4", nameof(String), "Key4 value email", OptionFlags.None),
+                new OptionDescriptor("key5", nameof(String), "Key5 value url", OptionFlags.None),
+                new OptionDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", OptionFlags.None),
+                new OptionDescriptor("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
+                new OptionDescriptor("key8", nameof(Int32), "Key8 value int", OptionFlags.None),
+                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", OptionFlags.Required) {ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", OptionFlags.Required, "k10"),
+                new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", OptionFlags.Required, "k11"),
+                new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", OptionFlags.Required, "k12")
             };
 
             TestHindiUnicodeOptionDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("एक", DataType.Text, "पहला तर्क", false) { Alias = "एकहै" },
-                new OptionDescriptor("दो", nameof(Boolean), "दूसरा तर्क", true) { },
-                new OptionDescriptor("तीन", DataType.Text, "तीसरा तर्क", false) { Alias = "तीनहै" },
-                new OptionDescriptor("चार", nameof(Double), "चौथा तर्क", false) { Alias = "चारहै" },
+                new OptionDescriptor("एक", nameof(String), "पहला तर्क", OptionFlags.None, "एकहै" ),
+                new OptionDescriptor("दो", nameof(Boolean), "दूसरा तर्क", OptionFlags.Required) { },
+                new OptionDescriptor("तीन", nameof(String), "तीसरा तर्क", OptionFlags.None, "तीनहै" ),
+                new OptionDescriptor("चार", nameof(Double), "चौथा तर्क", OptionFlags.None, "चारहै"),
             };
 
             TestChineseUnicodeOptionDescriptors = new(new UnicodeTextHandler())
             {
-                new OptionDescriptor("第一的", DataType.Text, "第一個命令參數", false) { Alias = "第一" },
-                new OptionDescriptor("第二", nameof(Boolean), "第二個命令參數", true) { },
-                new OptionDescriptor("第三", DataType.Text, "第三個命令參數", false),
-                new OptionDescriptor("第四", nameof(Double), "第四個命令參數", false)
+                new OptionDescriptor("第一的", nameof(String), "第一個命令參數", OptionFlags.None, "第一"),
+                new OptionDescriptor("第二", nameof(Boolean), "第二個命令參數", OptionFlags.Required) { },
+                new OptionDescriptor("第三", nameof(String), "第三個命令參數", OptionFlags.None),
+                new OptionDescriptor("第四", nameof(Double), "第四個命令參數", OptionFlags.None)
             };
 
             Commands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("id1", "name1", "prefix1", "desc1", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "id1", NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("id2", "name2", "name2", "desc2", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "id2", NewCommandDefinition("id2", "name2", "desc2", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Multiple prefix names
-                NewCommandDefinition("id3", "name3", "prefix3 sub3 name3", "desc3", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "id3", NewCommandDefinition("id3", "name3", "desc3", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Command with no args
-                NewCommandDefinition("id4", "name4", "prefix4_noargs", "desc4").Item1,
+                { "id4", NewCommandDefinition("id4", "name4", "desc4", CommandType.SubCommand, CommandFlags.None).Item1 },
 
                 // Command with no default arg
-                NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
-
-                // Command with no default arg
-                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
-
-                // Command with default arg
-                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
-
-                // Command with default arg
-                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
-
-                // Command with sub cmd and value with in
-                NewCommandDefinition("id9", "name9", "root9 grp9 cmd9", "Value with in", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                { "id5", NewCommandDefinition("id5", "name5", "desc5",   CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
 
             GroupedCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid", NewCommandDefinition("orgid", "pi", "the top org grouped command",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid:authid", NewCommandDefinition("orgid:authid", "auth", "the auth grouped command",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid:authid:loginid", NewCommandDefinition("orgid:authid:loginid", "login", "the login command within the auth group",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "the silent login command within the auth group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key2").Item1,
+                { "orgid:authid:sloginid", NewCommandDefinition("orgid:authid:sloginid", "slogin", "the silent login command within the auth group",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "the slient oidc login command within the slogin group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid:authid:sloginid:oidc", NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "the slient oidc login command within the slogin group",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "the slient oauth login command within the slogin group", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
-            };
-
-            AliasCommands = new()
-            {
-                // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "the top org grouped command", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
-
-                // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "the auth grouped command", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
-
-                // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "the login command within the auth group", TestAliasDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid:authid:sloginid:oauth", NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "the slient oauth login command within the slogin group",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
 
             GroupedOptionsCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "pi", "top org cmd group", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid", NewCommandDefinition("orgid", "pi", "top org cmd group",CommandType.SubCommand, CommandFlags.None, TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "pi auth", "org auth cmd group", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid:authid", NewCommandDefinition("orgid:authid", "auth", "org auth cmd group",CommandType.SubCommand, CommandFlags.None, TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:loginid", "login", "pi auth login", "org auth login cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid:authid:loginid", NewCommandDefinition("orgid:authid:loginid", "login", "org auth login cmd",CommandType.SubCommand, CommandFlags.None, TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid", "slogin", "pi auth slogin", "org auth slogin cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key2").Item1,
+                { "orgid:authid:sloginid", NewCommandDefinition("orgid:authid:sloginid", "slogin", "org auth slogin cmd",CommandType.SubCommand, CommandFlags.None, TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "pi auth slogin oidc", "org auth slogin oidc cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "orgid:authid:sloginid:oidc", NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "org auth slogin oidc cmd",CommandType.SubCommand, CommandFlags.None, TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "pi auth slogin oauth", "org auth slogin oauth cmd", TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                { "orgid:authid:sloginid:oauth", NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "org auth slogin oauth cmd",CommandType.SubCommand, CommandFlags.None, TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
 
             LicensingCommands = new()
             {
                 // Different name and prefix
-                NewCommandDefinition("root1", "name1", "prefix1", "desc1", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
+                { "root1", NewCommandDefinition("root1", "name1", "desc1",CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Different name and prefix
-                NewCommandDefinition("root2", "name2", "prefix2", "desc2", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
+                { "root2", NewCommandDefinition("root2", "name2", "desc2",CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Different name and prefix
-                NewCommandDefinition("root3", "name3", "prefix3", "desc3", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
+                { "root3", NewCommandDefinition("root3", "name3", "desc3",CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Different name and prefix
-                NewCommandDefinition("grp1", "name1", "prefix1", "desc1", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
+                { "grp1", NewCommandDefinition("grp1", "name1", "desc1",CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Different name and prefix
-                NewCommandDefinition("grp2", "name2", "prefix2", "desc2", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
+                { "grp2", NewCommandDefinition("grp2", "name2", "desc2",CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Different name and prefix
-                NewCommandDefinition("grp3", "name3", "prefix3", "desc3", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
+                { "grp3", NewCommandDefinition("grp3", "name3", "desc3",CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Different name and prefix
-                NewCommandDefinition("id1", "name1", "prefix1", "desc1", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "id1", NewCommandDefinition("id1", "name1", "desc1",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Same name and prefix with args
-                NewCommandDefinition("id2", "name2", "name2", "desc2", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "id2", NewCommandDefinition("id2", "name2", "desc2",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Multiple prefix names
-                NewCommandDefinition("id3", "name3", "prefix3 sub3 name3", "desc3", TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "id3", NewCommandDefinition("id3", "name3", "desc3",CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Command with no args
-                NewCommandDefinition("id4", "name4", "prefix4_noargs", "desc4").Item1,
+                {"id4", NewCommandDefinition("id4", "name4", "desc4",CommandType.SubCommand, CommandFlags.None).Item1 },
 
                 // Command with no default arg
-                NewCommandDefinition("id5", "name5", "prefix5_default", "desc5", TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
-
-                // Command with no default arg
-                NewCommandDefinition("id6", "name6", "prefix6_empty_args", "desc6", new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
-
-                // Command with default arg
-                NewCommandDefinition("id7", "name7", "prefix7_defaultarg", "desc7", TestDefaultOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
-
-                // Command with default arg
-                NewCommandDefinition("id8", "name8", "prefix8_defaultarg_defaultvalue", "desc8", TestDefaultOptionValueDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "key1").Item1,
+                { "id5", NewCommandDefinition("id5", "name5", "desc5",CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new UnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
 
             UnicodeCommands = new()
             {
                 // --- Hindi --- Root command
-                NewCommandDefinition("uc1", "यूनिकोड", "यूनिकोड", "यूनिकोड रूट कमांड", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
+                { "uc1", NewCommandDefinition("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड",CommandType.Root, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Grouped command
-                NewCommandDefinition("uc2", "परीक्षण", "यूनिकोड परीक्षण", "यूनिकोड समूहीकृत कमांड", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
+                { "uc2", NewCommandDefinition("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड",CommandType.Group, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Subcommand
-                NewCommandDefinition("uc3", "प्रिंट", "यूनिकोड परीक्षण प्रिंट", "प्रिंट कमांड", TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "uc3", NewCommandDefinition("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड",CommandType.SubCommand, CommandFlags.None, TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // subcommand with default option
-                NewCommandDefinition("uc4", "दूसरा", "यूनिकोड परीक्षण दूसरा", "दूसरा आदेश", TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "एक").Item1,
+                { "uc4", NewCommandDefinition("दूसरा", "दूसरा नाम", "दूसरा आदेश",CommandType.SubCommand, CommandFlags.None, TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // --- Chinese --- Root command
-                NewCommandDefinition("uc5", "統一碼", "統一碼", "示例根命令描述", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isRoot: true).Item1,
+                { "uc5", NewCommandDefinition("統一碼", "統一碼 姓名", "示例根命令描述",CommandType.Root, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Grouped command
-                NewCommandDefinition("uc6", "測試", "統一碼 測試", "示例分組命令", null, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), isGroup: true).Item1,
+                { "uc6", NewCommandDefinition("測試", "測試 姓名", "示例分組命令",CommandType.Group, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Subcommand
-                NewCommandDefinition("uc7", "打印", "統一碼 測試 打印", "測試命令", TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
+                { "uc7", NewCommandDefinition("打印", "打印 姓名", "測試命令",CommandType.SubCommand, CommandFlags.None, TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // subcommand with default option
-                NewCommandDefinition("uc8", "備用", "統一碼 測試 備用", "替代描述", TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>), defaultArg: "第一的").Item1,
+                { "uc8", NewCommandDefinition("備用", "備用 姓名", "替代描述",CommandType.SubCommand, CommandFlags.None, TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
         }
 
-        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string prefix, string desc, OptionDescriptors? args = null, Type? checker = null, Type? runner = null, string? defaultArg = null, bool? isRoot = false, bool? isGroup = false, Options? options = null)
+        public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string desc, CommandType commandType, CommandFlags commandFlags, OptionDescriptors? args = null, Type? checker = null, Type? runner = null, Options? options = null)
         {
-            var cmd1 = new CommandDescriptor(id, name, prefix, desc, args, defaultOption: defaultArg)
+            var cmd1 = new CommandDescriptor(id, name, desc, commandType, commandFlags, optionDescriptors: args)
             {
-                // Internal set, in prod apps this will be set by DI Addxxx methods
                 Checker = checker,
                 Runner = runner,
-                IsGroup = isGroup.GetValueOrDefault(),
-                IsRoot = isRoot.GetValueOrDefault()
             };
 
-            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(new CommandRoute("id1", "test"), cmd1, options));
+            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options));
         }
 
-        public static List<CommandDescriptor> AliasCommands;
-        public static List<CommandDescriptor> Commands;
-        public static List<CommandDescriptor> GroupedCommands;
-        public static List<CommandDescriptor> GroupedOptionsCommands;
-        public static List<CommandDescriptor> LicensingCommands;
-        public static OptionDescriptors TestAliasDefaultOptionDescriptors;
+        public static Dictionary<string, CommandDescriptor> Commands;
+        public static Dictionary<string, CommandDescriptor> GroupedCommands;
+        public static Dictionary<string, CommandDescriptor> GroupedOptionsCommands;
+        public static Dictionary<string, CommandDescriptor> LicensingCommands;
+        public static Dictionary<string, CommandDescriptor> UnicodeCommands;
         public static OptionDescriptors TestOptionDescriptors;
         public static OptionDescriptors TestChineseUnicodeOptionDescriptors;
-        public static OptionDescriptors TestDefaultOptionDescriptors;
-        public static OptionDescriptors TestDefaultOptionValueDescriptors;
         public static OptionDescriptors TestHindiUnicodeOptionDescriptors;
         public static OptionDescriptors TestOptionsDescriptors;
-        public static List<CommandDescriptor> UnicodeCommands;
+        public static Dictionary<string, CommandDescriptor> AliasCommands;
     }
 }

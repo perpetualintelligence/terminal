@@ -5,16 +5,21 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Collections.Generic;
+
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// An abstraction of a linked command.
+    /// Defines a collection of tags for a command.
     /// </summary>
-    public interface ILinkedCommand
+    public sealed class TagCollection : List<string>
     {
         /// <summary>
-        /// The linked command.
+        /// Initializes a new instance.
         /// </summary>
-        public CommandDescriptor LinkedCommand { get; }
+        /// <param name="tags">The tags.</param>
+        public TagCollection(string[] tags) : base(tags)
+        {
+        }
     }
 }

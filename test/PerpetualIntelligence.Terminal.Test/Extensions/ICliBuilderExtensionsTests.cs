@@ -20,20 +20,15 @@ using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
-
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
 using System;
 using System.Linq;
 
 namespace PerpetualIntelligence.Terminal.Extensions
 {
     [TestClass]
-    public class ITerminalBuilderExtensionsTests : InitializerTests
+    public class ITerminalBuilderExtensionsTests
     {
-        public ITerminalBuilderExtensionsTests() : base(TestLogger.Create<ITerminalBuilderExtensionsTests>())
-        {
-        }
+        private readonly ITerminalBuilder terminalBuilder;
 
         [TestMethod]
         public void AddHelpProviderShouldCorrectlyInitialize()
@@ -81,8 +76,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandDescriptorMultipleTimeShouldNotError()
         {
-            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc").Add();
-            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc").Add();
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "desc", CommandType.SubCommand, CommandFlags.None).Add();
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "desc", CommandType.SubCommand, CommandFlags.None).Add();
 
             var sp = terminalBuilder.Services.BuildServiceProvider();
             var cmds = sp.GetServices<CommandDescriptor>();
@@ -95,20 +90,18 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandDescriptorShouldCorrectlyInitializeCheckerAndRunner()
         {
-            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc").Add();
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "desc", CommandType.SubCommand, CommandFlags.None).Add();
 
             var cmdDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             Assert.IsNotNull(cmdDescriptor);
             Assert.AreEqual(ServiceLifetime.Singleton, cmdDescriptor.Lifetime);
-            CommandDescriptor? impIstance = (CommandDescriptor?)cmdDescriptor.ImplementationInstance;
-            Assert.IsNotNull(impIstance);
-            Assert.AreEqual("id1", impIstance.Id);
-            Assert.AreEqual("name1", impIstance.Name);
-            Assert.AreEqual("prefix1", impIstance.Prefix);
-            Assert.AreEqual(typeof(MockCommandRunner), impIstance.Runner);
-            Assert.AreEqual(typeof(MockCommandChecker), impIstance.Checker);
-            Assert.IsFalse(impIstance.IsGroup);
-            Assert.IsFalse(impIstance.IsRoot);
+            CommandDescriptor? impInstance = (CommandDescriptor?)cmdDescriptor.ImplementationInstance;
+            Assert.IsNotNull(impInstance);
+            Assert.AreEqual("id1", impInstance.Id);
+            Assert.AreEqual("name1", impInstance.Name);
+            Assert.AreEqual(typeof(MockCommandRunner), impInstance.Runner);
+            Assert.AreEqual(typeof(MockCommandChecker), impInstance.Checker);
+            Assert.AreEqual(CommandType.SubCommand, impInstance.Type);
 
             var cmdRunner = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(MockCommandRunner)));
             Assert.IsNotNull(cmdRunner);
@@ -133,40 +126,43 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandDescriptorWithGroupAndNoRootShouldNotError()
         {
-            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: true, isRoot: false).Add();
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "desc", CommandType.Group, CommandFlags.None).Add();
 
             IServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
 
             Assert.AreEqual("id1", cmd.Id);
-            Assert.IsTrue(cmd.IsGroup);
-            Assert.IsFalse(cmd.IsRoot);
-            Assert.IsFalse(cmd.IsProtected);
-        }
-
-        [TestMethod]
-        public void AddCommandDescriptorWithRootAndNoGroupShouldError()
-        {
-            TestHelper.AssertThrowsErrorException(() => terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: false, isRoot: true).Add(), TerminalErrors.InvalidConfiguration, "The root command must also be a grouped command. command_id=id1 command_name=name1");
+            Assert.AreEqual(CommandType.Group, cmd.Type);
         }
 
         [TestMethod]
         public void AddCommandDescriptorWithSpecialAnnotationsShouldNotError()
         {
-            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "desc", isGroup: true, isRoot: true, isProtected: true).Add();
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "desc", CommandType.Root, CommandFlags.Protected).Add();
 
             IServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
 
-            Assert.IsTrue(cmd.IsGroup);
-            Assert.IsTrue(cmd.IsRoot);
-            Assert.IsTrue(cmd.IsProtected);
+            Assert.AreEqual(CommandType.Root, cmd.Type);
+            Assert.AreEqual(CommandFlags.Protected, cmd.Flags);
+        }
+
+        [TestMethod]
+        public void AddCommandDescriptorWithSpecialAnnotationsFlagsShouldNotError()
+        {
+            terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "desc", CommandType.Group, CommandFlags.Protected | CommandFlags.Obsolete).Add();
+
+            IServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
+            CommandDescriptor cmd = serviceProvider.GetRequiredService<CommandDescriptor>();
+
+            Assert.AreEqual(CommandType.Group, cmd.Type);
+            Assert.AreEqual(CommandFlags.Protected | CommandFlags.Obsolete, cmd.Flags);
         }
 
         [TestMethod]
         public void AddCommandShouldCorrectlyInitialize()
         {
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1");
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "description1", CommandType.SubCommand, CommandFlags.None);
 
             // AddCommand does not add ICommandBuilder to service collection.
             var servicesCmdBuilder = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));
@@ -185,19 +181,17 @@ namespace PerpetualIntelligence.Terminal.Extensions
             var instance = serviceProvider.GetRequiredService<CommandDescriptor>();
             Assert.AreEqual("id1", instance.Id);
             Assert.AreEqual("name1", instance.Name);
-            Assert.AreEqual("prefix1", instance.Prefix);
             Assert.AreEqual("description1", instance.Description);
             Assert.AreEqual(typeof(MockCommandChecker), instance.Checker);
             Assert.AreEqual(typeof(MockCommandRunner), instance.Runner);
-            Assert.IsFalse(instance.IsGroup);
-            Assert.IsFalse(instance.IsRoot);
-            Assert.IsFalse(instance.IsProtected);
+            Assert.AreEqual(CommandType.SubCommand, instance.Type);
+            Assert.AreEqual(CommandFlags.None, instance.Flags);
         }
 
         [TestMethod]
         public void AddCommandSpecialAnnotationsShouldCorrectlyInitialize()
         {
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "prefix1", "description1", isGroup: true, isRoot: true, isProtected: true);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "description1", CommandType.Root, CommandFlags.Protected);
 
             // AddCommand does not add ICommandBuilder to service collection.
             var servicesCmdBuilder = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));
@@ -216,29 +210,27 @@ namespace PerpetualIntelligence.Terminal.Extensions
             var instance = serviceProvider.GetRequiredService<CommandDescriptor>();
             Assert.AreEqual("id1", instance.Id);
             Assert.AreEqual("name1", instance.Name);
-            Assert.AreEqual("prefix1", instance.Prefix);
             Assert.AreEqual("description1", instance.Description);
             Assert.AreEqual(typeof(MockCommandChecker), instance.Checker);
             Assert.AreEqual(typeof(MockCommandRunner), instance.Runner);
-            Assert.IsTrue(instance.IsGroup);
-            Assert.IsTrue(instance.IsRoot);
-            Assert.IsTrue(instance.IsProtected);
+            Assert.AreEqual(CommandType.Root, instance.Type);
+            Assert.AreEqual(CommandFlags.Protected, instance.Flags);
         }
 
         [TestMethod]
         public void AddExtractorShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddExtractor<MockCommandExtractor, MockArgumentExtractor>();
+            terminalBuilder.AddExtractor<MockCommandExtractor, MockCommandRouteParser>();
 
             var cmd = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandExtractor)));
             Assert.IsNotNull(cmd);
             Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
             Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
 
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionExtractor)));
+            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandRouteParser)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
-            Assert.AreEqual(typeof(MockArgumentExtractor), arg.ImplementationType);
+            Assert.AreEqual(typeof(MockCommandRouteParser), arg.ImplementationType);
         }
 
         [TestMethod]
@@ -294,19 +286,21 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Assert.IsInstanceOfType(instance, typeof(UnicodeTextHandler));
         }
 
-        protected override void OnTestInitialize()
+        public ITerminalBuilderExtensionsTests()
         {
             IServiceCollection? serviceDescriptors = null;
-
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
                 serviceDescriptors = arg;
             }).Build();
 
-            Assert.IsNotNull(serviceDescriptors);
-            terminalBuilder = serviceDescriptors.AddTerminalBuilder();
-        }
+            if (serviceDescriptors is null)
+            {
+                throw new InvalidOperationException("Service descriptors not initialized.");
+            }
+            terminalBuilder = serviceDescriptors.AddTerminal();
 
-        private ITerminalBuilder terminalBuilder = null!;
+            Assert.IsNotNull(serviceDescriptors);
+        }
     }
 }

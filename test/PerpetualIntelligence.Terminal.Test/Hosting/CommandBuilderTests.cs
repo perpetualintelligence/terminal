@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             serviceDescriptor.Should().BeNull();
 
             // Add command to local
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             // Build
             ITerminalBuilder cliBuilderFromCommandBuilder = commandBuilder.Add();
@@ -47,7 +47,6 @@ namespace PerpetualIntelligence.Terminal.Hosting
             CommandDescriptor instance = (CommandDescriptor)serviceDescriptor.ImplementationInstance!;
             instance.Id.Should().Be("id1");
             instance.Name.Should().Be("name1");
-            instance.Prefix.Should().Be("cmd name prefix");
             instance.Description.Should().Be("Command description");
         }
 
@@ -55,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public void Build_Returns_Same_TerminalBuilder()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection);
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
             ITerminalBuilder cliBuilderFromCommandBuilder = commandBuilder.Add();
             terminalBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
         }

@@ -8,6 +8,7 @@
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test.Services;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -25,8 +26,8 @@ namespace PerpetualIntelligence.Terminal.Commands
         [TestMethod]
         public void OptionsWithDifferentIdAreNotEqual()
         {
-            Option arg1 = new(new OptionDescriptor("id1", DataType.Text, "desc1"), "value1");
-            Option arg2 = new(new OptionDescriptor("id2", DataType.Text, "desc1"), "value1");
+            Option arg1 = new(new OptionDescriptor("id1", nameof(String), "desc1", OptionFlags.None), "value1");
+            Option arg2 = new(new OptionDescriptor("id2", nameof(String), "desc1", OptionFlags.None), "value1");
 
             Assert.AreNotEqual(arg1, arg2);
         }
@@ -34,8 +35,8 @@ namespace PerpetualIntelligence.Terminal.Commands
         [TestMethod]
         public void OptionsWithSameIdAreEqual()
         {
-            Option arg1 = new(new OptionDescriptor("id1", DataType.Text, "desc1"), "value1");
-            Option arg2 = new(new OptionDescriptor("id1", "Custom", "desc1"), 25.64);
+            Option arg1 = new(new OptionDescriptor("id1", nameof(String), "desc1", OptionFlags.None), "value1");
+            Option arg2 = new(new OptionDescriptor("id1", "Custom", "desc1", OptionFlags.None), 25.64);
 
             Assert.AreEqual(arg1, arg2);
         }
@@ -47,7 +48,7 @@ namespace PerpetualIntelligence.Terminal.Commands
             TestHelper.AssertJsonPropertyName(typeof(Option).GetProperty(nameof(Option.Descriptor)), "descriptor");
 
             typeof(Option).GetProperty(nameof(Option.Alias)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
-            typeof(Option).GetProperty(nameof(Option.CustomDataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
+            typeof(Option).GetProperty(nameof(Option.DataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
             typeof(Option).GetProperty(nameof(Option.CustomProperties)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
             typeof(Option).GetProperty(nameof(Option.DataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
             typeof(Option).GetProperty(nameof(Option.Description)).Should().BeDecoratedWith<JsonIgnoreAttribute>();

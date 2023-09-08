@@ -28,8 +28,9 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="id">The option id.</param>
         /// <param name="dataType">The option data type.</param>
         /// <param name="description">The option description.</param>
-        /// <param name="required">The option is required.</param>
-        public OptionDescriptor(string id, DataType dataType, string description, bool? required = null)
+        /// <param name="flags">The option flags.</param>
+        /// <param name="alias">The option alias.</param>
+        public OptionDescriptor(string id, string dataType, string description, OptionFlags flags, string? alias = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -39,28 +40,8 @@ namespace PerpetualIntelligence.Terminal.Commands
             Id = id;
             DataType = dataType;
             Description = description;
-            Required = required;
-        }
-
-        /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        /// <param name="id">The option id.</param>
-        /// <param name="customDataType">The option custom data type.</param>
-        /// <param name="description">The option description.</param>
-        /// <param name="required">The option is required.</param>
-        public OptionDescriptor(string id, string customDataType, string description, bool? required = null)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
-            }
-
-            Id = id;
-            DataType = DataType.Custom;
-            CustomDataType = customDataType;
-            Description = description;
-            Required = required;
+            Flags = flags;
+            Alias = alias;
         }
 
         /// <summary>
@@ -72,13 +53,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// option identifier. The core data model is optimized to work with option id. In general, an app should
         /// not identify the same option with multiple strings.
         /// </remarks>
-        public string? Alias { get; set; }
-
-        /// <summary>
-        /// The option custom data type.
-        /// </summary>
-        /// <remarks>This custom data type is used only if the <see cref="DataType"/> property is set to <see cref="DataType.Custom"/>.</remarks>
-        public string? CustomDataType { get; set; }
+        public string? Alias { get; }
 
         /// <summary>
         /// The custom properties.
@@ -88,7 +63,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The option data type.
         /// </summary>
-        public DataType DataType { get; set; }
+        public string DataType { get; }
 
         /// <summary>
         /// The option description.
@@ -97,25 +72,15 @@ namespace PerpetualIntelligence.Terminal.Commands
         public string? Description { get; }
 
         /// <summary>
-        /// Determines whether the option is disabled
+        /// The option flags.
         /// </summary>
-        public bool? Disabled { get; set; }
+        public OptionFlags Flags { get; private set; }
 
         /// <summary>
         /// The option id.
         /// </summary>
         /// <remarks>The option id is unique within a command.</remarks>
         public string Id { get; }
-
-        /// <summary>
-        /// Determines whether the option is obsolete.
-        /// </summary>
-        public bool? Obsolete { get; set; }
-
-        /// <summary>
-        /// Determines is the option is required.
-        /// </summary>
-        public bool? Required { get; private set; }
 
         /// <summary>
         /// The option value checkers.
@@ -143,7 +108,7 @@ namespace PerpetualIntelligence.Terminal.Commands
             {
                 if (valueCheckers.Any(e => e.GetRawType() == typeof(RequiredAttribute)))
                 {
-                    Required = true;
+                    Flags |= OptionFlags.Required;
                 }
             }
         }
