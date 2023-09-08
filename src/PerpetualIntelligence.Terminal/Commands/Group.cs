@@ -8,8 +8,11 @@
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// Represents a group within a <see cref="Root"/>.
+    /// Represents a notional command group  within a <see cref="Root"/>.
     /// </summary>
+    /// <remarks>
+    /// A <see cref="Group"/> always has a <see cref="LinkedCommand"/> of type <see cref="CommandType.Group"/>.
+    /// </remarks>
     public sealed class Group
     {
         /// <summary>
@@ -37,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         {
             LinkedCommand = linkedCommand ?? throw new System.ArgumentNullException(nameof(linkedCommand));
 
-            if (linkedCommand.Descriptor.IsGroup)
+            if (linkedCommand.Descriptor.Type != CommandType.Group)
             {
                 throw new System.ArgumentException("The command is not a group.", nameof(linkedCommand));
             }

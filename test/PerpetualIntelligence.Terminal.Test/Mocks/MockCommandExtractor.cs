@@ -19,9 +19,9 @@ namespace PerpetualIntelligence.Terminal.Mocks
         {
             Called = true;
 
-            var cIdt = new Commands.CommandDescriptor("testid", "testname", "testname", "desc");
+            var cIdt = new Commands.CommandDescriptor("testid", "testname", "desc", CommandType.SubCommand, CommandFlags.None);
             Command command = new(cIdt);
-            ExtractedCommand extractedCommand = new(new CommandRoute("id1", "test"), command, Root.Default());
+            ParsedCommand extractedCommand = new(new CommandRoute("id1", "test"), command, Root.Default());
             return Task.FromResult(new CommandExtractorResult(extractedCommand));
         }
     }

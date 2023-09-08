@@ -32,16 +32,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "統一碼 測試"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
-            Assert.AreEqual("統一碼 測試", result.ExtractedCommand.Command.Descriptor.Prefix);
-            Assert.IsFalse(result.ExtractedCommand.Command.Descriptor.IsRoot);
-            Assert.IsTrue(result.ExtractedCommand.Command.Descriptor.IsGroup);
+            Assert.IsNotNull(result.ParsedCommand.Command.Descriptor);
+            Assert.AreEqual(CommandType.Group, result.ParsedCommand.Command.Descriptor.Type);
 
-            Assert.IsNotNull(result.ExtractedCommand);
-            Assert.AreEqual("uc6", result.ExtractedCommand.Command.Id);
-            Assert.AreEqual("測試", result.ExtractedCommand.Command.Name);
-            Assert.AreEqual("示例分組命令", result.ExtractedCommand.Command.Description);
-            Assert.IsNull(result.ExtractedCommand.Command.Options);
+            Assert.IsNotNull(result.ParsedCommand);
+            Assert.AreEqual("uc6", result.ParsedCommand.Command.Id);
+            Assert.AreEqual("測試", result.ParsedCommand.Command.Name);
+            Assert.AreEqual("示例分組命令", result.ParsedCommand.Command.Description);
+            Assert.IsNull(result.ParsedCommand.Command.Options);
         }
 
         [TestMethod]
@@ -57,15 +55,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "統一碼"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
-            Assert.AreEqual("統一碼", result.ExtractedCommand.Command.Descriptor.Prefix);
-            Assert.IsTrue(result.ExtractedCommand.Command.Descriptor.IsRoot);
+            Assert.IsNotNull(result.ParsedCommand.Command.Descriptor);
+            Assert.AreEqual(CommandType.Root, result.ParsedCommand.Command.Descriptor.Type);
 
-            Assert.IsNotNull(result.ExtractedCommand);
-            Assert.AreEqual("uc5", result.ExtractedCommand.Command.Id);
-            Assert.AreEqual("統一碼", result.ExtractedCommand.Command.Name);
-            Assert.AreEqual("示例根命令描述", result.ExtractedCommand.Command.Description);
-            Assert.IsNull(result.ExtractedCommand.Command.Options);
+            Assert.IsNotNull(result.ParsedCommand);
+            Assert.AreEqual("uc5", result.ParsedCommand.Command.Id);
+            Assert.AreEqual("統一碼", result.ParsedCommand.Command.Name);
+            Assert.AreEqual("示例根命令描述", result.ParsedCommand.Command.Description);
+            Assert.IsNull(result.ParsedCommand.Command.Options);
         }
 
         [TestMethod]
@@ -75,20 +72,19 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "統一碼 測試 打印 -第一 第一個值 --第二 --第三 第三個值 --第四 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
-            Assert.AreEqual("統一碼 測試 打印", result.ExtractedCommand.Command.Descriptor.Prefix);
+            Assert.IsNotNull(result.ParsedCommand.Command.Descriptor);
 
-            Assert.IsNotNull(result.ExtractedCommand);
-            Assert.AreEqual("uc7", result.ExtractedCommand.Command.Id);
-            Assert.AreEqual("打印", result.ExtractedCommand.Command.Name);
-            Assert.AreEqual("測試命令", result.ExtractedCommand.Command.Description);
-            Assert.IsNotNull(result.ExtractedCommand.Command.Options);
-            Assert.AreEqual(4, result.ExtractedCommand.Command.Options.Count);
+            Assert.IsNotNull(result.ParsedCommand);
+            Assert.AreEqual("uc7", result.ParsedCommand.Command.Id);
+            Assert.AreEqual("打印", result.ParsedCommand.Command.Name);
+            Assert.AreEqual("測試命令", result.ParsedCommand.Command.Description);
+            Assert.IsNotNull(result.ParsedCommand.Command.Options);
+            Assert.AreEqual(4, result.ParsedCommand.Command.Options.Count);
 
-            AssertOption(result.ExtractedCommand.Command.Options[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
-            AssertOption(result.ExtractedCommand.Command.Options[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
-            AssertOption(result.ExtractedCommand.Command.Options[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
-            AssertOption(result.ExtractedCommand.Command.Options[3], "第四", nameof(Double), "第四個命令參數", "253.36");
+            AssertOption(result.ParsedCommand.Command.Options[0], "第一的", nameof(String), "第一個命令參數", "第一個值");
+            AssertOption(result.ParsedCommand.Command.Options[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
+            AssertOption(result.ParsedCommand.Command.Options[2], "第三", nameof(String), "第三個命令參數", "第三個值");
+            AssertOption(result.ParsedCommand.Command.Options[3], "第四", nameof(Double), "第四個命令參數", "253.36");
         }
 
         [TestMethod]
@@ -97,20 +93,19 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id1", "統一碼 測試 打印 --第一的 第一個值 --第二 --第三 第三個值 --第四 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
-            Assert.AreEqual("統一碼 測試 打印", result.ExtractedCommand.Command.Descriptor.Prefix);
+            Assert.IsNotNull(result.ParsedCommand.Command.Descriptor);
 
-            Assert.IsNotNull(result.ExtractedCommand);
-            Assert.AreEqual("uc7", result.ExtractedCommand.Command.Id);
-            Assert.AreEqual("打印", result.ExtractedCommand.Command.Name);
-            Assert.AreEqual("測試命令", result.ExtractedCommand.Command.Description);
-            Assert.IsNotNull(result.ExtractedCommand.Command.Options);
-            Assert.AreEqual(4, result.ExtractedCommand.Command.Options.Count);
+            Assert.IsNotNull(result.ParsedCommand);
+            Assert.AreEqual("uc7", result.ParsedCommand.Command.Id);
+            Assert.AreEqual("打印", result.ParsedCommand.Command.Name);
+            Assert.AreEqual("測試命令", result.ParsedCommand.Command.Description);
+            Assert.IsNotNull(result.ParsedCommand.Command.Options);
+            Assert.AreEqual(4, result.ParsedCommand.Command.Options.Count);
 
-            AssertOption(result.ExtractedCommand.Command.Options[0], "第一的", DataType.Text, "第一個命令參數", "第一個值");
-            AssertOption(result.ExtractedCommand.Command.Options[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
-            AssertOption(result.ExtractedCommand.Command.Options[2], "第三", DataType.Text, "第三個命令參數", "第三個值");
-            AssertOption(result.ExtractedCommand.Command.Options[3], "第四", nameof(Double), "第四個命令參數", "253.36");
+            AssertOption(result.ParsedCommand.Command.Options[0], "第一的", nameof(String), "第一個命令參數", "第一個值");
+            AssertOption(result.ParsedCommand.Command.Options[1], "第二", nameof(Boolean), "第二個命令參數", true.ToString());
+            AssertOption(result.ParsedCommand.Command.Options[2], "第三", nameof(String), "第三個命令參數", "第三個值");
+            AssertOption(result.ParsedCommand.Command.Options[3], "第四", nameof(Double), "第四個命令參數", "253.36");
         }
 
         protected override void OnTestInitialize()
@@ -118,26 +113,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             options = MockTerminalOptions.NewAliasOptions();
             textHandler = new UnicodeTextHandler();
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            commandStore = new InMemoryCommandStore(textHandler, MockCommands.UnicodeCommands, options, TestLogger.Create<InMemoryCommandStore>());
+            commandStore = new InMemoryCommandStore(MockCommands.UnicodeCommands);
             routeParser = new MockCommandRouteParser();
             optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            extractor = new CommandExtractor(routeParser, commandStore, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>());
+            extractor = new CommandExtractor(routeParser);
         }
 
-        private void AssertOption(Option arg, string name, DataType dataType, string description, object value)
+        private void AssertOption(Option arg, string name, string dataType, string description, object value)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
-            Assert.IsNull(arg.CustomDataType);
-            Assert.AreEqual(arg.Description, description);
-            Assert.AreEqual(arg.Value, value);
-        }
-
-        private void AssertOption(Option arg, string name, string customDataType, string description, object value)
-        {
-            Assert.AreEqual(arg.Id, name);
-            Assert.AreEqual(arg.DataType, DataType.Custom);
-            Assert.AreEqual(arg.CustomDataType, customDataType);
             Assert.AreEqual(arg.Description, description);
             Assert.AreEqual(arg.Value, value);
         }

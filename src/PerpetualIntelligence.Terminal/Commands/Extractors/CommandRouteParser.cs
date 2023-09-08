@@ -5,12 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
+using PerpetualIntelligence.Terminal.Stores;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,20 +25,23 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
     public class CommandRouteParser : ICommandRouteParser
     {
         private readonly ITextHandler textHandler;
-        private readonly CommandDescriptors commandDescriptors;
+        private readonly ICommandStoreHandler commandStoreHandler;
         private readonly TerminalOptions terminalOptions;
+        private readonly ILogger<CommandRouteParser> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandRouteParser"/> class.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
-        /// <param name="commandDescriptors">The command descriptors.</param>
+        /// <param name="commandStoreHandler">The command store handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
-        public CommandRouteParser(ITextHandler textHandler, CommandDescriptors commandDescriptors, TerminalOptions terminalOptions)
+        /// <param name="logger">The logger.</param>
+        public CommandRouteParser(ITextHandler textHandler, ICommandStoreHandler commandStoreHandler, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
         {
             this.textHandler = textHandler;
-            this.commandDescriptors = commandDescriptors;
+            this.commandStoreHandler = commandStoreHandler;
             this.terminalOptions = terminalOptions;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -45,224 +50,205 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// <param name="commandRoute"></param>
         /// <returns></returns>
         /// <exception cref="ErrorException"></exception>
-        public Task<Root> ParseAsync(CommandRoute commandRoute)
+        public async Task<ParsedCommand> ParseAsync(CommandRoute commandRoute)
         {
+            // Initialize variables
+            Root? root = null;
+            Group? lastGroup = null;
+            SubCommand? lastSubCommand = null;
+            Command? lastCommand = null;
+            List<string>? argValues = null;
+            Dictionary<string, string>? optionPairs = null;
+            bool argOrOptionsStarted = false;
+
+            // Split the command string into elements using the regex pattern
             MatchCollection matches = Regex.Matches(commandRoute.Command.Raw, textHandler.ExtractionRegex(terminalOptions));
-
-            foreach (Match match in matches)
+            for (int matchIdx = 0; matchIdx < matches.Count; ++matchIdx)
             {
-                Debug.WriteLine("Match: " + match.Value);
-            }
+                Match match = matches[matchIdx];
+                string element = match.Value.Trim(terminalOptions.Extractor.Separator.ToArray());
 
-            if (matches.Count <= 0)
-            {
-                throw new ErrorException(TerminalErrors.InvalidRequest, "The command string is invalid.");
-            }
-
-            Root root = ExtractRoot(matches, commandRoute);
-
-            return Task.FromResult(root);
-        }
-
-        private Root ExtractRoot(MatchCollection matches, CommandRoute commandRoute)
-        {
-            string rootId = matches[0].Value;
-            Command command = GetCommandOrThrow(commandRoute, rootId);
-
-            Root root;
-            if (command.Descriptor.IsRoot)
-            {
-                root = new Root(linkedCommand: command);
-            }
-            else if (command.Descriptor.IsSubCommand)
-            {
-                // First element is a sub-command, so we create a dummy root for execution.
-                SubCommand subCommand = new(command);
-                root = Root.Default(subCommand);
-            }
-            else
-            {
-                throw new ErrorException(TerminalErrors.InvalidCommand, $"The command is not a root or a sub-command. command={0}", rootId);
-            }
-
-            return root;
-        }
-
-        private CommandDescriptor GetCommandDescriptorOrThrow(string commandId)
-        {
-            if (!commandDescriptors.ContainsKey(commandId))
-            {
-                throw new ErrorException(TerminalErrors.InvalidCommand, $"The command is invalid. command={0}", commandId);
-            }
-
-            return commandDescriptors[commandId];
-        }
-
-        private Root ThrowIfNotRoot(Command rootCommand)
-        {
-            if (!rootCommand.Descriptor.IsRoot)
-            {
-                throw new ErrorException(TerminalErrors.InvalidCommand, $"The command is not a root. command={0}", rootCommand.Id);
-            }
-
-            return new Root(linkedCommand: rootCommand);
-        }
-
-        private void ThrowIfNotGroup(Command grpCommand)
-        {
-            if (!grpCommand.Descriptor.IsGroup)
-            {
-                throw new ErrorException(TerminalErrors.InvalidCommand, $"The command is not a group. command={0}", grpCommand.Id);
-            }
-        }
-
-        private Group? ExtractNestedGroup(Match match, CommandRoute commandRoute, Root root)
-        {
-            string groupIds = match.Groups[2].Value.Trim();
-            string[] groupArr = groupIds.Split(new[] { terminalOptions.Extractor.Separator }, StringSplitOptions.RemoveEmptyEntries);
-
-            // Make sure each groups are distinct
-            if (groupArr.Distinct().Count() != groupArr.Length)
-            {
-                throw new ErrorException(TerminalErrors.InvalidRequest, "The command string contains groups that are not distinct. command_string={0}", groupIds);
-            }
-
-            Group? group = null;
-            foreach (string groupId in groupArr)
-            {
-                Command groupCommand = GetCommandOrThrow(commandRoute, groupId);
-                ThrowIfNotGroup(groupCommand);
-                Group currentGroup = new(groupCommand);
-
-                if (group == null)
+                // Check if the element exists in the command dictionary. If it does not exist that means that the arguments and options have started
+                // or the command id is invalid.
+                CommandDescriptor? commandDescriptor = null;
+                if (!argOrOptionsStarted)
                 {
-                    root.ChildGroup = currentGroup;
+                    // Performance Improvement: The commandStoreHandler may involve a network call if we are querying a remote store. So we optimize the algorithm
+                    // to query store till we start arguments and options processing.
+                    try
+                    {
+                        commandDescriptor = await commandStoreHandler.FindByIdAsync(element);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogInformation(ex, "Failed to find command in the store. Assuming it to be an argument or an option. command={0}", element);
+
+                        // The command is not in the store, either the command is invalid or the arguments and options have started.
+                        argOrOptionsStarted = true;
+                    }
+                }
+
+                if (!argOrOptionsStarted)
+                {
+                    // No exception was thrown but the command does not exist in the store.
+                    if (commandDescriptor == null)
+                    {
+                        throw new ErrorException(TerminalErrors.UnsupportedCommand, "The command is not supported. command={0}", element);
+                    }
+
+                    Command command = new(commandDescriptor);
+                    if (commandDescriptor.Type == CommandType.Root)
+                    {
+                        // There can be only root in the command route
+                        if (root != null)
+                        {
+                            throw new ErrorException(TerminalErrors.InvalidCommand, "The command route contains multiple roots. root={0}", commandDescriptor.Id);
+                        }
+
+                        root = new Root(command);
+                    }
+                    else if (commandDescriptor.Type == CommandType.Group)
+                    {
+                        if (root == null)
+                        {
+                            throw new ErrorException(TerminalErrors.InvalidCommand, "The command group must be preceded by a root command. group={0}", commandDescriptor.Id);
+                        }
+
+                        Group group = new(command);
+                        if (lastGroup == null)
+                        {
+                            root.ChildGroup = group;
+                        }
+                        else
+                        {
+                            lastGroup.ChildGroup = group;
+                        }
+
+                        lastGroup = group;
+                    }
+                    else if (commandDescriptor.Type == CommandType.SubCommand)
+                    {
+                        if (lastSubCommand != null)
+                        {
+                            throw new ErrorException(TerminalErrors.InvalidCommand, "The nested subcommands are not supported. command={0}", commandDescriptor.Id);
+                        }
+
+                        SubCommand subCommand = new(command);
+
+                        if (lastGroup != null)
+                        {
+                            lastGroup.ChildSubCommand = subCommand;
+                        }
+                        else if (root != null)
+                        {
+                            root.ChildSubCommand = subCommand;
+                        }
+
+                        lastSubCommand = subCommand;
+                    }
+
+                    lastCommand = command;
                 }
                 else
                 {
-                    group.ChildGroup = currentGroup;
-                }
-
-                group = currentGroup;
-            }
-
-            // Return the last leaf group.
-            return group;
-        }
-
-        private Command GetCommandOrThrow(CommandRoute commandRoute, string commandId)
-        {
-            CommandDescriptor commandDescriptor = GetCommandDescriptorOrThrow(commandId);
-            return new Command(commandDescriptor);
-        }
-
-        private Task<Command> ExtractCommandAsync(Match match, CommandRoute commandRoute, Root? root, Group? group)
-        {
-            return Task.Run(() =>
-            {
-                string commandId = match.Groups[3].Value.Trim();
-                Command command = GetCommandOrThrow(commandRoute, commandId);
-
-                if (group != null)
-                {
-                    if (command.Equals(group.ChildSubCommand))
+                    if (IsOption(element))
                     {
-                        throw new ErrorException(TerminalErrors.InvalidCommand, "The command does not belong to the group. command={0} group={1}", commandId, group.LinkedCommand.Id);
+                        optionPairs ??= new Dictionary<string, string>();
+
+                        int nextMatchIdx = matchIdx + 1;
+                        if (nextMatchIdx < matches.Count)
+                        {
+                            string nextElement = matches[nextMatchIdx].Value.Trim(terminalOptions.Extractor.Separator.ToArray());
+                            if (IsOption(nextElement))
+                            {
+                                //  Next element is an option so this element is a boolean option
+                                optionPairs.Add(element, true.ToString());
+                            }
+                            else
+                            {
+                                optionPairs.Add(element, nextElement);
+                                matchIdx = nextMatchIdx;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        argValues ??= new List<string>();
+                        argValues.Add(element);
                     }
                 }
-                else if (root != null)
-                {
-                    if (command.Equals(root.ChildSubCommand))
-                    {
-                        throw new ErrorException(TerminalErrors.InvalidCommand, "The command does not belong to the root. command={0} root={1}", commandId, root.LinkedCommand.Id);
-                    }
-                }
-
-                ExtractArguments(match, command);
-                ExtractOptions(match, command);
-
-                return command;
-            });
-        }
-
-        private Arguments? ExtractArguments(Match match, Command command)
-        {
-            string argumentsString = match.Groups[4].Value.Trim();
-            string[] argumentValues = argumentsString.Split(new[] { terminalOptions.Extractor.Separator }, StringSplitOptions.RemoveEmptyEntries);
-
-            // Command may not support if arguments
-            if (command.Descriptor.ArgumentDescriptors == null)
-            {
-                if (argumentValues.Length > 0)
-                {
-                    throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support any arguments. command={0}", command.Id);
-                }
-
-                // Nothing to process.
-                return null;
             }
 
-            // Arguments are always specified in order
-            if (argumentValues.Length > command.Descriptor.ArgumentDescriptors.Count)
+            if (lastCommand == null)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command string contains more arguments than the command supports. command_string={0}", argumentsString);
+                throw new ErrorException(TerminalErrors.InvalidCommand, "The command string is missing a valid command. command_string={0}", commandRoute.Command.Raw);
+            }
+
+            // At the end we will either have a valid root or a default root.
+            root ??= Root.Default();
+
+            Arguments? arguments = null;
+            if (argValues != null)
+            {
+                arguments = ParseArguments(lastCommand.Descriptor, argValues);
+            }
+
+            Options? options = null;
+            if (optionPairs != null)
+            {
+                options = ParseOptions(lastCommand.Descriptor, optionPairs);
+            }
+
+            lastCommand.Arguments = arguments;
+            lastCommand.Options = options;
+
+            ParsedCommand extractedCommand = new(commandRoute, lastCommand, root);
+            return extractedCommand;
+        }
+
+        private Options ParseOptions(CommandDescriptor descriptor, Dictionary<string, string> optValues)
+        {
+            Options options = new(textHandler);
+            foreach (var optKvp in optValues)
+            {
+                bool found = descriptor.TryGetOptionDescriptor(optKvp.Key, out OptionDescriptor optionDescriptor);
+                if (!found)
+                {
+                    throw new ErrorException(TerminalErrors.UnsupportedOption, "The command does not support option. command={0} option={1}", descriptor.Id, optKvp.Key);
+                }
+
+                options.Add(new Option(optionDescriptor, optKvp.Value));
+            }
+            return options;
+        }
+
+        private Arguments ParseArguments(CommandDescriptor commandDescriptor, List<string> values)
+        {
+            if (commandDescriptor.ArgumentDescriptors == null || !commandDescriptor.ArgumentDescriptors.Any())
+            {
+                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support arguments. command={0}", commandDescriptor.Id);
+            }
+
+            if (commandDescriptor.ArgumentDescriptors.Count < values.Count)
+            {
+                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support specified arguments. command={0} arguments={1}", commandDescriptor.Id, values.JoinBySpace());
             }
 
             Arguments arguments = new(textHandler);
-            int index = 0;
-            foreach (string argumentVal in argumentValues)
+            for (int idx = 0; idx < values.Count; ++idx)
             {
-                ArgumentDescriptor argumentDescriptor = command.Descriptor.ArgumentDescriptors[index];
-                arguments.Add(new Argument(argumentDescriptor, argumentVal));
-                index++;
+                Argument argument = new(commandDescriptor.ArgumentDescriptors[idx], values[idx]);
+                arguments.Add(argument);
             }
 
             return arguments;
         }
 
-        private Options? ExtractOptions(Match match, Command command)
+        private bool IsOption(string value)
         {
-            string optionsString = match.Groups[5].Value.Trim();
-            string[] optionsKvp = optionsString.Split(new[] { terminalOptions.Extractor.Separator }, StringSplitOptions.RemoveEmptyEntries);
-
-            // Command may not support if options
-            if (command.Descriptor.OptionDescriptors == null)
-            {
-                if (optionsKvp.Length > 0)
-                {
-                    throw new ErrorException(TerminalErrors.UnsupportedOption, "The command does not support any options. command={0}", command.Id);
-                }
-
-                // Nothing to process.
-                return null;
-            }
-
-            // Options are always specified in order
-            if (optionsKvp.Length > command.Descriptor.OptionDescriptors.Count)
-            {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command string contains more options than the command supports. command_string={0}", optionsKvp);
-            }
-
-            Options options = new(textHandler);
-            foreach (string opt in optionsKvp)
-            {
-                Option option = CreateOption(opt, command.Descriptor);
-                options.Add(option);
-            }
-
-            return options;
-        }
-
-        private Option CreateOption(string optionKvp, CommandDescriptor commandDescriptor)
-        {
-            string[] keyValue = optionKvp.Split(new[] { terminalOptions.Extractor.OptionValueSeparator }, StringSplitOptions.RemoveEmptyEntries);
-            string key = keyValue[0].TrimStart(terminalOptions.Extractor.OptionPrefix, textHandler.Comparison);
-            key = key.TrimStart(terminalOptions.Extractor.OptionAliasPrefix, textHandler.Comparison);
-
-            object value = keyValue.Length > 1 ? keyValue[1] : true;
-
-            OptionDescriptor optionDescriptor = commandDescriptor.OptionDescriptors![key];
-            return new Option(optionDescriptor, value);
+            // Check if the match value starts with a prefix like "-" or "--"
+            return value.StartsWith(terminalOptions.Extractor.OptionPrefix, textHandler.Comparison) ||
+                   value.StartsWith(terminalOptions.Extractor.OptionAliasPrefix, textHandler.Comparison);
         }
     }
 }

@@ -10,8 +10,11 @@ using System;
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// Represents a sub-command within a <see cref="Group"/>.
+    /// Represents a notional sub-command within a <see cref="Group"/>.
     /// </summary>
+    /// <remarks>
+    /// A <see cref="SubCommand"/> always has a <see cref="LinkedCommand"/> of type <see cref="CommandType.SubCommand"/>.
+    /// </remarks>
     public sealed class SubCommand
     {
         /// <summary>
@@ -20,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="linkedCommand">The linked command.</param>
         public SubCommand(Command linkedCommand)
         {
-            if (!linkedCommand.Descriptor.IsSubCommand)
+            if (linkedCommand.Descriptor.Type != CommandType.SubCommand)
             {
                 throw new ArgumentException("The command is not a sub-command.", nameof(linkedCommand));
             }

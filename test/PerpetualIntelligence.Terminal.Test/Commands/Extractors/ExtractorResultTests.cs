@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandExtractorResult(new ExtractedCommand(new CommandRoute("test_route", "test cmd"), new Command(null), null)), "Value cannot be null. (Parameter 'commandDescriptor')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandExtractorResult(new ParsedCommand(new CommandRoute("test_route", "test cmd"), new Command(null), null)), "Value cannot be null. (Parameter 'commandDescriptor')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }
@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandExtractorResult(new ExtractedCommand(null, new Command(new CommandDescriptor("test_id", "test_name", "test_prefix", "desc")), null)), "Value cannot be null. (Parameter 'commandRoute')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandExtractorResult(new ParsedCommand(null, new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), null)), "Value cannot be null. (Parameter 'commandRoute')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }
@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandExtractorResult(null), "Value cannot be null. (Parameter 'extractedCommand')");
+            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandExtractorResult(null), "Value cannot be null. (Parameter 'parsedCommand')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }

@@ -243,7 +243,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             }
 
             // Key only (treat it as a boolean) value=true
-            if (nameof(Boolean).Equals(argDescriptor.CustomDataType))
+            if (nameof(Boolean).Equals(argDescriptor.DataType))
             {
                 // The value will not be white space because we have already removed all the separators.
                 string value = (argValue == null || textHandler.TextEquals(argValue, string.Empty)) ? true.ToString() : argValue;

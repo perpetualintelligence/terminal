@@ -1,22 +1,22 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Terminal.Mocks;
-using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
-    [CommandDescriptor("id4", "name4", "test grp cmd4", "description")]
+    [CommandDescriptor("id4", "name4", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]
-    [OptionDescriptor("arg1", DataType.Text, "test arg desc1")]
-    [OptionDescriptor("arg2", DataType.Text, "test arg desc2")]
-    [OptionDescriptor("arg3", DataType.Text, "test arg desc3")]
+    [OptionDescriptor("arg1", nameof(String), "test arg desc1", OptionFlags.None)]
+    [OptionDescriptor("arg2", nameof(String), "test arg desc2", OptionFlags.None)]
+    [OptionDescriptor("arg3", nameof(String), "test arg desc3", OptionFlags.None)]
     public class MockDeclarativeTarget4 : IDeclarativeTarget
     {
     }

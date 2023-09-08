@@ -43,12 +43,12 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The command options.
         /// </summary>
-        public Options? Options { get; }
+        public Options? Options { get; set; }
 
         /// <summary>
         /// The command arguments.
         /// </summary>
-        public Arguments? Arguments { get; }
+        public Arguments? Arguments { get; set; }
 
         /// <summary>
         /// The command custom properties.
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The command id unique.
         /// </summary>
-        public string? Id => Descriptor.Id;
+        public string Id => Descriptor.Id;
 
         /// <summary>
         /// The command name.

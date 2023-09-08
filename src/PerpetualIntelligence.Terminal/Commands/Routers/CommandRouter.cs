@@ -52,7 +52,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
             CommandRouterResult? result = null;
-            ExtractedCommand? extractedCommand = null;
+            ParsedCommand? extractedCommand = null;
             try
             {
                 // Issue a before route event if configured
@@ -72,10 +72,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
                 // Extract the command
                 CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(context.Route));
-                extractedCommand = extractorResult.ExtractedCommand;
+                extractedCommand = extractorResult.ParsedCommand;
 
                 // Delegate to handler
-                CommandHandlerContext handlerContext = new(context, extractorResult.ExtractedCommand, license);
+                CommandHandlerContext handlerContext = new(context, extractorResult.ParsedCommand, license);
                 var handlerResult = await commandHandler.HandleAsync(handlerContext);
                 result = new CommandRouterResult(handlerResult, context.Route);
             }

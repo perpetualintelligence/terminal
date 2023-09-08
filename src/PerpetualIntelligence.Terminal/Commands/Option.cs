@@ -1,4 +1,10 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -7,7 +13,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace PerpetualIntelligence.Terminal.Commands
@@ -55,17 +60,10 @@ namespace PerpetualIntelligence.Terminal.Commands
         public string? Alias => Descriptor.Alias;
 
         /// <summary>
-        /// The option custom data type.
-        /// </summary>
-        /// <remarks>This custom data type is used only if the <see cref="DataType"/> property is set to <see cref="DataType.Custom"/>.</remarks>
-        [JsonIgnore]
-        public string? CustomDataType => Descriptor.CustomDataType;
-
-        /// <summary>
-        /// The option data type. Defaults to <see cref="DataType.Text"/>.
+        /// The option data type.
         /// </summary>
         [JsonIgnore]
-        public DataType DataType => Descriptor.DataType;
+        public string DataType => Descriptor.DataType;
 
         /// <summary>
         /// The option description.

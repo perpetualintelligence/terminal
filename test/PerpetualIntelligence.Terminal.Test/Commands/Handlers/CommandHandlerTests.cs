@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
@@ -48,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             using var newHost = hostBuilder.Build();
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
@@ -61,7 +62,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockErrorCommandCheckerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_checker_error", "test_checker_error_desc");
@@ -71,7 +72,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         public async Task CheckerNotConfiguredShouldError()
         {
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not configured. command_name=name1 command_id=id1");
@@ -91,7 +92,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                 Assert.IsFalse(MockCommandRunnerInnerResult.ResultDisposed);
 
                 CommandRoute commandRoute = new("test_id", "test_raw");
-                ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+                ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
                 CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
                 await handler.HandleAsync(commandContext);
@@ -113,7 +114,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockNotCheckerOrRunner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not valid. command_name=name1 command_id=id1 checker=MockNotCheckerOrRunner");
@@ -129,7 +130,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockNotCheckerOrRunner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner delegate is not configured. command_name=name1 command_id=id1 runner=MockNotCheckerOrRunner");
@@ -150,7 +151,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
@@ -165,7 +166,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockErrorCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_runner_error", "test_runner_error_desc");
@@ -179,7 +180,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             helpCommand.Item1.Runner = typeof(MockErrorCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_runner_help_error", "test_runner_help_error_desc");
@@ -192,7 +193,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleAsync(commandContext);
@@ -215,7 +216,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var result = await handler.HandleAsync(commandContext);
@@ -235,7 +236,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleAsync(commandContext);
@@ -255,7 +256,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleAsync(commandContext);
@@ -277,7 +278,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             helpCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleAsync(commandContext);
@@ -293,7 +294,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleAsync(commandContext);
@@ -309,7 +310,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not configured. command_name=name1 command_id=id1");
@@ -322,7 +323,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleAsync(commandContext);
@@ -339,7 +340,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var result = await handler.HandleAsync(commandContext);
@@ -357,7 +358,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var result = await handler.HandleAsync(commandContext);
@@ -386,7 +387,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             asyncEventHandler.AfterCheckCalled.Should().Be(false);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var result = await handler.HandleAsync(commandContext);
@@ -410,7 +411,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             asyncEventHandler.AfterRunCalled.Should().Be(false);
 
             CommandRoute commandRoute = new("test_id", "test_raw");
-            ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var result = await handler.HandleAsync(commandContext);
@@ -440,7 +441,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             try
             {
                 CommandRoute commandRoute = new("test_id", "test_raw");
-                ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+                ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
                 CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
                 var result = await handler.HandleAsync(commandContext);
@@ -476,7 +477,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             try
             {
                 CommandRoute commandRoute = new("test_id", "test_raw");
-                ExtractedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+                ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
                 CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
                 var result = await handler.HandleAsync(commandContext);
@@ -503,20 +504,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
-            command = MockCommands.NewCommandDefinition("id1", "name1", "prefix1", "desc1");
+            command = MockCommands.NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None);
             routingContext = new MockTerminalRoutingContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token));
             routerContext = new CommandRouterContext("test", routingContext);
 
             OptionDescriptors optionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
-                new OptionDescriptor(terminalOptions.Help.OptionId, nameof(Boolean), "Help options")
+                new OptionDescriptor(terminalOptions.Help.OptionId, nameof(Boolean), "Help options", OptionFlags.None)
             });
 
             // This mocks the help requested
             Options options = new(new UnicodeTextHandler());
             Option helpAttr = new(optionDescriptors.First(), true);
             options.Add(helpAttr);
-            helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "prefix2", "desc2", optionDescriptors, options: options);
+            helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "desc2", CommandType.SubCommand, CommandFlags.None, optionDescriptors, options: options);
 
             handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
         }

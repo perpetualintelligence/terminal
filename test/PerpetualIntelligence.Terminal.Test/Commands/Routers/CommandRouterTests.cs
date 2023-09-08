@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
-            await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => commandRouter.RouteAsync(routerContext), "Value cannot be null. (Parameter 'extractedCommand')");
+            await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => commandRouter.RouteAsync(routerContext), "Value cannot be null. (Parameter 'parsedCommand')");
             Assert.IsTrue(commandExtractor.Called);
             Assert.IsFalse(commandHandler.Called);
         }
@@ -113,7 +113,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             Assert.IsNotNull(commandHandler.ContextCalled);
             Assert.AreEqual("test_id", commandHandler.ContextCalled.ExtractedCommand.Command.Descriptor.Id);
             Assert.AreEqual("test_name", commandHandler.ContextCalled.ExtractedCommand.Command.Descriptor.Name);
-            Assert.AreEqual("test_prefix", commandHandler.ContextCalled.ExtractedCommand.Command.Descriptor.Prefix);
 
             Assert.AreEqual("test_id", commandHandler.ContextCalled.ExtractedCommand.Command.Id);
             Assert.AreEqual("test_name", commandHandler.ContextCalled.ExtractedCommand.Command.Name);

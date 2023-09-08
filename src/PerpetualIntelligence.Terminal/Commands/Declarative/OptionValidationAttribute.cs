@@ -1,4 +1,10 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -19,12 +25,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="argId">The option identifier.</param>
+        /// <param name="optionId">The option identifier.</param>
         /// <param name="validationAttribute">The option validation attribute.</param>
         /// <param name="validationArgs">The validation attribute options.</param>
-        public OptionValidationAttribute(string argId, Type validationAttribute, params object[] validationArgs)
+        public OptionValidationAttribute(string optionId, Type validationAttribute, params object[] validationArgs)
         {
-            ArgId = argId;
+            OptionId = optionId;
             ValidationAttribute = validationAttribute;
             ValidationArgs = validationArgs;
         }
@@ -32,7 +38,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// <summary>
         /// The option identifier.
         /// </summary>
-        public string ArgId { get; }
+        public string OptionId { get; }
 
         /// <summary>
         /// The validation attribute options.

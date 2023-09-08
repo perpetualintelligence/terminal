@@ -13,9 +13,15 @@ namespace PerpetualIntelligence.Terminal.Mocks
 {
     internal class MockCommandRouteParser : ICommandRouteParser
     {
-        public Task<Root> ParseAsync(CommandRoute commandRoute)
+        public CommandRoute PassedCommandRoute { get; private set; }
+
+        public bool Called { get; private set; }
+
+        public Task<ParsedCommand> ParseAsync(CommandRoute commandRoute)
         {
-            return Task.FromResult(Root.Default());
+            PassedCommandRoute = commandRoute;
+            Called = true;
+            return Task.FromResult(new ParsedCommand(commandRoute, new Command(new CommandDescriptor("id", "name", "description", CommandType.SubCommand, CommandFlags.None)), Root.Default()));
         }
     }
 }

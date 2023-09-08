@@ -1,36 +1,29 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
 using System;
 using System.Collections.Generic;
+using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Extensions
 {
-    [TestClass]
-    public class IServiceCollectionExtensionsTests : InitializerTests
+    public class IServiceCollectionExtensionsTests
     {
-        public IServiceCollectionExtensionsTests() : base(TestLogger.Create<IServiceCollectionExtensionsTests>())
-        {
-        }
-
-        [TestMethod]
-        public void AddTerminalBuilderShouldPopulateCorrectly()
+        [Fact]
+        public void CreateTerminalBuilderShouldNotAddAnyServices()
         {
             IServiceCollection? serviceDescriptors = null;
 
@@ -39,17 +32,19 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 serviceDescriptors = arg;
             }).Build();
 
-            Assert.IsNotNull(serviceDescriptors);
-            ITerminalBuilder? terminalBuilder = serviceDescriptors.AddTerminalBuilder();
-            Assert.IsNotNull(terminalBuilder);
-            Assert.IsInstanceOfType(terminalBuilder, typeof(TerminalBuilder));
-            Assert.IsTrue(ReferenceEquals(serviceDescriptors, terminalBuilder.Services));
+            serviceDescriptors.Should().NotBeNull();
+            ITerminalBuilder? terminalBuilder = serviceDescriptors!.CreateTerminalBuilder();
+            terminalBuilder.Should().NotBeNull()
+                           .And.BeOfType<TerminalBuilder>()
+                           .And.Match<TerminalBuilder>(tb => ReferenceEquals(serviceDescriptors, tb.Services));
 
-            Assert.IsFalse(setupActionCalled);
+            setupActionCalled.Should().BeFalse();
+
+            AssertCoreServicesNotAdded(host);
         }
 
-        [TestMethod]
-        public void AddCliConfigurationShouldInitializeCorrectly()
+        [Fact]
+        public void AddTerminalConfigurationShouldInitializeCorrectly()
         {
             var myConfiguration = new Dictionary<string, string>
             {
@@ -64,78 +59,87 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal(configuration)
-                .AddExtractor<MockCommandExtractor, MockArgumentExtractor>();
+                arg.AddTerminal(configuration);
             }).Build();
 
-            AssertHostServices(host);
-
-            Assert.IsFalse(setupActionCalled);
-        }
-
-        [TestMethod]
-        public void AddCliDefaultShouldInitializeCorrectly()
-        {
-            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
-            {
-                arg.AddTerminal()
-                .AddExtractor<MockCommandExtractor, MockArgumentExtractor>();
-            }).Build();
-
-            AssertHostServices(host);
-
-            Assert.IsFalse(setupActionCalled);
-        }
-
-        [TestMethod]
-        public void AddCliOptionsShouldInitializeCorrectly()
-        {
-            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
-            {
-                arg.AddTerminal(SetupAction)
-                .AddExtractor<MockCommandExtractor, MockArgumentExtractor>();
-            }).Build();
-
-            AssertHostServices(host);
-
-            Assert.IsTrue(setupActionCalled);
-        }
-
-        private static void AssertHostServices(IHost host)
-        {
             // Check Options are added
             TerminalOptions? terminalOptions = host.Services.GetService<TerminalOptions>();
-            Assert.IsNotNull(terminalOptions);
+            terminalOptions.Should().NotBeNull();
 
             // Options is singleton
             TerminalOptions? cliOptions2 = host.Services.GetService<TerminalOptions>();
             TerminalOptions? cliOptions3 = host.Services.GetService<TerminalOptions>();
-            Assert.IsTrue(ReferenceEquals(terminalOptions, cliOptions2));
-            Assert.IsTrue(ReferenceEquals(terminalOptions, cliOptions3));
+            cliOptions2.Should().BeSameAs(terminalOptions);
+            cliOptions3.Should().BeSameAs(terminalOptions);
 
+            setupActionCalled.Should().BeFalse();
+
+            AssertCoreServicesNotAdded(host);
+        }
+
+        [Fact]
+        public void AddTerminalNoConfigShouldInitializeCorrectly()
+        {
+            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
+            {
+                arg.AddTerminal();
+            }).Build();
+
+            // Check Options are added
+            TerminalOptions? terminalOptions = host.Services.GetService<TerminalOptions>();
+            terminalOptions.Should().NotBeNull();
+
+            // Options is singleton
+            TerminalOptions? cliOptions2 = host.Services.GetService<TerminalOptions>();
+            TerminalOptions? cliOptions3 = host.Services.GetService<TerminalOptions>();
+            cliOptions2.Should().BeSameAs(terminalOptions);
+            cliOptions3.Should().BeSameAs(terminalOptions);
+
+            setupActionCalled.Should().BeFalse();
+
+            AssertCoreServicesNotAdded(host);
+        }
+
+        [Fact]
+        public void AddTerminalOptionsShouldInitializeCorrectly()
+        {
+            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
+            {
+                arg.AddTerminal(SetupAction);
+            }).Build();
+
+            // Check Options are added
+            TerminalOptions? terminalOptions = host.Services.GetService<TerminalOptions>();
+            terminalOptions.Should().NotBeNull();
+
+            // Options is singleton
+            TerminalOptions? cliOptions2 = host.Services.GetService<TerminalOptions>();
+            TerminalOptions? cliOptions3 = host.Services.GetService<TerminalOptions>();
+            cliOptions2.Should().BeSameAs(terminalOptions);
+            cliOptions3.Should().BeSameAs(terminalOptions);
+
+            setupActionCalled.Should().BeTrue();
+
+            AssertCoreServicesNotAdded(host);
+        }
+
+        private void AssertCoreServicesNotAdded(IHost host)
+        {
             // Check ICommandRouter is added as a transient
             ICommandRouter? commandRouter = host.Services.GetService<ICommandRouter>();
-            Assert.IsNotNull(commandRouter);
-            Assert.IsInstanceOfType(commandRouter, typeof(CommandRouter));
-            Assert.IsFalse(ReferenceEquals(commandRouter, host.Services.GetService<ICommandRouter>())); // Non singleton
+            commandRouter.Should().BeNull();
 
             // Check ICommandRouter is added as a transient
             ICommandHandler? commandHandler = host.Services.GetService<ICommandHandler>();
-            Assert.IsNotNull(commandHandler);
-            Assert.IsInstanceOfType(commandHandler, typeof(CommandHandler));
-            Assert.IsFalse(ReferenceEquals(commandHandler, host.Services.GetService<ICommandHandler>()));
+            commandHandler.Should().BeNull();
 
             // License checker is added as a singleton
             ILicenseChecker? licenseChecker = host.Services.GetService<ILicenseChecker>();
-            Assert.IsNotNull(licenseChecker);
-            Assert.IsInstanceOfType(licenseChecker, typeof(LicenseChecker));
-            Assert.IsTrue(ReferenceEquals(licenseChecker, host.Services.GetService<ILicenseChecker>())); // Singleton
+            licenseChecker.Should().BeNull();
 
             // License extractor is added as a singleton
             ILicenseExtractor? licenseExtractor = host.Services.GetService<ILicenseExtractor>();
-            Assert.IsNotNull(licenseExtractor);
-            Assert.IsInstanceOfType(licenseExtractor, typeof(LicenseExtractor));
-            Assert.IsTrue(ReferenceEquals(licenseExtractor, host.Services.GetService<ILicenseExtractor>()));
+            licenseExtractor.Should().BeNull();
         }
 
         private void SetupAction(TerminalOptions obj)

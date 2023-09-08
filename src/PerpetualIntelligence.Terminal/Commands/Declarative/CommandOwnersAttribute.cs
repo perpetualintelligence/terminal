@@ -4,35 +4,30 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using System;
 
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
     /// <summary>
-    /// Declares the command tags.
+    /// Declares a command owners. A command owner is a group or a root.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public sealed class CommandTagsAttribute : Attribute
+    public sealed class CommandOwnersAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="tags">The tags.</param>
-        public CommandTagsAttribute(params string[] tags)
+        /// <param name="owners">The command owner identifiers.</param>
+        public CommandOwnersAttribute(params string[] owners)
         {
-            Tags = new TagCollection(tags);
+            Owners = new OwnerCollection(owners);
         }
 
         /// <summary>
-        /// The command tags.
+        /// The command owner identifiers.
         /// </summary>
-        public TagCollection Tags { get; }
+        /// <seealso cref="CommandDescriptor.Id"/>
+        public OwnerCollection Owners { get; }
     }
 }

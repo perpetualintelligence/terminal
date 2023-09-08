@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Licensing;
 using System;
@@ -23,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <param name="extractedCommand">The extracted command handle.</param>
         /// <param name="license">The extracted license.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public CommandHandlerContext(CommandRouterContext routerContext, ExtractedCommand extractedCommand, License license)
+        public CommandHandlerContext(CommandRouterContext routerContext, ParsedCommand extractedCommand, License license)
         {
             RouterContext = routerContext ?? throw new ArgumentNullException(nameof(routerContext));
             ExtractedCommand = extractedCommand ?? throw new ArgumentNullException(nameof(extractedCommand));
@@ -38,7 +39,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// The extracted command to handle.
         /// </summary>
-        public ExtractedCommand ExtractedCommand { get; }
+        public ParsedCommand ExtractedCommand { get; }
 
         /// <summary>
         /// The extracted licenses.

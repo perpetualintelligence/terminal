@@ -10,20 +10,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
     /// <summary>
     /// The command extractor result.
     /// </summary>
-    public class CommandExtractorResult
+    public sealed class CommandExtractorResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="extractedCommand">The extracted command.</param>
-        public CommandExtractorResult(ExtractedCommand extractedCommand)
+        /// <param name="parsedCommand">The parsed command.</param>
+        public CommandExtractorResult(ParsedCommand parsedCommand)
         {
-            ExtractedCommand = extractedCommand ?? throw new System.ArgumentNullException(nameof(extractedCommand));
+            ParsedCommand = parsedCommand ?? throw new System.ArgumentNullException(nameof(parsedCommand));
         }
 
         /// <summary>
-        /// The extracted command.
+        /// The parsed command.
         /// </summary>
-        public ExtractedCommand ExtractedCommand { get; }
+        public ParsedCommand ParsedCommand { get; }
     }
 }

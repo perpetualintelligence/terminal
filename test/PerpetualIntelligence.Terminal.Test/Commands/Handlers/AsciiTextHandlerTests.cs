@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         public void ExtractionRegex_Should_Return_Default_Extraction_Regex()
         {
             var result = _handler.ExtractionRegex(MockTerminalOptions.NewAliasOptions());
-            result.Should().Be("(\"[^\"]*\"|[^\\ ]+)");
+            result.Should().Be("(?:[^\"\\s]+)|\"[^\"]*\"|--?\\w+");
         }
 
         [Theory]

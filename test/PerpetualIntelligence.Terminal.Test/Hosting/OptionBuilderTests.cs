@@ -1,4 +1,10 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -8,6 +14,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Terminal.Mocks;
 using System;
@@ -32,7 +39,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public void Build_Returns_Same_CommandBuilder()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection);
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "cmd name prefix", "Command description");
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             OptionBuilder argumentBuilder = new(commandBuilder);
             ICommandBuilder cmdBuilderFromArgBuilder = argumentBuilder.Add();
@@ -49,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         {
             TerminalBuilder terminalBuilder = new(serviceCollection);
             CommandBuilder commandBuilder = new(terminalBuilder);
-            OptionBuilder argumentBuilder = new (commandBuilder);
+            OptionBuilder argumentBuilder = new(commandBuilder);
 
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
             argumentBuilder.Services.Should().NotBeSameAs(serviceCollection);

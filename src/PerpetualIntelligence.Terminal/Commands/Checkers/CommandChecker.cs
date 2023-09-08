@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
-    /// The command checker.
+    /// The default command checker.
     /// </summary>
-    public class CommandChecker : ICommandChecker
+    public sealed class CommandChecker : ICommandChecker
     {
         /// <summary>
         /// Initialize a new instance.
@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public virtual async Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
+        public async Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {
             // If the command itself do not support any options then there is nothing much to check. Extractor will
             // reject any unsupported attributes.
@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 if (!containsArg)
                 {
                     // Required option is missing
-                    if (optDescriptor.Required.GetValueOrDefault())
+                    if (optDescriptor.Flags.HasFlag(OptionFlags.Required))
                     {
                         throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
                     }
@@ -58,13 +58,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 else
                 {
                     // Check obsolete
-                    if (optDescriptor.Obsolete.GetValueOrDefault() && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
+                    if (optDescriptor.Flags.HasFlag(OptionFlags.Obsolete) && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
                     {
                         throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
                     }
 
                     // Check disabled
-                    if (optDescriptor.Disabled.GetValueOrDefault())
+                    if (optDescriptor.Flags.HasFlag(OptionFlags.Disabled))
                     {
                         throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
                     }

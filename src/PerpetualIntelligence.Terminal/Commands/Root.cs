@@ -8,8 +8,11 @@
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// Represents a root command.
+    /// Represents a notional root command.
     /// </summary>
+    /// <remarks>
+    /// A <see cref="Root"/> always has a <see cref="LinkedCommand"/> of type <see cref="CommandType.Root"/>.
+    /// </remarks>
     public sealed class Root
     {
         /// <summary>
@@ -22,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         {
             LinkedCommand = linkedCommand ?? throw new System.ArgumentNullException(nameof(linkedCommand));
 
-            if (linkedCommand.Descriptor.IsRoot)
+            if (linkedCommand.Descriptor.Type != CommandType.Root)
             {
                 throw new System.ArgumentException("The command is not a root.", nameof(linkedCommand));
             }
@@ -57,11 +60,17 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="subCommand">The child sub-command.</param>
         public static Root Default(SubCommand? subCommand = null)
         {
-            Root root = new(new Command(new CommandDescriptor("default", "default", "default", "Default root command.")), childGroup: null, childSubCommand: subCommand)
+            Root root = new(new Command(new CommandDescriptor("default", "default", "Default root command.", CommandType.Root, CommandFlags.None)), childGroup: null, childSubCommand: subCommand)
             {
                 IsDefault = true
             };
             return root;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return LinkedCommand.Id;
         }
     }
 }

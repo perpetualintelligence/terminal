@@ -21,18 +21,16 @@ namespace PerpetualIntelligence.Terminal.Commands
             root1.LinkedCommand.Should().NotBeNull();
             root1.LinkedCommand.Descriptor.Id.Should().Be("default");
             root1.LinkedCommand.Descriptor.Name.Should().Be("default");
-            root1.LinkedCommand.Descriptor.Prefix.Should().Be("default");
             root1.LinkedCommand.Descriptor.Description.Should().Be("Default root command.");
             root1.ChildSubCommand.Should().BeNull();
 
-            var cmd = new Command(new CommandDescriptor("cmd", "cmd", "cmd", "just a command") { IsSubCommand = true });
+            var cmd = new Command(new CommandDescriptor("cmd", "cmd", "just a command", CommandType.SubCommand, CommandFlags.None));
             var subCommand = new SubCommand(cmd);
             var root2 = Root.Default(subCommand);
             root2.IsDefault.Should().BeTrue();
             root2.LinkedCommand.Should().NotBeNull();
             root2.LinkedCommand.Descriptor.Id.Should().Be("default");
             root2.LinkedCommand.Descriptor.Name.Should().Be("default");
-            root2.LinkedCommand.Descriptor.Prefix.Should().Be("default");
             root2.LinkedCommand.Descriptor.Description.Should().Be("Default root command.");
             root2.ChildSubCommand.Should().Be(subCommand);
 

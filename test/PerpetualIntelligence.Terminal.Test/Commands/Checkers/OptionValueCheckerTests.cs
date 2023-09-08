@@ -1,17 +1,18 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -27,8 +28,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task MapperFailureShouldErrorAsync()
         {
-            // Any failure, we just want to test that mapper failure is correclty returned
-            OptionDescriptor identity = new("arg1", (DataType)int.MaxValue, "desc1");
+            // Any failure, we just want to test that mapper failure is correctly returned
+            OptionDescriptor identity = new("arg1", nameof(Int32), "desc1", OptionFlags.None);
             Option value = new(identity, 23.69);
 
             OptionCheckerContext context = new(identity, value);
@@ -38,7 +39,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task NullOptionValueShouldErrorAsync()
         {
-            OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None);
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Option value = new(identity, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -53,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Checker.StrictOptionValueType = true;
 
             // Value is double, but we can convert it so this should not error.
-            OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, 23.69);
 
             OptionCheckerContext context = new(identity, value);
@@ -70,7 +71,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Checker.StrictOptionValueType = false;
 
             // Value is double, strict checking is disabled so we will not convert it
-            OptionDescriptor identity = new("arg1", DataType.Text, "desc1");
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, 23.69);
 
             OptionCheckerContext context = new(identity, value);
@@ -86,7 +87,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Checker.StrictOptionValueType = false;
 
-            OptionDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(identity, value);
@@ -98,7 +99,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Checker.StrictOptionValueType = false;
 
-            OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(identity, value);
@@ -110,7 +111,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Checker.StrictOptionValueType = true;
 
-            OptionDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(identity, value);
@@ -122,7 +123,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Checker.StrictOptionValueType = true;
 
-            OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(identity, value);
@@ -132,7 +133,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task SupportedValueShouldNotErrorAsync()
         {
-            OptionDescriptor identity = new("arg1", DataType.Text, "desc1") { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
             Option value = new(identity, "test2");
 
             OptionCheckerContext context = new(identity, value);
@@ -142,7 +143,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task SystemTypeMatchAndDataValidationSuccessShouldNotErrorAsync()
         {
-            OptionDescriptor identity = new("arg1", DataType.CreditCard, "desc1");
+            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, "4242424242424242");
 
             OptionCheckerContext context = new(identity, value);
@@ -158,7 +159,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         protected override void OnTestInitialize()
         {
             options = MockTerminalOptions.NewLegacyOptions();
-            mapper = new DataAnnotationsOptionDataTypeMapper(options, TestLogger.Create<DataAnnotationsOptionDataTypeMapper>());
+            mapper = new OptionDataTypeMapper(options, TestLogger.Create<OptionDataTypeMapper>());
             checker = new OptionChecker(mapper, options);
         }
 

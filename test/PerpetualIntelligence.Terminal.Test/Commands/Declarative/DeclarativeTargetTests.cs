@@ -103,7 +103,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void Build_Should_Read_NoArgumentValidaiton_Correctly()
+        public void Build_Should_Read_NoArgumentValidation_Correctly()
         {
             terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
@@ -180,17 +180,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().Prefix.Should().Be("test grp cmd1");
             cmdDescs.First().OptionDescriptors.Should().HaveCount(3);
 
             var argDescs = cmdDescs.First().OptionDescriptors!.ToArray();
             argDescs[0].Id.Should().Be("arg1");
-            argDescs[0].DataType.Should().Be(DataType.Text);
+            argDescs[0].DataType.Should().Be(nameof(String));
             argDescs[0].Description.Should().Be("test arg desc1");
-            argDescs[0].CustomDataType.Should().BeNull();
-            argDescs[0].Required.Should().BeFalse();
-            argDescs[0].Obsolete.Should().BeFalse();
-            argDescs[0].Disabled.Should().BeFalse();
+            argDescs[0].DataType.Should().BeNull();
+            argDescs[0].Flags.Should().Be(OptionFlags.None);
             argDescs[0].Alias.Should().BeNull();
             argDescs[0].CustomProperties.Should().NotBeNull();
             argDescs[0].CustomProperties!.Keys.Should().Equal(new string[] { "a1Key1", "a1Key2", "a1Key3" });
@@ -198,12 +195,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             argDescs[0].ValueCheckers.Should().BeNull();
 
             argDescs[1].Id.Should().Be("arg2");
-            argDescs[1].DataType.Should().Be(DataType.Text);
+            argDescs[1].DataType.Should().Be(nameof(String));
             argDescs[1].Description.Should().Be("test arg desc2");
-            argDescs[1].CustomDataType.Should().BeNull();
-            argDescs[1].Required.Should().BeTrue();
-            argDescs[1].Obsolete.Should().BeFalse();
-            argDescs[1].Disabled.Should().BeTrue();
+            argDescs[1].DataType.Should().BeNull();
+            argDescs[1].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
             argDescs[1].Alias.Should().Be("arg2_alias");
             argDescs[1].CustomProperties.Should().NotBeNull();
             argDescs[1].CustomProperties!.Keys.Should().Equal(new string[] { "a2Key1", "a2Key2" });
@@ -214,12 +209,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
 
             argDescs[2].Id.Should().Be("arg3");
-            argDescs[2].DataType.Should().Be(DataType.Custom);
             argDescs[2].Description.Should().Be("test arg desc3");
-            argDescs[2].CustomDataType.Should().Be(nameof(System.Double));
-            argDescs[2].Required.Should().BeTrue();
-            argDescs[2].Obsolete.Should().BeTrue();
-            argDescs[2].Disabled.Should().BeFalse();
+            argDescs[2].DataType.Should().Be(nameof(Double));
+            argDescs[2].Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
             argDescs[2].Alias.Should().BeNull();
             argDescs[2].CustomProperties.Should().BeNull();
             argDescs[2].ValueCheckers.Should().NotBeNull();
@@ -240,15 +232,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
 
             cmdDescs.ToArray()[0].Id.Should().Be("id1");
             cmdDescs.ToArray()[0].Name.Should().Be("name1");
-            cmdDescs.ToArray()[0].Prefix.Should().Be("test grp cmd1");
 
             cmdDescs.ToArray()[1].Id.Should().Be("id2");
             cmdDescs.ToArray()[1].Name.Should().Be("name2");
-            cmdDescs.ToArray()[1].Prefix.Should().Be("test grp cmd2");
 
             cmdDescs.ToArray()[2].Id.Should().Be("id3");
             cmdDescs.ToArray()[2].Name.Should().Be("name3");
-            cmdDescs.ToArray()[2].Prefix.Should().Be("test grp cmd3");
         }
 
         [Fact]
@@ -259,7 +248,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().Prefix.Should().Be("test grp cmd1");
             cmdDescs.First().CustomProperties.Should().NotBeNull();
             cmdDescs.First().CustomProperties!.Keys.Should().Equal(new string[] { "key1", "key2", "key3" });
             cmdDescs.First().CustomProperties!.Values.Should().Equal(new string[] { "value1", "value2", "value3" });
@@ -273,7 +261,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().Prefix.Should().Be("test grp cmd2");
             cmdDescs.First().CustomProperties.Should().BeNull();
         }
 
@@ -285,7 +272,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().Prefix.Should().Be("test grp cmd2");
             cmdDescs.First().Tags.Should().BeNull();
         }
 
@@ -297,7 +283,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().Prefix.Should().Be("test grp cmd1");
             cmdDescs.First().Tags.Should().Equal(new string[] { "tag1", "tag2", "tag3" });
         }
 
@@ -325,7 +310,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void TargetDoesNotImplements_IDeclarativeTarget()
         {
-            AssemblyName aName = new AssemblyName("PiCliDeclarativeDynamicAssembly1");
+            AssemblyName aName = new ("PiCliDeclarativeDynamicAssembly1");
             AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.RunAndCollect);
 
             // The module name is usually the same as the assembly name.
@@ -345,7 +330,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void TargetImplements_IDeclarativeTarget()
         {
-            AssemblyName aName = new AssemblyName("PiCliDeclarativeDynamicAssembly2");
+            AssemblyName aName = new ("PiCliDeclarativeDynamicAssembly2");
             AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.RunAndCollect);
 
             // The module name is usually the same as the assembly name.
@@ -371,8 +356,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             return ValueTask.CompletedTask;
         }
 
-        private TerminalBuilder terminalBuilder;
-        private IHost host = null!;
+        private readonly TerminalBuilder terminalBuilder;
+        private readonly IHost host = null!;
         private IServiceCollection serviceCollection = null!;
     }
 }

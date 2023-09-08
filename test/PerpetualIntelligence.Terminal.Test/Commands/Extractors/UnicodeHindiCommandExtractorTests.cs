@@ -5,148 +5,124 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
-using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
-    [TestClass]
-    public class UnicodeHindiCommandExtractorTests : InitializerTests
+    public class UnicodeHindiCommandExtractorTests
     {
-        public UnicodeHindiCommandExtractorTests() : base(TestLogger.Create<CommandExtractorTests>())
+        private OptionExtractor optionExtractor;
+        private ICommandRouteParser routeParser;
+        private ICommandStoreHandler commandStore;
+        private CommandExtractor extractor;
+        private TerminalOptions options;
+        private ITextHandler textHandler;
+
+        public UnicodeHindiCommandExtractorTests()
         {
+            options = MockTerminalOptions.NewAliasOptions();
+            textHandler = new UnicodeTextHandler();
+            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
+            routeParser = new MockCommandRouteParser();
+            commandStore = new InMemoryCommandStore(MockCommands.UnicodeCommands);
+            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
+            extractor = new CommandExtractor(routeParser);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task UnicodeGroupedCommand_Should_Extract_Correctly()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड परीक्षण"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड परीक्षण", result.ExtractedCommand.Command.Descriptor.Prefix);
-            Assert.IsFalse(result.ExtractedCommand.Command.Descriptor.IsRoot);
-            Assert.IsTrue(result.ExtractedCommand.Command.Descriptor.IsGroup);
+            result.ParsedCommand.Command.Descriptor.Should().NotBeNull();
+            result.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Group);
 
-            Assert.IsNotNull(result.ExtractedCommand);
-            Assert.AreEqual("uc2", result.ExtractedCommand.Command.Id);
-            Assert.AreEqual("परीक्षण", result.ExtractedCommand.Command.Name);
-            Assert.AreEqual("यूनिकोड समूहीकृत कमांड", result.ExtractedCommand.Command.Description);
-            Assert.IsNull(result.ExtractedCommand.Command.Options);
+            result.ParsedCommand.Should().NotBeNull();
+            result.ParsedCommand.Command.Id.Should().Be("uc2");
+            result.ParsedCommand.Command.Name.Should().Be("परीक्षण");
+            result.ParsedCommand.Command.Description.Should().Be("यूनिकोड समूहीकृत कमांड");
+            result.ParsedCommand.Command.Options.Should().BeNull();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task UnicodeGroupedCommand_With_Incomplete_Prefix_ShouldError()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "परीक्षण"));
             await TestHelper.AssertThrowsErrorExceptionAsync(() => extractor.ExtractAsync(context), TerminalErrors.UnsupportedCommand, "The command prefix is not valid. prefix=परीक्षण");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task UnicodeRootCommand_Should_Extract_Correctly()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड", result.ExtractedCommand.Command.Descriptor.Prefix);
-            Assert.IsTrue(result.ExtractedCommand.Command.Descriptor.IsRoot);
+            result.ParsedCommand.Command.Descriptor.Should().NotBeNull();
+            result.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Root);
 
-            Assert.IsNotNull(result.ExtractedCommand);
-            Assert.AreEqual("uc1", result.ExtractedCommand.Command.Id);
-            Assert.AreEqual("यूनिकोड", result.ExtractedCommand.Command.Name);
-            Assert.AreEqual("यूनिकोड रूट कमांड", result.ExtractedCommand.Command.Description);
-            Assert.IsNull(result.ExtractedCommand.Command.Options);
+            result.ParsedCommand.Should().NotBeNull();
+            result.ParsedCommand.Command.Id.Should().Be("uc1");
+            result.ParsedCommand.Command.Name.Should().Be("यूनिकोड");
+            result.ParsedCommand.Command.Description.Should().Be("यूनिकोड रूट कमांड");
+            result.ParsedCommand.Command.Options.Should().BeNull();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task UnicodeSubCommand_Should_Extract_Correctly()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड परीक्षण प्रिंट --एक पहला मूल्य --दो --तीन तीसरा मूल्य --चार 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड परीक्षण प्रिंट", result.ExtractedCommand.Command.Descriptor.Prefix);
+            result.ParsedCommand.Command.Descriptor.Should().NotBeNull();
 
-            Assert.IsNotNull(result.ExtractedCommand);
-            Assert.AreEqual("uc3", result.ExtractedCommand.Command.Id);
-            Assert.AreEqual("प्रिंट", result.ExtractedCommand.Command.Name);
-            Assert.AreEqual("प्रिंट कमांड", result.ExtractedCommand.Command.Description);
-            Assert.IsNotNull(result.ExtractedCommand.Command.Options);
-            Assert.AreEqual(4, result.ExtractedCommand.Command.Options.Count);
+            result.ParsedCommand.Should().NotBeNull();
+            result.ParsedCommand.Command.Id.Should().Be("uc3");
+            result.ParsedCommand.Command.Name.Should().Be("प्रिंट");
+            result.ParsedCommand.Command.Description.Should().Be("प्रिंट कमांड");
+            result.ParsedCommand.Command.Options.Should().HaveCount(4);
 
-            AssertOption(result.ExtractedCommand.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
-            AssertOption(result.ExtractedCommand.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertOption(result.ExtractedCommand.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertOption(result.ExtractedCommand.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertOption(result.ParsedCommand.Command.Options![0], "एक", nameof(String), "पहला तर्क", "पहला मूल्य");
+            AssertOption(result.ParsedCommand.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
+            AssertOption(result.ParsedCommand.Command.Options[2], "तीन", nameof(String), "तीसरा तर्क", "तीसरा मूल्य");
+            AssertOption(result.ParsedCommand.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task UnicodeSubCommand_Alias_Should_Extract_Correctly()
         {
             // एकहै and चारहै are alias
             CommandExtractorContext context = new(new CommandRoute("id1", "यूनिकोड परीक्षण प्रिंट -एकहै पहला मूल्य --दो --तीन तीसरा मूल्य -चारहै 253.36"));
             var result = await extractor.ExtractAsync(context);
 
-            Assert.IsNotNull(result.ExtractedCommand.Command.Descriptor);
-            Assert.AreEqual("यूनिकोड परीक्षण प्रिंट", result.ExtractedCommand.Command.Descriptor.Prefix);
+            result.ParsedCommand.Command.Descriptor.Should().NotBeNull();
 
-            Assert.IsNotNull(result.ExtractedCommand);
-            Assert.AreEqual("uc3", result.ExtractedCommand.Command.Id);
-            Assert.AreEqual("प्रिंट", result.ExtractedCommand.Command.Name);
-            Assert.AreEqual("प्रिंट कमांड", result.ExtractedCommand.Command.Description);
-            Assert.IsNotNull(result.ExtractedCommand.Command.Options);
-            Assert.AreEqual(4, result.ExtractedCommand.Command.Options.Count);
+            result.ParsedCommand.Should().NotBeNull();
+            result.ParsedCommand.Command.Id.Should().Be("uc3");
+            result.ParsedCommand.Command.Name.Should().Be("प्रिंट");
+            result.ParsedCommand.Command.Description.Should().Be("प्रिंट कमांड");
+            result.ParsedCommand.Command.Options.Should().HaveCount(4);
 
-            AssertOption(result.ExtractedCommand.Command.Options[0], "एक", DataType.Text, "पहला तर्क", "पहला मूल्य");
-            AssertOption(result.ExtractedCommand.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
-            AssertOption(result.ExtractedCommand.Command.Options[2], "तीन", DataType.Text, "तीसरा तर्क", "तीसरा मूल्य");
-            AssertOption(result.ExtractedCommand.Command.Options[3], "चार", nameof(Double), "चौथा तर्क", "253.36");
+            AssertOption(result.ParsedCommand.Command.Options![0], "एक", nameof(String), "पहला तर्क", "पहला मूल्य");
+            AssertOption(result.ParsedCommand.Command.Options[1], "दो", nameof(Boolean), "दूसरा तर्क", true.ToString());
         }
 
-        protected override void OnTestInitialize()
+        private void AssertOption(Option arg, string name, string dataType, string description, object value)
         {
-            options = MockTerminalOptions.NewAliasOptions();
-            textHandler = new UnicodeTextHandler();
-            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            routeParser = new MockCommandRouteParser();
-            commandStore = new InMemoryCommandStore(textHandler, MockCommands.UnicodeCommands, options, TestLogger.Create<InMemoryCommandStore>());
-            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
-            extractor = new CommandExtractor(routeParser, commandStore, optionExtractor, textHandler, options, TestLogger.Create<CommandExtractor>());
+            arg.Should().NotBeNull();
+            arg.Id.Should().Be(name);
+            arg.DataType.Should().Be(dataType);
+            arg.Description.Should().Be(description);
+            arg.Value.Should().Be(value);
         }
-
-        private void AssertOption(Option arg, string name, DataType dataType, string description, object value)
-        {
-            Assert.AreEqual(arg.Id, name);
-            Assert.AreEqual(arg.DataType, dataType);
-            Assert.IsNull(arg.CustomDataType);
-            Assert.AreEqual(arg.Description, description);
-            Assert.AreEqual(arg.Value, value);
-        }
-
-        private void AssertOption(Option arg, string name, string customDataType, string description, object value)
-        {
-            Assert.AreEqual(arg.Id, name);
-            Assert.AreEqual(arg.DataType, DataType.Custom);
-            Assert.AreEqual(arg.CustomDataType, customDataType);
-            Assert.AreEqual(arg.Description, description);
-            Assert.AreEqual(arg.Value, value);
-        }
-
-        private OptionExtractor optionExtractor = null!;
-        private ICommandRouteParser routeParser = null!;
-        private ICommandStoreHandler commandStore = null!;
-        private CommandExtractor extractor = null!;
-        private TerminalOptions options = null!;
-        private ITextHandler textHandler = null!;
     }
 }

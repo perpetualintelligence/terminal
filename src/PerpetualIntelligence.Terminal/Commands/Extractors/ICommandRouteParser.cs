@@ -19,6 +19,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// </summary>
         /// <param name="commandRoute">The command route to parse.</param>
         /// <returns></returns>
-        Task<Root> ParseAsync(CommandRoute commandRoute);
+        Task<ParsedCommand> ParseAsync(CommandRoute commandRoute);
     }
 }
