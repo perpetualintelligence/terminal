@@ -79,12 +79,6 @@ namespace PerpetualIntelligence.Terminal.Commands
         public string Id => Descriptor.Id;
 
         /// <summary>
-        /// The option custom properties.
-        /// </summary>
-        [JsonIgnore]
-        public Dictionary<string, object>? CustomProperties => Descriptor.CustomProperties;
-
-        /// <summary>
         /// The option value.
         /// </summary>
         [JsonPropertyName("value")]

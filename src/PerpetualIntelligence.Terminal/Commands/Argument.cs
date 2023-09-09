@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Commands
     /// </para>
     /// </remarks>
     /// <seealso cref="Command"/>
-    public sealed class Argument : IEquatable<Argument?>
+    public sealed class Argument : IEquatable<Argument?>, IKeyAsId
     {
         /// <summary>
         /// Initialize a new instance..

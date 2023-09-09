@@ -46,8 +46,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             foreach (var optDescriptor in optionDescriptors)
             {
                 // Optimize (not all options are required)
-                bool containsArg = context.HandlerContext.ExtractedCommand.Command.TryGetOption(optDescriptor.Id, out Option? arg);
-                if (!containsArg)
+                bool containsOpt = context.HandlerContext.ExtractedCommand.Command.TryGetOption(optDescriptor.Id, out Option? opt);
+                if (!containsOpt)
                 {
                     // Required option is missing
                     if (optDescriptor.Flags.HasFlag(OptionFlags.Required))
@@ -70,7 +70,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     }
 
                     // Check arg value
-                    await optionChecker.CheckAsync(new OptionCheckerContext(optDescriptor, arg!));
+                    await optionChecker.CheckAsync(new OptionCheckerContext(opt!));
                 }
             }
 

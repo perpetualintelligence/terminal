@@ -15,16 +15,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
     public class ExtractorResultTests
     {
         [TestMethod]
-        public void ArgumentExtractorResultNullArgumentShouldThrow()
-        {
-#pragma warning disable CA1806 // Do not ignore method results
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new OptionExtractorResult(null), "Value cannot be null. (Parameter 'option')");
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning restore CA1806 // Do not ignore method results
-        }
-
-        [TestMethod]
         public void CommandExtractorResultNullCommandDescriptorShouldThrow()
         {
 #pragma warning disable CA1806 // Do not ignore method results

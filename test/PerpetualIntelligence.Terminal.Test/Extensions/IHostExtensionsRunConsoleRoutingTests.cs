@@ -121,7 +121,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
             publisher.Called.Should().BeTrue();
             publisher.MultiplePublishedMessages.Count.Should().Be(2);
-            publisher.MultiplePublishedMessages[0].Should().Be("test_error_description. arg1=test1 arg2=test2");
+            publisher.MultiplePublishedMessages[0].Should().Be("test_error_description. opt1=test1 opt2=test2");
             publisher.MultiplePublishedMessages[1].Should().Be("Received cancellation token, the routing is canceled.");
             publisher.PublishedMessage.Should().Be("Received cancellation token, the routing is canceled.");
             new string(stringWriter.ToString().Distinct().ToArray()).Should().Be("$");
@@ -351,120 +351,120 @@ namespace PerpetualIntelligence.Terminal.Extensions
             stringWriter.ToString().Should().BeNullOrWhiteSpace();
         }
 
-        private void ConfigureServicesCancelOnRoute(IServiceCollection arg2)
+        private void ConfigureServicesCancelOnRoute(IServiceCollection opt2)
         {
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource));
+            opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+            opt2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Exception publisher
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            arg2.AddSingleton<TerminalConsoleRouting>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+            opt2.AddSingleton<TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
-        private void ConfigureServicesDefault(IServiceCollection arg2)
+        private void ConfigureServicesDefault(IServiceCollection opt2)
         {
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter());
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter());
+            opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+            opt2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Exception publisher
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            arg2.AddSingleton<TerminalConsoleRouting>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+            opt2.AddSingleton<TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
-        private void ConfigureServicesDelayAndCancelOnRoute(IServiceCollection arg2)
+        private void ConfigureServicesDelayAndCancelOnRoute(IServiceCollection opt2)
         {
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(3000, tokenSource));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(3000, tokenSource));
+            opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+            opt2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Exception publisher
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            arg2.AddSingleton<TerminalConsoleRouting>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+            opt2.AddSingleton<TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
-        private void ConfigureServicesErrorExceptionAndCancelOnRoute(IServiceCollection arg2)
+        private void ConfigureServicesErrorExceptionAndCancelOnRoute(IServiceCollection opt2)
         {
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new ErrorException("test_error_code", "test_error_description. arg1={0} arg2={1}", "test1", "test2")));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new ErrorException("test_error_code", "test_error_description. opt1={0} opt2={1}", "test1", "test2")));
+            opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+            opt2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Exception publisher
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            arg2.AddSingleton<TerminalConsoleRouting>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+            opt2.AddSingleton<TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
-        private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection arg2)
+        private void ConfigureServicesExceptionAndCancelOnRoute(IServiceCollection opt2)
         {
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
             // Adding space at the end so that any msg are correctly appended.
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation.")));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new InvalidOperationException("Test invalid operation.")));
+            opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+            opt2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Exception publisher
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            arg2.AddSingleton<TerminalConsoleRouting>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+            opt2.AddSingleton<TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
-        private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection arg2)
+        private void ConfigureServicesExplicitErrorAndCancelOnRoute(IServiceCollection opt2)
         {
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
             // Adding space at the end so that any msg are correctly appended.
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, new Shared.Infrastructure.Error("explicit_error", "explicit_error_description param1={0} param2={1}.", "test_param1", "test_param2")));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, null, new Shared.Infrastructure.Error("explicit_error", "explicit_error_description param1={0} param2={1}.", "test_param1", "test_param2")));
+            opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,
-            arg2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
+            opt2.AddSingleton<ILoggerFactory>(new MockLoggerFactory() { StringWriter = stringWriter });
 
             // Add Exception publisher
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            arg2.AddSingleton<TerminalConsoleRouting>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+            opt2.AddSingleton<TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private static TerminalOptions GetCliOptions(IHost host)

@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 
             if (ThrowError)
             {
-                throw new ErrorException("test_error", "test description. arg1={0} arg2={1}", "val1", "val2");
+                throw new ErrorException("test_error", "test description. opt1={0} opt2={1}", "val1", "val2");
             }
 
             return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense, MockLicenses.TestLicense.Handler));

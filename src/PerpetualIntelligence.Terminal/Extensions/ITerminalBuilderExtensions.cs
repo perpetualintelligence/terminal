@@ -157,7 +157,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ICommandExtractor"/> and <see cref="IOptionExtractor"/> to the service collection.
+        /// Adds the <see cref="ICommandExtractor"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
@@ -293,9 +293,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Optional
             IEnumerable<OptionDescriptorAttribute> optAttrs = declarativeTarget.GetCustomAttributes<OptionDescriptorAttribute>(false);
+            IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<ArgumentDescriptorAttribute>(false);
             IEnumerable<OptionValidationAttribute> optVdls = declarativeTarget.GetCustomAttributes<OptionValidationAttribute>(false);
             IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeTarget.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
-            IEnumerable<OptionCustomPropertyAttribute> argPropAttrs = declarativeTarget.GetCustomAttributes<OptionCustomPropertyAttribute>(false);
+
+            // Arguments Descriptors
+            foreach (ArgumentDescriptorAttribute argAttr in argAttrs)
+            {
+                commandBuilder.DefineArgument(argAttr.Order, argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Flags);
+            }
 
             // Options Descriptors
             foreach (OptionDescriptorAttribute optAttr in optAttrs)
@@ -312,21 +318,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
                         if (e.OptionId.Equals(optAttr.Id))
                         {
                             optBuilder.ValidationAttribute(e.ValidationAttribute, e.ValidationArgs);
-                        }
-                        return true;
-                    });
-                }
-
-                // Option custom properties
-                Dictionary<string, object>? argCustomProps = null;
-                if (argPropAttrs.Any())
-                {
-                    argCustomProps = new Dictionary<string, object>();
-                    argPropAttrs.All(e =>
-                    {
-                        if (e.ArgId.Equals(optAttr.Id))
-                        {
-                            optBuilder.CustomProperty(e.Key, e.Value);
                         }
                         return true;
                     });

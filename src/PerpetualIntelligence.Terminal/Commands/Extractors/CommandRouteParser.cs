@@ -234,14 +234,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support specified arguments. command={0} arguments={1}", commandDescriptor.Id, values.JoinBySpace());
             }
 
-            Arguments arguments = new(textHandler);
+            List<Argument> arguments = new();
             for (int idx = 0; idx < values.Count; ++idx)
             {
                 Argument argument = new(commandDescriptor.ArgumentDescriptors[idx], values[idx]);
                 arguments.Add(argument);
             }
-
-            return arguments;
+            return new Arguments(textHandler, arguments);
         }
 
         private bool IsOption(string value)

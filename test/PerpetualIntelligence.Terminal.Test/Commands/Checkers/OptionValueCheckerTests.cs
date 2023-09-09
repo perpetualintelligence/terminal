@@ -29,23 +29,23 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         public async Task MapperFailureShouldErrorAsync()
         {
             // Any failure, we just want to test that mapper failure is correctly returned
-            OptionDescriptor identity = new("arg1", nameof(Int32), "desc1", OptionFlags.None);
+            OptionDescriptor identity = new("opt1", nameof(Int32), "desc1", OptionFlags.None);
             Option value = new(identity, 23.69);
 
-            OptionCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=arg1 data_type=2147483647");
+            OptionCheckerContext context = new(value);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=2147483647");
         }
 
         [TestMethod]
         public async Task NullOptionValueShouldErrorAsync()
         {
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None);
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Option value = new(identity, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            OptionCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value cannot be null. option=arg1");
+            OptionCheckerContext context = new(value);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value cannot be null. option=opt1");
         }
 
         [TestMethod]
@@ -54,10 +54,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Checker.StrictOptionValueType = true;
 
             // Value is double, but we can convert it so this should not error.
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None);
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, 23.69);
 
-            OptionCheckerContext context = new(identity, value);
+            OptionCheckerContext context = new(value);
             await checker.CheckAsync(context);
 
             // Check converted
@@ -71,10 +71,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Checker.StrictOptionValueType = false;
 
             // Value is double, strict checking is disabled so we will not convert it
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None);
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, 23.69);
 
-            OptionCheckerContext context = new(identity, value);
+            OptionCheckerContext context = new(value);
             await checker.CheckAsync(context);
 
             // Check not converted
@@ -87,10 +87,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Checker.StrictOptionValueType = false;
 
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
             Option value = new(identity, "test3");
 
-            OptionCheckerContext context = new(identity, value);
+            OptionCheckerContext context = new(value);
             await checker.CheckAsync(context);
         }
 
@@ -99,10 +99,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Checker.StrictOptionValueType = false;
 
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
             Option value = new(identity, "invalid_4242424242424242");
 
-            OptionCheckerContext context = new(identity, value);
+            OptionCheckerContext context = new(value);
             await checker.CheckAsync(context);
         }
 
@@ -111,11 +111,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Checker.StrictOptionValueType = true;
 
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
             Option value = new(identity, "test3");
 
-            OptionCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=arg1 value=test3 info=The field value must be one of the valid values.");
+            OptionCheckerContext context = new(value);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -123,37 +123,32 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Checker.StrictOptionValueType = true;
 
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new CreditCardAttribute()) } };
             Option value = new(identity, "invalid_4242424242424242");
 
-            OptionCheckerContext context = new(identity, value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=arg1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
+            OptionCheckerContext context = new(value);
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]
         public async Task SupportedValueShouldNotErrorAsync()
         {
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("test1", "test2")) } };
             Option value = new(identity, "test2");
 
-            OptionCheckerContext context = new(identity, value);
+            OptionCheckerContext context = new(value);
             await checker.CheckAsync(context);
         }
 
         [TestMethod]
         public async Task SystemTypeMatchAndDataValidationSuccessShouldNotErrorAsync()
         {
-            OptionDescriptor identity = new("arg1", nameof(String), "desc1", OptionFlags.None);
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, "4242424242424242");
 
-            OptionCheckerContext context = new(identity, value);
+            OptionCheckerContext context = new(value);
             var result = await checker.CheckAsync(context);
             Assert.AreEqual(typeof(string), result.MappedType);
-        }
-
-        [TestMethod]
-        public void ValidationAttributeCheckFailShouldError()
-        {
         }
 
         protected override void OnTestInitialize()

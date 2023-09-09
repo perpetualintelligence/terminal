@@ -17,16 +17,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
     [CommandCustomProperty("key1", "value1")]
     [CommandCustomProperty("key2", "value2")]
     [CommandCustomProperty("key3", "value3")]
-    [OptionDescriptor("arg1", nameof(String), "test arg desc1", OptionFlags.None)]
-    [OptionCustomProperty("arg1", "key1", "value1")]
-    [OptionCustomProperty("arg1", "key2", "value2")]
-    [OptionCustomProperty("arg1", "key3", "value3")]
-    [OptionDescriptor("arg2", nameof(String), "test arg desc2", OptionFlags.None)]
-    [OptionValidation("arg2", typeof(RequiredAttribute))]
-    [OptionCustomProperty("arg2", "key1", "value1")]
-    [OptionCustomProperty("arg2", "key2", "value2")]
+    [OptionDescriptor("opt1", nameof(String), "test arg desc1", OptionFlags.None)]
+    [OptionDescriptor("opt2", nameof(String), "test arg desc2", OptionFlags.None)]
+    [OptionValidation("opt2", typeof(RequiredAttribute))]
     [OptionDescriptor("ar3", nameof(String), "test arg desc3", OptionFlags.None)]
-    [OptionValidation("arg3", typeof(RangeAttribute), 25, 40)]
+    [OptionValidation("opt3", typeof(RangeAttribute), 25, 40)]
     public class MockDeclarativeTargetNoCommandDescriptor : IDeclarativeTarget
     {
     }

@@ -6,20 +6,27 @@
 */
 
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using System.Collections.ObjectModel;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// The ordered <see cref="Argument"/> keyed collection.
+    /// The readonly <see cref="Argument"/> keyed collection.
     /// </summary>
-    public sealed class Arguments : KeyedCollection<string, Argument>
+    public sealed class Arguments : IReadOnlyCollection<Argument>
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public Arguments(ITextHandler textHandler) : base(textHandler.EqualityComparer())
+        public Arguments(ITextHandler textHandler, IEnumerable<Argument> arguments)
         {
+            inner = new KeyAsIdCollection<Argument>(textHandler);
+            foreach (var argument in arguments)
+            {
+                inner.Add(argument);
+            }
+
             TextHandler = textHandler;
         }
 
@@ -29,22 +36,50 @@ namespace PerpetualIntelligence.Terminal.Commands
         public ITextHandler TextHandler { get; }
 
         /// <summary>
-        /// Gets the option value by its id.
+        /// The argument count.
         /// </summary>
-        /// <param name="argId">The option identifier or the alias.</param>
-        public TValue GetValue<TValue>(string argId)
+        public int Count => inner.Count;
+
+        /// <summary>
+        /// Gets the argument by its id.
+        /// </summary>
+        /// <param name="id">The argument identifier.</param>
+        /// <returns></returns>
+
+        public Argument this[string id]
         {
-            return (TValue)this[argId].Value;
+            get
+            {
+                return inner[id];
+            }
         }
 
         /// <summary>
-        /// Returns the key from the specified <see cref="Argument"/>.
+        /// Gets the argument by its index.
         /// </summary>
-        /// <param name="item">The <see cref="Option"/> instance.</param>
-        /// <returns>The key.</returns>
-        protected override string GetKeyForItem(Argument item)
+        /// <param name="index">The argument index.</param>
+        /// <returns></returns>
+
+        public Argument this[int index]
         {
-            return item.Id;
+            get
+            {
+                return inner[index];
+            }
         }
+
+        /// <inheritdoc/>
+        public IEnumerator<Argument> GetEnumerator()
+        {
+            return inner.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return inner.GetEnumerator();
+        }
+
+        private KeyAsIdCollection<Argument> inner;
     }
 }

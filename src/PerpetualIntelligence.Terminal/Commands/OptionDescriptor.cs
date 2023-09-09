@@ -56,11 +56,6 @@ namespace PerpetualIntelligence.Terminal.Commands
         public string? Alias { get; }
 
         /// <summary>
-        /// The custom properties.
-        /// </summary>
-        public Dictionary<string, object>? CustomProperties { get; set; }
-
-        /// <summary>
         /// The option data type.
         /// </summary>
         public string DataType { get; }

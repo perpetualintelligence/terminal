@@ -63,9 +63,9 @@ namespace PerpetualIntelligence.Terminal.Hosting
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
         }
 
-        private void ConfigureServicesDelegate(IServiceCollection arg2)
+        private void ConfigureServicesDelegate(IServiceCollection opt2)
         {
-            serviceCollection = arg2;
+            serviceCollection = opt2;
         }
 
         private readonly IHost host = null!;

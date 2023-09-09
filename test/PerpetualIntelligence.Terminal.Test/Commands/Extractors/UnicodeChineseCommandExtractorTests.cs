@@ -112,10 +112,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             options = MockTerminalOptions.NewAliasOptions();
             textHandler = new UnicodeTextHandler();
-            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             commandStore = new InMemoryCommandStore(MockCommands.UnicodeCommands);
             routeParser = new MockCommandRouteParser();
-            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             extractor = new CommandExtractor(routeParser);
         }
 
@@ -127,7 +125,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private OptionExtractor optionExtractor = null!;
         private ICommandRouteParser routeParser = null!;
         private ICommandStoreHandler commandStore = null!;
         private CommandExtractor extractor = null!;

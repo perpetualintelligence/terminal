@@ -55,12 +55,12 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddArgumentCheckerShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddOptionChecker<MockArgumentMapper, MockArgumentChecker>();
+            terminalBuilder.AddOptionChecker<MockOptionMapper, MockOptionChecker>();
 
             var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionChecker)));
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
-            Assert.AreEqual(typeof(MockArgumentChecker), arg.ImplementationType);
+            Assert.AreEqual(typeof(MockOptionChecker), arg.ImplementationType);
         }
 
         [TestMethod]

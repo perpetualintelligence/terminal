@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -22,15 +23,15 @@ using System.Linq;
 namespace PerpetualIntelligence.Terminal.Hosting
 {
     /// <summary>
-    /// The default <see cref="IOptionBuilder"/>.
+    /// The default <see cref="IArgumentBuilder"/>.
     /// </summary>
-    public sealed class OptionBuilder : IOptionBuilder
+    public sealed class ArgumentBuilder : IArgumentBuilder
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="commandBuilder">The <see cref="ICommandBuilder"/>.</param>
-        public OptionBuilder(ICommandBuilder commandBuilder)
+        public ArgumentBuilder(ICommandBuilder commandBuilder)
         {
             this.commandBuilder = commandBuilder;
             Services = new ServiceCollection();
@@ -42,22 +43,17 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public IServiceCollection Services { get; }
 
         /// <summary>
-        /// Builds an <see cref="OptionDescriptor"/> and adds it to the service collection.
+        /// Builds an <see cref="ArgumentBuilder"/> and adds it to the service collection.
         /// </summary>
         /// <returns></returns>
         public ICommandBuilder Add()
         {
             ServiceProvider lsp = Services.BuildServiceProvider();
-            OptionDescriptor? optionDescriptor = lsp.GetService<OptionDescriptor>() ?? throw new ErrorException(TerminalErrors.MissingOption, "The option builder is missing an option descriptor.");
+            ArgumentDescriptor? argumentDescriptor = lsp.GetService<ArgumentDescriptor>() ?? throw new ErrorException(TerminalErrors.MissingArgument, "The argument builder is missing an argument descriptor.");
 
-            // Validation Attribute
-            IEnumerable<ValidationAttribute> attributes = lsp.GetServices<ValidationAttribute>();
-            if (attributes.Any())
-            {
-                optionDescriptor.ValueCheckers = attributes.Select(e => new DataValidationOptionValueChecker(e));
-            }
+            commandBuilder.Services.AddSingleton(argumentDescriptor);
 
-            commandBuilder.Services.AddSingleton(optionDescriptor);
+            // Does nothing for now.
             return commandBuilder;
         }
 

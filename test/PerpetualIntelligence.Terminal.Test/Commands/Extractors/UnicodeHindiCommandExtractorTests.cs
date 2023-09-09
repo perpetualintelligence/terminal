@@ -20,7 +20,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     public class UnicodeHindiCommandExtractorTests
     {
-        private OptionExtractor optionExtractor;
         private ICommandRouteParser routeParser;
         private ICommandStoreHandler commandStore;
         private CommandExtractor extractor;
@@ -31,10 +30,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             options = MockTerminalOptions.NewAliasOptions();
             textHandler = new UnicodeTextHandler();
-            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             routeParser = new MockCommandRouteParser();
             commandStore = new InMemoryCommandStore(MockCommands.UnicodeCommands);
-            optionExtractor = new OptionExtractor(textHandler, options, TestLogger.Create<OptionExtractor>());
             extractor = new CommandExtractor(routeParser);
         }
 

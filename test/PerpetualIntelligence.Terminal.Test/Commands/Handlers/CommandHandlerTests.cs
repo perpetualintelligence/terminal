@@ -522,39 +522,39 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
         }
 
-        private void ConfigureCheckerOnly(IServiceCollection arg2)
+        private void ConfigureCheckerOnly(IServiceCollection opt2)
         {
-            arg2.AddTransient<MockCommandCheckerInner>();
+            opt2.AddTransient<MockCommandCheckerInner>();
         }
 
-        private void ConfigureServices(IServiceCollection arg2)
+        private void ConfigureServices(IServiceCollection opt2)
         {
-            arg2.AddSingleton<MockCommandCheckerInner>();
-            arg2.AddSingleton<MockErrorCommandCheckerInner>();
+            opt2.AddSingleton<MockCommandCheckerInner>();
+            opt2.AddSingleton<MockErrorCommandCheckerInner>();
 
-            arg2.AddSingleton<MockCommandRunnerInner>();
-            arg2.AddSingleton<MockErrorCommandRunnerInner>();
-            arg2.AddSingleton<MockGenericCommandRunnerInner>();
+            opt2.AddSingleton<MockCommandRunnerInner>();
+            opt2.AddSingleton<MockErrorCommandRunnerInner>();
+            opt2.AddSingleton<MockGenericCommandRunnerInner>();
 
-            arg2.AddSingleton<MockNotCheckerOrRunner>();
+            opt2.AddSingleton<MockNotCheckerOrRunner>();
 
-            arg2.AddSingleton<IHelpProvider, MockHelpProvider>();
+            opt2.AddSingleton<IHelpProvider, MockHelpProvider>();
         }
 
-        private void ConfigureServicesWithEventHandler(IServiceCollection arg2)
+        private void ConfigureServicesWithEventHandler(IServiceCollection opt2)
         {
-            arg2.AddSingleton<MockCommandCheckerInner>();
-            arg2.AddSingleton<MockErrorCommandCheckerInner>();
+            opt2.AddSingleton<MockCommandCheckerInner>();
+            opt2.AddSingleton<MockErrorCommandCheckerInner>();
 
-            arg2.AddSingleton<MockCommandRunnerInner>();
-            arg2.AddSingleton<MockErrorCommandRunnerInner>();
-            arg2.AddSingleton<MockGenericCommandRunnerInner>();
+            opt2.AddSingleton<MockCommandRunnerInner>();
+            opt2.AddSingleton<MockErrorCommandRunnerInner>();
+            opt2.AddSingleton<MockGenericCommandRunnerInner>();
 
-            arg2.AddSingleton<MockNotCheckerOrRunner>();
+            opt2.AddSingleton<MockNotCheckerOrRunner>();
 
-            arg2.AddSingleton<IAsyncEventHandler, MockAsyncEventHandler>();
+            opt2.AddSingleton<IAsyncEventHandler, MockAsyncEventHandler>();
 
-            arg2.AddSingleton<IHelpProvider, MockHelpProvider>();
+            opt2.AddSingleton<IHelpProvider, MockHelpProvider>();
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;

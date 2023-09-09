@@ -55,14 +55,32 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="id">The option id.</param>
         /// <param name="dataType">The option data type.</param>
         /// <param name="description">The option description.</param>
-        /// <param name="optionFlags">The option flags.</param>
+        /// <param name="flags">The option flags.</param>
         /// <param name="alias">The option alias.</param>
         /// <returns>The configured <see cref="IOptionBuilder"/>.</returns>
-        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, string dataType, string description, OptionFlags optionFlags, string? alias = null)
+        public static IOptionBuilder DefineOption(this ICommandBuilder builder, string id, string dataType, string description, OptionFlags flags, string? alias = null)
         {
-            OptionDescriptor option = new(id, dataType, description, optionFlags, alias);
+            OptionDescriptor option = new(id, dataType, description, flags, alias);
             OptionBuilder argumentBuilder = new(builder);
             argumentBuilder.Services.AddSingleton(option);
+            return argumentBuilder;
+        }
+
+        /// <summary>
+        /// Starts a new <see cref="IArgumentBuilder"/> definition.
+        /// </summary>
+        /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
+        /// <param name="order">The argument order.</param>
+        /// <param name="id">The argument id.</param>
+        /// <param name="dataType">The argument data type.</param>
+        /// <param name="description">The argument description.</param>
+        /// <param name="flags">The argument flags.</param>
+        /// <returns>The configured <see cref="IArgumentBuilder"/>.</returns>
+        public static IArgumentBuilder DefineArgument(this ICommandBuilder builder, int order, string id, string dataType, string description, ArgumentFlags flags)
+        {
+            ArgumentDescriptor argument = new(order, id, dataType, description, flags);
+            ArgumentBuilder argumentBuilder = new(builder);
+            argumentBuilder.Services.AddSingleton(argument);
             return argumentBuilder;
         }
 

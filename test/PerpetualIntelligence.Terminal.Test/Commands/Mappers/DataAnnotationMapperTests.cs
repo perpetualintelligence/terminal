@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         [DataRow(DataType.Custom, typeof(double), null, nameof(Double))]
         public async Task MapperShouldReturnCorrectMappingAsync(string dataType, Type systemType, Type validationAttribute, string? customDataType)
         {
-            Option option = new(new OptionDescriptor("arg1", dataType, "desc", OptionFlags.None), "val1");
+            Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
             var result = await mapper.MapAsync(new OptionDataTypeMapperContext(option));
             Assert.AreEqual(systemType, result.MappedType);
         }
@@ -67,20 +67,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         [TestMethod]
         public async Task NullOrWhitespaceCustomDataTypeShouldErrorAsync()
         {
-            Option test = new Option(new OptionDescriptor("arg1", "  ", "desc", OptionFlags.None), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test)), TerminalErrors.InvalidOption, "The option custom data type is null or whitespace. option=arg1");
+            Option test = new Option(new OptionDescriptor("opt1", "  ", "desc", OptionFlags.None), "val1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test)), TerminalErrors.InvalidOption, "The option custom data type is null or whitespace. option=opt1");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Option test2 = new Option(new OptionDescriptor("arg2", dataType: null, "desc", OptionFlags.None), "val2");
+            Option test2 = new Option(new OptionDescriptor("opt2", dataType: null, "desc", OptionFlags.None), "val2");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test2)), TerminalErrors.InvalidOption, "The option custom data type is null or whitespace. option=arg2");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test2)), TerminalErrors.InvalidOption, "The option custom data type is null or whitespace. option=opt2");
         }
 
         [TestMethod]
         public async Task UnsupportedDataTypeShouldErrorAsync()
         {
-            var option = new Option(new OptionDescriptor("arg1", "unsupported", "desc", OptionFlags.None), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(option)), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=arg1 data_type=2147483647");
+            var option = new Option(new OptionDescriptor("opt1", "unsupported", "desc", OptionFlags.None), "val1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(option)), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=2147483647");
         }
 
         protected override void OnTestInitialize()

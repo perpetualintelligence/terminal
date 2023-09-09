@@ -579,7 +579,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Check the published error
             MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
             exPublisher.Called.Should().BeTrue();
-            exPublisher.PublishedMessage.Should().Be("test_error_description. arg1=test1 arg2=test2");
+            exPublisher.PublishedMessage.Should().Be("test_error_description. opt1=test1 opt2=test2");
 
             tokenSource.Cancel();
             Task.WaitAll(routingTask, clientTask);
@@ -668,32 +668,32 @@ namespace PerpetualIntelligence.Terminal.Extensions
             return host.Services.GetRequiredService<TerminalOptions>();
         }
 
-        private void ConfigureServicesDefault(IServiceCollection arg2)
+        private void ConfigureServicesDefault(IServiceCollection opt2)
         {
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
 
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter());
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter());
+            opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            arg2.AddSingleton<TerminalTcpRouting>();
-            arg2.AddSingleton<ITextHandler, UnicodeTextHandler>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<TerminalTcpRouting>();
+            opt2.AddSingleton<ITextHandler, UnicodeTextHandler>();
+            opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
-        private void ConfigureServicesErrorExceptionOnRoute(IServiceCollection arg2)
+        private void ConfigureServicesErrorExceptionOnRoute(IServiceCollection opt2)
         {
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
 
-            arg2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, null, new ErrorException("test_error_code", "test_error_description. arg1={0} arg2={1}", "test1", "test2")));
-            arg2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, null, new ErrorException("test_error_code", "test_error_description. opt1={0} opt2={1}", "test1", "test2")));
+            opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
-            arg2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            arg2.AddSingleton<TerminalTcpRouting>();
-            arg2.AddSingleton<ITextHandler, UnicodeTextHandler>();
-            arg2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<TerminalTcpRouting>();
+            opt2.AddSingleton<ITextHandler, UnicodeTextHandler>();
+            opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private IHost host = null!;

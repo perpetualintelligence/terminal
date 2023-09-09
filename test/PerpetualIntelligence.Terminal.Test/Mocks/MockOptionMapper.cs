@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    public class MockArgumentMapper : IOptionDataTypeMapper
+    public class MockOptionMapper : IOptionDataTypeMapper
     {
         public bool Called { get; set; }
 

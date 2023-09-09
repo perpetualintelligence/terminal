@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -8,11 +8,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PerpetualIntelligence.Shared.Attributes.Validation;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Terminal.Hosting;
-using PerpetualIntelligence.Shared.Attributes.Validation;
-using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -43,23 +43,23 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             CommandDescriptor cmd = cmdDescs.First();
             cmd.OptionDescriptors.Should().NotBeNull();
 
-            OptionDescriptor arg1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg1"));
-            arg1.ValueCheckers.Should().BeNull();
+            OptionDescriptor opt1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt1"));
+            opt1.ValueCheckers.Should().BeNull();
 
-            OptionDescriptor arg2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg2"));
-            arg2.ValueCheckers.Should().NotBeNull();
-            arg2.ValueCheckers!.Count().Should().Be(2);
-            DataValidationOptionValueChecker val2Checker1 = (DataValidationOptionValueChecker)arg2.ValueCheckers!.First();
+            OptionDescriptor opt2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt2"));
+            opt2.ValueCheckers.Should().NotBeNull();
+            opt2.ValueCheckers!.Count().Should().Be(2);
+            DataValidationOptionValueChecker val2Checker1 = (DataValidationOptionValueChecker)opt2.ValueCheckers!.First();
             val2Checker1.ValidationAttribute.Should().BeOfType<RequiredAttribute>();
-            DataValidationOptionValueChecker val2Checker2 = (DataValidationOptionValueChecker)arg2.ValueCheckers!.Last();
+            DataValidationOptionValueChecker val2Checker2 = (DataValidationOptionValueChecker)opt2.ValueCheckers!.Last();
             val2Checker2.ValidationAttribute.Should().BeOfType<OneOfAttribute>();
-            OneOfAttribute val2OneOf = (OneOfAttribute)(val2Checker2.ValidationAttribute);
+            OneOfAttribute val2OneOf = (OneOfAttribute)val2Checker2.ValidationAttribute;
             val2OneOf.AllowedValues.Should().BeEquivalentTo(new string[] { "test1", "test2", "test3" });
 
-            OptionDescriptor arg3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg3"));
-            arg3.ValueCheckers.Should().NotBeNull();
-            arg3.ValueCheckers!.Count().Should().Be(1);
-            DataValidationOptionValueChecker val1Checker3 = (DataValidationOptionValueChecker)arg3.ValueCheckers!.First();
+            OptionDescriptor opt3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt3"));
+            opt3.ValueCheckers.Should().NotBeNull();
+            opt3.ValueCheckers!.Count().Should().Be(1);
+            DataValidationOptionValueChecker val1Checker3 = (DataValidationOptionValueChecker)opt3.ValueCheckers!.First();
             val1Checker3.ValidationAttribute.Should().BeOfType<RangeAttribute>();
             RangeAttribute val1Range = (RangeAttribute)(val1Checker3.ValidationAttribute);
             val1Range.Minimum.Should().Be(25.34);
@@ -113,63 +113,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             CommandDescriptor cmd = cmdDescs.First();
             cmd.OptionDescriptors.Should().NotBeNull();
 
-            OptionDescriptor arg1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg1"));
-            arg1.ValueCheckers.Should().BeNull();
+            OptionDescriptor opt1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt1"));
+            opt1.ValueCheckers.Should().BeNull();
 
-            OptionDescriptor arg2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg2"));
-            arg2.ValueCheckers.Should().BeNull();
+            OptionDescriptor opt2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt2"));
+            opt2.ValueCheckers.Should().BeNull();
 
-            OptionDescriptor arg3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg3"));
-            arg3.ValueCheckers.Should().BeNull();
-        }
-
-        [Fact]
-        public void Build_Should_Read_ArgumentCustomProperties_Correctly()
-        {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
-            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
-            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
-            cmdDescs.Should().HaveCount(1);
-
-            CommandDescriptor cmd = cmdDescs.First();
-            cmd.OptionDescriptors.Should().NotBeNull();
-
-            OptionDescriptor arg1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg1"));
-            arg1.CustomProperties.Should().NotBeNull();
-            arg1.CustomProperties!.Count.Should().Be(3);
-            arg1.CustomProperties["a1Key1"].Should().Be("a1Value1");
-            arg1.CustomProperties["a1Key2"].Should().Be("a1Value2");
-            arg1.CustomProperties["a1Key3"].Should().Be("a1Value3");
-
-            OptionDescriptor arg2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg2"));
-            arg2.CustomProperties.Should().NotBeNull();
-            arg2.CustomProperties!.Count.Should().Be(2);
-            arg2.CustomProperties["a2Key1"].Should().Be("a2Value1");
-            arg2.CustomProperties["a2Key2"].Should().Be("a2Value2");
-
-            OptionDescriptor arg3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg3"));
-            arg3.CustomProperties.Should().BeNull();
-        }
-
-        [Fact]
-        public void Build_Should_Read_NoArgumentCustomProperties_Correctly()
-        {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
-            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
-            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
-            cmdDescs.Should().HaveCount(1);
-
-            CommandDescriptor cmd = cmdDescs.First();
-            cmd.OptionDescriptors.Should().NotBeNull();
-
-            OptionDescriptor arg1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg1"));
-            arg1.CustomProperties.Should().BeNull();
-
-            OptionDescriptor arg2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg2"));
-            arg2.CustomProperties.Should().BeNull();
-
-            OptionDescriptor arg3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("arg3"));
-            arg3.CustomProperties.Should().BeNull();
+            OptionDescriptor opt3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt3"));
+            opt3.ValueCheckers.Should().BeNull();
         }
 
         [Fact]
@@ -182,41 +133,34 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
 
             cmdDescs.First().OptionDescriptors.Should().HaveCount(3);
 
-            var argDescs = cmdDescs.First().OptionDescriptors!.ToArray();
-            argDescs[0].Id.Should().Be("arg1");
-            argDescs[0].DataType.Should().Be(nameof(String));
-            argDescs[0].Description.Should().Be("test arg desc1");
-            argDescs[0].DataType.Should().BeNull();
-            argDescs[0].Flags.Should().Be(OptionFlags.None);
-            argDescs[0].Alias.Should().BeNull();
-            argDescs[0].CustomProperties.Should().NotBeNull();
-            argDescs[0].CustomProperties!.Keys.Should().Equal(new string[] { "a1Key1", "a1Key2", "a1Key3" });
-            argDescs[0].CustomProperties!.Values.Should().Equal(new string[] { "a1Value1", "a1Value2", "a1Value3" });
-            argDescs[0].ValueCheckers.Should().BeNull();
+            var optDescs = cmdDescs.First().OptionDescriptors!.ToArray();
+            optDescs[0].Id.Should().Be("opt1");
+            optDescs[0].DataType.Should().Be(nameof(String));
+            optDescs[0].Description.Should().Be("test arg desc1");
+            optDescs[0].DataType.Should().BeNull();
+            optDescs[0].Flags.Should().Be(OptionFlags.None);
+            optDescs[0].Alias.Should().BeNull();
+            optDescs[0].ValueCheckers.Should().BeNull();
 
-            argDescs[1].Id.Should().Be("arg2");
-            argDescs[1].DataType.Should().Be(nameof(String));
-            argDescs[1].Description.Should().Be("test arg desc2");
-            argDescs[1].DataType.Should().BeNull();
-            argDescs[1].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
-            argDescs[1].Alias.Should().Be("arg2_alias");
-            argDescs[1].CustomProperties.Should().NotBeNull();
-            argDescs[1].CustomProperties!.Keys.Should().Equal(new string[] { "a2Key1", "a2Key2" });
-            argDescs[1].CustomProperties!.Values.Should().Equal(new string[] { "a2Value1", "a2Value2" });
-            argDescs[1].ValueCheckers.Should().NotBeNull();
-            argDescs[1].ValueCheckers.Should().HaveCount(2);
-            argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
-            argDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+            optDescs[1].Id.Should().Be("opt2");
+            optDescs[1].DataType.Should().Be(nameof(String));
+            optDescs[1].Description.Should().Be("test arg desc2");
+            optDescs[1].DataType.Should().BeNull();
+            optDescs[1].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
+            optDescs[1].Alias.Should().Be("opt2_alias");
+            optDescs[1].ValueCheckers.Should().NotBeNull();
+            optDescs[1].ValueCheckers.Should().HaveCount(2);
+            optDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
+            optDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
 
-            argDescs[2].Id.Should().Be("arg3");
-            argDescs[2].Description.Should().Be("test arg desc3");
-            argDescs[2].DataType.Should().Be(nameof(Double));
-            argDescs[2].Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
-            argDescs[2].Alias.Should().BeNull();
-            argDescs[2].CustomProperties.Should().BeNull();
-            argDescs[2].ValueCheckers.Should().NotBeNull();
-            argDescs[2].ValueCheckers.Should().HaveCount(1);
-            argDescs[2].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
+            optDescs[2].Id.Should().Be("opt3");
+            optDescs[2].Description.Should().Be("test arg desc3");
+            optDescs[2].DataType.Should().Be(nameof(Double));
+            optDescs[2].Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
+            optDescs[2].Alias.Should().BeNull();
+            optDescs[2].ValueCheckers.Should().NotBeNull();
+            optDescs[2].ValueCheckers.Should().HaveCount(1);
+            optDescs[2].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
         }
 
         [Fact]
@@ -310,7 +254,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void TargetDoesNotImplements_IDeclarativeTarget()
         {
-            AssemblyName aName = new ("PiCliDeclarativeDynamicAssembly1");
+            AssemblyName aName = new("PiCliDeclarativeDynamicAssembly1");
             AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.RunAndCollect);
 
             // The module name is usually the same as the assembly name.
@@ -330,7 +274,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         [Fact]
         public void TargetImplements_IDeclarativeTarget()
         {
-            AssemblyName aName = new ("PiCliDeclarativeDynamicAssembly2");
+            AssemblyName aName = new("PiCliDeclarativeDynamicAssembly2");
             AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.RunAndCollect);
 
             // The module name is usually the same as the assembly name.
@@ -345,9 +289,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command descriptor.");
         }
 
-        private void ConfigureServicesDelegate(IServiceCollection arg2)
+        private void ConfigureServicesDelegate(IServiceCollection opt2)
         {
-            serviceCollection = arg2;
+            serviceCollection = opt2;
         }
 
         public ValueTask DisposeAsync()

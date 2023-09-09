@@ -74,9 +74,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 throw new ErrorException(TerminalErrors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Option.Id, mapperResult.MappedType, context.Option.DataType, context.Option.Value.GetType().Name, context.Option.Value);
             }
 
-            if (context.OptionDescriptor.ValueCheckers != null)
+            if (context.Option.Descriptor.ValueCheckers != null)
             {
-                foreach (IOptionValueChecker valueChecker in context.OptionDescriptor.ValueCheckers)
+                foreach (IOptionValueChecker valueChecker in context.Option.Descriptor.ValueCheckers)
                 {
                     try
                     {

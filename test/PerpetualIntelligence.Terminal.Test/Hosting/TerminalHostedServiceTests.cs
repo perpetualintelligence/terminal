@@ -251,7 +251,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             await defaultCliHostedService.StartAsync(cancellationToken);
 
             // Last is a new line
-            logger.Messages.Last().Should().Be("test_error=test description. arg1=val1 arg2=val2");
+            logger.Messages.Last().Should().Be("test_error=test description. opt1=val1 opt2=val2");
         }
 
         [Fact]
@@ -291,9 +291,9 @@ namespace PerpetualIntelligence.Terminal.Hosting
                 services.AddTerminal()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
-                       .DefineOption("id1", nameof(Int32), "test arg1", OptionFlags.None, "alias_id1").Add()
-                       .DefineOption("id2", nameof(Int32), "test arg2", OptionFlags.None, "alias_id2").Add()
-                       .DefineOption("id3", nameof(Boolean), "test arg3", OptionFlags.None).Add()
+                       .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
+                       .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
+                       .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
                    .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add();
 
@@ -331,15 +331,15 @@ namespace PerpetualIntelligence.Terminal.Hosting
             {
                 services.AddTerminal()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
-                        .DefineOption("id1", nameof(Int32), "test arg1", OptionFlags.None, "alias_id1").Add()
+                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
                     .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
-                       .DefineOption("id1", nameof(Int32), "test arg1", OptionFlags.None, "alias_id1").Add()
-                       .DefineOption("id2", nameof(Int32), "test arg2", OptionFlags.None, "alias_id2").Add()
-                       .DefineOption("id3", nameof(Boolean), "test arg3", OptionFlags.None).Add()
+                       .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
+                       .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
+                       .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
                    .Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd3", "cmd3", "test1", CommandType.SubCommand, CommandFlags.None)
-                        .DefineOption("id1", nameof(Int32), "test arg1", OptionFlags.None, "alias_id1").Add()
+                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
                     .Add();
 
                 // Replace with Mock DIs
