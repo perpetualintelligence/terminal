@@ -33,7 +33,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void Build_Should_Read_ArgumentValidation_Correctly()
+        public void No_CommandOwner_Throws()
+        {
+            Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandOwner>();
+            act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command owner.");
+        }
+
+        [Fact]
+        public void Build_Should_Read_OptionValidation_Correctly()
         {
             terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
@@ -137,7 +144,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             optDescs[0].Id.Should().Be("opt1");
             optDescs[0].DataType.Should().Be(nameof(String));
             optDescs[0].Description.Should().Be("test arg desc1");
-            optDescs[0].DataType.Should().BeNull();
             optDescs[0].Flags.Should().Be(OptionFlags.None);
             optDescs[0].Alias.Should().BeNull();
             optDescs[0].ValueCheckers.Should().BeNull();
@@ -145,7 +151,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             optDescs[1].Id.Should().Be("opt2");
             optDescs[1].DataType.Should().Be(nameof(String));
             optDescs[1].Description.Should().Be("test arg desc2");
-            optDescs[1].DataType.Should().BeNull();
             optDescs[1].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
             optDescs[1].Alias.Should().Be("opt2_alias");
             optDescs[1].ValueCheckers.Should().NotBeNull();

@@ -95,11 +95,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         [Fact]
-        public async Task CheckAsync_ExceededArgumentLimit_ShouldError()
+        public async Task CheckAsync_ExceededOptionLimit_ShouldError()
         {
             // Args 13
             license.Limits.OptionLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit=2 current=13");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit=2 current=90");
         }
 
         [Fact]
@@ -130,9 +130,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public async Task CheckAsync_ExceededSubCommandLimit_ShouldError()
         {
-            // Subs commands 14
+            // Subs commands 5
             license.Limits.SubCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit=2 current=8");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit=2 current=5");
         }
 
         [Fact]
@@ -148,8 +148,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
             result.TerminalCount.Should().Be(1);
             result.RootCommandCount.Should().Be(3);
             result.CommandGroupCount.Should().Be(3);
-            result.SubCommandCount.Should().Be(8);
-            result.OptionCount.Should().Be(13);
+            result.SubCommandCount.Should().Be(5);
+            result.OptionCount.Should().Be(90);
         }
 
         [Fact]

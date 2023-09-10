@@ -68,7 +68,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
             option.Id.Should().Be("opt1");
             option.DataType.Should().Be(nameof(Int32));
-            option.DataType.Should().BeNull();
             option.Description.Should().Be("description1");
             option.Alias.Should().Be("arg-alias1");
             option.Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);

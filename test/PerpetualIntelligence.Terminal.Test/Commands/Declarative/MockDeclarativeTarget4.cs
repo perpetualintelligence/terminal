@@ -10,6 +10,7 @@ using System;
 
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
+    [CommandOwners("oid1, oid2")]
     [CommandDescriptor("id4", "name4", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]

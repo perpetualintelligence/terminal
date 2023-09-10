@@ -198,7 +198,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                     // For now we only care about option count.
                     if (kvpCmd.Value.OptionDescriptors != null)
                     {
-                        optionCount += 1;
+                        optionCount += kvpCmd.Value.OptionDescriptors.Count;
                     }
                 }
 
@@ -249,7 +249,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         private readonly TerminalOptions terminalOptions;
         private readonly ICommandStoreHandler commandStoreHandler;
         private readonly ILogger<LicenseChecker> logger;
-
         private long optionCount;
         private long commandGroupCount;
         private bool initialized;

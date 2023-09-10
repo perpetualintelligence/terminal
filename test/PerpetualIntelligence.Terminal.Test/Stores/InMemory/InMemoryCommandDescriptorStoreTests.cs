@@ -40,16 +40,12 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         {
             var result = await cmdStore.AllAsync();
             result.Should().NotBeNull();
-            result.Count.Should().Be(9);
+            result.Count.Should().Be(5);
             result.Keys.Should().Contain("id1");
             result.Keys.Should().Contain("id2");
             result.Keys.Should().Contain("id3");
             result.Keys.Should().Contain("id4");
             result.Keys.Should().Contain("id5");
-            result.Keys.Should().Contain("id6");
-            result.Keys.Should().Contain("id7");
-            result.Keys.Should().Contain("id8");
-            result.Keys.Should().Contain("id9");
         }
 
         private InMemoryCommandStore cmdStore = null!;

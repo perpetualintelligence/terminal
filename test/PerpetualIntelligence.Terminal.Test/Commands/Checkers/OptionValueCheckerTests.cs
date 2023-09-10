@@ -5,8 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Shared.Attributes.Validation;
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
@@ -29,11 +31,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         public async Task MapperFailureShouldErrorAsync()
         {
             // Any failure, we just want to test that mapper failure is correctly returned
-            OptionDescriptor identity = new("opt1", nameof(Int32), "desc1", OptionFlags.None);
-            Option value = new(identity, 23.69);
+            OptionDescriptor identity = new("opt1", "invalid_dt", "desc1", OptionFlags.None);
+            Option value = new(identity, "non int value");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=2147483647");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=invalid_dt");
         }
 
         [TestMethod]
@@ -83,7 +85,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task StrictTypeCheckingDisabledNotSupportedValueShouldNotErrorAsync()
+        public async Task StrictTypeCheckingDisabled_NotSupportedValue_ShouldErrorAsync()
         {
             options.Checker.StrictOptionValueType = false;
 
@@ -91,11 +93,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(value);
-            await checker.CheckAsync(context);
+            Func<Task> func = async () => await checker.CheckAsync(context);
+            await func.Should().ThrowAsync<ErrorException>().WithMessage("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
-        public async Task StrictTypeCheckingDisabledSystemTypeMatchAndDataValidationFailShouldNotErrorAsync()
+        public async Task StrictTypeCheckingDisabled_SystemTypeMatch_AndDataValidationFail_ShouldErrorAsync()
         {
             options.Checker.StrictOptionValueType = false;
 
@@ -103,11 +106,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(value);
-            await checker.CheckAsync(context);
+            Func<Task> func = async () => await checker.CheckAsync(context);
+            await func.Should().ThrowAsync<ErrorException>().WithMessage("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]
-        public async Task StrictTypeCheckingNotSupportedValueShouldErrorAsync()
+        public async Task StrictTypeChecking_NotSupportedValue_ShouldErrorAsync()
         {
             options.Checker.StrictOptionValueType = true;
 

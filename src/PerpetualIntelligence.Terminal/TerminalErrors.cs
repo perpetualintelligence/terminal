@@ -60,7 +60,7 @@ namespace PerpetualIntelligence.Terminal
         /// <summary>
         /// The argument is missing.
         /// </summary>
-        public const string MissingArgument = "missing_Argument";
+        public const string MissingArgument = "missing_argument";
 
         /// <summary>
         /// The claim is missing.

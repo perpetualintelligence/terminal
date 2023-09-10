@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
+    [CommandOwners("oid1, oid2")]
     [CommandDescriptor("id3", "name3", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]
