@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
                 throw new ErrorException(TerminalErrors.InvalidConfiguration, "The help provider is missing in the configured services.");
             }
 
-            return helpProvider.ProvideAsync(new HelpProviderContext(context.HandlerContext.ExtractedCommand.Command));
+            return helpProvider.ProvideAsync(new HelpProviderContext(context.HandlerContext.ParsedCommand.Command));
         }
 
         /// <inheritdoc/>

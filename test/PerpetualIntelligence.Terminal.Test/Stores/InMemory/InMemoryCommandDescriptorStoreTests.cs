@@ -6,8 +6,8 @@
 */
 
 using FluentAssertions;
+using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Mocks;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,18 +21,20 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         }
 
         [Fact]
-        public async Task FindByIdShouldErrorIfNotFoundAsync()
+        public async Task FindByIdShouldNotErrorIfNotFoundAsync()
         {
-            Func<Task> act = async () => await cmdStore.FindByIdAsync("invalid_id");
-            await act.Should().ThrowAsync<Exception>().WithMessage("The given key 'invalid_id' was not present in the dictionary.");
+            bool found = await cmdStore.TryFindByIdAsync("invalid_id", out CommandDescriptor? commandDescriptor);
+            found.Should().BeFalse();
+            commandDescriptor.Should().BeNull();
         }
 
         [Fact]
         public async Task TryFindByIdShouldNotErrorIfFoundAsync()
         {
-            var result = await cmdStore.FindByIdAsync("id1");
-            result.Should().NotBeNull();
-            result.Id.Should().Be("id1");
+            bool found = await cmdStore.TryFindByIdAsync("id1", out CommandDescriptor? commandDescriptor);
+            found.Should().BeTrue();
+            commandDescriptor.Should().NotBeNull();
+            commandDescriptor!.Id.Should().Be("id1");
         }
 
         [Fact]

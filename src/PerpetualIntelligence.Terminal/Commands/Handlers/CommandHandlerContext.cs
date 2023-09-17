@@ -21,13 +21,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// Initialize a new instance.
         /// </summary>
         /// <param name="routerContext">The command router context.</param>
-        /// <param name="extractedCommand">The extracted command handle.</param>
+        /// <param name="parsedCommand">The parsed command.</param>
         /// <param name="license">The extracted license.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public CommandHandlerContext(CommandRouterContext routerContext, ParsedCommand extractedCommand, License license)
+        public CommandHandlerContext(CommandRouterContext routerContext, ParsedCommand parsedCommand, License license)
         {
             RouterContext = routerContext ?? throw new ArgumentNullException(nameof(routerContext));
-            ExtractedCommand = extractedCommand ?? throw new ArgumentNullException(nameof(extractedCommand));
+            ParsedCommand = parsedCommand ?? throw new ArgumentNullException(nameof(parsedCommand));
             License = license ?? throw new ArgumentNullException(nameof(license));
         }
 
@@ -37,9 +37,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         public CommandRouterContext RouterContext { get; }
 
         /// <summary>
-        /// The extracted command to handle.
+        /// The parsed command to handle.
         /// </summary>
-        public ParsedCommand ExtractedCommand { get; }
+        public ParsedCommand ParsedCommand { get; }
 
         /// <summary>
         /// The extracted licenses.

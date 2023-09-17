@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Terminal
         [Fact]
         public void AssertErrorsAreValid()
         {
-            TestHelper.AssertConstantCount(typeof(TerminalErrors), 17);
+            TestHelper.AssertConstantCount(typeof(TerminalErrors), 18);
 
             TerminalErrors.ConnectionClosed.Should().Be("connection_closed");
             TerminalErrors.InvalidCommand.Should().Be("invalid_command");
@@ -31,6 +31,7 @@ namespace PerpetualIntelligence.Terminal
             TerminalErrors.MissingOption.Should().Be("missing_option");
             TerminalErrors.MissingClaim.Should().Be("missing_claim");
             TerminalErrors.MissingArgument.Should().Be("missing_argument");
+            TerminalErrors.MissingCommand.Should().Be("missing_command");
             TerminalErrors.RequestCanceled.Should().Be("request_canceled");
             TerminalErrors.InvalidLicense.Should().Be("invalid_license");
             TerminalErrors.UnauthorizedAccess.Should().Be("unauthorized_access");

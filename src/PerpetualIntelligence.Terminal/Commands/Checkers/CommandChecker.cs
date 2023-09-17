@@ -8,6 +8,7 @@
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Configuration.Options;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
@@ -35,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             // If the command itself do not support any options then there is nothing much to check. Extractor will
             // reject any unsupported attributes.
-            OptionDescriptors? optionDescriptors = context.HandlerContext.ExtractedCommand.Command.Descriptor.OptionDescriptors;
+            OptionDescriptors? optionDescriptors = context.HandlerContext.ParsedCommand.Command.Descriptor.OptionDescriptors;
             if (optionDescriptors == null)
             {
                 return new CommandCheckerResult();
@@ -43,30 +44,30 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             // Check the options against the descriptor constraints
             // TODO: process multiple errors.
-            foreach (var optDescriptor in optionDescriptors)
+            foreach (KeyValuePair<string, OptionDescriptor> optKvp in optionDescriptors)
             {
                 // Optimize (not all options are required)
-                bool containsOpt = context.HandlerContext.ExtractedCommand.Command.TryGetOption(optDescriptor.Id, out Option? opt);
+                bool containsOpt = context.HandlerContext.ParsedCommand.Command.TryGetOption(optKvp.Key, out Option? opt);
                 if (!containsOpt)
                 {
                     // Required option is missing
-                    if (optDescriptor.Flags.HasFlag(OptionFlags.Required))
+                    if (optKvp.Value.Flags.HasFlag(OptionFlags.Required))
                     {
-                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.HandlerContext.ParsedCommand.Command.Name, context.HandlerContext.ParsedCommand.Command.Id, optKvp.Key);
                     }
                 }
                 else
                 {
                     // Check obsolete
-                    if (optDescriptor.Flags.HasFlag(OptionFlags.Obsolete) && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
+                    if (optKvp.Value.Flags.HasFlag(OptionFlags.Obsolete) && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.HandlerContext.ParsedCommand.Command.Name, context.HandlerContext.ParsedCommand.Command.Id, optKvp.Key);
                     }
 
                     // Check disabled
-                    if (optDescriptor.Flags.HasFlag(OptionFlags.Disabled))
+                    if (optKvp.Value.Flags.HasFlag(OptionFlags.Disabled))
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.HandlerContext.ExtractedCommand.Command.Name, context.HandlerContext.ExtractedCommand.Command.Id, optDescriptor.Id);
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.HandlerContext.ParsedCommand.Command.Name, context.HandlerContext.ParsedCommand.Command.Id, optKvp.Key);
                     }
 
                     // Check arg value

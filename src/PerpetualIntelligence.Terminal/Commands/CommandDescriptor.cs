@@ -121,39 +121,5 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// The tags to find the command.
         /// </summary>
         public TagCollection? Tags { get; internal set; }
-
-        /// <summary>
-        /// Attempts to find an option descriptor.
-        /// </summary>
-        /// <param name="optionId">The option descriptor identifier.</param>
-        /// <param name="optionDescriptor">The option descriptor if found.</param>
-        /// <returns><c>true</c> if an option descriptor exist in the collection, otherwise <c>false</c>.</returns>
-        public bool TryGetOptionDescriptor(string optionId, out OptionDescriptor optionDescriptor)
-        {
-            if (OptionDescriptors == null)
-            {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                optionDescriptor = default;
-                return false;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            }
-
-#if NETSTANDARD2_1_OR_GREATER
-            return OptionDescriptors.TryGetValue(optionId, out optionDescriptor);
-#else
-            if (OptionDescriptors.Contains(optionId))
-            {
-                optionDescriptor = OptionDescriptors[optionId];
-                return true;
-            }
-            else
-            {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                optionDescriptor = default;
-                return false;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            }
-#endif
-        }
     }
 }

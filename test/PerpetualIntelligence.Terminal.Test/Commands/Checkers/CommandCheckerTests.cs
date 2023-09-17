@@ -19,6 +19,7 @@ using PerpetualIntelligence.Terminal.Stores.InMemory;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,10 +38,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Disabled);
             CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, "value1")
-            };
+            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
             Command argsCommand = new(disabledArgsDescriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -56,10 +54,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, "value1")
-            };
+            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -75,10 +70,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Obsolete);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, "value1")
-            };
+            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -96,10 +88,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Obsolete);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, "value1")
-            };
+            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -121,10 +110,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor2 = new("key2", nameof(String), "desc1", OptionFlags.Required);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor2, "value2")
-            };
+            Options options = new(textHandler, new Option[] { new Option(optionDescriptor2, "value2") });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -140,10 +126,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Required);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, "value1")
-            };
+            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -161,10 +144,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, "non-date")
-            };
+            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "non-date") });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -173,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
 
-            Assert.AreEqual("non-date", options[0].Value);
+            Assert.AreEqual("non-date", options["key1"].Value);
         }
 
         [TestMethod]
@@ -184,10 +164,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, "non-date")
-            };
+            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "non-date") });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -205,15 +182,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, "25-Mar-2021")
-            };
+            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "25-Mar-2021") });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
-            object oldValue = options[0].Value;
+            object oldValue = options["key1"].Value;
             Assert.IsInstanceOfType(oldValue, typeof(string));
 
             // Value should pass and converted to date
@@ -221,7 +195,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckAsync(context);
 
-            object newValue = options[0].Value;
+            object newValue = options["key1"].Value;
             Assert.IsInstanceOfType(newValue, typeof(DateTime));
             Assert.AreEqual(oldValue, ((DateTime)newValue).ToString("dd-MMM-yyyy"));
         }
@@ -232,10 +206,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(Double), "test desc", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, 25.36)
-            };
+            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, 25.36) });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -251,10 +222,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler)
-            {
-                new Option(optionDescriptor, DateTime.Now)
-            };
+            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, DateTime.Now) });
 
             Command argsCommand = new(descriptor, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());

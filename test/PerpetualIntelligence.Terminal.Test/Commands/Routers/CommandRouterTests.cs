@@ -111,11 +111,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             await commandRouter.RouteAsync(routerContext);
 
             Assert.IsNotNull(commandHandler.ContextCalled);
-            Assert.AreEqual("test_id", commandHandler.ContextCalled.ExtractedCommand.Command.Descriptor.Id);
-            Assert.AreEqual("test_name", commandHandler.ContextCalled.ExtractedCommand.Command.Descriptor.Name);
+            Assert.AreEqual("test_id", commandHandler.ContextCalled.ParsedCommand.Command.Descriptor.Id);
+            Assert.AreEqual("test_name", commandHandler.ContextCalled.ParsedCommand.Command.Descriptor.Name);
 
-            Assert.AreEqual("test_id", commandHandler.ContextCalled.ExtractedCommand.Command.Id);
-            Assert.AreEqual("test_name", commandHandler.ContextCalled.ExtractedCommand.Command.Name);
+            Assert.AreEqual("test_id", commandHandler.ContextCalled.ParsedCommand.Command.Id);
+            Assert.AreEqual("test_name", commandHandler.ContextCalled.ParsedCommand.Command.Name);
         }
 
         [TestMethod]

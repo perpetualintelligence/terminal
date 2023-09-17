@@ -170,10 +170,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.AreEqual(cmdId, result.ParsedCommand.Command.Id);
 
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "value1");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "value2");
-            AssertOption(result.ParsedCommand.Command.Options[2], "key3", nameof(Int64), "Key3 value phone", "value3");
-            AssertOption(result.ParsedCommand.Command.Options[3], "key4", nameof(Double), "Key4 value number", "25.36");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "value1");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "value2");
+            AssertOption(result.ParsedCommand.Command.Options["key3"], "key3", nameof(Int64), "Key3 value phone", "value3");
+            AssertOption(result.ParsedCommand.Command.Options["key4"], "key4", nameof(Double), "Key4 value number", "25.36");
         }
 
         [DataTestMethod]
@@ -265,10 +265,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(4, result.ParsedCommand.Command.Options.Count);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "value1");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "value2");
-            AssertOption(result.ParsedCommand.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertOption(result.ParsedCommand.Command.Options[3], "key9", nameof(Double), "Key9 value custom double", "26.36");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "value1");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "value2");
+            AssertOption(result.ParsedCommand.Command.Options["key6"], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.ParsedCommand.Command.Options["key9"], "key9", nameof(Double), "Key9 value custom double", "26.36");
         }
 
         [DataTestMethod]
@@ -291,10 +291,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.IsNotNull(result.ParsedCommand);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(4, result.ParsedCommand.Command.Options.Count);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", $"Test{prefix}prefix{prefix}message");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "nospacemessage");
-            AssertOption(result.ParsedCommand.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertOption(result.ParsedCommand.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{prefix}with{prefix}prefix");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", $"Test{prefix}prefix{prefix}message");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "nospacemessage");
+            AssertOption(result.ParsedCommand.Command.Options["key6"], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.ParsedCommand.Command.Options["key10"], "key10", nameof(String), "Key10 value custom string", $"Again{prefix}with{prefix}prefix");
         }
 
         [DataTestMethod]
@@ -317,10 +317,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.IsNotNull(result.ParsedCommand);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(4, result.ParsedCommand.Command.Options.Count);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", $"Test{separator}separator{separator}message");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "nosseparatormessage");
-            AssertOption(result.ParsedCommand.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertOption(result.ParsedCommand.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}separator");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", $"Test{separator}separator{separator}message");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "nosseparatormessage");
+            AssertOption(result.ParsedCommand.Command.Options["key6"], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.ParsedCommand.Command.Options["key10"], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}separator");
         }
 
         [DataTestMethod]
@@ -343,10 +343,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.IsNotNull(result.ParsedCommand);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(4, result.ParsedCommand.Command.Options.Count);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", $"Test{separator}space{separator}message");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "nospacemessage");
-            AssertOption(result.ParsedCommand.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertOption(result.ParsedCommand.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}space");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", $"Test{separator}space{separator}message");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "nospacemessage");
+            AssertOption(result.ParsedCommand.Command.Options["key6"], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.ParsedCommand.Command.Options["key10"], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}space");
         }
 
         [DataTestMethod]
@@ -369,10 +369,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.IsNotNull(result.ParsedCommand);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(4, result.ParsedCommand.Command.Options.Count);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", $"Test{separator}{separator}space{separator}{separator}{separator}{separator}message");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "nospacemessage");
-            AssertOption(result.ParsedCommand.Command.Options[2], "key6", nameof(Boolean), "Key6 no value", "True");
-            AssertOption(result.ParsedCommand.Command.Options[3], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}{separator}space");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", $"Test{separator}{separator}space{separator}{separator}{separator}{separator}message");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "nospacemessage");
+            AssertOption(result.ParsedCommand.Command.Options["key6"], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.ParsedCommand.Command.Options["key10"], "key10", nameof(String), "Key10 value custom string", $"Again{separator}with{separator}{separator}space");
         }
 
         [TestMethod]
@@ -392,7 +392,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.IsNotNull(result.ParsedCommand);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(1, result.ParsedCommand.Command.Options.Count);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", $"Test space message");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", $"Test space message");
         }
 
         [TestMethod]
@@ -409,8 +409,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(2, result.ParsedCommand.Command.Options.Count);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key2", nameof(String), "Key2 value text", "hello");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key6", nameof(Boolean), "Key6 no value", "True");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "hello");
+            AssertOption(result.ParsedCommand.Command.Options["key6"], "key6", nameof(Boolean), "Key6 no value", "True");
         }
 
         [TestMethod]
@@ -621,16 +621,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.AreEqual(typeof(CommandRunner<CommandRunnerResult>), result.ParsedCommand.Command.Descriptor.Runner);
             Assert.IsNotNull(result.ParsedCommand.Command.Descriptor.OptionDescriptors);
             Assert.AreEqual(10, result.ParsedCommand.Command.Descriptor.OptionDescriptors.Count);
-            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors[0], "key1", nameof(String), "Key1 value text");
-            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors[1], "key2", nameof(String), "Key2 value text");
-            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors[2], "key3", nameof(Int64), "Key3 value phone");
-            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors[3], "key4", nameof(String), "Key4 value email");
-            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors[4], "key5", nameof(String), "Key5 value url");
-            AssertOptionIdentity(result.ParsedCommand.Command.Descriptor.OptionDescriptors[5], "key6", nameof(Boolean), "Key6 no value");
-            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors[6], "key7", nameof(Int64), "Key7 value currency", new DataValidationOptionValueChecker[] { new(new OneOfAttribute("INR", "USD", "EUR")) });
-            AssertOptionIdentity(result.ParsedCommand.Command.Descriptor.OptionDescriptors[7], "key8", nameof(Int32), "Key8 value custom int");
-            AssertOptionIdentity(result.ParsedCommand.Command.Descriptor.OptionDescriptors[8], "key9", nameof(Double), "Key9 value custom double", new DataValidationOptionValueChecker[] { new(new RequiredAttribute()), new(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) });
-            AssertOptionIdentity(result.ParsedCommand.Command.Descriptor.OptionDescriptors[9], "key10", nameof(String), "Key10 value custom string");
+            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key1"], "key1", nameof(String), "Key1 value text");
+            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key2"], "key2", nameof(String), "Key2 value text");
+            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key3"], "key3", nameof(Int64), "Key3 value phone");
+            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key4"], "key4", nameof(String), "Key4 value email");
+            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key5"], "key5", nameof(String), "Key5 value url");
+            AssertOptionIdentity(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key6"], "key6", nameof(Boolean), "Key6 no value");
+            AssertOptionDescriptor(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key7"], "key7", nameof(Int64), "Key7 value currency", new DataValidationOptionValueChecker[] { new(new OneOfAttribute("INR", "USD", "EUR")) });
+            AssertOptionIdentity(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key8"], "key8", nameof(Int32), "Key8 value custom int");
+            AssertOptionIdentity(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key9"], "key9", nameof(Double), "Key9 value custom double", new DataValidationOptionValueChecker[] { new(new RequiredAttribute()), new(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) });
+            AssertOptionIdentity(result.ParsedCommand.Command.Descriptor.OptionDescriptors["key10"], "key10", nameof(String), "Key10 value custom string");
 
             // Supported options 10, user only passed 7
             Assert.IsNotNull(result.ParsedCommand);
@@ -639,13 +639,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.AreEqual("desc2", result.ParsedCommand.Command.Description);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(7, result.ParsedCommand.Command.Options.Count);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "value1");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "value2");
-            AssertOption(result.ParsedCommand.Command.Options[2], "key3", nameof(Int64), "Key3 value phone", "+1-2365985632");
-            AssertOption(result.ParsedCommand.Command.Options[3], "key4", nameof(String), "Key4 value email", "testmail@gmail.com");
-            AssertOption(result.ParsedCommand.Command.Options[4], "key5", nameof(String), "Key5 value url", "C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt");
-            AssertOption(result.ParsedCommand.Command.Options[5], "key6", "Boolean", "Key6 no value", "True");
-            AssertOption(result.ParsedCommand.Command.Options[6], "key9", "Double", "Key9 value custom double", "33.368");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "value1");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "value2");
+            AssertOption(result.ParsedCommand.Command.Options["key3"], "key3", nameof(Int64), "Key3 value phone", "+1-2365985632");
+            AssertOption(result.ParsedCommand.Command.Options["key4"], "key4", nameof(String), "Key4 value email", "testmail@gmail.com");
+            AssertOption(result.ParsedCommand.Command.Options["key5"], "key5", nameof(String), "Key5 value url", "C:\\apps\\devop_tools\\bin\\wntx64\\i18nnotes.txt");
+            AssertOption(result.ParsedCommand.Command.Options["key6"], "key6", "Boolean", "Key6 no value", "True");
+            AssertOption(result.ParsedCommand.Command.Options["key9"], "key9", "Double", "Key9 value custom double", "33.368");
         }
 
         [TestMethod]
@@ -734,8 +734,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\" --key2 \"date -s '20 JUN 2023 11:06:38'\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "key1_value");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "date -s '20 JUN 2023 11:06:38'");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "key1_value");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "date -s '20 JUN 2023 11:06:38'");
         }
 
         [TestMethod]
@@ -748,8 +748,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1_alias \"date -s '15 JUN 2023 11:06:38'\" --key2 \"date -s '20 JUN 2023 11:06:38'\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "date -s '15 JUN 2023 11:06:38'");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "date -s '20 JUN 2023 11:06:38'");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "date -s '15 JUN 2023 11:06:38'");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "date -s '20 JUN 2023 11:06:38'");
         }
 
         [TestMethod]
@@ -762,7 +762,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"cmd --opt1 val1 --opt2 val2 --opt3\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "cmd --opt1 val1 --opt2 val2 --opt3");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "cmd --opt1 val1 --opt2 val2 --opt3");
         }
 
         [TestMethod]
@@ -775,7 +775,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "key1_value");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "key1_value");
         }
 
         [TestMethod]
@@ -788,8 +788,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\" --key2 \"key2_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "key1_value");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key2", nameof(String), "Key2 value text", "key2_value");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "key1_value");
+            AssertOption(result.ParsedCommand.Command.Options["key2"], "key2", nameof(String), "Key2 value text", "key2_value");
         }
 
         [TestMethod]
@@ -802,7 +802,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1_alias \"key1_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "key1_value");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "key1_value");
         }
 
         [TestMethod]
@@ -815,8 +815,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 -key1_alias \"key1_value\" -key5_alias \"key5_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "key1_value");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key5", nameof(String), "Key5 value text", "key5_value");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "key1_value");
+            AssertOption(result.ParsedCommand.Command.Options["key5"], "key5", nameof(String), "Key5 value text", "key5_value");
         }
 
         [TestMethod]
@@ -829,8 +829,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractorContext context = new(new CommandRoute("id9", "root9 grp9 cmd9 --key1 \"key1_value\" -key5_alias \"key5_value\""));
             var result = await extractor.ExtractAsync(context);
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options[0], "key1", nameof(String), "Key1 value text", "key1_value");
-            AssertOption(result.ParsedCommand.Command.Options[1], "key5", nameof(String), "Key5 value text", "key5_value");
+            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "key1_value");
+            AssertOption(result.ParsedCommand.Command.Options["key5"], "key5", nameof(String), "Key5 value text", "key5_value");
         }
 
         private void SetupBasedOnTerminalOptions(TerminalOptions terminalOptionsIpt)

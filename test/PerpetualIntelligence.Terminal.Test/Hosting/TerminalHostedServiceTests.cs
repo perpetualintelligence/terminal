@@ -18,6 +18,7 @@ using PerpetualIntelligence.Terminal.Hosting.Mocks;
 using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Terminal.Mocks;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -313,7 +314,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             foreach (var commandDescriptor in commandDescriptors)
             {
                 commandDescriptor.OptionDescriptors.Should().NotBeEmpty();
-                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(terminalOptions.Help.OptionId));
+                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors![terminalOptions.Help.OptionAlias];
                 helpAttr.Should().NotBeNull();
                 helpAttr!.Alias.Should().Be(terminalOptions.Help.OptionAlias);
                 helpAttr.Description.Should().Be(terminalOptions.Help.OptionDescription);
@@ -357,7 +358,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             commandDescriptors.Should().NotBeEmpty();
             foreach (var commandDescriptor in commandDescriptors)
             {
-                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.FirstOrDefault(e => e.Id.Equals(terminalOptions.Help.OptionId));
+                OptionDescriptor? helpAttr = commandDescriptor.OptionDescriptors!.GetValueOrDefault(terminalOptions.Help.OptionId);
                 helpAttr.Should().BeNull();
             }
         }

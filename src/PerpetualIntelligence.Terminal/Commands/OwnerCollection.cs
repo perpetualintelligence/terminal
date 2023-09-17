@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// Initializes a new instance.
         /// </summary>
         /// <param name="owners">The owner identifiers.</param>
-        public OwnerCollection(string[] owners) : base(owners)
+        public OwnerCollection(params string[] owners) : base(owners)
         {
         }
     }

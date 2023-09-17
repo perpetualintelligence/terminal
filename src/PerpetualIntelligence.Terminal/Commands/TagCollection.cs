@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// Initializes a new instance.
         /// </summary>
         /// <param name="tags">The tags.</param>
-        public TagCollection(string[] tags) : base(tags)
+        public TagCollection(params string[] tags) : base(tags)
         {
         }
     }

@@ -514,9 +514,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             });
 
             // This mocks the help requested
-            Options options = new(new UnicodeTextHandler());
-            Option helpAttr = new(optionDescriptors.First(), true);
-            options.Add(helpAttr);
+            Options options = new(new UnicodeTextHandler(), new Option[] { new Option(optionDescriptors.First().Value, true) });
             helpCommand = MockCommands.NewCommandDefinition("id2", "name2", "desc2", CommandType.SubCommand, CommandFlags.None, optionDescriptors, options: options);
 
             handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());

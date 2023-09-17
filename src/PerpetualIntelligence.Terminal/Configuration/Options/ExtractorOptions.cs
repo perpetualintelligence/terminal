@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     public class ExtractorOptions
     {
         /// <summary>
-        /// Determines whether the extractor support extracting an option by alias.
+        /// Determines whether the extractor support extracting an option by alias. Defaults to <c>null</c>.
         /// </summary>
         /// <remarks>
         /// Option alias supports the apps that identify a command option with an id and an alias string. For modern
@@ -58,5 +58,14 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// The command string separator must be a single Unicode character, and it can be a whitespace character.
         /// </remarks>
         public string Separator { get; set; } = " ";
+
+        /// <summary>
+        /// Determines whether to parse the command hierarchy. Defaults to <c>null</c>.
+        /// </summary>
+        /// <remarks>
+        /// A command hierarchy is a structure of commands in the specified command route starting with a root, followed by nested groups and an executing command.
+        /// Typically, for production use cases, the command hierarchy is not required.
+        /// </remarks>
+        public bool? ParseHierarchy { get; set; }
     }
 }

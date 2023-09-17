@@ -48,7 +48,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             if (obj is not DataValidationOptionValueChecker objClass) { return false; }
 
-            return objClass.ValidationAttribute.Equals(this.ValidationAttribute);
+            return objClass.ValidationAttribute.Equals(ValidationAttribute);
         }
 
         /// <inheritdoc/>

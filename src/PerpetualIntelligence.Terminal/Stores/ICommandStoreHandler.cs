@@ -21,7 +21,11 @@ namespace PerpetualIntelligence.Terminal.Stores
         /// Attempts to finds a <see cref="CommandDescriptor"/> by its id asynchronously.
         /// </summary>
         /// <param name="id">The command id.</param>
-        public Task<CommandDescriptor> FindByIdAsync(string id);
+        /// <param name="commandDescriptor">The <see cref="CommandDescriptor"/> if found, otherwise <c>null</c> </param>
+        /// <remarks>
+        /// This method should never throw an exception. If the command is not found then return <c>false</c>.
+        /// </remarks>
+        public Task<bool> TryFindByIdAsync(string id, out CommandDescriptor? commandDescriptor);
 
         /// <summary>
         /// Returns all <see cref="CommandDescriptor"/>s asynchronously.

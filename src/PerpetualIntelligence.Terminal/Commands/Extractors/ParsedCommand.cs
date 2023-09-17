@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Configuration.Options;
+
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     /// <summary>
@@ -18,11 +20,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// <param name="commandRoute">The command route.</param>
         /// <param name="command">The command.</param>
         /// <param name="hierarchy">The command hierarchy.</param>
-        public ParsedCommand(CommandRoute commandRoute, Command command, Root hierarchy)
+        public ParsedCommand(CommandRoute commandRoute, Command command, Root? hierarchy = null)
         {
             CommandRoute = commandRoute ?? throw new System.ArgumentNullException(nameof(commandRoute));
             Command = command ?? throw new System.ArgumentNullException(nameof(command));
-            Hierarchy = hierarchy ?? throw new System.ArgumentNullException(nameof(hierarchy));
+            Hierarchy = hierarchy;
         }
 
         /// <summary>
@@ -38,6 +40,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// <summary>
         /// The parsed <see cref="Command"/> hierarchy.
         /// </summary>
-        public Root Hierarchy { get; }
+        /// <seealso cref="ExtractorOptions.ParseHierarchy"/>
+        public Root? Hierarchy { get; }
     }
 }

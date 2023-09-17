@@ -6,7 +6,6 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Terminal.Mocks;
 using System;
 using System.Text;
 using Xunit;
@@ -56,13 +55,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             //Assert
             result.Should().BeEquivalentTo(StringComparer.OrdinalIgnoreCase);
-        }
-
-        [Fact]
-        public void ExtractionRegex_Should_Return_Default_Extraction_Regex()
-        {
-            var result = _handler.ExtractionRegex(MockTerminalOptions.NewAliasOptions());
-            result.Should().Be("(?:[^\"\\s]+)|\"[^\"]*\"|--?\\w+");
         }
 
         [Theory]

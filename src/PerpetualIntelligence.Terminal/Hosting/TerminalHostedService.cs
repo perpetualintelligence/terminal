@@ -110,10 +110,10 @@ namespace PerpetualIntelligence.Terminal.Hosting
                 IEnumerable<CommandDescriptor> commandDescriptors = serviceProvider.GetServices<CommandDescriptor>();
                 foreach (CommandDescriptor commandDescriptor in commandDescriptors)
                 {
-                    commandDescriptor.OptionDescriptors ??= new OptionDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
-
                     OptionDescriptor helpDescriptor = new(options.Help.OptionId, nameof(Boolean), options.Help.OptionDescription, OptionFlags.None, options.Help.OptionAlias);
-                    commandDescriptor.OptionDescriptors.Add(helpDescriptor);
+
+                    commandDescriptor.OptionDescriptors ??= new OptionDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
+                    commandDescriptor.OptionDescriptors.RegisterHelp(helpDescriptor);
                 }
             });
         }

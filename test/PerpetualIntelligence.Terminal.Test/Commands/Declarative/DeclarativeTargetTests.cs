@@ -50,10 +50,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             CommandDescriptor cmd = cmdDescs.First();
             cmd.OptionDescriptors.Should().NotBeNull();
 
-            OptionDescriptor opt1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt1"));
+            OptionDescriptor opt1 = cmd.OptionDescriptors!["opt1"];
             opt1.ValueCheckers.Should().BeNull();
 
-            OptionDescriptor opt2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt2"));
+            OptionDescriptor opt2 = cmd.OptionDescriptors["opt2"];
             opt2.ValueCheckers.Should().NotBeNull();
             opt2.ValueCheckers!.Count().Should().Be(2);
             DataValidationOptionValueChecker val2Checker1 = (DataValidationOptionValueChecker)opt2.ValueCheckers!.First();
@@ -63,12 +63,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             OneOfAttribute val2OneOf = (OneOfAttribute)val2Checker2.ValidationAttribute;
             val2OneOf.AllowedValues.Should().BeEquivalentTo(new string[] { "test1", "test2", "test3" });
 
-            OptionDescriptor opt3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt3"));
+            OptionDescriptor opt3 = cmd.OptionDescriptors["opt3"];
             opt3.ValueCheckers.Should().NotBeNull();
             opt3.ValueCheckers!.Count().Should().Be(1);
             DataValidationOptionValueChecker val1Checker3 = (DataValidationOptionValueChecker)opt3.ValueCheckers!.First();
             val1Checker3.ValidationAttribute.Should().BeOfType<RangeAttribute>();
-            RangeAttribute val1Range = (RangeAttribute)(val1Checker3.ValidationAttribute);
+            RangeAttribute val1Range = (RangeAttribute)val1Checker3.ValidationAttribute;
             val1Range.Minimum.Should().Be(25.34);
             val1Range.Maximum.Should().Be(40.56);
         }
@@ -120,13 +120,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             CommandDescriptor cmd = cmdDescs.First();
             cmd.OptionDescriptors.Should().NotBeNull();
 
-            OptionDescriptor opt1 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt1"));
+            OptionDescriptor opt1 = cmd.OptionDescriptors!["opt1"];
             opt1.ValueCheckers.Should().BeNull();
 
-            OptionDescriptor opt2 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt2"));
+            OptionDescriptor opt2 = cmd.OptionDescriptors["opt2"];
             opt2.ValueCheckers.Should().BeNull();
 
-            OptionDescriptor opt3 = cmd.OptionDescriptors!.First(e => e.Id.Equals("opt3"));
+            OptionDescriptor opt3 = cmd.OptionDescriptors["opt3"];
             opt3.ValueCheckers.Should().BeNull();
         }
 
@@ -138,34 +138,46 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().OptionDescriptors.Should().HaveCount(3);
+            cmdDescs.First().OptionDescriptors.Should().HaveCount(4);
 
-            var optDescs = cmdDescs.First().OptionDescriptors!.ToArray();
-            optDescs[0].Id.Should().Be("opt1");
-            optDescs[0].DataType.Should().Be(nameof(String));
-            optDescs[0].Description.Should().Be("test arg desc1");
-            optDescs[0].Flags.Should().Be(OptionFlags.None);
-            optDescs[0].Alias.Should().BeNull();
-            optDescs[0].ValueCheckers.Should().BeNull();
+            var optDescs = cmdDescs.First().OptionDescriptors;
+            optDescs.Should().NotBeNull();
 
-            optDescs[1].Id.Should().Be("opt2");
-            optDescs[1].DataType.Should().Be(nameof(String));
-            optDescs[1].Description.Should().Be("test arg desc2");
-            optDescs[1].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
-            optDescs[1].Alias.Should().Be("opt2_alias");
-            optDescs[1].ValueCheckers.Should().NotBeNull();
-            optDescs[1].ValueCheckers.Should().HaveCount(2);
-            optDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
-            optDescs[1].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+            optDescs!["opt1"].Id.Should().Be("opt1");
+            optDescs["opt1"].DataType.Should().Be(nameof(String));
+            optDescs["opt1"].Description.Should().Be("test arg desc1");
+            optDescs["opt1"].Flags.Should().Be(OptionFlags.None);
+            optDescs["opt1"].Alias.Should().BeNull();
+            optDescs["opt1"].ValueCheckers.Should().BeNull();
 
-            optDescs[2].Id.Should().Be("opt3");
-            optDescs[2].Description.Should().Be("test arg desc3");
-            optDescs[2].DataType.Should().Be(nameof(Double));
-            optDescs[2].Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
-            optDescs[2].Alias.Should().BeNull();
-            optDescs[2].ValueCheckers.Should().NotBeNull();
-            optDescs[2].ValueCheckers.Should().HaveCount(1);
-            optDescs[2].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
+            optDescs["opt2"].Id.Should().Be("opt2");
+            optDescs["opt2"].DataType.Should().Be(nameof(String));
+            optDescs["opt2"].Description.Should().Be("test arg desc2");
+            optDescs["opt2"].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
+            optDescs["opt2"].Alias.Should().Be("opt2_alias");
+            optDescs["opt2"].ValueCheckers.Should().NotBeNull();
+            optDescs["opt2"].ValueCheckers.Should().HaveCount(2);
+            optDescs["opt2"].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
+            optDescs["opt2"].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+
+            optDescs["opt2_alias"].Id.Should().Be("opt2");
+            optDescs["opt2_alias"].DataType.Should().Be(nameof(String));
+            optDescs["opt2_alias"].Description.Should().Be("test arg desc2");
+            optDescs["opt2_alias"].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
+            optDescs["opt2_alias"].Alias.Should().Be("opt2_alias");
+            optDescs["opt2_alias"].ValueCheckers.Should().NotBeNull();
+            optDescs["opt2_alias"].ValueCheckers.Should().HaveCount(2);
+            optDescs["opt2_alias"].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
+            optDescs["opt2_alias"].ValueCheckers!.Cast<DataValidationOptionValueChecker>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+
+            optDescs["opt3"].Id.Should().Be("opt3");
+            optDescs["opt3"].Description.Should().Be("test arg desc3");
+            optDescs["opt3"].DataType.Should().Be(nameof(Double));
+            optDescs["opt3"].Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
+            optDescs["opt3"].Alias.Should().BeNull();
+            optDescs["opt3"].ValueCheckers.Should().NotBeNull();
+            optDescs["opt3"].ValueCheckers.Should().HaveCount(1);
+            optDescs["opt3"].ValueCheckers!.Cast<DataValidationOptionValueChecker>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
         }
 
         [Fact]
