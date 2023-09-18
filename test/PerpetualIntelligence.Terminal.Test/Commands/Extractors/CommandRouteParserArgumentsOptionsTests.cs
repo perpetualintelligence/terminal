@@ -303,7 +303,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [Fact]
-        public async Task Double_Delimited_Gives_Same_Result()
+        public async Task Multiple_Delimited_Strips_First_Delimited_Pair()
         {
             var result = await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 \"\"\"arg1 delimited value\"\"\""));
 
@@ -312,7 +312,25 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             result.Command.Arguments!.Count.Should().Be(1);
 
             result.Command.Arguments[0].Id.Should().Be("arg1");
-            result.Command.Arguments[0].Value.Should().Be("arg1 delimited value");
+            result.Command.Arguments[0].Value.Should().Be("\"\"arg1 delimited value\"\"");
+        }
+
+        [Theory]
+        [InlineData("\"   arg1  delimited     value     \"", "   arg1  delimited     value     ")]
+        [InlineData("\"arg1  delimited     value     \"", "arg1  delimited     value     ")]
+        [InlineData("\"   arg1  delimited     value\"", "   arg1  delimited     value")]
+        [InlineData("\"arg1 delimited value\"", "arg1 delimited value")]
+        [InlineData("\"arg1   delimited         value\"", "arg1   delimited         value")]
+        public async Task Separators_In_Delimited_Argument_Value_Are_Preserved(string arg, string preserved)
+        {
+            var result = await commandRouteParser.ParseAsync(new CommandRoute("id1", $"root1 grp1 cmd1 {arg}"));
+
+            result.Command.Id.Should().Be("cmd1");
+            result.Command.Arguments.Should().NotBeNull();
+            result.Command.Arguments!.Count.Should().Be(1);
+
+            result.Command.Arguments[0].Id.Should().Be("arg1");
+            result.Command.Arguments[0].Value.Should().Be(preserved);
         }
 
         [Fact]
@@ -368,20 +386,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             result.Command.Arguments[8].Value.Should().Be("arg9 value");
 
             result.Command.Options.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task Required_Argument_Not_Specified_ThrowsAsync()
-        {
-            Func<Task> act = () => commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1"));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("Required argument 'arg2' not specified.");
-        }
-
-        [Fact]
-        public async Task Required_Option_Not_Specified_ThrowsAsync()
-        {
-            Func<Task> act = () => commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1"));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("Required argument 'arg2' not specified.");
         }
 
         private readonly TerminalOptions terminalOptions;

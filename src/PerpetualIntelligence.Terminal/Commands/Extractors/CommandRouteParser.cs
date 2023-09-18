@@ -79,10 +79,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // -----------------------------
             // Command Processing
             // -----------------------------
-            // The initial segments of the input are always treated as commands.
-            // We'll dequeue segments from the queue until we encounter a segment
-            // that is not recognized as a valid command. This approach is based
-            // on the fact that the order is always commands -> arguments (optional) -> options (optional).
+            // The initial segments of the input are primarily processed as commands.
+            // Segments are dequeued from the queue and checked for their validity as commands.
+            // If a segment isn't recognized as a valid command, it's treated as an argument or an option.
+            // This approach is rooted in the expected input order:
+            // commands -> arguments (optional) -> options (optional).
+            // If a command is found after recognizing segments as arguments, those arguments
+            // are treated as potential commands, aiding in better error handling and feedback.
             List<CommandDescriptor> commandDescriptors = new();
             List<string> potentialCommands = new();
             while (segmentsQueue.Any())
@@ -104,9 +107,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                         throw new ErrorException(TerminalErrors.ServerError, "Command found in the store but returned null descriptor.");
                     }
 
-                    // Arguments are specified after commands. If we found a command and previously we found arguments then we add the
-                    // arguments to the list of potential commands. This enables us to provide better error messages when the user enters
-                    // an invalid command.
+                    // Arguments are specified after commands. If we found a command after arguments then we add the arguments to the list
+                    // of potential commands. This enables us to provide better error messages when the user enters an invalid command.
                     if (parsedArguments.Any())
                     {
                         potentialCommands.AddRange(parsedArguments);
@@ -118,27 +120,41 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     // If we are here then that means the next segment is an argument.
                     parsedArguments ??= new List<string>();
 
-                    // If the segment starts with a delimiter, then we loop to find the closing delimiter.
+                    // If the segment starts with a delimiter, process it as a potentially multi-segment argument.
+                    // Otherwise, treat it as a single word argument.
                     StringBuilder argumentValueBuilder = new(segment);
-                    if (segment.StartsWith(delimiter))
+                    if (StartsWith(segment, delimiter))
                     {
-                        while (!segment.EndsWith(delimiter) && segmentsQueue.Any())
+                        // The loop aggregates segments to form a complete argument value encapsulated by delimiters.
+                        // While there are segments to process, the loop appends them to the current argument unless a delimiter signals the end.
+                        // The argumentValueBuilder.Length == 1 check ensures that if a segment is only the starting delimiter, subsequent segments
+                        // are appended until a closing delimiter is found.
+                        while (segmentsQueue.Any() && (!EndsWith(segment, delimiter) || argumentValueBuilder.Length == 1))
                         {
+                            // Since we are within the delimiter, we can safely append a separator
                             argumentValueBuilder.Append(separator);
-
                             segment = segmentsQueue.Dequeue();
                             argumentValueBuilder.Append(segment);
                         }
 
                         // Check if the closing delimiter was found.
-                        if (!segment.EndsWith(delimiter))
+                        if (!EndsWith(segment, delimiter))
                         {
                             throw new ErrorException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
                         }
                     }
 
-                    string trimmedArgumentValue = argumentValueBuilder.ToString().TrimStart(delimiter, textHandler.Comparison).TrimEnd(delimiter, textHandler.Comparison);
-                    parsedArguments.Add(trimmedArgumentValue);
+                    // Trim delimiters from the argument value.
+                    string argumentValue = argumentValueBuilder.ToString();
+                    if (StartsWith(argumentValue, delimiter))
+                    {
+                        argumentValue = RemovePrefix(argumentValue, delimiter);
+                    }
+                    if (EndsWith(argumentValue, delimiter))
+                    {
+                        argumentValue = RemoveSuffix(argumentValue, delimiter);
+                    }
+                    parsedArguments.Add(argumentValue);
                 }
 
                 // Check if the current command has a valid owner specified in the command route.
@@ -177,29 +193,43 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 string segment = segmentsQueue.Dequeue();
                 StringBuilder optionValueBuilder = new();
 
+                // Option value can be a single word, multiple words, or a delimited value.
+                // This loop will continue until we encounter the next option or until we reached the end of the queue.
                 while (segmentsQueue.Any() && !IsOption(segmentsQueue.Peek()))
                 {
-                    // The check for optionValue.Length > 0 ensures that we only append a space if there's
-                    // already some content in the StringBuilder. This way, spaces will be added between
-                    // segments, but not at the start.
                     if (optionValueBuilder.Length > 0)
                     {
-                        optionValueBuilder.Append(separator);
+                        optionValueBuilder.Append(separator); // Using space as a separator
                     }
-
                     optionValueBuilder.Append(segmentsQueue.Dequeue());
                 }
 
-                string trimedOptionValue = optionValueBuilder.ToString().TrimStart(delimiter, textHandler.Comparison).TrimEnd(delimiter, textHandler.Comparison);
-                string trimedOption = segment.TrimStart(prefix, textHandler.Comparison).TrimStart(aliasPrefix, textHandler.Comparison);
-                if (string.IsNullOrEmpty(trimedOptionValue))
+                // If the option value is delimited then we remove the delimiters.
+                string optionValue = optionValueBuilder.Length > 0 ? optionValueBuilder.ToString() : true.ToString();
+                if (StartsWith(optionValue, delimiter))
                 {
-                    parsedOptions.Add(trimedOption, true.ToString());
+                    optionValue = RemovePrefix(optionValue, delimiter);
+                }
+                if (EndsWith(optionValue, delimiter))
+                {
+                    optionValue = RemoveSuffix(optionValue, delimiter);
+                }
+
+                string? optionOrAlias = null;
+                if (IsOptionPrefix(segment))
+                {
+                    optionOrAlias = RemovePrefix(segment, terminalOptions.Extractor.OptionPrefix);
+                }
+                else if (IsAliasPrefix(segment))
+                {
+                    optionOrAlias = RemovePrefix(segment, terminalOptions.Extractor.OptionAliasPrefix);
                 }
                 else
                 {
-                    parsedOptions.Add(trimedOption, trimedOptionValue);
+                    throw new ErrorException(TerminalErrors.InvalidOption, "The option is missing the prefix. option={0}", segment);
                 }
+
+                parsedOptions[optionOrAlias] = optionValue;
             }
 
             // Log for debug
@@ -367,28 +397,37 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private bool IsOption(string value)
         {
             // Check if the match value starts with a prefix like "-" or "--"
-            return IsOptionPrefixed(value) || IsAliasPrefixed(value);
+            return IsOptionPrefix(value) || IsAliasPrefix(value);
         }
 
-        private bool IsOptionPrefixed(string value)
+        private bool IsOptionPrefix(string value)
         {
-            return value.StartsWith(terminalOptions.Extractor.OptionPrefix, textHandler.Comparison);
+            return StartsWith(value, terminalOptions.Extractor.OptionPrefix);
         }
 
-        private bool IsAliasPrefixed(string value)
+        private bool IsAliasPrefix(string value)
         {
-            return value.StartsWith(terminalOptions.Extractor.OptionAliasPrefix, textHandler.Comparison);
+            return StartsWith(value, terminalOptions.Extractor.OptionAliasPrefix);
         }
 
-        /// <summary>
-        /// Safely removes the specified prefix from the start of the given value.
-        /// </summary>
-        /// <param name="value">The string value to process.</param>
-        /// <param name="prefix">The prefix to remove.</param>
-        /// <returns>The value without the prefix.</returns>
         private string RemovePrefix(string value, string prefix)
         {
             return value.Substring(prefix.Length);
+        }
+
+        private string RemoveSuffix(string value, string suffix)
+        {
+            return value.Substring(0, value.Length - suffix.Length);
+        }
+
+        private bool StartsWith(string value, string prefix)
+        {
+            return value.StartsWith(prefix, textHandler.Comparison);
+        }
+
+        private bool EndsWith(string value, string suffix)
+        {
+            return value.EndsWith(suffix, textHandler.Comparison);
         }
     }
 }
