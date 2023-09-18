@@ -184,7 +184,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 Runner = runner,
             };
 
-            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options));
+            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options: options));
         }
 
         public static Dictionary<string, CommandDescriptor> Commands;

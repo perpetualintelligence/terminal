@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
-            Command argsCommand = new(disabledArgsDescriptor, options);
+            Command argsCommand = new(disabledArgsDescriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -72,7 +72,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -90,7 +90,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -112,7 +112,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new Option[] { new Option(optionDescriptor2, "value2") });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -128,7 +128,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -146,7 +146,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "non-date") });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -166,7 +166,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "non-date") });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -184,7 +184,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "25-Mar-2021") });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             object oldValue = options["key1"].Value;
@@ -208,7 +208,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, 25.36) });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -224,7 +224,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, DateTime.Now) });
 
-            Command argsCommand = new(descriptor, options);
+            Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);

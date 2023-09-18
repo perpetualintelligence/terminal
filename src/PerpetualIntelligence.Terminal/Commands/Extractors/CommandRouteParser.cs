@@ -45,156 +45,54 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         /// <summary>
-        /// Parses the command string into a <see cref="Root"/> object.
+        /// Parses the command string into a <see cref="ParsedCommand"/> object.
         /// </summary>
+        /// <param name="commandRoute">The command route to parse.</param>
+        /// <returns>A parsed command derived from the provided command route.</returns>
         /// <remarks>
-        /// This method uses a Queue data structure to simplify the logic flow, making the code more readable and maintainable.
-        /// The benefit of using a Queue is more on the side of code clarity and predictability of the sequence in which segments are processed.
-        ///
-        /// <para>From a performance standpoint:</para>
+        /// This method leverages a Queue data structure to facilitate and streamline the parsing process.
+        /// Using a Queue aids in making the parsing sequence more predictable and the code more readable.
+        /// <para>Performance Insight:</para>
         /// <list type="bullet">
         /// <item>
-        /// <description>Direct Iteration: Time complexity is O(n), where n is the number of segments.</description>
+        /// <description>Direct Iteration: Time complexity is O(n), where n represents the number of segments in the command string.</description>
         /// </item>
         /// <item>
-        /// <description>With Queue: Time complexity is technically O(2n) due to the enqueue and dequeue operations, which simplifies to O(n) in big O notation. But there's an overhead due to the enqueue and dequeue operations.</description>
+        /// <description>Using Queue: While the time complexity technically becomes O(2n) due to the enqueue and dequeue operations, it's asymptotically equivalent to O(n). Nevertheless, there is a slight overhead attributed to the enqueue and dequeue operations.</description>
         /// </item>
         /// </list>
-        /// For most real-world scenarios with reasonably sized command strings, the difference in raw execution time between the two methods would likely be negligible.
+        /// In practical applications with typical command string sizes, the differences in performance between the two methods are expected to be minimal.
         /// </remarks>
-
         public async Task<ParsedCommand> ParseAsync(CommandRoute commandRoute)
         {
-            // Initialize variables
+            // Segment the raw command into individual components
+            Queue<string> segmentsQueue = new(commandRoute.Command.Raw.Split(new[] { terminalOptions.Extractor.Separator }, StringSplitOptions.None));
+
+            // Handle the processing of commands and arguments
+            (List<CommandDescriptor> parsedCommands, List<string> parsedArguments) = await ProcessCommandsAndArgumentsAsync(segmentsQueue);
+
+            // Extract and process command options
+            Dictionary<string, string> parsedOptions = ProcessOptions(segmentsQueue);
+
+            // Log parsed details if debug level logging is enabled
+            LogIfDebugLevelEnabled(parsedCommands, parsedArguments, parsedOptions);
+
+            // Compile and return the parsed command details
+            return ParseCommand(commandRoute, parsedCommands, parsedArguments, parsedOptions);
+        }
+
+        private Dictionary<string, string> ProcessOptions(Queue<string> segmentsQueue)
+        {
             string delimiter = terminalOptions.Extractor.ValueDelimiter;
             string separator = terminalOptions.Extractor.Separator;
-            string prefix = terminalOptions.Extractor.OptionPrefix;
-            string aliasPrefix = terminalOptions.Extractor.OptionAliasPrefix;
+            Dictionary<string, string> parsedOptions = new Dictionary<string, string>();
 
-            Queue<string> segmentsQueue = new(commandRoute.Command.Raw.Split(new[] { separator }, StringSplitOptions.None));
-            List<string> parsedCommands = new();
-            List<string> parsedArguments = new();
-            Dictionary<string, string> parsedOptions = new();
-
-            // -----------------------------
-            // Command Processing
-            // -----------------------------
-            // The initial segments of the input are primarily processed as commands.
-            // Segments are dequeued from the queue and checked for their validity as commands.
-            // If a segment isn't recognized as a valid command, it's treated as an argument or an option.
-            // This approach is rooted in the expected input order:
-            // commands -> arguments (optional) -> options (optional).
-            // If a command is found after recognizing segments as arguments, those arguments
-            // are treated as potential commands, aiding in better error handling and feedback.
-            List<CommandDescriptor> commandDescriptors = new();
-            List<string> potentialCommands = new();
-            while (segmentsQueue.Any())
-            {
-                string segment = segmentsQueue.Peek();
-                if (IsOption(segment))
-                {
-                    break;
-                }
-                segmentsQueue.Dequeue();
-
-                // If the segment is a valid command, then we add it to the list of parsed commands. Otherwise we assume its an argument or an option.
-                bool found = await commandStoreHandler.TryFindByIdAsync(segment, out CommandDescriptor? currentDescriptor);
-                if (found)
-                {
-                    // If the command is found then we should also have a valid descriptor.
-                    if (currentDescriptor == null)
-                    {
-                        throw new ErrorException(TerminalErrors.ServerError, "Command found in the store but returned null descriptor.");
-                    }
-
-                    // Arguments are specified after commands. If we found a command after arguments then we add the arguments to the list
-                    // of potential commands. This enables us to provide better error messages when the user enters an invalid command.
-                    if (parsedArguments.Any())
-                    {
-                        potentialCommands.AddRange(parsedArguments);
-                        parsedArguments.Clear();
-                    }
-                }
-                else
-                {
-                    // If we are here then that means the next segment is an argument.
-                    parsedArguments ??= new List<string>();
-
-                    // If the segment starts with a delimiter, process it as a potentially multi-segment argument.
-                    // Otherwise, treat it as a single word argument.
-                    StringBuilder argumentValueBuilder = new(segment);
-                    if (StartsWith(segment, delimiter))
-                    {
-                        // The loop aggregates segments to form a complete argument value encapsulated by delimiters.
-                        // While there are segments to process, the loop appends them to the current argument unless a delimiter signals the end.
-                        // The argumentValueBuilder.Length == 1 check ensures that if a segment is only the starting delimiter, subsequent segments
-                        // are appended until a closing delimiter is found.
-                        while (segmentsQueue.Any() && (!EndsWith(segment, delimiter) || argumentValueBuilder.Length == 1))
-                        {
-                            // Since we are within the delimiter, we can safely append a separator
-                            argumentValueBuilder.Append(separator);
-                            segment = segmentsQueue.Dequeue();
-                            argumentValueBuilder.Append(segment);
-                        }
-
-                        // Check if the closing delimiter was found.
-                        if (!EndsWith(segment, delimiter))
-                        {
-                            throw new ErrorException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
-                        }
-                    }
-
-                    // Trim delimiters from the argument value.
-                    string argumentValue = argumentValueBuilder.ToString();
-                    if (StartsWith(argumentValue, delimiter))
-                    {
-                        argumentValue = RemovePrefix(argumentValue, delimiter);
-                    }
-                    if (EndsWith(argumentValue, delimiter))
-                    {
-                        argumentValue = RemoveSuffix(argumentValue, delimiter);
-                    }
-                    parsedArguments.Add(argumentValue);
-                }
-
-                // Check if the current command has a valid owner specified in the command route.
-                if (currentDescriptor != null)
-                {
-                    string? previousCommandId = potentialCommands.LastOrDefault();
-                    if (previousCommandId != null)
-                    {
-                        if (currentDescriptor.Owners == null || !currentDescriptor.Owners.Contains(previousCommandId))
-                        {
-                            throw new ErrorException(TerminalErrors.InvalidCommand, "The command owner is not valid. owner={0} command={1}.", previousCommandId, currentDescriptor.Id);
-                        }
-                    }
-                    else
-                    {
-                        if (currentDescriptor.Owners != null && currentDescriptor.Owners.Any())
-                        {
-                            throw new ErrorException(TerminalErrors.MissingCommand, "The command owner is missing in the command route. owners={0} command={1}.", currentDescriptor.Owners.JoinBySpace(), currentDescriptor.Id);
-                        }
-                    }
-
-                    potentialCommands.Add(segment);
-                    commandDescriptors.Add(currentDescriptor);
-                }
-            }
-
-            // -----------------------------
-            // Option Processing
-            // -----------------------------
-            // After processing the arguments, we'll treat the remaining segments as options.
-            // Each option starts with a prefix (like '--' or '-') followed by its associated
-            // value(s). The value for an option is the concatenation of all following segments
-            // until the next option or until the end of the input.
-            while (segmentsQueue.Any())
+            while (segmentsQueue.Count > 0)
             {
                 string segment = segmentsQueue.Dequeue();
                 StringBuilder optionValueBuilder = new();
 
-                // Option value can be a single word, multiple words, or a delimited value.
-                // This loop will continue until we encounter the next option or until we reached the end of the queue.
+                // Collect option values
                 while (segmentsQueue.Any() && !IsOption(segmentsQueue.Peek()))
                 {
                     if (optionValueBuilder.Length > 0)
@@ -204,7 +102,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     optionValueBuilder.Append(segmentsQueue.Dequeue());
                 }
 
-                // If the option value is delimited then we remove the delimiters.
+                // Process the option value
                 string optionValue = optionValueBuilder.Length > 0 ? optionValueBuilder.ToString() : true.ToString();
                 if (StartsWith(optionValue, delimiter))
                 {
@@ -215,7 +113,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     optionValue = RemoveSuffix(optionValue, delimiter);
                 }
 
-                string? optionOrAlias = null;
+                // Get the option or alias
+                string? optionOrAlias;
                 if (IsOptionPrefix(segment))
                 {
                     optionOrAlias = RemovePrefix(segment, terminalOptions.Extractor.OptionPrefix);
@@ -232,77 +131,178 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 parsedOptions[optionOrAlias] = optionValue;
             }
 
-            // Log for debug
-            if (logger.IsEnabled(LogLevel.Debug))
+            return parsedOptions;
+        }
+
+        private async Task<(List<CommandDescriptor> ParsedDescriptors, List<string> ParsedArguments)> ProcessCommandsAndArgumentsAsync(Queue<string> segmentsQueue)
+        {
+            string delimiter = terminalOptions.Extractor.ValueDelimiter;
+            string separator = terminalOptions.Extractor.Separator;
+
+            List<CommandDescriptor> parsedDescriptors = new();
+            List<string> parsedArguments = new();
+            string? potentialLastCommandId = null;
+
+            while (segmentsQueue.Count > 0)
             {
-                logger.LogDebug("Commands:");
-                parsedCommands.ForEach(cmd => logger.LogDebug($"{cmd}{Environment.NewLine}"));
+                string segment = segmentsQueue.Peek();
 
-                logger.LogDebug("\nArguments:");
-                parsedArguments.ForEach(arg => logger.LogDebug($"{arg}{Environment.NewLine}"));
-
-                logger.LogDebug("\nOptions:");
-                foreach (var opt in parsedOptions)
+                // Break loop if segment represents an option.
+                if (IsOption(segment))
                 {
-                    logger.LogDebug($"{opt.Key}={opt.Value}{Environment.NewLine}");
+                    break;
+                }
+                segmentsQueue.Dequeue();
+
+                if (await commandStoreHandler.TryFindByIdAsync(segment, out CommandDescriptor? currentDescriptor))
+                {
+                    if (currentDescriptor == null)
+                    {
+                        throw new ErrorException(TerminalErrors.ServerError, "Command found in the store but returned null descriptor.");
+                    }
+
+                    if (!parsedArguments.IsNullOrEmpty())
+                    {
+                        potentialLastCommandId = parsedArguments.Last();
+                    }
+                }
+                else
+                {
+                    StringBuilder argumentValueBuilder = new(segment, segment.Length + 10);
+
+                    if (StartsWith(segment, delimiter))
+                    {
+                        while (segmentsQueue.Count > 0 && (!EndsWith(segment, delimiter) || argumentValueBuilder.Length == 1))
+                        {
+                            argumentValueBuilder.Append(separator);
+                            segment = segmentsQueue.Dequeue();
+                            argumentValueBuilder.Append(segment);
+                        }
+
+                        if (!EndsWith(segment, delimiter))
+                        {
+                            throw new ErrorException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
+                        }
+                    }
+
+                    string argumentValue = argumentValueBuilder.ToString();
+                    if (StartsWith(argumentValue, delimiter))
+                    {
+                        argumentValue = RemovePrefix(argumentValue, delimiter);
+                    }
+                    if (EndsWith(argumentValue, delimiter))
+                    {
+                        argumentValue = RemoveSuffix(argumentValue, delimiter);
+                    }
+                    parsedArguments.Add(argumentValue);
+                }
+
+                if (currentDescriptor != null)
+                {
+                    if (potentialLastCommandId != null && (currentDescriptor.Owners == null || !currentDescriptor.Owners.Contains(potentialLastCommandId)))
+                    {
+                        throw new ErrorException(TerminalErrors.InvalidCommand, "The command owner is not valid. owner={0} command={1}.", potentialLastCommandId, currentDescriptor.Id);
+                    }
+                    else if (potentialLastCommandId == null && currentDescriptor.Owners != null && currentDescriptor.Owners.Any())
+                    {
+                        throw new ErrorException(TerminalErrors.MissingCommand, "The command owner is missing in the command route. owners={0} command={1}.", currentDescriptor.Owners.JoinBySpace(), currentDescriptor.Id);
+                    }
+
+                    potentialLastCommandId = segment;
+                    parsedDescriptors.Add(currentDescriptor);
                 }
             }
 
-            ParsedCommand parsedCommand = await ParseCommandAsync(commandRoute, commandDescriptors, parsedArguments, parsedOptions);
-            return parsedCommand;
+            return (parsedDescriptors, parsedArguments);
         }
 
-        private Task<ParsedCommand> ParseCommandAsync(CommandRoute commandRoute, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
+        private void LogIfDebugLevelEnabled(List<CommandDescriptor> parsedDescriptors, IEnumerable<string> parsedArguments, Dictionary<string, string> parsedOptions)
+        {
+            if (!logger.IsEnabled(LogLevel.Debug))
+            {
+                return;
+            }
+
+            StringBuilder debugLog = new();
+
+            debugLog.AppendLine("Commands:");
+            foreach (var cmd in parsedDescriptors)
+            {
+                debugLog.AppendLine(cmd.Id);
+            }
+
+            debugLog.AppendLine("Arguments:");
+            foreach (var arg in parsedArguments)
+            {
+                debugLog.AppendLine(arg);
+            }
+
+            debugLog.AppendLine("Options:");
+            foreach (var opt in parsedOptions)
+            {
+                debugLog.AppendLine($"{opt.Key}={opt.Value}");
+            }
+
+            logger.LogDebug(debugLog.ToString());
+        }
+
+        private ParsedCommand ParseCommand(CommandRoute commandRoute, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
         {
             if (!parsedDescriptors.Any())
             {
                 throw new ErrorException(TerminalErrors.MissingCommand, "The command is missing in the command route.");
             }
 
-            return Task.Run(() =>
+            // The last command in the route is the one that will be executed
+            CommandDescriptor executingCommandDescriptor = parsedDescriptors[parsedDescriptors.Count - 1];
+            Command executingCommand = new(
+                executingCommandDescriptor,
+                ParseArguments(executingCommandDescriptor, parsedArguments)
+,
+                ParseOptions(executingCommandDescriptor, parsedOptions));
+
+            // Build the hierarchy and return the parsed command
+            return new ParsedCommand(commandRoute, executingCommand, BuildHierarchy(parsedDescriptors, executingCommand));
+        }
+
+        private Root? BuildHierarchy(List<CommandDescriptor> parsedDescriptors, Command executingCommand)
+        {
+            if (!terminalOptions.Extractor.ParseHierarchy.GetValueOrDefault())
             {
-                // The last command in the route is the command that we are trying to execute.
-                // Parse arguments and options
-                CommandDescriptor executingCommandDescriptor = parsedDescriptors.Last();
-                Arguments? arguments = ParseArguments(executingCommandDescriptor, parsedArguments);
-                Options? options = ParseOptions(executingCommandDescriptor, parsedOptions);
-                Command executingCommand = new(executingCommandDescriptor, options, arguments);
+                return null;
+            }
 
-                // If we are here then the owners are valid and we can create the hierarchy
-                Root? hierarchy = null;
-                if (terminalOptions.Extractor.ParseHierarchy.GetValueOrDefault())
+            Root? hierarchy = null;
+            Group? lastGroup = null;
+            SubCommand? lastSubCommand = null;
+            foreach (CommandDescriptor currentDescriptor in parsedDescriptors)
+            {
+                Command currentCommand = textHandler.TextEquals(currentDescriptor.Id, executingCommand.Id)
+                                         ? executingCommand
+                                         : new Command(currentDescriptor);
+
+                switch (currentDescriptor.Type)
                 {
-                    Group? lastGroup = null;
-                    SubCommand? lastSubCommand = null;
-                    for (int idx = 0; idx < parsedDescriptors.Count; ++idx)
-                    {
-                        CommandDescriptor currentDescriptor = parsedDescriptors[idx];
-                        Command currentCommand = new(currentDescriptor);
-                        if (textHandler.TextEquals(currentDescriptor.Id, executingCommandDescriptor.Id))
+                    case CommandType.Root:
                         {
-                            currentCommand = executingCommand;
-                        }
-
-                        if (currentDescriptor.Type == CommandType.Root)
-                        {
-                            // There can be only root in the command route
                             if (hierarchy != null)
                             {
                                 throw new ErrorException(TerminalErrors.InvalidCommand, "The command route contains multiple roots. root={0}", currentDescriptor.Id);
                             }
 
                             hierarchy = new Root(currentCommand);
+                            break;
                         }
-                        else if (currentDescriptor.Type == CommandType.Group)
-                        {
-                            if (hierarchy == null)
-                            {
-                                throw new ErrorException(TerminalErrors.InvalidCommand, "The command group must be preceded by a root command. group={0}", currentDescriptor.Id);
-                            }
 
+                    case CommandType.Group:
+                        {
                             Group group = new(currentCommand);
                             if (lastGroup == null)
                             {
+                                if (hierarchy == null)
+                                {
+                                    throw new ErrorException(TerminalErrors.MissingCommand, "The command group is missing a root command. group={0}", currentCommand.Id);
+                                }
                                 hierarchy.ChildGroup = group;
                             }
                             else
@@ -311,16 +311,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                             }
 
                             lastGroup = group;
+                            break;
                         }
-                        else if (currentDescriptor.Type == CommandType.SubCommand)
+
+                    case CommandType.SubCommand:
                         {
                             if (lastSubCommand != null)
                             {
-                                throw new ErrorException(TerminalErrors.InvalidCommand, "The nested subcommands are not supported. command={0}", currentDescriptor.Id);
+                                throw new ErrorException(TerminalErrors.InvalidRequest, "The subcommands cannot be nested. command={0}", currentDescriptor.Id);
                             }
 
                             SubCommand subCommand = new(currentCommand);
-
                             if (lastGroup != null)
                             {
                                 lastGroup.ChildSubCommand = subCommand;
@@ -333,49 +334,48 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                             {
                                 hierarchy = Root.Default(subCommand);
                             }
-
                             lastSubCommand = subCommand;
+                            break;
                         }
-                        else
-                        {
-                            throw new ErrorException(TerminalErrors.InvalidRequest, "Invalid command descriptor type.");
-                        }
-                    }
-                }
 
-                return new ParsedCommand(commandRoute, executingCommand, hierarchy);
-            });
+                    default:
+                        {
+                            throw new ErrorException(TerminalErrors.InvalidRequest, "The command descriptor type is not valid. type={0}", currentDescriptor.Type);
+                        }
+                }
+            }
+            return hierarchy;
         }
 
         private Options? ParseOptions(CommandDescriptor commandDescriptor, Dictionary<string, string>? parsedOptions)
         {
-            if (parsedOptions == null || !parsedOptions.Any())
+            if (parsedOptions == null || parsedOptions.Count == 0)
             {
                 return null;
             }
 
-            if (commandDescriptor.OptionDescriptors == null || !commandDescriptor.OptionDescriptors.Any())
+            if (commandDescriptor.OptionDescriptors == null || commandDescriptor.OptionDescriptors.Count == 0)
             {
                 throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support options. command={0}", commandDescriptor.Id);
             }
 
-            List<Option> options = new();
+            List<Option> options = new(parsedOptions.Count);
             foreach (var optKvp in parsedOptions)
             {
-                OptionDescriptor optionDescriptor = commandDescriptor.OptionDescriptors[optKvp.Key];
-                options.Add(new Option(optionDescriptor, optKvp.Value));
+                options.Add(new Option(commandDescriptor.OptionDescriptors[optKvp.Key], optKvp.Value));
             }
+
             return new Options(textHandler, options);
         }
 
         private Arguments? ParseArguments(CommandDescriptor commandDescriptor, List<string>? parsedArguments)
         {
-            if (parsedArguments == null || !parsedArguments.Any())
+            if (parsedArguments == null || parsedArguments.Count == 0)
             {
                 return null;
             }
 
-            if (commandDescriptor.ArgumentDescriptors == null || !commandDescriptor.ArgumentDescriptors.Any())
+            if (commandDescriptor.ArgumentDescriptors == null || commandDescriptor.ArgumentDescriptors.Count == 0)
             {
                 throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support arguments. command={0}", commandDescriptor.Id);
             }
@@ -385,11 +385,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support specified arguments. command={0} arguments={1}", commandDescriptor.Id, parsedArguments.JoinBySpace());
             }
 
-            List<Argument> arguments = new();
+            List<Argument> arguments = new(parsedArguments.Count);
             for (int idx = 0; idx < parsedArguments.Count; ++idx)
             {
-                Argument argument = new(commandDescriptor.ArgumentDescriptors[idx], parsedArguments[idx]);
-                arguments.Add(argument);
+                arguments.Add(new(commandDescriptor.ArgumentDescriptors[idx], parsedArguments[idx]));
             }
             return new Arguments(textHandler, arguments);
         }

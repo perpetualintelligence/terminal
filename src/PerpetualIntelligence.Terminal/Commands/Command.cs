@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Shared.Exceptions;
-using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Terminal.Commands
 {
@@ -25,9 +24,9 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// Initializes a new instance.
         /// </summary>
         /// <param name="commandDescriptor">The command descriptor.</param>
-        /// <param name="options">The command options.</param>
         /// <param name="arguments">The command arguments.</param>
-        public Command(CommandDescriptor commandDescriptor, Options? options = null, Arguments? arguments = null)
+        /// <param name="options">The command options.</param>
+        public Command(CommandDescriptor commandDescriptor, Arguments? arguments = null, Options? options = null)
         {
             Descriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
             Options = options;
@@ -48,11 +47,6 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// The command arguments.
         /// </summary>
         public Arguments? Arguments { get; set; }
-
-        /// <summary>
-        /// The command custom properties.
-        /// </summary>
-        public Dictionary<string, object>? CustomProperties => Descriptor.CustomProperties;
 
         /// <summary>
         /// The command description.

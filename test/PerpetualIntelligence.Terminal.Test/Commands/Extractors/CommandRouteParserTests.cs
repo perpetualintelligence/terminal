@@ -208,6 +208,23 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support arguments. command=root1");
         }
 
+        [Theory]
+        [InlineData("root1    grp1   grp2  grp3      cmd1")]
+        [InlineData("   root1    grp1   grp2  grp3      cmd1")]
+        [InlineData("   root1    grp1   grp2  grp3      cmd1    ")]
+        [InlineData("root1    grp1   grp2  grp3      cmd1    ")]
+        public async Task Multiple_Separators_Between_Commands_Ignored(string raw)
+        {
+            terminalOptions.Extractor.ParseHierarchy = true;
+
+            CommandRoute commandRoute = new(Guid.NewGuid().ToString(), raw);
+            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+
+            parsedCommand.Command.Id.Should().Be("cmd1");
+
+            parsedCommand.Hierarchy.Should().NotBeNull();
+        }
+
         [Fact]
         public async Task Group_InvalidNestedRoot_Throws()
         {
