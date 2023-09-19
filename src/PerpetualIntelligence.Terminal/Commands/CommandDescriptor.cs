@@ -29,9 +29,9 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="type">The command type.</param>
         /// <param name="flags">The command flags.</param>
         /// <param name="owners">The command owners.</param>
-        /// <param name="optionDescriptors">The option descriptors.</param>
         /// <param name="argumentDescriptors">The argument descriptors.</param>
-        public CommandDescriptor(string id, string name, string description, CommandType type, CommandFlags flags, OwnerCollection? owners = null, OptionDescriptors? optionDescriptors = null, ArgumentDescriptors? argumentDescriptors = null)
+        /// <param name="optionDescriptors">The option descriptors.</param>
+        public CommandDescriptor(string id, string name, string description, CommandType type, CommandFlags flags, OwnerCollection? owners = null, ArgumentDescriptors? argumentDescriptors = null, OptionDescriptors? optionDescriptors = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
