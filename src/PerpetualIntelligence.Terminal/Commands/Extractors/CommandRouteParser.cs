@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             string delimiter = terminalOptions.Extractor.ValueDelimiter;
             string separator = terminalOptions.Extractor.Separator;
-            Dictionary<string, string> parsedOptions = new Dictionary<string, string>();
+            Dictionary<string, string> parsedOptions = new();
 
             while (segmentsQueue.Count > 0)
             {
@@ -102,8 +102,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     optionValueBuilder.Append(segmentsQueue.Dequeue());
                 }
 
-                // Process the option value
-                string optionValue = optionValueBuilder.Length > 0 ? optionValueBuilder.ToString() : true.ToString();
+                // Process the option value and trim the end of the value if it ends with the separator.
+                string optionValue = optionValueBuilder.Length > 0 ? optionValueBuilder.ToString().TrimEnd(separator, textHandler.Comparison) : true.ToString();
                 if (StartsWith(optionValue, delimiter))
                 {
                     optionValue = RemovePrefix(optionValue, delimiter);
@@ -145,14 +145,19 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             while (segmentsQueue.Count > 0)
             {
-                string segment = segmentsQueue.Peek();
-
                 // Break loop if segment represents an option.
+                string segment = segmentsQueue.Peek();
                 if (IsOption(segment))
                 {
                     break;
                 }
                 segmentsQueue.Dequeue();
+
+                // If we are not within a delimiter then we cannot have a separator.
+                if (segment.IsNullOrEmpty())
+                {
+                    continue;
+                }
 
                 if (await commandStoreHandler.TryFindByIdAsync(segment, out CommandDescriptor? currentDescriptor))
                 {
@@ -377,12 +382,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             if (commandDescriptor.ArgumentDescriptors == null || commandDescriptor.ArgumentDescriptors.Count == 0)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support arguments. command={0}", commandDescriptor.Id);
+                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support any arguments. command={0}", commandDescriptor.Id);
             }
 
             if (commandDescriptor.ArgumentDescriptors.Count < parsedArguments.Count)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support specified arguments. command={0} arguments={1}", commandDescriptor.Id, parsedArguments.JoinBySpace());
+                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support {0} arguments. command={1} arguments={2}", parsedArguments.Count, commandDescriptor.Id, parsedArguments.JoinByComma());
             }
 
             List<Argument> arguments = new(parsedArguments.Count);

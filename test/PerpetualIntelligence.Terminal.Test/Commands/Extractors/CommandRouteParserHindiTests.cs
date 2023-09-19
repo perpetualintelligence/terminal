@@ -53,6 +53,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Unicode_Hindi_Group_Extracts_Correctly()
         {
+            _terminalOptions.Extractor.ParseHierarchy = true;
+
             var parsedCommand = await _commandRouteParser.ParseAsync(new CommandRoute("परीक्षण", "यूनिकोड परीक्षण"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
@@ -64,7 +66,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             parsedCommand.Command.Description.Should().Be("यूनिकोड समूहीकृत कमांड");
             parsedCommand.Command.Options.Should().BeNull();
 
-            parsedCommand.Hierarchy.LinkedCommand.Id.Should().Be("यूनिकोड");
+            parsedCommand.Hierarchy.Should().BeNull();
+            parsedCommand.Hierarchy!.LinkedCommand.Id.Should().Be("यूनिकोड");
             parsedCommand.Hierarchy.ChildSubCommand.Should().BeNull();
 
             parsedCommand.Hierarchy.ChildGroup.Should().NotBeNull();

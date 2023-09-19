@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         {
             if (string.IsNullOrWhiteSpace(raw))
             {
-                throw new System.ArgumentException($"'{nameof(raw)}' cannot be null or whitespace.", nameof(raw));
+                throw new System.ArgumentNullException(nameof(raw), $"'{nameof(raw)}' cannot be null or whitespace.");
             }
 
             Raw = raw;
