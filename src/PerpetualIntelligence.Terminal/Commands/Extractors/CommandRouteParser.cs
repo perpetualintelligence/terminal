@@ -113,22 +113,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     optionValue = RemoveSuffix(optionValue, delimiter);
                 }
 
-                // Get the option or alias
-                string? optionOrAlias;
-                if (IsOptionPrefix(segment))
-                {
-                    optionOrAlias = RemovePrefix(segment, terminalOptions.Extractor.OptionPrefix);
-                }
-                else if (IsAliasPrefix(segment))
-                {
-                    optionOrAlias = RemovePrefix(segment, terminalOptions.Extractor.OptionAliasPrefix);
-                }
-                else
-                {
-                    throw new ErrorException(TerminalErrors.InvalidOption, "The option is missing the prefix. option={0}", segment);
-                }
-
-                parsedOptions[optionOrAlias] = optionValue;
+                // Add the option to the parsed options dictionary
+                parsedOptions[segment] = optionValue;
             }
 
             return parsedOptions;
@@ -262,9 +248,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandDescriptor executingCommandDescriptor = parsedDescriptors[parsedDescriptors.Count - 1];
             Command executingCommand = new(
                 executingCommandDescriptor,
-                ParseArguments(executingCommandDescriptor, parsedArguments)
-,
-                ParseOptions(executingCommandDescriptor, parsedOptions));
+                ParseArguments(executingCommandDescriptor, parsedArguments),
+                ParseOptions(executingCommandDescriptor, parsedOptions)
+            );
 
             // Build the hierarchy and return the parsed command
             return new ParsedCommand(commandRoute, executingCommand, BuildHierarchy(parsedDescriptors, executingCommand));
@@ -364,10 +350,47 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support options. command={0}", commandDescriptor.Id);
             }
 
+            // 1. An input can be either an option or an alias, but not both.
+            // 2. If a segment is identified as an option, it must match the option ID.
+            // 3. If identified as an alias, it must match the alias.
             List<Option> options = new(parsedOptions.Count);
             foreach (var optKvp in parsedOptions)
             {
-                options.Add(new Option(commandDescriptor.OptionDescriptors[optKvp.Key], optKvp.Value));
+                string optionOrAliasKey;
+                bool isOption = IsOptionPrefix(optKvp.Key);
+
+                if (isOption)
+                {
+                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Extractor.OptionPrefix);
+                }
+                else
+                {
+                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Extractor.OptionAliasPrefix);
+                }
+
+                if (!commandDescriptor.OptionDescriptors.TryGetValue(optionOrAliasKey, out var optionDescriptor))
+                {
+                    throw new ErrorException(TerminalErrors.UnsupportedOption, "The command does not support an option or its alias. command={0} option={1}", commandDescriptor.Id, optionOrAliasKey);
+                }
+
+                if (isOption)
+                {
+                    // Validate if option matches expected id
+                    if (!textHandler.TextEquals(optionDescriptor.Id, optionOrAliasKey))
+                    {
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option prefix is not valid for an alias. option={0}", optionOrAliasKey);
+                    }
+                }
+                else
+                {
+                    // Validate if option matches expected alias
+                    if (!textHandler.TextEquals(optionDescriptor.Alias, optionOrAliasKey))
+                    {
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The alias prefix is not valid for an option. option={0}", optKvp.Key);
+                    }
+                }
+
+                options.Add(new Option(optionDescriptor, optKvp.Value));
             }
 
             return new Options(textHandler, options);

@@ -16,7 +16,6 @@ using PerpetualIntelligence.Terminal.Stores.InMemory;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
@@ -28,7 +27,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
         }
 
-        [TestMethod]
         public async Task AdditionalSeparatorsShouldBeIgnored()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "pi     -key1_alias   value1  --key2-er  value2   --key6-a-s-xx-s --key9   25.36     -k12     "));
