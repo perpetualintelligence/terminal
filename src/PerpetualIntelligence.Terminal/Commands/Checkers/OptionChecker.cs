@@ -1,13 +1,13 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -49,7 +49,23 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             if (options.Checker.StrictOptionValueType.GetValueOrDefault())
             {
                 // Check value compatibility
-                return await StrictTypeCheckingAsync(context, mapperResult);
+                await StrictTypeCheckingAsync(context, mapperResult);
+            }
+
+            // Check value
+            if (context.Option.Descriptor.ValueCheckers != null)
+            {
+                foreach (IOptionValueChecker valueChecker in context.Option.Descriptor.ValueCheckers)
+                {
+                    try
+                    {
+                        await valueChecker.CheckAsync(context.Option);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ErrorException(TerminalErrors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", context.Option.Id, context.Option.Value, ex.Message);
+                    }
+                }
             }
 
             return new OptionCheckerResult(mapperResult.MappedType);
@@ -72,21 +88,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             {
                 // Meaningful error instead of format exception
                 throw new ErrorException(TerminalErrors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Option.Id, mapperResult.MappedType, context.Option.DataType, context.Option.Value.GetType().Name, context.Option.Value);
-            }
-
-            if (context.OptionDescriptor.ValueCheckers != null)
-            {
-                foreach (IOptionValueChecker valueChecker in context.OptionDescriptor.ValueCheckers)
-                {
-                    try
-                    {
-                        valueChecker.CheckAsync(context.Option);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", context.Option.Id, context.Option.Value, ex.Message);
-                    }
-                }
             }
 
             return Task.FromResult(new OptionCheckerResult(mapperResult.MappedType));

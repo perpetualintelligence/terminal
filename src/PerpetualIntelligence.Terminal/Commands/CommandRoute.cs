@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentException($"'{nameof(id)}' cannot be null or whitespace.", nameof(id));
+                throw new ArgumentNullException(nameof(id), $"'{nameof(id)}' cannot be null or whitespace.");
             }
 
             Id = id;

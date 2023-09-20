@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [Fact]
         public void AddArgument_Adds_Custom_DataType_Correctly()
         {
-            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("arg1", "custom-dt", "description1", OptionFlags.Disabled, alias: null);
+            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("opt1", "custom-dt", "description1", OptionFlags.Disabled, alias: null);
 
             // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             serviceDescriptor.ImplementationType.Should().BeNull();
 
             OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
-            option.Id.Should().Be("arg1");
+            option.Id.Should().Be("opt1");
             option.DataType.Should().Be("custom-dt");
             option.Description.Should().Be("description1");
             option.Alias.Should().BeNull();
@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [Fact]
         public void AddArgument_Adds_Std_DataType_Correctly()
         {
-            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("arg1", nameof(Int32), "description1", OptionFlags.Required | OptionFlags.Obsolete, alias: "arg-alias1");
+            IOptionBuilder argumentBuilder = commandBuilder.DefineOption("opt1", nameof(Int32), "description1", OptionFlags.Required | OptionFlags.Obsolete, alias: "arg-alias1");
 
             // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
@@ -66,9 +66,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             serviceDescriptor.ImplementationType.Should().BeNull();
 
             OptionDescriptor option = (OptionDescriptor)serviceDescriptor.ImplementationInstance!;
-            option.Id.Should().Be("arg1");
+            option.Id.Should().Be("opt1");
             option.DataType.Should().Be(nameof(Int32));
-            option.DataType.Should().BeNull();
             option.Description.Should().Be("description1");
             option.Alias.Should().Be("arg-alias1");
             option.Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);

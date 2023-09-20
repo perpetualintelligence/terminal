@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             throw new System.NotImplementedException();
         }
 
-        public Task<CommandDescriptor> FindByIdAsync(string id)
+        public Task<bool> TryFindByIdAsync(string id, out CommandDescriptor? commandDescriptor)
         {
             throw new System.NotImplementedException();
         }

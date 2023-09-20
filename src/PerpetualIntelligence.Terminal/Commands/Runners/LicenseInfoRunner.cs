@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Licensing;
@@ -23,12 +17,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
     /// <summary>
     /// The <c>lic</c> command displays the current licensing information.
     /// </summary>
-    public class LicInfoRunner : CommandRunner<CommandRunnerResult>
+    public class LicenseInfoRunner : CommandRunner<CommandRunnerResult>
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public LicInfoRunner(ITerminalConsole terminalConsole, ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
+        public LicenseInfoRunner(ITerminalConsole terminalConsole, ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
         {
             this.terminalConsole = terminalConsole;
             this.licenseExractor = licenseExractor;
@@ -94,9 +88,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "grouped_command_limit={0}", PrintNumber(license.Limits.GroupedCommandLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option_limit={0}", PrintNumber(license.Limits.OptionLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option_alias={0}", license.Limits.OptionAlias.ToString());
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "default_option={0}", license.Limits.DefaultOption.ToString());
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "default_option_value={0}", license.Limits.DefaultOptionValue.ToString());
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "data_type_handlers={0}", license.Limits.DataTypeHandlers.JoinBySpace());
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "test_handlers={0}", license.Limits.TextHandlers.JoinBySpace());

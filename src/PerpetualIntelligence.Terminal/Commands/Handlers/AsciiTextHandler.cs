@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,39 +32,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         public IEqualityComparer<string> EqualityComparer()
         {
             return StringComparer.OrdinalIgnoreCase;
-        }
-
-        /// <summary>
-        /// Returns the default extraction regex pattern for ASCII command string.
-        /// </summary>
-        /// <param name="terminalOptions">The terminal configuration options.</param>
-        public string ExtractionRegex(TerminalOptions terminalOptions)
-        {
-            //string separator = " "; // Replace this with your configurable separator
-            //string delimiter = "\""; // Replace this with your configurable string delimiter
-
-            //// - Sample Pattern
-            //// string pattern = $@"('[^']*'|[^{Regex.Escape(separator)}]+)";
-            //string pattern = $@"({Regex.Escape(delimiter)}[^{Regex.Escape(delimiter)}]*{Regex.Escape(delimiter)}|[^{Regex.Escape(separator)}]+)";
-            //return pattern;
-
-            string separator = " "; // Replace this with your configurable separator
-            string delimiter = "\""; // Replace this with your configurable string delimiter
-            string optionPrefix = "--"; // Replace this with your configurable option prefix
-            string optionAliasPrefix = "-"; // Replace this with your configurable option alias prefix
-
-            //string pattern = $@"({Regex.Escape(delimiter)}[^{Regex.Escape(delimiter)}]*{Regex.Escape(delimiter)}|{Regex.Escape(optionPrefix)}[^{Regex.Escape(optionAliasPrefix)}\s]+|{Regex.Escape(optionAliasPrefix)}[^{Regex.Escape(optionAliasPrefix)}\s]+|[^{Regex.Escape(separator)}]+)";
-            //string pattern = $@"({Regex.Escape(delimiter)}[^{Regex.Escape(delimiter)}]*{Regex.Escape(delimiter)}|{Regex.Escape(optionPrefix + optionAliasPrefix)}?[^{Regex.Escape(optionAliasPrefix + optionPrefix)}\s]+|[^{Regex.Escape(separator)}]+)";
-
-            //string pattern = @"(\""[^\""]*\""|\S+\s*(?:-{1,2}\w+(?:\s+[^""\s]+)?)*\s*)";
-
-            //string optionPrefixes = "--|-";
-            //string pattern = @"^(\w+(?:\s\w+)*?)\s(\w+)\s((?:[^""\s]+|"".*?"")*\s*)((?:" + optionPrefixes + @"\w+\s*(?:[^""\s]+|"".*?""|\S*)\s*)*)$";
-
-            //string pattern = @"[^""\s]+|"".*?""|--?\w+\s*[^""\s]*"".*?""|--?\w+\s*(?:"".*?""|\S*)";
-            string pattern = @"(?:[^""\s]+)|""[^""]*""|--?\w+";
-
-            return pattern;
         }
 
         /// <summary>

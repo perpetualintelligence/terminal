@@ -58,6 +58,16 @@ namespace PerpetualIntelligence.Terminal
         public const string MissingOption = "missing_option";
 
         /// <summary>
+        /// The argument is missing.
+        /// </summary>
+        public const string MissingArgument = "missing_argument";
+
+        /// <summary>
+        /// The argument is missing.
+        /// </summary>
+        public const string MissingCommand = "missing_command";
+
+        /// <summary>
         /// The claim is missing.
         /// </summary>
         public const string MissingClaim = "missing_claim";

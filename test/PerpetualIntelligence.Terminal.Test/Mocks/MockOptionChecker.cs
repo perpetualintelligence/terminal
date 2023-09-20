@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    public class MockArgumentChecker : IOptionChecker
+    public class MockOptionChecker : IOptionChecker
     {
         public bool Called { get; set; }
 

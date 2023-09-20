@@ -28,22 +28,18 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         }
 
         /// <summary>
-        /// Returns the command descriptor by id asynchronously.
-        /// </summary>
-        /// <param name="id">The command descriptor id.</param>
-        /// <returns>The <see cref="CommandDescriptor"/> instance.</returns>
-        public Task<CommandDescriptor> FindByIdAsync(string id)
-        {
-            return Task.FromResult(commandDescriptors[id]);
-        }
-
-        /// <summary>
         /// Returns all command descriptors asynchronously.
         /// </summary>
         /// <returns>A <see cref="ReadOnlyDictionary{TKey, TValue}"/> of command descriptors.</returns>
         public Task<ReadOnlyDictionary<string, CommandDescriptor>> AllAsync()
         {
             return Task.FromResult(new ReadOnlyDictionary<string, CommandDescriptor>(commandDescriptors));
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> TryFindByIdAsync(string id, out CommandDescriptor? commandDescriptor)
+        {
+            return Task.FromResult(commandDescriptors.TryGetValue(id, out commandDescriptor));
         }
 
         private readonly Dictionary<string, CommandDescriptor> commandDescriptors;

@@ -108,12 +108,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // check the options value with license value.
             LicenseLimits limits = context.License.Limits;
 
-            // Option alias
-            if (!OptionsValid(limits.OptionAlias, terminalOptions.Extractor.OptionAlias))
-            {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured option alias is not allowed for your license edition.");
-            }
-
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictOptionValueType))
             {
@@ -198,7 +192,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                     // For now we only care about option count.
                     if (kvpCmd.Value.OptionDescriptors != null)
                     {
-                        optionCount += 1;
+                        optionCount += kvpCmd.Value.OptionDescriptors.Count;
                     }
                 }
 
@@ -249,7 +243,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         private readonly TerminalOptions terminalOptions;
         private readonly ICommandStoreHandler commandStoreHandler;
         private readonly ILogger<LicenseChecker> logger;
-
         private long optionCount;
         private long commandGroupCount;
         private bool initialized;

@@ -9,6 +9,7 @@ using PerpetualIntelligence.Terminal.Mocks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
+    [CommandOwners("oid1, oid2")]
     [CommandDescriptor("id5", "name5", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]

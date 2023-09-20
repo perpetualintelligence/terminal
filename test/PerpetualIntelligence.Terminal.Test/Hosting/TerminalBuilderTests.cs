@@ -33,9 +33,9 @@ namespace PerpetualIntelligence.Terminal.Hosting
             host.Dispose();
         }
 
-        private void ConfigureServicesDelegate(IServiceCollection arg2)
+        private void ConfigureServicesDelegate(IServiceCollection opt2)
         {
-            serviceCollection = arg2;
+            serviceCollection = opt2;
         }
 
         private readonly IHost host = null!;

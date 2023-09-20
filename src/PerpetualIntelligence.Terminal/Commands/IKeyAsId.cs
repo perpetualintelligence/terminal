@@ -5,21 +5,16 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Collections.Generic;
-
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// Defines a collection of owners for a command.
+    /// An abstraction of an entity with a key as an identifier.
     /// </summary>
-    public sealed class OwnerCollection : List<string>
+    public interface IKeyAsId
     {
         /// <summary>
-        /// Initializes a new instance.
+        /// The identifier.
         /// </summary>
-        /// <param name="owners">The owner identifiers.</param>
-        public OwnerCollection(params string[] owners) : base(owners)
-        {
-        }
+        public string Id { get; }
     }
 }

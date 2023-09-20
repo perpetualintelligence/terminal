@@ -26,7 +26,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
         /// </summary>
         static MockCommands()
         {
-            TestOptionDescriptors = new(new UnicodeTextHandler())
+            TestOptionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
                 new OptionDescriptor("key1", nameof(String), "Key1 value text", OptionFlags.None),
                 new OptionDescriptor("key2", nameof(String), "Key2 value text", OptionFlags.Required),
@@ -38,9 +38,9 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", OptionFlags.None),
                 new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", OptionFlags.Required) {ValueCheckers = new []{ new DataValidationOptionValueChecker(new RequiredAttribute()), new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", OptionFlags.Required)
-            };
+            });
 
-            TestOptionsDescriptors = new(new UnicodeTextHandler())
+            TestOptionsDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
                 new OptionDescriptor("key1", nameof(String), "Key1 value text", OptionFlags.None, "key1_alias"),
                 new OptionDescriptor("key2-er", nameof(String), "Key2 value text", OptionFlags.Required),
@@ -54,23 +54,15 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", OptionFlags.Required, "k10"),
                 new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", OptionFlags.Required, "k11"),
                 new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", OptionFlags.Required, "k12")
-            };
+            });
 
-            TestHindiUnicodeOptionDescriptors = new(new UnicodeTextHandler())
+            TestHindiUnicodeOptionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
             {
                 new OptionDescriptor("एक", nameof(String), "पहला तर्क", OptionFlags.None, "एकहै" ),
                 new OptionDescriptor("दो", nameof(Boolean), "दूसरा तर्क", OptionFlags.Required) { },
                 new OptionDescriptor("तीन", nameof(String), "तीसरा तर्क", OptionFlags.None, "तीनहै" ),
                 new OptionDescriptor("चार", nameof(Double), "चौथा तर्क", OptionFlags.None, "चारहै"),
-            };
-
-            TestChineseUnicodeOptionDescriptors = new(new UnicodeTextHandler())
-            {
-                new OptionDescriptor("第一的", nameof(String), "第一個命令參數", OptionFlags.None, "第一"),
-                new OptionDescriptor("第二", nameof(Boolean), "第二個命令參數", OptionFlags.Required) { },
-                new OptionDescriptor("第三", nameof(String), "第三個命令參數", OptionFlags.None),
-                new OptionDescriptor("第四", nameof(Double), "第四個命令參數", OptionFlags.None)
-            };
+            });
 
             Commands = new()
             {
@@ -171,28 +163,16 @@ namespace PerpetualIntelligence.Terminal.Mocks
             UnicodeCommands = new()
             {
                 // --- Hindi --- Root command
-                { "uc1", NewCommandDefinition("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड",CommandType.Root, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
+                { "यूनिकोड", NewCommandDefinition("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड",CommandType.Root, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Grouped command
-                { "uc2", NewCommandDefinition("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड",CommandType.Group, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
+                { "परीक्षण", NewCommandDefinition("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड",CommandType.Group, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Subcommand
-                { "uc3", NewCommandDefinition("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड",CommandType.SubCommand, CommandFlags.None, TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // subcommand with default option
-                { "uc4", NewCommandDefinition("दूसरा", "दूसरा नाम", "दूसरा आदेश",CommandType.SubCommand, CommandFlags.None, TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // --- Chinese --- Root command
-                { "uc5", NewCommandDefinition("統一碼", "統一碼 姓名", "示例根命令描述",CommandType.Root, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // Grouped command
-                { "uc6", NewCommandDefinition("測試", "測試 姓名", "示例分組命令",CommandType.Group, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
+                { "प्रिंट", NewCommandDefinition("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड",CommandType.SubCommand, CommandFlags.None, TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
 
                 // Subcommand
-                { "uc7", NewCommandDefinition("打印", "打印 姓名", "測試命令",CommandType.SubCommand, CommandFlags.None, TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
-
-                // subcommand with default option
-                { "uc8", NewCommandDefinition("備用", "備用 姓名", "替代描述",CommandType.SubCommand, CommandFlags.None, TestChineseUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
+                { "दूसरा", NewCommandDefinition("दूसरा", "दूसरा नाम", "दूसरा आदेश",CommandType.SubCommand, CommandFlags.None, TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1 },
             };
         }
 
@@ -204,7 +184,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 Runner = runner,
             };
 
-            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options));
+            return new Tuple<CommandDescriptor, Command>(cmd1, new Command(cmd1, options: options));
         }
 
         public static Dictionary<string, CommandDescriptor> Commands;
@@ -212,10 +192,9 @@ namespace PerpetualIntelligence.Terminal.Mocks
         public static Dictionary<string, CommandDescriptor> GroupedOptionsCommands;
         public static Dictionary<string, CommandDescriptor> LicensingCommands;
         public static Dictionary<string, CommandDescriptor> UnicodeCommands;
+        public static Dictionary<string, CommandDescriptor> AliasCommands;
         public static OptionDescriptors TestOptionDescriptors;
-        public static OptionDescriptors TestChineseUnicodeOptionDescriptors;
         public static OptionDescriptors TestHindiUnicodeOptionDescriptors;
         public static OptionDescriptors TestOptionsDescriptors;
-        public static Dictionary<string, CommandDescriptor> AliasCommands;
     }
 }

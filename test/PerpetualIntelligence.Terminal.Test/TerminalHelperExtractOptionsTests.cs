@@ -1,4 +1,10 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -285,49 +291,6 @@ namespace PerpetualIntelligence.Terminal
             optionStrings[24].AliasPrefix.Should().BeFalse();
             optionStrings[24].Position.Should().Be(24);
             optionStrings[24].Raw.Should().Be(" --opt3");
-        }
-
-        [Fact]
-        public void Alias_Is_Set_Based_On_Option()
-        {
-            terminalOptions.Extractor.OptionAlias = true;
-            OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(" --op1 val1", terminalOptions, textHandler);
-            optionStrings[0].AliasPrefix.Should().BeFalse();
-
-            terminalOptions.Extractor.OptionAlias = true;
-            optionStrings = TerminalHelper.ExtractOptionStrings(" -op1 val1", terminalOptions, textHandler);
-            optionStrings[0].AliasPrefix.Should().BeTrue();
-
-            terminalOptions.Extractor.OptionAlias = true;
-            optionStrings = TerminalHelper.ExtractOptionStrings(" --op1 val1 -opalias2 val2", terminalOptions, textHandler);
-            optionStrings[0].AliasPrefix.Should().BeFalse();
-            optionStrings[11].AliasPrefix.Should().BeTrue();
-
-            terminalOptions.Extractor.OptionAlias = false;
-            optionStrings = TerminalHelper.ExtractOptionStrings(" --op1 val1 -opalias2 val2", terminalOptions, textHandler);
-            optionStrings[0].AliasPrefix.Should().BeFalse();
-            optionStrings[11].AliasPrefix.Should().BeTrue();
-
-            terminalOptions.Extractor.OptionAlias = null;
-            optionStrings = TerminalHelper.ExtractOptionStrings(" --op1 val1 -opalias2 val2", terminalOptions, textHandler);
-            optionStrings[0].AliasPrefix.Should().BeFalse();
-            optionStrings[11].AliasPrefix.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Alias_Is_Always_True_For_No_Options()
-        {
-            terminalOptions.Extractor.OptionAlias = true;
-            OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(" test", terminalOptions, textHandler);
-            optionStrings[0].AliasPrefix.Should().BeTrue();
-
-            terminalOptions.Extractor.OptionAlias = false;
-            optionStrings = TerminalHelper.ExtractOptionStrings(" test", terminalOptions, textHandler);
-            optionStrings[0].AliasPrefix.Should().BeTrue();
-
-            terminalOptions.Extractor.OptionAlias = null;
-            optionStrings = TerminalHelper.ExtractOptionStrings(" test", terminalOptions, textHandler);
-            optionStrings[0].AliasPrefix.Should().BeTrue();
         }
 
         [Theory]

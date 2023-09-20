@@ -6,36 +6,28 @@
 */
 
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// The ordered <see cref="ArgumentDescriptors"/> collection.
+    /// The readonly <see cref="ArgumentDescriptor"/> keyed collection.
     /// </summary>
-    public sealed class ArgumentDescriptors : KeyedCollection<string, ArgumentDescriptor>
+    public sealed class ArgumentDescriptors : IReadOnlyCollection<ArgumentDescriptor>
     {
-        /// <summary>
-        /// Initializes a new instance with the specified argument descriptors.
-        /// </summary>
-        /// <param name="textHandler">The text handler.</param>
-        /// <param name="collection">The argument descriptors.</param>
-        public ArgumentDescriptors(ITextHandler textHandler, IEnumerable<ArgumentDescriptor> collection) : this(textHandler)
-        {
-            foreach (ArgumentDescriptor argumentDescriptor in collection)
-            {
-                Add(argumentDescriptor);
-            }
-        }
-
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public ArgumentDescriptors(ITextHandler textHandler) : base(textHandler.EqualityComparer())
+        public ArgumentDescriptors(ITextHandler textHandler, IEnumerable<ArgumentDescriptor> arguments)
         {
-            TextHandler = textHandler ?? throw new ArgumentNullException(nameof(textHandler));
+            inner = new KeyAsIdCollection<ArgumentDescriptor>(textHandler);
+            foreach (var argument in arguments)
+            {
+                inner.Add(argument);
+            }
+
+            TextHandler = textHandler;
         }
 
         /// <summary>
@@ -44,13 +36,50 @@ namespace PerpetualIntelligence.Terminal.Commands
         public ITextHandler TextHandler { get; }
 
         /// <summary>
-        /// Returns the key from the specified <see cref="ArgumentDescriptor"/>.
+        /// The argument descriptor count.
         /// </summary>
-        /// <param name="item">The <see cref="ArgumentDescriptor"/> instance.</param>
-        /// <returns>The key.</returns>
-        protected override string GetKeyForItem(ArgumentDescriptor item)
+        public int Count => inner.Count;
+
+        /// <summary>
+        /// Gets the argument descriptor by its id.
+        /// </summary>
+        /// <param name="id">The argument descriptor identifier.</param>
+        /// <returns></returns>
+
+        public ArgumentDescriptor this[string id]
         {
-            return item.Id;
+            get
+            {
+                return inner[id];
+            }
         }
+
+        /// <summary>
+        /// Gets the argument descriptor by its index.
+        /// </summary>
+        /// <param name="index">The argument index.</param>
+        /// <returns></returns>
+
+        public ArgumentDescriptor this[int index]
+        {
+            get
+            {
+                return inner[index];
+            }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerator<ArgumentDescriptor> GetEnumerator()
+        {
+            return inner.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return inner.GetEnumerator();
+        }
+
+        private KeyAsIdCollection<ArgumentDescriptor> inner;
     }
 }

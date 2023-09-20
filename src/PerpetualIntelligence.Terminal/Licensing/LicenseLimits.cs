@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -8,7 +8,6 @@
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 
@@ -20,11 +19,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
     public sealed class LicenseLimits
     {
         /// <summary>
-        /// Checks <see cref="ExtractorOptions.OptionAlias"/> option.
-        /// </summary>
-        public bool OptionAlias { get; internal set; }
-
-        /// <summary>
         /// The maximum options or options. Defaults to <c>null</c> or no limit.
         /// </summary>
         public long? OptionLimit { get; internal set; }
@@ -33,16 +27,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// Supports the command option data type checks. Defaults to <c>null</c> or no data type checks.
         /// </summary>
         public string[]? DataTypeHandlers { get; internal set; }
-
-        /// <summary>
-        /// Supports the default command option. Defaults to <c>false</c> or no default options.
-        /// </summary>
-        public bool DefaultOption { get; internal set; }
-
-        /// <summary>
-        /// Supports the default option value. Defaults to <c>false</c> or no default option value.
-        /// </summary>
-        public bool DefaultOptionValue { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
@@ -174,9 +158,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 SubCommandLimit = 25,
                 OptionLimit = 500,
 
-                OptionAlias = true,
-                DefaultOption = true,
-                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler },
@@ -201,9 +182,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 SubCommandLimit = Convert.ToInt16(customClaims["sub_command_limit"]),
                 OptionLimit = Convert.ToInt16(customClaims["option_limit"]),
 
-                OptionAlias = Convert.ToBoolean(customClaims["option_alias"]),
-                DefaultOption = Convert.ToBoolean(customClaims["default_option"]),
-                DefaultOptionValue = Convert.ToBoolean(customClaims["default_option_value"]),
                 StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
 
                 DataTypeHandlers = customClaims["data_type_handlers"].ToString().SplitBySpace(),
@@ -229,9 +207,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 SubCommandLimit = 100,
                 OptionLimit = 2000,
 
-                OptionAlias = true,
-                DefaultOption = true,
-                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
@@ -255,9 +230,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 SubCommandLimit = 250,
                 OptionLimit = 5000,
 
-                OptionAlias = true,
-                DefaultOption = true,
-                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
@@ -281,9 +253,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 SubCommandLimit = null,
                 OptionLimit = null,
 
-                OptionAlias = true,
-                DefaultOption = true,
-                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
@@ -307,9 +276,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 SubCommandLimit = 25,
                 OptionLimit = 500,
 
-                OptionAlias = false,
-                DefaultOption = false,
-                DefaultOptionValue = false,
                 StrictDataType = false,
 
                 DataTypeHandlers = null,
@@ -333,9 +299,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 SubCommandLimit = 50,
                 OptionLimit = 1000,
 
-                OptionAlias = true,
-                DefaultOption = true,
-                DefaultOptionValue = true,
                 StrictDataType = true,
 
                 DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler },

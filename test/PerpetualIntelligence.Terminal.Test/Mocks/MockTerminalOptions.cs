@@ -1,4 +1,10 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -26,7 +32,6 @@ namespace PerpetualIntelligence.Terminal.Mocks
                     OptionAliasPrefix = "-",
                     OptionValueSeparator = "=",
                     Separator = " ",
-                    CommandIdRegex = "^[A-Za-z0-9:]*$"
                 },
             };
         }
@@ -42,13 +47,11 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 },
                 Extractor = new ExtractorOptions()
                 {
-                    OptionAlias = true,
                     ValueDelimiter = "\"",
                     OptionPrefix = "--",
                     OptionAliasPrefix = "-",
                     OptionValueSeparator = " ",
                     Separator = " ",
-                    CommandIdRegex = "^[A-Za-z0-9:]*$"
                 },
             };
         }

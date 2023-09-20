@@ -5,9 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Shared.Exceptions;
-using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Terminal.Commands
 {
@@ -26,9 +24,9 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// Initializes a new instance.
         /// </summary>
         /// <param name="commandDescriptor">The command descriptor.</param>
-        /// <param name="options">The command options.</param>
         /// <param name="arguments">The command arguments.</param>
-        public Command(CommandDescriptor commandDescriptor, Options? options = null, Arguments? arguments = null)
+        /// <param name="options">The command options.</param>
+        public Command(CommandDescriptor commandDescriptor, Arguments? arguments = null, Options? options = null)
         {
             Descriptor = commandDescriptor ?? throw new System.ArgumentNullException(nameof(commandDescriptor));
             Options = options;
@@ -51,11 +49,6 @@ namespace PerpetualIntelligence.Terminal.Commands
         public Arguments? Arguments { get; set; }
 
         /// <summary>
-        /// The command custom properties.
-        /// </summary>
-        public Dictionary<string, object>? CustomProperties => Descriptor.CustomProperties;
-
-        /// <summary>
         /// The command description.
         /// </summary>
         public string? Description => Descriptor.Description;
@@ -71,76 +64,80 @@ namespace PerpetualIntelligence.Terminal.Commands
         public string Name => Descriptor.Name;
 
         /// <summary>
-        /// Gets the optional option value for the specified identifier.
+        /// Attempts to get the option for the specified identifier.
         /// </summary>
-        /// <typeparam name="TValue">The type of value.</typeparam>
-        /// <returns>The optional option value.</returns>
-        public TValue? GetOptionalOptionValue<TValue>(string id)
+        /// <param name="idOrAlias">The option identifier or its alias.</param>
+        /// <param name="option">The option if found.</param>
+        /// <returns><c>true</c> if the option is found.</returns>
+        public bool TryGetOption(string idOrAlias, out Option? option)
         {
+            option = null;
+
             if (Options == null)
             {
-                return default;
+                return false;
             }
 
-            if (Options.Contains(id))
+            try
             {
-                return Options.GetValue<TValue>(id);
+                option = Options[idOrAlias];
+                return true;
             }
-            else
+            catch
             {
-                return default;
+                return false;
             }
         }
 
         /// <summary>
-        /// Gets the required option value for the specified identifier.
+        /// Gets the option value for the specified identifier.
         /// </summary>
+        /// <param name="idOrAlias">The option id or its alias.</param>
         /// <typeparam name="TValue">The type of value.</typeparam>
         /// <returns>The option value.</returns>
         /// <exception cref="ErrorException">If the option is not supported.</exception>
-        public TValue GetRequiredOptionValue<TValue>(string id)
+        public TValue GetOptionValue<TValue>(string idOrAlias)
         {
             if (Options == null)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedOption, "The option is not supported. option={0}", id);
+                throw new ErrorException(TerminalErrors.UnsupportedOption, "The option is not supported. option={0}", idOrAlias);
             }
 
-            return Options.GetValue<TValue>(id);
+            return Options.GetOptionValue<TValue>(idOrAlias);
         }
 
         /// <summary>
-        /// Attempts to find an option.
+        /// Gets the argument value for the specified index.
         /// </summary>
-        /// <param name="id">The option identifier.</param>
-        /// <param name="option">The option if found in the collection.</param>
-        /// <returns><c>true</c> if an option exist in the collection, otherwise <c>false</c>.</returns>
-        [WriteUnitTest]
-        public bool TryGetOption(string id, out Option option)
+        /// <param name="index">The argument index.</param>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <returns>The option value.</returns>
+        /// <exception cref="ErrorException">If the argument is not supported.</exception>
+        public TValue GetArgumentValue<TValue>(int index)
         {
-            if (Options == null)
+            if (Arguments == null)
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                option = default;
-                return false;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                throw new ErrorException(TerminalErrors.UnsupportedOption, "The argument is not supported at index. index={0}", index);
             }
 
-#if NETSTANDARD2_1_OR_GREATER
-            return Options.TryGetValue(id, out option);
-#else
-            if (Options.Contains(id))
+            return (TValue)Arguments[index].Value;
+        }
+
+        /// <summary>
+        /// Gets the argument value for the specified identifier.
+        /// </summary>
+        /// <param name="id">The argument id.</param>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <returns>The option value.</returns>
+        /// <exception cref="ErrorException">If the argument is not supported.</exception>
+        public TValue GetArgumentValue<TValue>(string id)
+        {
+            if (Arguments == null)
             {
-                option = Options[id];
-                return true;
+                throw new ErrorException(TerminalErrors.UnsupportedOption, "The argument is not supported. argument={0}", id);
             }
-            else
-            {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                option = default;
-                return false;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            }
-#endif
+
+            return (TValue)Arguments[id].Value;
         }
     }
 }

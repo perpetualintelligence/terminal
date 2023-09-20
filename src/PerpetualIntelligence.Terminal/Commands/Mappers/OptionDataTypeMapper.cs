@@ -51,6 +51,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
                 case nameof(UInt64): return MapperResultAsync(typeof(ulong));
                 case nameof(Single): return MapperResultAsync(typeof(float));
                 case nameof(Double): return MapperResultAsync(typeof(double));
+                case nameof(DateTime): return MapperResultAsync(typeof(DateTime));
                 default:
                     {
                         throw new ErrorException(TerminalErrors.UnsupportedOption, "The option data type is not supported. option={0} data_type={1}", context.Option.Id, context.Option.DataType);

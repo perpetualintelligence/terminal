@@ -17,12 +17,10 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         {
             ExtractorOptions options = new();
 
-            options.OptionAlias.Should().BeNull();
-            options.OptionAliasPrefix.Should().Be("--");
-            options.OptionPrefix.Should().Be("-");
+            options.OptionAliasPrefix.Should().Be("-");
+            options.OptionPrefix.Should().Be("--");
             options.OptionValueSeparator.Should().Be(" ");
             options.ValueDelimiter.Should().Be("\"");
-            options.CommandIdRegex.Should().Be("^[A-Za-z0-9_-]*$");
             options.Separator.Should().Be(" ");
         }
     }

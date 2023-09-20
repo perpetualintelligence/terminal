@@ -1,81 +1,101 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using PerpetualIntelligence.Terminal.Commands.Handlers;
-using System.Collections.ObjectModel;
-using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// The ordered <see cref="Option"/> keyed collection.
     /// </summary>
-    public sealed class Options : KeyedCollection<string, Option>
+    public sealed class Options : IReadOnlyDictionary<string, Option>
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public Options(ITextHandler textHandler) : base(textHandler.EqualityComparer())
+        /// <param name="textHandler">The text handler.</param>
+        /// <param name="options">The options.</param>
+        public Options(ITextHandler textHandler, IEnumerable<Option>? options = null)
         {
             TextHandler = textHandler;
+
+            inner = new Dictionary<string, Option>(textHandler.EqualityComparer());
+            if (options != null)
+            {
+                inner = new Dictionary<string, Option>(textHandler.EqualityComparer());
+                foreach (Option option in options)
+                {
+                    AddOption(option);
+                }
+            }
         }
+
+        private void AddOption(Option option)
+        {
+            if (option.Descriptor.Alias != null)
+            {
+                inner.Add(option.Descriptor.Alias, option);
+            }
+
+            inner.Add(option.Descriptor.Id, option);
+        }
+
+        /// <inheritdoc/>
+        public Option this[string key] => inner[key];
 
         /// <summary>
         /// The text handler.
         /// </summary>
         public ITextHandler TextHandler { get; }
 
+        /// <inheritdoc/>
+        public IEnumerable<string> Keys => inner.Keys;
+
+        /// <inheritdoc/>
+        public IEnumerable<Option> Values => inner.Values;
+
+        /// <inheritdoc/>
+        public int Count => inner.Count;
+
+        /// <inheritdoc/>
+        public IEnumerator<KeyValuePair<string, Option>> GetEnumerator()
+        {
+            return inner.GetEnumerator();
+        }
+
         /// <summary>
         /// Gets the option value by its id.
         /// </summary>
-        /// <param name="argId">The option identifier or the alias.</param>
-        public TValue GetValue<TValue>(string argId)
+        /// <param name="optId">The option identifier or the alias.</param>
+        public TValue GetOptionValue<TValue>(string optId)
         {
-            return (TValue)this[argId].Value;
+            return (TValue)this[optId].Value;
         }
 
-        /// <summary>
-        /// Gets the option value by its id or alias.
-        /// </summary>
-        /// <param name="argIdOrAlias">The option identifier or the alias.</param>
-        /// <param name="alias"><c>true</c> to find the option by alias, <c>false</c> to find by its identifier.</param>
-        /// <typeparam name="TValue">The value type.</typeparam>
-        /// <remarks>
-        /// We recommend to use <see cref="GetValue{TValue}(string)"/> to get an option value. Using alias will
-        /// degrade the application's performance.
-        /// </remarks>
-        public TValue GetValue<TValue>(string argIdOrAlias, bool? alias = false)
+        /// <inheritdoc/>
+        public bool TryGetValue(string key, out Option value)
         {
-            if (alias.GetValueOrDefault())
-            {
-                // if alias is true, we will still try and find with id first and then with alias
-                if (Contains(argIdOrAlias))
-                {
-                    return (TValue)this[argIdOrAlias].Value;
-                }
-                else
-                {
-                    return (TValue)Items.First(e => e.Alias != null && TextHandler.TextEquals(e.Alias, argIdOrAlias)).Value;
-                }
-            }
-            else
-            {
-                return (TValue)this[argIdOrAlias].Value;
-            }
+            return inner.TryGetValue(key, out value);
         }
 
-        /// <summary>
-        /// Returns the key from the specified <see cref="Option"/>.
-        /// </summary>
-        /// <param name="item">The <see cref="Option"/> instance.</param>
-        /// <returns>The key.</returns>
-        protected override string GetKeyForItem(Option item)
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return item.Id;
+            return inner.GetEnumerator();
         }
+
+        /// <inheritdoc/>
+        public bool ContainsKey(string key)
+        {
+            return inner.ContainsKey(key);
+        }
+
+        private readonly Dictionary<string, Option> inner;
     }
 }

@@ -5,15 +5,13 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Terminal.Mocks;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
-    [CommandOwners("oid1, oid2")]
-    [CommandDescriptor("id1", "name1", "description", CommandType.SubCommand, CommandFlags.None)]
+    [CommandDescriptor("id1", "name", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]
@@ -21,12 +19,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
     [CommandCustomProperty("key2", "value2")]
     [CommandCustomProperty("key3", "value3")]
     [OptionDescriptor("opt1", nameof(String), "test arg desc1", OptionFlags.None)]
-    [OptionDescriptor("opt2", nameof(String), "test arg desc2", OptionFlags.Disabled, "opt2_alias")]
+    [OptionDescriptor("opt2", nameof(String), "test arg desc2", OptionFlags.None)]
     [OptionValidation("opt2", typeof(RequiredAttribute))]
-    [OptionValidation("opt2", typeof(OneOfAttribute), "test1", "test2", "test3")]
-    [OptionDescriptor("opt3", nameof(System.Double), "test arg desc3", OptionFlags.Required | OptionFlags.Obsolete)]
-    [OptionValidation("opt3", typeof(RangeAttribute), 25.34, 40.56)]
-    public class MockDeclarativeTarget1 : IDeclarativeTarget
+    [OptionDescriptor("ar3", nameof(String), "test arg desc3", OptionFlags.None)]
+    [OptionValidation("opt3", typeof(RangeAttribute), 25, 40)]
+    public class MockDeclarativeTargetNoCommandOwner : IDeclarativeTarget
     {
     }
 }

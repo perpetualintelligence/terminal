@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -19,12 +19,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="optionDescriptor">The option descriptor.</param>
         /// <param name="option">The option.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public OptionCheckerContext(OptionDescriptor optionDescriptor, Option option)
+        public OptionCheckerContext(Option option)
         {
-            OptionDescriptor = optionDescriptor ?? throw new ArgumentNullException(nameof(optionDescriptor));
             Option = option ?? throw new ArgumentNullException(nameof(option));
         }
 
@@ -32,10 +30,5 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// The option to check.
         /// </summary>
         public Option Option { get; set; }
-
-        /// <summary>
-        /// The option descriptor.
-        /// </summary>
-        public OptionDescriptor OptionDescriptor { get; }
     }
 }
