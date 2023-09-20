@@ -302,9 +302,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.SubCommandLimit.Should().Be(25);
             limits.OptionLimit.Should().Be(500);
 
-            limits.OptionAlias.Should().Be(true);
-            limits.DefaultOption.Should().Be(true);
-            limits.DefaultOptionValue.Should().Be(true);
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });

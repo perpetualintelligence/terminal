@@ -46,35 +46,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         [Fact]
-        public async Task CheckAsync_OptionAlias_ShouldBehaveCorrectly()
-        {
-            // Error, not allowed but configured
-            license.Limits.OptionAlias = false;
-            terminalOptions.Extractor.OptionAlias = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured option alias is not allowed for your license edition.");
-
-            // No error, not allowed not configured
-            license.Limits.OptionAlias = false;
-            terminalOptions.Extractor.OptionAlias = false;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, not allowed not configured
-            license.Limits.OptionAlias = false;
-            terminalOptions.Extractor.OptionAlias = null;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, allowed not configured
-            license.Limits.OptionAlias = true;
-            terminalOptions.Extractor.OptionAlias = false;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-
-            // No error, allowed and configured
-            license.Limits.OptionAlias = true;
-            terminalOptions.Extractor.OptionAlias = true;
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
-        }
-
-        [Fact]
         public async Task CheckAsync_ErrorHandling_ShouldBehaveCorrectly()
         {
             terminalOptions.Handler.ErrorHandler = "default";

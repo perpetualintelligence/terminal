@@ -64,6 +64,28 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         [Fact]
+        public async Task Delimited_Stays_As_Is()
+        {
+            string cmdStr = "root1 grp1 cmd1 \"  -- - -arg1 asd&&&*ASD**ASD&A* value  --\" --opt3 \"--option    -delimited   ^#%^@#&*&* JJKJKASD value3    \"";
+            var result = await commandRouteParser.ParseAsync(new CommandRoute("id1", cmdStr));
+
+            // Command
+            result.Command.Id.Should().Be("cmd1");
+            result.Command.Arguments.Should().NotBeNull();
+            result.Command.Options.Should().NotBeNull();
+
+            // Arguments
+            result.Command.Arguments!.Count.Should().Be(1);
+            result.Command.Arguments[0].Id.Should().Be("arg1");
+            result.Command.Arguments[0].Value.Should().Be("  -- - -arg1 asd&&&*ASD**ASD&A* value  --");
+
+            // Options
+            result.Command.Options!.Count.Should().Be(1);
+            Option opt1 = result.Command.Options["opt3"];
+            opt1.Value.Should().Be("--option    -delimited   ^#%^@#&*&* JJKJKASD value3    ");
+        }
+
+        [Fact]
         public async Task Arguments_And_Options_Are_Processed_Correctly()
         {
             string cmdStr = "root1 grp1 cmd1 \"arg1 value\" 32 true 35.987 3435345345 arg6value 12/23/2023 12/23/2022:12:23:22 \"arg9 value\" -opt7_a --opt3 \"option delimited value3\" --opt4 option value4    with multiple  spaces --opt5 35.987 --opt1 34 -opt6_a 12/23/2023 --opt2 option value2 -opt8_a true";
@@ -229,6 +251,84 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             var options = "-opt7";
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 " + options));
             await act.Should().ThrowAsync<ErrorException>().WithMessage("The alias prefix is not valid for an option. option=-opt7");
+        }
+
+        [Fact]
+        public async Task Option_With_Single_Delimiter_Value_Works()
+        {
+            var result = await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 --opt3 \"  option    delimited  value3  \""));
+
+            result.Command.Id.Should().Be("cmd1");
+            result.Command.Options.Should().NotBeNull();
+            result.Command.Arguments.Should().BeNull();
+
+            result.Command.Options!.Count.Should().Be(1);
+            Option opt1 = result.Command.Options["opt3"];
+            opt1.Value.Should().Be("  option    delimited  value3  ");
+        }
+
+        [Fact]
+        public async Task Option_With_Single_Delimiter_Multiple_Separator_Value_Works()
+        {
+            var result = await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 --opt3       \"  option    delimited  value3  \"      "));
+
+            result.Command.Id.Should().Be("cmd1");
+            result.Command.Options.Should().NotBeNull();
+            result.Command.Arguments.Should().BeNull();
+
+            result.Command.Options!.Count.Should().Be(1);
+            Option opt1 = result.Command.Options["opt3"];
+            opt1.Value.Should().Be("  option    delimited  value3  ");
+        }
+
+
+        [Fact]
+        public async Task Argument_With_Single_Delimiter_Value_Works()
+        {
+            var result = await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 \"  argument    delimited  value3  \""));
+
+            result.Command.Id.Should().Be("cmd1");
+            result.Command.Options.Should().BeNull();
+            result.Command.Arguments.Should().NotBeNull();
+
+            result.Command.Arguments!.Count.Should().Be(1);
+            result.Command.Arguments![0].Value.Should().Be("  argument    delimited  value3  ");
+        }
+
+        [Fact]
+        public async Task Option_With_Single_Boolean_Works_Without_Value()
+        {
+            var result = await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 --opt8"));
+
+            result.Command.Id.Should().Be("cmd1");
+            result.Command.Options.Should().NotBeNull();
+
+            // 1 option + 1 alias
+            result.Command.Options!.Count.Should().Be(2);
+            result.Command.Arguments.Should().BeNull();
+
+            Option opt1 = result.Command.Options["opt8"];
+            opt1.Value.Should().Be(true.ToString());
+            Option opt1Alias = result.Command.Options["opt8_a"];
+            opt1Alias.Value.Should().Be(true.ToString());
+        }
+
+        [Fact]
+        public async Task Option_With_Single_Boolean_Works_With_Value()
+        {
+            var result = await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 --opt8 false"));
+
+            result.Command.Id.Should().Be("cmd1");
+            result.Command.Options.Should().NotBeNull();
+
+            // 1 option + 1 alias
+            result.Command.Options!.Count.Should().Be(2);
+            result.Command.Arguments.Should().BeNull();
+
+            Option opt1 = result.Command.Options["opt8"];
+            opt1.Value.Should().Be("false");
+            Option opt1Alias = result.Command.Options["opt8_a"];
+            opt1Alias.Value.Should().Be("false");
         }
 
         [Fact]

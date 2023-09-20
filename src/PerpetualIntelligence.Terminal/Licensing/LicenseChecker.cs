@@ -108,12 +108,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // check the options value with license value.
             LicenseLimits limits = context.License.Limits;
 
-            // Option alias
-            if (!OptionsValid(limits.OptionAlias, terminalOptions.Extractor.OptionAlias))
-            {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured option alias is not allowed for your license edition.");
-            }
-
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictOptionValueType))
             {

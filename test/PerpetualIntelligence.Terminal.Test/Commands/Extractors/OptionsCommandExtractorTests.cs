@@ -27,21 +27,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
         }
 
-        public async Task AdditionalSeparatorsShouldBeIgnored()
-        {
-            CommandExtractorContext context = new(new CommandRoute("id1", "pi     -key1_alias   value1  --key2-er  value2   --key6-a-s-xx-s --key9   25.36     -k12     "));
-            var result = await extractor.ExtractAsync(context);
-
-            AssertCommand(result.ParsedCommand.Command, "orgid", "pi", 5);
-
-            Assert.IsNotNull(result.ParsedCommand.Command.Options);
-            AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "value1", "key1_alias");
-            AssertOption(result.ParsedCommand.Command.Options["key2-er"], "key2-er", nameof(String), "Key2 value text", "value2", null);
-            AssertOption(result.ParsedCommand.Command.Options["key6-a-s-xx-s"], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
-            AssertOption(result.ParsedCommand.Command.Options["key9"], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
-            AssertOption(result.ParsedCommand.Command.Options["key12"], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
-        }
-
         [TestMethod]
         public async Task AdditionalSeparatorsWithinValueShouldNotBeIgnored()
         {
@@ -58,21 +43,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             AssertOption(result.ParsedCommand.Command.Options["key6-a-s-xx-s"], "key6-a-s-xx-s", nameof(Boolean), "Key6 no value", true.ToString(), null);
             AssertOption(result.ParsedCommand.Command.Options["key9"], "key9", nameof(Double), "Key9 invalid default value", "25.36", null);
             AssertOption(result.ParsedCommand.Command.Options["key12"], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
-        }
-
-        [TestMethod]
-        public async Task AliasIdButAliasNotConfiguredShouldError()
-        {
-            options.Extractor.OptionAlias = false;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "pi -key1_alias value1"));
-
-            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
-               () => extractor.ExtractAsync(context),
-               1,
-               new[] { TerminalErrors.InvalidConfiguration },
-               new[] { "The option extraction by alias prefix is not configured. option_string=-key1_alias value1" }
-           );
         }
 
         [TestMethod]
@@ -109,36 +79,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.IsNotNull(result.ParsedCommand.Command.Options);
             Assert.AreEqual(1, result.ParsedCommand.Command.Options.Count);
             AssertOption(result.ParsedCommand.Command.Options["key1"], "key1", nameof(String), "Key1 value text", "value1", "key1_alias");
-        }
-
-        [TestMethod]
-        public async Task ArgumentIdWithAliasPrefixAndAliasNotConfiguredMultipleSpacesShouldError()
-        {
-            options.Extractor.OptionAlias = false;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "pi    -key1     value1 "));
-
-            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
-               () => extractor.ExtractAsync(context),
-               1,
-               new[] { TerminalErrors.InvalidConfiguration },
-               new[] { "The option extraction by alias prefix is not configured. option_string=-key1 value1" }
-           );
-        }
-
-        [TestMethod]
-        public async Task ArgumentIdWithAliasPrefixAndAliasNotConfiguredShouldError()
-        {
-            options.Extractor.OptionAlias = false;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "pi -key1 value1"));
-
-            await TestHelper.AssertThrowsMultiErrorExceptionAsync(
-               () => extractor.ExtractAsync(context),
-               1,
-               new[] { TerminalErrors.InvalidConfiguration },
-               new[] { "The option extraction by alias prefix is not configured. option_string=-key1 value1" }
-           );
         }
 
         [TestMethod]
@@ -209,17 +149,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             AssertOption(result.ParsedCommand.Command.Options["key10"], "key10", nameof(String), "Key10 value custom string", "value10", "k10");
             AssertOption(result.ParsedCommand.Command.Options["key11"], "key11", nameof(Boolean), "Key11 value boolean", true.ToString(), "k11");
             AssertOption(result.ParsedCommand.Command.Options["key12"], "key12", nameof(Boolean), "Key12 value default boolean", true.ToString(), "k12");
-        }
-
-        [TestMethod]
-        public async Task NoOptionsShouldExtractCorrectly()
-        {
-            options.Extractor.OptionAlias = false;
-
-            CommandExtractorContext context = new(new CommandRoute("id1", "pi"));
-            var result = await extractor.ExtractAsync(context);
-
-            AssertCommand(result.ParsedCommand.Command, "orgid", "pi", null);
         }
 
         protected override void OnTestInitialize()

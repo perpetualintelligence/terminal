@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -55,9 +55,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.SubCommandLimit.Should().Be(5);
             limits.OptionLimit.Should().Be(6);
 
-            limits.OptionAlias.Should().Be(true);
-            limits.DefaultOption.Should().Be(false);
-            limits.DefaultOptionValue.Should().Be(true);
             limits.StrictDataType.Should().Be(false);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "" });
@@ -82,9 +79,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.SubCommandLimit.Should().Be(25);
             limits.OptionLimit.Should().Be(500);
 
-            limits.OptionAlias.Should().Be(true);
-            limits.DefaultOption.Should().Be(true);
-            limits.DefaultOptionValue.Should().Be(true);
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
@@ -109,9 +103,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.SubCommandLimit.Should().Be(100);
             limits.OptionLimit.Should().Be(2000);
 
-            limits.OptionAlias.Should().Be(true);
-            limits.DefaultOption.Should().Be(true);
-            limits.DefaultOptionValue.Should().Be(true);
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
@@ -151,9 +142,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.SubCommandLimit.Should().Be(250);
             limits.OptionLimit.Should().Be(5000);
 
-            limits.OptionAlias.Should().Be(true);
-            limits.DefaultOption.Should().Be(true);
-            limits.DefaultOptionValue.Should().Be(true);
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
@@ -178,9 +166,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.SubCommandLimit.Should().Be(null);
             limits.OptionLimit.Should().Be(null);
 
-            limits.OptionAlias.Should().Be(true);
-            limits.DefaultOption.Should().Be(true);
-            limits.DefaultOptionValue.Should().Be(true);
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
@@ -205,9 +190,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.SubCommandLimit.Should().Be(25);
             limits.OptionLimit.Should().Be(500);
 
-            limits.OptionAlias.Should().Be(false);
-            limits.DefaultOption.Should().Be(false);
-            limits.DefaultOptionValue.Should().Be(false);
             limits.StrictDataType.Should().Be(false);
 
             limits.DataTypeHandlers.Should().BeNull();
@@ -232,9 +214,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
             limits.SubCommandLimit.Should().Be(50);
             limits.OptionLimit.Should().Be(1000);
 
-            limits.OptionAlias.Should().Be(true);
-            limits.DefaultOption.Should().Be(true);
-            limits.DefaultOptionValue.Should().Be(true);
             limits.StrictDataType.Should().Be(true);
 
             limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
