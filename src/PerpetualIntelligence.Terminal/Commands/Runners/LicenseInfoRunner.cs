@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Licensing;
@@ -23,12 +17,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
     /// <summary>
     /// The <c>lic</c> command displays the current licensing information.
     /// </summary>
-    public class LicInfoRunner : CommandRunner<CommandRunnerResult>
+    public class LicenseInfoRunner : CommandRunner<CommandRunnerResult>
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public LicInfoRunner(ITerminalConsole terminalConsole, ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
+        public LicenseInfoRunner(ITerminalConsole terminalConsole, ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
         {
             this.terminalConsole = terminalConsole;
             this.licenseExractor = licenseExractor;
