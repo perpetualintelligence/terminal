@@ -46,9 +46,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             _commandDescriptors = new Dictionary<string, CommandDescriptor>()
             {
                { "यूनिकोड", new CommandDescriptor("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड", CommandType.Root, CommandFlags.None) },
-               { "परीक्षण", new CommandDescriptor("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड", CommandType.Group, CommandFlags.None, new OwnerCollection("यूनिकोड")) },
-               { "प्रिंट", new CommandDescriptor("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड", CommandType.SubCommand, CommandFlags.None, new OwnerCollection("परीक्षण"), argumentDescriptors:null, optionDescriptors: options) },
-               { "दूसरा", new CommandDescriptor("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, new OwnerCollection("परीक्षण"),  argumentDescriptors:null, optionDescriptors: options) },
+               { "परीक्षण", new CommandDescriptor("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड", CommandType.Group, CommandFlags.None, new OwnerIdCollection("यूनिकोड")) },
+               { "प्रिंट", new CommandDescriptor("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"), argumentDescriptors:null, optionDescriptors: options) },
+               { "दूसरा", new CommandDescriptor("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"),  argumentDescriptors:null, optionDescriptors: options) },
             };
 
             _commandStore = new InMemoryCommandStore(_commandDescriptors);

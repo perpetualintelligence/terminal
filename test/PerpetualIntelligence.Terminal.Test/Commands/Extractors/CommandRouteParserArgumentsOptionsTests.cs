@@ -53,8 +53,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             commandDescriptors = new Dictionary<string, CommandDescriptor>()
             {
                { "root1", new CommandDescriptor("root1", "root1_name", "root1_desc", CommandType.Root, CommandFlags.None, argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) },
-               { "grp1", new CommandDescriptor("grp1", "grp1_name", "grp1_desc", CommandType.Group, CommandFlags.None, new OwnerCollection("root1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) },
-               { "cmd1", new CommandDescriptor("cmd1", "cmd1_name", "cmd1_desc", CommandType.SubCommand, CommandFlags.None, new OwnerCollection("grp1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) },
+               { "grp1", new CommandDescriptor("grp1", "grp1_name", "grp1_desc", CommandType.Group, CommandFlags.None, new OwnerIdCollection("root1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) },
+               { "cmd1", new CommandDescriptor("cmd1", "cmd1_name", "cmd1_desc", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("grp1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) },
                { "cmd_nr2", new CommandDescriptor("cmd_nr2", "cmd_nr2_name", "cmd_nr2_desc", CommandType.SubCommand, CommandFlags.None,  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) }
             };
             commandStoreHandler = new InMemoryCommandStore(commandDescriptors);

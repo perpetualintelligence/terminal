@@ -285,13 +285,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
                     if (currentDescriptor != null)
                     {
-                        if (potentialLastCommandId != null && (currentDescriptor.Owners == null || !currentDescriptor.Owners.Contains(potentialLastCommandId)))
+                        if (potentialLastCommandId != null && (currentDescriptor.OwnerIds == null || !currentDescriptor.OwnerIds.Contains(potentialLastCommandId)))
                         {
                             throw new ErrorException(TerminalErrors.InvalidCommand, "The command owner is not valid. owner={0} command={1}.", potentialLastCommandId, currentDescriptor.Id);
                         }
-                        else if (potentialLastCommandId == null && currentDescriptor.Owners != null && currentDescriptor.Owners.Any())
+                        else if (potentialLastCommandId == null && currentDescriptor.OwnerIds != null && currentDescriptor.OwnerIds.Any())
                         {
-                            throw new ErrorException(TerminalErrors.MissingCommand, "The command owner is missing in the command route. owners={0} command={1}.", currentDescriptor.Owners.JoinBySpace(), currentDescriptor.Id);
+                            throw new ErrorException(TerminalErrors.MissingCommand, "The command owner is missing in the command route. owners={0} command={1}.", currentDescriptor.OwnerIds.JoinBySpace(), currentDescriptor.Id);
                         }
 
                         potentialLastCommandId = segment;
