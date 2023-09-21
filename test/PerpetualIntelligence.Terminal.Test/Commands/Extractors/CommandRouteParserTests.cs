@@ -365,6 +365,30 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await func.Should().ThrowAsync<ErrorException>().WithMessage($"The command owner is not valid. owner={errCmd} command={childCmd}.");
         }
 
+        [Theory]
+        [InlineData("root1", "root1")]
+        [InlineData("root1 grp1", "grp1")]
+        [InlineData("root1 grp1 grp2", "grp2")]
+        [InlineData("root1 grp1 grp2 grp3", "grp3")]
+        [InlineData("root1 grp1 grp2 grp3 cmd1", "cmd1")]
+        public async Task Arguments_NotSupported_Throws(string cmdStr, string errCmd)
+        {
+            Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", $"{cmdStr} \"not supported arg1\" 36.25"));
+            await func.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support any arguments. command={errCmd}");
+        }
+
+        [Theory]
+        [InlineData("root1", "root1")]
+        [InlineData("root1 grp1", "grp1")]
+        [InlineData("root1 grp1 grp2", "grp2")]
+        [InlineData("root1 grp1 grp2 grp3", "grp3")]
+        [InlineData("root1 grp1 grp2 grp3 cmd1", "cmd1")]
+        public async Task Options_NotSupported_Throws(string cmdStr, string errCmd)
+        {
+            Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", $"{cmdStr} --opt1 val1 -opt2 val2"));
+            await func.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support any options. command={errCmd}");
+        }
+
         private readonly TerminalOptions terminalOptions;
         private ITextHandler textHandler;
         private ICommandStoreHandler commandStoreHandler;

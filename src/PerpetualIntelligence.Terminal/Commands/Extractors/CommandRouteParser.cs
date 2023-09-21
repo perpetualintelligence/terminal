@@ -100,7 +100,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task<ParsedCommand> ParseAsync(CommandRoute commandRoute)
         {
             // Segment the raw command into individual components
-            Queue<string> segmentsQueue = new(commandRoute.Command.Raw.Split(new[] { terminalOptions.Extractor.Separator }, StringSplitOptions.None));
+            HashSet<string> separatorSet = new() { terminalOptions.Extractor.Separator };
+            Queue<string> segmentsQueue = new(commandRoute.Command.Raw.Split(separatorSet.ToArray(), StringSplitOptions.None));
 
             // Handle the processing of commands and arguments
             (List<CommandDescriptor> parsedCommands, List<string> parsedArguments) = await ExtractCommandsAndArgumentsAsync(segmentsQueue);
@@ -495,7 +496,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             if (commandDescriptor.OptionDescriptors == null || commandDescriptor.OptionDescriptors.Count == 0)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support options. command={0}", commandDescriptor.Id);
+                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support any options. command={0}", commandDescriptor.Id);
+            }
+
+            if (commandDescriptor.OptionDescriptors.Count < parsedOptions.Count)
+            {
+                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support {0} options. command={1} options={2}", parsedOptions.Count, commandDescriptor.Id, parsedOptions.Keys.JoinByComma());
             }
 
             // 1. An input can be either an option or an alias, but not both.
