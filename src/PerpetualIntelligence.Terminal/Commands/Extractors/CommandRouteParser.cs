@@ -20,24 +20,24 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
 {
     /// <summary>
-    /// Represents a default command-line parser that understands and processes terminal commands based on pre-defined descriptors.
+    /// Represents a default command-line parser for processing terminal commands based on defined descriptors.
     /// </summary>
     /// <remarks>
-    /// <para>The default command-line parser is designed for comprehensive command line parsing with a variety of use-cases in mind:</para>
+    /// <para>The default command-line parser is designed for extensive command line parsing. Key features include:</para>
     ///
-    /// <para><strong>Configurable Elements</strong>: The parser accommodates configurable separators, delimiters, option prefixes, and option alias prefixes, making it adaptable for various command structures.</para>
+    /// <para><strong>Configurable Elements</strong>: Adapts to various command structures with configurable separators, delimiters, and option prefixes.</para>
     ///
-    /// <para><strong>Segmentation and Queue</strong>: Before any form of parsing starts, the entire command input string is split into individual segments using the defined separator. These segments are then efficiently processed in order by using a queue data structure. The utilization of a queue ensures that every segment is processed once and only once, enhancing the efficiency of the algorithm.</para>
+    /// <para><strong>Segmentation and Queue</strong>: Segregates the command input string to separate commands/arguments from options. Segments are efficiently processed using a queue.</para>
     ///
-    /// <para><strong>Command Parsing</strong>: Commands are the first to be identified and processed from the segments. They provide context for subsequent segments and must always precede arguments and options. In a hierarchical structure, root commands must precede command groups and subcommands. The parser understands this structure and processes them in the correct order.</para>
+    /// <para><strong>Command Parsing</strong>: Commands provide context for subsequent segments and must always precede arguments and options. The parser recognizes root commands, command groups, and subcommands.</para>
     ///
-    /// <para><strong>Hierarchical Parsing (Optional)</strong>: If enabled, commands can be structured hierarchically consisting of root, group, and subcommands. The hierarchy parsing requires a separate loop which affects the overall complexity of the parsing process. Each hierarchy should have a singular root. Commands are identified and processed before arguments or options.</para>
+    /// <para><strong>Hierarchical Parsing (Optional)</strong>: Allows a hierarchical command structure with root, group, and subcommands. Note: Hierarchical parsing may affect the overall complexity of the parsing process.</para>
     ///
     /// <para><strong>Argument Parsing</strong>: Command arguments are processed before options. Any segment after the identified command, and that isn't recognized as an option or its alias, is treated as an argument. It's imperative that the provided arguments for a command don't exceed what its descriptor anticipates.</para>
     ///
-    /// <para><strong>Option Parsing</strong>: Options follow arguments and are recognized by either their prefix or alias prefix. For an option to be valid, it must be defined in the command's descriptor.</para>
+    /// <para><strong>Option Parsing</strong>: Options follow arguments. The parser initially seeks the starting point of options in the input string. Once identified, each option, recognized by its prefix or alias prefix, is segmented using the option value separator. For an option to be valid, it must be defined in the command's descriptor.</para>
     ///
-    /// <para><strong>Efficiency and Complexity</strong>: The essence of this parser's efficiency lies in the sequential processing of segments. When hierarchical parsing is disabled, the time complexity can be viewed as O(n), where n is the number of segments. With hierarchical parsing enabled, the complexity grows but remains efficient due to the singular processing of each segment. This ensures that the parser remains adept even as the complexity of the command grows. The algorithm has been designed to be comprehensive and cater to a broad spectrum of command line structures, making it suitable for a wide range of applications.</para>
+    /// <para><strong>Efficiency and Complexity</strong>: The parser's efficiency is derived from a combination of string operations and the sequential processing of segments. The initial identification of the starting point of options using `IndexOf` and subsequent `Substring` operations have a time complexity of O(n), where n is the length of the input string. The `Split` operations, both for commands/arguments and options, add another O(n). Processing segments through queue operations like Enqueue, Peek, and Dequeue have constant time complexities (O(1)) for each operation, but the cumulative time complexity across all segments remains O(n). Thus, considering all these operations, the overall complexity for the parsing process can be approximated as O(n). While the parser is designed to be comprehensive and handle a variety of command line structures efficiently, the actual performance can vary based on the intricacies of specific command structures and their length. It is always recommended to measure the parser's performance against real-world scenarios to assess its suitability for specific applications.</para>
     ///
     /// <para><strong>Potential Errors</strong>:
     /// <list type="bullet">
@@ -99,9 +99,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// </remarks>
         public async Task<ParsedCommand> ParseAsync(CommandRoute commandRoute)
         {
-            // Segment the raw command into individual components
-            HashSet<string> separatorSet = new() { terminalOptions.Extractor.Separator };
-            Queue<string> segmentsQueue = new(commandRoute.Command.Raw.Split(separatorSet.ToArray(), StringSplitOptions.None));
+            // Extract the queue of segments from the raw command based of `separator` and `optionValueSeparator`
+            Queue<ParsedSplit> segmentsQueue = ExtractQueue(commandRoute);
 
             // Handle the processing of commands and arguments
             (List<CommandDescriptor> parsedCommands, List<string> parsedArguments) = await ExtractCommandsAndArgumentsAsync(segmentsQueue);
@@ -116,22 +115,79 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             return ParseCommand(commandRoute, parsedCommands, parsedArguments, parsedOptions);
         }
 
-        private Dictionary<string, string> ExtractOptions(Queue<string> segmentsQueue)
+        private Queue<ParsedSplit> ExtractQueue(CommandRoute commandRoute)
         {
-            // Handy configurable tokens.
-            string delimiter = terminalOptions.Extractor.ValueDelimiter;
-            string separator = terminalOptions.Extractor.Separator;
+            var queue = new Queue<ParsedSplit>();
 
+            // This algorithm is designed to split a given string based on two token delimiters:
+            // a primary separator and a value separator. The goal is to determine which of the
+            // two tokens appears next in the string, allowing us to correctly split the string
+            // into its logical segments.
+            // 1. Start by initializing a `currentIndex` to zero, which indicates our current
+            // position within the string.
+            // 2. Using a while loop, iterate through the string until the entire length is processed.
+            // 3. For each position denoted by `currentIndex`:
+            //   a. Set the `nearestTokenIndex` to the end of the string. This value tracks the
+            //      nearest occurrence of any token.
+            //   b. Initialize `foundToken` to null. This holds the token (separator or valueSeparator)
+            //      that is closest to the `currentIndex`.
+            // 4. Loop through both tokens using a foreach loop:
+            //   a. Find the first occurrence of each token from the current index.
+            //   b. If a token occurrence is found and its position is closer than any previously
+            //      found token's position, update `nearestTokenIndex` and `foundToken`.
+            // 5. After the foreach loop:
+            //   a. If `foundToken` is null (no more occurrences of either token), add the remainder
+            //      of the string to the result and exit the loop.
+            //   b. If a token is found, split the string at `nearestTokenIndex`, add the segment
+            //      and its associated token to the result. Update `currentIndex` to continue processing.
+            // The result is a list of segments split by the nearest occurring token, capturing the
+            // context of each split.
+            int currentIndex = 0;
+            string raw = commandRoute.Command.Raw;
+            while (currentIndex < raw.Length)
+            {
+                int nearestTokenIndex = raw.Length;
+                string? foundToken = null;
+                foreach (var token in new[] { terminalOptions.Extractor.Separator, terminalOptions.Extractor.OptionValueSeparator })
+                {
+                    int index = raw.IndexOf(token, currentIndex);
+                    if (index != -1 && index < nearestTokenIndex)
+                    {
+                        nearestTokenIndex = index;
+                        foundToken = token;
+                    }
+                }
+
+                if (foundToken == null)
+                {
+                    queue.Enqueue(new ParsedSplit(raw.Substring(currentIndex), null));
+                    currentIndex = raw.Length;
+                    continue;
+                }
+
+                string substring = raw.Substring(currentIndex, nearestTokenIndex - currentIndex);
+                queue.Enqueue(new ParsedSplit(substring, foundToken));
+                currentIndex = nearestTokenIndex + foundToken.Length;
+            }
+
+            return queue;
+        }
+
+        private Dictionary<string, string> ExtractOptions(Queue<ParsedSplit> segmentsQueue)
+        {
             // This dictionary will hold the parsed options.
             Dictionary<string, string> parsedOptions = new();
+            string valueDelimiter = terminalOptions.Extractor.ValueDelimiter;
+            string separator = terminalOptions.Extractor.Separator;
 
             while (segmentsQueue.Count > 0)
             {
                 // Always dequeue a segment because we're expecting it to be an option.
-                string option = segmentsQueue.Dequeue();
+                ParsedSplit optionSplit = segmentsQueue.Dequeue();
                 StringBuilder optionValueBuilder = new();
 
                 // If we are not within a delimiter then we cannot have a separator.
+                string option = optionSplit.Split;
                 if (option.IsNullOrEmpty() || textHandler.TextEquals(option, separator))
                 {
                     continue;
@@ -149,7 +205,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                         break; // Exit the loop if there are no more segments.
                     }
 
-                    nextSegment = segmentsQueue.Peek();
+                    nextSegment = segmentsQueue.Peek().Split;
 
                     // If nextSegment is purely the separator or empty, discard it and continue to the next iteration.
                     if (textHandler.TextEquals(nextSegment, separator) || string.IsNullOrEmpty(nextSegment))
@@ -172,19 +228,19 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 // Peek at the next segment without removing it. This allows us to make a decision
                 // on how to proceed without advancing the queue. E.g. whether the option value
                 // is delimited or not.
-                if (StartsWith(nextSegment, delimiter))
+                if (StartsWith(nextSegment, valueDelimiter))
                 {
                     // If the next segment starts with a delimiter, then this segment represents a value that is enclosed
                     // within delimiters. We should process until we find the closing delimiter, capturing everything in-between.
                     bool foundClosingDelimiter = false;
                     while (segmentsQueue.Count > 0 && !foundClosingDelimiter)
                     {
-                        string currentSegment = segmentsQueue.Dequeue();
-                        optionValueBuilder.Append(currentSegment);
+                        ParsedSplit currentSegment = segmentsQueue.Dequeue();
+                        optionValueBuilder.Append(currentSegment.Split);
 
                         // If the currentSegment contains just the delimiter both start and end will match and we will break out of the loop.
                         // This will happen when the option value for e.g. \"  value  "\
-                        if (EndsWith(currentSegment, delimiter) && optionValueBuilder.Length > 1)
+                        if (EndsWith(currentSegment.Split, valueDelimiter) && optionValueBuilder.Length > 1)
                         {
                             foundClosingDelimiter = true;
                         }
@@ -193,7 +249,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                         bool requiresSeparator = segmentsQueue.Count > 0 && !foundClosingDelimiter;
                         if (requiresSeparator)
                         {
-                            optionValueBuilder.Append(separator);
+                            optionValueBuilder.Append(currentSegment.Token);
                         }
                     }
 
@@ -205,13 +261,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
                     // Strip the delimiters if present.
                     string optionValueTemp = optionValueBuilder.ToString().TrimEnd(separator, textHandler.Comparison);
-                    if (StartsWith(optionValueTemp, delimiter))
+                    if (StartsWith(optionValueTemp, valueDelimiter))
                     {
-                        optionValueTemp = RemovePrefix(optionValueTemp, delimiter);
+                        optionValueTemp = RemovePrefix(optionValueTemp, valueDelimiter);
                     }
-                    if (EndsWith(optionValueTemp, delimiter))
+                    if (EndsWith(optionValueTemp, valueDelimiter))
                     {
-                        optionValueTemp = RemoveSuffix(optionValueTemp, delimiter);
+                        optionValueTemp = RemoveSuffix(optionValueTemp, valueDelimiter);
                     }
                     parsedOptions[option] = optionValueTemp;
                 }
@@ -220,14 +276,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     // If the next segment is neither an option nor starts with a delimiter, then it should be treated as a
                     // non-delimited value for the current option. We process segments until we encounter the next option
                     // or until we exhaust all segments.
-                    while (segmentsQueue.Count > 0 && !IsOption(segmentsQueue.Peek()))
+                    while (segmentsQueue.Count > 0 && !IsOption(segmentsQueue.Peek().Split))
                     {
                         if (optionValueBuilder.Length > 0)
                         {
                             optionValueBuilder.Append(separator); // Using space as a separator
                         }
 
-                        optionValueBuilder.Append(segmentsQueue.Dequeue());
+                        optionValueBuilder.Append(segmentsQueue.Dequeue().Split);
                     }
 
                     parsedOptions[option] = optionValueBuilder.ToString().TrimEnd(separator, textHandler.Comparison);
@@ -247,26 +303,26 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// The differentiation is crucial because commands and arguments are handled differently downstream.
         /// An argument, as recognized by this method, is a segment that doesn't correlate with any known command and follows an identified command.
         /// </remarks>
-        private async Task<(List<CommandDescriptor> ParsedDescriptors, List<string> ParsedArguments)> ExtractCommandsAndArgumentsAsync(Queue<string> segmentsQueue)
+        private async Task<(List<CommandDescriptor> ParsedDescriptors, List<string> ParsedArguments)> ExtractCommandsAndArgumentsAsync(Queue<ParsedSplit> segmentsQueue)
         {
-            string delimiter = terminalOptions.Extractor.ValueDelimiter;
-            string separator = terminalOptions.Extractor.Separator;
-
             List<CommandDescriptor> parsedDescriptors = new();
             List<string> parsedArguments = new();
             string? potentialLastCommandId = null;
+            string valueDelimiter = terminalOptions.Extractor.ValueDelimiter;
+            string separator = terminalOptions.Extractor.Separator;
 
             while (segmentsQueue.Count > 0)
             {
                 // Break loop if segment represents an option.
-                string segment = segmentsQueue.Peek();
-                if (IsOption(segment))
+                ParsedSplit splitSegment = segmentsQueue.Peek();
+                if (IsOption(splitSegment.Split))
                 {
                     break;
                 }
                 segmentsQueue.Dequeue();
 
                 // If we are not within a delimiter then we cannot have a separator.
+                string segment = splitSegment.Split;
                 if (segment.IsNullOrEmpty() || textHandler.TextEquals(segment, separator))
                 {
                     continue;
@@ -303,35 +359,43 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 {
                     StringBuilder argumentValueBuilder = new(segment, segment.Length + 10);
 
-                    if (StartsWith(segment, delimiter))
+                    if (StartsWith(segment, valueDelimiter))
                     {
-                        while (segmentsQueue.Count > 0 && (!EndsWith(segment, delimiter) || argumentValueBuilder.Length == 1))
+                        while (segmentsQueue.Count > 0 && (!EndsWith(segment, valueDelimiter) || argumentValueBuilder.Length == 1))
                         {
                             argumentValueBuilder.Append(separator);
-                            segment = segmentsQueue.Dequeue();
+                            splitSegment = segmentsQueue.Dequeue();
+                            segment = splitSegment.Split;
                             argumentValueBuilder.Append(segment);
                         }
 
-                        if (!EndsWith(segment, delimiter))
+                        if (!EndsWith(segment, valueDelimiter))
                         {
                             throw new ErrorException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
                         }
                     }
 
-                    string argumentValue = argumentValueBuilder.ToString();
-                    if (StartsWith(argumentValue, delimiter))
-                    {
-                        argumentValue = RemovePrefix(argumentValue, delimiter);
-                    }
-                    if (EndsWith(argumentValue, delimiter))
-                    {
-                        argumentValue = RemoveSuffix(argumentValue, delimiter);
-                    }
-                    parsedArguments.Add(argumentValue);
+                    parsedArguments.Add(TrimValueDelimiter(argumentValueBuilder.ToString()));
                 }
             }
 
             return (parsedDescriptors, parsedArguments);
+        }
+
+        private string TrimValueDelimiter(string value)
+        {
+            string trimmedValue = value;
+            if (StartsWith(trimmedValue, terminalOptions.Extractor.ValueDelimiter))
+            {
+                trimmedValue = RemovePrefix(trimmedValue, terminalOptions.Extractor.ValueDelimiter);
+            }
+
+            if (EndsWith(trimmedValue, terminalOptions.Extractor.ValueDelimiter))
+            {
+                trimmedValue = RemoveSuffix(trimmedValue, terminalOptions.Extractor.ValueDelimiter);
+            }
+
+            return trimmedValue;
         }
 
         private void LogIfDebugLevelEnabled(List<CommandDescriptor> parsedDescriptors, IEnumerable<string> parsedArguments, Dictionary<string, string> parsedOptions)
@@ -403,7 +467,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             Root? hierarchy = null;
             Group? lastGroup = null;
-            SubCommand? lastSubCommand = null;
             foreach (CommandDescriptor currentDescriptor in parsedDescriptors)
             {
                 Command currentCommand = textHandler.TextEquals(currentDescriptor.Id, executingCommand.Id)
@@ -445,11 +508,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
                     case CommandType.SubCommand:
                         {
-                            if (lastSubCommand != null)
-                            {
-                                throw new ErrorException(TerminalErrors.InvalidRequest, "The subcommands cannot be nested. command={0}", currentDescriptor.Id);
-                            }
-
                             SubCommand subCommand = new(currentCommand);
                             if (lastGroup != null)
                             {
@@ -463,7 +521,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                             {
                                 hierarchy = Root.Default(subCommand);
                             }
-                            lastSubCommand = subCommand;
                             break;
                         }
 
