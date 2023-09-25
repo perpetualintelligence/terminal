@@ -11,7 +11,7 @@ using PerpetualIntelligence.Terminal.Commands;
 namespace PerpetualIntelligence.Terminal.Hosting
 {
     /// <summary>
-    /// An abstraction of <c>pi-cli</c> argument builder.
+    /// An abstraction of argument builder.
     /// </summary>
     public interface IArgumentBuilder
     {

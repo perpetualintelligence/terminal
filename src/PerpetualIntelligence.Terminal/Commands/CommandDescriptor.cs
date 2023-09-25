@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="owners">The command owners.</param>
         /// <param name="argumentDescriptors">The argument descriptors.</param>
         /// <param name="optionDescriptors">The option descriptors.</param>
-        public CommandDescriptor(string id, string name, string description, CommandType type, CommandFlags flags, OwnerCollection? owners = null, ArgumentDescriptors? argumentDescriptors = null, OptionDescriptors? optionDescriptors = null)
+        public CommandDescriptor(string id, string name, string description, CommandType type, CommandFlags flags, OwnerIdCollection? owners = null, ArgumentDescriptors? argumentDescriptors = null, OptionDescriptors? optionDescriptors = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -48,7 +48,7 @@ namespace PerpetualIntelligence.Terminal.Commands
             Description = description;
             Type = type;
             Flags = flags;
-            Owners = owners;
+            OwnerIds = owners;
             OptionDescriptors = optionDescriptors;
             ArgumentDescriptors = argumentDescriptors;
         }
@@ -99,7 +99,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <remarks>
         /// The root command will not have any owner.
         /// </remarks>
-        public OwnerCollection? Owners { get; internal set; }
+        public OwnerIdCollection? OwnerIds { get; internal set; }
 
         /// <summary>
         /// The command id.

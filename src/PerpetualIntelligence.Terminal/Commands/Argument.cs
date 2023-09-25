@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Commands
     /// </para>
     /// </remarks>
     /// <seealso cref="Command"/>
-    public sealed class Argument : IEquatable<Argument?>, IKeyAsId
+    public sealed class Argument : IEquatable<Argument?>, IKeyAsId, IValue
     {
         /// <summary>
         /// Initialize a new instance..
@@ -70,6 +70,12 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <remarks>The argument id is unique with in a command.</remarks>
         [JsonIgnore]
         public string Id => Descriptor.Id;
+
+        /// <summary>
+        /// The option data type.
+        /// </summary>
+        [JsonIgnore]
+        public string DataType => Descriptor.DataType;
 
         /// <summary>
         /// Indicates whether the current argument is equal to another argument.
@@ -116,7 +122,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// Changes the argument value to the specified type.
         /// </summary>
         /// <param name="type">The new type to use.</param>
-        internal void ChangeValueType(Type type)
+        public void ChangeValueType(Type type)
         {
             Value = Convert.ChangeType(Value, type);
         }

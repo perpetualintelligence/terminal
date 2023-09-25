@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The <c>pi-cli</c> command string extraction options.
+    /// The command string extraction options.
     /// </summary>
     public class ExtractorOptions
     {

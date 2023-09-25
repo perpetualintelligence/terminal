@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -21,10 +21,10 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         [TestMethod]
         public void CheckerOptionsShouldHaveCorrectDefaultValues()
         {
-            CheckerOptions options = new ();
+            CheckerOptions options = new();
 
-            Assert.AreEqual(null, options.AllowObsoleteOption);
-            Assert.AreEqual(null, options.StrictOptionValueType);            
+            Assert.AreEqual(null, options.AllowObsolete);
+            Assert.AreEqual(null, options.StrictValueType);
         }
     }
 }

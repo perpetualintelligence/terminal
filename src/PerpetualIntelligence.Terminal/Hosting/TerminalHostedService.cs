@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,7 +24,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Hosting
 {
     /// <summary>
-    /// The <c>pi-cli</c> hosted service to manage the application lifetime and terminal customization.
+    /// The hosted service to manage the application lifetime and terminal customization.
     /// </summary>
     public class TerminalHostedService : IHostedService
     {
@@ -49,7 +43,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         /// <summary>
-        /// Starts the <c>pi-cli</c> hosted service asynchronously.
+        /// Starts the  hosted service asynchronously.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -119,7 +113,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         /// <summary>
-        /// Stops the <c>pi-cli</c> hosted service asynchronously.
+        /// Stops the hosted service asynchronously.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         public Task StopAsync(CancellationToken cancellationToken)
@@ -166,7 +160,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         /// <summary>
-        /// Triggered when the <c>pi-cli</c> application host has fully started.
+        /// Triggered when the application host has fully started.
         /// </summary>
         protected virtual void OnStarted()
         {
@@ -175,7 +169,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         /// <summary>
-        /// Triggered when the <c>pi-cli</c> application host has completed a graceful shutdown. The application will
+        /// Triggered when the application host has completed a graceful shutdown. The application will
         /// not exit until all callbacks registered on this token have completed.
         /// </summary>
         protected virtual void OnStopped()
@@ -184,7 +178,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         /// <summary>
-        /// Triggered when the <c>pi-cli</c> application host is starting a graceful shutdown. Shutdown will block until
+        /// Triggered when the application host is starting a graceful shutdown. Shutdown will block until
         /// all callbacks registered on this token have completed.
         /// </summary>
         protected virtual void OnStopping()

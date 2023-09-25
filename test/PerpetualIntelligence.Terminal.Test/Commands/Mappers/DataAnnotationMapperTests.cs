@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,7 +32,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         public async Task MapperShouldThrowForInvalidDataType(string dataType)
         {
             Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
-            Func<Task> result = async () => await mapper.MapAsync(new OptionDataTypeMapperContext(option));
+            Func<Task> result = async () => await mapper.MapAsync(new DataTypeMapperContext<Option>(option));
             await result.Should().ThrowAsync<ErrorException>().WithMessage($"The option data type is not supported. option=opt1 data_type={dataType}");
         }
 
@@ -57,7 +51,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         public async Task MapperShouldReturnCorrectMappingAsync(string dataType, Type systemType)
         {
             Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
-            var result = await mapper.MapAsync(new OptionDataTypeMapperContext(option));
+            var result = await mapper.MapAsync(new DataTypeMapperContext<Option>(option));
             Assert.AreEqual(systemType, result.MappedType);
         }
 
@@ -65,24 +59,24 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         public async Task NullOrWhitespaceDataTypeShouldErrorAsync()
         {
             Option test = new(new OptionDescriptor("opt1", "   ", "desc", OptionFlags.None), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new DataTypeMapperContext<Option>(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
 
             test = new(new OptionDescriptor("opt1", "", "desc", OptionFlags.None), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new DataTypeMapperContext<Option>(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             test = new(new OptionDescriptor("opt1", null, "desc", OptionFlags.None), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new OptionDataTypeMapperContext(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => mapper.MapAsync(new DataTypeMapperContext<Option>(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         protected override void OnTestInitialize()
         {
             options = MockTerminalOptions.NewLegacyOptions();
-            mapper = new OptionDataTypeMapper(options, TestLogger.Create<OptionDataTypeMapper>());
+            mapper = new DataTypeMapper<Option>(options, TestLogger.Create<DataTypeMapper<Option>>());
         }
 
-        private IOptionDataTypeMapper mapper = null!;
+        private IDataTypeMapper<Option> mapper = null!;
         private TerminalOptions options = null!;
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,19 +7,20 @@
 
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Mappers
+namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
-    /// The option data-type mapper result.
+    /// The argument checker result.
     /// </summary>
-    public sealed class OptionDataTypeMapperResult
+    /// <seealso cref="IArgumentChecker"/>
+    /// <seealso cref="ArgumentCheckerContext"/>
+    public class ArgumentCheckerResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="mappedType">The mapped type.</param>
-        /// <exception cref="ArgumentNullException">Null mapped type.</exception>
-        public OptionDataTypeMapperResult(Type mappedType)
+        /// <param name="mappedType">The mapped type to validate the option.</param>
+        public ArgumentCheckerResult(Type mappedType)
         {
             MappedType = mappedType ?? throw new ArgumentNullException(nameof(mappedType));
         }

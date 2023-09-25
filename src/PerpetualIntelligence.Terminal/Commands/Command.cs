@@ -10,7 +10,7 @@ using PerpetualIntelligence.Shared.Exceptions;
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// An immutable <c>pi-cli</c> command. A command is a specific action or a set of actions that a user or an
+    /// An immutable command. A command is a specific action or a set of actions that a user or an
     /// application requests the underlying system to perform. It can be a simple action such as invoking a system
     /// method or an OS command or representing a complex operation that calls a set of protected APIs over the internal
     /// or external network. A command can virtually do anything in the context of your application or service.
@@ -81,6 +81,32 @@ namespace PerpetualIntelligence.Terminal.Commands
             try
             {
                 option = Options[idOrAlias];
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to get the argument for the specified identifier.
+        /// </summary>
+        /// <param name="id">The argument identifier.</param>
+        /// <param name="argument">The argument if found.</param>
+        /// <returns><c>true</c> if the argument is found.</returns>
+        public bool TryGetArgument(string id, out Argument? argument)
+        {
+            argument = null;
+
+            if (Arguments == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                argument = Arguments[id];
                 return true;
             }
             catch

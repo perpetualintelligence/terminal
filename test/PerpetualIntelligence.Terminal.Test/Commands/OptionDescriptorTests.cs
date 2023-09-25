@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         [Fact]
         public void RequiredShouldBeSetWithDataAnnotationRequiredAttribute()
         {
-            OptionDescriptor arg = new("name", "custom", "test desc", OptionFlags.None) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new RequiredAttribute()) } };
+            OptionDescriptor arg = new("name", "custom", "test desc", OptionFlags.None) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new RequiredAttribute()) } };
             arg.ValueCheckers.Should().NotBeNull();
             arg.Flags.Should().Be(OptionFlags.Required);
         }

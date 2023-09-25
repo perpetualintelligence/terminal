@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using System;
 using System.Collections.Generic;
@@ -34,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Commands
     /// </para>
     /// </remarks>
     /// <seealso cref="Command"/>
-    public sealed class Option : IEquatable<Option?>
+    public sealed class Option : IEquatable<Option?>, IValue
     {
         /// <summary>
         /// Initialize a new instance..
@@ -140,7 +134,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// Changes the option value to the specified type.
         /// </summary>
         /// <param name="type">The new type to use.</param>
-        internal void ChangeValueType(Type type)
+        public void ChangeValueType(Type type)
         {
             Value = Convert.ChangeType(Value, type);
         }

@@ -10,7 +10,7 @@ using PerpetualIntelligence.Terminal.Commands.Handlers;
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The <c>pi-cli</c> handler options.
+    /// The handler options.
     /// </summary>
     public class HandlerOptions
     {

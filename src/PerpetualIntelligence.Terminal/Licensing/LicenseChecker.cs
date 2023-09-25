@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
-    /// The default <see cref="ILicenseChecker"/> for all <c>pi-cli</c> features.
+    /// The default <see cref="ILicenseChecker"/> for all features.
     /// </summary>
     public sealed class LicenseChecker : ILicenseChecker
     {
@@ -109,7 +109,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             LicenseLimits limits = context.License.Limits;
 
             // Strict Data Type
-            if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictOptionValueType))
+            if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictValueType))
             {
                 throw new ErrorException(TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
             }

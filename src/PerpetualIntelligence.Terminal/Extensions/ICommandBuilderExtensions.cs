@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
         /// <param name="owners">The owner identifiers.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder Owners(this ICommandBuilder builder, OwnerCollection owners)
+        public static ICommandBuilder Owners(this ICommandBuilder builder, OwnerIdCollection owners)
         {
             if (!owners.Any())
             {

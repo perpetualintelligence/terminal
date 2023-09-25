@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Events
 {
     /// <summary>
-    /// The <c>pi-cli</c> asynchronous event handler.
+    /// The asynchronous event handler.
     /// </summary>
     public interface IAsyncEventHandler
     {

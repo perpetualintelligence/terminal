@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task DisabledArgumentShouldErrorAsync()
+        public async Task DisabledOptionShouldErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Disabled);
             CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
@@ -45,11 +45,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is disabled. command_name=name1 command_id=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is disabled. command=id1 option=key1");
         }
 
         [TestMethod]
-        public async Task EnabledArgumentShouldNotErrorAsync()
+        public async Task EnabledOptionShouldNotErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         [TestMethod]
-        public async Task ObsoleteArgumentAndObsoleteAllowedShouldNotErrorAsync()
+        public async Task ObsoleteOptionAndObsoleteAllowedShouldNotErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Obsolete);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
@@ -78,12 +78,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
 
-            terminalOptions.Checker.AllowObsoleteOption = true;
+            terminalOptions.Checker.AllowObsolete = true;
             await checker.CheckAsync(context);
         }
 
         [TestMethod]
-        public async Task ObsoleteArgumentAndObsoleteNotAllowedShouldErrorAsync()
+        public async Task ObsoleteOptionAndObsoleteNotAllowedShouldErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Obsolete);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
@@ -96,15 +96,15 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
 
-            terminalOptions.Checker.AllowObsoleteOption = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
+            terminalOptions.Checker.AllowObsolete = null;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command=id1 option=key1");
 
-            terminalOptions.Checker.AllowObsoleteOption = false;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command_name=name1 command_id=id1 option=key1");
+            terminalOptions.Checker.AllowObsolete = false;
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command=id1 option=key1");
         }
 
         [TestMethod]
-        public async Task RequiredArgumentMissingShouldErrorAsync()
+        public async Task RequiredOptionMissingShouldErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Required);
             OptionDescriptor optionDescriptor2 = new("key2", nameof(String), "desc1", OptionFlags.Required);
@@ -117,11 +117,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.MissingOption, "The required option is missing. command_name=name1 command_id=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.MissingOption, "The required option is missing. command=id1 option=key1");
         }
 
         [TestMethod]
-        public async Task RequiredArgumentPassedShouldNotErrorAsync()
+        public async Task RequiredOptionPassedShouldNotErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Required);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
@@ -139,7 +139,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingDisabledInvalidValueTypeShouldNotErrorAsync()
         {
-            terminalOptions.Checker.StrictOptionValueType = false;
+            terminalOptions.Checker.StrictValueType = false;
 
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
@@ -159,7 +159,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingValueDelimiterValidValueTypeShouldErrorAsync()
         {
-            terminalOptions.Checker.StrictOptionValueType = true;
+            terminalOptions.Checker.StrictValueType = true;
 
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
@@ -177,7 +177,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         [TestMethod]
         public async Task StrictTypeCheckingWithValidValueTypeShouldChangeTypeCorrectlyAsync()
         {
-            terminalOptions.Checker.StrictOptionValueType = true;
+            terminalOptions.Checker.StrictValueType = true;
 
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
@@ -237,9 +237,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             commandRoute = new CommandRoute(Guid.NewGuid().ToString(), "test_raw");
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             textHandler = new UnicodeTextHandler();
-            mapper = new OptionDataTypeMapper(terminalOptions, TestLogger.Create<OptionDataTypeMapper>());
-            valueChecker = new OptionChecker(mapper, terminalOptions);
-            checker = new CommandChecker(valueChecker, terminalOptions, TestLogger.Create<CommandChecker>());
+            optionMapper = new DataTypeMapper<Option>(terminalOptions, TestLogger.Create<DataTypeMapper<Option>>());
+            argumentMapper = new DataTypeMapper<Argument>(terminalOptions, TestLogger.Create<DataTypeMapper<Argument>>());
+            valueChecker = new OptionChecker(optionMapper, terminalOptions);
+            argumentChecker = new ArgumentChecker(argumentMapper, terminalOptions);
+            checker = new CommandChecker(valueChecker, argumentChecker, terminalOptions, TestLogger.Create<CommandChecker>());
             commands = new InMemoryCommandStore(MockCommands.Commands);
             tokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRoutingContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token));
@@ -249,10 +251,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         private CommandRoute commandRoute = null!;
         private CommandChecker checker = null!;
         private ICommandStoreHandler commands = null!;
-        private IOptionDataTypeMapper mapper = null!;
+        private IDataTypeMapper<Option> optionMapper = null!;
+        private IDataTypeMapper<Argument> argumentMapper = null!;
         private TerminalOptions terminalOptions = null!;
         private ITextHandler textHandler = null!;
         private IOptionChecker valueChecker = null!;
+        private IArgumentChecker argumentChecker = null!;
         private CommandRouterContext routerContext = null!;
         private TerminalRoutingContext routingContext = null!;
         private CancellationTokenSource tokenSource = null!;

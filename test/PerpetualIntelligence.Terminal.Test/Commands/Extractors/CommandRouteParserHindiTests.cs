@@ -46,9 +46,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             _commandDescriptors = new Dictionary<string, CommandDescriptor>()
             {
                { "यूनिकोड", new CommandDescriptor("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड", CommandType.Root, CommandFlags.None) },
-               { "परीक्षण", new CommandDescriptor("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड", CommandType.Group, CommandFlags.None, new OwnerCollection("यूनिकोड")) },
-               { "प्रिंट", new CommandDescriptor("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड", CommandType.SubCommand, CommandFlags.None, new OwnerCollection("परीक्षण"), argumentDescriptors:null, optionDescriptors: options) },
-               { "दूसरा", new CommandDescriptor("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, new OwnerCollection("परीक्षण"),  argumentDescriptors:null, optionDescriptors: options) },
+               { "परीक्षण", new CommandDescriptor("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड", CommandType.Group, CommandFlags.None, new OwnerIdCollection("यूनिकोड")) },
+               { "प्रिंट", new CommandDescriptor("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"), argumentDescriptors:null, optionDescriptors: options) },
+               { "दूसरा", new CommandDescriptor("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"),  argumentDescriptors:null, optionDescriptors: options) },
             };
 
             _commandStore = new InMemoryCommandStore(_commandDescriptors);
@@ -75,6 +75,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unicode_Hindi_Group_Throws_With_Space_And_Custom_Separator()
         {
             _terminalOptions.Extractor.Separator = "एस";
+            _terminalOptions.Extractor.OptionValueSeparator = "एस";
 
             // Here we are using a space in the command name to test that the parser will throw an error.
             // The separator is set to "एस" so the parser will not be able to find the command 'परीक्षण  '
@@ -108,6 +109,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             parsedCommand.Hierarchy.ChildGroup!.LinkedCommand.Id.Should().Be("परीक्षण");
             parsedCommand.Hierarchy.ChildGroup.ChildGroup.Should().BeNull();
             parsedCommand.Hierarchy.ChildGroup.ChildSubCommand.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Unicode_Hindi_Group_With_Multiple_Separator_And_Spaces_Should_Error()
+        {
+            string separator = "एस";
+            _terminalOptions.Extractor.Separator = separator;
+            _terminalOptions.Extractor.OptionValueSeparator = separator;
+
+            _terminalOptions.Extractor.ParseHierarchy = true;
+
+            // Here space is not a separation so any space is considered part of the command name.
+            // Because there is not command with name '  परीक्षण' the parser will interpret it as argument and throw.
+            Func<Task> act = async () => await _commandRouteParser.ParseAsync(new CommandRoute("id1", $"{separator}यूनिकोड{separator}{separator}{separator}  परीक्षण{separator}{separator}{separator}{separator}"));
+            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command does not support any arguments. command=यूनिकोड");
         }
 
         [Fact]
@@ -203,6 +219,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             string sep = "एस";
             _terminalOptions.Extractor.Separator = sep;
+            _terminalOptions.Extractor.OptionValueSeparator = sep;
 
             string prefix = "डैश";
             _terminalOptions.Extractor.OptionPrefix = prefix;
@@ -211,7 +228,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             _terminalOptions.Extractor.OptionAliasPrefix = alias;
 
             _terminalOptions.Extractor.ParseHierarchy = true;
-            var parsedCommand = await _commandRouteParser.ParseAsync(new CommandRoute("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}\"प्रथम मान\"{sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
+            var parsedCommand = await _commandRouteParser.ParseAsync(new CommandRoute("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}{sep}{sep}प्रथम मान{sep}{sep}{sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
@@ -251,5 +268,234 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             parsedCommand.Command.Options!["चारहै"].Value.Should().Be("86.39");
             parsedCommand.Command.Options["चार"].Should().BeSameAs(parsedCommand.Command.Options["चारहै"]);
         }
+
+        [Fact]
+        public async Task Unicode_Hindi_SubCommand_With_Space_Options_Extracts_Correctly()
+        {
+            string sep = "एस";
+            _terminalOptions.Extractor.Separator = sep;
+            _terminalOptions.Extractor.OptionValueSeparator = sep;
+
+            string prefix = "डैश";
+            _terminalOptions.Extractor.OptionPrefix = prefix;
+
+            string alias = "एल";
+            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+
+            // Here space is not treated as separator so it is included in the value.
+            _terminalOptions.Extractor.ParseHierarchy = true;
+            var parsedCommand = await _commandRouteParser.ParseAsync(new CommandRoute("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}  प्रथम   मान   {sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
+
+            parsedCommand.Command.Descriptor.Should().NotBeNull();
+            parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
+
+            parsedCommand.Should().NotBeNull();
+            parsedCommand.Command.Id.Should().Be("प्रिंट");
+            parsedCommand.Command.Name.Should().Be("प्रिंट नाम");
+            parsedCommand.Command.Description.Should().Be("प्रिंट कमांड");
+            parsedCommand.Command.Options.Should().NotBeNullOrEmpty();
+            parsedCommand.Command.Arguments.Should().BeNull();
+
+            parsedCommand.Hierarchy.Should().NotBeNull();
+            parsedCommand.Hierarchy!.LinkedCommand.Id.Should().Be("यूनिकोड");
+            parsedCommand.Hierarchy.ChildSubCommand.Should().BeNull();
+
+            parsedCommand.Hierarchy.ChildGroup.Should().NotBeNull();
+            parsedCommand.Hierarchy.ChildGroup!.LinkedCommand.Id.Should().Be("परीक्षण");
+            parsedCommand.Hierarchy.ChildGroup.ChildGroup.Should().BeNull();
+
+            parsedCommand.Hierarchy.ChildGroup.ChildSubCommand.Should().NotBeNull();
+            parsedCommand.Hierarchy.ChildGroup.ChildSubCommand!.LinkedCommand.Id.Should().Be("प्रिंट");
+
+            // 4 Options + 3 Alias
+            parsedCommand.Command.Options.Should().HaveCount(7);
+
+            parsedCommand.Command.Options!["एक"].Value.Should().Be("  प्रथम   मान   ");
+            parsedCommand.Command.Options["एकहै"].Value.Should().Be("  प्रथम   मान   ");
+            parsedCommand.Command.Options["एक"].Should().BeSameAs(parsedCommand.Command.Options["एकहै"]);
+
+            parsedCommand.Command.Options["दो"].Value.Should().Be(true.ToString());
+
+            parsedCommand.Command.Options["तीन"].Value.Should().Be("तीसरा मान");
+            parsedCommand.Command.Options["तीनहै"].Value.Should().Be("तीसरा मान");
+            parsedCommand.Command.Options["तीन"].Should().BeSameAs(parsedCommand.Command.Options["तीनहै"]);
+
+            parsedCommand.Command.Options!["चार"].Value.Should().Be("86.39");
+            parsedCommand.Command.Options!["चारहै"].Value.Should().Be("86.39");
+            parsedCommand.Command.Options["चार"].Should().BeSameAs(parsedCommand.Command.Options["चारहै"]);
+        }
+
+
+        [Fact]
+        public async Task Unicode_Hindi_SubCommand_With_Different_Separator_With_Space_Options_Extracts_Correctly()
+        {
+            string cSep = "एस";
+            string oSep = "साथ";
+            _terminalOptions.Extractor.Separator = cSep;
+            _terminalOptions.Extractor.OptionValueSeparator = oSep;
+
+            string prefix = "डैश";
+            _terminalOptions.Extractor.OptionPrefix = prefix;
+
+            string alias = "एल";
+            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+
+            // Here space is not treated as separator so it is included in the value.
+            _terminalOptions.Extractor.ParseHierarchy = true;
+            var parsedCommand = await _commandRouteParser.ParseAsync(new CommandRoute("id1", $"यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39"));
+
+            parsedCommand.Command.Descriptor.Should().NotBeNull();
+            parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
+
+            parsedCommand.Should().NotBeNull();
+            parsedCommand.Command.Id.Should().Be("प्रिंट");
+            parsedCommand.Command.Name.Should().Be("प्रिंट नाम");
+            parsedCommand.Command.Description.Should().Be("प्रिंट कमांड");
+            parsedCommand.Command.Options.Should().NotBeNullOrEmpty();
+            parsedCommand.Command.Arguments.Should().BeNull();
+
+            parsedCommand.Hierarchy.Should().NotBeNull();
+            parsedCommand.Hierarchy!.LinkedCommand.Id.Should().Be("यूनिकोड");
+            parsedCommand.Hierarchy.ChildSubCommand.Should().BeNull();
+
+            parsedCommand.Hierarchy.ChildGroup.Should().NotBeNull();
+            parsedCommand.Hierarchy.ChildGroup!.LinkedCommand.Id.Should().Be("परीक्षण");
+            parsedCommand.Hierarchy.ChildGroup.ChildGroup.Should().BeNull();
+
+            parsedCommand.Hierarchy.ChildGroup.ChildSubCommand.Should().NotBeNull();
+            parsedCommand.Hierarchy.ChildGroup.ChildSubCommand!.LinkedCommand.Id.Should().Be("प्रिंट");
+
+            // 4 Options + 3 Alias
+            parsedCommand.Command.Options.Should().HaveCount(7);
+
+            parsedCommand.Command.Options!["एक"].Value.Should().Be("  प्रथम   मान   ");
+            parsedCommand.Command.Options["एकहै"].Value.Should().Be("  प्रथम   मान   ");
+            parsedCommand.Command.Options["एक"].Should().BeSameAs(parsedCommand.Command.Options["एकहै"]);
+
+            parsedCommand.Command.Options["दो"].Value.Should().Be(true.ToString());
+
+            parsedCommand.Command.Options["तीन"].Value.Should().Be("तीसरा मान");
+            parsedCommand.Command.Options["तीनहै"].Value.Should().Be("तीसरा मान");
+            parsedCommand.Command.Options["तीन"].Should().BeSameAs(parsedCommand.Command.Options["तीनहै"]);
+
+            parsedCommand.Command.Options!["चार"].Value.Should().Be("86.39");
+            parsedCommand.Command.Options!["चारहै"].Value.Should().Be("86.39");
+            parsedCommand.Command.Options["चार"].Should().BeSameAs(parsedCommand.Command.Options["चारहै"]);
+        }
+
+        [Fact]
+        public async Task Unicode_Different_Separator_At_The_End_Are_Ignored()
+        {
+            string cSep = "एस";
+            string oSep = "साथ";
+            _terminalOptions.Extractor.Separator = cSep;
+            _terminalOptions.Extractor.OptionValueSeparator = oSep;
+
+            string prefix = "डैश";
+            _terminalOptions.Extractor.OptionPrefix = prefix;
+
+            string alias = "एल";
+            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+
+            // Here space is not treated as separator so it is included in the value.
+            _terminalOptions.Extractor.ParseHierarchy = true;
+            var parsedCommand = await _commandRouteParser.ParseAsync(new CommandRoute("id1", $"यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39{oSep}{oSep}{oSep}{cSep}{cSep}{cSep}"));
+
+            parsedCommand.Command.Descriptor.Should().NotBeNull();
+            parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
+
+            parsedCommand.Should().NotBeNull();
+            parsedCommand.Command.Id.Should().Be("प्रिंट");
+            parsedCommand.Command.Name.Should().Be("प्रिंट नाम");
+            parsedCommand.Command.Description.Should().Be("प्रिंट कमांड");
+            parsedCommand.Command.Options.Should().NotBeNullOrEmpty();
+            parsedCommand.Command.Arguments.Should().BeNull();
+
+            parsedCommand.Hierarchy.Should().NotBeNull();
+            parsedCommand.Hierarchy!.LinkedCommand.Id.Should().Be("यूनिकोड");
+            parsedCommand.Hierarchy.ChildSubCommand.Should().BeNull();
+
+            parsedCommand.Hierarchy.ChildGroup.Should().NotBeNull();
+            parsedCommand.Hierarchy.ChildGroup!.LinkedCommand.Id.Should().Be("परीक्षण");
+            parsedCommand.Hierarchy.ChildGroup.ChildGroup.Should().BeNull();
+
+            parsedCommand.Hierarchy.ChildGroup.ChildSubCommand.Should().NotBeNull();
+            parsedCommand.Hierarchy.ChildGroup.ChildSubCommand!.LinkedCommand.Id.Should().Be("प्रिंट");
+
+            // 4 Options + 3 Alias
+            parsedCommand.Command.Options.Should().HaveCount(7);
+
+            parsedCommand.Command.Options!["एक"].Value.Should().Be("  प्रथम   मान   ");
+            parsedCommand.Command.Options["एकहै"].Value.Should().Be("  प्रथम   मान   ");
+            parsedCommand.Command.Options["एक"].Should().BeSameAs(parsedCommand.Command.Options["एकहै"]);
+
+            parsedCommand.Command.Options["दो"].Value.Should().Be(true.ToString());
+
+            parsedCommand.Command.Options["तीन"].Value.Should().Be("तीसरा मान");
+            parsedCommand.Command.Options["तीनहै"].Value.Should().Be("तीसरा मान");
+            parsedCommand.Command.Options["तीन"].Should().BeSameAs(parsedCommand.Command.Options["तीनहै"]);
+
+            parsedCommand.Command.Options!["चार"].Value.Should().Be("86.39");
+            parsedCommand.Command.Options!["चारहै"].Value.Should().Be("86.39");
+            parsedCommand.Command.Options["चार"].Should().BeSameAs(parsedCommand.Command.Options["चारहै"]);
+        }
+
+        [Fact]
+        public async Task Unicode_Different_Separator_At_The_Start_Are_Ignored()
+        {
+            string cSep = "एस";
+            string oSep = "साथ";
+            _terminalOptions.Extractor.Separator = cSep;
+            _terminalOptions.Extractor.OptionValueSeparator = oSep;
+
+            string prefix = "डैश";
+            _terminalOptions.Extractor.OptionPrefix = prefix;
+
+            string alias = "एल";
+            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+
+            // Here space is not treated as separator so it is included in the value.
+            _terminalOptions.Extractor.ParseHierarchy = true;
+            var parsedCommand = await _commandRouteParser.ParseAsync(new CommandRoute("id1", $"{oSep}{oSep}{oSep}{cSep}{cSep}{cSep}यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39"));
+
+            parsedCommand.Command.Descriptor.Should().NotBeNull();
+            parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
+
+            parsedCommand.Should().NotBeNull();
+            parsedCommand.Command.Id.Should().Be("प्रिंट");
+            parsedCommand.Command.Name.Should().Be("प्रिंट नाम");
+            parsedCommand.Command.Description.Should().Be("प्रिंट कमांड");
+            parsedCommand.Command.Options.Should().NotBeNullOrEmpty();
+            parsedCommand.Command.Arguments.Should().BeNull();
+
+            parsedCommand.Hierarchy.Should().NotBeNull();
+            parsedCommand.Hierarchy!.LinkedCommand.Id.Should().Be("यूनिकोड");
+            parsedCommand.Hierarchy.ChildSubCommand.Should().BeNull();
+
+            parsedCommand.Hierarchy.ChildGroup.Should().NotBeNull();
+            parsedCommand.Hierarchy.ChildGroup!.LinkedCommand.Id.Should().Be("परीक्षण");
+            parsedCommand.Hierarchy.ChildGroup.ChildGroup.Should().BeNull();
+
+            parsedCommand.Hierarchy.ChildGroup.ChildSubCommand.Should().NotBeNull();
+            parsedCommand.Hierarchy.ChildGroup.ChildSubCommand!.LinkedCommand.Id.Should().Be("प्रिंट");
+
+            // 4 Options + 3 Alias
+            parsedCommand.Command.Options.Should().HaveCount(7);
+
+            parsedCommand.Command.Options!["एक"].Value.Should().Be("  प्रथम   मान   ");
+            parsedCommand.Command.Options["एकहै"].Value.Should().Be("  प्रथम   मान   ");
+            parsedCommand.Command.Options["एक"].Should().BeSameAs(parsedCommand.Command.Options["एकहै"]);
+
+            parsedCommand.Command.Options["दो"].Value.Should().Be(true.ToString());
+
+            parsedCommand.Command.Options["तीन"].Value.Should().Be("तीसरा मान");
+            parsedCommand.Command.Options["तीनहै"].Value.Should().Be("तीसरा मान");
+            parsedCommand.Command.Options["तीन"].Should().BeSameAs(parsedCommand.Command.Options["तीनहै"]);
+
+            parsedCommand.Command.Options!["चार"].Value.Should().Be("86.39");
+            parsedCommand.Command.Options!["चारहै"].Value.Should().Be("86.39");
+            parsedCommand.Command.Options["चार"].Should().BeSameAs(parsedCommand.Command.Options["चारहै"]);
+        }
+
     }
 }

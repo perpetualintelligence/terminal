@@ -21,13 +21,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// <param name="owners">The command owner identifiers.</param>
         public CommandOwnersAttribute(params string[] owners)
         {
-            Owners = new OwnerCollection(owners);
+            Owners = new OwnerIdCollection(owners);
         }
 
         /// <summary>
         /// The command owner identifiers.
         /// </summary>
         /// <seealso cref="CommandDescriptor.Id"/>
-        public OwnerCollection Owners { get; }
+        public OwnerIdCollection Owners { get; }
     }
 }

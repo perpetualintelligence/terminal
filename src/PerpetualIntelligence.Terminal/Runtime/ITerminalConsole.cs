@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// An abstraction of a console for <c>pi-cli</c> terminal framework.
+    /// An abstraction of a console for terminal framework.
     /// </summary>
     /// <remarks>
     /// <see cref="ITerminalConsole"/> allows application to define a standard or a custom console environment.

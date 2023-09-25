@@ -80,7 +80,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The option value checkers.
         /// </summary>
-        public IEnumerable<IOptionValueChecker>? ValueCheckers
+        public IEnumerable<IValueChecker<Option>>? ValueCheckers
         {
             get
             {
@@ -108,6 +108,6 @@ namespace PerpetualIntelligence.Terminal.Commands
             }
         }
 
-        private IEnumerable<IOptionValueChecker>? valueCheckers;
+        private IEnumerable<IValueChecker<Option>>? valueCheckers;
     }
 }

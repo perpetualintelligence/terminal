@@ -72,8 +72,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
             }
 
             // Owners
-            OwnerCollection? owners = localSeviceProvider.GetService<OwnerCollection>();
-            commandDescriptor.Owners = owners;
+            OwnerIdCollection? owners = localSeviceProvider.GetService<OwnerIdCollection>();
+            commandDescriptor.OwnerIds = owners;
 
             // Tags
             TagCollection? tags = localSeviceProvider.GetService<TagCollection>();

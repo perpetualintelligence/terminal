@@ -12,13 +12,13 @@ namespace PerpetualIntelligence.Terminal.Commands
     /// <summary>
     /// Defines a collection of owners for a command.
     /// </summary>
-    public sealed class OwnerCollection : List<string>
+    public sealed class OwnerIdCollection : List<string>
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="owners">The owner identifiers.</param>
-        public OwnerCollection(params string[] owners) : base(owners)
+        /// <param name="ownerIds">The owner identifiers.</param>
+        public OwnerIdCollection(params string[] ownerIds) : base(ownerIds)
         {
         }
     }

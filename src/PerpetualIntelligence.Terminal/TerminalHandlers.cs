@@ -1,4 +1,10 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -12,7 +18,7 @@ using System.Runtime.CompilerServices;
 namespace PerpetualIntelligence.Terminal
 {
     /// <summary>
-    /// These well-known <c>pi-cli</c> handlers allow app authors to configure the framework and provide custom implementations.
+    /// These well-known handlers allow app authors to configure the framework and provide custom implementations.
     /// </summary>
     public static class TerminalHandlers
     {

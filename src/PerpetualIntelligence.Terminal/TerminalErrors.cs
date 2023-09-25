@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Terminal
 {
     /// <summary>
-    /// The errors for the Perpetual Intelligence's <c>pi-cli</c> framework.
+    /// The errors for the Perpetual Intelligence's framework.
     /// </summary>
     public static class TerminalErrors
     {
@@ -26,6 +26,11 @@ namespace PerpetualIntelligence.Terminal
         /// The option is not valid.
         /// </summary>
         public const string InvalidOption = "invalid_option";
+
+        /// <summary>
+        /// The argument is not valid.
+        /// </summary>
+        public const string InvalidArgument = "invalid_argument";
 
         /// <summary>
         /// The command is not valid.

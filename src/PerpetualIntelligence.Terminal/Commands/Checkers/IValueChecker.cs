@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
     /// <summary>
-    /// An abstraction to check an option value.
+    /// An abstraction to check a <see cref="IValue"/>.
     /// </summary>
-    public interface IOptionValueChecker
+    public interface IValueChecker<T> where T : IValue
     {
         /// <summary>
         /// Checks the option value.
         /// </summary>
-        /// <param name="option">The option to check.</param>
+        /// <param name="value">The entity to check.</param>
         /// <returns></returns>
-        Task CheckAsync(Option option);
+        Task CheckAsync(T value);
 
         /// <summary>
         /// Returns the underlying checker raw type.
