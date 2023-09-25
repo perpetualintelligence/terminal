@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Commands.Handlers
 {
     /// <summary>
-    /// An abstraction to handle a <c>pi-cli</c> command request routed from a <see cref="ICommandRouter"/>.
+    /// An abstraction to handle a command request routed from a <see cref="ICommandRouter"/>.
     /// </summary>
     public interface ICommandHandler
     {

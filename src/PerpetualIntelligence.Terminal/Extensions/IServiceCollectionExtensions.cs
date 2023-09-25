@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
     public static class IServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the <c>pi-cli</c> terminal service.
+        /// Adds the terminal service.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="setupAction">The setup action.</param>
@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <c>pi-cli</c> terminal service.
+        /// Adds the terminal service.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
@@ -45,7 +45,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <c>pi-cli</c> terminal service.
+        /// Adds the terminal service.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the default <c>pi-cli</c> terminal services.
+        /// Adds the default terminal services.
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <param name="setupAction">The configuration setup action.</param>

@@ -34,9 +34,9 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 new OptionDescriptor("key4", nameof(String), "Key4 value email", OptionFlags.None),
                 new OptionDescriptor("key5", nameof(String), "Key5 value url", OptionFlags.None),
                 new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", OptionFlags.None),
-                new OptionDescriptor("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationOptionValueChecker(new OneOfAttribute("INR", "USD", "EUR")) } },
+                new OptionDescriptor("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new OneOfAttribute("INR", "USD", "EUR")) } },
                 new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", OptionFlags.None),
-                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", OptionFlags.Required) {ValueCheckers = new []{ new DataValidationOptionValueChecker(new RequiredAttribute()), new DataValidationOptionValueChecker(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", OptionFlags.Required) {ValueCheckers = new []{ new DataValidationValueChecker<Option>(new RequiredAttribute()), new DataValidationValueChecker<Option>(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", OptionFlags.Required)
             });
 
@@ -48,9 +48,9 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 new OptionDescriptor("key4", nameof(String), "Key4 value email", OptionFlags.None),
                 new OptionDescriptor("key5", nameof(String), "Key5 value url", OptionFlags.None),
                 new OptionDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", OptionFlags.None),
-                new OptionDescriptor("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute("INR", "USD", "EUR") )} },
+                new OptionDescriptor("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationValueChecker<Option>( new OneOfAttribute("INR", "USD", "EUR") )} },
                 new OptionDescriptor("key8", nameof(Int32), "Key8 value int", OptionFlags.None),
-                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", OptionFlags.Required) {ValueCheckers = new[] { new DataValidationOptionValueChecker( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", OptionFlags.Required) {ValueCheckers = new[] { new DataValidationValueChecker<Option>( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
                 new OptionDescriptor("key10", nameof(String), "Key10 value custom string", OptionFlags.Required, "k10"),
                 new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", OptionFlags.Required, "k11"),
                 new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", OptionFlags.Required, "k12")

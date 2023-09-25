@@ -37,15 +37,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
     public static class ITerminalBuilderExtensions
     {
         /// <summary>
-        /// Adds the <see cref="IOptionDataTypeMapper"/> and <see cref="IOptionChecker"/> to the service collection.
+        /// Adds the <see cref="IDataTypeMapper{TValur}"/> and <see cref="IOptionChecker"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TMapper">The option mapper type.</typeparam>
         /// <typeparam name="TChecker">The option checker type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddOptionChecker<TMapper, TChecker>(this ITerminalBuilder builder) where TMapper : class, IOptionDataTypeMapper where TChecker : class, IOptionChecker
+        public static ITerminalBuilder AddOptionChecker<TMapper, TChecker>(this ITerminalBuilder builder) where TMapper : class, IDataTypeMapper<Option> where TChecker : class, IOptionChecker
         {
-            builder.Services.AddTransient<IOptionDataTypeMapper, TMapper>();
+            builder.Services.AddTransient<IDataTypeMapper<Option>, TMapper>();
             builder.Services.AddTransient<IOptionChecker, TChecker>();
             return builder;
         }
@@ -175,7 +175,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds <c>pi-cli</c> license handler to the service collection.
+        /// Adds  license handler to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>

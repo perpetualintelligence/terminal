@@ -10,29 +10,29 @@ using System;
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
-    /// Defines special argument flags.
+    /// As abstraction of a value.
     /// </summary>
-    [Flags]
-    public enum ArgumentFlags
+    public interface IValue
     {
         /// <summary>
-        /// No special flags.
+        /// The identifier.
         /// </summary>
-        None = 0,
+        string Id { get; }
 
         /// <summary>
-        /// The argument is required.
+        /// The data type.
         /// </summary>
-        Required = 2,
+        string DataType { get; }
 
         /// <summary>
-        /// The argument is obsolete.
+        /// The actual value.
         /// </summary>
-        Obsolete = 4,
+        object Value { get; set; }
 
         /// <summary>
-        /// The argument is disabled.
+        /// Changes the value's  <see cref="Type"/>.
         /// </summary>
-        Disabled = 8,
+        /// <param name="type"></param>
+        void ChangeValueType(Type type);
     }
 }

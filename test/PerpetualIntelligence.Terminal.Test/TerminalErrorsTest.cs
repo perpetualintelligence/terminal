@@ -16,12 +16,13 @@ namespace PerpetualIntelligence.Terminal
         [Fact]
         public void AssertErrorsAreValid()
         {
-            TestHelper.AssertConstantCount(typeof(TerminalErrors), 18);
+            TestHelper.AssertConstantCount(typeof(TerminalErrors), 19);
 
             TerminalErrors.ConnectionClosed.Should().Be("connection_closed");
             TerminalErrors.InvalidCommand.Should().Be("invalid_command");
             TerminalErrors.InvalidConfiguration.Should().Be("invalid_configuration");
             TerminalErrors.InvalidOption.Should().Be("invalid_option");
+            TerminalErrors.InvalidArgument.Should().Be("invalid_argument");
             TerminalErrors.DuplicateOption.Should().Be("duplicate_option");
             TerminalErrors.InvalidRequest.Should().Be("invalid_request");
             TerminalErrors.UnsupportedOption.Should().Be("unsupported_option");

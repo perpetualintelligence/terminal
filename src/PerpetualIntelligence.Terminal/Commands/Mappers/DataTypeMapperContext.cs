@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -10,23 +10,23 @@ using System;
 namespace PerpetualIntelligence.Terminal.Commands.Mappers
 {
     /// <summary>
-    /// The option data-type mapper context.
+    /// The <see cref="IValue"/> data-type mapper context.
     /// </summary>
-    public sealed class OptionDataTypeMapperContext
+    public sealed class DataTypeMapperContext<TValue> where TValue : IValue
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="option">The option.</param>
+        /// <param name="value">The value.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public OptionDataTypeMapperContext(Option option)
+        public DataTypeMapperContext(TValue value)
         {
-            Option = option ?? throw new ArgumentNullException(nameof(option));
+            Value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
-        /// The option to map.
+        /// The value to map.
         /// </summary>
-        public Option Option { get; set; }
+        public TValue Value { get; set; }
     }
 }

@@ -22,64 +22,122 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// Initialize a new instance.
         /// </summary>
         /// <param name="optionChecker">The option checker.</param>
+        /// <param name="argumentChecker">The argument checker.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandChecker(IOptionChecker optionChecker, TerminalOptions options, ILogger<CommandChecker> logger)
+        public CommandChecker(IOptionChecker optionChecker, IArgumentChecker argumentChecker, TerminalOptions options, ILogger<CommandChecker> logger)
         {
             this.optionChecker = optionChecker;
-            this.options = options;
+            this.argumentChecker = argumentChecker;
+            this.terminalOptions = options;
             this.logger = logger;
         }
 
         /// <inheritdoc/>
         public async Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {
-            // If the command itself do not support any options then there is nothing much to check. Extractor will
-            // reject any unsupported attributes.
-            OptionDescriptors? optionDescriptors = context.HandlerContext.ParsedCommand.Command.Descriptor.OptionDescriptors;
-            if (optionDescriptors == null)
-            {
-                return new CommandCheckerResult();
-            }
+            await CheckArgumentsAsync(context);
 
-            // Check the options against the descriptor constraints
-            // TODO: process multiple errors.
-            foreach (KeyValuePair<string, OptionDescriptor> optKvp in optionDescriptors)
-            {
-                // Optimize (not all options are required)
-                bool containsOpt = context.HandlerContext.ParsedCommand.Command.TryGetOption(optKvp.Key, out Option? opt);
-                if (!containsOpt)
-                {
-                    // Required option is missing
-                    if (optKvp.Value.Flags.HasFlag(OptionFlags.Required))
-                    {
-                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command_name={0} command_id={1} option={2}", context.HandlerContext.ParsedCommand.Command.Name, context.HandlerContext.ParsedCommand.Command.Id, optKvp.Key);
-                    }
-                }
-                else
-                {
-                    // Check obsolete
-                    if (optKvp.Value.Flags.HasFlag(OptionFlags.Obsolete) && !options.Checker.AllowObsoleteOption.GetValueOrDefault())
-                    {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command_name={0} command_id={1} option={2}", context.HandlerContext.ParsedCommand.Command.Name, context.HandlerContext.ParsedCommand.Command.Id, optKvp.Key);
-                    }
-
-                    // Check disabled
-                    if (optKvp.Value.Flags.HasFlag(OptionFlags.Disabled))
-                    {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command_name={0} command_id={1} option={2}", context.HandlerContext.ParsedCommand.Command.Name, context.HandlerContext.ParsedCommand.Command.Id, optKvp.Key);
-                    }
-
-                    // Check arg value
-                    await optionChecker.CheckAsync(new OptionCheckerContext(opt!));
-                }
-            }
+            await CheckOptionsAsync(context);
 
             return new CommandCheckerResult();
         }
 
+        private async Task CheckArgumentsAsync(CommandCheckerContext context)
+        {
+            // Cache commonly accessed properties
+            var command = context.HandlerContext.ParsedCommand.Command;
+            ArgumentDescriptors? argumentDescriptors = command.Descriptor.ArgumentDescriptors;
+
+            // If the command itself does not support any arguments then there's nothing to check. Extractor will reject any unsupported attributes.
+            if (argumentDescriptors == null)
+            {
+                return;
+            }
+
+            // Check the arguments against the descriptor constraints
+            foreach (var arg in argumentDescriptors)
+            {
+                bool containsArg = command.TryGetArgument(arg.Id, out Argument? argument);
+                var flags = arg.Flags;
+
+                if (!containsArg)
+                {
+                    // Required argument is missing
+                    if (flags.HasFlag(ArgumentFlags.Required))
+                    {
+                        throw new ErrorException(TerminalErrors.MissingArgument, "The required argument is missing. command={0} argument={1}", command.Id, arg.Id);
+                    }
+
+                    continue;  // Skip checking the other conditions if argument isn't present
+                }
+
+                // Check obsolete
+                if (flags.HasFlag(ArgumentFlags.Obsolete) && !terminalOptions.Checker.AllowObsolete.GetValueOrDefault())
+                {
+                    throw new ErrorException(TerminalErrors.InvalidArgument, "The argument is obsolete. command={0} argument={1}", command.Id, arg.Id);
+                }
+
+                // Check disabled
+                if (flags.HasFlag(ArgumentFlags.Disabled))
+                {
+                    throw new ErrorException(TerminalErrors.InvalidArgument, "The argument is disabled. command={0} argument={1}", command.Id, arg.Id);
+                }
+
+                // Check arg value
+                await argumentChecker.CheckAsync(new ArgumentCheckerContext(argument!));
+            }
+        }
+
+        private async Task CheckOptionsAsync(CommandCheckerContext context)
+        {
+            // Cache commonly accessed properties
+            var command = context.HandlerContext.ParsedCommand.Command;
+            OptionDescriptors? optionDescriptors = command.Descriptor.OptionDescriptors;
+
+            // If the command itself does not support any options then there's nothing to check. Extractor will reject any unsupported attributes.
+            if (optionDescriptors == null)
+            {
+                return;
+            }
+
+            // Check the options against the descriptor constraints
+            foreach (KeyValuePair<string, OptionDescriptor> optKvp in optionDescriptors)
+            {
+                bool containsOpt = command.TryGetOption(optKvp.Key, out Option? opt);
+                var flags = optKvp.Value.Flags;
+
+                if (!containsOpt)
+                {
+                    // Required option is missing
+                    if (flags.HasFlag(OptionFlags.Required))
+                    {
+                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command={0} option={1}", command.Id, optKvp.Key);
+                    }
+
+                    continue;  // Skip checking the other conditions if option isn't present
+                }
+
+                // Check obsolete
+                if (flags.HasFlag(OptionFlags.Obsolete) && !terminalOptions.Checker.AllowObsolete.GetValueOrDefault())
+                {
+                    throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command={0} option={1}", command.Id, optKvp.Key);
+                }
+
+                // Check disabled
+                if (flags.HasFlag(OptionFlags.Disabled))
+                {
+                    throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command={0} option={1}", command.Id, optKvp.Key);
+                }
+
+                // Check arg value
+                await optionChecker.CheckAsync(new OptionCheckerContext(opt!));
+            }
+        }
+
         private readonly IOptionChecker optionChecker;
+        private readonly IArgumentChecker argumentChecker;
         private readonly ILogger<CommandChecker> logger;
-        private readonly TerminalOptions options;
+        private readonly TerminalOptions terminalOptions;
     }
 }

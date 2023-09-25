@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// </summary>
         /// <param name="mapper">The option data-type mapper.</param>
         /// <param name="options">The configuration options.</param>
-        public OptionChecker(IOptionDataTypeMapper mapper, TerminalOptions options)
+        public OptionChecker(IDataTypeMapper<Option> mapper, TerminalOptions options)
         {
             this.mapper = mapper;
             this.options = options;
@@ -43,10 +43,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             }
 
             // Check option data type and value type
-            OptionDataTypeMapperResult mapperResult = await mapper.MapAsync(new OptionDataTypeMapperContext(context.Option));
+            DataTypeMapperResult mapperResult = await mapper.MapAsync(new DataTypeMapperContext<Option>(context.Option));
 
             // Check whether we need to check type
-            if (options.Checker.StrictOptionValueType.GetValueOrDefault())
+            if (options.Checker.StrictValueType.GetValueOrDefault())
             {
                 // Check value compatibility
                 await StrictTypeCheckingAsync(context, mapperResult);
@@ -55,7 +55,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             // Check value
             if (context.Option.Descriptor.ValueCheckers != null)
             {
-                foreach (IOptionValueChecker valueChecker in context.Option.Descriptor.ValueCheckers)
+                foreach (IValueChecker<Option> valueChecker in context.Option.Descriptor.ValueCheckers)
                 {
                     try
                     {
@@ -77,7 +77,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// <param name="context"></param>
         /// <param name="mapperResult"></param>
         /// <returns></returns>
-        protected Task<OptionCheckerResult> StrictTypeCheckingAsync(OptionCheckerContext context, OptionDataTypeMapperResult mapperResult)
+        protected Task<OptionCheckerResult> StrictTypeCheckingAsync(OptionCheckerContext context, DataTypeMapperResult mapperResult)
         {
             // Ensure strict value compatibility
             try
@@ -93,7 +93,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             return Task.FromResult(new OptionCheckerResult(mapperResult.MappedType));
         }
 
-        private readonly IOptionDataTypeMapper mapper;
+        private readonly IDataTypeMapper<Option> mapper;
         private readonly TerminalOptions options;
     }
 }

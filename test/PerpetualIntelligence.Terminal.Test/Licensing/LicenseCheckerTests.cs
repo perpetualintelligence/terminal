@@ -218,27 +218,27 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             // Error, not allowed but configured
             license.Limits.StrictDataType = false;
-            terminalOptions.Checker.StrictOptionValueType = true;
+            terminalOptions.Checker.StrictValueType = true;
             await TestHelper.AssertThrowsErrorExceptionAsync(() => licenseChecker.CheckAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
 
             // No error, not allowed configured false
             license.Limits.StrictDataType = false;
-            terminalOptions.Checker.StrictOptionValueType = false;
+            terminalOptions.Checker.StrictValueType = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, not allowed not configured
             license.Limits.StrictDataType = false;
-            terminalOptions.Checker.StrictOptionValueType = null;
+            terminalOptions.Checker.StrictValueType = null;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed not configured
             license.Limits.StrictDataType = true;
-            terminalOptions.Checker.StrictOptionValueType = false;
+            terminalOptions.Checker.StrictValueType = false;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
 
             // No error, allowed and configured
             license.Limits.StrictDataType = true;
-            terminalOptions.Checker.StrictOptionValueType = true;
+            terminalOptions.Checker.StrictValueType = true;
             await licenseChecker.CheckAsync(new LicenseCheckerContext(license));
         }
 

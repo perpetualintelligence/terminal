@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace PerpetualIntelligence.Terminal.Hosting
 {
     /// <summary>
-    /// An abstraction of <c>pi-cli</c> service builder.
+    /// An abstraction of service builder.
     /// </summary>
     public interface ITerminalBuilder
     {

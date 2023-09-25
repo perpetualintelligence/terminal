@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -54,7 +48,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             IEnumerable<ValidationAttribute> attributes = lsp.GetServices<ValidationAttribute>();
             if (attributes.Any())
             {
-                optionDescriptor.ValueCheckers = attributes.Select(e => new DataValidationOptionValueChecker(e));
+                optionDescriptor.ValueCheckers = attributes.Select(e => new DataValidationValueChecker<Option>(e));
             }
 
             commandBuilder.Services.AddSingleton(optionDescriptor);

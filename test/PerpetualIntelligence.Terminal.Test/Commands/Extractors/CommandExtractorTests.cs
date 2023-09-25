@@ -105,22 +105,22 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.AreEqual(arg.Value, value);
         }
 
-        private static void AssertOptionDescriptor(OptionDescriptor arg, string name, string dataType, string? description = null, DataValidationOptionValueChecker[]? supportedValues = null)
+        private static void AssertOptionDescriptor(OptionDescriptor arg, string name, string dataType, string? description = null, DataValidationValueChecker<Option>[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
             Assert.AreEqual(arg.Description, description);
 
-            DataValidationOptionValueChecker[]? expectedCheckers = arg.ValueCheckers?.Cast<DataValidationOptionValueChecker>().ToArray();
+            DataValidationValueChecker<Option>[]? expectedCheckers = arg.ValueCheckers?.Cast<DataValidationValueChecker<Option>>().ToArray();
             CollectionAssert.AreEquivalent(expectedCheckers, supportedValues);
         }
 
-        private void AssertOptionIdentity(OptionDescriptor arg, string name, string dataType, string? description = null, DataValidationOptionValueChecker[]? supportedValues = null)
+        private void AssertOptionIdentity(OptionDescriptor arg, string name, string dataType, string? description = null, DataValidationValueChecker<Option>[]? supportedValues = null)
         {
             Assert.AreEqual(arg.Id, name);
             Assert.AreEqual(arg.DataType, dataType);
             Assert.AreEqual(arg.Description, description);
-            CollectionAssert.AreEquivalent(arg.ValueCheckers?.Cast<DataValidationOptionValueChecker>().ToArray(), supportedValues);
+            CollectionAssert.AreEquivalent(arg.ValueCheckers?.Cast<DataValidationValueChecker<Option>>().ToArray(), supportedValues);
         }
 
         private ICommandStoreHandler commandStore = null!;

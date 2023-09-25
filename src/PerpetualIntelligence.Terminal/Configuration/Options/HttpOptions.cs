@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// The logical name to create and configure <see cref="HttpClient"/> instance.
         /// </summary>
         /// <remarks>
-        /// <c>pi-cli</c> framework uses <see cref="IHttpClientFactory.CreateClient(string)"/> and the configured name
+        /// The framework uses <see cref="IHttpClientFactory.CreateClient(string)"/> and the configured name
         /// to create an instance of <see cref="HttpClient"/>.
         /// </remarks>
         public string? HttpClientName { get; set; }

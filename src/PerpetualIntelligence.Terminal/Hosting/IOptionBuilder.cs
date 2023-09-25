@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -11,7 +11,7 @@ using PerpetualIntelligence.Terminal.Commands;
 namespace PerpetualIntelligence.Terminal.Hosting
 {
     /// <summary>
-    /// An abstraction of <c>pi-cli</c> option builder.
+    /// An abstraction of option builder.
     /// </summary>
     public interface IOptionBuilder
     {

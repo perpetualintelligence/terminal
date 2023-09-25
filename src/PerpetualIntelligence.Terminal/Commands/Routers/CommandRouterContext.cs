@@ -11,7 +11,7 @@ using System;
 namespace PerpetualIntelligence.Terminal.Commands.Routers
 {
     /// <summary>
-    /// The <c>pi-cli</c> generic command router context.
+    /// The generic command router context.
     /// </summary>
     public sealed class CommandRouterContext
     {

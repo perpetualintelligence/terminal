@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -10,7 +10,7 @@ using PerpetualIntelligence.Shared.Licensing;
 namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
-    /// A <c>pi-cli</c> license.
+    /// A terminal framework license.
     /// </summary>
     public sealed class License : System.ComponentModel.License
     {

@@ -5,12 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Terminal.Commands.Checkers;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
     /// The <see cref="ArgumentDescriptor"/> class defines the command argument identity, data type, and data validation
     /// behavior. We also refer to arguments as command arguments.
     /// </summary>
+    /// <seealso cref="Argument"/>
     public sealed class ArgumentDescriptor : IKeyAsId
     {
         /// <summary>
@@ -63,11 +69,44 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The argument flags.
         /// </summary>
-        public ArgumentFlags Flags { get; }
+        public ArgumentFlags Flags { get; private set; }
 
         /// <summary>
         /// The argument order.
         /// </summary>
         public int Order { get; }
+
+        /// <summary>
+        /// The argument value checkers.
+        /// </summary>
+        public IEnumerable<IValueChecker<Argument>>? ValueCheckers
+        {
+            get
+            {
+                return valueCheckers;
+            }
+
+            set
+            {
+                valueCheckers = value;
+                SetValidationRequired();
+            }
+        }
+
+        /// <summary>
+        /// Sets the option as required.
+        /// </summary>
+        private void SetValidationRequired()
+        {
+            if (valueCheckers != null)
+            {
+                if (valueCheckers.Any(e => e.GetRawType() == typeof(RequiredAttribute)))
+                {
+                    Flags |= ArgumentFlags.Required;
+                }
+            }
+        }
+
+        private IEnumerable<IValueChecker<Argument>>? valueCheckers;
     }
 }
