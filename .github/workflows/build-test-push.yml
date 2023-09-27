@@ -143,7 +143,7 @@ jobs:
 
     # Pack
     - name: Pack
-      run: dotnet pack -p:PackageVersion=${{ env.PI_CI_PACKAGE_VERSION }} --no-build -c Release -o _packages -v minimal
+      run: dotnet pack -c Release -p:PackageVersion=${{ env.PI_CI_PACKAGE_VERSION }} --no-build -o _packages -v minimal
       
     # GITHUB
     - name: Github Push
