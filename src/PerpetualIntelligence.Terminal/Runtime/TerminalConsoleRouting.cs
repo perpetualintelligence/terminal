@@ -75,6 +75,9 @@ namespace PerpetualIntelligence.Terminal.Runtime
 
                     try
                     {
+                        // Wait for a bit to avoid CPU hogging and give time for cancellation token to be set.
+                        await Task.Delay(100);
+
                         // Honor the cancellation request.
                         if (context.StartContext.CancellationToken.IsCancellationRequested)
                         {
