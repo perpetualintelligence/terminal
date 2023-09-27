@@ -25,25 +25,27 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void CustomEdition_ShouldSetLimitsCorrectly()
         {
-            Dictionary<string, object> claims = new();
-            claims.Add("terminal_limit", 1);
-            claims.Add("redistribution_limit", 2);
-            claims.Add("root_command_limit", 3);
-            claims.Add("grouped_command_limit", 4);
-            claims.Add("sub_command_limit", 5);
-            claims.Add("option_limit", 6);
+            Dictionary<string, object> claims = new()
+            {
+                { "terminal_limit", 1 },
+                { "redistribution_limit", 2 },
+                { "root_command_limit", 3 },
+                { "grouped_command_limit", 4 },
+                { "sub_command_limit", 5 },
+                { "option_limit", 6 },
 
-            claims.Add("option_alias", true);
-            claims.Add("default_option", false);
-            claims.Add("default_option_value", true);
-            claims.Add("strict_data_type", false);
+                { "option_alias", true },
+                { "default_option", false },
+                { "default_option_value", true },
+                { "strict_data_type", false },
 
-            claims.Add("data_type_handlers", "");
-            claims.Add("text_handlers", "t1");
-            claims.Add("error_handlers", "e1 e2 e3");
-            claims.Add("store_handlers", "st1 st2");
-            claims.Add("service_handlers", "s1 s2 s3");
-            claims.Add("license_handlers", "l1");
+                { "data_type_handlers", "" },
+                { "text_handlers", "t1" },
+                { "error_handlers", "e1 e2 e3" },
+                { "store_handlers", "st1 st2" },
+                { "service_handlers", "s1 s2 s3" },
+                { "license_handlers", "l1" }
+            };
 
             LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.Custom, claims);
             limits.Plan.Should().Be(PiCliLicensePlans.Custom);

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -19,9 +19,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         }
 
         [Fact]
-        public void DefualtValuesShouldBeCorrect()
+        public void DefaultValuesShouldBeCorrect()
         {
-            LoggingOptions options = new LoggingOptions();
+            LoggingOptions options = new();
 
             options.LoggerIndent.Should().Be(4);
             options.LogToStandard.Should().BeNull();
@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         [Fact]
         public void LoggingOptionsShouldHaveCorrectDefaultValues()
         {
-            LoggingOptions options = new LoggingOptions();
+            LoggingOptions options = new();
 
             options.ObsureInvalidOptions.Should().BeTrue();
             options.ObscureStringForInvalidOption.Should().Be("****");

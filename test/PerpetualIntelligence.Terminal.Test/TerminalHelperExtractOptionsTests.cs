@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using FluentAssertions;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -34,7 +28,7 @@ namespace PerpetualIntelligence.Terminal
         [Fact]
         public void Counter_More_Than_50_Throws()
         {
-            StringBuilder sb50 = new StringBuilder();
+            StringBuilder sb50 = new ();
             for (int idx = 0; idx < 50; ++idx)
             {
                 sb50.Append($"--opt{idx} val{idx}");
@@ -44,7 +38,7 @@ namespace PerpetualIntelligence.Terminal
             OptionStrings optionStrings = TerminalHelper.ExtractOptionStrings(sb50.ToString(), terminalOptions, textHandler);
             optionStrings.Count.Should().Be(50);
 
-            StringBuilder sb51 = new StringBuilder();
+            StringBuilder sb51 = new ();
             for (int idx = 0; idx < 51; ++idx)
             {
                 sb51.Append($"--opt{idx} val{idx}");
@@ -309,7 +303,7 @@ namespace PerpetualIntelligence.Terminal
             optionString.AliasPrefix.Should().BeTrue();
         }
 
-        private TerminalOptions terminalOptions;
-        private ITextHandler textHandler;
+        private readonly TerminalOptions terminalOptions;
+        private readonly ITextHandler textHandler;
     }
 }

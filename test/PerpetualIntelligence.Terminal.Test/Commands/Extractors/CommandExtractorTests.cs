@@ -7,7 +7,6 @@
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
@@ -15,7 +14,6 @@ using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
 using PerpetualIntelligence.Test.Services;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
@@ -26,7 +24,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public CommandExtractorTests()
         {
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            SetupBasedOnTerminalOptions(terminalOptions);
+            textHandler = new UnicodeTextHandler();
+            routeParser = new MockCommandRouteParser();
+            commandStore = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
+            extractor = new CommandExtractor(routeParser);
         }
 
         [TestMethod]
@@ -87,40 +88,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new CommandString("   "), "'raw' cannot be null or whitespace. (Parameter 'raw')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
-        }
-
-        private void SetupBasedOnTerminalOptions(TerminalOptions terminalOptionsIpt)
-        {
-            textHandler = new UnicodeTextHandler();
-            routeParser = new MockCommandRouteParser();
-            commandStore = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
-            extractor = new CommandExtractor(routeParser);
-        }
-
-        private static void AssertOption(Option arg, string name, string dataType, string description, object value)
-        {
-            Assert.AreEqual(arg.Id, name);
-            Assert.AreEqual(arg.DataType, dataType);
-            Assert.AreEqual(arg.Description, description);
-            Assert.AreEqual(arg.Value, value);
-        }
-
-        private static void AssertOptionDescriptor(OptionDescriptor arg, string name, string dataType, string? description = null, DataValidationValueChecker<Option>[]? supportedValues = null)
-        {
-            Assert.AreEqual(arg.Id, name);
-            Assert.AreEqual(arg.DataType, dataType);
-            Assert.AreEqual(arg.Description, description);
-
-            DataValidationValueChecker<Option>[]? expectedCheckers = arg.ValueCheckers?.Cast<DataValidationValueChecker<Option>>().ToArray();
-            CollectionAssert.AreEquivalent(expectedCheckers, supportedValues);
-        }
-
-        private void AssertOptionIdentity(OptionDescriptor arg, string name, string dataType, string? description = null, DataValidationValueChecker<Option>[]? supportedValues = null)
-        {
-            Assert.AreEqual(arg.Id, name);
-            Assert.AreEqual(arg.DataType, dataType);
-            Assert.AreEqual(arg.Description, description);
-            CollectionAssert.AreEquivalent(arg.ValueCheckers?.Cast<DataValidationValueChecker<Option>>().ToArray(), supportedValues);
         }
 
         private ICommandStoreHandler commandStore = null!;

@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
@@ -41,7 +40,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalTcpRouting"/> class.
         /// </summary>
-        /// <param name="applicationLifetime">The host application lifetime instance.</param>
         /// <param name="commandRouter">The command router.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
         /// <param name="options">The configuration options.</param>
@@ -52,7 +50,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// It takes several dependencies that are required for handling TCP client-server communication.
         /// </remarks>
         public TerminalTcpRouting(
-            IHostApplicationLifetime applicationLifetime,
             ICommandRouter commandRouter,
             IExceptionHandler exceptionHandler,
             TerminalOptions options,
