@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Shared.Exceptions;
@@ -76,8 +70,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
             commandDescriptor.OwnerIds = owners;
 
             // Tags
-            TagCollection? tags = localSeviceProvider.GetService<TagCollection>();
-            commandDescriptor.Tags = tags;
+            TagIdCollection? tags = localSeviceProvider.GetService<TagIdCollection>();
+            commandDescriptor.TagIds = tags;
 
             // Make sure the command runner and checker are added. TODO this may add duplicate types
             terminalBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new ErrorException(TerminalErrors.InvalidConfiguration, "Checker is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));

@@ -88,16 +88,16 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// Adds command tags to the <see cref="ICommandBuilder"/>.
         /// </summary>
         /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
-        /// <param name="tags">The tags.</param>
+        /// <param name="tagIds">The tag identifiers.</param>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder Tags(this ICommandBuilder builder, TagCollection tags)
+        public static ICommandBuilder Tags(this ICommandBuilder builder, TagIdCollection tagIds)
         {
-            if (!tags.Any())
+            if (!tagIds.Any())
             {
-                throw new InvalidOperationException("The tags cannot be null or empty.");
+                throw new InvalidOperationException("The tag identifiers cannot be null or empty.");
             }
 
-            builder.Services.AddSingleton(tags);
+            builder.Services.AddSingleton(tagIds);
             return builder;
         }
     }

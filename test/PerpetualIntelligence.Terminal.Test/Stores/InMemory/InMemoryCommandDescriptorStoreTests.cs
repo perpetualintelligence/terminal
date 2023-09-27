@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
     {
         public InMemoryCommandDescriptorStoreTests()
         {
-            cmdStore = new InMemoryCommandStore(MockCommands.Commands);
+            cmdStore = new InMemoryCommandStore(MockCommands.Commands.TextHandler, MockCommands.Commands.Values);
         }
 
         [Fact]

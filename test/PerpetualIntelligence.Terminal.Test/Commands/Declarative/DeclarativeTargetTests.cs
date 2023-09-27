@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.Tags.Should().BeNull();
+            cmd.TagIds.Should().BeNull();
         }
 
         [Fact]
@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.Tags.Should().BeEquivalentTo(new string[] { "tag1", "tag2", "tag3" });
+            cmd.TagIds.Should().BeEquivalentTo(new string[] { "tag1", "tag2", "tag3" });
         }
 
         [Fact]
@@ -233,7 +233,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().Tags.Should().BeNull();
+            cmdDescs.First().TagIds.Should().BeNull();
         }
 
         [Fact]
@@ -244,7 +244,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().Tags.Should().Equal(new string[] { "tag1", "tag2", "tag3" });
+            cmdDescs.First().TagIds.Should().Equal(new string[] { "tag1", "tag2", "tag3" });
         }
 
         [Fact]

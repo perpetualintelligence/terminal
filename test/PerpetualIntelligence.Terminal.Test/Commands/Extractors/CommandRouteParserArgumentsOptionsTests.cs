@@ -50,14 +50,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             terminalOptions = MockTerminalOptions.NewAliasOptions();
             textHandler = new AsciiTextHandler();
-            commandDescriptors = new Dictionary<string, CommandDescriptor>()
+            commandDescriptors = new(textHandler, new List<CommandDescriptor>()
             {
-               { "root1", new CommandDescriptor("root1", "root1_name", "root1_desc", CommandType.Root, CommandFlags.None, argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) },
-               { "grp1", new CommandDescriptor("grp1", "grp1_name", "grp1_desc", CommandType.Group, CommandFlags.None, new OwnerIdCollection("root1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) },
-               { "cmd1", new CommandDescriptor("cmd1", "cmd1_name", "cmd1_desc", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("grp1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) },
-               { "cmd_nr2", new CommandDescriptor("cmd_nr2", "cmd_nr2_name", "cmd_nr2_desc", CommandType.SubCommand, CommandFlags.None,  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors) }
-            };
-            commandStoreHandler = new InMemoryCommandStore(commandDescriptors);
+                new CommandDescriptor("root1", "root1_name", "root1_desc", CommandType.Root, CommandFlags.None, argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors),
+                new CommandDescriptor("grp1", "grp1_name", "grp1_desc", CommandType.Group, CommandFlags.None, new OwnerIdCollection("root1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors),
+                new CommandDescriptor("cmd1", "cmd1_name", "cmd1_desc", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("grp1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors),
+                new CommandDescriptor("cmd_nr2", "cmd_nr2_name", "cmd_nr2_desc", CommandType.SubCommand, CommandFlags.None,  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors)
+            });
+            commandStoreHandler = new InMemoryCommandStore(textHandler, commandDescriptors.Values);
             logger = new NullLogger<CommandRouteParser>();
 
             commandRouteParser = new CommandRouteParser(textHandler, commandStoreHandler, terminalOptions, logger);
@@ -183,7 +183,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             result.Command.Options["opt3"].Value.Should().Be("option delimited value3");
         }
 
-
         [Fact]
         public async Task Value_Separators_At_The_End_Are_Ignored()
         {
@@ -218,7 +217,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             result.Command.Options["opt3"].Value.Should().Be("option delimited value3");
         }
 
-
         [Fact]
         public async Task Value_Separators_In_Between_Are_Ignored()
         {
@@ -235,7 +233,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             result.Command.Options!.Count.Should().Be(1);
             result.Command.Options["opt3"].Value.Should().Be("option delimited value3");
         }
-
 
         [Fact]
         public async Task Duplicate_Value_Separators_In_Between_Are_Ignored()
@@ -1098,7 +1095,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private readonly TerminalOptions terminalOptions;
         private ITextHandler textHandler;
         private ICommandStoreHandler commandStoreHandler;
-        private Dictionary<string, CommandDescriptor> commandDescriptors;
+        private CommandDescriptors commandDescriptors;
         private ArgumentDescriptors argumentDescriptors;
         private OptionDescriptors optionDescriptors;
         private ICommandRouteParser commandRouteParser;

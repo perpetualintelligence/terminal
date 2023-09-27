@@ -93,7 +93,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             textHandler = new UnicodeTextHandler();
             routeParser = new MockCommandRouteParser();
-            commandStore = new InMemoryCommandStore(MockCommands.Commands);
+            commandStore = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
             extractor = new CommandExtractor(routeParser);
         }
 

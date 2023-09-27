@@ -13,8 +13,8 @@ namespace PerpetualIntelligence.Terminal.Commands
     /// <summary>
     /// A keyed collection by id.
     /// </summary>
-    /// <typeparam name="TValue"></typeparam>
-    public class KeyAsIdCollection<TValue> : KeyedCollection<string, TValue> where TValue : IKeyAsId
+    /// <typeparam name="TItem">The collection item type.</typeparam>
+    public class KeyAsIdCollection<TItem> : KeyedCollection<string, TItem> where TItem : IKeyAsId
     {
         /// <summary>
         /// Initialize a new instance.
@@ -29,7 +29,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        protected override string GetKeyForItem(TValue item)
+        protected override string GetKeyForItem(TItem item)
         {
             return item.Id;
         }

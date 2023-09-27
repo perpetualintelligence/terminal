@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
     public static class ILoggerExtensions
     {
         /// <summary>
-        /// Logs the formated message and returns the logged message for downstream processing.
+        /// Logs the formatted message and returns the logged message for downstream processing.
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="logLevel"></param>
