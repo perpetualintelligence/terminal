@@ -19,7 +19,7 @@
         CI CONFIG:
     -->
     <Choose>
-        <When Condition="'$(PI_CI_REFERENCE)'=='local' Or '$(PI_CI_REFERENCE)'=='cross'">
+        <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
                 <ProjectReference Include="..\PerpetualIntelligence.Terminal\PerpetualIntelligence.Terminal.csproj" />
             </ItemGroup>
