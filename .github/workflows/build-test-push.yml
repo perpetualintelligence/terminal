@@ -135,11 +135,11 @@ jobs:
 
     # Build
     - name: Build
-      run: dotnet build -c Release --no-restore --verbosity minimal
+      run: dotnet build -c Release --no-restore
       
     # Test
     - name: Test
-      run: dotnet test --no-build --verbosity minimal
+      run: dotnet test -c Release --no-build --verbosity minimal
 
     # Pack
     - name: Pack
