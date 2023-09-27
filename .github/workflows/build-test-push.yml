@@ -135,7 +135,7 @@ jobs:
 
     # Build
     - name: Build
-      run: dotnet build -c Release --no-restore --verbosity minimal
+      run: dotnet build -c Release --no-restore
       
     # Test
     - name: Test
