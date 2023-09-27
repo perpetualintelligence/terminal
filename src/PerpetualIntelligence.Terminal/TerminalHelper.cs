@@ -128,7 +128,7 @@ namespace PerpetualIntelligence.Terminal
         }
 
         /// <summary>
-        /// Determines if we are in a <c>dev-mode</c>. We assume <c>dev-mode</c> during debugging if the consumer deploys  on-premise,
+        /// Determines if we are in a <c>dev-mode</c>. We assume <c>dev-mode</c> during debugging if the consumer deploys on-premise,
         /// use any source code editor or an IDE such as Visual Studio, Visual Studio Code, NotePad, Eclipse etc., use DEBUG or any other custom configuration.
         /// It is a violation of licensing terms to disable <c>dev-mode</c> with IL Weaving, Reflection or any other methods.
         /// </summary>

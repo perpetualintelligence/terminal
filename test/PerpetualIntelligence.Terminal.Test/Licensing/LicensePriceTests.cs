@@ -1,13 +1,13 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Shared.Licensing;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -116,7 +116,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void StandardEdition_ShouldIgnoreClaims()
         {
-            Dictionary<string, object> expected = new Dictionary<string, object>()
+            Dictionary<string, object> expected = new()
             {
                 {"currency", "INR" },
                 {"monthly_price", 36523.36 },
