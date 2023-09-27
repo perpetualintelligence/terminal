@@ -35,7 +35,7 @@ on:
         
 jobs:
   setup:    
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: github-release
     timeout-minutes: 10
     
