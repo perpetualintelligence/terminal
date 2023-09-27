@@ -51,6 +51,20 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
+        /// Adds the <see cref="IDataTypeMapper{TValur}"/> and <see cref="IArgumentChecker"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TMapper">The argument mapper type.</typeparam>
+        /// <typeparam name="TChecker">The argument checker type.</typeparam>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddArgumentChecker<TMapper, TChecker>(this ITerminalBuilder builder) where TMapper : class, IDataTypeMapper<Argument> where TChecker : class, IArgumentChecker
+        {
+            builder.Services.AddTransient<IDataTypeMapper<Argument>, TMapper>();
+            builder.Services.AddTransient<IArgumentChecker, TChecker>();
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the <see cref="IAsyncEventHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>

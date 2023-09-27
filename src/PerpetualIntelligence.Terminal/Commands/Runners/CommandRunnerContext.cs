@@ -7,7 +7,6 @@
 
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using System;
-using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
@@ -20,12 +19,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// Initialize a new instance.
         /// </summary>
         /// <param name="handlerContext">The command hander context.</param>
-        /// <param name="custom">The custom data for the command to run.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public CommandRunnerContext(CommandHandlerContext handlerContext, Dictionary<string, object>? custom = null)
+        public CommandRunnerContext(CommandHandlerContext handlerContext)
         {
             HandlerContext = handlerContext;
-            Custom = custom;
         }
 
         /// <summary>
@@ -34,8 +31,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         public CommandHandlerContext HandlerContext { get; }
 
         /// <summary>
-        /// The custom data for the command.
+        /// The command to run.
         /// </summary>
-        public Dictionary<string, object>? Custom { get; }
+        public Command Command => HandlerContext.ParsedCommand.Command;
+
+        /// <summary>
+        /// The hierarchy of the command to run.
+        /// </summary>
+        public Root? Hierarchy => HandlerContext.ParsedCommand.Hierarchy;
     }
 }

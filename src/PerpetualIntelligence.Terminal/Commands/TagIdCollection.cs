@@ -12,13 +12,13 @@ namespace PerpetualIntelligence.Terminal.Commands
     /// <summary>
     /// Defines a collection of tags for a command.
     /// </summary>
-    public sealed class TagCollection : List<string>
+    public sealed class TagIdCollection : List<string>
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="tags">The tags.</param>
-        public TagCollection(params string[] tags) : base(tags)
+        public TagIdCollection(params string[] tags) : base(tags)
         {
         }
     }

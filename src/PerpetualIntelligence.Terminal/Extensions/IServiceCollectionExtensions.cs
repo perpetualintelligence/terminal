@@ -7,8 +7,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Mappers;
+using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Hosting;
 using System;
@@ -74,9 +78,11 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public static ITerminalBuilder AddTerminalDefault(this IServiceCollection services, Action<TerminalOptions> setupAction)
         {
             return services.AddTerminal(setupAction)
-                    .AddExtractor<CommandExtractor, CommandRouteParser>()
                     .AddLicenseHandler()
-                    .AddTextHandler<AsciiTextHandler>()
+                    .AddRouter<CommandRouter, CommandHandler>()
+                    .AddExtractor<CommandExtractor, CommandRouteParser>()
+                    .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
+                    .AddArgumentChecker<DataTypeMapper<Argument>, ArgumentChecker>()
                     .AddExceptionHandler<ExceptionHandler>();
         }
     }

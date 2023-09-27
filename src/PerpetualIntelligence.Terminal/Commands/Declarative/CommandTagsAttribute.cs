@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using System;
 
@@ -27,12 +21,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         /// <param name="tags">The tags.</param>
         public CommandTagsAttribute(params string[] tags)
         {
-            Tags = new TagCollection(tags);
+            Tags = new TagIdCollection(tags);
         }
 
         /// <summary>
         /// The command tags.
         /// </summary>
-        public TagCollection Tags { get; }
+        public TagIdCollection Tags { get; }
     }
 }

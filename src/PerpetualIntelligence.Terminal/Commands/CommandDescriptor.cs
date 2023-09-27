@@ -120,6 +120,6 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// The tags to find the command.
         /// </summary>
-        public TagCollection? Tags { get; internal set; }
+        public TagIdCollection? TagIds { get; internal set; }
     }
 }

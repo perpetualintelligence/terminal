@@ -116,54 +116,59 @@ namespace PerpetualIntelligence.Terminal.Commands
         }
 
         /// <summary>
-        /// Gets the option value for the specified identifier.
+        /// Attempts to get the option value for the specified identifier.
         /// </summary>
         /// <param name="idOrAlias">The option id or its alias.</param>
+        /// <param name="value">The option value.</param>
         /// <typeparam name="TValue">The type of value.</typeparam>
         /// <returns>The option value.</returns>
         /// <exception cref="ErrorException">If the option is not supported.</exception>
-        public TValue GetOptionValue<TValue>(string idOrAlias)
+        public bool TryGetOptionValue<TValue>(string idOrAlias, out TValue? value)
         {
-            if (Options == null)
-            {
-                throw new ErrorException(TerminalErrors.UnsupportedOption, "The option is not supported. option={0}", idOrAlias);
-            }
+            value = default;
 
-            return Options.GetOptionValue<TValue>(idOrAlias);
+            try
+            {
+                if (Options == null)
+                {
+                    return false;
+                }
+
+                value = Options.GetOptionValue<TValue>(idOrAlias);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
-        /// Gets the argument value for the specified index.
+        /// Attempts to get the argument value for the specified index.
         /// </summary>
         /// <param name="index">The argument index.</param>
+        /// <param name="value">The argument value.</param>
         /// <typeparam name="TValue">The type of value.</typeparam>
         /// <returns>The option value.</returns>
         /// <exception cref="ErrorException">If the argument is not supported.</exception>
-        public TValue GetArgumentValue<TValue>(int index)
+        public bool TryGetArgumentValue<TValue>(int index, out TValue? value)
         {
-            if (Arguments == null)
+            value = default;
+
+            try
             {
-                throw new ErrorException(TerminalErrors.UnsupportedOption, "The argument is not supported at index. index={0}", index);
+                if (Arguments == null)
+                {
+                    return false;
+                }
+
+                value = (TValue)Arguments[index].Value;
+                return true;
             }
-
-            return (TValue)Arguments[index].Value;
-        }
-
-        /// <summary>
-        /// Gets the argument value for the specified identifier.
-        /// </summary>
-        /// <param name="id">The argument id.</param>
-        /// <typeparam name="TValue">The type of value.</typeparam>
-        /// <returns>The option value.</returns>
-        /// <exception cref="ErrorException">If the argument is not supported.</exception>
-        public TValue GetArgumentValue<TValue>(string id)
-        {
-            if (Arguments == null)
+            catch
             {
-                throw new ErrorException(TerminalErrors.UnsupportedOption, "The argument is not supported. argument={0}", id);
+                return false;
             }
-
-            return (TValue)Arguments[id].Value;
         }
     }
 }

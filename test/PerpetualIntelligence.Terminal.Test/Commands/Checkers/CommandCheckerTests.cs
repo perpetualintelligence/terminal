@@ -20,6 +20,7 @@ using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -242,7 +243,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             valueChecker = new OptionChecker(optionMapper, terminalOptions);
             argumentChecker = new ArgumentChecker(argumentMapper, terminalOptions);
             checker = new CommandChecker(valueChecker, argumentChecker, terminalOptions, TestLogger.Create<CommandChecker>());
-            commands = new InMemoryCommandStore(MockCommands.Commands);
+            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
             tokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRoutingContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token));
             routerContext = new CommandRouterContext("test", routingContext);

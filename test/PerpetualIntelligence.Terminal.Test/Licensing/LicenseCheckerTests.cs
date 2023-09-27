@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         public LicenseCheckerTests()
         {
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            commandStoreHandler = new InMemoryCommandStore(MockCommands.LicensingCommands);
+            commandStoreHandler = new InMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
             licenseChecker = new LicenseChecker(commandStoreHandler, terminalOptions, TestLogger.Create<LicenseChecker>());
             license = new License("testProviderId2", TerminalHandlers.OnlineLicenseHandler, PiCliLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(PiCliLicensePlans.Unlimited), LicensePrice.Create(PiCliLicensePlans.Unlimited));
         }

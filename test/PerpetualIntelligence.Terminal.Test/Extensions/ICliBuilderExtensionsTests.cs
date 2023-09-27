@@ -13,6 +13,7 @@ using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Mappers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -53,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddArgumentCheckerShouldCorrectlyInitialize()
+        public void AddOptionCheckerShouldCorrectlyInitialize()
         {
             terminalBuilder.AddOptionChecker<MockOptionMapper, MockOptionChecker>();
 
@@ -61,6 +62,27 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Assert.IsNotNull(arg);
             Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
             Assert.AreEqual(typeof(MockOptionChecker), arg.ImplementationType);
+
+            var map = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDataTypeMapper<Option>)));
+            Assert.IsNotNull(map);
+            Assert.AreEqual(ServiceLifetime.Transient, map.Lifetime);
+            Assert.AreEqual(typeof(MockOptionMapper), map.ImplementationType);
+        }
+
+        [TestMethod]
+        public void AddArgumentCheckerShouldCorrectlyInitialize()
+        {
+            terminalBuilder.AddArgumentChecker<MockArgumentMapper, MockArgumentChecker>();
+
+            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentChecker)));
+            Assert.IsNotNull(arg);
+            Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
+            Assert.AreEqual(typeof(MockArgumentChecker), arg.ImplementationType);
+
+            var map = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDataTypeMapper<Argument>)));
+            Assert.IsNotNull(map);
+            Assert.AreEqual(ServiceLifetime.Transient, map.Lifetime);
+            Assert.AreEqual(typeof(MockArgumentMapper), map.ImplementationType);
         }
 
         [TestMethod]

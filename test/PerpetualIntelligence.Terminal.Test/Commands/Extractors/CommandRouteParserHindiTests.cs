@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private readonly TerminalOptions _terminalOptions;
         private readonly ILogger<CommandRouteParser> _logger;
         private readonly ICommandRouteParser _commandRouteParser;
-        private Dictionary<string, CommandDescriptor> _commandDescriptors;
+        private CommandDescriptors _commandDescriptors;
 
         public CommandRouteParserHindiTests()
         {
@@ -43,15 +43,15 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 new OptionDescriptor("चार", nameof(Double), "चौथा तर्क", OptionFlags.None, "चारहै"),
             });
 
-            _commandDescriptors = new Dictionary<string, CommandDescriptor>()
+            _commandDescriptors = new CommandDescriptors(_textHandler, new List<CommandDescriptor>()
             {
-               { "यूनिकोड", new CommandDescriptor("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड", CommandType.Root, CommandFlags.None) },
-               { "परीक्षण", new CommandDescriptor("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड", CommandType.Group, CommandFlags.None, new OwnerIdCollection("यूनिकोड")) },
-               { "प्रिंट", new CommandDescriptor("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"), argumentDescriptors:null, optionDescriptors: options) },
-               { "दूसरा", new CommandDescriptor("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"),  argumentDescriptors:null, optionDescriptors: options) },
-            };
+               new CommandDescriptor("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड", CommandType.Root, CommandFlags.None),
+               new CommandDescriptor("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड", CommandType.Group, CommandFlags.None, new OwnerIdCollection("यूनिकोड")),
+               new CommandDescriptor("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"), argumentDescriptors : null, optionDescriptors : options),
+               new CommandDescriptor("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"), argumentDescriptors : null, optionDescriptors : options)
+            });
 
-            _commandStore = new InMemoryCommandStore(_commandDescriptors);
+            _commandStore = new InMemoryCommandStore(_textHandler, _commandDescriptors.Values);
             _terminalOptions = MockTerminalOptions.NewAliasOptions();
             _commandRouteParser = new CommandRouteParser(_textHandler, _commandStore, _terminalOptions, _logger);
         }
@@ -325,7 +325,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             parsedCommand.Command.Options["चार"].Should().BeSameAs(parsedCommand.Command.Options["चारहै"]);
         }
 
-
         [Fact]
         public async Task Unicode_Hindi_SubCommand_With_Different_Separator_With_Space_Options_Extracts_Correctly()
         {
@@ -496,6 +495,5 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             parsedCommand.Command.Options!["चारहै"].Value.Should().Be("86.39");
             parsedCommand.Command.Options["चार"].Should().BeSameAs(parsedCommand.Command.Options["चारहै"]);
         }
-
     }
 }

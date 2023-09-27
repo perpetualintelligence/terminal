@@ -6,7 +6,7 @@
 */
 
 using PerpetualIntelligence.Terminal.Commands;
-using System;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -21,10 +21,12 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
+        /// <param name="textHandler"></param>
         /// <param name="commandDescriptors">The command identities.</param>
-        public InMemoryCommandStore(Dictionary<string, CommandDescriptor> commandDescriptors)
+        public InMemoryCommandStore(ITextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
         {
-            this.commandDescriptors = commandDescriptors ?? throw new ArgumentNullException(nameof(commandDescriptors));
+            this.textHandler = textHandler;
+            this.commandDescriptors = new CommandDescriptors(textHandler, commandDescriptors);
         }
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
             return Task.FromResult(commandDescriptors.TryGetValue(id, out commandDescriptor));
         }
 
-        private readonly Dictionary<string, CommandDescriptor> commandDescriptors;
+        private readonly CommandDescriptors commandDescriptors;
+        private readonly ITextHandler textHandler;
     }
 }
