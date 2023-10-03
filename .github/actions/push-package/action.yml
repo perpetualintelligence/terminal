@@ -25,9 +25,6 @@ inputs:
     description: 'The package registry (github or nuget)'
     default: github
     required: true
-  testLicJson:
-    description: 'The test license JSON'
-    required: true
 runs:
   using: "composite"
   steps:

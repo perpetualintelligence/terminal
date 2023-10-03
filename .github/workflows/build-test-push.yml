@@ -129,35 +129,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
 
-    # Restore
-    - name: Restore
-      run: dotnet restore --verbosity minimal
-
-    # Build
-    - name: Build
-      run: dotnet build -c Release --no-restore
-      
-    # Test
-    - name: Test
-      run: dotnet test -c Release --no-build --verbosity minimal
-
-    # Pack
-    - name: Pack
-      run: dotnet pack ./src/PerpetualIntelligence.Terminal/PerpetualIntelligence.Terminal.csproj -c Release -p:PackageVersion=${{ env.PI_CI_PACKAGE_VERSION }} --no-build -o _packages -v minimal
-      
-    # GITHUB
-    - name: Github Push
-      if: ${{ env.PI_PUBLISH_REGISTRY == 'github' }}
-      run: dotnet nuget push _packages/PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg --skip-duplicate --no-symbols --api-key ${{ env.PI_GITHUB_PAT_ENV }} --source github
-
-    # NUGET - 1
-    # First push to github (for package cadence, Nuget requires package verification)
-    - name: Github Push
-      if: ${{ env.PI_PUBLISH_REGISTRY == 'nuget' }}
-      run: dotnet nuget push _packages/PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg --skip-duplicate --no-symbols --api-key ${{ env.PI_GITHUB_PAT_ENV }} --source github
-      
-    # NUGET - 2
-    # Second push to Nuget (for package cadence, Github will be used and in production Nuget after package verification)
-    - name: Nuget Push
-      if: ${{ env.PI_PUBLISH_REGISTRY == 'nuget' }}
-      run: dotnet nuget push _packages/PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg --skip-duplicate --no-symbols --api-key ${{ env.PI_NUGET_PAT_ENV }} --source nuget.org
+    # Publish PerpetualIntelligence.Terminal
+    - name: PerpetualIntelligence.Terminal
+      uses: ./.github/actions/push-package
+      with:
+        project: PerpetualIntelligence.Terminal
+        config: Release
+        version: ${{ env.PI_CI_PACKAGE_VERSION }}
+        ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
+        nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
+        registry: ${{ env.PI_PUBLISH_REGISTRY }}
