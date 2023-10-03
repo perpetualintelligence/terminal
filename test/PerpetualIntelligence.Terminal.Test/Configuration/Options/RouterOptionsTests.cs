@@ -8,7 +8,6 @@
 using FluentAssertions;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
-using System;
 using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
@@ -28,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
             options.Timeout.Should().Be(25000);
             options.MaxCommandStringLength.Should().Be(1024);
             options.RemoteMaxClients.Should().Be(5);
-            options.CommandStringDelimiter.Should().Be(Environment.NewLine);
+            options.CommandStringDelimiter.Should().Be("$EOM$");
         }
     }
 }

@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <remarks>
         /// The <see cref="DelimitedCommandString(TerminalOptions, string[])"/> method checks if each element in the raw array ends with the
         /// <see cref="RouterOptions.CommandStringDelimiter"/>. If it doesn't, the delimiter is appended to the string element. The formatted strings are then
-        /// concatenated into a single command string.
+        /// joined into a single command string.
         /// </remarks>
         public static string DelimitedCommandString(this TerminalOptions terminalOptions, params string[] raw)
         {
