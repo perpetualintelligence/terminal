@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
     {
         public Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
         {
-            throw new ErrorException("test_checker_error", "test_checker_error_desc");
+            throw new TerminalException("test_checker_error", "test_checker_error_desc");
         }
     }
 }

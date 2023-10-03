@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Set invalid start mode
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Grpc), tokenSource.Token);
             Func<Task> act = async () => await host.RunConsoleRoutingAsync(new TerminalConsoleRoutingContext(startContext));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Grpc");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Grpc");
         }
 
         [Fact]
@@ -413,7 +413,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Console), tokenSource.Token);
 
-            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new ErrorException("test_error_code", "test_error_description. opt1={0} opt2={1}", "test1", "test2")));
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, tokenSource, new TerminalException("test_error_code", "test_error_description. opt1={0} opt2={1}", "test1", "test2")));
             opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,

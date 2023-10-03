@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             OptionCheckerContext context = new(value);
             Func<Task> func = async () => await checker.CheckAsync(context);
-            await func.Should().ThrowAsync<ErrorException>().WithMessage("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
+            await func.Should().ThrowAsync<TerminalException>().WithMessage("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -107,7 +107,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             OptionCheckerContext context = new(value);
             Func<Task> func = async () => await checker.CheckAsync(context);
-            await func.Should().ThrowAsync<ErrorException>().WithMessage("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
+            await func.Should().ThrowAsync<TerminalException>().WithMessage("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]

@@ -38,7 +38,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <returns>The string representation.</returns>
         public Task HandleAsync(ExceptionHandlerContext context)
         {
-            if (context.Exception is ErrorException ee)
+            if (context.Exception is TerminalException ee)
             {
                 logger.FormatAndLog(LogLevel.Error, options.Logging, ee.Error.ErrorDescription ?? "", ee.Error.Args ?? Array.Empty<object?>());
             }

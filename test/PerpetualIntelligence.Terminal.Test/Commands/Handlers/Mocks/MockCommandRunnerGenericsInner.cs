@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
 
             if (ThrowException)
             {
-                throw new ErrorException("test_error", "test_desc");
+                throw new TerminalException("test_error", "test_desc");
             }
 
             return Task.FromResult(new MockGenericCommandRunnerResult());

@@ -188,7 +188,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             {
                 await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
             }
-            catch (ErrorException ex)
+            catch (TerminalException ex)
             {
                 ex.Message.Should().StartWith("The Json license file is not valid, see licensing options. json_file=");
             }
@@ -386,7 +386,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         private static string GetJsonLicenseFIleForLocalHostGithubSecretForCICD(string env)
         {
             // The demo json is too long for system env, so we use path for system env and json for github
-            string? fileOrJson = Environment.GetEnvironmentVariable(env) ?? throw new ErrorException(TerminalErrors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
+            string? fileOrJson = Environment.GetEnvironmentVariable(env) ?? throw new TerminalException(TerminalErrors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
             string json = fileOrJson;
             if (File.Exists(fileOrJson))
             {

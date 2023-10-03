@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Terminal
                     int endIdx = trimmedRaw.IndexOf(terminalOptions.Extractor.ValueDelimiter, startIdx + 1, textHandler.Comparison);
                     if (endIdx < 0)
                     {
-                        throw new ErrorException(TerminalErrors.InvalidRequest, "The option value within end token is not specified.");
+                        throw new TerminalException(TerminalErrors.InvalidRequest, "The option value within end token is not specified.");
                     }
 
                     withInRanges.Add(startIdx, endIdx);
@@ -76,7 +76,7 @@ namespace PerpetualIntelligence.Terminal
             {
                 if (counter > 50)
                 {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, $"Too many iteration while extracting options. max={50} current={counter}");
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, $"Too many iteration while extracting options. max={50} current={counter}");
                 }
 
                 // Increment the nextPos to get the next option spit

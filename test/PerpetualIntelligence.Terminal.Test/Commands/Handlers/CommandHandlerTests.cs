@@ -446,7 +446,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                 CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
                 var result = await handler.HandleAsync(commandContext);
             }
-            catch (ErrorException eex)
+            catch (TerminalException eex)
             {
                 eex.Error.ErrorCode.Should().Be("test_error");
                 eex.Error.ErrorDescription.Should().Be("test_desc");
@@ -482,7 +482,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                 CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
                 var result = await handler.HandleAsync(commandContext);
             }
-            catch (ErrorException eex)
+            catch (TerminalException eex)
             {
                 eex.Error.ErrorCode.Should().Be("test_c_error");
                 eex.Error.ErrorDescription.Should().Be("test_c_desc");

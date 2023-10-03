@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
     ///
     /// <para><strong>Developer Note</strong>: While the default parser is optimized for a diverse set of command-line scenarios, if you possess a highly specialized or simplified parsing requirement, it might be beneficial to implement a custom parser. Nonetheless, it's advisable to thoroughly understand the capabilities and efficiency of this parser before transitioning to a custom implementation.</para>
     /// </remarks>
-    /// <exception cref="ErrorException">
+    /// <exception cref="TerminalException">
     /// This exception is designed to capture a myriad of parsing issues such as unrecognized commands, unexpected number of arguments, or misidentified options.
     /// </exception>
     public class CommandRouteParser : ICommandRouteParser
@@ -332,7 +332,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                 {
                     if (currentDescriptor == null)
                     {
-                        throw new ErrorException(TerminalErrors.ServerError, "Command found in the store but returned null descriptor.");
+                        throw new TerminalException(TerminalErrors.ServerError, "Command found in the store but returned null descriptor.");
                     }
 
                     if (!parsedArguments.IsNullOrEmpty())
@@ -344,11 +344,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     {
                         if (potentialLastCommandId != null && (currentDescriptor.OwnerIds == null || !currentDescriptor.OwnerIds.Contains(potentialLastCommandId)))
                         {
-                            throw new ErrorException(TerminalErrors.InvalidCommand, "The command owner is not valid. owner={0} command={1}.", potentialLastCommandId, currentDescriptor.Id);
+                            throw new TerminalException(TerminalErrors.InvalidCommand, "The command owner is not valid. owner={0} command={1}.", potentialLastCommandId, currentDescriptor.Id);
                         }
                         else if (potentialLastCommandId == null && currentDescriptor.OwnerIds != null && currentDescriptor.OwnerIds.Any())
                         {
-                            throw new ErrorException(TerminalErrors.MissingCommand, "The command owner is missing in the command route. owners={0} command={1}.", currentDescriptor.OwnerIds.JoinBySpace(), currentDescriptor.Id);
+                            throw new TerminalException(TerminalErrors.MissingCommand, "The command owner is missing in the command route. owners={0} command={1}.", currentDescriptor.OwnerIds.JoinBySpace(), currentDescriptor.Id);
                         }
 
                         potentialLastCommandId = segment;
@@ -371,7 +371,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
                         if (!EndsWith(segment, valueDelimiter))
                         {
-                            throw new ErrorException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
+                            throw new TerminalException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
                         }
                     }
 
@@ -432,7 +432,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             if (!parsedDescriptors.Any())
             {
-                throw new ErrorException(TerminalErrors.MissingCommand, "The command is missing in the command route.");
+                throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the command route.");
             }
 
             // The last command in the route is the one that will be executed
@@ -479,7 +479,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                         {
                             if (hierarchy != null)
                             {
-                                throw new ErrorException(TerminalErrors.InvalidCommand, "The command route contains multiple roots. root={0}", currentDescriptor.Id);
+                                throw new TerminalException(TerminalErrors.InvalidCommand, "The command route contains multiple roots. root={0}", currentDescriptor.Id);
                             }
 
                             hierarchy = new Root(currentCommand);
@@ -493,7 +493,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                             {
                                 if (hierarchy == null)
                                 {
-                                    throw new ErrorException(TerminalErrors.MissingCommand, "The command group is missing a root command. group={0}", currentCommand.Id);
+                                    throw new TerminalException(TerminalErrors.MissingCommand, "The command group is missing a root command. group={0}", currentCommand.Id);
                                 }
                                 hierarchy.ChildGroup = group;
                             }
@@ -526,7 +526,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
                     default:
                         {
-                            throw new ErrorException(TerminalErrors.InvalidRequest, "The command descriptor type is not valid. type={0}", currentDescriptor.Type);
+                            throw new TerminalException(TerminalErrors.InvalidRequest, "The command descriptor type is not valid. type={0}", currentDescriptor.Type);
                         }
                 }
             }
@@ -553,12 +553,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             if (commandDescriptor.OptionDescriptors == null || commandDescriptor.OptionDescriptors.Count == 0)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support any options. command={0}", commandDescriptor.Id);
+                throw new TerminalException(TerminalErrors.UnsupportedArgument, "The command does not support any options. command={0}", commandDescriptor.Id);
             }
 
             if (commandDescriptor.OptionDescriptors.Count < parsedOptions.Count)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support {0} options. command={1} options={2}", parsedOptions.Count, commandDescriptor.Id, parsedOptions.Keys.JoinByComma());
+                throw new TerminalException(TerminalErrors.UnsupportedArgument, "The command does not support {0} options. command={1} options={2}", parsedOptions.Count, commandDescriptor.Id, parsedOptions.Keys.JoinByComma());
             }
 
             // 1. An input can be either an option or an alias, but not both.
@@ -581,7 +581,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
                 if (!commandDescriptor.OptionDescriptors.TryGetValue(optionOrAliasKey, out var optionDescriptor))
                 {
-                    throw new ErrorException(TerminalErrors.UnsupportedOption, "The command does not support an option or its alias. command={0} option={1}", commandDescriptor.Id, optionOrAliasKey);
+                    throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support an option or its alias. command={0} option={1}", commandDescriptor.Id, optionOrAliasKey);
                 }
 
                 if (isOption)
@@ -589,7 +589,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     // Validate if option matches expected id
                     if (!textHandler.TextEquals(optionDescriptor.Id, optionOrAliasKey))
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The option prefix is not valid for an alias. option={0}", optionOrAliasKey);
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The option prefix is not valid for an alias. option={0}", optionOrAliasKey);
                     }
                 }
                 else
@@ -597,7 +597,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     // Validate if option matches expected alias
                     if (!textHandler.TextEquals(optionDescriptor.Alias, optionOrAliasKey))
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The alias prefix is not valid for an option. option={0}", optKvp.Key);
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The alias prefix is not valid for an option. option={0}", optKvp.Key);
                     }
                 }
 
@@ -627,12 +627,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
             if (commandDescriptor.ArgumentDescriptors == null || commandDescriptor.ArgumentDescriptors.Count == 0)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support any arguments. command={0}", commandDescriptor.Id);
+                throw new TerminalException(TerminalErrors.UnsupportedArgument, "The command does not support any arguments. command={0}", commandDescriptor.Id);
             }
 
             if (commandDescriptor.ArgumentDescriptors.Count < parsedArguments.Count)
             {
-                throw new ErrorException(TerminalErrors.UnsupportedArgument, "The command does not support {0} arguments. command={1} arguments={2}", parsedArguments.Count, commandDescriptor.Id, parsedArguments.JoinByComma());
+                throw new TerminalException(TerminalErrors.UnsupportedArgument, "The command does not support {0} arguments. command={1} arguments={2}", parsedArguments.Count, commandDescriptor.Id, parsedArguments.JoinByComma());
             }
 
             List<Argument> arguments = new(parsedArguments.Count);

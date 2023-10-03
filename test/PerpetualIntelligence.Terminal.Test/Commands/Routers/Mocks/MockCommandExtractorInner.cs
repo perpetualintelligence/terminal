@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 
             if (IsExplicitError)
             {
-                throw new ErrorException("test_extractor_error", "test_extractor_error_desc");
+                throw new TerminalException("test_extractor_error", "test_extractor_error_desc");
             }
             else
             {

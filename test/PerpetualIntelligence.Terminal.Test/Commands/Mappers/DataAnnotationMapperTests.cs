@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         {
             Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
             Func<Task> result = async () => await mapper.MapAsync(new DataTypeMapperContext<Option>(option));
-            await result.Should().ThrowAsync<ErrorException>().WithMessage($"The option data type is not supported. option=opt1 data_type={dataType}");
+            await result.Should().ThrowAsync<TerminalException>().WithMessage($"The option data type is not supported. option=opt1 data_type={dataType}");
         }
 
         [DataTestMethod]

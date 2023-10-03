@@ -389,7 +389,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Argument_Without_Closing_Delimiter_Throws()
         {
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 32 \"arg2 value true 35.987 3435345345 2312.123123 12/23/2023 12/23/2022:12:23:22"));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The argument value is missing the closing delimiter. argument=\"arg2 value true 35.987 3435345345 2312.123123 12/23/2023 12/23/2022:12:23:22");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The argument value is missing the closing delimiter. argument=\"arg2 value true 35.987 3435345345 2312.123123 12/23/2023 12/23/2022:12:23:22");
         }
 
         [Fact]
@@ -451,7 +451,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Invalid_Option_Throws(string invalidOpt, string errOpt)
         {
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 " + invalidOpt));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support an option or its alias. command=cmd1 option={errOpt}");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support an option or its alias. command=cmd1 option={errOpt}");
         }
 
         [Fact]
@@ -460,7 +460,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // opt7_a is an alias for opt7 so we cannot use -- prefix we have to use - alias prefix
             var options = "--opt7_a";
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 " + options));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The option prefix is not valid for an alias. option=opt7_a");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The option prefix is not valid for an alias. option=opt7_a");
         }
 
         [Fact]
@@ -469,7 +469,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // opt7 is an option so we cannot use - alias prefix we have to use -- option prefix
             var options = "-opt7";
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 " + options));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The alias prefix is not valid for an option. option=-opt7");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The alias prefix is not valid for an option. option=-opt7");
         }
 
         [Fact]
@@ -491,7 +491,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // We support 9 arguments but passed 11
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 val1 val2 val3    \"  val4   \" val5 val6 val7 val8 val9 val10 val11 "));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command does not support 11 arguments. command=cmd1 arguments=val1,val2,val3,  val4   ,val5,val6,val7,val8,val9,val10,val11");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support 11 arguments. command=cmd1 arguments=val1,val2,val3,  val4   ,val5,val6,val7,val8,val9,val10,val11");
         }
 
         [Fact]
@@ -500,21 +500,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // We support 9 arguments but passed 11
             string cmdStr = "root1 grp1 cmd1 --opt1 34 --opt2 option value2 --opt3 \"option delimited value3\" --opt4 option value4    with multiple  spaces --opt5 35.987 --opt6 12/23/2023 --opt7 --opt8 false --opt9 -opt10 val10 --opt11 val11 --opt12 -opt13 val13 --opt14 val14 -opt15";
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", cmdStr));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command does not support 15 options. command=cmd1 options=--opt1,--opt2,--opt3,--opt4,--opt5,--opt6,--opt7,--opt8,--opt9,-opt10,--opt11,--opt12,-opt13,--opt14,-opt15");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support 15 options. command=cmd1 options=--opt1,--opt2,--opt3,--opt4,--opt5,--opt6,--opt7,--opt8,--opt9,-opt10,--opt11,--opt12,-opt13,--opt14,-opt15");
         }
 
         [Fact]
         public async Task Unsupported_Option_Throws()
         {
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 --opt3_invalid \"  option    delimited  value3  \""));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command does not support an option or its alias. command=cmd1 option=opt3_invalid");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support an option or its alias. command=cmd1 option=opt3_invalid");
         }
 
         [Fact]
         public async Task Unsupported_Alias_Throws()
         {
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "root1 grp1 cmd1 -opt8_a_invalid true"));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command does not support an option or its alias. command=cmd1 option=opt8_a_invalid");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support an option or its alias. command=cmd1 option=opt8_a_invalid");
         }
 
         [Fact]
@@ -950,7 +950,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // Here arg9 and value are not delimited so they are considered as two arguments and exceed the limit of 9 arguments
             Func<Task> act = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", " root1   grp1  cmd1           \"arg1    value\"   32   true       35.987 3435345345       arg6value      12/23/2023 12/23/2022:12:23:22     arg9   value   "));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command does not support 10 arguments. command=cmd1 arguments=arg1    value,32,true,35.987,3435345345,arg6value,12/23/2023,12/23/2022:12:23:22,arg9,value");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support 10 arguments. command=cmd1 arguments=arg1    value,32,true,35.987,3435345345,arg6value,12/23/2023,12/23/2022:12:23:22,arg9,value");
         }
 
         [Fact]

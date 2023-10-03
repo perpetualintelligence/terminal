@@ -197,7 +197,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             {
                 await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
             }
-            catch (ErrorException ex)
+            catch (TerminalException ex)
             {
                 ex.Message.Should().StartWith("The Json license file is not valid, see licensing options. json_file=");
             }
@@ -524,7 +524,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             if (fileOrJson == null)
             {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
             }
 
             string json = fileOrJson;

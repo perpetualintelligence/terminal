@@ -189,7 +189,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 CommandRouterContext routerContext = new("test_command_string", routingContext);
                 var result = await commandRouter.RouteAsync(routerContext);
             }
-            catch (ErrorException eex)
+            catch (TerminalException eex)
             {
                 eex.Error.ErrorCode.Should().Be("test_extractor_error");
                 eex.Error.ErrorDescription.Should().Be("test_extractor_error_desc");
@@ -229,7 +229,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             terminalOptions.Router.MaxCommandStringLength = 30;
             Func<Task> act = () => commandRouter.RouteAsync(new CommandRouterContext(new string('x', 31), routingContext));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command string length is over the configured limit. max_length=30");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command string length is over the configured limit. max_length=30");
         }
 
         protected override void OnTestCleanup()

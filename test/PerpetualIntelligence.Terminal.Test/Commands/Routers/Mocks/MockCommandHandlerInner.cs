@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 
             if (IsExplicitError)
             {
-                throw new ErrorException("test_handler_error", "test_handler_error_desc");
+                throw new TerminalException("test_handler_error", "test_handler_error_desc");
             }
             else
             {

@@ -68,7 +68,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Terminal limit
             if (terminalCount > context.License.Limits.TerminalLimit)
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit={0} current={1}", context.License.Limits.TerminalLimit, terminalCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit={0} current={1}", context.License.Limits.TerminalLimit, terminalCount);
             }
 
             // Redistribution limit TODO, how do we check redistribution in a native bounded context
@@ -76,25 +76,25 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Root command limit
             if (rootCommandCount > context.License.Limits.RootCommandLimit)
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The root command limit exceeded. max_limit={0} current={1}", context.License.Limits.RootCommandLimit, rootCommandCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The root command limit exceeded. max_limit={0} current={1}", context.License.Limits.RootCommandLimit, rootCommandCount);
             }
 
             // grouped command limit
             if (commandGroupCount > context.License.Limits.GroupedCommandLimit)
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The grouped command limit exceeded. max_limit={0} current={1}", context.License.Limits.GroupedCommandLimit, commandGroupCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The grouped command limit exceeded. max_limit={0} current={1}", context.License.Limits.GroupedCommandLimit, commandGroupCount);
             }
 
             // grouped command limit
             if (subCommandCount > context.License.Limits.SubCommandLimit)
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit={0} current={1}", context.License.Limits.SubCommandLimit, subCommandCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit={0} current={1}", context.License.Limits.SubCommandLimit, subCommandCount);
             }
 
             // Option limit
             if (optionCount > context.License.Limits.OptionLimit)
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", context.License.Limits.OptionLimit, optionCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", context.License.Limits.OptionLimit, optionCount);
             }
 
             // We have found a valid license within limit so reset the previous failed and return.
@@ -111,43 +111,43 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictValueType))
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
             }
 
             // Date Type handler, null allowed for data type handler.
             if (!OptionsValid(limits.DataTypeHandlers, terminalOptions.Handler.DataTypeHandler, allowNullActual: true))
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler={0}", terminalOptions.Handler.DataTypeHandler);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler={0}", terminalOptions.Handler.DataTypeHandler);
             }
 
             // Unicode handler
             if (!OptionsValid(limits.TextHandlers, terminalOptions.Handler.TextHandler, allowNullActual: false))
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler={0}", terminalOptions.Handler.TextHandler);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler={0}", terminalOptions.Handler.TextHandler);
             }
 
             // Error handler
             if (!OptionsValid(limits.ErrorHandlers, terminalOptions.Handler.ErrorHandler, allowNullActual: false))
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler={0}", terminalOptions.Handler.ErrorHandler);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler={0}", terminalOptions.Handler.ErrorHandler);
             }
 
             // Store handler
             if (!OptionsValid(limits.StoreHandlers, terminalOptions.Handler.StoreHandler, allowNullActual: false))
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler={0}", terminalOptions.Handler.StoreHandler);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler={0}", terminalOptions.Handler.StoreHandler);
             }
 
             // Service handler
             if (!OptionsValid(limits.ServiceHandlers, terminalOptions.Handler.ServiceHandler, allowNullActual: false))
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler={0}", terminalOptions.Handler.ServiceHandler);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler={0}", terminalOptions.Handler.ServiceHandler);
             }
 
             // License handler
             if (!OptionsValid(limits.LicenseHandlers, terminalOptions.Handler.LicenseHandler, allowNullActual: false))
             {
-                throw new ErrorException(TerminalErrors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler={0}", terminalOptions.Handler.LicenseHandler);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
 
             return Task.CompletedTask;
@@ -186,7 +186,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                     }
                     else
                     {
-                        throw new ErrorException(TerminalErrors.InvalidCommand, "The command type is not supported. type={0}", kvpCmd.Value.Type);
+                        throw new TerminalException(TerminalErrors.InvalidCommand, "The command type is not supported. type={0}", kvpCmd.Value.Type);
                     }
 
                     // For now we only care about option count.

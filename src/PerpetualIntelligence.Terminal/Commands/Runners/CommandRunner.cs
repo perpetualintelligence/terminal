@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         {
             if (helpProvider == null)
             {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The help provider is missing in the configured services.");
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The help provider is missing in the configured services.");
             }
 
             return helpProvider.ProvideAsync(new HelpProviderContext(context.HandlerContext.ParsedCommand.Command));

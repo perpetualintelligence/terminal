@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public ICommandBuilder Add()
         {
             ServiceProvider lsp = Services.BuildServiceProvider();
-            ArgumentDescriptor? argumentDescriptor = lsp.GetService<ArgumentDescriptor>() ?? throw new ErrorException(TerminalErrors.MissingArgument, "The argument builder is missing an argument descriptor.");
+            ArgumentDescriptor? argumentDescriptor = lsp.GetService<ArgumentDescriptor>() ?? throw new TerminalException(TerminalErrors.MissingArgument, "The argument builder is missing an argument descriptor.");
 
             commandBuilder.Services.AddSingleton(argumentDescriptor);
 

@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             }
             catch (Exception ex)
             {
-                ErrorException eex = (ErrorException)ex;
+                TerminalException eex = (TerminalException)ex;
                 eex.Error.ErrorCode.Should().Be(TerminalErrors.InvalidLicense);
                 eex.Error.FormatDescription().Should().Be("The licensing for the SaaS plan is not supported. saas_plan=invalid_plan");
             }

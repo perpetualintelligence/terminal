@@ -85,12 +85,12 @@ namespace PerpetualIntelligence.Terminal.Runtime
             // Ensure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)
             {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
             }
 
             if (context.IPEndPoint == null)
             {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The network IP endpoint is missing in the TCP server routing request.");
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The network IP endpoint is missing in the TCP server routing request.");
             }
 
             _server = new(context.IPEndPoint);
@@ -268,7 +268,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
             // Check if the client is connected
             if (!client.Connected)
             {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, $"The client is not connected. task={0}", taskIdx);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, $"The client is not connected. task={0}", taskIdx);
             }
 
             using (NetworkStream stream = client.GetStream())
@@ -300,7 +300,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     // Ensure we can read from the stream
                     if (!stream.CanRead)
                     {
-                        throw new ErrorException(TerminalErrors.ServerError, "The TCP client stream is not readable. task={0}", taskIdx);
+                        throw new TerminalException(TerminalErrors.ServerError, "The TCP client stream is not readable. task={0}", taskIdx);
                     }
 
                     // Read data from the stream asynchronously
@@ -321,7 +321,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 string rawCommandString = receivedData.ToString();
                 if (string.IsNullOrWhiteSpace(rawCommandString))
                 {
-                    throw new ErrorException(TerminalErrors.ServerError, "The command string cannot be empty. task={0}", taskIdx);
+                    throw new TerminalException(TerminalErrors.ServerError, "The command string cannot be empty. task={0}", taskIdx);
                 }
 
                 // This may be multiple commands
@@ -331,7 +331,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     string raw = splitCmdString[idx];
                     if (raw.Length > options.Router.MaxCommandStringLength)
                     {
-                        throw new ErrorException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0} task={1}", options.Router.MaxCommandStringLength, taskIdx);
+                        throw new TerminalException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0} task={1}", options.Router.MaxCommandStringLength, taskIdx);
                     }
 
                     // Process the completed data package if it hasn't been processed before

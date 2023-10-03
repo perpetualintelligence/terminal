@@ -27,12 +27,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
 
         public Task HelpAsync(CommandRunnerContext context)
         {
-            throw new ErrorException("test_runner_help_error", "test_runner_help_error_desc");
+            throw new TerminalException("test_runner_help_error", "test_runner_help_error_desc");
         }
 
         public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
         {
-            throw new ErrorException("test_runner_error", "test_runner_error_desc");
+            throw new TerminalException("test_runner_error", "test_runner_error_desc");
         }
     }
 }

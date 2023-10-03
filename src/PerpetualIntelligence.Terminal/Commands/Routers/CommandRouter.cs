@@ -64,11 +64,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 // Honor the max limit
                 if (context.Route.Command.Raw.Length > terminalOptions.Router.MaxCommandStringLength)
                 {
-                    throw new ErrorException(Error.InvalidConfiguration, "The command string length is over the configured limit. max_length={0}", terminalOptions.Router.MaxCommandStringLength);
+                    throw new TerminalException(Error.InvalidConfiguration, "The command string length is over the configured limit. max_length={0}", terminalOptions.Router.MaxCommandStringLength);
                 }
 
                 // Ensure we have the license extracted before routing
-                License? license = await licenseExtractor.GetAsync() ?? throw new ErrorException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
+                License? license = await licenseExtractor.GetAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
                 // Extract the command
                 CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(context.Route));
