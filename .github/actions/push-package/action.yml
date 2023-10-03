@@ -40,7 +40,7 @@ runs:
     # Test
     - name: Test
       if: ${{ inputs.skiptest == 'false' }}
-      run: dotnet test ./test/${{ inputs.project }}.Test/${{ inputs.project }}.Test.csproj -c ${{ inputs.config }} --verbosity minimal    
+      run: dotnet test ./test/${{ inputs.project }}.Test/${{ inputs.project }}.Test.csproj -c ${{ inputs.config }} --verbosity minimal
       shell: bash
 
     # Pack
