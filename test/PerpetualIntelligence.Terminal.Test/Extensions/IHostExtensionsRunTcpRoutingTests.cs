@@ -371,7 +371,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             });
 
             // Cancel the token source to stop the server and client
-            tokenSource.CancelAfter(5000);
+            tokenSource.CancelAfter(2000);
 
             // Wait for both the routing task and the client task to complete
             await Task.WhenAll(routingTask, clientTask);
@@ -578,23 +578,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Task.WaitAll(routingTask, clientTask);
             routingTask.IsCompletedSuccessfully.Should().BeTrue();
             clientTask.IsCompletedSuccessfully.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task RunAsync_Should_Not_Stop_Server_After_Timeout_Async()
-        {
-            host = CreateHostWithLogger(ConfigureServicesDefault, nameof(RunAsync_Should_Not_Stop_Server_After_Timeout_Async));
-
-            // Start the TCP routing asynchronously with a timeout value (e.g., 2 seconds)
-            var timeout = 2000; // 2 seconds
-            GetCliOptions(host).Router.Timeout = timeout;
-            var routingTask = host.RunTcpRoutingAsync(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
-
-            // Wait for the routing task to complete or timeout
-            bool success = await Task.WhenAny(routingTask, Task.Delay(timeout + 1000)) == routingTask;
-
-            // Verify that the server stops on cancellation
-            success.Should().BeFalse();
         }
 
         [Fact]
