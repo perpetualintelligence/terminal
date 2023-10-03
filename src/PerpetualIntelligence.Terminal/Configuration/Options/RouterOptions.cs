@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
 using System.Threading;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
@@ -35,18 +34,16 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public int RemoteMaxClients { get; set; } = 5;
 
         /// <summary>
-        /// The read timeout from a remote source such as a network stream. The default value is 5 seconds.
-        /// </summary>
-        public int RemoteReadTimeout { get; set; } = 5000;
-
-        /// <summary>
         /// The maximum length of a command string. The default value is 1024.
         /// </summary>
         public int MaxCommandStringLength { get; set; } = 1024;
 
         /// <summary>
-        /// The delimiter to identify a complete command string. The default value is <see cref="Environment.NewLine"/>.
+        /// The delimiter to identify a complete command string. The default value is <c>$EOM$</c>.
         /// </summary>
-        public string CommandStringDelimiter { get; set; } = Environment.NewLine;
+        /// <remarks>
+        /// A <see cref="CommandStringDelimiter"/> is used while streaming a long command string from a remote source such as a network stream.
+        /// </remarks>
+        public string CommandStringDelimiter { get; set; } = "$EOM$";
     }
 }

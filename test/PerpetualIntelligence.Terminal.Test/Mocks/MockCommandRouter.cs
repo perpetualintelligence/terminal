@@ -42,40 +42,48 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
         public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
         {
-            // Stats
-            RouteCalled = true;
-            RawCommandString = context.Route.Command.Raw;
-            MultipleRawString.Add(context.Route.Command.Raw);
-            RouteCounter += 1;
+            // For testing this is a singleton router so make sure it is thread safe
+            await routeLock.WaitAsync();
 
-            // Add delay
-            if (routeDelay != null)
+            try
             {
-                await Task.Delay(routeDelay.Value);
+                // Your critical section code here
+                RouteCalled = true;
+                RawCommandString = context.Route.Command.Raw;
+                MultipleRawString.Add(context.Route.Command.Raw);
+                RouteCounter += 1;
+
+                if (routeDelay != null)
+                {
+                    await Task.Delay(routeDelay.Value);
+                }
+
+                cancelOnRouteCalled?.Cancel();
+
+                if (exception != null)
+                {
+                    throw exception;
+                }
+
+                if (explicitError != null)
+                {
+                    throw new ErrorException(explicitError);
+                }
+
+                ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()), context.Route);
+
+                return ReturnedRouterResult;
             }
-
-            // Cancel on route first
-            cancelOnRouteCalled?.Cancel();
-
-            // Raise exception
-            if (exception != null)
+            finally
             {
-                throw exception;
+                routeLock.Release(); // Release the semaphore when done
             }
-
-            // Raise explicit error
-            if (explicitError != null)
-            {
-                throw new ErrorException(explicitError);
-            }
-
-            ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()), context.Route);
-            return ReturnedRouterResult;
         }
 
         private readonly CancellationTokenSource? cancelOnRouteCalled;
         private readonly Exception? exception;
         private readonly Error? explicitError;
         private readonly int? routeDelay;
+        private SemaphoreSlim routeLock = new (1, 1);
     }
 }

@@ -11,8 +11,7 @@ using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -36,6 +35,9 @@ namespace PerpetualIntelligence.Terminal.Runtime
         private readonly TerminalOptions options;
         private readonly ITextHandler textHandler;
         private readonly ILogger<TerminalTcpRouting> logger;
+        private ConcurrentDictionary<int, ConcurrentQueue<string>>? commandCollection;
+        private ConcurrentDictionary<Task, int>? clientConnections;
+        private TcpListener? _server;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalTcpRouting"/> class.
@@ -76,6 +78,10 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// </remarks>
         public virtual async Task<TerminalTcpRoutingResult> RunAsync(TerminalTcpRoutingContext context)
         {
+            // Reset the command queue
+            commandCollection = new ConcurrentDictionary<int, ConcurrentQueue<string>>();
+            clientConnections = new ConcurrentDictionary<Task, int>();
+
             // Ensure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)
             {
@@ -87,25 +93,37 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 throw new ErrorException(TerminalErrors.InvalidConfiguration, "The network IP endpoint is missing in the TCP server routing request.");
             }
 
-            TcpListener server = new(context.IPEndPoint);
-
+            _server = new(context.IPEndPoint);
             try
             {
                 // Start the TCP server
-                server.Start();
-                logger.LogDebug("TCP Server started. endpoint={0} timestamp_utc={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                _server.Start();
+                logger.LogDebug("Terminal TCP routing started. endpoint={0}", context.IPEndPoint);
 
-                // Indefinitely wait for incoming clients till a cancellation token.
-                while (true)
+                // Initialize the client connections
+                // Setup tasks to accept client connections
+                logger.LogDebug("Initializing client connections. count={0}", options.Router.RemoteMaxClients);
+                for (int idx = 0; idx < options.Router.RemoteMaxClients; ++idx)
                 {
-                    // Break if cancellation is requested
-                    if (context.StartContext.CancellationToken.IsCancellationRequested)
-                    {
-                        logger.LogDebug("TCP Server is canceled. endpoint={0} timestamp_utc={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
-                        break;
-                    }
+                    // Create a local copy of the index for the task
+                    int localIdx = idx + 1;
+                    clientConnections.TryAdd(AcceptClientAsync(context, localIdx), localIdx);
+                }
 
-                    await AcceptClientConnectionsAsync(server, context);
+                // We have initialized the requested client connections. Now we wait for all the client connections to complete until
+                // the cancellation requested. Each time a a client task complete a new task is created to accept a new client connection.
+                await AcceptClientsUntilCanceledAsync(context);
+
+                // If we are here then that means a cancellation is requested, gracefully stop the client connections.
+                Task routerTimeout = Task.Delay(options.Router.Timeout);
+                var completedTask = await Task.WhenAny(Task.WhenAll(clientConnections.Keys), routerTimeout);
+                if (completedTask == routerTimeout)
+                {
+                    logger.LogError("Client connections failed to complete. timeout={0}", options.Router.Timeout);
+                }
+                else
+                {
+                    logger.LogDebug("Client connections are complete.");
                 }
             }
             catch (Exception ex)
@@ -115,46 +133,76 @@ namespace PerpetualIntelligence.Terminal.Runtime
             }
             finally
             {
-                server.Stop(); // Stop the TCP server
-                logger.LogDebug("Terminal TCP routing stopped. endpoint={0} timestamp_utc={1}", context.IPEndPoint, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                _server.Stop(); // Stop the TCP server
+                logger.LogDebug("Terminal TCP routing stopped. endpoint={0}", context.IPEndPoint);
             }
 
             // Return the default result (empty)
             return new TerminalTcpRoutingResult();
         }
 
-        /// <summary>
-        /// Accepts multiple client connections asynchronously and handles each connection in a separate background task.
-        /// </summary>
-        /// <param name="server">The TCP listener waiting for incoming client connections.</param>
-        /// <param name="context">The routing context.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        /// <remarks>
-        /// This method sets up a TCP listener to accept incoming client connections asynchronously.
-        /// It handles the accepted connections concurrently by creating separate background tasks.
-        /// Exceptions encountered during acceptance are logged, and the method continues accepting other connections.
-        /// </remarks>
-        private async Task AcceptClientConnectionsAsync(TcpListener server, TerminalTcpRoutingContext context)
+        private async Task AcceptClientsUntilCanceledAsync(TerminalTcpRoutingContext context)
         {
-            // Setup tasks to accept client connections
-            logger.LogDebug("Initializing {0} client connections.", options.Router.RemoteMaxClients);
-            List<Task> clientConnections = new();
-            for (int idx = 0; idx < options.Router.RemoteMaxClients; ++idx)
+            if (commandCollection is null || clientConnections is null)
             {
-                // Create a local copy of the index for the task
-                int localIdx = idx + 1;
-                clientConnections.Add(AcceptClientAsync(server, context, localIdx));
+                return;
             }
 
-            // Wait for all client connections to complete
-            await Task.WhenAll(clientConnections);
-            logger.LogWarning("All {0} client connection tasks are exhausted.", options.Router.RemoteMaxClients);
+            // Keep accepting new clients till a cancellation token is received.
+            CancellationToken cancellationToken = context.StartContext.CancellationToken;
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                int completedIndex = -1;
+                try
+                {
+                    // Process the commands from the completed client connection
+                    Task completedClient = await Task.WhenAny(clientConnections.Keys);
+                    completedIndex = clientConnections[completedClient];
+                    if (commandCollection.TryRemove(completedIndex, out ConcurrentQueue<string> commands))
+                    {
+                        foreach (string raw in commands)
+                        {
+                            await ProcessRawCommandsAsync(context, raw, completedIndex);
+                        }
+                    }
+
+                    // Remove the completed client connection and add a new one
+                    logger.LogWarning("Client connection is exhausted. task={0}", clientConnections[completedClient]);
+                    clientConnections.TryRemove(completedClient, out int value);
+                    logger.LogDebug("Initializing a new client connection. task={0}", completedIndex);
+                    clientConnections.TryAdd(AcceptClientAsync(context, completedIndex), completedIndex);
+                }
+                catch (Exception ex)
+                {
+                    await HandleTaskIndexedExceptionAsync(ex, completedIndex);
+                }
+            }
+        }
+
+        private async Task HandleTaskIndexedExceptionAsync(Exception ex, int taskIdx)
+        {
+            // Ensure error message ends with a period.
+            string message = ex.Message;
+            if (!ex.Message.EndsWith("."))
+            {
+                message += '.';
+            }
+
+            if (ex.InnerException != null)
+            {
+                logger.LogError($"{message} task={0} info={1}", taskIdx, ex.InnerException.Message);
+            }
+            else
+            {
+                logger.LogError($"{message} task={0}", taskIdx);
+            }
+
+            await exceptionHandler.HandleAsync(new ExceptionHandlerContext(ex, null));
         }
 
         /// <summary>
         /// Accepts a client connection asynchronously and handles the connection.
         /// </summary>
-        /// <param name="server">The TCP listener waiting for incoming client connections.</param>
         /// <param name="context">The routing context.</param>
         /// <param name="taskIdx">The task index accepting a client connection.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
@@ -162,42 +210,33 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// This method is responsible for accepting a single client connection asynchronously.
         /// It sets up a TCP client connection and delegates the connection handling to the HandleClientConnected method.
         /// </remarks>
-        private async Task AcceptClientAsync(TcpListener server, TerminalTcpRoutingContext context, int taskIdx)
+        private async Task AcceptClientAsync(TerminalTcpRoutingContext context, int taskIdx)
         {
             try
             {
                 // Ensure that AcceptTcpClientAsync is canceled when the cancellation token is signaled.
                 logger.LogDebug("Waiting for client to connect on task {0}", taskIdx);
-                Task<TcpClient> tcpClientTask = server.AcceptTcpClientAsync();
+                Task<TcpClient> tcpClientTask = _server!.AcceptTcpClientAsync();
                 await Task.WhenAny(tcpClientTask, Task.Delay(Timeout.Infinite, context.StartContext.CancellationToken));
                 context.StartContext.CancellationToken.ThrowIfCancellationRequested();
 
                 // Setup the context and handle the client connection
                 using TcpClient tcpClient = tcpClientTask.Result;
-                context.Setup(server, tcpClient);
                 logger.LogDebug("Client connected on task {0}", taskIdx);
 
-                await HandleClientConnected(context, taskIdx);
+                await HandleClientConnectedAsync(context, tcpClient, taskIdx);
                 logger.LogDebug("Client connection handled on task {0}", taskIdx);
             }
             catch (Exception ex)
             {
-                await exceptionHandler.HandleAsync(new ExceptionHandlerContext(ex, null));
+                await HandleTaskIndexedExceptionAsync(ex, taskIdx);
             }
         }
 
-        /// <summary>
-        /// Processes the raw data received from the client asynchronously.
-        /// </summary>
-        /// <param name="tcpContext">The <see cref="TerminalTcpRoutingContext"/> representing the TCP client and server setup.</param>
-        /// <param name="raw">The raw data received from the client.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        /// <remarks>
-        /// This method routes the command request to the router. It waits for the router or the timeout.
-        /// The task completed within the timeout. If it faults or is canceled, the exception is re-thrown.
-        /// </remarks>
-        private async Task ProcessRawDataAsync(TerminalTcpRoutingContext tcpContext, string raw)
+        private async Task ProcessRawCommandsAsync(TerminalTcpRoutingContext tcpContext, string raw, int taskIdx)
         {
+            logger.LogDebug("Routing the command. raw={0} task={1}", raw, taskIdx);
+
             // Route the command request to router. Wait for the router or the timeout.
             CommandRouterContext context = new(raw, tcpContext);
             Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(context);
@@ -218,26 +257,21 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Handles the communication with a connected TCP client asynchronously.
         /// </summary>
         /// <param name="tcpContext">The <see cref="TerminalTcpRoutingContext"/> representing the TCP client and server setup.</param>
+        /// <param name="client">The connected client.</param>
         /// <param name="taskIdx">The task index executing the client handling.</param>
         /// <remarks>
         /// This method is executed asynchronously for each connected TCP client.
         /// It reads data from the client's network stream, processes the received data, and manages communication asynchronously.
         /// </remarks>
-        private async Task HandleClientConnected(TerminalTcpRoutingContext tcpContext, int taskIdx)
+        private async Task HandleClientConnectedAsync(TerminalTcpRoutingContext tcpContext, TcpClient client, int taskIdx)
         {
-            // Check if the TCP client and server are set up correctly
-            if (tcpContext.Server == null || tcpContext.Client == null)
-            {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The TCP routing context is not set up with a client and server.");
-            }
-
             // Check if the client is connected
-            if (!tcpContext.Client.Connected)
+            if (!client.Connected)
             {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The TCP client is not connected.");
+                throw new ErrorException(TerminalErrors.InvalidConfiguration, $"The client is not connected. task={0}", taskIdx);
             }
 
-            using (NetworkStream stream = tcpContext.Client.GetStream())
+            using (NetworkStream stream = client.GetStream())
             {
                 // The buffer size is the max command string length plus the delimiter length
                 int bufferSize = options.Router.MaxCommandStringLength + options.Router.CommandStringDelimiter.Length;
@@ -247,70 +281,67 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 // Read data from the client stream asynchronously until the client is disconnected or the cancellation token is triggered
                 while (true)
                 {
+                    // Release the current thread to avoid busy-wait
+                    await Task.Yield();
+
                     if (tcpContext.StartContext.CancellationToken.IsCancellationRequested)
                     {
-                        logger.LogDebug("Client request is canceled. task_idx={0} timestamp_utc={1}", taskIdx, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                        logger.LogDebug("Client request is canceled. task={0}", taskIdx);
                         break;
                     }
 
                     // The stream is closed, the client is disconnected.
-                    if (!tcpContext.Client.Connected)
+                    if (!client.Connected)
                     {
-                        logger.LogDebug("Client is disconnected. task_idx={0} timestamp_utc={1}", taskIdx, DateTimeOffset.UtcNow.ToString("dd-MMM-yyyy HH:mm:ss.fff"));
+                        logger.LogDebug("Client is disconnected. task={0}", taskIdx);
                         break;
                     }
 
+                    // Ensure we can read from the stream
+                    if (!stream.CanRead)
+                    {
+                        throw new ErrorException(TerminalErrors.ServerError, "The TCP client stream is not readable. task={0}", taskIdx);
+                    }
+
                     // Read data from the stream asynchronously
-                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, tcpContext.StartContext.CancellationToken);
                     if (bytesRead == 0)
                     {
-                        continue;
+                        // The remote stream is closed, the client is disconnected or we have read all the data.
+                        logger.LogDebug("Client stream is empty. client={0} server={1} task={2}", tcpContext.IPEndPoint.Address, _server!.LocalEndpoint, taskIdx);
+                        break;
                     }
 
                     // Append the received data to the StringBuilder
                     receivedData.Append(textHandler.Encoding.GetString(buffer, 0, bytesRead));
+                }
 
-                    // The raw received data is the data received so far. We need to sync it with the previous iteration data
-                    // that was not processed.
-                    string syncedRawReceivedData = receivedData.ToString();
+                // The raw received data is the data received so far. We need to sync it with the previous iteration data
+                // that was not processed.
+                string rawCommandString = receivedData.ToString();
+                if (string.IsNullOrWhiteSpace(rawCommandString))
+                {
+                    throw new ErrorException(TerminalErrors.ServerError, "The command string cannot be empty. task={0}", taskIdx);
+                }
 
-                    // Split the received data using the delimiter
-                    bool lastMessageComplete = syncedRawReceivedData.EndsWith(options.Router.CommandStringDelimiter);
-                    string[] splitPackages = syncedRawReceivedData.Split(new[] { options.Router.CommandStringDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-
-                    // If the split packages are empty then we do not have any complete message, continue and read more data.
-                    if (!splitPackages.Any())
+                // This may be multiple commands
+                string[] splitCmdString = rawCommandString.Split(new[] { options.Router.CommandStringDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+                for (int idx = 0; idx < splitCmdString.Length; ++idx)
+                {
+                    string raw = splitCmdString[idx];
+                    if (raw.Length > options.Router.MaxCommandStringLength)
                     {
-                        continue;
+                        throw new ErrorException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0} task={1}", options.Router.MaxCommandStringLength, taskIdx);
                     }
 
-                    // Process all completed data packages
-                    for (int idx = 0; idx < splitPackages.Length; ++idx)
+                    // Process the completed data package if it hasn't been processed before
+                    bool found = commandCollection!.TryGetValue(taskIdx, out ConcurrentQueue<string> values);
+                    if (!found)
                     {
-                        string dp = splitPackages[idx];
-
-                        // Check if the last data package is complete
-                        bool isLastPackage = idx == splitPackages.Length - 1;
-
-                        // Check if data package size is over the configured limit. If so, throw an exception. Also check if the last data package is complete.
-                        if (!isLastPackage || (isLastPackage && lastMessageComplete))
-                        {
-                            if (dp.Length > options.Router.MaxCommandStringLength)
-                            {
-                                throw new ErrorException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0}", options.Router.MaxCommandStringLength);
-                            }
-
-                            // Process the completed data package if it hasn't been processed before
-                            await ProcessRawDataAsync(tcpContext, dp);
-                        }
+                        values = new ConcurrentQueue<string>();
+                        commandCollection.TryAdd(taskIdx, values);
                     }
-
-                    // Check if the last message was complete then we have to clear the received data to avoid processing the message again.
-                    receivedData.Clear();
-                    if (!lastMessageComplete)
-                    {
-                        receivedData.Append(splitPackages.Last());
-                    }
+                    values.Enqueue(raw);
                 }
             }
         }
