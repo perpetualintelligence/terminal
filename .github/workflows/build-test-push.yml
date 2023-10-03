@@ -143,21 +143,21 @@ jobs:
 
     # Pack
     - name: Pack
-      run: dotnet pack -c Release -p:PackageVersion=${{ env.PI_CI_PACKAGE_VERSION }} --no-build -o _packages -v minimal
+      run: dotnet pack ./src/PerpetualIntelligence.Terminal/PerpetualIntelligence.Terminal.csproj -c Release -p:PackageVersion=${{ env.PI_CI_PACKAGE_VERSION }} --no-build -o _packages -v minimal
       
     # GITHUB
     - name: Github Push
       if: ${{ env.PI_PUBLISH_REGISTRY == 'github' }}
-      run: dotnet nuget push "PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg" --skip-duplicate --no-symbols --api-key ${{ env.PI_GITHUB_PAT_ENV }} --source github
+      run: dotnet nuget push _packages/PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg --skip-duplicate --no-symbols --api-key ${{ env.PI_GITHUB_PAT_ENV }} --source github
 
     # NUGET - 1
     # First push to github (for package cadence, Nuget requires package verification)
     - name: Github Push
       if: ${{ env.PI_PUBLISH_REGISTRY == 'nuget' }}
-      run: dotnet nuget push "PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg" --skip-duplicate --no-symbols --api-key ${{ env.PI_GITHUB_PAT_ENV }} --source github
+      run: dotnet nuget push _packages/PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg --skip-duplicate --no-symbols --api-key ${{ env.PI_GITHUB_PAT_ENV }} --source github
       
     # NUGET - 2
     # Second push to Nuget (for package cadence, Github will be used and in production Nuget after package verification)
     - name: Nuget Push
       if: ${{ env.PI_PUBLISH_REGISTRY == 'nuget' }}
-      run: dotnet nuget push "PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg" --skip-duplicate --no-symbols --api-key ${{ env.PI_NUGET_PAT_ENV }} --source nuget.org
+      run: dotnet nuget push _packages/PerpetualIntelligence.Terminal.${{ env.PI_CI_PACKAGE_VERSION }}.nupkg --skip-duplicate --no-symbols --api-key ${{ env.PI_NUGET_PAT_ENV }} --source nuget.org
