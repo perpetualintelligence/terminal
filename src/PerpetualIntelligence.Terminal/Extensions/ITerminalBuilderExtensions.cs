@@ -7,7 +7,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Declarative;
@@ -89,6 +88,18 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Add options checker
             builder.Services.AddSingleton<IConfigurationOptionsChecker, ConfigurationOptionsChecker>();
 
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="TerminalStartContext"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="terminalStartContext">The terminal start context.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddStartContext(this ITerminalBuilder builder, TerminalStartContext terminalStartContext)
+        {
+            builder.Services.AddSingleton(terminalStartContext);
             return builder;
         }
 

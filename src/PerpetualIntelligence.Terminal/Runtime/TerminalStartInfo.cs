@@ -1,9 +1,11 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
+
+using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Terminal.Runtime
 {
@@ -16,17 +18,17 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Initializes a new instance.
         /// </summary>
         /// <param name="startMode">The terminal start mode.</param>
-        /// <param name="port">The optional port number of the endpoint, if the <see cref="TerminalStartMode"/> is <see cref="TerminalStartMode.Tcp"/>.</param>
-        public TerminalStartInfo(TerminalStartMode startMode, int? port = null)
+        /// <param name="customProperties"></param>
+        public TerminalStartInfo(TerminalStartMode startMode, Dictionary<string, object>? customProperties = null)
         {
-            Port = port;
             StartMode = startMode;
+            CustomProperties = customProperties;
         }
 
         /// <summary>
-        /// The optional port number of the endpoint.
+        /// The custom properties.
         /// </summary>
-        public int? Port { get; }
+        public Dictionary<string, object>? CustomProperties { get; }
 
         /// <summary>
         /// The terminal start mode.

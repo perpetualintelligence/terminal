@@ -24,6 +24,7 @@ using PerpetualIntelligence.Terminal.Runtime;
 using PerpetualIntelligence.Terminal.Stores;
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace PerpetualIntelligence.Terminal.Extensions
 {
@@ -92,6 +93,16 @@ namespace PerpetualIntelligence.Terminal.Extensions
             terminalBuilder.AddTerminalOptions();
 
             var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalOptions)));
+            Assert.IsNotNull(serviceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
+        }
+
+        [TestMethod]
+        public void AddStartContextShouldCorrectlyInitialize()
+        {
+            terminalBuilder.AddStartContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), CancellationToken.None));
+
+            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalStartContext)));
             Assert.IsNotNull(serviceDescriptor);
             Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
         }

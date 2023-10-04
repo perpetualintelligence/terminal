@@ -50,7 +50,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // We catch the exception to avoid unhandeled fatal exception
+            // We catch the exception to avoid unhandled fatal exception
             try
             {
                 // Register Application Lifetime events
