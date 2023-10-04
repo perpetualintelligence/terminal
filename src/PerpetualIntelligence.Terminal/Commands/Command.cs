@@ -161,12 +161,12 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <summary>
         /// Attempts to get the argument value for the specified index.
         /// </summary>
-        /// <param name="index">The argument index.</param>
+        /// <param name="id">The argument identifier.</param>
         /// <param name="value">The argument value.</param>
         /// <typeparam name="TValue">The type of value.</typeparam>
         /// <returns>The option value.</returns>
         /// <exception cref="TerminalException">If the argument is not supported.</exception>
-        public bool TryGetArgumentValue<TValue>(int index, out TValue? value)
+        public bool TryGetArgumentValue<TValue>(string id, out TValue? value)
         {
             value = default;
 
@@ -177,7 +177,7 @@ namespace PerpetualIntelligence.Terminal.Commands
                     return false;
                 }
 
-                value = (TValue)Arguments[index].Value;
+                value = (TValue)Arguments[id].Value;
                 return true;
             }
             catch
