@@ -18,6 +18,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
             ((int)TerminalStartMode.Tcp).Should().Be(1);
             ((int)TerminalStartMode.Http).Should().Be(2);
             ((int)TerminalStartMode.Grpc).Should().Be(3);
+            ((int)TerminalStartMode.Udp).Should().Be(4);
 
             ((int)TerminalStartMode.Console).Should().Be(100);
 

@@ -28,6 +28,11 @@ namespace PerpetualIntelligence.Terminal.Runtime
         Grpc = 3,
 
         /// <summary>
+        /// The terminal starts as a UDP server that listens to an incoming message.  NOT YET SUPPORTED.
+        /// </summary>
+        Udp = 4,
+
+        /// <summary>
         /// The terminal starts as a  console application.
         /// </summary>
         Console = 100,

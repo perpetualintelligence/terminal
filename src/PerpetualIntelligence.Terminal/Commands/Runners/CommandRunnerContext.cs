@@ -6,6 +6,7 @@
 */
 
 using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Runtime;
 using System;
 
 namespace PerpetualIntelligence.Terminal.Commands.Runners
@@ -34,6 +35,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// The command to run.
         /// </summary>
         public Command Command => HandlerContext.ParsedCommand.Command;
+
+        /// <summary>
+        /// The terminal start context.
+        /// </summary>
+        public TerminalStartContext StartContext => HandlerContext.RouterContext.RoutingContext.StartContext;
 
         /// <summary>
         /// The hierarchy of the command to run.

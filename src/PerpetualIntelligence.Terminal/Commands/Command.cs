@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Exceptions;
-
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
@@ -113,6 +111,23 @@ namespace PerpetualIntelligence.Terminal.Commands
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Get the option value for the specified identifier.
+        /// </summary>
+        /// <param name="idOrAlias">The option id or its alias.</param>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <returns>The option value.</returns>
+        /// <exception cref="TerminalException">If the option is not supported.</exception>
+        public TValue GetRequiredOptionValue<TValue>(string idOrAlias)
+        {
+            if (Options == null)
+            {
+                throw new TerminalException(TerminalErrors.UnsupportedOption, $"The command does not support any options. command={0}", Id);
+            }
+
+            return Options.GetOptionValue<TValue>(idOrAlias);
         }
 
         /// <summary>
