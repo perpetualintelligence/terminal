@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using System;
@@ -42,11 +41,11 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public ITerminalBuilder Add()
         {
             // Add the command descriptor from local to the global CLI builder.
-            ServiceProvider localSeviceProvider = Services.BuildServiceProvider();
-            CommandDescriptor commandDescriptor = localSeviceProvider.GetRequiredService<CommandDescriptor>();
+            ServiceProvider localServiceProvider = Services.BuildServiceProvider();
+            CommandDescriptor commandDescriptor = localServiceProvider.GetRequiredService<CommandDescriptor>();
 
             // Options
-            IEnumerable<OptionDescriptor> optionDescriptors = localSeviceProvider.GetServices<OptionDescriptor>();
+            IEnumerable<OptionDescriptor> optionDescriptors = localServiceProvider.GetServices<OptionDescriptor>();
             if (optionDescriptors.Any())
             {
                 // FOMAC MUST UnicodeTextHandler is hard coded
@@ -54,7 +53,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             }
 
             // Custom Properties
-            IEnumerable<Tuple<string, object>> customProps = localSeviceProvider.GetServices<Tuple<string, object>>();
+            IEnumerable<Tuple<string, object>> customProps = localServiceProvider.GetServices<Tuple<string, object>>();
             if (customProps.Any())
             {
                 commandDescriptor.CustomProperties = new Dictionary<string, object>();
@@ -66,16 +65,16 @@ namespace PerpetualIntelligence.Terminal.Hosting
             }
 
             // Owners
-            OwnerIdCollection? owners = localSeviceProvider.GetService<OwnerIdCollection>();
+            OwnerIdCollection? owners = localServiceProvider.GetService<OwnerIdCollection>();
             commandDescriptor.OwnerIds = owners;
 
             // Tags
-            TagIdCollection? tags = localSeviceProvider.GetService<TagIdCollection>();
+            TagIdCollection? tags = localServiceProvider.GetService<TagIdCollection>();
             commandDescriptor.TagIds = tags;
 
             // Make sure the command runner and checker are added. TODO this may add duplicate types
-            terminalBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new TerminalException(TerminalErrors.InvalidConfiguration, "Checker is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
-            terminalBuilder.Services.AddTransient(commandDescriptor.Runner ?? throw new TerminalException(TerminalErrors.InvalidConfiguration, "Runner is not configured in the command descriptor. command_id={0}", commandDescriptor.Id));
+            terminalBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new TerminalException(TerminalErrors.InvalidConfiguration, "Checker is not configured in the command descriptor. command={0}", commandDescriptor.Id));
+            terminalBuilder.Services.AddTransient(commandDescriptor.Runner ?? throw new TerminalException(TerminalErrors.InvalidConfiguration, "Runner is not configured in the command descriptor. command={0}", commandDescriptor.Id));
             terminalBuilder.Services.AddSingleton(commandDescriptor);
 
             return terminalBuilder;

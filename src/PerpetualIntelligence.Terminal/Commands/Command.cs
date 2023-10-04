@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Collections.Generic;
+
 namespace PerpetualIntelligence.Terminal.Commands
 {
     /// <summary>
@@ -50,6 +52,11 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// The command description.
         /// </summary>
         public string? Description => Descriptor.Description;
+
+        /// <summary>
+        /// The command custom properties.
+        /// </summary>
+        public Dictionary<string, object>? CustomProperties => Descriptor.CustomProperties;
 
         /// <summary>
         /// The command id unique.

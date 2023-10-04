@@ -20,6 +20,7 @@ using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Runtime;
 using PerpetualIntelligence.Terminal.Stores;
 using System;
 using System.Linq;
@@ -264,6 +265,17 @@ namespace PerpetualIntelligence.Terminal.Extensions
             Assert.IsNotNull(exe);
             Assert.AreEqual(ServiceLifetime.Transient, exe.Lifetime);
             Assert.AreEqual(typeof(MockExceptionPublisher), exe.ImplementationType);
+        }
+
+        [TestMethod]
+        public void AddTerminalConsoleShouldCorrectlyInitialize()
+        {
+            terminalBuilder.AddTerminalConsole<TerminalSystemConsole>();
+
+            var exe = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalConsole)));
+            Assert.IsNotNull(exe);
+            Assert.AreEqual(ServiceLifetime.Singleton, exe.Lifetime);
+            Assert.AreEqual(typeof(TerminalSystemConsole), exe.ImplementationType);
         }
 
         [TestMethod]

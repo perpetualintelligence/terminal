@@ -16,19 +16,19 @@ namespace PerpetualIntelligence.Terminal.Extensions
     public static class TerminalOptionsExtensions
     {
         /// <summary>
-        /// Returns a delimited command string for the specified raw messages.
+        /// Returns a delimited message for the specified raw messages.
         /// </summary>
-        /// <param name="raw">The raw strings to be appended to the command string delimiter.</param>
-        /// <param name="terminalOptions">The terminal options instance containing the command string delimiter.</param>
-        /// <returns>The delimited command string.</returns>
+        /// <param name="raw">The raw strings to be appended to the message delimiter.</param>
+        /// <param name="terminalOptions">The terminal options instance containing the message delimiter.</param>
+        /// <returns>The delimited message.</returns>
         /// <remarks>
-        /// The <see cref="DelimitedCommandString(TerminalOptions, string[])"/> method checks if each element in the raw array ends with the
-        /// <see cref="RouterOptions.CommandStringDelimiter"/>. If it doesn't, the delimiter is appended to the string element. The formatted strings are then
-        /// joined into a single command string.
+        /// The <see cref="DelimitedMessage(TerminalOptions, string[])"/> method checks if each element in the raw array ends with the
+        /// <see cref="RouterOptions.MessageDelimiter"/>. If it doesn't, the delimiter is appended to the string element. The formatted strings are then
+        /// joined into a single message.
         /// </remarks>
-        public static string DelimitedCommandString(this TerminalOptions terminalOptions, params string[] raw)
+        public static string DelimitedMessage(this TerminalOptions terminalOptions, params string[] raw)
         {
-            var delimitedStrings = raw.Select(s => s.EndsWith(terminalOptions.Router.CommandStringDelimiter) ? s : string.Concat(s, terminalOptions.Router.CommandStringDelimiter));
+            var delimitedStrings = raw.Select(s => s.EndsWith(terminalOptions.Router.MessageDelimiter) ? s : string.Concat(s, terminalOptions.Router.MessageDelimiter));
             return string.Join(string.Empty, delimitedStrings);
         }
     }

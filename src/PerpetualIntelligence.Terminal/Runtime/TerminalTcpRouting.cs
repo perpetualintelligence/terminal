@@ -274,7 +274,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
             using (NetworkStream stream = client.GetStream())
             {
                 // The buffer size is the max command string length plus the delimiter length
-                int bufferSize = options.Router.MaxCommandStringLength + options.Router.CommandStringDelimiter.Length;
+                int bufferSize = options.Router.MaxMessageLength + options.Router.MessageDelimiter.Length;
                 byte[] buffer = new byte[bufferSize];
                 StringBuilder receivedData = new();
 
@@ -325,13 +325,13 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 }
 
                 // This may be multiple commands
-                string[] splitCmdString = rawCommandString.Split(new[] { options.Router.CommandStringDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+                string[] splitCmdString = rawCommandString.Split(new[] { options.Router.MessageDelimiter }, StringSplitOptions.RemoveEmptyEntries);
                 for (int idx = 0; idx < splitCmdString.Length; ++idx)
                 {
                     string raw = splitCmdString[idx];
-                    if (raw.Length > options.Router.MaxCommandStringLength)
+                    if (raw.Length > options.Router.MaxMessageLength)
                     {
-                        throw new TerminalException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0} task={1}", options.Router.MaxCommandStringLength, taskIdx);
+                        throw new TerminalException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0} task={1}", options.Router.MaxMessageLength, taskIdx);
                     }
 
                     // Process the completed data package if it hasn't been processed before

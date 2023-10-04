@@ -18,14 +18,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public TerminalOptionsExtensionsTests()
         {
             _terminalOptions = new TerminalOptions();
-            _terminalOptions.Router.CommandStringDelimiter = "|";
+            _terminalOptions.Router.MessageDelimiter = "|";
         }
 
         [Fact]
         public void DelimitedCommandString_ShouldReturn_EmptyString_ForEmptyInput()
         {
             var input = System.Array.Empty<string>();
-            var result = _terminalOptions.DelimitedCommandString(input);
+            var result = _terminalOptions.DelimitedMessage(input);
             result.Should().BeEmpty();
         }
 
@@ -33,7 +33,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public void DelimitedCommandString_ShouldReturn_ExpectedString_ForSingleInput()
         {
             var input = new[] { "cmd1" };
-            var result = _terminalOptions.DelimitedCommandString(input);
+            var result = _terminalOptions.DelimitedMessage(input);
             result.Should().Be("cmd1|");
         }
 
@@ -41,7 +41,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public void DelimitedCommandString_ShouldReturn_ExpectedString_ForMultipleInputs()
         {
             var input = new[] { "cmd1", "cmd2", "cmd3" };
-            var result = _terminalOptions.DelimitedCommandString(input);
+            var result = _terminalOptions.DelimitedMessage(input);
             result.Should().Be("cmd1|cmd2|cmd3|");
         }
 
@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public void DelimitedCommandString_ShouldAddDelimiterToElement_NotEndingWithDelimiter()
         {
             var input = new[] { "cmd1|", "cmd2", "cmd3" };
-            var result = _terminalOptions.DelimitedCommandString(input);
+            var result = _terminalOptions.DelimitedMessage(input);
             result.Should().Be("cmd1|cmd2|cmd3|");
         }
     }

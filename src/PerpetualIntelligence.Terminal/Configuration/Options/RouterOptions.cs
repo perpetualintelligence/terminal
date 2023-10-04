@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public string Caret { get; set; } = ">";
 
         /// <summary>
-        /// The command router timeout in milliseconds. The default value is 25 seconds. Use
+        /// The command router timeout in milliseconds. The default value is <c>25</c> seconds. Use
         /// <see cref="Timeout.Infinite"/> for infinite timeout.
         /// </summary>
         /// <remarks>
@@ -29,21 +29,21 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public int Timeout { get; set; } = 25000;
 
         /// <summary>
-        /// The maximum number of active remote client connections the router can accept. The default value is 5.
+        /// The maximum number of active remote client connections the router can accept. The default value is <c>5</c>.
         /// </summary>
         public int RemoteMaxClients { get; set; } = 5;
 
         /// <summary>
-        /// The maximum length of a command string. The default value is 1024.
+        /// The maximum length of a single message. The default value is <c>1024</c> characters.
         /// </summary>
-        public int MaxCommandStringLength { get; set; } = 1024;
+        public int MaxMessageLength { get; set; } = 1024;
 
         /// <summary>
-        /// The delimiter to identify a complete command string. The default value is <c>$EOM$</c>.
+        /// The delimiter to identify a complete message. The default value is <c>$EOM$</c>.
         /// </summary>
         /// <remarks>
-        /// A <see cref="CommandStringDelimiter"/> is used while streaming a long command string from a remote source such as a network stream.
+        /// A <see cref="MessageDelimiter"/> is used while streaming a long command string from a remote source such as a network stream.
         /// </remarks>
-        public string CommandStringDelimiter { get; set; } = "$EOM$";
+        public string MessageDelimiter { get; set; } = "$EOM$";
     }
 }

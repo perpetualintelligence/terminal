@@ -25,9 +25,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
 
             options.Caret.Should().Be(">");
             options.Timeout.Should().Be(25000);
-            options.MaxCommandStringLength.Should().Be(1024);
+            options.MaxMessageLength.Should().Be(1024);
             options.RemoteMaxClients.Should().Be(5);
-            options.CommandStringDelimiter.Should().Be("$EOM$");
+            options.MessageDelimiter.Should().Be("$EOM$");
         }
     }
 }

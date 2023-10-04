@@ -31,7 +31,19 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <param name="owners">The command owners.</param>
         /// <param name="argumentDescriptors">The argument descriptors.</param>
         /// <param name="optionDescriptors">The option descriptors.</param>
-        public CommandDescriptor(string id, string name, string description, CommandType type, CommandFlags flags, OwnerIdCollection? owners = null, ArgumentDescriptors? argumentDescriptors = null, OptionDescriptors? optionDescriptors = null)
+        /// <param name="tagIds">The tag identifiers.</param>
+        /// <param name="customProperties">The custom properties.</param>
+        public CommandDescriptor(
+            string id,
+            string name,
+            string description,
+            CommandType type,
+            CommandFlags flags,
+            OwnerIdCollection? owners = null,
+            ArgumentDescriptors? argumentDescriptors = null,
+            OptionDescriptors? optionDescriptors = null,
+            TagIdCollection? tagIds = null,
+            Dictionary<string, object>? customProperties = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -50,6 +62,8 @@ namespace PerpetualIntelligence.Terminal.Commands
             Flags = flags;
             OwnerIds = owners;
             OptionDescriptors = optionDescriptors;
+            TagIds = tagIds;
+            CustomProperties = customProperties;
             ArgumentDescriptors = argumentDescriptors;
         }
 
@@ -87,11 +101,6 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// The command flags.
         /// </summary>
         public CommandFlags Flags { get; }
-
-        /// <summary>
-        /// The command usage.
-        /// </summary>
-        public string? Usage { get; }
 
         /// <summary>
         /// The command owner identifiers.

@@ -235,7 +235,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         [TestMethod]
         public async Task Router_Throws_On_CommandString_MaxLimitAsync()
         {
-            terminalOptions.Router.MaxCommandStringLength = 30;
+            terminalOptions.Router.MaxMessageLength = 30;
             Func<Task> act = () => commandRouter.RouteAsync(new CommandRouterContext(new string('x', 31), routingContext));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command string length is over the configured limit. max_length=30");
         }
