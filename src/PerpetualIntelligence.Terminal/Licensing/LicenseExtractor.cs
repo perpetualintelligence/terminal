@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Validation key cannot be private
             if (validationKey.PrivateKeyStatus == PrivateKeyStatus.Exists)
             {
-                throw new TerminalException(Error.Unauthorized, "License validation certificate cannot have private key.");
+                throw new TerminalException(TerminalErrors.UnauthorizedAccess, "License validation certificate cannot have private key.");
             }
 
             // Init token validation params
@@ -126,14 +126,14 @@ namespace PerpetualIntelligence.Terminal.Licensing
             TokenValidationResult result = await jwtHandler.ValidateTokenAsync(checkModel.Key, validationParameters);
             if (!result.IsValid)
             {
-                throw new TerminalException(Error.Unauthorized, "License key validation failed. info={0}", result.Exception.Message);
+                throw new TerminalException(TerminalErrors.UnauthorizedAccess, "License key validation failed. info={0}", result.Exception.Message);
             }
 
             // Check Standard claims
-            EnsureClaim(result, "sub", checkModel.Subject, new Error(Error.Unauthorized, "The subject or sub claim is not authorized. sub={0}", checkModel.Subject));
-            EnsureClaim(result, "tid", checkModel.ConsumerTenantId, new Error(Error.Unauthorized, "The consumer tenant or tid claim is not authorized. tid={0}", checkModel.ConsumerTenantId));
-            EnsureClaim(result, "oid", checkModel.ConsumerObjectId, new Error(Error.Unauthorized, "The consumer object or oid claim is not authorized. tid={0}", checkModel.ConsumerObjectId));
-            EnsureClaim(result, "auth_apps", checkModel.AuthorizedApplicationId, new Error(Error.Unauthorized, "The application is not authorized. application_id={0}", checkModel.AuthorizedApplicationId));
+            EnsureClaim(result, "sub", checkModel.Subject, new Error(TerminalErrors.UnauthorizedAccess, "The subject or sub claim is not authorized. sub={0}", checkModel.Subject));
+            EnsureClaim(result, "tid", checkModel.ConsumerTenantId, new Error(TerminalErrors.UnauthorizedAccess, "The consumer tenant or tid claim is not authorized. tid={0}", checkModel.ConsumerTenantId));
+            EnsureClaim(result, "oid", checkModel.ConsumerObjectId, new Error(TerminalErrors.UnauthorizedAccess, "The consumer object or oid claim is not authorized. tid={0}", checkModel.ConsumerObjectId));
+            EnsureClaim(result, "auth_apps", checkModel.AuthorizedApplicationId, new Error(TerminalErrors.UnauthorizedAccess, "The application is not authorized. application_id={0}", checkModel.AuthorizedApplicationId));
 
             return LicenseClaimsModel.Create(result.Claims);
         }

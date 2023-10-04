@@ -6,7 +6,6 @@
 */
 
 using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -64,7 +63,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 // Honor the max limit
                 if (context.Route.Command.Raw.Length > terminalOptions.Router.MaxCommandStringLength)
                 {
-                    throw new TerminalException(Error.InvalidConfiguration, "The command string length is over the configured limit. max_length={0}", terminalOptions.Router.MaxCommandStringLength);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The command string length is over the configured limit. max_length={0}", terminalOptions.Router.MaxCommandStringLength);
                 }
 
                 // Ensure we have the license extracted before routing

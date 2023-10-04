@@ -6,7 +6,6 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Licensing;
 using System;
 using System.Collections.Generic;
@@ -29,7 +28,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void CustomEdition_NoClaimsShouldError()
         {
-            Test.Services.TestHelper.AssertThrowsErrorException(() => LicensePrice.Create(PiCliLicensePlans.Custom), "invalid_license", "The pricing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:plan:custom");
+            Action act = () => LicensePrice.Create(PiCliLicensePlans.Custom);
+            act.Should().Throw<TerminalException>("The pricing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:plan:custom");
         }
 
         [Fact]

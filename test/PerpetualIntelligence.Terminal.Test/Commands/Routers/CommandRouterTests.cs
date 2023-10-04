@@ -8,7 +8,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Routers.Mocks;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
@@ -34,7 +33,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => commandRouter.RouteAsync(routerContext), "test_extractor_error", "test_extractor_error_desc");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteAsync(routerContext), "test_extractor_error", "test_extractor_error_desc");
             Assert.IsTrue(commandExtractor.Called);
             Assert.IsFalse(commandHandler.Called);
         }
@@ -46,7 +45,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
-            await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => commandRouter.RouteAsync(routerContext), "Value cannot be null. (Parameter 'commandDescriptor')");
+            Func<Task> act = async () => await commandRouter.RouteAsync(routerContext);
+            await act.Should().ThrowAsync<ArgumentException>().WithMessage("Value cannot be null. (Parameter 'commandDescriptor')");
             Assert.IsTrue(commandExtractor.Called);
             Assert.IsFalse(commandHandler.Called);
         }
@@ -58,7 +58,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
-            await TestHelper.AssertThrowsWithMessageAsync<ArgumentException>(() => commandRouter.RouteAsync(routerContext), "Value cannot be null. (Parameter 'parsedCommand')");
+            Func<Task> act = async () => await commandRouter.RouteAsync(routerContext);
+            await act.Should().ThrowAsync<ArgumentException>().WithMessage("Value cannot be null. (Parameter 'parsedCommand')");
             Assert.IsTrue(commandExtractor.Called);
             Assert.IsFalse(commandHandler.Called);
         }
@@ -70,7 +71,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => commandRouter.RouteAsync(routerContext), "test_handler_error", "test_handler_error_desc");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteAsync(routerContext), "test_handler_error", "test_handler_error_desc");
             Assert.IsTrue(commandHandler.Called);
         }
 
@@ -98,7 +99,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             licenseExtractor.NoLicense = true;
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => commandRouter.RouteAsync(routerContext), "invalid_license", "Failed to extract a valid license. Please configure the cli hosted service correctly.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteAsync(routerContext), "invalid_license", "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
             Assert.IsFalse(commandExtractor.Called);
             Assert.IsFalse(commandHandler.Called);
@@ -149,10 +150,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CA1806 // Do not ignore method results
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(null, licenseExtractor, commandExtractor, commandHandler), "Value cannot be null. (Parameter 'terminalOptions')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(terminalOptions, null, commandExtractor, commandHandler), "Value cannot be null. (Parameter 'licenseExtractor')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(terminalOptions, licenseExtractor, null, commandHandler), "Value cannot be null. (Parameter 'commandExtractor')");
-            TestHelper.AssertThrowsWithMessage<ArgumentNullException>(() => new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, null), "Value cannot be null. (Parameter 'commandHandler')");
+            Action act = () => new CommandRouter(null, licenseExtractor, commandExtractor, commandHandler);
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'terminalOptions')");
+
+            act = () => new CommandRouter(terminalOptions, null, commandExtractor, commandHandler);
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'licenseExtractor')");
+
+            act = () => new CommandRouter(terminalOptions, licenseExtractor, null, commandHandler);
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandExtractor')");
+
+            act = () => new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, null);
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandHandler')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type
 #pragma warning restore CA1806 // Do not ignore method results
         }

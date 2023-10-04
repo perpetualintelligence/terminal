@@ -53,7 +53,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=MockCommandCheckerInner");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=MockCommandCheckerInner");
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_checker_error", "test_checker_error_desc");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleAsync(commandContext), "test_checker_error", "test_checker_error_desc");
         }
 
         [TestMethod]
@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not configured. command_name=name1 command_id=id1");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not configured. command_name=name1 command_id=id1");
         }
 
         [TestMethod]
@@ -117,7 +117,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not valid. command_name=name1 command_id=id1 checker=MockNotCheckerOrRunner");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command checker is not valid. command_name=name1 command_id=id1 checker=MockNotCheckerOrRunner");
         }
 
         [TestMethod]
@@ -133,7 +133,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner delegate is not configured. command_name=name1 command_id=id1 runner=MockNotCheckerOrRunner");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner delegate is not configured. command_name=name1 command_id=id1 runner=MockNotCheckerOrRunner");
         }
 
         [TestMethod]
@@ -154,7 +154,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => newHandler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
         }
 
         [TestMethod]
@@ -169,7 +169,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_runner_error", "test_runner_error_desc");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleAsync(commandContext), "test_runner_error", "test_runner_error_desc");
         }
 
         [TestMethod]
@@ -183,7 +183,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, helpCommand.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), "test_runner_help_error", "test_runner_help_error_desc");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleAsync(commandContext), "test_runner_help_error", "test_runner_help_error_desc");
         }
 
         [TestMethod]
@@ -313,7 +313,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not configured. command_name=name1 command_id=id1");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleAsync(commandContext), TerminalErrors.ServerError, "The command runner is not configured. command_name=name1 command_id=id1");
         }
 
         [TestMethod]

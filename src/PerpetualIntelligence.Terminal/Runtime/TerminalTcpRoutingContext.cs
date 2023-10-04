@@ -24,8 +24,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint server will connect.</param>
         /// <param name="terminalStartContext">The terminal start context.</param>
-        /// <param name="server">The TCP command server.</param>
-        /// <param name="client">The TCP command client.</param>
         public TerminalTcpRoutingContext(IPEndPoint iPEndPoint, TerminalStartContext terminalStartContext) : base(terminalStartContext)
         {
             IPEndPoint = iPEndPoint;
