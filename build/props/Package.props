@@ -20,7 +20,7 @@
         <Company>Perpetual Intelligence L.L.C.</Company>
         <Product>pi-cli</Product>
         <PackageProjectUrl>https://perpetualintelligence.com</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/perpetualintelligence/cli</RepositoryUrl>
+        <RepositoryUrl>https://github.com/perpetualintelligence/terminal</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
