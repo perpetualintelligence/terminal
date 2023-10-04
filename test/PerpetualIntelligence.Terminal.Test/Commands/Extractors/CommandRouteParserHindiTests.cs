@@ -80,7 +80,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // Here we are using a space in the command name to test that the parser will throw an error.
             // The separator is set to "एस" so the parser will not be able to find the command 'परीक्षण  '
             Func<Task> act = async () => await _commandRouteParser.ParseAsync(new CommandRoute("id1", "यूनिकोडएसपरीक्षण  "));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command does not support any arguments. command=यूनिकोड");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support any arguments. command=यूनिकोड");
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // Here space is not a separation so any space is considered part of the command name.
             // Because there is not command with name '  परीक्षण' the parser will interpret it as argument and throw.
             Func<Task> act = async () => await _commandRouteParser.ParseAsync(new CommandRoute("id1", $"{separator}यूनिकोड{separator}{separator}{separator}  परीक्षण{separator}{separator}{separator}{separator}"));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command does not support any arguments. command=यूनिकोड");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support any arguments. command=यूनिकोड");
         }
 
         [Fact]

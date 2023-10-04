@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// </summary>
         /// <param name="idOrAlias">The option id or its alias.</param>
         /// <returns><see cref="OptionDescriptor"/> instance if found.</returns>
-        /// <exception cref="ErrorException">
+        /// <exception cref="TerminalException">
         /// If <see cref="OptionDescriptor"/> instance with specified id is not found.
         /// </exception>
         public OptionDescriptor this[string idOrAlias]
@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Commands
                 }
                 catch
                 {
-                    throw new ErrorException(TerminalErrors.UnsupportedOption, "The option is not supported. option={0}", idOrAlias);
+                    throw new TerminalException(TerminalErrors.UnsupportedOption, "The option is not supported. option={0}", idOrAlias);
                 }
             }
         }

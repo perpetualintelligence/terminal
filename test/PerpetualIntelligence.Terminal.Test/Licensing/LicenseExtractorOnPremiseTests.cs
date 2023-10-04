@@ -105,7 +105,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             if (fileOrJson == null)
             {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "Environment variable with license key not found. env={0}", env);
             }
 
             string json = fileOrJson;

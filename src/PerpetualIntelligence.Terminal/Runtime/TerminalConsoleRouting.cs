@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 //  Make sure we have supported start context
                 if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Console)
                 {
-                    throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
                 }
 
                 // Track the application lifetime so we can know whether cancellation is requested.

@@ -65,7 +65,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             // Raise explicit error
             if (explicitError != null)
             {
-                throw new ErrorException(explicitError);
+                throw new TerminalException(explicitError);
             }
 
             return new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()), context.Route);

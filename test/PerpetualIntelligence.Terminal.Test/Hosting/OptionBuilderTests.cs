@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
 
             OptionBuilder optionBuilder = new(commandBuilder);
             Action act = () => optionBuilder.Add();
-            act.Should().Throw<ErrorException>().WithMessage("The option builder is missing an option descriptor.");
+            act.Should().Throw<TerminalException>().WithMessage("The option builder is missing an option descriptor.");
         }
 
         [Fact]

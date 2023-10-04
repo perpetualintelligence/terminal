@@ -120,16 +120,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // No checker configured.
             if (context.ParsedCommand.Command.Descriptor.Checker == null)
             {
-                throw new ErrorException(TerminalErrors.ServerError, "The command checker is not configured. command_name={0} command_id={1}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id);
+                throw new TerminalException(TerminalErrors.ServerError, "The command checker is not configured. command_name={0} command_id={1}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id);
             }
 
             // Not added to service collection
-            object? checkerObj = services.GetService(context.ParsedCommand.Command.Descriptor.Checker) ?? throw new ErrorException(TerminalErrors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Checker.Name);
+            object? checkerObj = services.GetService(context.ParsedCommand.Command.Descriptor.Checker) ?? throw new TerminalException(TerminalErrors.ServerError, "The command checker is not registered with service collection. command_name={0} command_id={1} checker={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Checker.Name);
 
             // Invalid checker configured
             if (checkerObj is not ICommandChecker checker)
             {
-                throw new ErrorException(TerminalErrors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Checker.Name);
+                throw new TerminalException(TerminalErrors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Checker.Name);
             }
 
             return Task.FromResult(checker);
@@ -140,16 +140,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // No runner configured.
             if (context.ParsedCommand.Command.Descriptor.Runner == null)
             {
-                throw new ErrorException(TerminalErrors.ServerError, "The command runner is not configured. command_name={0} command_id={1}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id);
+                throw new TerminalException(TerminalErrors.ServerError, "The command runner is not configured. command_name={0} command_id={1}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id);
             }
 
             // Not added to service collection
-            object? runnerObj = services.GetService(context.ParsedCommand.Command.Descriptor.Runner) ?? throw new ErrorException(TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Runner.Name);
+            object? runnerObj = services.GetService(context.ParsedCommand.Command.Descriptor.Runner) ?? throw new TerminalException(TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name={0} command_id={1} runner={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Runner.Name);
 
             // Invalid runner configured
             if (runnerObj is not IDelegateCommandRunner runnerDelegate)
             {
-                throw new ErrorException(TerminalErrors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Runner.Name);
+                throw new TerminalException(TerminalErrors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Runner.Name);
             }
 
             return Task.FromResult(runnerDelegate);

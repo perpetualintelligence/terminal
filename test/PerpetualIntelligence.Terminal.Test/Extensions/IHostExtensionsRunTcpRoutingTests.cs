@@ -38,7 +38,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             Func<Task> act = async () => await host.RunTcpRoutingAsync(new TerminalTcpRoutingContext(null!, startContext));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The network IP endpoint is missing in the TCP server routing request.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The network IP endpoint is missing in the TCP server routing request.");
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token);
             var context = new TerminalTcpRoutingContext(serverIpEndPoint, startContext);
             Func<Task> act = async () => await host.RunTcpRoutingAsync(context);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Custom");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Custom");
         }
 
         [Fact]
@@ -664,7 +664,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             tokenSource = new CancellationTokenSource();
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
 
-            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, null, new ErrorException("test_error_code", "test_error_description. opt1={0} opt2={1}", "test1", "test2")));
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, null, new TerminalException("test_error_code", "test_error_description. opt1={0} opt2={1}", "test1", "test2")));
             opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());

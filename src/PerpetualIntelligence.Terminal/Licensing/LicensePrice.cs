@@ -79,14 +79,14 @@ namespace PerpetualIntelligence.Terminal.Licensing
                     {
                         if (customClaims == null)
                         {
-                            throw new ErrorException(TerminalErrors.InvalidLicense, "The pricing for the custom SaaS plan requires a custom claims. saas_plan={0}", saasPlan);
+                            throw new TerminalException(TerminalErrors.InvalidLicense, "The pricing for the custom SaaS plan requires a custom claims. saas_plan={0}", saasPlan);
                         }
 
                         return new LicensePrice(customClaims["currency"].ToString(), Convert.ToDouble(customClaims["monthly_price"]), Convert.ToDouble(customClaims["yearly_price"]), saasPlan);
                     }
                 default:
                     {
-                        throw new ErrorException(TerminalErrors.InvalidLicense, "The pricing for the SaaS plan is not supported. saas_plan={0}", saasPlan);
+                        throw new TerminalException(TerminalErrors.InvalidLicense, "The pricing for the SaaS plan is not supported. saas_plan={0}", saasPlan);
                     }
             }
         }

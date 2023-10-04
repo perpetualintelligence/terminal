@@ -12,7 +12,6 @@ using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
-using PerpetualIntelligence.Test.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -84,8 +83,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CA1806 // Do not ignore method results
-            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new CommandString(null), "'raw' cannot be null or whitespace. (Parameter 'raw')");
-            TestHelper.AssertThrowsWithMessage<ArgumentException>(() => new CommandString("   "), "'raw' cannot be null or whitespace. (Parameter 'raw')");
+            Action act = () => new CommandString(null);
+            act.Should().Throw<ArgumentException>().WithMessage("'raw' cannot be null or whitespace. (Parameter 'raw')");
+
+            act = () => new CommandString("   ");
+            act.Should().Throw<ArgumentException>().WithMessage("'raw' cannot be null or whitespace. (Parameter 'raw')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }

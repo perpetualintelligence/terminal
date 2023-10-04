@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         public void No_CommandOwner_Throws()
         {
             Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandOwner>();
-            act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command owner.");
+            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command owner.");
         }
 
         [Fact]
@@ -251,21 +251,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         public void TargetMustDefine_CommandChecker()
         {
             Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandChecker>();
-            act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command checker.");
+            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command checker.");
         }
 
         [Fact]
         public void TargetMustDefine_CommandDescriptor()
         {
             Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandDescriptor>();
-            act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command descriptor.");
+            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command descriptor.");
         }
 
         [Fact]
         public void TargetMustDefine_CommandRunner()
         {
             Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandRunner>();
-            act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command runner.");
+            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command runner.");
         }
 
         [Fact]
@@ -303,7 +303,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
 
             // This means that we tried adding the target as it implements IDeclarativeTarget
             Action act = () => terminalBuilder.AddDeclarativeAssembly(mockType);
-            act.Should().Throw<ErrorException>().WithMessage("The declarative target does not define command descriptor.");
+            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command descriptor.");
         }
 
         private void ConfigureServicesDelegate(IServiceCollection opt2)

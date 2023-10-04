@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "non int value");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=invalid_dt");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=invalid_dt");
         }
 
         [TestMethod]
@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value cannot be null. option=opt1");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value cannot be null. option=opt1");
         }
 
         [TestMethod]
@@ -94,7 +94,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             OptionCheckerContext context = new(value);
             Func<Task> func = async () => await checker.CheckAsync(context);
-            await func.Should().ThrowAsync<ErrorException>().WithMessage("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
+            await func.Should().ThrowAsync<TerminalException>().WithMessage("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -107,7 +107,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             OptionCheckerContext context = new(value);
             Func<Task> func = async () => await checker.CheckAsync(context);
-            await func.Should().ThrowAsync<ErrorException>().WithMessage("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
+            await func.Should().ThrowAsync<TerminalException>().WithMessage("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -131,7 +131,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]

@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     // Required argument is missing
                     if (flags.HasFlag(ArgumentFlags.Required))
                     {
-                        throw new ErrorException(TerminalErrors.MissingArgument, "The required argument is missing. command={0} argument={1}", command.Id, arg.Id);
+                        throw new TerminalException(TerminalErrors.MissingArgument, "The required argument is missing. command={0} argument={1}", command.Id, arg.Id);
                     }
 
                     continue;  // Skip checking the other conditions if argument isn't present
@@ -75,13 +75,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 // Check obsolete
                 if (flags.HasFlag(ArgumentFlags.Obsolete) && !terminalOptions.Checker.AllowObsolete.GetValueOrDefault())
                 {
-                    throw new ErrorException(TerminalErrors.InvalidArgument, "The argument is obsolete. command={0} argument={1}", command.Id, arg.Id);
+                    throw new TerminalException(TerminalErrors.InvalidArgument, "The argument is obsolete. command={0} argument={1}", command.Id, arg.Id);
                 }
 
                 // Check disabled
                 if (flags.HasFlag(ArgumentFlags.Disabled))
                 {
-                    throw new ErrorException(TerminalErrors.InvalidArgument, "The argument is disabled. command={0} argument={1}", command.Id, arg.Id);
+                    throw new TerminalException(TerminalErrors.InvalidArgument, "The argument is disabled. command={0} argument={1}", command.Id, arg.Id);
                 }
 
                 // Check arg value
@@ -112,7 +112,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     // Required option is missing
                     if (flags.HasFlag(OptionFlags.Required))
                     {
-                        throw new ErrorException(TerminalErrors.MissingOption, "The required option is missing. command={0} option={1}", command.Id, optKvp.Key);
+                        throw new TerminalException(TerminalErrors.MissingOption, "The required option is missing. command={0} option={1}", command.Id, optKvp.Key);
                     }
 
                     continue;  // Skip checking the other conditions if option isn't present
@@ -121,13 +121,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 // Check obsolete
                 if (flags.HasFlag(OptionFlags.Obsolete) && !terminalOptions.Checker.AllowObsolete.GetValueOrDefault())
                 {
-                    throw new ErrorException(TerminalErrors.InvalidOption, "The option is obsolete. command={0} option={1}", command.Id, optKvp.Key);
+                    throw new TerminalException(TerminalErrors.InvalidOption, "The option is obsolete. command={0} option={1}", command.Id, optKvp.Key);
                 }
 
                 // Check disabled
                 if (flags.HasFlag(OptionFlags.Disabled))
                 {
-                    throw new ErrorException(TerminalErrors.InvalidOption, "The option is disabled. command={0} option={1}", command.Id, optKvp.Key);
+                    throw new TerminalException(TerminalErrors.InvalidOption, "The option is disabled. command={0} option={1}", command.Id, optKvp.Key);
                 }
 
                 // Check arg value

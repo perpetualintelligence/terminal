@@ -39,7 +39,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             // Check for null argument value
             if (context.Argument.Value == null)
             {
-                throw new ErrorException(TerminalErrors.InvalidOption, "The argument value cannot be null. argument={0}", context.Argument.Id);
+                throw new TerminalException(TerminalErrors.InvalidOption, "The argument value cannot be null. argument={0}", context.Argument.Id);
             }
 
             // Check argument data type and value type
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     }
                     catch (Exception ex)
                     {
-                        throw new ErrorException(TerminalErrors.InvalidOption, "The argument value is not valid. argument={0} value={1} info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The argument value is not valid. argument={0} value={1} info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
                     }
                 }
             }
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             catch
             {
                 // Meaningful error instead of format exception
-                throw new ErrorException(TerminalErrors.InvalidArgument, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
+                throw new TerminalException(TerminalErrors.InvalidArgument, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
             }
 
             return Task.FromResult(new OptionCheckerResult(mapperResult.MappedType));

@@ -48,13 +48,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="host">The host.</param>
         /// <param name="context">The routing context for terminal custom routing.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        /// <exception cref="ErrorException">Thrown when the requested start mode is not valid for custom routing.</exception>
+        /// <exception cref="TerminalException">Thrown when the requested start mode is not valid for custom routing.</exception>
         public static Task RunCustomRoutingAsync(this IHost host, TerminalCustomRoutingContext context)
         {
             //  Make sure we have supported start context
             if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Custom)
             {
-                throw new ErrorException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
             }
 
             TerminalCustomRouting routingService = host.Services.GetRequiredService<TerminalCustomRouting>();

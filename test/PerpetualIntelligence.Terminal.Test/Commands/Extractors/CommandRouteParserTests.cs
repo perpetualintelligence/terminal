@@ -153,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "grp1");
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command owner is missing in the command route. owners=root1 command=grp1.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command owner is missing in the command route. owners=root1 command=grp1.");
         }
 
         [Fact]
@@ -161,7 +161,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "invalid_root1 grp1");
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command owner is not valid. owner=invalid_root1 command=grp1.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command owner is not valid. owner=invalid_root1 command=grp1.");
         }
 
         [Theory]
@@ -173,7 +173,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 grp1 grp2 grp3 {cmd1} {cmd2}");
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command owner is not valid. owner={cmd1} command={cmd2}.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={cmd1} command={cmd2}.");
         }
 
         [Fact]
@@ -181,7 +181,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 grp1 grp2 grp3 invalid1 cmd2");
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command owner is not valid. owner=invalid1 command=cmd2.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner=invalid1 command=cmd2.");
         }
 
         [Fact]
@@ -189,7 +189,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 grp1 grp2 grp3 cmd2 invalid1");
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support any arguments. command=cmd2");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=cmd2");
         }
 
         [Fact]
@@ -197,7 +197,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 grp1 grp2 grp3 invalid_cmd1");
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support any arguments. command=grp3");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=grp3");
         }
 
         [Fact]
@@ -205,7 +205,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 invalid_grp1");
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support any arguments. command=root1");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=root1");
         }
 
         [Theory]
@@ -230,7 +230,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1 invalid_grp2 grp3");
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The command owner is not valid. owner=invalid_grp2 command=grp3.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command owner is not valid. owner=invalid_grp2 command=grp3.");
         }
 
         [Fact]
@@ -322,7 +322,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), cmdString);
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command owner is not valid. owner={errOwner} command={errCmd}.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={errOwner} command={errCmd}.");
         }
 
         [Theory]
@@ -335,7 +335,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), cmdString);
             Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
-            await act.Should().ThrowAsync<ErrorException>().WithMessage($"The command owner is not valid. owner={duplicateCmd} command={duplicateCmd}.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={duplicateCmd} command={duplicateCmd}.");
         }
 
         [Fact]
@@ -362,7 +362,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unexpected_Inputs_Should_Throw(string cmdStr, string errCmd, string childCmd)
         {
             Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", cmdStr));
-            await func.Should().ThrowAsync<ErrorException>().WithMessage($"The command owner is not valid. owner={errCmd} command={childCmd}.");
+            await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={errCmd} command={childCmd}.");
         }
 
         [Theory]
@@ -374,7 +374,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Arguments_NotSupported_Throws(string cmdStr, string errCmd)
         {
             Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", $"{cmdStr} \"not supported arg1\" 36.25"));
-            await func.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support any arguments. command={errCmd}");
+            await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command={errCmd}");
         }
 
         [Theory]
@@ -386,7 +386,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Options_NotSupported_Throws(string cmdStr, string errCmd)
         {
             Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", $"{cmdStr} --opt1 val1 -opt2 val2"));
-            await func.Should().ThrowAsync<ErrorException>().WithMessage($"The command does not support any options. command={errCmd}");
+            await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any options. command={errCmd}");
         }
 
         private readonly TerminalOptions terminalOptions;

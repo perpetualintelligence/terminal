@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         {
             if (string.IsNullOrWhiteSpace(context.Value.DataType))
             {
-                throw new ErrorException(TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option={0}", context.Value.Id);
+                throw new TerminalException(TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option={0}", context.Value.Id);
             }
 
             switch (context.Value.DataType)
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
                 case nameof(DateTime): return MapperResultAsync(typeof(DateTime));
                 default:
                     {
-                        throw new ErrorException(TerminalErrors.UnsupportedOption, "The option data type is not supported. option={0} data_type={1}", context.Value.Id, context.Value.DataType);
+                        throw new TerminalException(TerminalErrors.UnsupportedOption, "The option data type is not supported. option={0} data_type={1}", context.Value.Id, context.Value.DataType);
                     }
             }
         }

@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockDefaultCommandRunner mockCommandRunner = new();
             Func<Task> act = () => mockCommandRunner.HelpAsync(new CommandRunnerContext(handlerContext));
-            await act.Should().ThrowAsync<ErrorException>().WithMessage("The help provider is missing in the configured services.");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The help provider is missing in the configured services.");
         }
 
         [Fact]

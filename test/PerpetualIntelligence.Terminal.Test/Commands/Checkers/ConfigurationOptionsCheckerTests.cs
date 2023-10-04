@@ -41,15 +41,15 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             async Task act() => await optionsChecker.CheckAsync(options);
 
             options.Id = "";
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, TerminalErrors.InvalidConfiguration, "The terminal identifier is required.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(act, TerminalErrors.InvalidConfiguration, "The terminal identifier is required.");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Id = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, TerminalErrors.InvalidConfiguration, "The terminal identifier is required.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(act, TerminalErrors.InvalidConfiguration, "The terminal identifier is required.");
 
             options.Id = "   ";
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, TerminalErrors.InvalidConfiguration, "The terminal identifier is required.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(act, TerminalErrors.InvalidConfiguration, "The terminal identifier is required.");
 
             options.Id = "asasd";
             await act();
@@ -63,13 +63,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             async Task act() => await optionsChecker.CheckAsync(options);
 
             options.Driver.Name = "";
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(act, TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
             options.Driver.Name = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(act, TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
             options.Driver.Name = "   ";
-            await TestHelper.AssertThrowsErrorExceptionAsync(act, TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(act, TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
 
             options.Driver.Enabled = false;
 
@@ -100,13 +100,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.OptionAliasPrefix = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
 
             options.Extractor.OptionAliasPrefix = "";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
 
             options.Extractor.OptionAliasPrefix = "   ";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot be null or whitespace.");
         }
 
         [DataTestMethod]
@@ -122,7 +122,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Extractor.OptionPrefix = prefix;
             options.Extractor.OptionAliasPrefix = $"{prefix}:";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot start with option prefix. prefix={prefix}");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot start with option prefix. prefix={prefix}");
         }
 
         [DataTestMethod]
@@ -137,7 +137,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         public async Task OptionAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
             options.Extractor.OptionAliasPrefix = prefix;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot be more than 3 Unicode characters. option_alias_prefix={prefix}");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option alias prefix cannot be more than 3 Unicode characters. option_alias_prefix={prefix}");
         }
 
         [TestMethod]
@@ -146,13 +146,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.OptionPrefix = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
 
             options.Extractor.OptionPrefix = "";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
 
             options.Extractor.OptionPrefix = "   ";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option prefix cannot be null or whitespace.");
         }
 
         [DataTestMethod]
@@ -167,7 +167,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         public async Task OptionPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
             options.Extractor.OptionPrefix = prefix;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option prefix cannot be more than 3 Unicode characters. option_prefix={prefix}");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option prefix cannot be more than 3 Unicode characters. option_prefix={prefix}");
         }
 
         [DataTestMethod]
@@ -184,7 +184,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Extractor.OptionPrefix = ":";
             options.Extractor.OptionAliasPrefix = separator;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option separator and option alias prefix cannot be same. separator={separator}");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option separator and option alias prefix cannot be same. separator={separator}");
         }
 
         [DataTestMethod]
@@ -200,7 +200,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Extractor.OptionValueSeparator = separator;
             options.Extractor.OptionPrefix = separator;
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option separator and option prefix cannot be same. separator={separator}");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The option separator and option prefix cannot be same. separator={separator}");
         }
 
         [TestMethod]
@@ -208,11 +208,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.OptionValueSeparator = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The option separator cannot be null or empty.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The option separator cannot be null or empty.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             options.Extractor.OptionValueSeparator = "";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The option separator cannot be null or empty.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The option separator cannot be null or empty.");
         }
 
         [DataTestMethod]
@@ -227,7 +227,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             options.Extractor.Separator = separator;
             options.Extractor.OptionPrefix = separator;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The command separator and option prefix cannot be same. separator={separator}");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The command separator and option prefix cannot be same. separator={separator}");
         }
 
         [TestMethod]
@@ -235,11 +235,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.Separator = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The command separator cannot be null or empty.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The command separator cannot be null or empty.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             options.Extractor.Separator = "";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The command separator cannot be null or empty.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The command separator cannot be null or empty.");
         }
 
         [TestMethod]
@@ -247,10 +247,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         public async Task LoggerIndentLessThanOrEqualToZeroShouldThrow()
         {
             options.Logging.LoggerIndent = -3;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=-3");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=-3");
 
             options.Logging.LoggerIndent = 0;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=0");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=0");
         }
 
         [TestMethod]
@@ -261,7 +261,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Extractor.ValueDelimiter = "^";
             options.Extractor.OptionAliasPrefix = "^";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option alias prefix. delimiter=^");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option alias prefix. delimiter=^");
         }
 
         [TestMethod]
@@ -271,7 +271,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Extractor.OptionPrefix = "^";
             options.Extractor.ValueDelimiter = "^";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option prefix. delimiter=^");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option prefix. delimiter=^");
         }
 
         [TestMethod]
@@ -281,7 +281,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Extractor.OptionValueSeparator = "^";
             options.Extractor.ValueDelimiter = "^";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option value separator. delimiter=^");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the option value separator. delimiter=^");
         }
 
         [TestMethod]
@@ -291,7 +291,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             options.Extractor.Separator = "^";
             options.Extractor.ValueDelimiter = "^";
 
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the separator. delimiter=^");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be same as the separator. delimiter=^");
         }
 
         [TestMethod]
@@ -299,11 +299,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Extractor.ValueDelimiter = "   ";
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be null or whitespace.");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.Extractor.ValueDelimiter = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be null or whitespace.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, $"The value delimiter cannot be null or whitespace.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 

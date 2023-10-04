@@ -81,7 +81,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
                 // performance hit in case there is a license check failure.
                 await RegisterHelpAsync();
             }
-            catch (ErrorException ex)
+            catch (TerminalException ex)
             {
                 logger.LogError($"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
             }

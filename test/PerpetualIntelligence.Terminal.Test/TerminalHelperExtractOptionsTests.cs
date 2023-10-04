@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Terminal
             }
 
             Action act = () => TerminalHelper.ExtractOptionStrings(sb51.ToString(), terminalOptions, textHandler);
-            act.Should().Throw<ErrorException>().WithMessage("Too many iteration while extracting options. max=50 current=51");
+            act.Should().Throw<TerminalException>().WithMessage("Too many iteration while extracting options. max=50 current=51");
         }
 
         [Fact]
