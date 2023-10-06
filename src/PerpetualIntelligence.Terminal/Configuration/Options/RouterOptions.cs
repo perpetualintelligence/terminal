@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// <summary>
         /// The maximum number of active remote client connections the router can accept. The default value is <c>5</c>.
         /// </summary>
-        public int RemoteMaxClients { get; set; } = 5;
+        public int MaxRemoteClients { get; set; } = 5;
 
         /// <summary>
         /// The maximum length of a single message. The default value is <c>1024</c> characters.

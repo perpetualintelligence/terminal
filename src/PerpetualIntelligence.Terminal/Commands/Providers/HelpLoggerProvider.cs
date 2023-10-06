@@ -1,11 +1,13 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
+using PerpetualIntelligence.Terminal.Configuration.Options;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Providers
@@ -15,38 +17,54 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
     /// </summary>
     public sealed class HelpLoggerProvider : IHelpProvider
     {
+        private readonly TerminalOptions terminalOptions;
+        private readonly ILogger<HelpLoggerProvider> _logger;
+
         /// <summary>
         /// Initializes new instance.
         /// </summary>
-        public HelpLoggerProvider(ILogger<HelpLoggerProvider> logger)
+        public HelpLoggerProvider(TerminalOptions terminalOptions, ILogger<HelpLoggerProvider> logger)
         {
-            Logger = logger;
+            this.terminalOptions = terminalOptions;
+            _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
         }
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        public ILogger<HelpLoggerProvider> Logger { get; }
 
         /// <inheritdoc/>
         public Task ProvideAsync(HelpProviderContext context)
         {
-            Logger.LogInformation("Command:");
-            Logger.LogInformation("    " + context.Command.Descriptor.Name);
-            Logger.LogInformation(context.Command.Descriptor.Description);
+            int indent = 2;
+            _logger.LogInformation("Command:");
+            _logger.LogInformation(string.Format("{0}{1} ({2}) {3}", new string(' ', indent), context.Command.Id, context.Command.Name, context.Command.Descriptor.Type));
+            _logger.LogInformation(string.Format("{0}{1}", new string(' ', indent * 2), context.Command.Description));
+            _logger.LogInformation("");
+
+            if (context.Command.Descriptor.ArgumentDescriptors != null)
+            {
+                indent = 2;
+                _logger.LogInformation("Arguments:");
+                foreach (ArgumentDescriptor argument in context.Command.Descriptor.ArgumentDescriptors)
+                {
+                    _logger.LogInformation(string.Format("{0}{1} <{2}>", new string(' ', indent), argument.Id, argument.DataType));
+                    _logger.LogInformation(string.Format("{0}{1}", new string(' ', indent * 2), argument.Description));
+                }
+            }
 
             if (context.Command.Descriptor.OptionDescriptors != null)
             {
-                foreach (OptionDescriptor option in context.Command.Descriptor.OptionDescriptors)
+                indent = 2;
+                _logger.LogInformation("Options:");
+                foreach (OptionDescriptor option in context.Command.Descriptor.OptionDescriptors.Values.Distinct())
                 {
                     if (option.Alias != null)
                     {
-                        Logger.LogInformation("{0} ({1}) - {2}", option.Id, option.Alias, option.Description);
+                        _logger.LogInformation(string.Format("{0}{1}{2}, {3}{4} <{5}>", new string(' ', indent), terminalOptions.Extractor.OptionPrefix, option.Id, terminalOptions.Extractor.OptionAliasPrefix, option.Alias, option.DataType));
                     }
                     else
                     {
-                        Logger.LogInformation("{0} - {1}", option.Id, option.Description);
+                        _logger.LogInformation(string.Format("{0}{1}{2} <{3}>", new string(' ', indent), terminalOptions.Extractor.OptionPrefix, option.Id, option.DataType));
                     }
+
+                    _logger.LogInformation(string.Format("{0}{1}", new string(' ', indent * 2), option.Description));
                 }
             }
 

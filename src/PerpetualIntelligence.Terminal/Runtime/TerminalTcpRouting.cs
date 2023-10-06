@@ -102,8 +102,8 @@ namespace PerpetualIntelligence.Terminal.Runtime
 
                 // Initialize the client connections
                 // Setup tasks to accept client connections
-                logger.LogDebug("Initializing client connections. count={0}", options.Router.RemoteMaxClients);
-                for (int idx = 0; idx < options.Router.RemoteMaxClients; ++idx)
+                logger.LogDebug("Initializing client connections. count={0}", options.Router.MaxRemoteClients);
+                for (int idx = 0; idx < options.Router.MaxRemoteClients; ++idx)
                 {
                     // Create a local copy of the index for the task
                     int localIdx = idx + 1;
