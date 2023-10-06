@@ -1,5 +1,6 @@
 # 5.1.1-rc*
 > Breaking Change
+- Add IHost terminal routing extension method
 - Support Arguments and Options parsing
 - Rename extractor and router options
 - Remove default option and default option value feature in favor of command argument feature

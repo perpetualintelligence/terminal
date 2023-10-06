@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// An abstraction of a context aware terminal routing service.
+    /// An abstraction of a context aware terminal routing.
     /// </summary>
     public interface ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
     {

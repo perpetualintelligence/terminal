@@ -252,7 +252,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public static ITerminalBuilder AddTerminalRouting<TRouting, TContext, TResult>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
         {
             // Add terminal routing service.
-            builder.Services.AddSingleton<TRouting>();
+            builder.Services.AddSingleton<ITerminalRouting<TContext, TResult>, TRouting>();
 
             return builder;
         }

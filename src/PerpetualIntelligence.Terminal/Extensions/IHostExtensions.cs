@@ -18,45 +18,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
     public static class IHostExtensions
     {
         /// <summary>
-        /// Runs the <see cref="TerminalConsoleRouting"/> asynchronously, blocking the calling thread until a cancellation request.
+        /// Runs the <see cref="ITerminalRouting{TContext, TResult}"/> asynchronously, blocking the calling thread until a cancellation request.
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="context">The routing context for terminal console routing.</param>
         /// <returns>A task representing the asynchronous operation with a result of <see cref="TerminalConsoleRoutingResult"/>.</returns>
-        public static Task<TerminalConsoleRoutingResult> RunConsoleRoutingAsync(this IHost host, TerminalConsoleRoutingContext context)
+        public static Task<TResult> RunTerminalRoutingAsync<TRouting, TContext, TResult>(this IHost host, TContext context) where TRouting : class, ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
         {
-            TerminalConsoleRouting routingService = host.Services.GetRequiredService<TerminalConsoleRouting>();
-            return routingService.RunAsync(context);
-        }
-
-        /// <summary>
-        /// Runs the <see cref="TerminalTcpRouting"/> asynchronously, blocking the calling thread until a cancellation request.
-        /// </summary>
-        /// <param name="host">The host.</param>
-        /// <param name="context">The routing context for terminal TCP routing.</param>
-        /// <returns>A task representing the asynchronous operation with a result of <see cref="TerminalTcpRoutingResult"/>.</returns>
-        public static Task<TerminalTcpRoutingResult> RunTcpRoutingAsync(this IHost host, TerminalTcpRoutingContext context)
-        {
-            TerminalTcpRouting routingService = host.Services.GetRequiredService<TerminalTcpRouting>();
-            return routingService.RunAsync(context);
-        }
-
-        /// <summary>
-        /// Runs the <see cref="TerminalCustomRouting"/> asynchronously, blocking the calling thread until a cancellation token.
-        /// </summary>
-        /// <param name="host">The host.</param>
-        /// <param name="context">The routing context for terminal custom routing.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        /// <exception cref="TerminalException">Thrown when the requested start mode is not valid for custom routing.</exception>
-        public static Task RunCustomRoutingAsync(this IHost host, TerminalCustomRoutingContext context)
-        {
-            //  Make sure we have supported start context
-            if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Custom)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
-            }
-
-            TerminalCustomRouting routingService = host.Services.GetRequiredService<TerminalCustomRouting>();
+            // TODO add checks for context, result and routing
+            ITerminalRouting<TContext, TResult> routingService = host.Services.GetRequiredService<ITerminalRouting<TContext, TResult>>();
             return routingService.RunAsync(context);
         }
     }
