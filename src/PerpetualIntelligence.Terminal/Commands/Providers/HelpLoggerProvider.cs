@@ -36,7 +36,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
             _logger.LogInformation("Command:");
             _logger.LogInformation(string.Format("{0}{1} ({2}) {3}", new string(' ', indent), context.Command.Id, context.Command.Name, context.Command.Descriptor.Type));
             _logger.LogInformation(string.Format("{0}{1}", new string(' ', indent * 2), context.Command.Description));
-            _logger.LogInformation("");
 
             if (context.Command.Descriptor.ArgumentDescriptors != null)
             {
