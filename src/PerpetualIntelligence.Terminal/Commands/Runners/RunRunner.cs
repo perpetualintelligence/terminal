@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public override Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public override Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             // TODO;
             return Task.FromResult(new CommandRunnerResult());

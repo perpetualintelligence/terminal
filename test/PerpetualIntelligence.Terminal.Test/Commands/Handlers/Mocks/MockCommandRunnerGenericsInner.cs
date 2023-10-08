@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
 
         public bool ThrowException { get; set; }
 
-        public override Task<MockGenericCommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public override Task<MockGenericCommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             Called = true;
 

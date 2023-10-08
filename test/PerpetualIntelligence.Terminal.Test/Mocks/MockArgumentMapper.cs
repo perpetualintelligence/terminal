@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
     {
         public bool Called { get; set; }
 
-        public Task<DataTypeMapperResult> MapAsync(DataTypeMapperContext<Argument> context)
+        public Task<DataTypeMapperResult> MapToTypeAsync(DataTypeMapperContext<Argument> context)
         {
             Called = true;
             return Task.FromResult(new DataTypeMapperResult(typeof(string)));

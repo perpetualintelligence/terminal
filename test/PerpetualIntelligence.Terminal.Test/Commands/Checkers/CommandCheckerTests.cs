@@ -20,7 +20,6 @@ using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,7 +45,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is disabled. command=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.InvalidOption, "The option is disabled. command=id1 option=key1");
         }
 
         [TestMethod]
@@ -62,7 +61,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await checker.CheckAsync(context);
+            await checker.CheckCommandAsync(context);
         }
 
         [TestMethod]
@@ -80,7 +79,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             CommandCheckerContext context = new(handlerContext);
 
             terminalOptions.Checker.AllowObsolete = true;
-            await checker.CheckAsync(context);
+            await checker.CheckCommandAsync(context);
         }
 
         [TestMethod]
@@ -98,10 +97,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             CommandCheckerContext context = new(handlerContext);
 
             terminalOptions.Checker.AllowObsolete = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command=id1 option=key1");
 
             terminalOptions.Checker.AllowObsolete = false;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command=id1 option=key1");
         }
 
         [TestMethod]
@@ -118,7 +117,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.MissingOption, "The required option is missing. command=id1 option=key1");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.MissingOption, "The required option is missing. command=id1 option=key1");
         }
 
         [TestMethod]
@@ -134,7 +133,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await checker.CheckAsync(context);
+            await checker.CheckCommandAsync(context);
         }
 
         [TestMethod]
@@ -152,7 +151,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await checker.CheckAsync(context);
+            await checker.CheckCommandAsync(context);
 
             Assert.AreEqual("non-date", options["key1"].Value);
         }
@@ -172,7 +171,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value does not match the mapped type. option=key1 type=System.DateTime data_type=DateTime value_type=String value=non-date");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.InvalidOption, "The option value does not match the mapped type. option=key1 type=System.DateTime data_type=DateTime value_type=String value=non-date");
         }
 
         [TestMethod]
@@ -194,7 +193,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             // Value should pass and converted to date
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await checker.CheckAsync(context);
+            await checker.CheckCommandAsync(context);
 
             object newValue = options["key1"].Value;
             Assert.IsInstanceOfType(newValue, typeof(DateTime));
@@ -214,7 +213,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            var result = await checker.CheckAsync(context);
+            var result = await checker.CheckCommandAsync(context);
         }
 
         [TestMethod]
@@ -230,7 +229,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await checker.CheckAsync(context);
+            await checker.CheckCommandAsync(context);
         }
 
         protected override void OnTestInitialize()

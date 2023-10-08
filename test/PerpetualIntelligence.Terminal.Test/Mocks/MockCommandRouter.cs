@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
         public CommandRouterResult? ReturnedRouterResult { get; private set; }
 
-        public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
+        public async Task<CommandRouterResult> RouteCommandAsync(CommandRouterContext context)
         {
             // For testing this is a singleton router so make sure it is thread safe
             await routeLock.WaitAsync();

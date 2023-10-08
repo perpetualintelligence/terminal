@@ -1,3 +1,8 @@
+# 5.2.1-rc*
+> Breaking Change
+- Disable command check during help execution
+- Rename various abstractions to reflect the exact purpose (e.g. `HandleAsync` -> `HandleCommandAsync`)
+
 # 5.1.1-rc*
 > Breaking Change
 - Add IHost terminal routing extension method

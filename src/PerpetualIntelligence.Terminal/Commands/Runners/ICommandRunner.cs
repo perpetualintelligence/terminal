@@ -19,13 +19,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// </summary>
         /// <param name="context">The runner context.</param>
         /// <returns>The runner result.</returns>
-        Task<TResult> RunAsync(CommandRunnerContext context);
+        Task<TResult> RunCommandAsync(CommandRunnerContext context);
 
         /// <summary>
         /// Runs a command help asynchronously.
         /// </summary>
         /// <param name="context">The runner context.</param>
         /// <returns>The runner result.</returns>
-        Task HelpAsync(CommandRunnerContext context);
+        Task RunHelpAsync(CommandRunnerContext context);
     }
 }

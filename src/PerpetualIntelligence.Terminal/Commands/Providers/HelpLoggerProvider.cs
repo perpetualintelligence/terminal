@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
         }
 
         /// <inheritdoc/>
-        public Task ProvideAsync(HelpProviderContext context)
+        public Task ProvideHelpAsync(HelpProviderContext context)
         {
             int indent = 2;
             _logger.LogInformation("Command:");

@@ -25,23 +25,23 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
         {
             this.helpProvider = helpProvider;
             DelegateHelpCalled = true;
-            await HelpAsync(context);
+            await RunHelpAsync(context);
             return CommandRunnerResult.NoProcessing;
         }
 
         public Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context)
         {
             DelegateRunCalled = true;
-            return RunAsync(context);
+            return RunCommandAsync(context);
         }
 
-        public async Task HelpAsync(CommandRunnerContext context)
+        public async Task RunHelpAsync(CommandRunnerContext context)
         {
-            await helpProvider.ProvideAsync(new HelpProviderContext(context.HandlerContext.ParsedCommand.Command));
+            await helpProvider.ProvideHelpAsync(new HelpProviderContext(context.HandlerContext.ParsedCommand.Command));
             HelpCalled = true;
         }
 
-        public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             RunCalled = true;
             return Task.FromResult<CommandRunnerResult>(new MockCommandRunnerInnerResult());

@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
     {
         public bool Called { get; set; }
 
-        public Task<ArgumentCheckerResult> CheckAsync(ArgumentCheckerContext context)
+        public Task<ArgumentCheckerResult> CheckArgumentAsync(ArgumentCheckerContext context)
         {
             Called = true;
             return Task.FromResult(new ArgumentCheckerResult(typeof(string)));

@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public async Task<CommandCheckerResult> CheckAsync(CommandCheckerContext context)
+        public async Task<CommandCheckerResult> CheckCommandAsync(CommandCheckerContext context)
         {
             await CheckArgumentsAsync(context);
 
@@ -85,7 +85,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 }
 
                 // Check arg value
-                await argumentChecker.CheckAsync(new ArgumentCheckerContext(argument!));
+                await argumentChecker.CheckArgumentAsync(new ArgumentCheckerContext(argument!));
             }
         }
 
@@ -131,7 +131,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 }
 
                 // Check arg value
-                await optionChecker.CheckAsync(new OptionCheckerContext(opt!));
+                await optionChecker.CheckOptionAsync(new OptionCheckerContext(opt!));
             }
         }
 

@@ -19,6 +19,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// </summary>
         /// <param name="context">The option extraction context.</param>
         /// <returns>The <see cref="CommandExtractorResult"/> instance.</returns>
-        public Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context);
+        public Task<CommandExtractorResult> ExtractCommandAsync(CommandExtractorContext context);
     }
 }

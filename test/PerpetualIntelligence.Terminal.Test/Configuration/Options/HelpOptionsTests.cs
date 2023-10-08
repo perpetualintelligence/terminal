@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         {
             HelpOptions options = new();
 
-            options.OptionAlias.Should().Be("H");
+            options.OptionAlias.Should().Be("h");
             options.OptionId.Should().Be("help");
             options.Disabled.Should().BeNull();
         }

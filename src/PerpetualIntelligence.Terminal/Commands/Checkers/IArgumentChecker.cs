@@ -19,6 +19,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// </summary>
         /// <param name="context">The argument check context.</param>
         /// <returns>The <see cref="ArgumentCheckerResult"/> instance.</returns>
-        public Task<ArgumentCheckerResult> CheckAsync(ArgumentCheckerContext context);
+        public Task<ArgumentCheckerResult> CheckArgumentAsync(ArgumentCheckerContext context);
     }
 }

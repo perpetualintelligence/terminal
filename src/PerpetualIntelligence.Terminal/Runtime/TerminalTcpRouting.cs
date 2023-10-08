@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -129,7 +128,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
             catch (Exception ex)
             {
                 // The default exception handler will log the exception and return a generic error message to the client.
-                await exceptionHandler.HandleAsync(new ExceptionHandlerContext(ex, null));
+                await exceptionHandler.HandleExceptionAsync(new ExceptionHandlerContext(ex, null));
             }
             finally
             {
@@ -197,7 +196,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 logger.LogError($"{message} task={0}", taskIdx);
             }
 
-            await exceptionHandler.HandleAsync(new ExceptionHandlerContext(ex, null));
+            await exceptionHandler.HandleExceptionAsync(new ExceptionHandlerContext(ex, null));
         }
 
         /// <summary>
@@ -239,7 +238,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
 
             // Route the command request to router. Wait for the router or the timeout.
             CommandRouterContext context = new(raw, tcpContext);
-            Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(context);
+            Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(context);
             if (await Task.WhenAny(routeTask, Task.Delay(options.Router.Timeout, tcpContext.StartContext.CancellationToken)) == routeTask)
             {
                 // Task completed within timeout.

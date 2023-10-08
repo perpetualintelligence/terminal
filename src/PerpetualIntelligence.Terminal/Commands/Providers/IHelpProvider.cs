@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
     /// An abstraction to provide help for commands.
     /// </summary>
     /// <remarks>
-    /// Use <see cref="IHelpProvider"/> to provide a common implementation for all your commands. To provide help for each command individually override <see cref="ICommandRunner{TResult}.HelpAsync(CommandRunnerContext)"/>.
+    /// Use <see cref="IHelpProvider"/> to provide a common implementation for all your commands. To provide help for each command individually override <see cref="ICommandRunner{TResult}.RunHelpAsync(CommandRunnerContext)"/>.
     /// </remarks>
     /// <seealso cref="IDelegateCommandRunner"/>
     /// <seealso cref="ICommandRunner{TResult}"/>
@@ -25,6 +25,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
         /// Provides help asynchronously.
         /// </summary>
         /// <returns></returns>
-        public Task ProvideAsync(HelpProviderContext context);
+        public Task ProvideHelpAsync(HelpProviderContext context);
     }
 }

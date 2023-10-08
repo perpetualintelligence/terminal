@@ -97,7 +97,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// When taking into account all phases, the effective complexity of the algorithm is O(s + n), where the emphasis is on the fact that each segment is processed only once post splitting. This showcases the algorithm's efficiency, making it a robust choice for parsing terminal commands.
         /// However, developers should consider their specific parsing requirements. If you have simpler parsing needs, a custom implementation might allow for further optimizations. But for diverse and comprehensive parsing scenarios, this default implementation provides a well-rounded and efficient solution.
         /// </remarks>
-        public async Task<ParsedCommand> ParseAsync(CommandRoute commandRoute)
+        public async Task<ParsedCommand> ParseRouteAsync(CommandRoute commandRoute)
         {
             // Extract the queue of segments from the raw command based of `separator` and `optionValueSeparator`
             Queue<ParsedSplit> segmentsQueue = ExtractQueue(commandRoute);

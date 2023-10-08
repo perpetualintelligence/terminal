@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// </summary>
         /// <param name="value">The entity to check.</param>
         /// <returns></returns>
-        Task CheckAsync(T value);
+        Task CheckValueAsync(T value);
 
         /// <summary>
         /// Returns the underlying checker raw type.

@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Terminal.Runtime;
@@ -35,7 +29,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public override async Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             // Confirm
             string? answer = await terminalConsole.ReadAnswerAsync("Are you sure", "y", "n");

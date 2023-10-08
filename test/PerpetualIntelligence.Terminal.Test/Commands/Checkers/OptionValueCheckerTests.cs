@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "non int value");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=invalid_dt");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckOptionAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=invalid_dt");
         }
 
         [TestMethod]
@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value cannot be null. option=opt1");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckOptionAsync(context), TerminalErrors.InvalidOption, "The option value cannot be null. option=opt1");
         }
 
         [TestMethod]
@@ -60,7 +60,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, 23.69);
 
             OptionCheckerContext context = new(value);
-            await checker.CheckAsync(context);
+            await checker.CheckOptionAsync(context);
 
             // Check converted
             Assert.AreEqual("23.69", value.Value);
@@ -77,7 +77,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, 23.69);
 
             OptionCheckerContext context = new(value);
-            await checker.CheckAsync(context);
+            await checker.CheckOptionAsync(context);
 
             // Check not converted
             Assert.AreEqual(23.69, value.Value);
@@ -93,7 +93,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(value);
-            Func<Task> func = async () => await checker.CheckAsync(context);
+            Func<Task> func = async () => await checker.CheckOptionAsync(context);
             await func.Should().ThrowAsync<TerminalException>().WithMessage("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(value);
-            Func<Task> func = async () => await checker.CheckAsync(context);
+            Func<Task> func = async () => await checker.CheckOptionAsync(context);
             await func.Should().ThrowAsync<TerminalException>().WithMessage("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
@@ -119,7 +119,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckOptionAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -131,7 +131,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckOptionAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]
@@ -141,7 +141,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "test2");
 
             OptionCheckerContext context = new(value);
-            await checker.CheckAsync(context);
+            await checker.CheckOptionAsync(context);
         }
 
         [TestMethod]
@@ -151,7 +151,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             Option value = new(identity, "4242424242424242");
 
             OptionCheckerContext context = new(value);
-            var result = await checker.CheckAsync(context);
+            var result = await checker.CheckOptionAsync(context);
             Assert.AreEqual(typeof(string), result.MappedType);
         }
 

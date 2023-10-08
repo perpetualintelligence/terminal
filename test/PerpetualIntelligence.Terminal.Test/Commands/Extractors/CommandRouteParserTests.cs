@@ -52,23 +52,23 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             terminalOptions.Extractor.ParseHierarchy = parseHierarchy;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1");
-            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
             parsedCommand.Hierarchy.Should().BeNull();
 
             commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1");
-            parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
             parsedCommand.Hierarchy.Should().BeNull();
 
             commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1 grp2");
-            parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
             parsedCommand.Hierarchy.Should().BeNull();
 
             commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1 grp2 grp3");
-            parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
             parsedCommand.Hierarchy.Should().BeNull();
 
             commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1 grp2 grp3 cmd1");
-            parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
             parsedCommand.Hierarchy.Should().BeNull();
         }
 
@@ -78,7 +78,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Command_NoHierarchy_NoGroup_NoRoot_Extracts_Without_Default_Root(string cmdRoute)
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), cmdRoute);
-            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
 
             parsedCommand.Command.Id.Should().Be(cmdRoute);
             parsedCommand.Command.Name.Should().Be($"{cmdRoute}_name");
@@ -95,7 +95,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             terminalOptions.Extractor.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), cmdRoute);
-            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
 
             parsedCommand.Command.Id.Should().Be(cmdRoute);
             parsedCommand.Command.Name.Should().Be($"{cmdRoute}_name");
@@ -113,7 +113,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task CommandRoute_Is_Set_In_Result()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1");
-            var result = await commandRouteParser.ParseAsync(commandRoute);
+            var result = await commandRouteParser.ParseRouteAsync(commandRoute);
             result.Should().NotBeNull();
 
             result.CommandRoute.Should().NotBeNull();
@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Root_No_Hierarchy_Parses_Correctly()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1");
-            var result = await commandRouteParser.ParseAsync(commandRoute);
+            var result = await commandRouteParser.ParseRouteAsync(commandRoute);
             result.Should().NotBeNull();
             result.Hierarchy.Should().BeNull();
 
@@ -137,7 +137,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             terminalOptions.Extractor.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1");
-            var result = await commandRouteParser.ParseAsync(commandRoute);
+            var result = await commandRouteParser.ParseRouteAsync(commandRoute);
             result.Should().NotBeNull();
 
             result.Command.Id.Should().Be("root1");
@@ -152,7 +152,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Group_NoRoot_Throws()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "grp1");
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command owner is missing in the command route. owners=root1 command=grp1.");
         }
 
@@ -160,7 +160,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Group_InvalidRoot_Throws()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "invalid_root1 grp1");
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command owner is not valid. owner=invalid_root1 command=grp1.");
         }
 
@@ -172,7 +172,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Nested_SubCommand_Throws(string cmd1, string cmd2)
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 grp1 grp2 grp3 {cmd1} {cmd2}");
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={cmd1} command={cmd2}.");
         }
 
@@ -180,7 +180,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Invalid_SubCommand_Owner_Throws()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 grp1 grp2 grp3 invalid1 cmd2");
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner=invalid1 command=cmd2.");
         }
 
@@ -188,7 +188,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Invalid_SubCommand_After_Valid_Command_Assumed_As_Argument()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 grp1 grp2 grp3 cmd2 invalid1");
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=cmd2");
         }
 
@@ -196,7 +196,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Last_Invalid_Command_Is_Assumed_To_Be_Group_Argument()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 grp1 grp2 grp3 invalid_cmd1");
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=grp3");
         }
 
@@ -204,7 +204,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Last_Invalid_Group_Is_Assumed_To_Be_Root_Argument()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), $"root1 invalid_grp1");
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=root1");
         }
 
@@ -218,7 +218,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             terminalOptions.Extractor.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), raw);
-            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
 
             parsedCommand.Command.Id.Should().Be("cmd1");
 
@@ -229,7 +229,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Group_InvalidNestedRoot_Throws()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1 invalid_grp2 grp3");
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command owner is not valid. owner=invalid_grp2 command=grp3.");
         }
 
@@ -237,7 +237,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Group_With_Root_Without_Hierarchy_Parses()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1");
-            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
 
             parsedCommand.Command.Id.Should().Be("grp1");
             parsedCommand.Command.Name.Should().Be("grp1_name");
@@ -252,7 +252,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             terminalOptions.Extractor.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1");
-            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
 
             parsedCommand.Command.Id.Should().Be("grp1");
             parsedCommand.Command.Name.Should().Be("grp1_name");
@@ -276,7 +276,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             terminalOptions.Extractor.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1 grp2 grp3 cmd1");
-            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
 
             parsedCommand.Command.Id.Should().Be("cmd1");
             parsedCommand.Command.Name.Should().Be("cmd1_name");
@@ -306,7 +306,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Command_With_Nested_Groups_And_Root_Without_Hierarchy_Parses()
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1 grp2 grp3 cmd1");
-            var parsedCommand = await commandRouteParser.ParseAsync(commandRoute);
+            var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
 
             parsedCommand.Command.Id.Should().Be("cmd1");
             parsedCommand.Command.Name.Should().Be("cmd1_name");
@@ -321,7 +321,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Nested_SubCommands_Throws(string cmdString, string errOwner, string errCmd)
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), cmdString);
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={errOwner} command={errCmd}.");
         }
 
@@ -334,14 +334,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Duplicate_Commands_Throws(string cmdString, string duplicateCmd)
         {
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), cmdString);
-            Func<Task> act = async () => await commandRouteParser.ParseAsync(commandRoute);
+            Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={duplicateCmd} command={duplicateCmd}.");
         }
 
         [Fact]
         public async Task Empty_Route_Throws()
         {
-            Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", "  "));
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "  "));
             await func.Should().ThrowAsync<ArgumentNullException>().WithMessage("'raw' cannot be null or whitespace. (Parameter 'raw')");
         }
 
@@ -349,7 +349,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Null_Route_Throws()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", null));
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", null));
             await func.Should().ThrowAsync<ArgumentNullException>().WithMessage("'raw' cannot be null or whitespace. (Parameter 'raw')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
@@ -361,7 +361,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("root1 grp1 grp2 grp3! cmd1 cmd2", "grp3!", "cmd1")]
         public async Task Unexpected_Inputs_Should_Throw(string cmdStr, string errCmd, string childCmd)
         {
-            Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", cmdStr));
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
             await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={errCmd} command={childCmd}.");
         }
 
@@ -373,7 +373,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("root1 grp1 grp2 grp3 cmd1", "cmd1")]
         public async Task Arguments_NotSupported_Throws(string cmdStr, string errCmd)
         {
-            Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", $"{cmdStr} \"not supported arg1\" 36.25"));
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"{cmdStr} \"not supported arg1\" 36.25"));
             await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command={errCmd}");
         }
 
@@ -385,7 +385,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("root1 grp1 grp2 grp3 cmd1", "cmd1")]
         public async Task Options_NotSupported_Throws(string cmdStr, string errCmd)
         {
-            Func<Task> func = async () => await commandRouteParser.ParseAsync(new CommandRoute("id1", $"{cmdStr} --opt1 val1 -opt2 val2"));
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"{cmdStr} --opt1 val1 -opt2 val2"));
             await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any options. command={errCmd}");
         }
 

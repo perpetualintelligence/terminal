@@ -21,7 +21,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 
         public bool IsExplicitNoCommandDescriptor { get; set; }
 
-        public Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context)
+        public Task<CommandExtractorResult> ExtractCommandAsync(CommandExtractorContext context)
         {
             Called = true;
 

@@ -8,8 +8,6 @@
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Extensions;
 using System;
 using System.Threading.Tasks;
 
@@ -23,11 +21,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public ExceptionHandler(TerminalOptions options, ILogger<ExceptionHandler> logger)
+        public ExceptionHandler(ILogger<ExceptionHandler> logger)
         {
-            this.options = options;
             this.logger = logger;
         }
 
@@ -36,32 +32,45 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// </summary>
         /// <param name="context">The error to publish.</param>
         /// <returns>The string representation.</returns>
-        public Task HandleAsync(ExceptionHandlerContext context)
+        public Task HandleExceptionAsync(ExceptionHandlerContext context)
         {
             if (context.Exception is TerminalException ee)
             {
-                logger.FormatAndLog(LogLevel.Error, options.Logging, ee.Error.ErrorDescription ?? "", ee.Error.Args ?? Array.Empty<object?>());
+                logger.LogError(ee, ee.Error.ErrorDescription, ee.Error.Args ?? Array.Empty<object?>());
             }
             else if (context.Exception is MultiErrorException me)
             {
                 foreach (Error err in me.Errors)
                 {
-                    logger.FormatAndLog(LogLevel.Error, options.Logging, err.ErrorDescription ?? "", err.Args ?? Array.Empty<object?>());
+                    logger.LogError(me, err.ErrorDescription, err.Args ?? Array.Empty<object?>());
                 }
             }
-            else if (context.Exception is OperationCanceledException)
+            else if (context.Exception is OperationCanceledException oe)
             {
-                logger.FormatAndLog(LogLevel.Error, options.Logging, "The request was canceled. command_string={0}", context.RawCommandString);
+                if (context.CommandRoute != null)
+                {
+                    logger.LogError(oe, "The request was canceled. route={0} command={1}", context.CommandRoute.Id, context.CommandRoute.Command.Raw);
+                }
+                else
+                {
+                    logger.LogError(oe, "The request was canceled.");
+                }
             }
             else
             {
-                logger.FormatAndLog(LogLevel.Error, options.Logging, "The request failed. command_string={0} info={1}", context.RawCommandString, context.Exception.Message);
+                if (context.CommandRoute != null)
+                {
+                    logger.LogError(context.Exception, "The request failed. route={0} command={1}", context.CommandRoute.Id, context.CommandRoute.Command.Raw);
+                }
+                else
+                {
+                    logger.LogError(context.Exception, "The request failed.");
+                }
             }
 
             return Task.CompletedTask;
         }
 
         private readonly ILogger<ExceptionHandler> logger;
-        private readonly TerminalOptions options;
     }
 }

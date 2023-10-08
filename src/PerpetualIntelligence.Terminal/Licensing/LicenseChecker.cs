@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <param name="context">The licensing context.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public async Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context)
+        public async Task<LicenseCheckerResult> CheckLicenseAsync(LicenseCheckerContext context)
         {
             // Initialize if needed
             await InitializeLockAsync(context.License);

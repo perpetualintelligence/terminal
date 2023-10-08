@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public async Task<OptionCheckerResult> CheckAsync(OptionCheckerContext context)
+        public async Task<OptionCheckerResult> CheckOptionAsync(OptionCheckerContext context)
         {
             // Check for null option value
             if (context.Option.Value == null)
@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             }
 
             // Check option data type and value type
-            DataTypeMapperResult mapperResult = await mapper.MapAsync(new DataTypeMapperContext<Option>(context.Option));
+            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(context.Option));
 
             // Check whether we need to check type
             if (options.Checker.StrictValueType.GetValueOrDefault())
@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 {
                     try
                     {
-                        await valueChecker.CheckAsync(context.Option);
+                        await valueChecker.CheckValueAsync(context.Option);
                     }
                     catch (Exception ex)
                     {

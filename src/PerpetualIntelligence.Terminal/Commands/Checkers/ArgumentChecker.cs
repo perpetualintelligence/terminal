@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public async Task<ArgumentCheckerResult> CheckAsync(ArgumentCheckerContext context)
+        public async Task<ArgumentCheckerResult> CheckArgumentAsync(ArgumentCheckerContext context)
         {
             // Check for null argument value
             if (context.Argument.Value == null)
@@ -43,7 +43,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             }
 
             // Check argument data type and value type
-            DataTypeMapperResult mapperResult = await mapper.MapAsync(new DataTypeMapperContext<Argument>(context.Argument));
+            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(new DataTypeMapperContext<Argument>(context.Argument));
 
             // Check whether we need to check type
             if (options.Checker.StrictValueType.GetValueOrDefault())
@@ -59,7 +59,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                 {
                     try
                     {
-                        await valueChecker.CheckAsync(context.Argument);
+                        await valueChecker.CheckValueAsync(context.Argument);
                     }
                     catch (Exception ex)
                     {

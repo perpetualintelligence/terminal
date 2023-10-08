@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         }
 
         /// <inheritdoc/>
-        public Task<DataTypeMapperResult> MapAsync(DataTypeMapperContext<TValue> context)
+        public Task<DataTypeMapperResult> MapToTypeAsync(DataTypeMapperContext<TValue> context)
         {
             if (string.IsNullOrWhiteSpace(context.Value.DataType))
             {

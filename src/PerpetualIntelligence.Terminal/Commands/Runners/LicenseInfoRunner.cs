@@ -30,10 +30,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public override async Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             LicenseExtractorResult licResult = await licenseExractor.ExtractAsync(new LicenseExtractorContext());
-            LicenseCheckerResult checkResult = await licenseChecker.CheckAsync(new LicenseCheckerContext(licResult.License));
+            LicenseCheckerResult checkResult = await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(licResult.License));
 
             License license = licResult.License;
 

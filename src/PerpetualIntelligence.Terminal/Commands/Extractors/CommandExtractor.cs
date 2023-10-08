@@ -27,9 +27,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         }
 
         /// <inheritdoc/>
-        public async Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context)
+        public async Task<CommandExtractorResult> ExtractCommandAsync(CommandExtractorContext context)
         {
-            ParsedCommand parsedCommand = await commandRouteParser.ParseAsync(context.Route);
+            ParsedCommand parsedCommand = await commandRouteParser.ParseRouteAsync(context.Route);
             return new CommandExtractorResult(parsedCommand);
         }
 

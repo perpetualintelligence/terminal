@@ -249,7 +249,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         private async Task CheckLicenseAsync(LicenseExtractorResult result)
         {
             ILicenseChecker licenseChecker = serviceProvider.GetRequiredService<ILicenseChecker>();
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(result.License));
+            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(result.License));
         }
 
         private async Task<LicenseExtractorResult> ExtractLicenseAsync()

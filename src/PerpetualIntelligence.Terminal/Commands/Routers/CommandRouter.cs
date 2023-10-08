@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// </summary>
         /// <param name="context">The router context.</param>
         /// <returns>The <see cref="CommandRouterResult"/> instance.</returns>
-        public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
+        public async Task<CommandRouterResult> RouteCommandAsync(CommandRouterContext context)
         {
             CommandRouterResult? result = null;
             ParsedCommand? extractedCommand = null;
@@ -69,12 +69,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 License? license = await licenseExtractor.GetAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
                 // Extract the command
-                CommandExtractorResult extractorResult = await commandExtractor.ExtractAsync(new CommandExtractorContext(context.Route));
+                CommandExtractorResult extractorResult = await commandExtractor.ExtractCommandAsync(new CommandExtractorContext(context.Route));
                 extractedCommand = extractorResult.ParsedCommand;
 
                 // Delegate to handler
                 CommandHandlerContext handlerContext = new(context, extractorResult.ParsedCommand, license);
-                var handlerResult = await commandHandler.HandleAsync(handlerContext);
+                var handlerResult = await commandHandler.HandleCommandAsync(handlerContext);
                 result = new CommandRouterResult(handlerResult, context.Route);
             }
             finally

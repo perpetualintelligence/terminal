@@ -20,6 +20,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// </summary>
         /// <param name="context">The handler context.</param>
         /// <returns>The handler result.</returns>
-        Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context);
+        Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context);
     }
 }

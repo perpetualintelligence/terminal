@@ -16,21 +16,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
     {
         public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider)
         {
-            await HelpAsync(context);
+            await RunHelpAsync(context);
             return CommandRunnerResult.NoProcessing;
         }
 
         public Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context)
         {
-            return RunAsync(context);
+            return RunCommandAsync(context);
         }
 
-        public Task HelpAsync(CommandRunnerContext context)
+        public Task RunHelpAsync(CommandRunnerContext context)
         {
             throw new TerminalException("test_runner_help_error", "test_runner_help_error_desc");
         }
 
-        public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             throw new TerminalException("test_runner_error", "test_runner_error_desc");
         }

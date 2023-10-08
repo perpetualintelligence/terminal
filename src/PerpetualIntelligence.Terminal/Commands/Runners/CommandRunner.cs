@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using System.Threading.Tasks;
 
@@ -22,14 +21,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider)
         {
             this.helpProvider = helpProvider;
-            await HelpAsync(context);
+            await RunHelpAsync(context);
             return CommandRunnerResult.NoProcessing;
         }
 
         /// <inheritdoc/>
         public async Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context)
         {
-            var result = await RunAsync(context);
+            var result = await RunCommandAsync(context);
             return (CommandRunnerResult)(object)result;
         }
 
@@ -39,17 +38,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// <param name="context">The command context.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task HelpAsync(CommandRunnerContext context)
+        public virtual Task RunHelpAsync(CommandRunnerContext context)
         {
             if (helpProvider == null)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The help provider is missing in the configured services.");
             }
 
-            return helpProvider.ProvideAsync(new HelpProviderContext(context.HandlerContext.ParsedCommand.Command));
+            return helpProvider.ProvideHelpAsync(new HelpProviderContext(context.HandlerContext.ParsedCommand.Command));
         }
 
         /// <inheritdoc/>
-        public abstract Task<TResult> RunAsync(CommandRunnerContext context);
+        public abstract Task<TResult> RunCommandAsync(CommandRunnerContext context);
     }
 }

@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
     {
         public bool Called { get; set; }
 
-        public Task<CommandExtractorResult> ExtractAsync(CommandExtractorContext context)
+        public Task<CommandExtractorResult> ExtractCommandAsync(CommandExtractorContext context)
         {
             Called = true;
 

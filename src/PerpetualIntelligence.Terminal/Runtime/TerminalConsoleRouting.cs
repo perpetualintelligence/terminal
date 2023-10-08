@@ -7,7 +7,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Exceptions;
+using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 // Track the application lifetime so we can know whether cancellation is requested.
                 while (true)
                 {
-                    string? raw = null;
+                    CommandRoute? route = null;
 
                     try
                     {
@@ -97,7 +97,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         }
 
                         // Read the user input
-                        raw = await terminalConsole.ReadLineAsync();
+                        string? raw = await terminalConsole.ReadLineAsync();
 
                         // Ignore empty commands
                         if (raw == null || terminalConsole.Ignore(raw))
@@ -108,7 +108,8 @@ namespace PerpetualIntelligence.Terminal.Runtime
 
                         // Route the request.
                         CommandRouterContext routerContext = new(raw, context);
-                        Task<CommandRouterResult> routeTask = commandRouter.RouteAsync(routerContext);
+                        route = routerContext.Route;
+                        Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
 
                         bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.CancellationToken);
                         if (!success)
@@ -119,15 +120,15 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     catch (OperationCanceledException oex)
                     {
                         // Routing is canceled.
-                        ExceptionHandlerContext exContext = new(oex, raw);
-                        await exceptionHandler.HandleAsync(exContext);
+                        ExceptionHandlerContext exContext = new(oex, route);
+                        await exceptionHandler.HandleExceptionAsync(exContext);
                         break;
                     }
                     catch (Exception ex)
                     {
                         // Task.Wait bundles up any exception into Exception.InnerException
-                        ExceptionHandlerContext exContext = new(ex.InnerException ?? ex, raw);
-                        await exceptionHandler.HandleAsync(exContext);
+                        ExceptionHandlerContext exContext = new(ex.InnerException ?? ex, route);
+                        await exceptionHandler.HandleExceptionAsync(exContext);
                     }
                 };
 

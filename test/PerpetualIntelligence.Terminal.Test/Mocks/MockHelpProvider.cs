@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
     {
         public bool HelpCalled { get; private set; }
 
-        public Task ProvideAsync(HelpProviderContext context)
+        public Task ProvideHelpAsync(HelpProviderContext context)
         {
             HelpCalled = true;
             return Task.CompletedTask;

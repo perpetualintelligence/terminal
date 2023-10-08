@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandExtractor extractor = new(routeParser);
 
             CommandExtractorContext context = new(new CommandRoute("id1", "id1 test raw string"));
-            await extractor.ExtractAsync(context);
+            await extractor.ExtractCommandAsync(context);
 
             routeParser.Called.Should().BeTrue();
             routeParser.PassedCommandRoute.Command.Raw.Should().Be("id1 test raw string");
@@ -47,7 +47,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // This is just extracting no checking
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            var result = await extractor.ExtractAsync(context);
+            var result = await extractor.ExtractCommandAsync(context);
 
             Assert.IsNull(result.ParsedCommand.Command.Options);
         }
@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task ConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
-            var result = await extractor.ExtractAsync(context);
+            var result = await extractor.ExtractCommandAsync(context);
 
             Assert.IsNull(result.ParsedCommand.Command.Options);
         }
@@ -66,14 +66,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
             CommandExtractor noProviderExtractor = new(routeParser);
-            await noProviderExtractor.ExtractAsync(context);
+            await noProviderExtractor.ExtractCommandAsync(context);
         }
 
         [TestMethod]
         public async Task CommandWithNoArgsShouldNotErrorAsync()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
-            var result = await extractor.ExtractAsync(context);
+            var result = await extractor.ExtractCommandAsync(context);
 
             Assert.IsNull(result.ParsedCommand.Command.Options);
         }

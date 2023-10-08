@@ -18,21 +18,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// Initialize a new instance.
         /// </summary>
         /// <param name="exception">The exception.</param>
-        /// <param name="rawCommandString">The raw command string.</param>
-        public ExceptionHandlerContext(Exception exception, string? rawCommandString)
+        /// <param name="commandRoute">The command route.</param>
+        public ExceptionHandlerContext(Exception exception, CommandRoute? commandRoute = null)
         {
-            RawCommandString = rawCommandString;
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+            CommandRoute = commandRoute;
         }
 
         /// <summary>
         /// The exception.
         /// </summary>
-        public Exception Exception { get; set; }
+        public Exception Exception { get; }
 
         /// <summary>
-        /// The command string.
+        /// The command route.
         /// </summary>
-        public string? RawCommandString { get; set; }
+        public CommandRoute? CommandRoute { get; }
     }
 }

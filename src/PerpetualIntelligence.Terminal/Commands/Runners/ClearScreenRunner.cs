@@ -4,15 +4,8 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using PerpetualIntelligence.Terminal.Runtime;
-using System;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Runners
@@ -33,7 +26,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public override async Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             await terminalConsole.ClearAsync();
             return new CommandRunnerResult();

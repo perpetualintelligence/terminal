@@ -36,25 +36,41 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         }
 
         /// <inheritdoc/>
-        public async Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
+        public async Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context)
         {
             // Optional Event handler
             IAsyncEventHandler? asyncEventHandler = services.GetService<IAsyncEventHandler>();
 
             // Check the license
-            await licenseChecker.CheckAsync(new LicenseCheckerContext(context.License));
+            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(context.License));
 
-            // Checks the command
-            CommandCheckerResult checkerResult = await CheckCommandAsync(context, asyncEventHandler);
-
-            // Run the command
-            CommandRunnerResult runnerResult = await RunCommandAsync(context, asyncEventHandler);
+            // Check and run the command
+            Tuple<CommandCheckerResult, CommandRunnerResult> result = await CheckAndRunCommandInnerAsync(context, asyncEventHandler);
 
             // Return the processed result
-            return new CommandHandlerResult(runnerResult, checkerResult);
+            return new CommandHandlerResult(result.Item2, result.Item1);
         }
 
-        private async Task<CommandRunnerResult> RunCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        {
+            // If we are executing a help command then we need to bypass all the checks.
+            if (!options.Help.Disabled.GetValueOrDefault() &&
+                (context.ParsedCommand.Command.TryGetOption(options.Help.OptionId, out _) ||
+                 context.ParsedCommand.Command.TryGetOption(options.Help.OptionAlias, out _)
+                ))
+            {
+                CommandRunnerResult runnerResult = await RunCommandInnerAsync(context, runHelp: true, asyncEventHandler);
+                return new Tuple<CommandCheckerResult, CommandRunnerResult>(new CommandCheckerResult(), runnerResult);
+            }
+            else
+            {
+                CommandCheckerResult checkerResult = await CheckCommandInnerAsync(context, asyncEventHandler);
+                CommandRunnerResult runnerResult = await RunCommandInnerAsync(context, runHelp: false, asyncEventHandler);
+                return new Tuple<CommandCheckerResult, CommandRunnerResult>(checkerResult, runnerResult);
+            }
+        }
+
+        private async Task<CommandRunnerResult> RunCommandInnerAsync(CommandHandlerContext context, bool runHelp, IAsyncEventHandler? asyncEventHandler)
         {
             // Issue a before run event if configured
             if (asyncEventHandler != null)
@@ -68,7 +84,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             CommandRunnerResult runnerResult;
 
             // Run or Help
-            if (!options.Help.Disabled.GetValueOrDefault() && context.ParsedCommand.Command.TryGetOption(options.Help.OptionId, out _))
+            if (runHelp)
             {
                 IHelpProvider helpProvider = services.GetRequiredService<IHelpProvider>();
                 runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, helpProvider);
@@ -93,7 +109,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             return runnerResult;
         }
 
-        private async Task<CommandCheckerResult> CheckCommandAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        private async Task<CommandCheckerResult> CheckCommandInnerAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
         {
             // Issue a before check event if configured
             if (asyncEventHandler != null)
@@ -103,7 +119,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             // Find the checker and check the command
             ICommandChecker commandChecker = await FindCheckerOrThrowAsync(context);
-            var result = await commandChecker.CheckAsync(new CommandCheckerContext(context));
+            var result = await commandChecker.CheckCommandAsync(new CommandCheckerContext(context));
 
             // Issue a after check event if configured
             if (asyncEventHandler != null)

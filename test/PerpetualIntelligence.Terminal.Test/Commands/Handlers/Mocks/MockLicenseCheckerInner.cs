@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
 
         public LicenseCheckerContext? ContextCalled { get; set; }
 
-        public Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context)
+        public Task<LicenseCheckerResult> CheckLicenseAsync(LicenseCheckerContext context)
         {
             Called = true;
             ContextCalled = context;

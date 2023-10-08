@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
         public bool Called { get; private set; }
 
-        public Task<ParsedCommand> ParseAsync(CommandRoute commandRoute)
+        public Task<ParsedCommand> ParseRouteAsync(CommandRoute commandRoute)
         {
             PassedCommandRoute = commandRoute;
             Called = true;

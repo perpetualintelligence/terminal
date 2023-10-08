@@ -16,13 +16,13 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
         public bool HelpCalled { get; set; }
 
-        public Task HelpAsync(CommandRunnerContext context)
+        public Task RunHelpAsync(CommandRunnerContext context)
         {
             HelpCalled = true;
             return Task.FromResult(new CommandRunnerResult());
         }
 
-        public Task<CommandRunnerResult> RunAsync(CommandRunnerContext context)
+        public Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             RunCalled = true;
             return Task.FromResult(new CommandRunnerResult());

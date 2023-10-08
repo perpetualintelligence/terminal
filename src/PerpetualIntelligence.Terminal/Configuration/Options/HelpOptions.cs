@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -36,6 +36,6 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// <remarks>
         /// Unless <see cref="Disabled"/>, the help option alias is automatically added to the command options. The <see cref="OptionAlias"/> must be unique across all option aliases for all commands.
         /// </remarks>
-        public string OptionAlias { get; set; } = "H";
+        public string OptionAlias { get; set; } = "h";
     }
 }

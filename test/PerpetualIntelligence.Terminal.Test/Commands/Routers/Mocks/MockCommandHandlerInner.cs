@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 
         public bool IsExplicitError { get; internal set; }
 
-        public Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
+        public Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context)
         {
             Called = true;
 

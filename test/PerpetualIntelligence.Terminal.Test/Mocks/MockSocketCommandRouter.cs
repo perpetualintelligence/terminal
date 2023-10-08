@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
         //This is used in the context of singleton Router
         public int RouteCounter { get; set; }
 
-        public async Task<CommandRouterResult> RouteAsync(CommandRouterContext context)
+        public async Task<CommandRouterResult> RouteCommandAsync(CommandRouterContext context)
         {
             // Stats
             RouteCalled = true;

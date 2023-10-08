@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
         public List<string> MultiplePublishedMessages { get; set; }
 
-        public Task HandleAsync(ExceptionHandlerContext context)
+        public Task HandleExceptionAsync(ExceptionHandlerContext context)
         {
             Called = true;
             PublishedMessage = context.Exception.Message;

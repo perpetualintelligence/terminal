@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         public ValidationAttribute ValidationAttribute { get; }
 
         /// <inheritdoc/>
-        public Task CheckAsync(TValue value)
+        public Task CheckValueAsync(TValue value)
         {
             ValidationContext context = new(value);
             ValidationAttribute.Validate(value.Value, context);

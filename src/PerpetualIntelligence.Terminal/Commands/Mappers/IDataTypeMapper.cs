@@ -19,6 +19,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Mappers
         /// </summary>
         /// <param name="context">The map context.</param>
         /// <returns>The </returns>
-        public Task<DataTypeMapperResult> MapAsync(DataTypeMapperContext<TValue> context);
+        public Task<DataTypeMapperResult> MapToTypeAsync(DataTypeMapperContext<TValue> context);
     }
 }

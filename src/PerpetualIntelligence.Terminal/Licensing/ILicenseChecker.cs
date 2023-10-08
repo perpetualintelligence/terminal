@@ -19,6 +19,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// </summary>
         /// <param name="context">The license check context.</param>
         /// <returns>The <see cref="LicenseCheckerResult"/> instance.</returns>
-        public Task<LicenseCheckerResult> CheckAsync(LicenseCheckerContext context);
+        public Task<LicenseCheckerResult> CheckLicenseAsync(LicenseCheckerContext context);
     }
 }

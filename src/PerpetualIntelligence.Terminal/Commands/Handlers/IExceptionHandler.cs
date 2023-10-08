@@ -19,6 +19,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// Handles <see cref="Exception"/> asynchronously.
         /// </summary>
         /// <param name="context">The exception context.</param>
-        public Task HandleAsync(ExceptionHandlerContext context);
+        public Task HandleExceptionAsync(ExceptionHandlerContext context);
     }
 }

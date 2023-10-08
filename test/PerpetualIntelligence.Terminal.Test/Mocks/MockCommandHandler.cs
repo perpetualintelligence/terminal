@@ -14,7 +14,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
     {
         public bool Called { get; set; }
 
-        public Task<CommandHandlerResult> HandleAsync(CommandHandlerContext context)
+        public Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context)
         {
             Called = true;
             return Task.FromResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()));

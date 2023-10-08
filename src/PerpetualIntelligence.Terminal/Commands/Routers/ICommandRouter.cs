@@ -19,6 +19,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// </summary>
         /// <param name="context">The router context.</param>
         /// <returns>The router result.</returns>
-        Task<CommandRouterResult> RouteAsync(CommandRouterContext context);
+        Task<CommandRouterResult> RouteCommandAsync(CommandRouterContext context);
     }
 }
