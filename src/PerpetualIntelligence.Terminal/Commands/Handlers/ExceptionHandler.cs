@@ -36,35 +36,35 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         {
             if (context.Exception is TerminalException ee)
             {
-                logger.LogError(ee, ee.Error.ErrorDescription, ee.Error.Args ?? Array.Empty<object?>());
+                logger.LogError(ee.Error.ErrorDescription, ee.Error.Args ?? Array.Empty<object?>());
             }
             else if (context.Exception is MultiErrorException me)
             {
                 foreach (Error err in me.Errors)
                 {
-                    logger.LogError(me, err.ErrorDescription, err.Args ?? Array.Empty<object?>());
+                    logger.LogError(err.ErrorDescription, err.Args ?? Array.Empty<object?>());
                 }
             }
             else if (context.Exception is OperationCanceledException oe)
             {
                 if (context.CommandRoute != null)
                 {
-                    logger.LogError(oe, "The request was canceled. route={0} command={1}", context.CommandRoute.Id, context.CommandRoute.Command.Raw);
+                    logger.LogError("The request was canceled. route={0} command={1}", context.CommandRoute.Id, context.CommandRoute.Command.Raw);
                 }
                 else
                 {
-                    logger.LogError(oe, "The request was canceled.");
+                    logger.LogError("The request was canceled.");
                 }
             }
             else
             {
                 if (context.CommandRoute != null)
                 {
-                    logger.LogError(context.Exception, "The request failed. route={0} command={1}", context.CommandRoute.Id, context.CommandRoute.Command.Raw);
+                    logger.LogError("The request failed. route={0} command={1}", context.CommandRoute.Id, context.CommandRoute.Command.Raw);
                 }
                 else
                 {
-                    logger.LogError(context.Exception, "The request failed.");
+                    logger.LogError("The request failed.");
                 }
             }
 
