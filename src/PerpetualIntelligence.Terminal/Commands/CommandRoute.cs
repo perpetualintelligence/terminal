@@ -65,13 +65,13 @@ namespace PerpetualIntelligence.Terminal.Commands
         /// <inheritdoc/>
         public static bool operator ==(CommandRoute? left, CommandRoute? right)
         {
-            return left == right;
+            return Equals(left, right);
         }
 
         /// <inheritdoc/>
         public static bool operator !=(CommandRoute? left, CommandRoute? right)
         {
-            return !(left == right);
+            return !Equals(left, right);
         }
     }
 }
