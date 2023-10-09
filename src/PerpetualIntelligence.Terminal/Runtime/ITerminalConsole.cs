@@ -79,5 +79,15 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Clears the <see cref="ITerminalConsole"/> buffer and the corresponding display information.
         /// </summary>
         public Task ClearAsync();
+
+        /// <summary>
+        /// The foreground color of the <see cref="ITerminalConsole"/>.
+        /// </summary>
+        public ConsoleColor ForegroundColor { get; set; }
+
+        /// <summary>
+        /// The background color of the <see cref="ITerminalConsole"/>.
+        /// </summary>
+        public ConsoleColor BackgroundColor { get; set; }
     }
 }

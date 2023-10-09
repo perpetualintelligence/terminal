@@ -18,6 +18,36 @@ namespace PerpetualIntelligence.Terminal.Runtime
     public class TerminalSystemConsole : ITerminalConsole
     {
         /// <summary>
+        /// The foreground color.
+        /// </summary>
+        public ConsoleColor ForegroundColor
+        {
+            get
+            {
+                return Console.ForegroundColor;
+            }
+            set
+            {
+                Console.ForegroundColor = value;
+            }
+        }
+
+        /// <summary>
+        /// The background color.
+        /// </summary>
+        public ConsoleColor BackgroundColor
+        {
+            get
+            {
+                return Console.BackgroundColor;
+            }
+            set
+            {
+                Console.BackgroundColor = value;
+            }
+        }
+
+        /// <summary>
         /// Clears the <see cref="Console"/> buffer and the corresponding display information.
         /// </summary>
         public Task ClearAsync()
