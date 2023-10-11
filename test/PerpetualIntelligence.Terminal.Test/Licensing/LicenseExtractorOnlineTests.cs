@@ -277,7 +277,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // claims
             result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:demo urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
             result.License.Claims.Audience.Should().Be(AuthEndpoints.PiB2CIssuer(DemoIdentifiers.TerminalDemoConsumerTenantId));
-            result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:picli");
+            result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
             result.License.Claims.TenantCountry.Should().Be("GLOBAL");
             result.License.Claims.Custom.Should().BeNull();
             //result.License.Claims.Expiry.Date.Should().Be(DateTimeOffset.UtcNow.AddYears(1).ToLocalTime().Date);
