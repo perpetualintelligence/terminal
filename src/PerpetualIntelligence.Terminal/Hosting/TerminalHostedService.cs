@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         /// <param name="license">The extracted license.</param>
         internal virtual Task PrintHostApplicationMandatoryLicensingAsync(License license)
         {
-            if (license.Plan == PiCliLicensePlans.Demo)
+            if (license.Plan == TerminalLicensePlans.Demo)
             {
                 if (license.Usage == LicenseUsages.Educational)
                 {
@@ -138,7 +138,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
                     logger.LogInformation("Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
                 }
             }
-            else if (license.Plan == PiCliLicensePlans.Custom)
+            else if (license.Plan == TerminalLicensePlans.Custom)
             {
                 if (license.Usage == LicenseUsages.RnD)
                 {

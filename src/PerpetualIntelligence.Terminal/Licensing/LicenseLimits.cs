@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace PerpetualIntelligence.Terminal.Licensing
 {
     /// <summary>
-    /// Defines the licensing limits based on the <see cref="PiCliLicensePlans"/>.
+    /// Defines the licensing limits based on the <see cref="TerminalLicensePlans"/>.
     /// </summary>
     public sealed class LicenseLimits
     {
@@ -102,31 +102,31 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             switch (licensePlan)
             {
-                case PiCliLicensePlans.Demo:
+                case TerminalLicensePlans.Demo:
                     {
                         return ForDemo();
                     }
-                case PiCliLicensePlans.Micro:
+                case TerminalLicensePlans.Micro:
                     {
                         return ForMicro();
                     }
-                case PiCliLicensePlans.SMB:
+                case TerminalLicensePlans.SMB:
                     {
                         return ForSMB();
                     }
-                case PiCliLicensePlans.Enterprise:
+                case TerminalLicensePlans.Enterprise:
                     {
                         return ForEnterprise();
                     }
-                case PiCliLicensePlans.OnPremise:
+                case TerminalLicensePlans.OnPremise:
                     {
                         return ForOnPremise();
                     }
-                case PiCliLicensePlans.Unlimited:
+                case TerminalLicensePlans.Unlimited:
                     {
                         return ForUnlimited();
                     }
-                case PiCliLicensePlans.Custom:
+                case TerminalLicensePlans.Custom:
                     {
                         if (customClaims == null)
                         {
@@ -150,7 +150,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = PiCliLicensePlans.Demo,
+                Plan = TerminalLicensePlans.Demo,
                 TerminalLimit = 1,
                 RedistributionLimit = 0,
                 RootCommandLimit = 1,
@@ -173,7 +173,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             LicenseLimits limits = new()
             {
-                Plan = PiCliLicensePlans.Custom,
+                Plan = TerminalLicensePlans.Custom,
 
                 TerminalLimit = Convert.ToInt16(customClaims["terminal_limit"]),
                 RedistributionLimit = Convert.ToInt16(customClaims["redistribution_limit"]),
@@ -199,7 +199,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = PiCliLicensePlans.Enterprise,
+                Plan = TerminalLicensePlans.Enterprise,
                 TerminalLimit = 5,
                 RedistributionLimit = 5000,
                 RootCommandLimit = 3,
@@ -222,7 +222,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = PiCliLicensePlans.OnPremise,
+                Plan = TerminalLicensePlans.OnPremise,
                 TerminalLimit = 25,
                 RedistributionLimit = 10000,
                 RootCommandLimit = 5,
@@ -245,7 +245,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = PiCliLicensePlans.Unlimited,
+                Plan = TerminalLicensePlans.Unlimited,
                 TerminalLimit = null,
                 RedistributionLimit = null,
                 RootCommandLimit = null,
@@ -268,7 +268,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = PiCliLicensePlans.Micro,
+                Plan = TerminalLicensePlans.Micro,
                 TerminalLimit = 1,
                 RedistributionLimit = 0,
                 RootCommandLimit = 1,
@@ -291,7 +291,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         {
             return new()
             {
-                Plan = PiCliLicensePlans.SMB,
+                Plan = TerminalLicensePlans.SMB,
                 TerminalLimit = 3,
                 RedistributionLimit = 1000,
                 RootCommandLimit = 1,

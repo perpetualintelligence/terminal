@@ -51,31 +51,31 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             switch (saasPlan)
             {
-                case PiCliLicensePlans.Demo:
+                case TerminalLicensePlans.Demo:
                     {
                         return new LicensePrice("USD", 0, 0, saasPlan);
                     }
-                case PiCliLicensePlans.Micro:
+                case TerminalLicensePlans.Micro:
                     {
                         return new LicensePrice("USD", 49, 529, saasPlan);
                     }
-                case PiCliLicensePlans.SMB:
+                case TerminalLicensePlans.SMB:
                     {
                         return new LicensePrice("USD", 299, 3229, saasPlan);
                     }
-                case PiCliLicensePlans.Enterprise:
+                case TerminalLicensePlans.Enterprise:
                     {
                         return new LicensePrice("USD", 699, 7529, saasPlan);
                     }
-                case PiCliLicensePlans.OnPremise:
+                case TerminalLicensePlans.OnPremise:
                     {
                         return new LicensePrice("USD", 1299, 14029, saasPlan);
                     }
-                case PiCliLicensePlans.Unlimited:
+                case TerminalLicensePlans.Unlimited:
                     {
                         return new LicensePrice("USD", 3299, 35629, saasPlan);
                     }
-                case PiCliLicensePlans.Custom:
+                case TerminalLicensePlans.Custom:
                     {
                         if (customClaims == null)
                         {

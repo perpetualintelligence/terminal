@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
     public interface ITerminalBuilder
     {
         /// <summary>
-        /// The global service collection.
+        /// The host service collection.
         /// </summary>
         IServiceCollection Services { get; }
     }

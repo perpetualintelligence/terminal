@@ -335,7 +335,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                         throw new TerminalException(TerminalErrors.ServerError, "Command found in the store but returned null descriptor.");
                     }
 
-                    if (!parsedArguments.IsNullOrEmpty())
+                    if (parsedArguments.Any())
                     {
                         potentialLastCommandId = parsedArguments.Last();
                     }

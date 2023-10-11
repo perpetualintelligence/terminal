@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void CustomEdition_NoCustomClaimsShouldThrow()
         {
-            Action act = () => LicenseLimits.Create(PiCliLicensePlans.Custom);
+            Action act = () => LicenseLimits.Create(TerminalLicensePlans.Custom);
             act.Should().Throw<TerminalException>().WithMessage("The licensing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:plan:custom");
         }
 
@@ -47,8 +47,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 { "license_handlers", "l1" }
             };
 
-            LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.Custom, claims);
-            limits.Plan.Should().Be(PiCliLicensePlans.Custom);
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Custom, claims);
+            limits.Plan.Should().Be(TerminalLicensePlans.Custom);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(2);
@@ -70,9 +70,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void DemoClaims_ShouldSetClaimsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.Demo);
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Demo);
 
-            limits.Plan.Should().Be(PiCliLicensePlans.Demo);
+            limits.Plan.Should().Be(TerminalLicensePlans.Demo);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);
@@ -94,9 +94,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void EnterpriseEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.Enterprise);
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Enterprise);
 
-            limits.Plan.Should().Be(PiCliLicensePlans.Enterprise);
+            limits.Plan.Should().Be(TerminalLicensePlans.Enterprise);
 
             limits.TerminalLimit.Should().Be(5);
             limits.RedistributionLimit.Should().Be(5000);
@@ -133,9 +133,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void OnPremiseEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.OnPremise);
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.OnPremise);
 
-            limits.Plan.Should().Be(PiCliLicensePlans.OnPremise);
+            limits.Plan.Should().Be(TerminalLicensePlans.OnPremise);
 
             limits.TerminalLimit.Should().Be(25);
             limits.RedistributionLimit.Should().Be(10000);
@@ -157,9 +157,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void UnlimitedEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.Unlimited);
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Unlimited);
 
-            limits.Plan.Should().Be(PiCliLicensePlans.Unlimited);
+            limits.Plan.Should().Be(TerminalLicensePlans.Unlimited);
 
             limits.TerminalLimit.Should().Be(null);
             limits.RedistributionLimit.Should().Be(null);
@@ -181,9 +181,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void MicroEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.Micro);
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Micro);
 
-            limits.Plan.Should().Be(PiCliLicensePlans.Micro);
+            limits.Plan.Should().Be(TerminalLicensePlans.Micro);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);
@@ -205,9 +205,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         [Fact]
         public void SMBEdition_ShouldSetLimitsCorrectly()
         {
-            LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.SMB);
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.SMB);
 
-            limits.Plan.Should().Be(PiCliLicensePlans.SMB);
+            limits.Plan.Should().Be(TerminalLicensePlans.SMB);
 
             limits.TerminalLimit.Should().Be(3);
             limits.RedistributionLimit.Should().Be(1000);
@@ -236,32 +236,32 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 { "text_handlers", new[] { "new1", "new2" } }
             };
 
-            LicenseLimits limits = LicenseLimits.Create(PiCliLicensePlans.Demo, expected);
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Demo, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(PiCliLicensePlans.Micro, expected);
+            limits = LicenseLimits.Create(TerminalLicensePlans.Micro, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(PiCliLicensePlans.SMB, expected);
+            limits = LicenseLimits.Create(TerminalLicensePlans.SMB, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(PiCliLicensePlans.Enterprise, expected);
+            limits = LicenseLimits.Create(TerminalLicensePlans.Enterprise, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(PiCliLicensePlans.OnPremise, expected);
+            limits = LicenseLimits.Create(TerminalLicensePlans.OnPremise, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
-            limits = LicenseLimits.Create(PiCliLicensePlans.Unlimited, expected);
+            limits = LicenseLimits.Create(TerminalLicensePlans.Unlimited, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
             limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });

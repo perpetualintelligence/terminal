@@ -240,7 +240,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 // TODO, not used currently.
                 return new LicenseExtractorResult
                 (
-                    new License("", TerminalHandlers.OnPremiseLicenseHandler, PiCliLicensePlans.OnPremise, LicenseUsages.CommercialBusiness, "null", "asdas", new LicenseClaimsModel(), new LicenseLimits(), LicensePrice.Create(PiCliLicensePlans.OnPremise)),
+                    new License("", TerminalHandlers.OnPremiseLicenseHandler, TerminalLicensePlans.OnPremise, LicenseUsages.CommercialBusiness, "null", "asdas", new LicenseClaimsModel(), new LicenseLimits(), LicensePrice.Create(TerminalLicensePlans.OnPremise)),
                     TerminalHandlers.OnPremiseLicenseHandler
                 );
             }

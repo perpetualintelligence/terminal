@@ -252,9 +252,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.KeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Http.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = DemoIdentifiers.PiCliDemoConsumerTenantId;
-            terminalOptions.Licensing.Subject = DemoIdentifiers.PiCliDemoSubject;
-            terminalOptions.Licensing.AuthorizedApplicationId = DemoIdentifiers.PiCliDemoAuthorizedApplicationId;
+            terminalOptions.Licensing.ConsumerTenantId = DemoIdentifiers.TerminalDemoConsumerTenantId;
+            terminalOptions.Licensing.Subject = DemoIdentifiers.TerminalDemoSubject;
+            terminalOptions.Licensing.AuthorizedApplicationId = DemoIdentifiers.TerminalDemoAuthorizedApplicationId;
             terminalOptions.Licensing.ProviderId = LicenseProviders.PerpetualIntelligence;
             licenseExtractor = new LicenseExtractor(terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -276,7 +276,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             // claims
             result.License.Claims.AcrValues.Should().Be("urn:oneimlx:lic:plan:demo urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
-            result.License.Claims.Audience.Should().Be(AuthEndpoints.PiB2CIssuer(DemoIdentifiers.PiCliDemoConsumerTenantId));
+            result.License.Claims.Audience.Should().Be(AuthEndpoints.PiB2CIssuer(DemoIdentifiers.TerminalDemoConsumerTenantId));
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:picli");
             result.License.Claims.TenantCountry.Should().Be("GLOBAL");
             result.License.Claims.Custom.Should().BeNull();
@@ -284,16 +284,16 @@ namespace PerpetualIntelligence.Terminal.Licensing
             //result.License.Claims.IssuedAt.Date.Should().Be(DateTimeOffset.UtcNow.ToLocalTime().Date);
             result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com");
             result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
-            result.License.Claims.Name.Should().Be(DemoIdentifiers.PiCliDemoConsumerTenantName);
+            result.License.Claims.Name.Should().Be(DemoIdentifiers.TerminalDemoConsumerTenantName);
             //result.License.Claims.NotBefore.Date.Should().Be(DateTimeOffset.UtcNow.ToLocalTime().Date);
             result.License.Claims.ObjectId.Should().BeNull();
             result.License.Claims.ObjectCountry.Should().BeNull();
-            result.License.Claims.Subject.Should().Be(DemoIdentifiers.PiCliDemoSubject);
-            result.License.Claims.TenantId.Should().Be(DemoIdentifiers.PiCliDemoConsumerTenantId);
+            result.License.Claims.Subject.Should().Be(DemoIdentifiers.TerminalDemoSubject);
+            result.License.Claims.TenantId.Should().Be(DemoIdentifiers.TerminalDemoConsumerTenantId);
 
             // Verify limits
             LicenseLimits limits = result.License.Limits;
-            limits.Plan.Should().Be(PiCliLicensePlans.Demo);
+            limits.Plan.Should().Be(TerminalLicensePlans.Demo);
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);

@@ -74,7 +74,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             logger.Messages[1].Should().Be("Demo custom header line-1");
             logger.Messages[2].Should().Be("Demo custom header line-2");
             logger.Messages[3].Should().Be("---------------------------------------------------------------------------------------------");
-            logger.Messages[4].Should().Be("Starting server \"urn:oneimlx:picli\" version=1.0.2-local");
+            logger.Messages[4].Should().Be("Starting server \"urn:oneimlx:terminal\" version=1.0.2-local");
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Demo()
         {
-            License community = new("testp", "testh", PiCliLicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            License community = new("testp", "testh", TerminalLicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -113,7 +113,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Educational()
         {
-            License community = new("testp", "testh", PiCliLicensePlans.Demo, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            License community = new("testp", "testh", TerminalLicensePlans.Demo, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -127,7 +127,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
         {
-            License community = new("testp", "testh", PiCliLicensePlans.Demo, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+            License community = new("testp", "testh", TerminalLicensePlans.Demo, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
