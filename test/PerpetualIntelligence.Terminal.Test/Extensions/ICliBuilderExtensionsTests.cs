@@ -254,7 +254,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddExtractorShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddExtractor<MockCommandExtractor, MockCommandRouteParser>();
+            terminalBuilder.AddCommandExtractor<MockCommandExtractor, MockCommandRouteParser>();
 
             var cmd = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandExtractor)));
             Assert.IsNotNull(cmd);
@@ -292,7 +292,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddRouterShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddRouter<MockCommandRouter, MockCommandHandler>();
+            terminalBuilder.AddCommandRouter<MockCommandRouter, MockCommandHandler>();
 
             var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandRouter)));
             Assert.IsNotNull(router);

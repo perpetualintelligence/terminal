@@ -188,7 +188,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <typeparam name="TCommand">The command extractor type.</typeparam>
         /// <typeparam name="TParser">The command route parser type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddExtractor<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TParser : class, ICommandRouteParser
+        public static ITerminalBuilder AddCommandExtractor<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TParser : class, ICommandRouteParser
         {
             // Add command extractor
             builder.Services.AddTransient<ICommandExtractor, TCommand>();
@@ -220,7 +220,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddRouter<TRouter, THandler>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler
+        public static ITerminalBuilder AddCommandRouter<TRouter, THandler>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler
         {
             // Add command router
             builder.Services.AddTransient<ICommandRouter, TRouter>();

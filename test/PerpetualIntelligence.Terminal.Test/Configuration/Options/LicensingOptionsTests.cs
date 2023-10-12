@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     [TestClass]
     public class LicensingOptionsTests : InitializerTests
     {
-        public LicensingOptionsTests() : base(TestLogger.Create<LoggingOptionsTests>())
+        public LicensingOptionsTests() : base(TestLogger.Create<LicensingOptionsTests>())
         {
         }
 

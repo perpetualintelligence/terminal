@@ -53,11 +53,6 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public LicensingOptions Licensing { get; set; } = new LicensingOptions();
 
         /// <summary>
-        /// The logging configuration options.
-        /// </summary>
-        public LoggingOptions Logging { get; set; } = new LoggingOptions();
-
-        /// <summary>
         /// The router configuration options.
         /// </summary>
         public RouterOptions Router { get; set; } = new RouterOptions();

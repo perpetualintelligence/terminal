@@ -8,7 +8,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Shared.Attributes;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
@@ -240,17 +239,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
             options.Extractor.Separator = "";
             await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The command separator cannot be null or empty.");
-        }
-
-        [TestMethod]
-        [WriteDocumentation]
-        public async Task LoggerIndentLessThanOrEqualToZeroShouldThrow()
-        {
-            options.Logging.LoggerIndent = -3;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=-3");
-
-            options.Logging.LoggerIndent = 0;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => optionsChecker.CheckAsync(options), TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent=0");
         }
 
         [TestMethod]

@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -59,14 +58,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     {
                         throw new TerminalException(TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
                     }
-                }
-            }
-
-            // Logging
-            {
-                if (options.Logging.LoggerIndent <= 0)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The terminal logger indent cannot be less than or equal to zero. logger_indent={0}", options.Logging.LoggerIndent);
                 }
             }
 

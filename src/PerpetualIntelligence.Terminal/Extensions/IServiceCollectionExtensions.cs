@@ -79,8 +79,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             return services.AddTerminal(setupAction)
                     .AddLicenseHandler()
-                    .AddRouter<CommandRouter, CommandHandler>()
-                    .AddExtractor<CommandExtractor, CommandRouteParser>()
+                    .AddCommandRouter<CommandRouter, CommandHandler>()
+                    .AddCommandExtractor<CommandExtractor, CommandRouteParser>()
                     .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
                     .AddArgumentChecker<DataTypeMapper<Argument>, ArgumentChecker>()
                     .AddExceptionHandler<ExceptionHandler>();
