@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -19,11 +19,11 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context);
+        public Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context);
 
         /// <summary>
         /// Gets the extracted license asynchronously.
         /// </summary>
-        public Task<License?> GetAsync();
+        public Task<License?> GetLicenseAsync();
     }
 }

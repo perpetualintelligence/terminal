@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,7 +7,6 @@
 
 using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Shared.Exceptions;
 using System;
 using System.Threading.Tasks;
 
@@ -19,7 +18,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
 
         public bool ThrowError { get; set; }
 
-        public Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
+        public Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context)
         {
             ExtractLicenseCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
 
@@ -31,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Hosting.Mocks
             return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense, MockLicenses.TestLicense.Handler));
         }
 
-        public Task<License?> GetAsync()
+        public Task<License?> GetLicenseAsync()
         {
             return Task.FromResult<License?>(MockLicenses.TestLicense);
         }

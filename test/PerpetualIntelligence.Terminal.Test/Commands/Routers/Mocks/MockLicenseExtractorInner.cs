@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
         public License TestLicense { get; set; } = new License("testProviderId", TerminalHandlers.OnlineLicenseHandler, TerminalLicensePlans.Demo, LicenseUsages.RnD, LicenseSources.JsonFile, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
-        public Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
+        public Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context)
         {
             if (NoLicense)
             {
@@ -27,7 +27,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             return Task.FromResult(new LicenseExtractorResult(TestLicense, TestLicense.Handler));
         }
 
-        public Task<License?> GetAsync()
+        public Task<License?> GetLicenseAsync()
         {
             if (NoLicense)
             {

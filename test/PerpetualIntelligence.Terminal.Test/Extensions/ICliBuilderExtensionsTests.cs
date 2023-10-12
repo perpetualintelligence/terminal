@@ -19,6 +19,7 @@ using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Hosting;
+using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Runtime;
 using PerpetualIntelligence.Terminal.Stores;
@@ -90,7 +91,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddTerminalOptionsShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddTerminalOptions();
+            terminalBuilder.AddOptions();
 
             var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalOptions)));
             Assert.IsNotNull(serviceDescriptor);
@@ -268,6 +269,27 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
+        public void AddLicensingShouldCorrectlyInitialize()
+        {
+            terminalBuilder.AddLicensing();
+
+            var debugger = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ILicenseDebugger)));
+            Assert.IsNotNull(debugger);
+            Assert.AreEqual(ServiceLifetime.Singleton, debugger.Lifetime);
+            Assert.AreEqual(typeof(LicenseDebugger), debugger.ImplementationType);
+
+            var extractor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ILicenseExtractor)));
+            Assert.IsNotNull(extractor);
+            Assert.AreEqual(ServiceLifetime.Singleton, extractor.Lifetime);
+            Assert.AreEqual(typeof(LicenseExtractor), extractor.ImplementationType);
+
+            var checker = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ILicenseChecker)));
+            Assert.IsNotNull(checker);
+            Assert.AreEqual(ServiceLifetime.Singleton, checker.Lifetime);
+            Assert.AreEqual(typeof(LicenseChecker), checker.ImplementationType);
+        }
+
+        [TestMethod]
         public void AddPublisherShouldCorrectlyInitialize()
         {
             terminalBuilder.AddExceptionHandler<MockExceptionPublisher>();
@@ -281,7 +303,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddTerminalConsoleShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddTerminalConsole<TerminalSystemConsole>();
+            terminalBuilder.AddConsole<TerminalSystemConsole>();
 
             var exe = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalConsole)));
             Assert.IsNotNull(exe);
@@ -308,7 +330,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddRoutingShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddTerminalRouting<MockRouting, MockRoutingContext, MockRoutingResult>();
+            terminalBuilder.AddRouting<MockRouting, MockRoutingContext, MockRoutingResult>();
 
             var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalRouting<MockRoutingContext, MockRoutingResult>)));
             Assert.IsNotNull(router);

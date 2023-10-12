@@ -69,7 +69,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             {
                 TerminalException eex = (TerminalException)ex;
                 eex.Error.ErrorCode.Should().Be(TerminalErrors.InvalidLicense);
-                eex.Error.FormatDescription().Should().Be("The pricing for the SaaS plan is not supported. saas_plan=invalid_plan");
+                eex.Error.FormatDescription().Should().Be("The pricing for the plan is not supported. plan=invalid_plan");
             }
         }
 

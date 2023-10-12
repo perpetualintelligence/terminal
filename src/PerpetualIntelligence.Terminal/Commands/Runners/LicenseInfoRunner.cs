@@ -25,14 +25,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         public LicenseInfoRunner(ITerminalConsole terminalConsole, ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
         {
             this.terminalConsole = terminalConsole;
-            this.licenseExractor = licenseExractor;
+            this.licenseExtractor = licenseExractor;
             this.licenseChecker = licenseChecker;
         }
 
         /// <inheritdoc/>
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
-            LicenseExtractorResult licResult = await licenseExractor.ExtractAsync(new LicenseExtractorContext());
+            LicenseExtractorResult licResult = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             LicenseCheckerResult checkResult = await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(licResult.License));
 
             License license = licResult.License;
@@ -131,6 +131,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
 
         private readonly ILicenseChecker licenseChecker;
         private readonly ITerminalConsole terminalConsole;
-        private readonly ILicenseExtractor licenseExractor;
+        private readonly ILicenseExtractor licenseExtractor;
     }
 }

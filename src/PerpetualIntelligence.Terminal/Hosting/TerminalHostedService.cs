@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
     /// <summary>
     /// The hosted service to manage the application lifetime and terminal customization.
     /// </summary>
-    public class TerminalHostedService : IHostedService
+    public abstract class TerminalHostedService : IHostedService
     {
         /// <summary>
         /// Initializes a new instance.
@@ -213,12 +213,13 @@ namespace PerpetualIntelligence.Terminal.Hosting
             logger.LogInformation($"license_handler={license.Handler}");
             logger.LogInformation($"usage={license.Usage}");
             logger.LogInformation($"plan={license.Plan}");
-            logger.LogInformation($"key_source={options.Licensing.KeySource}");
+            logger.LogInformation($"key_source={options.Licensing.LicenseKeySource}");
             if (license.LicenseKeySource == LicenseSources.JsonFile)
             {
                 // Don't dump the key, just the lic file path
                 logger.LogInformation($"key_file={license.LicenseKey}");
             }
+            logger.LogInformation($"expiry={license.Claims.Expiry.ToLocalTime()}");
 
             return Task.CompletedTask;
         }
@@ -255,7 +256,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         private async Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
             ILicenseExtractor licenseExtractor = serviceProvider.GetRequiredService<ILicenseExtractor>();
-            LicenseExtractorResult result = await licenseExtractor.ExtractAsync(new LicenseExtractorContext());
+            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             return result;
         }
 

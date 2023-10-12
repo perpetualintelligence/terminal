@@ -5,31 +5,26 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
+using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
-    [TestClass]
-    public class LicensingOptionsTests : InitializerTests
+    public class LicensingOptionsTests
     {
-        public LicensingOptionsTests() : base(TestLogger.Create<LicensingOptionsTests>())
-        {
-        }
-
-        [TestMethod]
+        [Fact]
         public void LicensingOptionsTestsShouldHaveCorrectDefaultValues()
         {
             LicensingOptions options = new();
 
-            Assert.IsNull(options.AuthorizedApplicationId);
-            Assert.IsNull(options.ConsumerTenantId);
-            Assert.AreEqual(LicenseSources.JsonFile, options.KeySource);
-            Assert.IsNull(options.LicenseKey);
-            Assert.AreEqual(LicenseProviders.PerpetualIntelligence, options.ProviderId);
-            Assert.IsNull(options.Subject);
+            options.AuthorizedApplicationId.Should().BeNull();
+            options.ConsumerTenantId.Should().BeNull();
+            options.LicenseKeySource.Should().Be(LicenseSources.JsonFile);
+            options.LicenseKey.Should().BeNull();
+            options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
+            options.OnPremiseDeployment.Should().BeNull();
+            options.Subject.Should().BeNull();
         }
     }
 }

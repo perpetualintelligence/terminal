@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public static ITerminalBuilder AddTerminal(this IServiceCollection services)
         {
             return services.CreateTerminalBuilder()
-                           .AddTerminalOptions();
+                           .AddOptions();
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         public static ITerminalBuilder AddTerminalDefault(this IServiceCollection services, Action<TerminalOptions> setupAction)
         {
             return services.AddTerminal(setupAction)
-                    .AddLicenseHandler()
+                    .AddLicensing()
                     .AddCommandRouter<CommandRouter, CommandHandler>()
                     .AddCommandExtractor<CommandExtractor, CommandRouteParser>()
                     .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()

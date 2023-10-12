@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             host = hostBuilder.Start();
 
             // Different hosted services to test behaviors
-            defaultCliHostedService = new TerminalHostedService(host.Services, terminalOptions, logger);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, logger);
             mockCustomCliHostedService = new MockTerminalCustomHostedService(host.Services, terminalOptions, logger);
             mockCliEventsHostedService = new MockTerminalEventsHostedService(host.Services, terminalOptions, logger);
         }
@@ -85,15 +85,16 @@ namespace PerpetualIntelligence.Terminal.Hosting
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
             printLic.Invoke(defaultCliHostedService, new[] { MockLicenses.TestLicense });
 
-            logger.Messages.Should().HaveCount(8);
+            logger.Messages.Should().HaveCount(9);
             logger.Messages[0].Should().Be("consumer=test_name (test_tenantid)");
             logger.Messages[1].Should().Be("country=");
             logger.Messages[2].Should().Be("subject=");
             logger.Messages[3].Should().Be("license_handler=offline-license");
             logger.Messages[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
-            logger.Messages[5].Should().Be("plan=urn:oneimlx:lic:plan:demo");
+            logger.Messages[5].Should().Be("plan=urn:oneimlx:terminal:plan:demo");
             logger.Messages[6].Should().Be("key_source=urn:oneimlx:lic:source:jsonfile");
             logger.Messages[7].Should().Be("key_file=testLicKey1");
+            logger.Messages[8].Should().StartWith("expiry=");
         }
 
         [Fact]
@@ -306,7 +307,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new TerminalHostedService(host.Services, terminalOptions, logger);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
@@ -351,7 +352,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new TerminalHostedService(host.Services, terminalOptions, logger);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();

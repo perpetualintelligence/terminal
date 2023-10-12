@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddTerminalOptions(this ITerminalBuilder builder)
+        public static ITerminalBuilder AddOptions(this ITerminalBuilder builder)
         {
             // Add options.
             builder.Services.AddOptions();
@@ -200,12 +200,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds  license handler to the service collection.
+        /// Adds terminal license handler to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddLicenseHandler(this ITerminalBuilder builder)
+        public static ITerminalBuilder AddLicensing(this ITerminalBuilder builder)
         {
+            // Add license debugger.
+            builder.Services.AddSingleton<ILicenseDebugger, LicenseDebugger>();
+
             // Add license extractor as singleton
             builder.Services.AddSingleton<ILicenseExtractor, LicenseExtractor>();
 
@@ -236,7 +239,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddTerminalConsole<TConsole>(this ITerminalBuilder builder) where TConsole : class, ITerminalConsole
+        public static ITerminalBuilder AddConsole<TConsole>(this ITerminalBuilder builder) where TConsole : class, ITerminalConsole
         {
             // Add terminal routing service.
             builder.Services.AddSingleton<ITerminalConsole, TConsole>();
@@ -249,7 +252,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddTerminalRouting<TRouting, TContext, TResult>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
+        public static ITerminalBuilder AddRouting<TRouting, TContext, TResult>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
         {
             // Add terminal routing service.
             builder.Services.AddSingleton<ITerminalRouting<TContext, TResult>, TRouting>();

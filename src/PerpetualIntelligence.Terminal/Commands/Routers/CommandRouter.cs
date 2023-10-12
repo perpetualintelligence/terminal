@@ -66,7 +66,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 }
 
                 // Ensure we have the license extracted before routing
-                License? license = await licenseExtractor.GetAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
+                License? license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
                 // Extract the command
                 CommandExtractorResult extractorResult = await commandExtractor.ExtractCommandAsync(new CommandExtractorContext(context.Route));

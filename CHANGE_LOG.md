@@ -1,3 +1,9 @@
+# 5.3.1-rc*
+> Breaking Change
+- Support On-Premise licensing for OSATs, factories and secured facilities that are not connected to public internet
+- Upgrade the licensing
+- Removed logging specific options in favor of ILogger<T>
+
 # 5.2.1-rc*
 > Breaking Change
 - Disable command check during help execution

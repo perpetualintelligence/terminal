@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Licensing;
 using System;
@@ -130,20 +129,16 @@ namespace PerpetualIntelligence.Terminal.Licensing
                     {
                         if (customClaims == null)
                         {
-                            throw new TerminalException(TerminalErrors.InvalidLicense, "The licensing for the custom SaaS plan requires a custom claims. saas_plan={0}", licensePlan);
+                            throw new TerminalException(TerminalErrors.InvalidLicense, "The licensing for the custom plan requires a custom claims. plan={0}", licensePlan);
                         }
 
                         return ForCustom(customClaims);
                     }
                 default:
                     {
-                        throw new TerminalException(TerminalErrors.InvalidLicense, "The licensing for the SaaS plan is not supported. saas_plan={0}", licensePlan);
+                        throw new TerminalException(TerminalErrors.InvalidLicense, "The license for the plan is not supported. plan={0}", licensePlan);
                     }
             }
-        }
-
-        internal LicenseLimits()
-        {
         }
 
         internal static LicenseLimits ForDemo()

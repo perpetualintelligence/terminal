@@ -45,15 +45,13 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// </summary>
         /// <remarks>
         /// <para>
-        /// <c>online-license</c> handler checks your license key online. Your CLI terminal needs network access during startup.
+        /// <see cref="TerminalHandlers.OnlineLicenseHandler"/> handler checks your license key online. Your terminal needs public network access during startup.
         /// </para>
         /// <para>
-        /// <c>offline-license</c> handler checks your license key offline. Your CLI terminal does not need network access
-        /// during startup.
+        ///  <see cref="TerminalHandlers.OfflineLicenseHandler"/> handler checks your license key offline. Your terminal does not need network access during startup, but requires you to periodically update the license key from your secured network.
         /// </para>
         /// <para>
-        /// <c>dev-license</c> handler allows you to bring you own license certificate to check the license key. Your CLI
-        /// terminal may need network access during startup
+        /// <see cref="TerminalHandlers.OnPremiseLicenseHandler"/> handler checks the license only when your terminal is attached to the debugger on the local developer node. Your terminal does not check license key on your on-premise production or released setup.
         /// </para>
         /// </remarks>
         public string LicenseHandler { get; set; } = "online-license";

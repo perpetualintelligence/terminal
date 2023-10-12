@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using PerpetualIntelligence.Shared.Authorization;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Shared.Licensing;
@@ -32,11 +31,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
+        /// <param name="licenseDebugger">The license debugger.</param>
         /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(TerminalOptions terminalOptions, ILogger<LicenseExtractor> logger, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(ILicenseDebugger licenseDebugger, TerminalOptions terminalOptions, ILogger<LicenseExtractor> logger, IHttpClientFactory? httpClientFactory = null)
         {
+            this.licenseDebugger = licenseDebugger;
             this.terminalOptions = terminalOptions;
             this.logger = logger;
             this.httpClientFactory = httpClientFactory;
@@ -47,18 +48,18 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<LicenseExtractorResult> ExtractAsync(LicenseExtractorContext context)
+        public async Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context)
         {
             // For singleton DI service we don't extract license keys once extracted.
             if (licenseExtractorResult == null)
             {
-                if (terminalOptions.Licensing.KeySource == LicenseSources.JsonFile)
+                if (terminalOptions.Licensing.LicenseKeySource == LicenseSources.JsonFile)
                 {
                     licenseExtractorResult = await ExtractFromJsonAsync();
                 }
                 else
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The key source is not supported, see licensing options. key_source={0}", terminalOptions.Licensing.KeySource);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license key source is not supported, see licensing options. key_source={0}", terminalOptions.Licensing.LicenseKeySource);
                 }
             }
 
@@ -66,7 +67,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         /// <inheritdoc/>
-        public Task<License?> GetAsync()
+        public Task<License?> GetLicenseAsync()
         {
             return Task.FromResult(licenseExtractorResult?.License);
         }
@@ -172,13 +173,19 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Missing key
             if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.LicenseKey))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The Json license file is not configured, see licensing options. key_source={0}", terminalOptions.Licensing.KeySource);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not configured, see licensing options. key_source={0}", terminalOptions.Licensing.LicenseKeySource);
             }
 
             // Key not a file
             if (!File.Exists(terminalOptions.Licensing.LicenseKey))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The Json license file path is not valid, see licensing options. key_file={0}", terminalOptions.Licensing.LicenseKey);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid, see licensing options. key_file={0}", terminalOptions.Licensing.LicenseKey);
+            }
+
+            // Missing or invalid license plan.
+            if (!TerminalLicensePlans.IsValidPlan(terminalOptions.Licensing.LicensePlan))
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid, see licensing options. plan={0}", terminalOptions.Licensing.LicensePlan);
             }
 
             // Read the json file
@@ -193,13 +200,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
             }
             catch (JsonException ex)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The Json license file is not valid, see licensing options. json_file={0} info={1}", terminalOptions.Licensing.LicenseKey, ex.Message);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not valid, see licensing options. key_file={0} info={1}", terminalOptions.Licensing.LicenseKey, ex.Message);
             }
 
             // Make sure the model is valid.
             if (licenseFileModel == null)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The Json license file cannot be read, see licensing options. json_file={0}", terminalOptions.Licensing.LicenseKey);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file cannot be read, see licensing options. key_file={0}", terminalOptions.Licensing.LicenseKey);
             }
 
             // License check based on configured license handler.
@@ -217,15 +224,20 @@ namespace PerpetualIntelligence.Terminal.Licensing
             }
             else
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The Json license file licensing handler mode is not valid, see hosting options. licensing_handler={0}", terminalOptions.Handler.LicenseHandler);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license handler is not valid, see hosting options. licensing_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
         }
 
         private async Task<LicenseExtractorResult> EnsureOnPremiseLicenseAsync(LicenseFileModel licenseFileModel)
         {
-            if (TerminalHelper.IsDevMode())
+            // Check if debugger is attached for on-premise mode.
+            // On-Premise mode we allow developers to work online and offline.
+            if (!licenseDebugger.IsDebuggerAttached() && terminalOptions.Licensing.OnPremiseDeployment.GetValueOrDefault())
             {
-                // On-Premise mode we allow developers to work online and offline.
+                return new LicenseExtractorResult(OnPremiseDeploymentLicense(), TerminalHandlers.OnPremiseLicenseHandler);
+            }
+            else
+            {
                 if (licenseFileModel.ValidationKey != null)
                 {
                     return await EnsureOfflineLicenseAsync(licenseFileModel);
@@ -235,15 +247,24 @@ namespace PerpetualIntelligence.Terminal.Licensing
                     return await EnsureOnlineLicenseAsync(licenseFileModel);
                 }
             }
-            else
-            {
-                // TODO, not used currently.
-                return new LicenseExtractorResult
-                (
-                    new License("", TerminalHandlers.OnPremiseLicenseHandler, TerminalLicensePlans.OnPremise, LicenseUsages.CommercialBusiness, "null", "asdas", new LicenseClaimsModel(), new LicenseLimits(), LicensePrice.Create(TerminalLicensePlans.OnPremise)),
-                    TerminalHandlers.OnPremiseLicenseHandler
-                );
-            }
+        }
+
+        /// <summary>
+        /// Creates a license for on-premise production deployment.
+        /// </summary>
+        /// <seealso cref="LicensingOptions.OnPremiseDeployment"/>
+        private License OnPremiseDeploymentLicense()
+        {
+            return new License(
+                LicenseProviders.PerpetualIntelligence,
+                TerminalHandlers.OnPremiseLicenseHandler,
+                terminalOptions.Licensing.LicensePlan,
+                "on-premise-deployment",
+                terminalOptions.Licensing.LicenseKeySource,
+                "on-premise-deployment",
+                new LicenseClaimsModel(),
+                new LicenseLimits(),
+                LicensePrice.Create(terminalOptions.Licensing.LicensePlan));
         }
 
         private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFileModel licenseFileModel)
@@ -297,17 +318,23 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 string usage = acrValues[1];
                 string providerId = acrValues[2];
 
-                // Make sure the provider tenant id matches
-                if (providerId != terminalOptions.Licensing.ProviderId)
+                // If the on-prem-deployment plan is set then check
+                if (plan != terminalOptions.Licensing.LicensePlan)
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", terminalOptions.Licensing.ProviderId);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
+                }
+
+                // Make sure the provider tenant id matches
+                if (providerId != LicenseProviders.PerpetualIntelligence)
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized. expected={0} actual={1}", providerId, LicenseProviders.PerpetualIntelligence);
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
                 LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
                 return new LicenseExtractorResult
                 (
-                    new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.KeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
+                    new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseKeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
                     TerminalHandlers.OnlineLicenseHandler
                 );
             }
@@ -356,17 +383,23 @@ namespace PerpetualIntelligence.Terminal.Licensing
             string usage = acrValues[1];
             string providerId = acrValues[2];
 
-            // Make sure the provider tenant id matches
-            if (providerId != terminalOptions.Licensing.ProviderId)
+            // If the on-prem-deployment plan is set then check
+            if (plan != terminalOptions.Licensing.LicensePlan)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized, see licensing options. provider_id={0}", terminalOptions.Licensing.ProviderId);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
+            }
+
+            // Make sure the provider tenant id matches
+            if (providerId != LicenseProviders.PerpetualIntelligence)
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized. expected={0} actual={1}", providerId, LicenseProviders.PerpetualIntelligence);
             }
 
             LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
             LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
             return new LicenseExtractorResult
             (
-                new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.KeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
+                new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseKeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
                 TerminalHandlers.OfflineLicenseHandler
             );
         }
@@ -389,6 +422,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
+        private readonly ILicenseDebugger licenseDebugger;
         private readonly TerminalOptions terminalOptions;
         private readonly string fallbackCheckLicUrl = "https://piapim.azure-api.net/public/checklicense";
         private readonly IHttpClientFactory? httpClientFactory;

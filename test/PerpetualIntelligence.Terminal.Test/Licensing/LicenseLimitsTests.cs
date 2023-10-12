@@ -19,7 +19,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         public void CustomEdition_NoCustomClaimsShouldThrow()
         {
             Action act = () => LicenseLimits.Create(TerminalLicensePlans.Custom);
-            act.Should().Throw<TerminalException>().WithMessage("The licensing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:plan:custom");
+            act.Should().Throw<TerminalException>().WithMessage("The licensing for the custom plan requires a custom claims. plan=urn:oneimlx:terminal:plan:custom");
         }
 
         [Fact]
@@ -126,7 +126,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             {
                 TerminalException eex = (TerminalException)ex;
                 eex.Error.ErrorCode.Should().Be(TerminalErrors.InvalidLicense);
-                eex.Error.FormatDescription().Should().Be("The licensing for the SaaS plan is not supported. saas_plan=invalid_plan");
+                eex.Error.FormatDescription().Should().Be("The license for the plan is not supported. plan=invalid_plan");
             }
         }
 

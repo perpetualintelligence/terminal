@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Licensing;
 using System;
 using System.Collections.Generic;
@@ -40,53 +39,53 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <summary>
         /// Creates a new instance of <see cref="LicenseLimits"/> based on the specified SaaS plan.
         /// </summary>
-        /// <param name="saasPlan">The SaaS plan.</param>
+        /// <param name="plan">The licensing plan.</param>
         /// <param name="customClaims">The custom claims.</param>
-        public static LicensePrice Create(string saasPlan, IDictionary<string, object>? customClaims = null)
+        public static LicensePrice Create(string plan, IDictionary<string, object>? customClaims = null)
         {
-            if (string.IsNullOrEmpty(saasPlan))
+            if (string.IsNullOrEmpty(plan))
             {
-                throw new System.ArgumentException($"'{nameof(saasPlan)}' cannot be null or empty.", nameof(saasPlan));
+                throw new System.ArgumentException($"'{nameof(plan)}' cannot be null or empty.", nameof(plan));
             }
 
-            switch (saasPlan)
+            switch (plan)
             {
                 case TerminalLicensePlans.Demo:
                     {
-                        return new LicensePrice("USD", 0, 0, saasPlan);
+                        return new LicensePrice("USD", 0, 0, plan);
                     }
                 case TerminalLicensePlans.Micro:
                     {
-                        return new LicensePrice("USD", 49, 529, saasPlan);
+                        return new LicensePrice("USD", 49, 529, plan);
                     }
                 case TerminalLicensePlans.SMB:
                     {
-                        return new LicensePrice("USD", 299, 3229, saasPlan);
+                        return new LicensePrice("USD", 299, 3229, plan);
                     }
                 case TerminalLicensePlans.Enterprise:
                     {
-                        return new LicensePrice("USD", 699, 7529, saasPlan);
+                        return new LicensePrice("USD", 699, 7529, plan);
                     }
                 case TerminalLicensePlans.OnPremise:
                     {
-                        return new LicensePrice("USD", 1299, 14029, saasPlan);
+                        return new LicensePrice("USD", 1299, 14029, plan);
                     }
                 case TerminalLicensePlans.Unlimited:
                     {
-                        return new LicensePrice("USD", 3299, 35629, saasPlan);
+                        return new LicensePrice("USD", 3299, 35629, plan);
                     }
                 case TerminalLicensePlans.Custom:
                     {
                         if (customClaims == null)
                         {
-                            throw new TerminalException(TerminalErrors.InvalidLicense, "The pricing for the custom SaaS plan requires a custom claims. saas_plan={0}", saasPlan);
+                            throw new TerminalException(TerminalErrors.InvalidLicense, "The pricing for the custom plan requires a custom claims. plan={0}", plan);
                         }
 
-                        return new LicensePrice(customClaims["currency"].ToString(), Convert.ToDouble(customClaims["monthly_price"]), Convert.ToDouble(customClaims["yearly_price"]), saasPlan);
+                        return new LicensePrice(customClaims["currency"].ToString(), Convert.ToDouble(customClaims["monthly_price"]), Convert.ToDouble(customClaims["yearly_price"]), plan);
                     }
                 default:
                     {
-                        throw new TerminalException(TerminalErrors.InvalidLicense, "The pricing for the SaaS plan is not supported. saas_plan={0}", saasPlan);
+                        throw new TerminalException(TerminalErrors.InvalidLicense, "The pricing for the plan is not supported. plan={0}", plan);
                     }
             }
         }
