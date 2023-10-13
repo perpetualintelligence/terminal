@@ -99,7 +99,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             fromJson.SigningKey.Password.Should().Be("test_pwd");
 
             // custom claims
-            fromJson.Custom.Should().HaveCount(19);
+            fromJson.Custom.Should().HaveCount(16);
 
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("terminal_limit", 1));
             fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));

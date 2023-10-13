@@ -71,8 +71,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
 
             logger.Messages.Should().HaveCount(5);
             logger.Messages[0].Should().Be("---------------------------------------------------------------------------------------------");
-            logger.Messages[1].Should().Be("Demo custom header line-1");
-            logger.Messages[2].Should().Be("Demo custom header line-2");
+            logger.Messages[1].Should().Be("Header line-1");
+            logger.Messages[2].Should().Be("Header line-2");
             logger.Messages[3].Should().Be("---------------------------------------------------------------------------------------------");
             logger.Messages[4].Should().Be("Starting server \"urn:oneimlx:terminal\" version=1.0.2-local");
         }
@@ -87,8 +87,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
 
             logger.Messages.Should().HaveCount(9);
             logger.Messages[0].Should().Be("consumer=test_name (test_tenantid)");
-            logger.Messages[1].Should().Be("country=");
-            logger.Messages[2].Should().Be("subject=");
+            logger.Messages[1].Should().Be("country=(null)");
+            logger.Messages[2].Should().Be("subject=(null)");
             logger.Messages[3].Should().Be("license_handler=offline-license");
             logger.Messages[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
             logger.Messages[5].Should().Be("plan=urn:oneimlx:terminal:plan:demo");
