@@ -191,8 +191,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
         protected virtual Task PrintHostApplicationHeaderAsync()
         {
             logger.LogInformation("---------------------------------------------------------------------------------------------");
-            logger.LogInformation("Demo custom header line-1");
-            logger.LogInformation("Demo custom header line-2");
+            logger.LogInformation("Header line-1");
+            logger.LogInformation("Header line-2");
             logger.LogInformation("---------------------------------------------------------------------------------------------");
 
             logger.LogInformation($"Starting server \"{Shared.Constants.TerminalUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
@@ -207,19 +207,19 @@ namespace PerpetualIntelligence.Terminal.Hosting
         protected virtual Task PrintHostApplicationLicensingAsync(License license)
         {
             // Print the license information
-            logger.LogInformation($"consumer={license.Claims.Name} ({license.Claims.TenantId})");
-            logger.LogInformation($"country={license.Claims.TenantCountry}");
-            logger.LogInformation($"subject={options.Licensing.Subject}");
-            logger.LogInformation($"license_handler={license.Handler}");
-            logger.LogInformation($"usage={license.Usage}");
-            logger.LogInformation($"plan={license.Plan}");
-            logger.LogInformation($"key_source={options.Licensing.LicenseKeySource}");
+            logger.LogInformation("consumer={0} ({1})", license.Claims.Name, license.Claims.TenantId);
+            logger.LogInformation("country={0}", license.Claims.TenantCountry);
+            logger.LogInformation("subject={0}", options.Licensing.Subject);
+            logger.LogInformation("license_handler={0}", license.Handler);
+            logger.LogInformation("usage={0}", license.Usage);
+            logger.LogInformation("plan={0}", license.Plan);
+            logger.LogInformation("key_source={0}", options.Licensing.LicenseKeySource);
             if (license.LicenseKeySource == LicenseSources.JsonFile)
             {
                 // Don't dump the key, just the lic file path
-                logger.LogInformation($"key_file={license.LicenseKey}");
+                logger.LogInformation("key_file={0}", license.LicenseKey);
             }
-            logger.LogInformation($"expiry={license.Claims.Expiry.ToLocalTime()}");
+            logger.LogInformation($"expiry={0}", license.Claims.Expiry.ToLocalTime());
 
             return Task.CompletedTask;
         }
