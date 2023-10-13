@@ -283,7 +283,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         [Fact]
-        public async void StartAsync_ShouldRegister_HelpArgument_ByDefault()
+        public async Task StartAsync_ShouldRegister_HelpArgument_ByDefault()
         {
             TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
 
@@ -323,7 +323,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         [Fact]
-        public async void StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
+        public async Task StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
         {
             TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
             terminalOptions.Help.Disabled = true;

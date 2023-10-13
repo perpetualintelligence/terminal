@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Stores;
 using System;

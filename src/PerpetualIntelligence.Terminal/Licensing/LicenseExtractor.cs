@@ -19,6 +19,7 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Licensing
@@ -188,8 +189,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid, see licensing options. plan={0}", terminalOptions.Licensing.LicensePlan);
             }
 
-            // Read the json file
+            // Read the json file, avoid file locking for multiple threads.
             LicenseFileModel? licenseFileModel;
+            await semaphoreSlim.WaitAsync();
             try
             {
                 // Make sure the lic stream is disposed to avoid locking.
@@ -201,6 +203,10 @@ namespace PerpetualIntelligence.Terminal.Licensing
             catch (JsonException ex)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not valid, see licensing options. key_file={0} info={1}", terminalOptions.Licensing.LicenseKey, ex.Message);
+            }
+            finally
+            {
+                semaphoreSlim.Release();
             }
 
             // Make sure the model is valid.
@@ -230,22 +236,30 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> EnsureOnPremiseLicenseAsync(LicenseFileModel licenseFileModel)
         {
-            // Check if debugger is attached for on-premise mode.
-            // On-Premise mode we allow developers to work online and offline.
-            if (!licenseDebugger.IsDebuggerAttached() && terminalOptions.Licensing.OnPremiseDeployment.GetValueOrDefault())
+            if (terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.OnPremise ||
+                terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Unlimited)
             {
-                return new LicenseExtractorResult(OnPremiseDeploymentLicense(), TerminalHandlers.OnPremiseLicenseHandler);
-            }
-            else
-            {
-                if (licenseFileModel.ValidationKey != null)
+                // Check if debugger is attached for on-premise mode.
+                // On-Premise mode we allow developers to work online and offline.
+                if (!licenseDebugger.IsDebuggerAttached() && terminalOptions.Licensing.OnPremiseDeployment.GetValueOrDefault())
                 {
-                    return await EnsureOfflineLicenseAsync(licenseFileModel);
+                    return new LicenseExtractorResult(OnPremiseDeploymentLicense(), TerminalHandlers.OnPremiseLicenseHandler);
                 }
                 else
                 {
-                    return await EnsureOnlineLicenseAsync(licenseFileModel);
+                    if (licenseFileModel.ValidationKey != null)
+                    {
+                        return await EnsureOfflineLicenseAsync(licenseFileModel);
+                    }
+                    else
+                    {
+                        return await EnsureOnlineLicenseAsync(licenseFileModel);
+                    }
                 }
+            }
+            else
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise deployment, see licensing options. plan={0}", terminalOptions.Licensing.LicensePlan);
             }
         }
 
@@ -263,7 +277,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 terminalOptions.Licensing.LicenseKeySource,
                 "on-premise-deployment",
                 new LicenseClaimsModel(),
-                new LicenseLimits(),
+                LicenseLimits.Create(terminalOptions.Licensing.LicensePlan),
                 LicensePrice.Create(terminalOptions.Licensing.LicensePlan));
         }
 
@@ -428,5 +442,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         private readonly IHttpClientFactory? httpClientFactory;
         private readonly ILogger<LicenseExtractor> logger;
         private LicenseExtractorResult? licenseExtractorResult;
+        private SemaphoreSlim semaphoreSlim = new(1, 1);
     }
 }
