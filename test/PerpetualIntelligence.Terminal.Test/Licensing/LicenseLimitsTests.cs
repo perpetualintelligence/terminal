@@ -34,9 +34,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 { "sub_command_limit", 5 },
                 { "option_limit", 6 },
 
-                { "option_alias", true },
-                { "default_option", false },
-                { "default_option_value", true },
                 { "strict_data_type", false },
 
                 { "data_type_handlers", "" },

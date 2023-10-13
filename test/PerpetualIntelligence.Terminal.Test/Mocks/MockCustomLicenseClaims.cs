@@ -23,9 +23,6 @@ namespace PerpetualIntelligence.Terminal.Mocks
                 { "sub_command_limit", 15 },
                 { "option_limit", 100 },
 
-                { "option_alias", true },
-                { "default_option", true },
-                { "default_option_value", true },
                 { "strict_data_type", true },
 
                 { "data_type_handlers", TerminalHandlers.DefaultHandler },
