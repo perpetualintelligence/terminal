@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalRouting{TContext, TResult}"/> for custom routing.
+    /// The default <see cref="ITerminalRouting{TContext}"/> for custom routing.
     /// </summary>
-    public abstract class TerminalCustomRouting : ITerminalRouting<TerminalCustomRoutingContext, TerminalCustomRoutingResult>
+    public abstract class TerminalCustomRouting : ITerminalRouting<TerminalCustomRoutingContext>
     {
         /// <summary>
         /// Routes to a custom service implementation.
         /// </summary>
         /// <param name="context">The custom routing service context.</param>
-        public abstract Task<TerminalCustomRoutingResult> RunAsync(TerminalCustomRoutingContext context);
+        public abstract Task RunAsync(TerminalCustomRoutingContext context);
     }
 }

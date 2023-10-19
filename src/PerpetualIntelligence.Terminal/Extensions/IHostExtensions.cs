@@ -19,21 +19,18 @@ namespace PerpetualIntelligence.Terminal.Extensions
     public static class IHostExtensions
     {
         /// <summary>
-        /// Runs the <see cref="ITerminalRouting{TContext, TResult}"/> asynchronously, blocking the calling thread until a cancellation request.
+        /// Runs the <see cref="ITerminalRouting{TContext}"/> asynchronously, blocking the calling thread until a cancellation request.
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="context">The routing context for terminal console routing.</param>
-        /// <returns>A task representing the asynchronous operation with a result of <see cref="TerminalConsoleRoutingResult"/>.</returns>
-        public static async Task<TResult> RunTerminalRoutingAsync<TRouting, TContext, TResult>(this IHost host, TContext context) where TRouting : class, ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
+        public static async Task RunTerminalRoutingAsync<TRouting, TContext>(this IHost host, TContext context) where TRouting : class, ITerminalRouting<TContext> where TContext : TerminalRoutingContext
         {
-            ILogger<ITerminalRouting<TContext, TResult>> logger = host.Services.GetRequiredService<ILogger<ITerminalRouting<TContext, TResult>>>();
-            logger.LogDebug("Start terminal routing. routing={0} context={1} result={2}", typeof(TRouting).Name, typeof(TContext).Name, typeof(TResult).Name);
+            ILogger<ITerminalRouting<TContext>> logger = host.Services.GetRequiredService<ILogger<ITerminalRouting<TContext>>>();
 
-            ITerminalRouting<TContext, TResult> routingService = host.Services.GetRequiredService<ITerminalRouting<TContext, TResult>>();
-            TResult result = await routingService.RunAsync(context);
-
+            logger.LogDebug("Start terminal routing. routing={0} context={1}", typeof(TRouting).Name, typeof(TContext).Name);
+            ITerminalRouting<TContext> routingService = host.Services.GetRequiredService<ITerminalRouting<TContext>>();
+            await routingService.RunAsync(context);
             logger.LogDebug("End terminal routing.");
-            return result;
         }
     }
 }

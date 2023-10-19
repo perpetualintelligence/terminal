@@ -17,9 +17,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalRouting{TContext, TResult}"/> for console based terminals.
+    /// The default <see cref="ITerminalRouting{TContext}"/> for console based terminals.
     /// </summary>
-    public class TerminalConsoleRouting : ITerminalRouting<TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>
+    public class TerminalConsoleRouting : ITerminalRouting<TerminalConsoleRoutingContext>
     {
         private readonly ITerminalConsole terminalConsole;
         private readonly IHostApplicationLifetime applicationLifetime;
@@ -58,7 +58,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// </summary>
         /// <param name="context">The routing service context.</param>
         /// <returns></returns>
-        public virtual Task<TerminalConsoleRoutingResult> RunAsync(TerminalConsoleRoutingContext context)
+        public virtual Task RunAsync(TerminalConsoleRoutingContext context)
         {
             return Task.Run(async () =>
             {
@@ -132,9 +132,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         await exceptionHandler.HandleExceptionAsync(exContext);
                     }
                 };
-
-                // Return Result
-                return new TerminalConsoleRoutingResult();
             });
         }
     }

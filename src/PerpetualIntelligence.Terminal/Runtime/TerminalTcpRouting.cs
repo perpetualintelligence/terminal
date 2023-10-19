@@ -19,15 +19,15 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalRouting{TContext, TResult}"/> for TCP client-server communication.
+    /// The default <see cref="ITerminalRouting{TContext}"/> for TCP client-server communication.
     /// </summary>
     /// <remarks>
-    /// <para>This class implements the <see cref="ITerminalRouting{TContext, TResult}"/> interface and is responsible for handling
+    /// <para>This class implements the <see cref="ITerminalRouting{TContext}"/> interface and is responsible for handling
     /// TCP client-server communication. It runs a TCP server on the specified IP endpoint and waits for incoming client connections.
     /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
     /// </para>
     /// </remarks>
-    public class TerminalTcpRouting : ITerminalRouting<TerminalTcpRoutingContext, TerminalTcpRoutingResult>
+    public class TerminalTcpRouting : ITerminalRouting<TerminalTcpRoutingContext>
     {
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
         /// The method will also stop if an exception is encountered while handling client connections.
         /// </remarks>
-        public virtual async Task<TerminalTcpRoutingResult> RunAsync(TerminalTcpRoutingContext context)
+        public virtual async Task RunAsync(TerminalTcpRoutingContext context)
         {
             // Reset the command queue
             commandCollection = new ConcurrentDictionary<int, ConcurrentQueue<string>>();
@@ -135,9 +135,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
                 _server.Stop(); // Stop the TCP server
                 logger.LogDebug("Terminal TCP routing stopped. endpoint={0}", context.IPEndPoint);
             }
-
-            // Return the default result (empty)
-            return new TerminalTcpRoutingResult();
         }
 
         private async Task AcceptClientsUntilCanceledAsync(TerminalTcpRoutingContext context)

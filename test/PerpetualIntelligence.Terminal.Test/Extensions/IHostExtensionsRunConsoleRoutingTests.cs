@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Set invalid start mode
             startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Grpc), tokenSource.Token);
-            Func<Task> act = async () => await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            Func<Task> act = async () => await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Grpc");
         }
 
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             using IHost host = BuildHostAndLogger(ConfigureServicesCancelOnRoute);
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeTrue();
@@ -63,7 +63,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().ContainSingle(">");
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
         }
 
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             await Task.Delay(2050);
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             // Canceled task so router will not be called.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -101,7 +101,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().BeEmpty();
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
         }
 
@@ -121,7 +121,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = "$";
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -134,7 +134,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().ContainSingle("$");
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
         }
 
@@ -153,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -166,7 +166,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().ContainSingle(">");
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
         }
 
@@ -189,7 +189,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Run the router for 5 seconds, the callback will stop the host 2 seconds.
             GetCliOptions(host).Router.Timeout = 5000;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             // Till the timer callback cancel the route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -206,7 +206,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Distinct().Should().ContainSingle(">");
 
             // The StartAsync will also log the .NET hosting logging messages
-            listLoggerFactory.AllLogMessages.Contains("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            listLoggerFactory.AllLogMessages.Contains("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             listLoggerFactory.AllLogMessages.Contains("End terminal routing.");
         }
 
@@ -226,7 +226,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = ">$";
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -239,7 +239,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().ContainSingle(">$");
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
         }
 
@@ -258,7 +258,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // We will run in a infinite loop due to empty input so break that after 2 seconds
             tokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeFalse();
@@ -266,7 +266,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // The log messages will have N raw string log messages
             string[] logMessages = listLoggerFactory.AllLogMessages.Distinct().ToArray();
             logMessages.Should().HaveCount(3);
-            logMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            logMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             logMessages[1].Should().Be("The raw string is null or ignored by the terminal console.");
             logMessages[2].Should().Be("End terminal routing.");
         }
@@ -287,7 +287,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
             tokenSource.CancelAfter(3000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             // In 3 seconds the Route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -297,7 +297,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // The log messages will have N raw string log messages
             string[] logMessages = listLoggerFactory.AllLogMessages.Distinct().ToArray();
             logMessages.Should().HaveCount(3);
-            logMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            logMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             logMessages[1].Should().Be("The raw string is null or ignored by the terminal console.");
             logMessages[2].Should().Be("End terminal routing.");
         }
@@ -321,7 +321,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Send cancellation after 2 seconds. Idea is in 2 seconds the router will route multiple times till canceled.
             tokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             // Result is processed and disposed by handler not the routing service.
             mockCommandRouter.ReturnedRouterResult.Should().NotBeNull();
@@ -344,7 +344,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Route delay is set to 3000 and timeout is 2000
             GetCliOptions(host).Router.Timeout = 2000;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -359,7 +359,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // The log messages will have N raw string log messages
             string[] logMessages = listLoggerFactory.AllLogMessages.Distinct().ToArray();
             logMessages.Should().HaveCount(3);
-            logMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            logMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             logMessages[1].Should().Be("The raw string is null or ignored by the terminal console.");
             logMessages[2].Should().Be("End terminal routing.");
         }
@@ -381,7 +381,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             tokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = "test_caret";
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>(new TerminalConsoleRoutingContext(startContext));
+            await host.RunTerminalRoutingAsync<TerminalConsoleRouting, TerminalConsoleRoutingContext>(new TerminalConsoleRoutingContext(startContext));
             titleWriter.Messages.Should().ContainSingle("test_caret");
 
             // Check output
@@ -393,7 +393,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().BeEmpty();
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext result=TerminalConsoleRoutingResult");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. routing=TerminalConsoleRouting context=TerminalConsoleRoutingContext");
             listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
         }
 
@@ -413,7 +413,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>, TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext>, TerminalConsoleRouting>();
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
@@ -433,7 +433,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>, TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext>, TerminalConsoleRouting>();
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
@@ -453,7 +453,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>, TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext>, TerminalConsoleRouting>();
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
@@ -473,7 +473,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>, TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext>, TerminalConsoleRouting>();
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
@@ -494,7 +494,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>, TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext>, TerminalConsoleRouting>();
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
@@ -515,7 +515,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
-            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext, TerminalConsoleRoutingResult>, TerminalConsoleRouting>();
+            opt2.AddSingleton<ITerminalRouting<TerminalConsoleRoutingContext>, TerminalConsoleRouting>();
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 

@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    internal class MockRouting : ITerminalRouting<MockRoutingContext, MockRoutingResult>
+    internal class MockRouting : ITerminalRouting<MockRoutingContext>
     {
         public bool Called
         {
             get; private set;
         }
 
-        public Task<MockRoutingResult> RunAsync(MockRoutingContext context)
+        public Task RunAsync(MockRoutingContext context)
         {
             Called = true;
             return Task.FromResult(new MockRoutingResult());

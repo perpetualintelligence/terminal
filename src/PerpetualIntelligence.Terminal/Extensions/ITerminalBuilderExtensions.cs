@@ -248,14 +248,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ITerminalRouting{TContext, TResult}"/> to the service collection.
+        /// Adds the <see cref="ITerminalRouting{TContext}"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddRouting<TRouting, TContext, TResult>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
+        public static ITerminalBuilder AddRouting<TRouting, TContext>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouting<TContext> where TContext : TerminalRoutingContext
         {
             // Add terminal routing service.
-            builder.Services.AddSingleton<ITerminalRouting<TContext, TResult>, TRouting>();
+            builder.Services.AddSingleton<ITerminalRouting<TContext>, TRouting>();
 
             return builder;
         }

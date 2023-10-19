@@ -12,13 +12,13 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// <summary>
     /// An abstraction of a context aware terminal routing.
     /// </summary>
-    public interface ITerminalRouting<TContext, TResult> where TContext : TerminalRoutingContext where TResult : TerminalRoutingResult
+    public interface ITerminalRouting<TContext> where TContext : TerminalRoutingContext
     {
         /// <summary>
         /// Runs terminal routing asynchronously.
         /// </summary>
         /// <param name="context">The terminal router context.</param>
         /// <returns>The <see cref="TerminalRoutingResult"/> instance.</returns>
-        public Task<TResult> RunAsync(TContext context);
+        public Task RunAsync(TContext context);
     }
 }
