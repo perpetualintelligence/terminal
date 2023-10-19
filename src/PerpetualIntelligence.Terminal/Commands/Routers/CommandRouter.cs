@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -27,18 +28,21 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// <param name="licenseExtractor">The license extractor.</param>
         /// <param name="commandExtractor">The command extractor.</param>
         /// <param name="commandHandler">The command handler.</param>
+        /// <param name="logger">The logger.</param>
         /// <param name="asyncEventHandler">The event handler.</param>
         public CommandRouter(
             TerminalOptions terminalOptions,
             ILicenseExtractor licenseExtractor,
             ICommandExtractor commandExtractor,
             ICommandHandler commandHandler,
+            ILogger<CommandRouter> logger,
             IAsyncEventHandler? asyncEventHandler = null)
         {
             this.commandExtractor = commandExtractor ?? throw new ArgumentNullException(nameof(commandExtractor));
             this.terminalOptions = terminalOptions ?? throw new ArgumentNullException(nameof(terminalOptions));
             this.licenseExtractor = licenseExtractor ?? throw new ArgumentNullException(nameof(licenseExtractor));
             this.commandHandler = commandHandler ?? throw new ArgumentNullException(nameof(commandHandler));
+            this.logger = logger;
             this.asyncEventHandler = asyncEventHandler;
         }
 
@@ -56,6 +60,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 // Issue a before route event if configured
                 if (asyncEventHandler != null)
                 {
+                    logger.LogDebug("Fire event. event={1} route={0}", nameof(asyncEventHandler.BeforeCommandRouteAsync), context.Route.Id);
                     await asyncEventHandler.BeforeCommandRouteAsync(context.Route);
                 }
 
@@ -82,6 +87,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 // Issue a after route event if configured
                 if (asyncEventHandler != null)
                 {
+                    logger.LogDebug("Fire event. event={1} route={0}", nameof(asyncEventHandler.AfterCommandRouteAsync), context.Route.Id);
                     await asyncEventHandler.AfterCommandRouteAsync(context.Route, extractedCommand?.Command, result);
                 }
             }
@@ -91,6 +97,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
         private readonly ICommandExtractor commandExtractor;
         private readonly ICommandHandler commandHandler;
+        private readonly ILogger<CommandRouter> logger;
         private readonly IAsyncEventHandler? asyncEventHandler;
         private readonly TerminalOptions terminalOptions;
         private readonly ILicenseExtractor licenseExtractor;

@@ -75,6 +75,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // Issue a before run event if configured
             if (asyncEventHandler != null)
             {
+                logger.LogDebug("Fire event. event={1} command={0}", nameof(asyncEventHandler.BeforeCommandRunAsync), context.ParsedCommand.Command.Id);
                 await asyncEventHandler.BeforeCommandRunAsync(context.ParsedCommand.Command);
             }
 
@@ -100,6 +101,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // Issue a after run event if configured
             if (asyncEventHandler != null)
             {
+                logger.LogDebug("Fire event. event={1} command={0}", nameof(asyncEventHandler.AfterCommandRunAsync), context.ParsedCommand.Command.Id);
                 await asyncEventHandler.AfterCommandRunAsync(context.ParsedCommand.Command, runnerResult);
             }
 
@@ -114,6 +116,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // Issue a before check event if configured
             if (asyncEventHandler != null)
             {
+                logger.LogDebug("Fire event. event={1} command={0}", nameof(asyncEventHandler.BeforeCommandCheckAsync), context.ParsedCommand.Command.Id);
                 await asyncEventHandler.BeforeCommandCheckAsync(context.ParsedCommand.Command);
             }
 
@@ -124,6 +127,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             // Issue a after check event if configured
             if (asyncEventHandler != null)
             {
+                logger.LogDebug("Fire event. event={1} command={0}", nameof(asyncEventHandler.AfterCommandCheckAsync), context.ParsedCommand.Command.Id);
                 await asyncEventHandler.AfterCommandCheckAsync(context.ParsedCommand.Command, result);
             }
 
