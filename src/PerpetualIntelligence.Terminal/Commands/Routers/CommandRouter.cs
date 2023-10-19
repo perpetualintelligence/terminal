@@ -57,17 +57,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             ParsedCommand? extractedCommand = null;
             try
             {
+                logger.LogDebug("Start command routing. route={0} raw={1}", context.Route.Id, context.Route.Command.Raw);
+
                 // Issue a before route event if configured
                 if (asyncEventHandler != null)
                 {
-                    logger.LogDebug("Fire event. event={1} route={0}", nameof(asyncEventHandler.BeforeCommandRouteAsync), context.Route.Id);
+                    logger.LogDebug("Fire event. event={0} route={1}", nameof(asyncEventHandler.BeforeCommandRouteAsync), context.Route.Id);
                     await asyncEventHandler.BeforeCommandRouteAsync(context.Route);
-                }
-
-                // Honor the max limit
-                if (context.Route.Command.Raw.Length > terminalOptions.Router.MaxMessageLength)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The command string length is over the configured limit. max_length={0}", terminalOptions.Router.MaxMessageLength);
                 }
 
                 // Ensure we have the license extracted before routing
@@ -87,9 +83,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 // Issue a after route event if configured
                 if (asyncEventHandler != null)
                 {
-                    logger.LogDebug("Fire event. event={1} route={0}", nameof(asyncEventHandler.AfterCommandRouteAsync), context.Route.Id);
+                    logger.LogDebug("Fire event. event={0} route={1}", nameof(asyncEventHandler.AfterCommandRouteAsync), context.Route.Id);
                     await asyncEventHandler.AfterCommandRouteAsync(context.Route, extractedCommand?.Command, result);
                 }
+
+                logger.LogDebug("End command routing. route={0} raw={1}", context.Route.Id, context.Route.Command.Raw);
             }
 
             return result;
