@@ -18,12 +18,12 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// The driver configuration options.
+        /// The driver configuration options. Reserved for future versions.
         /// </summary>
         public DriverOptions Driver { get; set; } = new DriverOptions();
 
         /// <summary>
-        /// The authentication configuration options.
+        /// The authentication configuration options. Reserved for future versions.
         /// </summary>
         public AuthenticationOptions Authentication { get; set; } = new AuthenticationOptions();
 

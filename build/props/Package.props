@@ -18,7 +18,7 @@
         <Copyright>Copyright 2021 Perpetual Intelligence L.L.C. All Rights Reserved.</Copyright>
         <Authors>Perpetual Intelligence</Authors>
         <Company>Perpetual Intelligence L.L.C.</Company>
-        <Product>pi-cli</Product>
+        <Product>oneterminal</Product>
         <PackageProjectUrl>https://perpetualintelligence.com</PackageProjectUrl>
         <RepositoryUrl>https://github.com/perpetualintelligence/terminal</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -26,7 +26,6 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageIcon>icon.png</PackageIcon>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
 

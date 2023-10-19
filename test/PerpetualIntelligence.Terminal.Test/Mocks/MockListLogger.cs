@@ -7,20 +7,22 @@
 
 using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
+using System.Collections.Generic;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    public class MockStringWriterLogger : ILogger
+    internal class MockListLogger : ILogger
     {
-        public MockStringWriterLogger(StringWriter output)
+        private List<string> logMessages;
+
+        public MockListLogger(List<string> allLogMessages)
         {
-            Output = output;
+            this.logMessages = allLogMessages;
         }
 
-        public IDisposable BeginScope<TState>(TState state) where TState : notnull
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
-            return new MockLoggerScope();
+            throw new NotImplementedException();
         }
 
         public bool IsEnabled(LogLevel logLevel)
@@ -30,9 +32,12 @@ namespace PerpetualIntelligence.Terminal.Mocks
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            Output.Write(state?.ToString());
-        }
+            if (formatter == null)
+            {
+                throw new ArgumentNullException(nameof(formatter));
+            }
 
-        private StringWriter Output { get; set; }
+            logMessages.Add(formatter(state, exception));
+        }
     }
 }

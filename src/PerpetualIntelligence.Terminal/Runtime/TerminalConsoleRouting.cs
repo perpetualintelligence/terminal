@@ -76,7 +76,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     try
                     {
                         // Wait for a bit to avoid CPU hogging and give time for cancellation token to be set.
-                        await Task.Delay(100);
+                        await Task.Yield();
 
                         // Honor the cancellation request.
                         if (context.StartContext.CancellationToken.IsCancellationRequested)
@@ -103,6 +103,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         if (raw == null || terminalConsole.Ignore(raw))
                         {
                             // Wait for next command.
+                            logger.LogDebug("The raw string is null or ignored by the terminal console.");
                             continue;
                         }
 
