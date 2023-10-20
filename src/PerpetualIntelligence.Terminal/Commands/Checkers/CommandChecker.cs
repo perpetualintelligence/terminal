@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,19 +22,25 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// </summary>
         /// <param name="optionChecker">The option checker.</param>
         /// <param name="argumentChecker">The argument checker.</param>
-        /// <param name="options">The configuration options.</param>
+        /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandChecker(IOptionChecker optionChecker, IArgumentChecker argumentChecker, TerminalOptions options, ILogger<CommandChecker> logger)
+        public CommandChecker(IOptionChecker optionChecker, IArgumentChecker argumentChecker, TerminalOptions terminalOptions, ILogger<CommandChecker> logger)
         {
             this.optionChecker = optionChecker;
             this.argumentChecker = argumentChecker;
-            this.terminalOptions = options;
+            this.terminalOptions = terminalOptions;
             this.logger = logger;
         }
 
         /// <inheritdoc/>
         public async Task<CommandCheckerResult> CheckCommandAsync(CommandCheckerContext context)
         {
+            // Make sure command string raw length is within specified
+            if (context.HandlerContext.RouterContext.Route.Raw.Length > terminalOptions.Router.MaxMessageLength)
+            {
+                throw new TerminalException(TerminalErrors.InvalidCommand, "The command string is too long. command={0} max={1}", context.HandlerContext.RouterContext.Route.Raw, terminalOptions.Router.MaxMessageLength);
+            }
+
             await CheckArgumentsAsync(context);
 
             await CheckOptionsAsync(context);

@@ -8,7 +8,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
@@ -336,22 +335,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), cmdString);
             Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(commandRoute);
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner={duplicateCmd} command={duplicateCmd}.");
-        }
-
-        [Fact]
-        public async Task Empty_Route_Throws()
-        {
-            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "  "));
-            await func.Should().ThrowAsync<ArgumentNullException>().WithMessage("'raw' cannot be null or whitespace. (Parameter 'raw')");
-        }
-
-        [Fact]
-        public async Task Null_Route_Throws()
-        {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", null));
-            await func.Should().ThrowAsync<ArgumentNullException>().WithMessage("'raw' cannot be null or whitespace. (Parameter 'raw')");
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Theory]

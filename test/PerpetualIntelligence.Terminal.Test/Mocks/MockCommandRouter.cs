@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
@@ -49,8 +48,8 @@ namespace PerpetualIntelligence.Terminal.Mocks
             {
                 // Your critical section code here
                 RouteCalled = true;
-                RawCommandString = context.Route.Command.Raw;
-                MultipleRawString.Add(context.Route.Command.Raw);
+                RawCommandString = context.Route.Raw;
+                MultipleRawString.Add(context.Route.Raw);
                 RouteCounter += 1;
 
                 if (routeDelay != null)
@@ -84,6 +83,6 @@ namespace PerpetualIntelligence.Terminal.Mocks
         private readonly Exception? exception;
         private readonly Error? explicitError;
         private readonly int? routeDelay;
-        private SemaphoreSlim routeLock = new (1, 1);
+        private SemaphoreSlim routeLock = new(1, 1);
     }
 }

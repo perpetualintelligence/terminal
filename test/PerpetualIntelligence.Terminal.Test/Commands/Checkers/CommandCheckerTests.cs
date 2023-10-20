@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
@@ -30,6 +31,27 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
     {
         public CommandCheckerTests() : base(TestLogger.Create<CommandCheckerTests>())
         {
+        }
+
+        [TestMethod]
+        public async Task Router_Throws_On_CommandString_MaxLimitAsync()
+        {
+            OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Disabled);
+            CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
+
+            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
+
+            Command argsCommand = new(disabledArgsDescriptor, arguments: null, options);
+            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+
+            // Max 30 we are passing 31
+            terminalOptions.Router.MaxMessageLength = 30;
+            routerContext = new CommandRouterContext(new string('x', 31), routingContext);
+            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
+            CommandCheckerContext context = new(handlerContext);
+
+            Func<Task> act = () => checker.CheckCommandAsync(context);
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command string is too long. command=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx max=30");
         }
 
         [TestMethod]

@@ -1,14 +1,13 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -41,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
         {
             // Stats
             RouteCalled = true;
-            RawCommandStrings.Add(context.Route.Command.Raw);
+            RawCommandStrings.Add(context.Route.Raw);
             RouteCounter += 1;
 
             // Add delay

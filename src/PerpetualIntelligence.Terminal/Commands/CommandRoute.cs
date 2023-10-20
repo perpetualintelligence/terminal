@@ -29,8 +29,13 @@ namespace PerpetualIntelligence.Terminal.Commands
                 throw new ArgumentNullException(nameof(id), $"'{nameof(id)}' cannot be null or whitespace.");
             }
 
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                throw new ArgumentNullException($"'{nameof(raw)}' cannot be null or whitespace.", nameof(raw));
+            }
+
             Id = id;
-            Command = new(raw);
+            Raw = raw;
         }
 
         /// <summary>
@@ -39,9 +44,9 @@ namespace PerpetualIntelligence.Terminal.Commands
         public string Id { get; }
 
         /// <summary>
-        /// The command string.
+        /// The raw command string.
         /// </summary>
-        public CommandString Command { get; }
+        public string Raw { get; }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)

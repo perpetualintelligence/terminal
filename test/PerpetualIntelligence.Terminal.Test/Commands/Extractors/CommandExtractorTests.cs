@@ -12,7 +12,6 @@ using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Terminal.Stores.InMemory;
-using System;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
@@ -39,7 +38,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             await extractor.ExtractCommandAsync(context);
 
             routeParser.Called.Should().BeTrue();
-            routeParser.PassedCommandRoute.Command.Raw.Should().Be("id1 test raw string");
+            routeParser.PassedCommandRoute.Raw.Should().Be("id1 test raw string");
         }
 
         [TestMethod]
@@ -76,20 +75,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             var result = await extractor.ExtractCommandAsync(context);
 
             Assert.IsNull(result.ParsedCommand.Command.Options);
-        }
-
-        [TestMethod]
-        public void NullOrEmptyCommandStringShouldThrow()
-        {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning disable CA1806 // Do not ignore method results
-            Action act = () => new CommandString(null);
-            act.Should().Throw<ArgumentException>().WithMessage("'raw' cannot be null or whitespace. (Parameter 'raw')");
-
-            act = () => new CommandString("   ");
-            act.Should().Throw<ArgumentException>().WithMessage("'raw' cannot be null or whitespace. (Parameter 'raw')");
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning restore CA1806 // Do not ignore method results
         }
 
         private ICommandStoreHandler commandStore = null!;

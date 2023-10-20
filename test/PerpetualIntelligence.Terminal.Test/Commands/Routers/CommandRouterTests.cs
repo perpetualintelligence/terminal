@@ -7,6 +7,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands.Routers.Mocks;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -150,16 +151,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CA1806 // Do not ignore method results
-            Action act = () => new CommandRouter(null, licenseExtractor, commandExtractor, commandHandler);
+            Action act = () => new CommandRouter(null, licenseExtractor, commandExtractor, commandHandler, logger);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'terminalOptions')");
 
-            act = () => new CommandRouter(terminalOptions, null, commandExtractor, commandHandler);
+            act = () => new CommandRouter(terminalOptions, null, commandExtractor, commandHandler, logger);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'licenseExtractor')");
 
-            act = () => new CommandRouter(terminalOptions, licenseExtractor, null, commandHandler);
+            act = () => new CommandRouter(terminalOptions, licenseExtractor, null, commandHandler, logger);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandExtractor')");
 
-            act = () => new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, null);
+            act = () => new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, null, logger);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandHandler')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type
 #pragma warning restore CA1806 // Do not ignore method results
@@ -178,7 +179,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.AfterRouteCalled.Should().BeTrue();
 
             eventHandler.PassedRoute.Should().NotBeNull();
-            eventHandler.PassedRoute!.Command.Raw.Should().Be("test_command_string");
+            eventHandler.PassedRoute!.Raw.Should().Be("test_command_string");
 
             eventHandler.PassedCommand.Should().NotBeNull();
             eventHandler.PassedRouterResult.Should().NotBeNull();
@@ -208,7 +209,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.AfterRouteCalled.Should().BeTrue();
 
             eventHandler.PassedRoute.Should().NotBeNull();
-            eventHandler.PassedRoute!.Command.Raw.Should().Be("test_command_string");
+            eventHandler.PassedRoute!.Raw.Should().Be("test_command_string");
 
             eventHandler.PassedCommand.Should().BeNull();
             eventHandler.PassedRouterResult.Should().BeNull();
@@ -220,7 +221,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeFalse();
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
-            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, asyncEventHandler: null);
+            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, logger, asyncEventHandler: null);
             CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteCommandAsync(routerContext);
 
@@ -230,15 +231,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.PassedRoute.Should().BeNull();
             eventHandler.PassedCommand.Should().BeNull();
             eventHandler.PassedRouterResult.Should().BeNull();
-        }
-
-        [TestMethod]
-        public async Task Router_Throws_On_CommandString_MaxLimitAsync()
-        {
-            terminalOptions.Router.MaxMessageLength = 30;
-            Func<Task> act = () => commandRouter.RouteCommandAsync(new CommandRouterContext(new string('x', 31), routingContext));
-            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command string length is over the configured limit. max_length=30");
-        }
+        }        
 
         protected override void OnTestCleanup()
         {
@@ -255,7 +248,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             licenseExtractor = new MockLicenseExtractorInner();
             eventHandler = new MockAsyncEventHandler();
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, eventHandler);
+            logger = TestLogger.Create<CommandRouter>();
+            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, logger, eventHandler);
             cancellationTokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRoutingContext(new Runtime.TerminalStartContext(new Runtime.TerminalStartInfo(Runtime.TerminalStartMode.Custom), cancellationTokenSource.Token));
         }
@@ -269,5 +263,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         private MockLicenseExtractorInner licenseExtractor = null!;
         private CommandRouter commandRouter = null!;
         private TerminalOptions terminalOptions = null!;
+        private ILogger<CommandRouter> logger = null!;
     }
 }

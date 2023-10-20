@@ -57,7 +57,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             ParsedCommand? extractedCommand = null;
             try
             {
-                logger.LogDebug("Start command routing. route={0} raw={1}", context.Route.Id, context.Route.Command.Raw);
+                logger.LogDebug("Start command routing. route={0} raw={1}", context.Route.Id, context.Route.Raw);
 
                 // Issue a before route event if configured
                 if (asyncEventHandler != null)
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                     await asyncEventHandler.AfterCommandRouteAsync(context.Route, extractedCommand?.Command, result);
                 }
 
-                logger.LogDebug("End command routing. route={0} raw={1}", context.Route.Id, context.Route.Command.Raw);
+                logger.LogDebug("End command routing. route={0}", context.Route.Id);
             }
 
             return result;

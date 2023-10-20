@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -143,7 +142,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             // The result is a list of segments split by the nearest occurring token, capturing the
             // context of each split.
             int currentIndex = 0;
-            string raw = commandRoute.Command.Raw;
+            string raw = commandRoute.Raw;
             while (currentIndex < raw.Length)
             {
                 int nearestTokenIndex = raw.Length;

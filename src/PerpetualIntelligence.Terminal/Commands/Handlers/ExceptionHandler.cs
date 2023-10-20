@@ -49,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             {
                 if (context.CommandRoute != null)
                 {
-                    logger.LogError("The request was canceled. route={0} command={1}", context.CommandRoute.Id, context.CommandRoute.Command.Raw);
+                    logger.LogError("The request was canceled. route={0} command={1}", context.CommandRoute.Id, context.CommandRoute.Raw);
                 }
                 else
                 {
@@ -60,7 +60,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             {
                 if (context.CommandRoute != null)
                 {
-                    logger.LogError("The request failed. route={0} command={1} info={2}", context.CommandRoute.Id, context.CommandRoute.Command.Raw, context.Exception.Message);
+                    logger.LogError("The request failed. route={0} command={1} info={2}", context.CommandRoute.Id, context.CommandRoute.Raw, context.Exception.Message);
                 }
                 else
                 {
