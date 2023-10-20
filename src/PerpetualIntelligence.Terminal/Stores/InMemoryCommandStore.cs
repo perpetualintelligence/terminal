@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Stores.InMemory
+namespace PerpetualIntelligence.Terminal.Stores
 {
     /// <summary>
     /// The default in-memory <see cref="ICommandStoreHandler"/>.
