@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The driver configuration options.
+    /// The driver configuration options. Reserved for future use.
     /// </summary>
     public sealed class DriverOptions
     {

@@ -4,12 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using System.Runtime.CompilerServices;
 
@@ -43,7 +37,7 @@ namespace PerpetualIntelligence.Terminal
         public const string InMemoryHandler = "in-memory";
 
         /// <summary>
-        /// The <c>json</c> handler.
+        /// The <c>json</c> handler. Reserved for future use.
         /// </summary>
         public const string JsonHandler = "json";
 
@@ -58,7 +52,7 @@ namespace PerpetualIntelligence.Terminal
         public const string OnlineLicenseHandler = "online-license";
 
         /// <summary>
-        /// The <c>onpremise</c> handler.
+        /// The <c>on-premise</c> handler.
         /// </summary>
         public const string OnPremiseLicenseHandler = "onpremise-license";
 

@@ -121,7 +121,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         {
             if (nullableNumber == null)
             {
-                return "INFINITE";
+                return "Unlimited";
             }
             else
             {

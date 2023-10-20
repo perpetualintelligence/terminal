@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The authentication configuration options.
+    /// The authentication configuration options. Reserved for future use.
     /// </summary>
     public class AuthenticationOptions
     {
