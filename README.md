@@ -23,7 +23,7 @@
 
 The framework manages the complexities of the infrastructure, making it easier for you to create your CLI apps. Use our [templates](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/pi-cli) and [tutorials](https://github.com/perpetualintelligence/docs/tree/main/samples/tutorials/pi-cli) for a fast setup.  
 
-> ***In essence, if your feature aligns with the .NET ecosystem, `oneterminal` can overlay a CLI on it.***
+> ***In summary, if your feature works with the .NET ecosystem, oneterminal can turn it into a CLI.***
 
 ## Repo
 This repository holds the source code and tests for the `oneterminal` framework, encapsulated in the subsequent NuGet packages:
