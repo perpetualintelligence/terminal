@@ -131,18 +131,18 @@ namespace PerpetualIntelligence.Terminal.Hosting
             {
                 if (license.Usage == LicenseUsages.Educational)
                 {
-                    logger.LogInformation("Your community license plan is free for educational purposes. For non-educational or production environment, you require a commercial license.");
+                    logger.LogWarning("Your demo license is free for educational purposes. For non-educational, release, or production environment, you require a commercial license.");
                 }
                 else if (license.Usage == LicenseUsages.RnD)
                 {
-                    logger.LogInformation("Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
+                    logger.LogWarning("Your demo license is free for RnD, test, and evaluation purposes. For release, or production environment, you require a commercial license.");
                 }
             }
             else if (license.Plan == TerminalLicensePlans.Custom)
             {
                 if (license.Usage == LicenseUsages.RnD)
                 {
-                    logger.LogInformation("Your demo license is free for RnD, test and evaluation purposes. For production environment, you require a commercial license.");
+                    logger.LogWarning("Your custom license is free for RnD, test and evaluation purposes. For release, or production environment, you require a commercial license.");
                 }
             }
 
@@ -219,7 +219,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
                 // Don't dump the key, just the lic file path
                 logger.LogInformation("key_file={0}", license.LicenseKey);
             }
-            logger.LogInformation($"expiry={0}", license.Claims.Expiry.ToLocalTime());
+            logger.LogInformation($"expiry={0}", license.Claims.Expiry);
 
             return Task.CompletedTask;
         }

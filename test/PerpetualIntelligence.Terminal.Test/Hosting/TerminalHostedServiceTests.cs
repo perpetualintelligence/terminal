@@ -98,7 +98,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         }
 
         [Fact]
-        public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Demo()
+        public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfo_For_Custom_RND()
         {
             License community = new("testp", "testh", TerminalLicensePlans.Custom, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
@@ -108,11 +108,11 @@ namespace PerpetualIntelligence.Terminal.Hosting
             printLic.Invoke(defaultCliHostedService, new[] { community });
 
             logger.Messages.Should().HaveCount(1);
-            logger.Messages[0].Should().Be("Your demo license is free for RnD, test and evaluation purposes. For production environment, you require a commercial license.");
+            logger.Messages[0].Should().Be("Your custom license is free for RnD, test and evaluation purposes. For release, or production environment, you require a commercial license.");
         }
 
         [Fact]
-        public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_Educational()
+        public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoFor_Demo_Education()
         {
             License community = new("testp", "testh", TerminalLicensePlans.Demo, LicenseUsages.Educational, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
@@ -122,11 +122,11 @@ namespace PerpetualIntelligence.Terminal.Hosting
             printLic.Invoke(defaultCliHostedService, new[] { community });
 
             logger.Messages.Should().HaveCount(1);
-            logger.Messages[0].Should().Be("Your community license plan is free for educational purposes. For non-educational or production environment, you require a commercial license.");
+            logger.Messages[0].Should().Be("Your demo license is free for educational purposes. For non-educational, release, or production environment, you require a commercial license.");
         }
 
         [Fact]
-        public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoForCommunity_RND()
+        public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoFor_Demo_RND()
         {
             License community = new("testp", "testh", TerminalLicensePlans.Demo, LicenseUsages.RnD, "tests", "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
@@ -136,7 +136,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             printLic.Invoke(defaultCliHostedService, new[] { community });
 
             logger.Messages.Should().HaveCount(1);
-            logger.Messages[0].Should().Be("Your community license plan is free for RnD, test, and demo purposes. For production environment, you require a commercial license.");
+            logger.Messages[0].Should().Be("Your demo license is free for RnD, test, and evaluation purposes. For release, or production environment, you require a commercial license.");
         }
 
         [Fact]
