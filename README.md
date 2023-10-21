@@ -27,6 +27,7 @@ The framework manages the complexities of the infrastructure, making it easier f
 
 ## Repo
 This repository holds the source code and tests for the `oneterminal` framework, encapsulated in the subsequent NuGet packages:
+
 [![Nuget](https://img.shields.io/nuget/vpre/PerpetualIntelligence.Terminal?label=PerpetualIntelligence.Terminal)](https://www.nuget.org/packages/PerpetualIntelligence.Terminal)
 
 ## License and Pricing
