@@ -1,34 +1,36 @@
-# oneterminal
-## The most flexible cross-platform framework for modern CLI terminals.
+# pi-cli
+## The most flexible cross-platform framework for building modern CLI and terminal apps.
 
-`oneterminal` empowers you to craft modern CLI terminals tailored to your company's unique needs. Serving a diverse range of industries, it streamlines the process of creating everything from basic CLI apps with a few flags to advanced terminals with root (driver), groups, sub-commands, arguments, and options.
+`pi-cli` (oneterminal) is a cross-platform adaptable framework designed for crafting CLI and terminal applications, from basic apps with a few options to advanced terminals with extensive command hierarchies.
 
-> ***Take your app to the command line, supporting Unicode, and create modern terminals in any user language.***
+> ***Take Your App to the Command Line:*** Easily build CLI and terminal applications with Unicode support.
 
-### **Features**:
-- Design and configure your terminal apps leveraging microservices architecture, Dependency Injection (DI), and the options pattern.
-- Choose our built-in features or build your solutions for terminal UX, input parsing, error responses, command checks, data storage, and robust type verification.
-- Use in-memory implementation for high-performance command storage or remote storage solutions, tailored for environments like Windows, Linux, macOS, Docker, Kubernetes, and more.
-- Craft deployment-agnostic CLI terminals with all necessary dependencies, evaluate them in local setups, and roll them out on-premise, on the cloud (public, private, or government), or in hybrid settings.
-- Establish enterprise-level secure CLI or terminal applications for your offerings, similar to [GitHub CLI](https://cli.github.com/), [.NET CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/), [Stripe CLI](https://stripe.com/docs/stripe-cli), or other CLI terminals with tailored formats.
-- Participate in our open-source community, help resolve issues, and share feedback on features and documentation.
-- Try our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) for quick onboarding, evaluating, and testing our ready samples on GitHub without signing up.
+### **Key Features**:
+- Utilize microservices architecture, Dependency Injection (DI), and options pattern to design and configure your terminal apps.
+- Access built-in features or develop your own solutions for terminal UX, input parsing, error handling, command validation, data storage, and type verification.
+- Opt for high-performance in-memory command storage or integrate with remote storage solutions.
+- Compatible with Windows, Linux, macOS, Docker, Kubernetes, and more.
+- Create deployment-agnostic CLI terminals, test locally, and deploy on-premise, cloud (public, private, or government), or in hybrid environments.
+- Build secure enterprise-level CLI or terminal applications.
+- Engage with our open-source community to resolve issues and contribute to feature enhancements and documentation.
+- Quickly onboard, evaluate, and test with our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) and ready samples on GitHub, no signup required.
 
-The framework manages the complexities of the infrastructure, making it easier for you to create your CLI apps. Use our [templates](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/pi-cli) and [tutorials](https://github.com/perpetualintelligence/docs/tree/main/samples/tutorials/pi-cli) for a fast setup.  
+`pi-cli` cuts through infrastructure complexity, letting you concentrate on crafting your CLI applications. Quickly dive in with our [templates and tutorials](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/pi-cli).
 
-> ***In summary, if your feature works with the .NET ecosystem, oneterminal can turn it into a CLI.***
+> **Transform any .NET ecosystem feature into a CLI or terminal app with ease.**
 
 ## License and Pricing
-For a deeper understanding of licensing, redistribution, and pricing, please refer to:
+Explore our documentation for detailed information on licensing, redistribution, and pricing:
 - [Licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html)
 - [Redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html)
-- [Pricing breakdown](https://www.perpetualintelligence.com/products/picli#pricing)
+- [Pricing details](https://www.perpetualintelligence.com/products/picli#pricing)
 
-> ***You need a commercial license for non-educational, release, or production use.***
+> **The full-feature `pi-cli` framework is free for educational and evaluation purposes.**
 
-## Documentation
-For detailed documentation and code samples, navigate to our [docs repository](https://github.com/perpetualintelligence/docs).
+For non-educational, release, deployment, or production use, a commercial license is required.
 
-## Feedback
-Stay up-to-date with our [issues and tasks](https://github.com/perpetualintelligence/cli/issues). Check out our [Issues policy](https://terms.perpetualintelligence.com/articles/issues-policy.html) to learn how we handle them. We follow the Contributor Covenant's rules for community behavior. See our [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_OF_CONDUCT.html) for details.
+## Documentation and Support
+Explore our [documentation repository](https://github.com/perpetualintelligence/docs) for detailed guides and code samples.
 
+## Feedback and Community
+Stay informed and contribute through our [issues and tasks tracker](https://github.com/perpetualintelligence/cli/issues). Learn about our issue handling processes in our [Issues Policy](https://terms.perpetualintelligence.com/articles/issues-policy.html). Our community follows the Contributor Covenant; read our [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_OF_CONDUCT.html) for more details.
