@@ -1,4 +1,4 @@
-# oneterminal
+# pi-cli
 ![terminal](terminal.png)
 
 ## Open. Flexible. Cross-Platform.
