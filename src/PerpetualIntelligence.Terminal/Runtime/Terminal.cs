@@ -1,11 +1,9 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-
-using System.Text.Json.Serialization;
 
 namespace PerpetualIntelligence.Terminal.Runtime
 {
@@ -17,9 +15,17 @@ namespace PerpetualIntelligence.Terminal.Runtime
     public sealed class Terminal
     {
         /// <summary>
-        /// The authorized application id for this terminal.
+        /// Initializes a new instance.
         /// </summary>
-        [JsonPropertyName("authorized_application_id")]
-        public string AuthorizedApplicationId { get; set; } = null!;
+        /// <param name="id">The terminal identifier.</param>
+        public Terminal(string id)
+        {
+            Id = id;
+        }
+
+        /// <summary>
+        /// The terminal identifier.
+        /// </summary>
+        public string Id { get; }
     }
 }

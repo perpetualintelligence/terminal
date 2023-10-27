@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// </summary>
     /// <remarks>
     /// <para>This class implements the <see cref="ITerminalRouting{TContext}"/> interface and is responsible for handling
-    /// TCP client-server communication. It runs a TCP server on the specified IP endpoint and waits for incoming client connections.
+    /// TCP client-server communication. It runs a terminal as a TCP server on the specified IP endpoint and waits for incoming client connections.
     /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
     /// </para>
     /// </remarks>

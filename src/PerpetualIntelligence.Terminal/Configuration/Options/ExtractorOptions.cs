@@ -15,13 +15,13 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// <summary>
         /// The option alias prefix. Defaults to <c>-</c>.
         /// </summary>
-        /// <remarks>The option alias prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
+        /// <remarks>The option alias prefix cannot be <c>null</c> or whitespace.</remarks>
         public string OptionAliasPrefix { get; set; } = "-";
 
         /// <summary>
         /// The option prefix. Defaults to <c>--</c>.
         /// </summary>
-        /// <remarks>The option prefix must be a single Unicode character, and it cannot be <c>null</c> or whitespace.</remarks>
+        /// <remarks>The option prefix cannot be <c>null</c> or whitespace.</remarks>
         public string OptionPrefix { get; set; } = "--";
 
         /// <summary>

@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The <see cref="ITerminalRouting{TContext, TResult}"/> context.
+    /// The <see cref="ITerminalRouting{TContext}"/> context.
     /// </summary>
     public abstract class TerminalRoutingContext
     {

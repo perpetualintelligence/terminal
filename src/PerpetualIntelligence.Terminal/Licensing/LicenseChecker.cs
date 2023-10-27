@@ -113,24 +113,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
             }
 
-            // Date Type handler, null allowed for data type handler.
-            if (!OptionsValid(limits.DataTypeHandlers, terminalOptions.Handler.DataTypeHandler, allowNullActual: true))
-            {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured data-type handler is not allowed for your license edition. datatype_handler={0}", terminalOptions.Handler.DataTypeHandler);
-            }
-
-            // Unicode handler
-            if (!OptionsValid(limits.TextHandlers, terminalOptions.Handler.TextHandler, allowNullActual: false))
-            {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured text handler is not allowed for your license edition. text_handler={0}", terminalOptions.Handler.TextHandler);
-            }
-
-            // Error handler
-            if (!OptionsValid(limits.ErrorHandlers, terminalOptions.Handler.ErrorHandler, allowNullActual: false))
-            {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured error handler is not allowed for your license edition. error_handler={0}", terminalOptions.Handler.ErrorHandler);
-            }
-
             // Store handler
             if (!OptionsValid(limits.StoreHandlers, terminalOptions.Handler.StoreHandler, allowNullActual: false))
             {

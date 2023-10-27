@@ -56,9 +56,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(false);
 
-            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "" });
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "t1" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "e1", "e2", "e3" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "st1", "st2" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "s1", "s2", "s3" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "l1" });
@@ -80,9 +77,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
@@ -104,9 +98,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license" });
@@ -143,9 +134,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "onpremise-license" });
@@ -167,9 +155,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "onpremise-license" });
@@ -191,9 +176,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(false);
 
-            limits.DataTypeHandlers.Should().BeNull();
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
@@ -215,9 +197,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
@@ -230,38 +209,37 @@ namespace PerpetualIntelligence.Terminal.Licensing
             {
                 { "terminal_limit", 25332343 },
                 { "redistribution_limit", 36523211212212 },
-                { "text_handlers", new[] { "new1", "new2" } }
+                { "service_handlers", new[] { "new1", "new2" } }
             };
 
             LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Demo, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.Micro, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.SMB, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.Enterprise, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.OnPremise, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.Unlimited, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.TextHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
+            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
         }
     }
 }

@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The command and option checker options.
+    /// The command, argument, and option checker configuration options.
     /// </summary>
     /// <remarks>The checker options are not filters. The command execution is blocked if any check fails.</remarks>
     public class CheckerOptions
@@ -17,8 +17,8 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// Determines whether the checker allows a command to run with an obsolete argument or an option.
         /// </summary>
         /// <remarks>
-        /// The obsolete value check is done at runtime only if a user or an application attempts to run the
-        /// command and passes an obsolete argument or an option value.
+        /// The obsolete check is done at runtime only if a user or an application attempts to run the
+        /// command and passes an obsolete argument or an option.
         /// </remarks>
         public bool? AllowObsolete { get; set; }
 

@@ -23,16 +23,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         public long? OptionLimit { get; internal set; }
 
         /// <summary>
-        /// Supports the command option data type checks. Defaults to <c>null</c> or no data type checks.
-        /// </summary>
-        public string[]? DataTypeHandlers { get; internal set; }
-
-        /// <summary>
-        /// The maximum sub commands. Defaults to <c>null</c> or no limit.
-        /// </summary>
-        public string[]? ErrorHandlers { get; internal set; }
-
-        /// <summary>
         /// The maximum grouped commands. Defaults to <c>null</c> or no limit.
         /// </summary>
         public int? GroupedCommandLimit { get; internal set; }
@@ -81,11 +71,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// The maximum terminals. Defaults to <c>null</c> or no limit.
         /// </summary>
         public int? TerminalLimit { get; internal set; }
-
-        /// <summary>
-        /// The maximum sub commands. Defaults to <c>null</c> or no limit.
-        /// </summary>
-        public string[]? TextHandlers { get; internal set; }
 
         /// <summary>
         /// Creates a new instance of <see cref="LicenseLimits"/> based on the specified SaaS plan.
@@ -155,9 +140,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler },
-                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
-                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler },
                 StoreHandlers = new[] { TerminalHandlers.InMemoryHandler },
                 ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
                 LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }
@@ -179,9 +161,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
                 StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
 
-                DataTypeHandlers = customClaims["data_type_handlers"].ToString().SplitBySpace(),
-                TextHandlers = customClaims["text_handlers"].ToString().SplitBySpace(),
-                ErrorHandlers = customClaims["error_handlers"].ToString().SplitBySpace(),
                 StoreHandlers = customClaims["store_handlers"].ToString().SplitBySpace(),
                 ServiceHandlers = customClaims["service_handlers"].ToString().SplitBySpace(),
                 LicenseHandlers = customClaims["license_handlers"].ToString().SplitBySpace()
@@ -204,9 +183,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
-                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
-                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
                 StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
                 ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
                 LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler }
@@ -227,9 +203,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
-                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
-                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
                 StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
                 ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
                 LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler }
@@ -250,9 +223,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
-                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
-                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
                 StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
                 ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
                 LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler }
@@ -273,9 +243,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
                 StrictDataType = false,
 
-                DataTypeHandlers = null,
-                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
-                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler },
                 StoreHandlers = new[] { TerminalHandlers.InMemoryHandler },
                 ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
                 LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }
@@ -296,9 +263,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
                 StrictDataType = true,
 
-                DataTypeHandlers = new[] { TerminalHandlers.DefaultHandler },
-                TextHandlers = new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler },
-                ErrorHandlers = new[] { TerminalHandlers.DefaultHandler },
                 StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler },
                 ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
                 LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }

@@ -314,9 +314,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.DataTypeHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.TextHandlers.Should().BeEquivalentTo(new string[] { "unicode", "ascii" });
-            limits.ErrorHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
             limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });

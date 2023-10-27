@@ -17,7 +17,7 @@
 
 `pi-cli` cuts through infrastructure complexity, letting you concentrate on crafting your CLI applications. Quickly dive in with our [templates and tutorials](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/pi-cli).
 
-> **Transform any .NET ecosystem feature into a CLI or terminal app with ease.**
+> ***Transform any .NET ecosystem feature into a CLI or terminal app with ease.***
 
 ## License and Pricing
 Explore our documentation for detailed information on licensing, redistribution, and pricing:
@@ -25,7 +25,7 @@ Explore our documentation for detailed information on licensing, redistribution,
 - [Redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html)
 - [Pricing details](https://www.perpetualintelligence.com/products/picli#pricing)
 
-> **The full-feature `pi-cli` framework is free for educational and evaluation purposes.**
+> ***The full-feature `pi-cli` framework is free for educational and evaluation purposes.***
 
 For non-educational, release, deployment, or production use, a commercial license is required.
 

@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
@@ -15,33 +13,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     public class HandlerOptions
     {
         /// <summary>
-        /// The data type handler. Its value can be <c>null</c>, <c>default</c> or <c>custom</c>. The <c>default</c> and
-        /// <c>custom</c> are reserved for future releases.
-        /// </summary>
-        /// <remarks>
-        /// <para><c>null</c> indicates no data type handler.</para>
-        /// <para><c>default</c> to be defined.</para>
-        /// <para><c>custom</c> to be defined.</para>
-        /// </remarks>
-        public string? DataTypeHandler { get; set; }
-
-        /// <summary>
-        /// The hosting and routing error handler. Its value can be <c>default</c> or <c>custom</c>. The command router
-        /// receives an error or exception during the command routing, extraction, checker, or execution. On error, it
-        /// forwards it to <see cref="IExceptionHandler"/>.
-        /// </summary>
-        /// <remarks>
-        /// <para><c>default</c> handler prints the error information in the CLI terminal.</para>
-        /// <para>
-        /// <c>custom</c> handler allows application authors to define a custom error handler to process and publish the
-        /// error according to their needs. E.g., app authors can publish the errors to a central log or on their cloud
-        /// back-end for audit purposes.
-        /// </para>
-        /// </remarks>
-        public string ErrorHandler { get; set; } = "default";
-
-        /// <summary>
-        /// The license handler. Its value can be <c>online-license</c>, <c>offline-license</c>, or <c>dev-license</c>.
+        /// The license handler. Its value can be <c>online-license</c>, <c>offline-license</c>, or <c>onpremise-license</c>.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -82,16 +54,5 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// </para>
         /// </remarks>
         public string StoreHandler { get; set; } = "in-memory";
-
-        /// <summary>
-        /// The hosting and routing command string text handler. Its value can be <c>unicode</c> or <c>ascii</c>. The
-        /// <c>ascii</c> is reserved for future releases.
-        /// </summary>
-        /// <remarks>
-        /// <para><c>unicode</c> handler supports Unicode command strings.</para>
-        /// <para><c>ascii</c> handler supports ASCII command strings.</para>
-        /// By default the value is set to <c>unicode</c>. Currently we only support <c>left-to-right</c> languages.
-        /// </remarks>
-        public string TextHandler { get; set; } = "unicode";
     }
 }

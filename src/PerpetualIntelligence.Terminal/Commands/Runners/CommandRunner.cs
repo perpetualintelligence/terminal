@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
-    /// The command runner.
+    /// The command runner is where developers implement how commands are executed. It operates asynchronously to handle commands that might take a while to process.
+    /// The framework routes each parsed command to its specific runner, helping to organize and manage the command execution logic within your application.
     /// </summary>
     public abstract class CommandRunner<TResult> : IDelegateCommandRunner, ICommandRunner<TResult> where TResult : CommandRunnerResult
     {

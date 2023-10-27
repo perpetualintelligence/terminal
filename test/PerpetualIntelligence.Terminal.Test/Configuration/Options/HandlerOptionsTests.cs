@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -24,12 +24,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         {
             HandlerOptions options = new();
 
-            options.DataTypeHandler.Should().BeNull();
-            options.ErrorHandler.Should().Be(TerminalHandlers.DefaultHandler);
             options.LicenseHandler.Should().Be(TerminalHandlers.OnlineLicenseHandler);
             options.ServiceHandler.Should().Be(TerminalHandlers.DefaultHandler);
             options.StoreHandler.Should().Be(TerminalHandlers.InMemoryHandler);
-            options.TextHandler.Should().Be(TerminalHandlers.UnicodeHandler);
         }
     }
 }

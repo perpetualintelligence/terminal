@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
         public Task RunAsync(MockRoutingContext context)
         {
             Called = true;
-            return Task.FromResult(new MockRoutingResult());
+            return Task.CompletedTask;
         }
     }
 }

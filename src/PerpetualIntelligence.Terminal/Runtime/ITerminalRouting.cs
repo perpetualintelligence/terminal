@@ -18,7 +18,6 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// Runs terminal routing asynchronously.
         /// </summary>
         /// <param name="context">The terminal router context.</param>
-        /// <returns>The <see cref="TerminalRoutingResult"/> instance.</returns>
         public Task RunAsync(TContext context);
     }
 }
