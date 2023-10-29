@@ -8,7 +8,7 @@
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The configuration options.
+    /// The terminal configuration options.
     /// </summary>
     public class TerminalOptions
     {

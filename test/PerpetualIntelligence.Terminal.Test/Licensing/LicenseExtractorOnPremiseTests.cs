@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
 
-            commandStoreHandler = new InMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
+            commandStore = new InMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
         }
 
         [Theory]
@@ -251,7 +251,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             licenseFromGet.Should().BeSameAs(result.License);
 
             // Check on-prem-deployment license
-            licenseChecker = new LicenseChecker(commandStoreHandler, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
+            licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
             LicenseCheckerResult licResult = await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(result.License));
             licResult.Should().NotBeNull();
             licResult.CommandGroupCount.Should().Be(3);
@@ -336,7 +336,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             licenseFromGet.Should().BeSameAs(result.License);
 
             // Check on-prem-deployment license
-            licenseChecker = new LicenseChecker(commandStoreHandler, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
+            licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
             LicenseCheckerResult licResult = await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(result.License));
             licResult.Should().NotBeNull();
             licResult.CommandGroupCount.Should().Be(3);
@@ -401,6 +401,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         private readonly string testOfflineLicPath;
         private ILicenseDebugger licenseDebugger = null!;
         private ILicenseChecker licenseChecker = null!;
-        private ICommandStoreHandler commandStoreHandler;
+        private ICommandStore commandStore;
     }
 }

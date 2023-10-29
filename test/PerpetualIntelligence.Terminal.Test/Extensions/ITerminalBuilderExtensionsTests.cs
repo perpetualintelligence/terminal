@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -91,7 +92,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddTerminalOptionsShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddOptions();
+            terminalBuilder.AddConfigurationOptions();
 
             var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalOptions)));
             Assert.IsNotNull(serviceDescriptor);
@@ -150,11 +151,11 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddCommandDescriptorStoreShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddStoreHandler<MockCommandDescriptorStore>();
+            terminalBuilder.AddCommandStore<MockCommandDescriptorStore>();
 
-            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandStoreHandler)));
+            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandStore)));
             Assert.IsNotNull(serviceDescriptor);
-            Assert.AreEqual(ServiceLifetime.Transient, serviceDescriptor.Lifetime);
+            Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
             Assert.AreEqual(typeof(MockCommandDescriptorStore), serviceDescriptor.ImplementationType);
         }
 
@@ -345,12 +346,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             var comparer = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITextHandler)));
             Assert.IsNotNull(comparer);
-            Assert.AreEqual(ServiceLifetime.Transient, comparer.Lifetime);
-
-            // This registers a factory so we build to check the instance
-            var serviceProvider = terminalBuilder.Services.BuildServiceProvider();
-            var instance = serviceProvider.GetService<ITextHandler>();
-            Assert.IsInstanceOfType(instance, typeof(UnicodeTextHandler));
+            Assert.AreEqual(ServiceLifetime.Singleton, comparer.Lifetime);
+            Assert.AreEqual(typeof(UnicodeTextHandler), comparer.ImplementationType);
         }
 
         public ITerminalBuilderExtensionsTests()
@@ -365,9 +362,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             {
                 throw new InvalidOperationException("Service descriptors not initialized.");
             }
-            terminalBuilder = serviceDescriptors.AddTerminal();
 
-            Assert.IsNotNull(serviceDescriptors);
+            terminalBuilder = serviceDescriptors.CreateTerminalBuilder();
         }
     }
 }

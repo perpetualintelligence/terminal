@@ -21,8 +21,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         public LicenseCheckerTests()
         {
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            commandStoreHandler = new InMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
-            licenseChecker = new LicenseChecker(commandStoreHandler, terminalOptions, TestLogger.Create<LicenseChecker>());
+            commandStore = new InMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
+            licenseChecker = new LicenseChecker(commandStore, terminalOptions, TestLogger.Create<LicenseChecker>());
             license = new License("testProviderId2", TerminalHandlers.OnlineLicenseHandler, TerminalLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Unlimited), LicensePrice.Create(TerminalLicensePlans.Unlimited));
         }
 
@@ -200,7 +200,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private ICommandStoreHandler commandStoreHandler;
+        private ICommandStore commandStore;
         private readonly License license;
         private readonly ILicenseChecker licenseChecker;
     }

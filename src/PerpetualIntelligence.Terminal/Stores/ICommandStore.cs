@@ -15,7 +15,7 @@ namespace PerpetualIntelligence.Terminal.Stores
     /// <summary>
     /// A store handler to lookup a <see cref="CommandDescriptor"/>.
     /// </summary>
-    public interface ICommandStoreHandler
+    public interface ICommandStore
     {
         /// <summary>
         /// Attempts to finds a <see cref="CommandDescriptor"/> by its id asynchronously.

@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddOptions(this ITerminalBuilder builder)
+        public static ITerminalBuilder AddConfigurationOptions(this ITerminalBuilder builder)
         {
             // Add options.
             builder.Services.AddOptions();
@@ -261,15 +261,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ICommandStoreHandler"/> to the service collection.
+        /// Adds the <see cref="ICommandStore"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command descriptor store type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddStoreHandler<TStore>(this ITerminalBuilder builder) where TStore : class, ICommandStoreHandler
+        public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder) where TStore : class, ICommandStore
         {
             // Add command extractor
-            builder.Services.AddTransient<ICommandStoreHandler, TStore>();
+            builder.Services.AddSingleton<ICommandStore, TStore>();
 
             return builder;
         }
@@ -282,7 +282,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         public static ITerminalBuilder AddTextHandler<TTextHandler>(this ITerminalBuilder builder) where TTextHandler : class, ITextHandler
         {
-            builder.Services.AddTransient<ITextHandler, TTextHandler>();
+            builder.Services.AddSingleton<ITextHandler, TTextHandler>();
             return builder;
         }
 

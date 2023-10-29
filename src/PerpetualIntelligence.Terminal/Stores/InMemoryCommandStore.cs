@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Stores
 {
     /// <summary>
-    /// The default in-memory <see cref="ICommandStoreHandler"/>.
+    /// The default in-memory <see cref="ICommandStore"/>.
     /// </summary>
-    public class InMemoryCommandStore : ICommandStoreHandler
+    public class InMemoryCommandStore : ICommandStore
     {
         /// <summary>
         /// Initialize a new instance.

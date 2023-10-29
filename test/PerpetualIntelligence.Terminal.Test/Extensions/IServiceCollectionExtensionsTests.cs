@@ -14,6 +14,7 @@ using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Licensing;
+using PerpetualIntelligence.Terminal.Stores;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -40,7 +41,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             setupActionCalled.Should().BeFalse();
 
-            AssertCoreServicesNotAdded(host);
+            AssertNoCoreServices(host);
         }
 
         [Fact]
@@ -59,7 +60,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal(configuration);
+                arg.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>(configuration);
             }).Build();
 
             // Check Options are added
@@ -74,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             setupActionCalled.Should().BeFalse();
 
-            AssertCoreServicesNotAdded(host);
+            AssertCoreServices(host);
         }
 
         [Fact]
@@ -82,7 +83,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal();
+                arg.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>();
             }).Build();
 
             // Check Options are added
@@ -97,7 +98,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             setupActionCalled.Should().BeFalse();
 
-            AssertCoreServicesNotAdded(host);
+            AssertCoreServices(host);
         }
 
         [Fact]
@@ -105,7 +106,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal(SetupAction);
+                arg.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>(SetupAction);
             }).Build();
 
             // Check Options are added
@@ -120,26 +121,43 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             setupActionCalled.Should().BeTrue();
 
-            AssertCoreServicesNotAdded(host);
+            AssertCoreServices(host);
         }
 
-        private void AssertCoreServicesNotAdded(IHost host)
+        private void AssertCoreServices(IHost host)
         {
-            // Check ICommandRouter is added as a transient
             ICommandRouter? commandRouter = host.Services.GetService<ICommandRouter>();
             commandRouter.Should().BeNull();
 
-            // Check ICommandRouter is added as a transient
             ICommandHandler? commandHandler = host.Services.GetService<ICommandHandler>();
             commandHandler.Should().BeNull();
 
-            // License checker is added as a singleton
+            ILicenseChecker? licenseChecker = host.Services.GetService<ILicenseChecker>();
+            licenseChecker.Should().NotBeNull();
+
+            ILicenseExtractor? licenseExtractor = host.Services.GetService<ILicenseExtractor>();
+            licenseExtractor.Should().NotBeNull();
+
+            ILicenseDebugger? LicenseDebugger = host.Services.GetService<ILicenseDebugger>();
+            LicenseDebugger.Should().NotBeNull();
+        }
+
+        private void AssertNoCoreServices(IHost host)
+        {
+            ICommandRouter? commandRouter = host.Services.GetService<ICommandRouter>();
+            commandRouter.Should().BeNull();
+
+            ICommandHandler? commandHandler = host.Services.GetService<ICommandHandler>();
+            commandHandler.Should().BeNull();
+
             ILicenseChecker? licenseChecker = host.Services.GetService<ILicenseChecker>();
             licenseChecker.Should().BeNull();
 
-            // License extractor is added as a singleton
             ILicenseExtractor? licenseExtractor = host.Services.GetService<ILicenseExtractor>();
             licenseExtractor.Should().BeNull();
+
+            ILicenseDebugger? LicenseDebugger = host.Services.GetService<ILicenseDebugger>();
+            LicenseDebugger.Should().BeNull();
         }
 
         private void SetupAction(TerminalOptions obj)

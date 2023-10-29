@@ -23,9 +23,9 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public LicenseChecker(ICommandStoreHandler commandStoreHandler, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
+        public LicenseChecker(ICommandStore commandStore, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
         {
-            this.commandStoreHandler = commandStoreHandler;
+            this.commandStore = commandStore;
             this.terminalOptions = terminalOptions;
             this.logger = logger;
         }
@@ -149,7 +149,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 // TODO, how do we sync terminal count across apps
                 terminalCount = 1;
 
-                var commandDescriptors = await commandStoreHandler.AllAsync();
+                var commandDescriptors = await commandStore.AllAsync();
                 foreach (var kvpCmd in commandDescriptors)
                 {
                     // Register the commands
@@ -222,7 +222,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private readonly ICommandStoreHandler commandStoreHandler;
+        private readonly ICommandStore commandStore;
         private readonly ILogger<LicenseChecker> logger;
         private long optionCount;
         private long commandGroupCount;

@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
     public class CommandRouteParser : ICommandRouteParser
     {
         private readonly ITextHandler textHandler;
-        private readonly ICommandStoreHandler commandStoreHandler;
+        private readonly ICommandStore commandStore;
         private readonly TerminalOptions terminalOptions;
         private readonly ILogger<CommandRouteParser> logger;
 
@@ -64,13 +64,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// Initializes a new instance of the <see cref="CommandRouteParser"/> class.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
-        /// <param name="commandStoreHandler">The command store handler.</param>
+        /// <param name="commandStore">The command store handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRouteParser(ITextHandler textHandler, ICommandStoreHandler commandStoreHandler, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
+        public CommandRouteParser(ITextHandler textHandler, ICommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
         {
             this.textHandler = textHandler;
-            this.commandStoreHandler = commandStoreHandler;
+            this.commandStore = commandStore;
             this.terminalOptions = terminalOptions;
             this.logger = logger;
         }
@@ -327,7 +327,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                     continue;
                 }
 
-                if (await commandStoreHandler.TryFindByIdAsync(segment, out CommandDescriptor? currentDescriptor))
+                if (await commandStore.TryFindByIdAsync(segment, out CommandDescriptor? currentDescriptor))
                 {
                     if (currentDescriptor == null)
                     {

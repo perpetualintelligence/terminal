@@ -272,7 +272,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
         private CommandRoute commandRoute = null!;
         private CommandChecker checker = null!;
-        private ICommandStoreHandler commands = null!;
+        private ICommandStore commands = null!;
         private IDataTypeMapper<Option> optionMapper = null!;
         private IDataTypeMapper<Argument> argumentMapper = null!;
         private TerminalOptions terminalOptions = null!;

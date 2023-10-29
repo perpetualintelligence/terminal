@@ -12,78 +12,141 @@ using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Extractors;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
+using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Hosting;
+using PerpetualIntelligence.Terminal.Runtime;
+using PerpetualIntelligence.Terminal.Stores;
 using System;
 
 namespace PerpetualIntelligence.Terminal.Extensions
 {
     /// <summary>
-    /// The <see cref="IServiceCollection"/> extension methods.
+    /// Provides extension methods to register terminal services with an <see cref="IServiceCollection"/>.
     /// </summary>
     public static class IServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the terminal service.
+        /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="setupAction">The setup action.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
-        public static ITerminalBuilder AddTerminal(this IServiceCollection services, Action<TerminalOptions> setupAction)
+        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
+        /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
+        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, Action<TerminalOptions> setupAction)
+            where TStore : class, ICommandStore
+            where TText : class, ITextHandler
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+
             services.Configure(setupAction);
-            return services.AddTerminal();
+            return services.AddTerminal<TStore, TText>();
         }
 
         /// <summary>
-        /// Adds the terminal service.
+        /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
-        public static ITerminalBuilder AddTerminal(this IServiceCollection services, IConfiguration configuration)
+        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="configuration">The configuration to bind to <see cref="TerminalOptions"/>.</param>
+        /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
+        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, IConfiguration configuration)
+            where TStore : class, ICommandStore
+            where TText : class, ITextHandler
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
             services.Configure<TerminalOptions>(configuration);
-            return services.AddTerminal();
+            return services.AddTerminal<TStore, TText>();
         }
 
         /// <summary>
-        /// Adds the terminal service.
+        /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <param name="services">The services.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
-        public static ITerminalBuilder AddTerminal(this IServiceCollection services)
+        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
+        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services)
+            where TStore : class, ICommandStore
+            where TText : class, ITextHandler
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
             return services.CreateTerminalBuilder()
-                           .AddOptions();
+                           .AddConfigurationOptions()
+                           .AddCommandStore<TStore>()
+                           .AddTextHandler<TText>()
+                           .AddLicensing();
         }
 
         /// <summary>
-        /// Create the core <see cref="ITerminalBuilder"/>.
+        /// Creates a <see cref="ITerminalBuilder"/> for configuring terminal services.
         /// </summary>
-        /// <param name="services">The services.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/> instance.</returns>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
+        /// <remarks>
+        /// This method is part of the terminal infrastructure and is not intended to be used directly from application code.
+        /// </remarks>
         public static ITerminalBuilder CreateTerminalBuilder(this IServiceCollection services)
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
             return new TerminalBuilder(services);
         }
 
         /// <summary>
-        /// Adds the default terminal services.
+        /// Adds the default terminal services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <param name="services">The service collection.</param>
-        /// <param name="setupAction">The configuration setup action.</param>
-        /// <returns></returns>
-        public static ITerminalBuilder AddTerminalDefault(this IServiceCollection services, Action<TerminalOptions> setupAction)
+        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
+        /// <typeparam name="THelp">The type implementing <see cref="IHelpProvider"/>.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
+        /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
+        public static ITerminalBuilder AddTerminalDefault<TStore, TText, THelp>(this IServiceCollection services, Action<TerminalOptions> setupAction)
+            where TStore : class, ICommandStore
+            where TText : class, ITextHandler
+            where THelp : class, IHelpProvider
         {
-            return services.AddTerminal(setupAction)
-                    .AddLicensing()
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+
+            return services.AddTerminal<TStore, TText>(setupAction)
                     .AddCommandRouter<CommandRouter, CommandHandler>()
                     .AddCommandExtractor<CommandExtractor, CommandRouteParser>()
                     .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
                     .AddArgumentChecker<DataTypeMapper<Argument>, ArgumentChecker>()
-                    .AddExceptionHandler<ExceptionHandler>();
+                    .AddExceptionHandler<ExceptionHandler>()
+                    .AddHelpProvider<THelp>();
+        }
+
+        /// <summary>
+        /// Adds the default terminal services for console applications to the specified <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
+        /// <typeparam name="THelp">The type implementing <see cref="IHelpProvider"/>.</typeparam>
+        /// <typeparam name="TConsole">The type implementing <see cref="ITerminalConsole"/>.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
+        /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
+        public static ITerminalBuilder AddTerminalConsole<TStore, TText, THelp, TConsole>(this IServiceCollection services, Action<TerminalOptions> setupAction)
+            where TStore : class, ICommandStore
+            where TText : class, ITextHandler
+            where THelp : class, IHelpProvider
+            where TConsole : class, ITerminalConsole
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+
+            return services.AddTerminalDefault<TStore, TText, THelp>(setupAction)
+                           .AddRouting<TerminalConsoleRouting, TerminalConsoleRoutingContext>()
+                           .AddConsole<TConsole>();
         }
     }
 }

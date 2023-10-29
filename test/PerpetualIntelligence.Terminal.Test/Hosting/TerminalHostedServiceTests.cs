@@ -17,6 +17,7 @@ using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Terminal.Hosting.Mocks;
 using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Terminal.Mocks;
+using PerpetualIntelligence.Terminal.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -290,7 +291,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal()
+                services.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
@@ -331,7 +332,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal()
+                services.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
                         .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
                     .Add()

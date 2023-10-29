@@ -37,10 +37,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
                new CommandDescriptor("cmd_nr1", "cmd_nr1_name", "cmd_nr1_desc", CommandType.SubCommand, CommandFlags.None),
                new CommandDescriptor("cmd_nr2", "cmd_nr2_name", "cmd_nr2_desc", CommandType.SubCommand, CommandFlags.None)
             });
-            commandStoreHandler = new InMemoryCommandStore(textHandler, commandDescriptors.Values);
+            commandStore = new InMemoryCommandStore(textHandler, commandDescriptors.Values);
             logger = new NullLogger<CommandRouteParser>();
 
-            commandRouteParser = new CommandRouteParser(textHandler, commandStoreHandler, terminalOptions, logger);
+            commandRouteParser = new CommandRouteParser(textHandler, commandStore, terminalOptions, logger);
         }
 
         [Theory]
@@ -374,7 +374,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         private readonly TerminalOptions terminalOptions;
         private ITextHandler textHandler;
-        private ICommandStoreHandler commandStoreHandler;
+        private ICommandStore commandStore;
         private CommandDescriptors commandDescriptors;
         private ICommandRouteParser commandRouteParser;
         private ILogger<CommandRouteParser> logger;

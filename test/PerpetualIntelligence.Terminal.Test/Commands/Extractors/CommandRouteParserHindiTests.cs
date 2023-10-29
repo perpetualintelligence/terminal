@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
     public class CommandRouteParserHindiTests
     {
         private readonly ITextHandler _textHandler;
-        private readonly ICommandStoreHandler _commandStore;
+        private readonly ICommandStore _commandStore;
         private readonly TerminalOptions _terminalOptions;
         private readonly ILogger<CommandRouteParser> _logger;
         private readonly ICommandRouteParser _commandRouteParser;

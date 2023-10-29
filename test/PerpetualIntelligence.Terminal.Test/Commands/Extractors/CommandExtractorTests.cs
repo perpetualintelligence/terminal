@@ -77,7 +77,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             Assert.IsNull(result.ParsedCommand.Command.Options);
         }
 
-        private ICommandStoreHandler commandStore = null!;
+        private ICommandStore commandStore = null!;
         private ICommandRouteParser routeParser = null!;
         private CommandExtractor extractor = null!;
         private TerminalOptions terminalOptions = null!;

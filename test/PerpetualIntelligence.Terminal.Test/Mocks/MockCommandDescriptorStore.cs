@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    public class MockCommandDescriptorStore : ICommandStoreHandler
+    public class MockCommandDescriptorStore : ICommandStore
     {
         public Task<ReadOnlyDictionary<string, CommandDescriptor>> AllAsync()
         {
