@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Stores
 {
     /// <summary>
-    /// A store handler to lookup a <see cref="CommandDescriptor"/>.
+    /// A store to lookup a <see cref="CommandDescriptor"/>.
     /// </summary>
     public interface ICommandStore
     {

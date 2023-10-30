@@ -70,7 +70,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         public static ITerminalBuilder AddEventHandler<TEventHandler>(this ITerminalBuilder builder) where TEventHandler : class, IAsyncEventHandler
         {
-            builder.Services.AddTransient<IAsyncEventHandler, TEventHandler>();
+            builder.Services.AddSingleton<IAsyncEventHandler, TEventHandler>();
             return builder;
         }
 

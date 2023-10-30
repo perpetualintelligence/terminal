@@ -39,8 +39,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
             where TStore : class, ICommandStore
             where TText : class, ITextHandler
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (setupAction == null)
+            {
+                throw new ArgumentNullException(nameof(setupAction));
+            }
 
             services.Configure(setupAction);
             return services.AddTerminal<TStore, TText>();
@@ -58,8 +65,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
             where TStore : class, ICommandStore
             where TText : class, ITextHandler
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
 
             services.Configure<TerminalOptions>(configuration);
             return services.AddTerminal<TStore, TText>();
@@ -76,7 +90,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             where TStore : class, ICommandStore
             where TText : class, ITextHandler
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
             return services.CreateTerminalBuilder()
                            .AddConfigurationOptions()
@@ -95,7 +112,11 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </remarks>
         public static ITerminalBuilder CreateTerminalBuilder(this IServiceCollection services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             return new TerminalBuilder(services);
         }
 
@@ -113,8 +134,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
             where TText : class, ITextHandler
             where THelp : class, IHelpProvider
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (setupAction == null)
+            {
+                throw new ArgumentNullException(nameof(setupAction));
+            }
 
             return services.AddTerminal<TStore, TText>(setupAction)
                     .AddCommandRouter<CommandRouter, CommandHandler>()
@@ -141,8 +169,15 @@ namespace PerpetualIntelligence.Terminal.Extensions
             where THelp : class, IHelpProvider
             where TConsole : class, ITerminalConsole
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (setupAction == null)
+            {
+                throw new ArgumentNullException(nameof(setupAction));
+            }
 
             return services.AddTerminalDefault<TStore, TText, THelp>(setupAction)
                            .AddRouting<TerminalConsoleRouting, TerminalConsoleRoutingContext>()

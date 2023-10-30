@@ -53,7 +53,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IAsyncEventHandler)));
             Assert.IsNotNull(arg);
-            Assert.AreEqual(ServiceLifetime.Transient, arg.Lifetime);
+            Assert.AreEqual(ServiceLifetime.Singleton, arg.Lifetime);
             Assert.AreEqual(typeof(MockAsyncEventHandler), arg.ImplementationType);
         }
 
