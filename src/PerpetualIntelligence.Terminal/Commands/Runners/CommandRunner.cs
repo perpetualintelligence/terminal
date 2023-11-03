@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using System.Threading.Tasks;
 
@@ -17,18 +18,26 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
     public abstract class CommandRunner<TResult> : IDelegateCommandRunner, ICommandRunner<TResult> where TResult : CommandRunnerResult
     {
         private IHelpProvider? helpProvider;
+        private ILogger? logger;
 
         /// <inheritdoc/>
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider, ILogger? logger = null)
         {
             this.helpProvider = helpProvider;
+
+            this.logger = logger;
+            logger?.LogDebug("Run help. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
+
             await RunHelpAsync(context);
             return CommandRunnerResult.NoProcessing;
         }
 
         /// <inheritdoc/>
-        public async Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context)
+        public async Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context, ILogger? logger = null)
         {
+            this.logger = logger;
+            logger?.LogDebug("Run command. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
+
             var result = await RunCommandAsync(context);
             return (CommandRunnerResult)(object)result;
         }

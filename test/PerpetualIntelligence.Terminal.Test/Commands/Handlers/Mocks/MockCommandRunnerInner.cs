@@ -1,10 +1,11 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Runners;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
 
         private IHelpProvider helpProvider = null!;
 
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider, ILogger? logger = null)
         {
             this.helpProvider = helpProvider;
             DelegateHelpCalled = true;
@@ -29,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
             return CommandRunnerResult.NoProcessing;
         }
 
-        public Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context)
+        public Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context, ILogger? logger = null)
         {
             DelegateRunCalled = true;
             return RunCommandAsync(context);

@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -46,11 +47,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// Processes the runner result asynchronously.
         /// </summary>
         /// <param name="context">The runner context.</param>
+        /// <param name="logger">The logger.</param>
         /// <remarks>
         /// Derived implementation should call base class implementation to mark the result as processed, see <see cref="IsProcessed"/>.
         /// </remarks>
-        public virtual Task ProcessAsync(CommandRunnerContext context)
+        public virtual Task ProcessAsync(CommandRunnerContext context, ILogger? logger = null)
         {
+            logger?.LogDebug("Process runner result. command={0}", context.Command.Id);
+            
             IsProcessed = true;
             return Task.CompletedTask;
         }

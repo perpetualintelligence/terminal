@@ -43,6 +43,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <exception cref="System.NotImplementedException"></exception>
         public async Task<LicenseCheckerResult> CheckLicenseAsync(LicenseCheckerContext context)
         {
+            logger.LogDebug("Check license. plan={0} usage={1} subject={2} tenant={3}", context.License.Plan, context.License.Usage, context.License.Claims.Subject, context.License.Claims.TenantId);
+
             // Initialize if needed
             await InitializeLockAsync(context.License);
 

@@ -13,7 +13,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
 {
     internal class MockCommandRouteParser : ICommandRouteParser
     {
-        public CommandRoute PassedCommandRoute { get; private set; }
+        public CommandRoute PassedCommandRoute { get; private set; } = null!;
 
         public bool Called { get; private set; }
 

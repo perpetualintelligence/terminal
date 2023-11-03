@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Terminal.Commands.Runners;
 using System.Threading.Tasks;
 
@@ -22,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
             return new ValueTask();
         }
 
-        public override Task ProcessAsync(CommandRunnerContext context)
+        public override Task ProcessAsync(CommandRunnerContext context, ILogger? logger = null)
         {
             ResultProcessed = true;
             return Task.CompletedTask;

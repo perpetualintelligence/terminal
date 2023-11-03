@@ -51,6 +51,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <returns></returns>
         public async Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context)
         {
+            logger.LogDebug("Extract license.");
+
             // For singleton DI service we don't extract license keys once extracted.
             if (licenseExtractorResult == null)
             {
@@ -70,6 +72,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <inheritdoc/>
         public Task<License?> GetLicenseAsync()
         {
+            logger.LogDebug("Get license.");
             return Task.FromResult(licenseExtractorResult?.License);
         }
 
@@ -165,6 +168,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> ExtractFromJsonAsync()
         {
+            logger.LogDebug("Extract from JSON license key.");
+
             // Missing app id
             if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.AuthorizedApplicationId))
             {
@@ -216,26 +221,32 @@ namespace PerpetualIntelligence.Terminal.Licensing
             }
 
             // License check based on configured license handler.
+            LicenseExtractorResult licenseExtractorResult;
             if (terminalOptions.Handler.LicenseHandler == TerminalHandlers.OnlineLicenseHandler)
             {
-                return await EnsureOnlineLicenseAsync(licenseFileModel);
+                licenseExtractorResult = await EnsureOnlineLicenseAsync(licenseFileModel);
             }
             else if (terminalOptions.Handler.LicenseHandler == TerminalHandlers.OfflineLicenseHandler)
             {
-                return await EnsureOfflineLicenseAsync(licenseFileModel);
+                licenseExtractorResult = await EnsureOfflineLicenseAsync(licenseFileModel);
             }
             else if (terminalOptions.Handler.LicenseHandler == TerminalHandlers.OnPremiseLicenseHandler)
             {
-                return await EnsureOnPremiseLicenseAsync(licenseFileModel);
+                licenseExtractorResult = await EnsureOnPremiseLicenseAsync(licenseFileModel);
             }
             else
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license handler is not valid, see hosting options. licensing_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
+
+            logger.LogDebug("Extracted license. plan={0} usage={1} subject={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
+            return licenseExtractorResult;
         }
 
         private async Task<LicenseExtractorResult> EnsureOnPremiseLicenseAsync(LicenseFileModel licenseFileModel)
         {
+            logger.LogDebug("Extract on-premise license. subject={0} tenant={1}", licenseFileModel.Subject, licenseFileModel.ConsumerTenantId);
+
             if (terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.OnPremise ||
                 terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Unlimited)
             {
@@ -243,6 +254,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
                 // On-Premise mode we allow developers to work online and offline.
                 if (!licenseDebugger.IsDebuggerAttached() && terminalOptions.Licensing.OnPremiseDeployment.GetValueOrDefault())
                 {
+                    logger.LogDebug("On-premise deployment enabled. Skipping license check. plan={0} subject={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFileModel.Subject, licenseFileModel.ConsumerTenantId);
                     return new LicenseExtractorResult(OnPremiseDeploymentLicense(), TerminalHandlers.OnPremiseLicenseHandler);
                 }
                 else
@@ -283,6 +295,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFileModel licenseFileModel)
         {
+            logger.LogDebug("Extract online license. subject={0} tenant={1}", licenseFileModel.Subject, licenseFileModel.ConsumerTenantId);
+
             // Check JWS signed assertion (JWS key)
             LicenseOnlineCheckModel checkModel = new()
             {
@@ -356,6 +370,8 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFileModel licenseFileModel)
         {
+            logger.LogDebug("Extract offline license. subject={0} tenant={1}", licenseFileModel.Subject, licenseFileModel.ConsumerTenantId);
+
             // Check JWS signed assertion (JWS key)
             LicenseOfflineCheckModel checkModel = new()
             {

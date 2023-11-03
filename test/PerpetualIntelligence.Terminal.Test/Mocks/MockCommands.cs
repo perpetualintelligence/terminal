@@ -194,7 +194,6 @@ namespace PerpetualIntelligence.Terminal.Mocks
         public static CommandDescriptors GroupedOptionsCommands;
         public static CommandDescriptors LicensingCommands;
         public static CommandDescriptors UnicodeCommands;
-        public static CommandDescriptors AliasCommands;
         public static OptionDescriptors TestOptionDescriptors;
         public static OptionDescriptors TestHindiUnicodeOptionDescriptors;
         public static OptionDescriptors TestOptionsDescriptors;

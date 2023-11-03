@@ -98,6 +98,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// </remarks>
         public async Task<ParsedCommand> ParseRouteAsync(CommandRoute commandRoute)
         {
+            logger.LogDebug("Parse route. route={0} raw={1}", commandRoute.Id, commandRoute.Raw);
+
             // Extract the queue of segments from the raw command based of `separator` and `optionValueSeparator`
             Queue<ParsedSplit> segmentsQueue = ExtractQueue(commandRoute);
 
@@ -399,32 +401,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         private void LogIfDebugLevelEnabled(List<CommandDescriptor> parsedDescriptors, IEnumerable<string> parsedArguments, Dictionary<string, string> parsedOptions)
         {
+            // Early return to optimize performance.
             if (!logger.IsEnabled(LogLevel.Debug))
             {
                 return;
             }
 
-            StringBuilder debugLog = new();
-
-            debugLog.AppendLine("Commands:");
-            foreach (var cmd in parsedDescriptors)
-            {
-                debugLog.AppendLine(cmd.Id);
-            }
-
-            debugLog.AppendLine("Arguments:");
-            foreach (var arg in parsedArguments)
-            {
-                debugLog.AppendLine(arg);
-            }
-
-            debugLog.AppendLine("Options:");
+            logger.LogDebug("Hierarchy={0}", parsedDescriptors.Select(e => e.Id).JoinByComma());
+            logger.LogDebug("Command={0}", parsedDescriptors.Last().Id);
+            logger.LogDebug("Arguments={0}", parsedArguments.JoinByComma());
+            logger.LogDebug("Options:");
             foreach (var opt in parsedOptions)
             {
-                debugLog.AppendLine($"{opt.Key}={opt.Value}");
+                logger.LogDebug($"{opt.Key}={opt.Value}");
             }
-
-            logger.LogDebug(debugLog.ToString());
         }
 
         private ParsedCommand ParseCommand(CommandRoute commandRoute, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)

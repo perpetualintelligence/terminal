@@ -15,27 +15,27 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Commands.Runners
 {
     /// <summary>
-    /// The <c>lic</c> command displays the current licensing information.
+    /// The default license info runner that outputs the current licensing information to the <see cref="ITerminalConsole"/>.
     /// </summary>
     public class LicenseInfoRunner : CommandRunner<CommandRunnerResult>
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        public LicenseInfoRunner(ITerminalConsole terminalConsole, ILicenseExtractor licenseExractor, ILicenseChecker licenseChecker)
+        public LicenseInfoRunner(ITerminalConsole terminalConsole, ILicenseChecker licenseChecker)
         {
             this.terminalConsole = terminalConsole;
-            this.licenseExtractor = licenseExractor;
             this.licenseChecker = licenseChecker;
         }
 
         /// <inheritdoc/>
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
-            LicenseExtractorResult licResult = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            LicenseCheckerResult checkResult = await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(licResult.License));
-
-            License license = licResult.License;
+            // Recheck the license to get the current consumption.
+            // TODO: This should be tolerant of over-consumption since it is printing the usage. At present CheckLicenseAsync
+            // throw exception on over-consumption.
+            License license = context.HandlerContext.License;
+            LicenseCheckerResult checkResult = await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
 
             {
                 // Print Details
@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
                 // Print Usage
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Usage");
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "root_command={0}", checkResult.RootCommandCount);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "grouped_command={0}", checkResult.CommandGroupCount);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "command_groups={0}", checkResult.CommandGroupCount);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "sub_command={0}", checkResult.SubCommandCount);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option={0}", checkResult.OptionCount);
             }
@@ -128,6 +128,5 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
 
         private readonly ILicenseChecker licenseChecker;
         private readonly ITerminalConsole terminalConsole;
-        private readonly ILicenseExtractor licenseExtractor;
     }
 }

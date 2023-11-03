@@ -1,10 +1,11 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using System.Threading.Tasks;
 
@@ -23,16 +24,18 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         /// Delegates to <see cref="ICommandRunner{TResult}.RunCommandAsync(CommandRunnerContext)"/> asynchronously.
         /// </summary>
         /// <param name="context">The runner context.</param>
+        /// <param name="logger">The logger.</param>
         /// <returns>The runner result.</returns>
 
-        Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context);
+        Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context, ILogger? logger = null);
 
         /// <summary>
         /// Delegates to <see cref="ICommandRunner{TResult}.RunHelpAsync(CommandRunnerContext)"/> asynchronously.
         /// </summary>
         /// <param name="context">The runner context.</param>
         /// <param name="helpProvider">The help provider.</param>
+        /// <param name="logger">The logger.</param>
         /// <returns>The runner result.</returns>
-        Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider);
+        Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider, ILogger? logger = null);
     }
 }

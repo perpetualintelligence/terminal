@@ -35,6 +35,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         /// <inheritdoc/>
         public async Task<CommandCheckerResult> CheckCommandAsync(CommandCheckerContext context)
         {
+            logger.LogDebug("Check command. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
+
             // Make sure command string raw length is within specified
             if (context.HandlerContext.RouterContext.Route.Raw.Length > terminalOptions.Router.MaxMessageLength)
             {

@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace PerpetualIntelligence.Terminal.Licensing
@@ -14,12 +15,24 @@ namespace PerpetualIntelligence.Terminal.Licensing
     /// </summary>
     public sealed class LicenseDebugger : ILicenseDebugger
     {
+        private readonly ILogger<LicenseDebugger> logger;
+
+        /// <summary>
+        /// Initialize a new instance.
+        /// </summary>
+        public LicenseDebugger(ILogger<LicenseDebugger> logger)
+        {
+            this.logger = logger;
+        }
+
         /// <summary>
         /// Returns <see cref="Debugger.IsAttached"/> value.
         /// </summary>
         public bool IsDebuggerAttached()
         {
-            return Debugger.IsAttached;
+            bool attached = Debugger.IsAttached;
+            logger.LogDebug("Check Debugger. attached={0}", attached);
+            return attached;
         }
     }
 }

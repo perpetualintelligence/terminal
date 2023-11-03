@@ -6,12 +6,13 @@
 */
 
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
-using PerpetualIntelligence.Terminal.Stores.InMemory;
+using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Extractors
@@ -25,14 +26,15 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             textHandler = new UnicodeTextHandler();
             routeParser = new MockCommandRouteParser();
             commandStore = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
-            extractor = new CommandExtractor(routeParser);
+            logger = TestLogger.Create<CommandExtractor>();
+            extractor = new CommandExtractor(routeParser, logger);
         }
 
         [TestMethod]
         public async Task Calls_Route_ParserAsync()
         {
             MockCommandRouteParser routeParser = new();
-            CommandExtractor extractor = new(routeParser);
+            CommandExtractor extractor = new(routeParser, logger);
 
             CommandExtractorContext context = new(new CommandRoute("id1", "id1 test raw string"));
             await extractor.ExtractCommandAsync(context);
@@ -64,7 +66,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task DisabledButProviderNotConfiguredShouldNotThrow()
         {
             CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            CommandExtractor noProviderExtractor = new(routeParser);
+            CommandExtractor noProviderExtractor = new(routeParser, logger);
             await noProviderExtractor.ExtractCommandAsync(context);
         }
 
@@ -82,5 +84,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private CommandExtractor extractor = null!;
         private TerminalOptions terminalOptions = null!;
         private ITextHandler textHandler = null!;
+        private ILogger<CommandExtractor> logger = null!;
     }
 }
