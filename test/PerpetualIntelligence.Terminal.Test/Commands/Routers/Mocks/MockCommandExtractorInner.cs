@@ -6,12 +6,12 @@
 */
 
 using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 {
-    internal class MockCommandExtractorInner : ICommandExtractor
+    internal class MockCommandParserInner : ICommandParser
     {
         public bool Called { get; set; }
 
@@ -21,13 +21,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
 
         public bool IsExplicitNoCommandDescriptor { get; set; }
 
-        public Task<CommandExtractorResult> ExtractCommandAsync(CommandExtractorContext context)
+        public Task<CommandParserResult> ParseCommandAsync(CommandParserContext context)
         {
             Called = true;
 
             if (IsExplicitError)
             {
-                throw new TerminalException("test_extractor_error", "test_extractor_error_desc");
+                throw new TerminalException("test_parser_error", "test_parser_error_desc");
             }
             else
             {
@@ -35,20 +35,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
                 {
                     // No error but no command
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                    return Task.FromResult(new CommandExtractorResult(null));
+                    return Task.FromResult(new CommandParserResult(null));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 else if (IsExplicitNoCommandDescriptor)
                 {
                     // No error but no command descriptor
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                    return Task.FromResult(new CommandExtractorResult(new ParsedCommand(new CommandRoute("id1", "test1"), new Command(null), Root.Default())));
+                    return Task.FromResult(new CommandParserResult(new ParsedCommand(new CommandRoute("id1", "test1"), new Command(null), Root.Default())));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 else
                 {
                     // all ok
-                    return Task.FromResult(new CommandExtractorResult(new ParsedCommand(new CommandRoute("id1", "test1"), new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), Root.Default())));
+                    return Task.FromResult(new CommandParserResult(new ParsedCommand(new CommandRoute("id1", "test1"), new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), Root.Default())));
                 }
             }
         }

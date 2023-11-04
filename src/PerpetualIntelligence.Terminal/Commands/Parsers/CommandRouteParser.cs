@@ -16,7 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     /// <summary>
     /// Represents a default command-line parser for processing terminal commands based on defined descriptors.
@@ -100,13 +100,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             logger.LogDebug("Parse route. route={0} raw={1}", commandRoute.Id, commandRoute.Raw);
 
-            // Extract the queue of segments from the raw command based of `separator` and `optionValueSeparator`
+            // Parse the queue of segments from the raw command based of `separator` and `optionValueSeparator`
             Queue<ParsedSplit> segmentsQueue = ExtractQueue(commandRoute);
 
             // Handle the processing of commands and arguments
             (List<CommandDescriptor> parsedCommands, List<string> parsedArguments) = await ExtractCommandsAndArgumentsAsync(segmentsQueue);
 
-            // Extract and process command options
+            // Parse and process command options
             Dictionary<string, string> parsedOptions = ExtractOptions(segmentsQueue);
 
             // Log parsed details if debug level logging is enabled
@@ -149,7 +149,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             {
                 int nearestTokenIndex = raw.Length;
                 string? foundToken = null;
-                foreach (var token in new[] { terminalOptions.Extractor.Separator, terminalOptions.Extractor.OptionValueSeparator })
+                foreach (var token in new[] { terminalOptions.Parser.Separator, terminalOptions.Parser.OptionValueSeparator })
                 {
                     int index = raw.IndexOf(token, currentIndex);
                     if (index != -1 && index < nearestTokenIndex)
@@ -178,8 +178,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             // This dictionary will hold the parsed options.
             Dictionary<string, string> parsedOptions = new();
-            string valueDelimiter = terminalOptions.Extractor.ValueDelimiter;
-            string separator = terminalOptions.Extractor.Separator;
+            string valueDelimiter = terminalOptions.Parser.ValueDelimiter;
+            string separator = terminalOptions.Parser.Separator;
 
             while (segmentsQueue.Count > 0)
             {
@@ -309,8 +309,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
             List<CommandDescriptor> parsedDescriptors = new();
             List<string> parsedArguments = new();
             string? potentialLastCommandId = null;
-            string valueDelimiter = terminalOptions.Extractor.ValueDelimiter;
-            string separator = terminalOptions.Extractor.Separator;
+            string valueDelimiter = terminalOptions.Parser.ValueDelimiter;
+            string separator = terminalOptions.Parser.Separator;
 
             while (segmentsQueue.Count > 0)
             {
@@ -386,14 +386,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         private string TrimValueDelimiter(string value)
         {
             string trimmedValue = value;
-            if (StartsWith(trimmedValue, terminalOptions.Extractor.ValueDelimiter))
+            if (StartsWith(trimmedValue, terminalOptions.Parser.ValueDelimiter))
             {
-                trimmedValue = RemovePrefix(trimmedValue, terminalOptions.Extractor.ValueDelimiter);
+                trimmedValue = RemovePrefix(trimmedValue, terminalOptions.Parser.ValueDelimiter);
             }
 
-            if (EndsWith(trimmedValue, terminalOptions.Extractor.ValueDelimiter))
+            if (EndsWith(trimmedValue, terminalOptions.Parser.ValueDelimiter))
             {
-                trimmedValue = RemoveSuffix(trimmedValue, terminalOptions.Extractor.ValueDelimiter);
+                trimmedValue = RemoveSuffix(trimmedValue, terminalOptions.Parser.ValueDelimiter);
             }
 
             return trimmedValue;
@@ -449,7 +449,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// </remarks>
         private Root? ParseHierarchy(List<CommandDescriptor> parsedDescriptors, Command executingCommand)
         {
-            if (!terminalOptions.Extractor.ParseHierarchy.GetValueOrDefault())
+            if (!terminalOptions.Parser.ParseHierarchy.GetValueOrDefault())
             {
                 return null;
             }
@@ -561,11 +561,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
                 if (isOption)
                 {
-                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Extractor.OptionPrefix);
+                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Parser.OptionPrefix);
                 }
                 else
                 {
-                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Extractor.OptionAliasPrefix);
+                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Parser.OptionAliasPrefix);
                 }
 
                 if (!commandDescriptor.OptionDescriptors.TryGetValue(optionOrAliasKey, out var optionDescriptor))
@@ -649,12 +649,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
 
         private bool IsOptionPrefix(string value)
         {
-            return StartsWith(value, terminalOptions.Extractor.OptionPrefix);
+            return StartsWith(value, terminalOptions.Parser.OptionPrefix);
         }
 
         private bool IsAliasPrefix(string value)
         {
-            return StartsWith(value, terminalOptions.Extractor.OptionAliasPrefix);
+            return StartsWith(value, terminalOptions.Parser.OptionAliasPrefix);
         }
 
         private string RemovePrefix(string value, string prefix)

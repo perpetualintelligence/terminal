@@ -7,18 +7,18 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     /// <summary>
     /// An abstraction to extract a <see cref="Command"/>.
     /// </summary>
-    public interface ICommandExtractor
+    public interface ICommandParser
     {
         /// <summary>
         /// Extracts <see cref="Command"/> asynchronously.
         /// </summary>
         /// <param name="context">The option extraction context.</param>
-        /// <returns>The <see cref="CommandExtractorResult"/> instance.</returns>
-        public Task<CommandExtractorResult> ExtractCommandAsync(CommandExtractorContext context);
+        /// <returns>The <see cref="CommandParserResult"/> instance.</returns>
+        public Task<CommandParserResult> ParseCommandAsync(CommandParserContext context);
     }
 }

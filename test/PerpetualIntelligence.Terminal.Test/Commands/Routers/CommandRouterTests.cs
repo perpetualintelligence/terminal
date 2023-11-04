@@ -30,38 +30,38 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         [TestMethod]
         public async Task ExtractorErrorShouldNotRouteFurtherAsync()
         {
-            commandExtractor.IsExplicitError = true;
+            commandParser.IsExplicitError = true;
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteCommandAsync(routerContext), "test_extractor_error", "test_extractor_error_desc");
-            Assert.IsTrue(commandExtractor.Called);
+            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteCommandAsync(routerContext), "test_parser_error", "test_parser_error_desc");
+            Assert.IsTrue(commandParser.Called);
             Assert.IsFalse(commandHandler.Called);
         }
 
         [TestMethod]
         public async Task ExtractorNoExtractedCommandDescriptorShouldNotRouteFurtherAsync()
         {
-            commandExtractor.IsExplicitNoCommandDescriptor = true;
+            commandParser.IsExplicitNoCommandDescriptor = true;
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
             Func<Task> act = async () => await commandRouter.RouteCommandAsync(routerContext);
             await act.Should().ThrowAsync<ArgumentException>().WithMessage("Value cannot be null. (Parameter 'commandDescriptor')");
-            Assert.IsTrue(commandExtractor.Called);
+            Assert.IsTrue(commandParser.Called);
             Assert.IsFalse(commandHandler.Called);
         }
 
         [TestMethod]
         public async Task ExtractorNoExtractedCommandShouldNotRouteFurtherAsync()
         {
-            commandExtractor.IsExplicitNoExtractedCommand = true;
+            commandParser.IsExplicitNoExtractedCommand = true;
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
             Func<Task> act = async () => await commandRouter.RouteCommandAsync(routerContext);
             await act.Should().ThrowAsync<ArgumentException>().WithMessage("Value cannot be null. (Parameter 'parsedCommand')");
-            Assert.IsTrue(commandExtractor.Called);
+            Assert.IsTrue(commandParser.Called);
             Assert.IsFalse(commandHandler.Called);
         }
 
@@ -81,7 +81,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
             CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteCommandAsync(routerContext);
-            Assert.IsTrue(commandExtractor.Called);
+            Assert.IsTrue(commandParser.Called);
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteCommandAsync(routerContext); ;
 
-            Assert.IsTrue(commandExtractor.Called);
+            Assert.IsTrue(commandParser.Called);
             Assert.IsTrue(commandHandler.Called);
         }
 
@@ -102,7 +102,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             CommandRouterContext routerContext = new("test_command_string", routingContext);
             await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteCommandAsync(routerContext), "invalid_license", "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
-            Assert.IsFalse(commandExtractor.Called);
+            Assert.IsFalse(commandParser.Called);
             Assert.IsFalse(commandHandler.Called);
         }
 
@@ -130,7 +130,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
 
             Assert.IsNotNull(commandHandler.ContextCalled);
             Assert.AreEqual(licenseExtractor.TestLicense, commandHandler.ContextCalled.License);
-            Assert.IsTrue(commandExtractor.Called);
+            Assert.IsTrue(commandParser.Called);
             Assert.IsTrue(commandHandler.Called);
         }
 
@@ -151,16 +151,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CA1806 // Do not ignore method results
-            Action act = () => new CommandRouter(null, licenseExtractor, commandExtractor, commandHandler, logger);
+            Action act = () => new CommandRouter(null, licenseExtractor, commandParser, commandHandler, logger);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'terminalOptions')");
 
-            act = () => new CommandRouter(terminalOptions, null, commandExtractor, commandHandler, logger);
+            act = () => new CommandRouter(terminalOptions, null, commandParser, commandHandler, logger);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'licenseExtractor')");
 
             act = () => new CommandRouter(terminalOptions, licenseExtractor, null, commandHandler, logger);
-            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandExtractor')");
+            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandParser')");
 
-            act = () => new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, null, logger);
+            act = () => new CommandRouter(terminalOptions, licenseExtractor, commandParser, null, logger);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandHandler')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type
 #pragma warning restore CA1806 // Do not ignore method results
@@ -191,7 +191,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeFalse();
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
-            commandExtractor.IsExplicitError = true;
+            commandParser.IsExplicitError = true;
 
             try
             {
@@ -200,8 +200,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             }
             catch (TerminalException eex)
             {
-                eex.Error.ErrorCode.Should().Be("test_extractor_error");
-                eex.Error.ErrorDescription.Should().Be("test_extractor_error_desc");
+                eex.Error.ErrorCode.Should().Be("test_parser_error");
+                eex.Error.ErrorDescription.Should().Be("test_parser_error_desc");
             }
 
             // Event fired even with exception
@@ -221,7 +221,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeFalse();
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
-            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, logger, asyncEventHandler: null);
+            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandParser, commandHandler, logger, asyncEventHandler: null);
             CommandRouterContext routerContext = new("test_command_string", routingContext);
             await commandRouter.RouteCommandAsync(routerContext);
 
@@ -243,19 +243,19 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>());
             host = hostBuilder.Build();
 
-            commandExtractor = new MockCommandExtractorInner();
+            commandParser = new MockCommandParserInner();
             commandHandler = new MockCommandHandlerInner();
             licenseExtractor = new MockLicenseExtractorInner();
             eventHandler = new MockAsyncEventHandler();
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             logger = TestLogger.Create<CommandRouter>();
-            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandExtractor, commandHandler, logger, eventHandler);
+            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandParser, commandHandler, logger, eventHandler);
             cancellationTokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRoutingContext(new Runtime.TerminalStartContext(new Runtime.TerminalStartInfo(Runtime.TerminalStartMode.Custom), cancellationTokenSource.Token));
         }
 
         private CancellationTokenSource cancellationTokenSource = null!;
-        private MockCommandExtractorInner commandExtractor = null!;
+        private MockCommandParserInner commandParser = null!;
         private MockCommandHandlerInner commandHandler = null!;
         private MockAsyncEventHandler eventHandler = null!;
         private MockTerminalRoutingContext routingContext = null!;

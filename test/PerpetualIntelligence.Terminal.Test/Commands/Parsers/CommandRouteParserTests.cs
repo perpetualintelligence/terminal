@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     public class CommandRouteParserTests
     {
@@ -48,7 +48,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData(null)]
         public async Task Does_Not_Parse_Hierarchy_If_Option_Not_Set(bool? parseHierarchy)
         {
-            terminalOptions.Extractor.ParseHierarchy = parseHierarchy;
+            terminalOptions.Parser.ParseHierarchy = parseHierarchy;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1");
             var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
@@ -91,7 +91,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("cmd_nr2")]
         public async Task Command_WithHierarchy_NoGroup_NoRoot_Extracts_With_Default_Root(string cmdRoute)
         {
-            terminalOptions.Extractor.ParseHierarchy = true;
+            terminalOptions.Parser.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), cmdRoute);
             var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
@@ -133,7 +133,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Root_With_Hierarchy_Parses_Correctly()
         {
-            terminalOptions.Extractor.ParseHierarchy = true;
+            terminalOptions.Parser.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1");
             var result = await commandRouteParser.ParseRouteAsync(commandRoute);
@@ -214,7 +214,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("root1    grp1   grp2  grp3      cmd1    ")]
         public async Task Multiple_Separators_Between_Commands_Ignored(string raw)
         {
-            terminalOptions.Extractor.ParseHierarchy = true;
+            terminalOptions.Parser.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), raw);
             var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
@@ -248,7 +248,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Group_With_Root_With_Hierarchy_Parses()
         {
-            terminalOptions.Extractor.ParseHierarchy = true;
+            terminalOptions.Parser.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1");
             var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);
@@ -272,7 +272,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Command_With_Nested_Groups_And_Root_With_Hierarchy_Parses()
         {
-            terminalOptions.Extractor.ParseHierarchy = true;
+            terminalOptions.Parser.ParseHierarchy = true;
 
             CommandRoute commandRoute = new(Guid.NewGuid().ToString(), "root1 grp1 grp2 grp3 cmd1");
             var parsedCommand = await commandRouteParser.ParseRouteAsync(commandRoute);

@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             var command = context.HandlerContext.ParsedCommand.Command;
             ArgumentDescriptors? argumentDescriptors = command.Descriptor.ArgumentDescriptors;
 
-            // If the command itself does not support any arguments then there's nothing to check. Extractor will reject any unsupported attributes.
+            // If the command itself does not support any arguments then there's nothing to check. Parser will reject any unsupported attributes.
             if (argumentDescriptors == null)
             {
                 return;
@@ -102,7 +102,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             var command = context.HandlerContext.ParsedCommand.Command;
             OptionDescriptors? optionDescriptors = command.Descriptor.OptionDescriptors;
 
-            // If the command itself does not support any options then there's nothing to check. Extractor will reject any unsupported attributes.
+            // If the command itself does not support any options then there's nothing to check. Parser will reject any unsupported attributes.
             if (optionDescriptors == null)
             {
                 return;

@@ -6,7 +6,7 @@
 */
 
 using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks

@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     public class CommandRouteParserArgumentsOptionsTests
     {
@@ -169,7 +169,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Duplicate_Custom_Value_Separators_Are_Ignored()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 --opt3=============\"option delimited value3\"";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -186,7 +186,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Value_Separators_At_The_End_Are_Ignored()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 --opt3=\"option delimited value3\"======";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -203,7 +203,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Value_Separators_At_The_Start_Are_Ignored()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "=====root1 grp1 cmd1 --opt3=\"option delimited value3\"";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -220,7 +220,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Value_Separators_In_Between_Are_Ignored()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1=grp1=cmd1 --opt3=\"option delimited value3\"";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -237,7 +237,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Duplicate_Value_Separators_In_Between_Are_Ignored()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1======grp1=======cmd1 --opt3=\"option delimited value3\"";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -254,7 +254,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Mixed_Duplicate_Value_Separators_In_Between_Are_Ignored()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1=     =====grp1=======      cmd1 --opt3= \"option delimited value3\"";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -271,7 +271,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Duplicate_Delimited_Custom_Value_Separator_Are_Not_Ignored()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 --opt3=\"============option delimited value3\"";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -288,7 +288,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Duplicate_Delimited_Custom_Mixed_Separator_Are_Not_Ignored()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 --opt3=\"=====       =======option delimited value3===     =====\"";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -305,7 +305,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Arguments_And_Options_With_Different_Separator_Are_Processed_Correctly()
         {
-            terminalOptions.Extractor.OptionValueSeparator = "=";
+            terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 \"arg1 value\" 32 true 35.987 3435345345 arg6value 12/23/2023 12/23/2022:12:23:22 \"arg9 value\" -opt7_a --opt3=\"option delimited value3\" --opt4=option value4    with multiple  spaces --opt5=35.987 --opt1=34 -opt6_a 12/23/2023 --opt2=option value2 -opt8_a=true";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));
@@ -783,7 +783,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("女性")]
         public async Task Strips_Argument_Separator_At_The_End(string sep)
         {
-            terminalOptions.Extractor.Separator = sep;
+            terminalOptions.Parser.Separator = sep;
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"root1{sep}grp1{sep}cmd1{sep}\"arg1{sep}value\"{sep}{sep}{sep}{sep}{sep}"));
 
             result.Command.Id.Should().Be("cmd1");
@@ -806,7 +806,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("女性")]
         public async Task Strips_Option_Separator_At_The_End(string sep)
         {
-            terminalOptions.Extractor.Separator = sep;
+            terminalOptions.Parser.Separator = sep;
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"root1{sep}grp1{sep}cmd1{sep}--opt3{sep}val3{sep}{sep}{sep}{sep}{sep}"));
 
             result.Command.Id.Should().Be("cmd1");
@@ -827,7 +827,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [InlineData("女性")]
         public async Task Arguments_Options_Are_Processed_With_Diverse_Separators_Correctly(string sep)
         {
-            terminalOptions.Extractor.Separator = sep;
+            terminalOptions.Parser.Separator = sep;
 
             string cmdStr = $"root1{sep}grp1{sep}cmd1{sep}\"arg1{sep}value\"{sep}32{sep}true{sep}35.987{sep}3435345345{sep}arg6value{sep}12/23/2023{sep}12/23/2022:12:23:22{sep}\"arg9{sep}value\"{sep}-opt7_a{sep}--opt3{sep}\"option{sep}delimited{sep}value3\"{sep}--opt4{sep}option{sep}value4{sep}{sep}{sep}{sep}with{sep}multiple{sep}{sep}spaces{sep}--opt5{sep}35.987{sep}--opt1{sep}34{sep}-opt6_a{sep}12/23/2023{sep}--opt2{sep}option{sep}value2{sep}-opt8_a{sep}false";
             var result = await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", cmdStr));

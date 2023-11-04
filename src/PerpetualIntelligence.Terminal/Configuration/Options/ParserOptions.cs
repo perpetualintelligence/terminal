@@ -8,9 +8,9 @@
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The command string extraction options.
+    /// The command parser options.
     /// </summary>
-    public class ExtractorOptions
+    public class ParserOptions
     {
         /// <summary>
         /// The option alias prefix. Defaults to <c>-</c>.

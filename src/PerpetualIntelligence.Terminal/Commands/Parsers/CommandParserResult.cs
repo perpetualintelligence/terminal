@@ -5,18 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// The command extractor result.
+    /// The command parser result.
     /// </summary>
-    public sealed class CommandExtractorResult
+    public sealed class CommandParserResult
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="parsedCommand">The parsed command.</param>
-        public CommandExtractorResult(ParsedCommand parsedCommand)
+        public CommandParserResult(ParsedCommand parsedCommand)
         {
             ParsedCommand = parsedCommand ?? throw new System.ArgumentNullException(nameof(parsedCommand));
         }

@@ -35,7 +35,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <param name="terminalOptions">The terminal configuration options.</param>
         public string ExtractionRegex(TerminalOptions terminalOptions)
         {
-            string pattern = $@"(\w+)|((?:{Regex.Escape(terminalOptions.Extractor.OptionPrefix)}|{Regex.Escape(terminalOptions.Extractor.OptionAliasPrefix)})\w+(?:\s+{terminalOptions.Extractor.ValueDelimiter}[^{terminalOptions.Extractor.ValueDelimiter}]*{terminalOptions.Extractor.ValueDelimiter})*)";
+            string pattern = $@"(\w+)|((?:{Regex.Escape(terminalOptions.Parser.OptionPrefix)}|{Regex.Escape(terminalOptions.Parser.OptionAliasPrefix)})\w+(?:\s+{terminalOptions.Parser.ValueDelimiter}[^{terminalOptions.Parser.ValueDelimiter}]*{terminalOptions.Parser.ValueDelimiter})*)";
             return pattern;
         }
 

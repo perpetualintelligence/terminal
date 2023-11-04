@@ -7,18 +7,18 @@
 
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// The command extractor context.
+    /// The command parser context.
     /// </summary>
-    public sealed class CommandExtractorContext
+    public sealed class CommandParserContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="commandRoute">The command route.</param>
-        public CommandExtractorContext(CommandRoute commandRoute)
+        public CommandParserContext(CommandRoute commandRoute)
         {
             Route = commandRoute ?? throw new ArgumentNullException(nameof(commandRoute));
         }

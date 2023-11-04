@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             return new TerminalOptions()
             {
                 Id = "test_id_1",
-                Extractor = new ExtractorOptions()
+                Parser = new ParserOptions()
                 {
                     OptionPrefix = "-",
                     OptionAliasPrefix = "-",
@@ -31,7 +31,7 @@ namespace PerpetualIntelligence.Terminal.Mocks
             return new TerminalOptions()
             {
                 Id = "test_id_2",
-                Extractor = new ExtractorOptions()
+                Parser = new ParserOptions()
                 {
                     ValueDelimiter = "\"",
                     OptionPrefix = "--",

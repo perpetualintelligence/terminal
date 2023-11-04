@@ -10,39 +10,39 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     [TestClass]
-    public class CommandExtractorResultTests
+    public class CommandParserResultTests
     {
         [Fact]
-        public void CommandExtractorResultNullCommandDescriptorShouldThrow()
+        public void CommandParserResultNullCommandDescriptorShouldThrow()
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = () => new CommandExtractorResult(new ParsedCommand(new CommandRoute("test_route", "test cmd"), new Command(null), null));
+            Action act = () => new CommandParserResult(new ParsedCommand(new CommandRoute("test_route", "test cmd"), new Command(null), null));
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandDescriptor')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }
 
         [Fact]
-        public void CommandExtractorResultNullCommandRouteShouldThrow()
+        public void CommandParserResultNullCommandRouteShouldThrow()
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = () => new CommandExtractorResult(new ParsedCommand(null, new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), null));
+            Action act = () => new CommandParserResult(new ParsedCommand(null, new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), null));
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandRoute')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }
 
         [Fact]
-        public void CommandExtractorResultNullParsedCommandShouldThrow()
+        public void CommandParserResultNullParsedCommandShouldThrow()
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = () => new CommandExtractorResult(null);
+            Action act = () => new CommandParserResult(null);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'parsedCommand')");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results

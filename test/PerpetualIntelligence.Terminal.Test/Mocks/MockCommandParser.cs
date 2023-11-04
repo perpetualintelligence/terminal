@@ -6,23 +6,23 @@
 */
 
 using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    public class MockCommandExtractor : ICommandExtractor
+    public class MockCommandParser : ICommandParser
     {
         public bool Called { get; set; }
 
-        public Task<CommandExtractorResult> ExtractCommandAsync(CommandExtractorContext context)
+        public Task<CommandParserResult> ParseCommandAsync(CommandParserContext context)
         {
             Called = true;
 
             var cIdt = new Commands.CommandDescriptor("testid", "testname", "desc", CommandType.SubCommand, CommandFlags.None);
             Command command = new(cIdt);
             ParsedCommand extractedCommand = new(new CommandRoute("id1", "test"), command, Root.Default());
-            return Task.FromResult(new CommandExtractorResult(extractedCommand));
+            return Task.FromResult(new CommandParserResult(extractedCommand));
         }
     }
 }

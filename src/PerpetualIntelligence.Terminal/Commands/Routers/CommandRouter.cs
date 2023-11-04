@@ -6,7 +6,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
@@ -26,19 +26,19 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// </summary>
         /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="licenseExtractor">The license extractor.</param>
-        /// <param name="commandExtractor">The command extractor.</param>
+        /// <param name="commandParser">The command parser.</param>
         /// <param name="commandHandler">The command handler.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="asyncEventHandler">The event handler.</param>
         public CommandRouter(
             TerminalOptions terminalOptions,
             ILicenseExtractor licenseExtractor,
-            ICommandExtractor commandExtractor,
+            ICommandParser commandParser,
             ICommandHandler commandHandler,
             ILogger<CommandRouter> logger,
             IAsyncEventHandler? asyncEventHandler = null)
         {
-            this.commandExtractor = commandExtractor ?? throw new ArgumentNullException(nameof(commandExtractor));
+            this.commandParser = commandParser ?? throw new ArgumentNullException(nameof(commandParser));
             this.terminalOptions = terminalOptions ?? throw new ArgumentNullException(nameof(terminalOptions));
             this.licenseExtractor = licenseExtractor ?? throw new ArgumentNullException(nameof(licenseExtractor));
             this.commandHandler = commandHandler ?? throw new ArgumentNullException(nameof(commandHandler));
@@ -69,12 +69,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 // Ensure we have the license extracted before routing
                 License? license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
 
-                // Extract the command
-                CommandExtractorResult extractorResult = await commandExtractor.ExtractCommandAsync(new CommandExtractorContext(context.Route));
-                extractedCommand = extractorResult.ParsedCommand;
+                // Parse the command
+                CommandParserResult parserResult = await commandParser.ParseCommandAsync(new CommandParserContext(context.Route));
+                extractedCommand = parserResult.ParsedCommand;
 
                 // Delegate to handler
-                CommandHandlerContext handlerContext = new(context, extractorResult.ParsedCommand, license);
+                CommandHandlerContext handlerContext = new(context, parserResult.ParsedCommand, license);
                 var handlerResult = await commandHandler.HandleCommandAsync(handlerContext);
                 result = new CommandRouterResult(handlerResult, context.Route);
             }
@@ -93,7 +93,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             return result;
         }
 
-        private readonly ICommandExtractor commandExtractor;
+        private readonly ICommandParser commandParser;
         private readonly ICommandHandler commandHandler;
         private readonly ILogger<CommandRouter> logger;
         private readonly IAsyncEventHandler? asyncEventHandler;

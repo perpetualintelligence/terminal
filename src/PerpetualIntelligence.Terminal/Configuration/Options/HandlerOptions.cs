@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// </summary>
         /// <remarks>
         /// <para>
-        /// <c>default</c> handler provides default DI service implementations for command router, extractor, handler,
+        /// <c>default</c> handler provides default DI service implementations for command router, parser, handler,
         /// mapper, checker and invoking runner.
         /// </para>
         /// <para><c>custom</c> handler allows application authors to define a custom DI services implementations.</para>

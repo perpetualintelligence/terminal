@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
@@ -254,14 +254,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddExtractorShouldCorrectlyInitialize()
+        public void AddCommandParserShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddCommandExtractor<MockCommandExtractor, MockCommandRouteParser>();
+            terminalBuilder.AddCommandParser<MockCommandParser, MockCommandRouteParser>();
 
-            var cmd = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandExtractor)));
+            var cmd = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandParser)));
             Assert.IsNotNull(cmd);
             Assert.AreEqual(ServiceLifetime.Transient, cmd.Lifetime);
-            Assert.AreEqual(typeof(MockCommandExtractor), cmd.ImplementationType);
+            Assert.AreEqual(typeof(MockCommandParser), cmd.ImplementationType);
 
             var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandRouteParser)));
             Assert.IsNotNull(arg);

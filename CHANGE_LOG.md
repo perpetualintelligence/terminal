@@ -1,5 +1,6 @@
 # 5.3.1-rc*
 > Breaking Change
+- Rename command extractor types to command parser
 - Remove redundant terminal routing result.
 - Support On-Premise licensing for OSATs, factories and secured facilities that are not connected to public internet
 - Upgrade the licensing

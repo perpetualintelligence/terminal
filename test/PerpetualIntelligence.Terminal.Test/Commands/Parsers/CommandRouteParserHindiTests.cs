@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     public class CommandRouteParserHindiTests
     {
@@ -74,8 +74,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [Fact]
         public async Task Unicode_Hindi_Group_Throws_With_Space_And_Custom_Separator()
         {
-            _terminalOptions.Extractor.Separator = "एस";
-            _terminalOptions.Extractor.OptionValueSeparator = "एस";
+            _terminalOptions.Parser.Separator = "एस";
+            _terminalOptions.Parser.OptionValueSeparator = "एस";
 
             // Here we are using a space in the command name to test that the parser will throw an error.
             // The separator is set to "एस" so the parser will not be able to find the command 'परीक्षण  '
@@ -87,8 +87,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unicode_Hindi_Group_With_Multiple_Separator_Extracts_Correctly()
         {
             string separator = "एस";
-            _terminalOptions.Extractor.Separator = separator;
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.Separator = separator;
+            _terminalOptions.Parser.ParseHierarchy = true;
 
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"{separator}यूनिकोड{separator}{separator}{separator}परीक्षण{separator}{separator}{separator}{separator}"));
 
@@ -115,10 +115,10 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unicode_Hindi_Group_With_Multiple_Separator_And_Spaces_Should_Error()
         {
             string separator = "एस";
-            _terminalOptions.Extractor.Separator = separator;
-            _terminalOptions.Extractor.OptionValueSeparator = separator;
+            _terminalOptions.Parser.Separator = separator;
+            _terminalOptions.Parser.OptionValueSeparator = separator;
 
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.ParseHierarchy = true;
 
             // Here space is not a separation so any space is considered part of the command name.
             // Because there is not command with name '  परीक्षण' the parser will interpret it as argument and throw.
@@ -130,8 +130,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unicode_Hindi_Group_Extracts_Correctly()
         {
             string separator = "एस";
-            _terminalOptions.Extractor.Separator = separator;
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.Separator = separator;
+            _terminalOptions.Parser.ParseHierarchy = true;
 
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"यूनिकोड{separator}परीक्षण"));
 
@@ -158,8 +158,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unicode_Hindi_SubCommand_Extracts_Correctly()
         {
             string separator = "एस";
-            _terminalOptions.Extractor.Separator = separator;
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.Separator = separator;
+            _terminalOptions.Parser.ParseHierarchy = true;
 
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("प्रिंट", $"यूनिकोड{separator}परीक्षण{separator}प्रिंट"));
 
@@ -188,8 +188,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unicode_Hindi_SubCommand_Second_Extracts_Correctly()
         {
             string separator = "एस";
-            _terminalOptions.Extractor.Separator = separator;
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.Separator = separator;
+            _terminalOptions.Parser.ParseHierarchy = true;
 
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"यूनिकोड{separator}परीक्षण{separator}दूसरा"));
 
@@ -218,16 +218,16 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unicode_Hindi_SubCommand_Options_Extracts_Correctly()
         {
             string sep = "एस";
-            _terminalOptions.Extractor.Separator = sep;
-            _terminalOptions.Extractor.OptionValueSeparator = sep;
+            _terminalOptions.Parser.Separator = sep;
+            _terminalOptions.Parser.OptionValueSeparator = sep;
 
             string prefix = "डैश";
-            _terminalOptions.Extractor.OptionPrefix = prefix;
+            _terminalOptions.Parser.OptionPrefix = prefix;
 
             string alias = "एल";
-            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+            _terminalOptions.Parser.OptionAliasPrefix = alias;
 
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.ParseHierarchy = true;
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}{sep}{sep}प्रथम मान{sep}{sep}{sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
@@ -273,17 +273,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task Unicode_Hindi_SubCommand_With_Space_Options_Extracts_Correctly()
         {
             string sep = "एस";
-            _terminalOptions.Extractor.Separator = sep;
-            _terminalOptions.Extractor.OptionValueSeparator = sep;
+            _terminalOptions.Parser.Separator = sep;
+            _terminalOptions.Parser.OptionValueSeparator = sep;
 
             string prefix = "डैश";
-            _terminalOptions.Extractor.OptionPrefix = prefix;
+            _terminalOptions.Parser.OptionPrefix = prefix;
 
             string alias = "एल";
-            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+            _terminalOptions.Parser.OptionAliasPrefix = alias;
 
             // Here space is not treated as separator so it is included in the value.
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.ParseHierarchy = true;
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}  प्रथम   मान   {sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
@@ -330,17 +330,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             string cSep = "एस";
             string oSep = "साथ";
-            _terminalOptions.Extractor.Separator = cSep;
-            _terminalOptions.Extractor.OptionValueSeparator = oSep;
+            _terminalOptions.Parser.Separator = cSep;
+            _terminalOptions.Parser.OptionValueSeparator = oSep;
 
             string prefix = "डैश";
-            _terminalOptions.Extractor.OptionPrefix = prefix;
+            _terminalOptions.Parser.OptionPrefix = prefix;
 
             string alias = "एल";
-            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+            _terminalOptions.Parser.OptionAliasPrefix = alias;
 
             // Here space is not treated as separator so it is included in the value.
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.ParseHierarchy = true;
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
@@ -387,17 +387,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             string cSep = "एस";
             string oSep = "साथ";
-            _terminalOptions.Extractor.Separator = cSep;
-            _terminalOptions.Extractor.OptionValueSeparator = oSep;
+            _terminalOptions.Parser.Separator = cSep;
+            _terminalOptions.Parser.OptionValueSeparator = oSep;
 
             string prefix = "डैश";
-            _terminalOptions.Extractor.OptionPrefix = prefix;
+            _terminalOptions.Parser.OptionPrefix = prefix;
 
             string alias = "एल";
-            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+            _terminalOptions.Parser.OptionAliasPrefix = alias;
 
             // Here space is not treated as separator so it is included in the value.
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.ParseHierarchy = true;
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39{oSep}{oSep}{oSep}{cSep}{cSep}{cSep}"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
@@ -444,17 +444,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         {
             string cSep = "एस";
             string oSep = "साथ";
-            _terminalOptions.Extractor.Separator = cSep;
-            _terminalOptions.Extractor.OptionValueSeparator = oSep;
+            _terminalOptions.Parser.Separator = cSep;
+            _terminalOptions.Parser.OptionValueSeparator = oSep;
 
             string prefix = "डैश";
-            _terminalOptions.Extractor.OptionPrefix = prefix;
+            _terminalOptions.Parser.OptionPrefix = prefix;
 
             string alias = "एल";
-            _terminalOptions.Extractor.OptionAliasPrefix = alias;
+            _terminalOptions.Parser.OptionAliasPrefix = alias;
 
             // Here space is not treated as separator so it is included in the value.
-            _terminalOptions.Extractor.ParseHierarchy = true;
+            _terminalOptions.Parser.ParseHierarchy = true;
             var parsedCommand = await _commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"{oSep}{oSep}{oSep}{cSep}{cSep}{cSep}यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();

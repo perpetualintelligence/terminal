@@ -28,7 +28,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
             options.Driver.Should().NotBeNull();
             options.Authentication.Should().NotBeNull();
             options.Checker.Should().NotBeNull();
-            options.Extractor.Should().NotBeNull();
+            options.Parser.Should().NotBeNull();
             options.Handler.Should().NotBeNull();
             options.Licensing.Should().NotBeNull();
             options.Router.Should().NotBeNull();

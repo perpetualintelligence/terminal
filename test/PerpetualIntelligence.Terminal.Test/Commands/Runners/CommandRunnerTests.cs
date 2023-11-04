@@ -7,7 +7,7 @@
 
 using FluentAssertions;
 using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
 using PerpetualIntelligence.Terminal.Commands.Routers;

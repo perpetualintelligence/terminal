@@ -33,9 +33,9 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public CheckerOptions Checker { get; set; } = new CheckerOptions();
 
         /// <summary>
-        /// The extractor configuration options.
+        /// The parser configuration options.
         /// </summary>
-        public ExtractorOptions Extractor { get; set; } = new ExtractorOptions();
+        public ParserOptions Parser { get; set; } = new ParserOptions();
 
         /// <summary>
         /// The handler configuration options.

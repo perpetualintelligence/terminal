@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Terminal.Configuration.Options;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     /// <summary>
     /// Represents a parsed command from a command route.
@@ -40,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         /// <summary>
         /// The parsed <see cref="Command"/> hierarchy.
         /// </summary>
-        /// <seealso cref="ExtractorOptions.ParseHierarchy"/>
+        /// <seealso cref="ParserOptions.ParseHierarchy"/>
         public Root? Hierarchy { get; }
     }
 }

@@ -10,12 +10,12 @@ using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
-    public class ExtractorOptionsTests
+    public class ParserOptionsTests
     {
         [Fact]
         public void ExtractorOptionsShouldHaveCorrectDefaultValues()
         {
-            ExtractorOptions options = new();
+            ParserOptions options = new();
 
             options.OptionAliasPrefix.Should().Be("-");
             options.OptionPrefix.Should().Be("--");

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
@@ -146,7 +146,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             return services.AddTerminal<TStore, TText>(setupAction)
                     .AddCommandRouter<CommandRouter, CommandHandler>()
-                    .AddCommandExtractor<CommandExtractor, CommandRouteParser>()
+                    .AddCommandParser<CommandParser, CommandRouteParser>()
                     .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
                     .AddArgumentChecker<DataTypeMapper<Argument>, ArgumentChecker>()
                     .AddExceptionHandler<ExceptionHandler>()

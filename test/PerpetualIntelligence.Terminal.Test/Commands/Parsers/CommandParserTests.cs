@@ -15,29 +15,29 @@ using PerpetualIntelligence.Terminal.Stores;
 using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Extractors
+namespace PerpetualIntelligence.Terminal.Commands.Parsers
 {
     [TestClass]
-    public class CommandExtractorTests
+    public class CommandParserTests
     {
-        public CommandExtractorTests()
+        public CommandParserTests()
         {
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             textHandler = new UnicodeTextHandler();
             routeParser = new MockCommandRouteParser();
             commandStore = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
-            logger = TestLogger.Create<CommandExtractor>();
-            extractor = new CommandExtractor(routeParser, logger);
+            logger = TestLogger.Create<CommandParser>();
+            parser = new CommandParser(routeParser, logger);
         }
 
         [TestMethod]
         public async Task Calls_Route_ParserAsync()
         {
             MockCommandRouteParser routeParser = new();
-            CommandExtractor extractor = new(routeParser, logger);
+            CommandParser parser = new(routeParser, logger);
 
-            CommandExtractorContext context = new(new CommandRoute("id1", "id1 test raw string"));
-            await extractor.ExtractCommandAsync(context);
+            CommandParserContext context = new(new CommandRoute("id1", "id1 test raw string"));
+            await parser.ParseCommandAsync(context);
 
             routeParser.Called.Should().BeTrue();
             routeParser.PassedCommandRoute.Raw.Should().Be("id1 test raw string");
@@ -47,8 +47,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         public async Task UnspecifiedRequiredValuesShouldNotPopulateIfDisabled()
         {
             // This is just extracting no checking
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            var result = await extractor.ExtractCommandAsync(context);
+            CommandParserContext context = new(new CommandRoute("id1", "prefix5_default"));
+            var result = await parser.ParseCommandAsync(context);
 
             Assert.IsNull(result.ParsedCommand.Command.Options);
         }
@@ -56,8 +56,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [TestMethod]
         public async Task ConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
-            var result = await extractor.ExtractCommandAsync(context);
+            CommandParserContext context = new(new CommandRoute("id1", "prefix4_noargs"));
+            var result = await parser.ParseCommandAsync(context);
 
             Assert.IsNull(result.ParsedCommand.Command.Options);
         }
@@ -65,25 +65,25 @@ namespace PerpetualIntelligence.Terminal.Commands.Extractors
         [TestMethod]
         public async Task DisabledButProviderNotConfiguredShouldNotThrow()
         {
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix5_default"));
-            CommandExtractor noProviderExtractor = new(routeParser, logger);
-            await noProviderExtractor.ExtractCommandAsync(context);
+            CommandParserContext context = new(new CommandRoute("id1", "prefix5_default"));
+            CommandParser noProviderParser = new(routeParser, logger);
+            await noProviderParser.ParseCommandAsync(context);
         }
 
         [TestMethod]
         public async Task CommandWithNoArgsShouldNotErrorAsync()
         {
-            CommandExtractorContext context = new(new CommandRoute("id1", "prefix4_noargs"));
-            var result = await extractor.ExtractCommandAsync(context);
+            CommandParserContext context = new(new CommandRoute("id1", "prefix4_noargs"));
+            var result = await parser.ParseCommandAsync(context);
 
             Assert.IsNull(result.ParsedCommand.Command.Options);
         }
 
         private ICommandStore commandStore = null!;
         private ICommandRouteParser routeParser = null!;
-        private CommandExtractor extractor = null!;
+        private CommandParser parser = null!;
         private TerminalOptions terminalOptions = null!;
         private ITextHandler textHandler = null!;
-        private ILogger<CommandExtractor> logger = null!;
+        private ILogger<CommandParser> logger = null!;
     }
 }

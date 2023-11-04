@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Declarative;
-using PerpetualIntelligence.Terminal.Commands.Extractors;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
@@ -182,18 +182,18 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ICommandExtractor"/> to the service collection.
+        /// Adds the <see cref="ICommandParser"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <typeparam name="TCommand">The command extractor type.</typeparam>
+        /// <typeparam name="TCommand">The command parser type.</typeparam>
         /// <typeparam name="TParser">The command route parser type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandExtractor<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandExtractor where TParser : class, ICommandRouteParser
+        public static ITerminalBuilder AddCommandParser<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandParser where TParser : class, ICommandRouteParser
         {
-            // Add command extractor
-            builder.Services.AddTransient<ICommandExtractor, TCommand>();
+            // Add command parser
+            builder.Services.AddTransient<ICommandParser, TCommand>();
 
-            // Add option extractor
+            // Add option parser
             builder.Services.AddTransient<ICommandRouteParser, TParser>();
 
             return builder;
@@ -268,7 +268,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder) where TStore : class, ICommandStore
         {
-            // Add command extractor
+            // Add command store
             builder.Services.AddSingleton<ICommandStore, TStore>();
 
             return builder;

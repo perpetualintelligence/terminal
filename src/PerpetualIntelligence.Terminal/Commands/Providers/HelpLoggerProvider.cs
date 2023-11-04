@@ -56,11 +56,11 @@ namespace PerpetualIntelligence.Terminal.Commands.Providers
                 {
                     if (option.Alias != null)
                     {
-                        _logger.LogInformation(string.Format("{0}{1}{2}, {3}{4} <{5}>", new string(' ', indent), terminalOptions.Extractor.OptionPrefix, option.Id, terminalOptions.Extractor.OptionAliasPrefix, option.Alias, option.DataType));
+                        _logger.LogInformation(string.Format("{0}{1}{2}, {3}{4} <{5}>", new string(' ', indent), terminalOptions.Parser.OptionPrefix, option.Id, terminalOptions.Parser.OptionAliasPrefix, option.Alias, option.DataType));
                     }
                     else
                     {
-                        _logger.LogInformation(string.Format("{0}{1}{2} <{3}>", new string(' ', indent), terminalOptions.Extractor.OptionPrefix, option.Id, option.DataType));
+                        _logger.LogInformation(string.Format("{0}{1}{2} <{3}>", new string(' ', indent), terminalOptions.Parser.OptionPrefix, option.Id, option.DataType));
                     }
 
                     _logger.LogInformation(string.Format("{0}{1}", new string(' ', indent * 2), option.Description));

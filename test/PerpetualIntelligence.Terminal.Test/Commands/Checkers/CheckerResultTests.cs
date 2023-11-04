@@ -11,7 +11,7 @@ using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Commands.Checkers
 {
-    public class ExtractorResultTests
+    public class CheckerResultTests
     {
         [Fact]
         public void OptionCheckerResultNullMappedTypeShouldThrow()
