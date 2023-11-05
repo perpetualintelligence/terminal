@@ -64,13 +64,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="IAsyncEventHandler"/> to the service collection.
+        /// Adds the <see cref="ITerminalEventHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddEventHandler<TEventHandler>(this ITerminalBuilder builder) where TEventHandler : class, IAsyncEventHandler
+        public static ITerminalBuilder AddEventHandler<TEventHandler>(this ITerminalBuilder builder) where TEventHandler : class, ITerminalEventHandler
         {
-            builder.Services.AddSingleton<IAsyncEventHandler, TEventHandler>();
+            builder.Services.AddSingleton<ITerminalEventHandler, TEventHandler>();
             return builder;
         }
 

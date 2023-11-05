@@ -15,9 +15,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Events
 {
     /// <summary>
-    /// The asynchronous event handler.
+    /// The terminal event handler.
     /// </summary>
-    public interface IAsyncEventHandler
+    public interface ITerminalEventHandler
     {
         /// <summary>
         /// Override this method if you will perform an asynchronous operation before <see cref="ICommandRouter"/> starts a command route.

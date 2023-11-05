@@ -1,9 +1,11 @@
 # 5.4.1-rc*
 > Breaking Change
 - Production release for `netstandard2.0` and `netstandard2.1`
+- Unit test on `net7`
 - Merge TerminalStartInfo into TerminalStartContext
 - Support cancellation for Terminal  Routing and Command Routing independently
-- Unit test on `net7`
+- Rename `IAsyncEventHandler` to `ITerminalEventHandler` for clarity
+
 
 # 5.3.1-rc*
 > Breaking Change

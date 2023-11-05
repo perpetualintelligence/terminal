@@ -44,14 +44,14 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(context.License));
 
             // Check and run the command
-            IAsyncEventHandler? asyncEventHandler = services.GetService<IAsyncEventHandler>();
+            ITerminalEventHandler? asyncEventHandler = services.GetService<ITerminalEventHandler>();
             Tuple<CommandCheckerResult, CommandRunnerResult> result = await CheckAndRunCommandInnerAsync(context, asyncEventHandler);
 
             // Return the processed result
             return new CommandHandlerResult(result.Item2, result.Item1);
         }
 
-        private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandHandlerContext context, ITerminalEventHandler? asyncEventHandler)
         {
             // If we are executing a help command then we need to bypass all the checks.
             if (!options.Help.Disabled.GetValueOrDefault() &&
@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             }
         }
 
-        private async Task<CommandRunnerResult> RunCommandInnerAsync(CommandHandlerContext context, bool runHelp, IAsyncEventHandler? asyncEventHandler)
+        private async Task<CommandRunnerResult> RunCommandInnerAsync(CommandHandlerContext context, bool runHelp, ITerminalEventHandler? asyncEventHandler)
         {
             // Issue a before run event if configured
             if (asyncEventHandler != null)
@@ -113,7 +113,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             return runnerResult;
         }
 
-        private async Task<CommandCheckerResult> CheckCommandInnerAsync(CommandHandlerContext context, IAsyncEventHandler? asyncEventHandler)
+        private async Task<CommandCheckerResult> CheckCommandInnerAsync(CommandHandlerContext context, ITerminalEventHandler? asyncEventHandler)
         {
             // Issue a before check event if configured
             if (asyncEventHandler != null)

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    internal class MockAsyncEventHandler : IAsyncEventHandler
+    internal class MockAsyncEventHandler : ITerminalEventHandler
     {
         public Command? PassedCommand { get; private set; }
         public CommandRouterResult? PassedRouterResult { get; private set; }

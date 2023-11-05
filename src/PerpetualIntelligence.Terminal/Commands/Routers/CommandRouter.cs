@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             ICommandParser commandParser,
             ICommandHandler commandHandler,
             ILogger<CommandRouter> logger,
-            IAsyncEventHandler? asyncEventHandler = null)
+            ITerminalEventHandler? asyncEventHandler = null)
         {
             this.commandParser = commandParser ?? throw new ArgumentNullException(nameof(commandParser));
             this.terminalOptions = terminalOptions ?? throw new ArgumentNullException(nameof(terminalOptions));
@@ -96,7 +96,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         private readonly ICommandParser commandParser;
         private readonly ICommandHandler commandHandler;
         private readonly ILogger<CommandRouter> logger;
-        private readonly IAsyncEventHandler? asyncEventHandler;
+        private readonly ITerminalEventHandler? asyncEventHandler;
         private readonly TerminalOptions terminalOptions;
         private readonly ILicenseExtractor licenseExtractor;
     }

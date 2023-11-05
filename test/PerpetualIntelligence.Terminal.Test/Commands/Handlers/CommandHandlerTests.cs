@@ -419,7 +419,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
 
-            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<IAsyncEventHandler>();
+            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<ITerminalEventHandler>();
             asyncEventHandler.BeforeCheckCalled.Should().Be(false);
             asyncEventHandler.AfterCheckCalled.Should().Be(false);
 
@@ -443,7 +443,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
 
-            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<IAsyncEventHandler>();
+            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<ITerminalEventHandler>();
             asyncEventHandler.BeforeRunCalled.Should().Be(false);
             asyncEventHandler.AfterRunCalled.Should().Be(false);
 
@@ -467,7 +467,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
 
-            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<IAsyncEventHandler>();
+            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<ITerminalEventHandler>();
             asyncEventHandler.BeforeRunCalled.Should().BeFalse();
             asyncEventHandler.AfterRunCalled.Should().BeFalse();
 
@@ -503,7 +503,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
 
-            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<IAsyncEventHandler>();
+            MockAsyncEventHandler asyncEventHandler = (MockAsyncEventHandler)host.Services.GetRequiredService<ITerminalEventHandler>();
             asyncEventHandler.BeforeCheckCalled.Should().BeFalse();
             asyncEventHandler.AfterCheckCalled.Should().BeFalse();
 
@@ -595,7 +595,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
 
             opt2.AddSingleton<MockNotCheckerOrRunner>();
 
-            opt2.AddSingleton<IAsyncEventHandler, MockAsyncEventHandler>();
+            opt2.AddSingleton<ITerminalEventHandler, MockAsyncEventHandler>();
 
             opt2.AddSingleton<IHelpProvider, MockHelpProvider>();
         }
