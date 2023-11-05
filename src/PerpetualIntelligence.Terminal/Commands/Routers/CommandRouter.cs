@@ -6,8 +6,8 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Licensing;
@@ -57,7 +57,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             ParsedCommand? extractedCommand = null;
             try
             {
-                logger.LogDebug("Start command route. route={0}", context.Route.Id);
+                logger.LogDebug("Start command routing. route={1}", context.Route.Id);
 
                 // Issue a before route event if configured
                 if (asyncEventHandler != null)
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                     await asyncEventHandler.AfterCommandRouteAsync(context.Route, extractedCommand?.Command, result);
                 }
 
-                logger.LogDebug("End command route. route={0}", context.Route.Id);
+                logger.LogDebug("End command routing. route={0}", context.Route.Id);
             }
 
             return result;

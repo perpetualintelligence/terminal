@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         public ExceptionHandlerContext(Exception exception, CommandRoute? commandRoute = null)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
-            CommandRoute = commandRoute;
+            Route = commandRoute;
         }
 
         /// <summary>
@@ -33,6 +33,6 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         /// <summary>
         /// The command route.
         /// </summary>
-        public CommandRoute? CommandRoute { get; }
+        public CommandRoute? Route { get; }
     }
 }

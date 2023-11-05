@@ -32,7 +32,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
         /// <inheritdoc/>
         public async Task<CommandParserResult> ParseCommandAsync(CommandParserContext context)
         {
-            logger.LogDebug("Parse route. route={0}", context.Route.Id);
+            logger.LogDebug("Parse command. route={0}", context.Route.Id);
             ParsedCommand parsedCommand = await commandRouteParser.ParseRouteAsync(context.Route);
             return new CommandParserResult(parsedCommand);
         }

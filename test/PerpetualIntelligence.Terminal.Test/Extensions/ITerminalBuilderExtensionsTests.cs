@@ -328,7 +328,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddRoutingShouldCorrectlyInitialize()
+        public void AddTerminalRouterShouldCorrectlyInitialize()
         {
             terminalBuilder.AddTerminalRouter<MockTerminalRouter, MockRoutingContext>();
 
