@@ -10,9 +10,9 @@ using Microsoft.Extensions.Options;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Commands.Declarative;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Commands.Runners;
@@ -252,7 +252,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddRouting<TRouting, TContext>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouter<TContext> where TContext : TerminalRouterContext
+        public static ITerminalBuilder AddTerminalRouter<TRouting, TContext>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouter<TContext> where TContext : TerminalRouterContext
         {
             // Add terminal routing service.
             builder.Services.AddSingleton<ITerminalRouter<TContext>, TRouting>();

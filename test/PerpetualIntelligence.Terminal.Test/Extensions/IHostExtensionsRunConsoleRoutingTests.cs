@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Set invalid start mode
             startContext = new TerminalStartContext(TerminalStartMode.Grpc, terminalTokenSource.Token, commandTokenSource.Token);
-            Func<Task> act = async () => await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            Func<Task> act = async () => await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Grpc");
         }
 
@@ -54,7 +54,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             using IHost host = BuildHostAndLogger(ConfigureServicesCancelOnRoute);
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeTrue();
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             await Task.Delay(2050);
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Canceled task so router will not be called.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -121,7 +121,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = "$";
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -153,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -189,7 +189,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Run the router for 5 seconds, the callback will stop the host 2 seconds.
             GetCliOptions(host).Router.Timeout = 5000;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Till the timer callback cancel the route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -226,7 +226,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Router will throw exception and then routing will get canceled
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = ">$";
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -258,7 +258,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // We will run in a infinite loop due to empty input so break that after 2 seconds
             terminalTokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeFalse();
@@ -287,7 +287,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
             terminalTokenSource.CancelAfter(3000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // In 3 seconds the Route will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
@@ -321,7 +321,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Send cancellation after 2 seconds. Idea is in 2 seconds the router will route multiple times till canceled.
             terminalTokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Result is processed and disposed by handler not the routing service.
             mockCommandRouter.ReturnedRouterResult.Should().NotBeNull();
@@ -344,7 +344,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             // Route delay is set to 3000 and timeout is 2000
             GetCliOptions(host).Router.Timeout = 2000;
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Check the published error
             MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -381,7 +381,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             terminalTokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             GetCliOptions(host).Router.Caret = "test_caret";
-            await host.RunTerminalRoutingAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
             titleWriter.Messages.Should().ContainSingle("test_caret");
 
             // Check output

@@ -330,7 +330,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddRoutingShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddRouting<MockTerminalRouter, MockRoutingContext>();
+            terminalBuilder.AddTerminalRouter<MockTerminalRouter, MockRoutingContext>();
 
             var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalRouter<MockRoutingContext>)));
             Assert.IsNotNull(router);

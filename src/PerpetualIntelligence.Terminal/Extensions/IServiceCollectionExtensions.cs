@@ -9,9 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -110,7 +110,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <remarks>
         /// This method is part of the terminal infrastructure and is not intended to be used directly from application code.
         /// </remarks>
-        public static ITerminalBuilder CreateTerminalBuilder(this IServiceCollection services)
+        internal static ITerminalBuilder CreateTerminalBuilder(this IServiceCollection services)
         {
             if (services == null)
             {
@@ -180,7 +180,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }
 
             return services.AddTerminalDefault<TStore, TText, THelp>(setupAction)
-                           .AddRouting<TerminalConsoleRouter, TerminalConsoleRouterContext>()
+                           .AddTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>()
                            .AddConsole<TConsole>();
         }
     }

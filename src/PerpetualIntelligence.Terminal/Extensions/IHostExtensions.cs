@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="context">The routing context for terminal console routing.</param>
-        public static async Task RunTerminalRoutingAsync<TRouting, TContext>(this IHost host, TContext context) where TRouting : class, ITerminalRouter<TContext> where TContext : TerminalRouterContext
+        public static async Task RunTerminalRouterAsync<TRouting, TContext>(this IHost host, TContext context) where TRouting : class, ITerminalRouter<TContext> where TContext : TerminalRouterContext
         {
             ILogger<ITerminalRouter<TContext>> logger = host.Services.GetRequiredService<ILogger<ITerminalRouter<TContext>>>();
 
