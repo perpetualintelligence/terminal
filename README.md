@@ -34,7 +34,7 @@ Explore our documentation for detailed information on licensing, redistribution,
 
 > ***The full-feature `pi-cli` framework is free for educational and evaluation purposes.***
 
-For non-educational, release, deployment, or production use, a commercial license is required.
+For non-educational, commercial, or production use, a commercial license is required.
 
 ## Documentation and Support
 Explore our [documentation repository](https://github.com/perpetualintelligence/docs) for detailed guides and code samples.
