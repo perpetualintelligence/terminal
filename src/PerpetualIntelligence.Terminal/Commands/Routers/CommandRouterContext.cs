@@ -20,7 +20,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// </summary>
         /// <param name="rawCommandString">The raw command string.</param>
         /// <param name="routingContext">The terminal routing context.</param>
-        public CommandRouterContext(string rawCommandString, TerminalRoutingContext routingContext)
+        public CommandRouterContext(string rawCommandString, TerminalRouterContext routingContext)
         {
             if (string.IsNullOrWhiteSpace(rawCommandString))
             {
@@ -34,7 +34,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
         /// <summary>
         /// The terminal routing context.
         /// </summary>
-        public TerminalRoutingContext RoutingContext { get; }
+        public TerminalRouterContext RoutingContext { get; }
 
         /// <summary>
         /// The command route.

@@ -10,8 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Commands.Runners;
@@ -537,12 +537,13 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
             host = hostBuilder.Build();
 
-            tokenSource = new CancellationTokenSource();
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None);
-            routingContext = new MockTerminalRoutingContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token));
+            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
             routerContext = new CommandRouterContext("test", routingContext);
 
             // This mocks the help id request
@@ -608,7 +609,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
         private MockLicenseCheckerInner licenseChecker = null!;
         private TerminalOptions terminalOptions = null!;
         private CommandRouterContext routerContext = null!;
-        private TerminalRoutingContext routingContext = null!;
-        private CancellationTokenSource tokenSource = null!;
+        private TerminalRouterContext routingContext = null!;
+        private CancellationTokenSource terminalTokenSource = null!;
+        private CancellationTokenSource commandTokenSource = null!;
     }
 }

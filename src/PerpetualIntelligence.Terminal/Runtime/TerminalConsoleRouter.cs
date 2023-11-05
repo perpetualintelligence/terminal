@@ -17,19 +17,19 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalRouting{TContext}"/> for console based terminals.
+    /// The default <see cref="ITerminalRouter{TContext}"/> for console based terminals.
     /// </summary>
-    public class TerminalConsoleRouting : ITerminalRouting<TerminalConsoleRoutingContext>
+    public class TerminalConsoleRouter : ITerminalRouter<TerminalConsoleRouterContext>
     {
         private readonly ITerminalConsole terminalConsole;
         private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
         private readonly TerminalOptions options;
-        private readonly ILogger<TerminalConsoleRouting> logger;
+        private readonly ILogger<TerminalConsoleRouter> logger;
 
         /// <summary>
-        /// Initialize a new <see cref="TerminalConsoleRouting"/> instance.
+        /// Initialize a new <see cref="TerminalConsoleRouter"/> instance.
         /// </summary>
         /// <param name="terminalConsole">The terminal console.</param>
         /// <param name="applicationLifetime">The host application lifetime instance.</param>
@@ -37,13 +37,13 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <param name="exceptionHandler">The exception handler.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public TerminalConsoleRouting(
+        public TerminalConsoleRouter(
             ITerminalConsole terminalConsole,
             IHostApplicationLifetime applicationLifetime,
             ICommandRouter commandRouter,
             IExceptionHandler exceptionHandler,
             TerminalOptions options,
-            ILogger<TerminalConsoleRouting> logger)
+            ILogger<TerminalConsoleRouter> logger)
         {
             this.terminalConsole = terminalConsole;
             this.applicationLifetime = applicationLifetime;
@@ -54,18 +54,18 @@ namespace PerpetualIntelligence.Terminal.Runtime
         }
 
         /// <summary>
-        /// Routes to the console asynchronously.
+        /// Runs to the terminal as a console asynchronously.
         /// </summary>
         /// <param name="context">The routing service context.</param>
         /// <returns></returns>
-        public virtual Task RunAsync(TerminalConsoleRoutingContext context)
+        public virtual Task RunAsync(TerminalConsoleRouterContext context)
         {
             return Task.Run(async () =>
             {
                 //  Make sure we have supported start context
-                if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Console)
+                if (context.StartContext.StartMode != TerminalStartMode.Console)
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartMode);
                 }
 
                 // Track the application lifetime so we can know whether cancellation is requested.
@@ -79,15 +79,15 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         await Task.Delay(100);
 
                         // Honor the cancellation request.
-                        if (context.StartContext.CancellationToken.IsCancellationRequested)
+                        if (context.StartContext.TerminalCancellationToken.IsCancellationRequested)
                         {
-                            throw new OperationCanceledException("Received cancellation token, the routing is canceled.");
+                            throw new OperationCanceledException("Received terminal cancellation token, the terminal routing is canceled.");
                         }
 
                         // Check if application is stopping
                         if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
                         {
-                            throw new OperationCanceledException("Application is stopping, the routing is canceled.");
+                            throw new OperationCanceledException("Application is stopping, the terminal routing is canceled.");
                         }
 
                         // Print the caret
@@ -112,7 +112,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                         route = routerContext.Route;
                         Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
 
-                        bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.CancellationToken);
+                        bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.TerminalCancellationToken);
                         if (!success)
                         {
                             throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");

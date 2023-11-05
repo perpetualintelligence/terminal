@@ -265,8 +265,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             argumentChecker = new ArgumentChecker(argumentMapper, terminalOptions);
             checker = new CommandChecker(valueChecker, argumentChecker, terminalOptions, TestLogger.Create<CommandChecker>());
             commands = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
-            tokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRoutingContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token));
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
+            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
             routerContext = new CommandRouterContext("test", routingContext);
         }
 
@@ -280,8 +281,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
         private IOptionChecker valueChecker = null!;
         private IArgumentChecker argumentChecker = null!;
         private CommandRouterContext routerContext = null!;
-        private TerminalRoutingContext routingContext = null!;
-        private CancellationTokenSource tokenSource = null!;
+        private TerminalRouterContext routingContext = null!;
+        private CancellationTokenSource terminalTokenSource = null!;
+        private CancellationTokenSource commandTokenSource = null!;
         private readonly CommandHandlerContext handlerContext = null!;
     }
 }

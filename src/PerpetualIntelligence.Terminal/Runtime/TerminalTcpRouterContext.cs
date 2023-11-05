@@ -12,10 +12,10 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// <summary>
     /// The TCP connection data.
     /// </summary>
-    public sealed class TerminalTcpRoutingContext : TerminalRoutingContext
+    public sealed class TerminalTcpRouterContext : TerminalRouterContext
     {
         /// <summary>
-        /// The network IP endpoint server will connect. Used for <see cref="TerminalTcpRouting"/>.
+        /// The network IP endpoint server will connect. Used for <see cref="TerminalTcpRouter"/>.
         /// </summary>
         public IPEndPoint IPEndPoint { get; private set; }
 
@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint server will connect.</param>
         /// <param name="terminalStartContext">The terminal start context.</param>
-        public TerminalTcpRoutingContext(IPEndPoint iPEndPoint, TerminalStartContext terminalStartContext) : base(terminalStartContext)
+        public TerminalTcpRouterContext(IPEndPoint iPEndPoint, TerminalStartContext terminalStartContext) : base(terminalStartContext)
         {
             IPEndPoint = iPEndPoint;
         }

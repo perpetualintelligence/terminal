@@ -19,27 +19,27 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalRouting{TContext}"/> for TCP client-server communication.
+    /// The default <see cref="ITerminalRouter{TContext}"/> for TCP client-server communication.
     /// </summary>
     /// <remarks>
-    /// <para>This class implements the <see cref="ITerminalRouting{TContext}"/> interface and is responsible for handling
+    /// <para>This class implements the <see cref="ITerminalRouter{TContext}"/> interface and is responsible for handling
     /// TCP client-server communication. It runs a terminal as a TCP server on the specified IP endpoint and waits for incoming client connections.
     /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
     /// </para>
     /// </remarks>
-    public class TerminalTcpRouting : ITerminalRouting<TerminalTcpRoutingContext>
+    public class TerminalTcpRouter : ITerminalRouter<TerminalTcpRouterContext>
     {
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
         private readonly TerminalOptions options;
         private readonly ITextHandler textHandler;
-        private readonly ILogger<TerminalTcpRouting> logger;
+        private readonly ILogger<TerminalTcpRouter> logger;
         private ConcurrentDictionary<int, ConcurrentQueue<string>>? commandCollection;
         private ConcurrentDictionary<Task, int>? clientConnections;
         private TcpListener? _server;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TerminalTcpRouting"/> class.
+        /// Initializes a new instance of the <see cref="TerminalTcpRouter"/> class.
         /// </summary>
         /// <param name="commandRouter">The command router.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
@@ -47,15 +47,15 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <param name="textHandler">The text handler.</param>
         /// <param name="logger">The logger.</param>
         /// <remarks>
-        /// This constructor creates a new instance of the <see cref="TerminalTcpRouting"/> class.
+        /// This constructor creates a new instance of the <see cref="TerminalTcpRouter"/> class.
         /// It takes several dependencies that are required for handling TCP client-server communication.
         /// </remarks>
-        public TerminalTcpRouting(
+        public TerminalTcpRouter(
             ICommandRouter commandRouter,
             IExceptionHandler exceptionHandler,
             TerminalOptions options,
             ITextHandler textHandler,
-            ILogger<TerminalTcpRouting> logger)
+            ILogger<TerminalTcpRouter> logger)
         {
             this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
@@ -75,16 +75,16 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
         /// The method will also stop if an exception is encountered while handling client connections.
         /// </remarks>
-        public virtual async Task RunAsync(TerminalTcpRoutingContext context)
+        public virtual async Task RunAsync(TerminalTcpRouterContext context)
         {
             // Reset the command queue
             commandCollection = new ConcurrentDictionary<int, ConcurrentQueue<string>>();
             clientConnections = new ConcurrentDictionary<Task, int>();
 
             // Ensure we have supported start context
-            if (context.StartContext.StartInformation.StartMode != TerminalStartMode.Tcp)
+            if (context.StartContext.StartMode != TerminalStartMode.Tcp)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartInformation.StartMode);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartMode);
             }
 
             if (context.IPEndPoint == null)
@@ -137,7 +137,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
             }
         }
 
-        private async Task AcceptClientsUntilCanceledAsync(TerminalTcpRoutingContext context)
+        private async Task AcceptClientsUntilCanceledAsync(TerminalTcpRouterContext context)
         {
             if (commandCollection is null || clientConnections is null)
             {
@@ -145,7 +145,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
             }
 
             // Keep accepting new clients till a cancellation token is received.
-            CancellationToken cancellationToken = context.StartContext.CancellationToken;
+            CancellationToken cancellationToken = context.StartContext.TerminalCancellationToken;
             while (!cancellationToken.IsCancellationRequested)
             {
                 int completedIndex = -1;
@@ -206,15 +206,15 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// This method is responsible for accepting a single client connection asynchronously.
         /// It sets up a TCP client connection and delegates the connection handling to the HandleClientConnected method.
         /// </remarks>
-        private async Task AcceptClientAsync(TerminalTcpRoutingContext context, int taskIdx)
+        private async Task AcceptClientAsync(TerminalTcpRouterContext context, int taskIdx)
         {
             try
             {
                 // Ensure that AcceptTcpClientAsync is canceled when the cancellation token is signaled.
                 logger.LogDebug("Waiting for client to connect on task {0}", taskIdx);
                 Task<TcpClient> tcpClientTask = _server!.AcceptTcpClientAsync();
-                await Task.WhenAny(tcpClientTask, Task.Delay(Timeout.Infinite, context.StartContext.CancellationToken));
-                context.StartContext.CancellationToken.ThrowIfCancellationRequested();
+                await Task.WhenAny(tcpClientTask, Task.Delay(Timeout.Infinite, context.StartContext.TerminalCancellationToken));
+                context.StartContext.TerminalCancellationToken.ThrowIfCancellationRequested();
 
                 // Setup the context and handle the client connection
                 using TcpClient tcpClient = tcpClientTask.Result;
@@ -229,14 +229,14 @@ namespace PerpetualIntelligence.Terminal.Runtime
             }
         }
 
-        private async Task ProcessRawCommandsAsync(TerminalTcpRoutingContext tcpContext, string raw, int taskIdx)
+        private async Task ProcessRawCommandsAsync(TerminalTcpRouterContext tcpContext, string raw, int taskIdx)
         {
             logger.LogDebug("Routing the command. raw={0} task={1}", raw, taskIdx);
 
             // Route the command request to router. Wait for the router or the timeout.
             CommandRouterContext context = new(raw, tcpContext);
             Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(context);
-            if (await Task.WhenAny(routeTask, Task.Delay(options.Router.Timeout, tcpContext.StartContext.CancellationToken)) == routeTask)
+            if (await Task.WhenAny(routeTask, Task.Delay(options.Router.Timeout, tcpContext.StartContext.TerminalCancellationToken)) == routeTask)
             {
                 // Task completed within timeout.
                 // Consider that the task may have faulted or been canceled.
@@ -252,14 +252,14 @@ namespace PerpetualIntelligence.Terminal.Runtime
         /// <summary>
         /// Handles the communication with a connected TCP client asynchronously.
         /// </summary>
-        /// <param name="tcpContext">The <see cref="TerminalTcpRoutingContext"/> representing the TCP client and server setup.</param>
+        /// <param name="tcpContext">The <see cref="TerminalTcpRouterContext"/> representing the TCP client and server setup.</param>
         /// <param name="client">The connected client.</param>
         /// <param name="taskIdx">The task index executing the client handling.</param>
         /// <remarks>
         /// This method is executed asynchronously for each connected TCP client.
         /// It reads data from the client's network stream, processes the received data, and manages communication asynchronously.
         /// </remarks>
-        private async Task HandleClientConnectedAsync(TerminalTcpRoutingContext tcpContext, TcpClient client, int taskIdx)
+        private async Task HandleClientConnectedAsync(TerminalTcpRouterContext tcpContext, TcpClient client, int taskIdx)
         {
             // Check if the client is connected
             if (!client.Connected)
@@ -280,7 +280,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     // Release the current thread to avoid busy-wait
                     await Task.Yield();
 
-                    if (tcpContext.StartContext.CancellationToken.IsCancellationRequested)
+                    if (tcpContext.StartContext.TerminalCancellationToken.IsCancellationRequested)
                     {
                         logger.LogDebug("Client request is canceled. task={0}", taskIdx);
                         break;
@@ -300,7 +300,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
                     }
 
                     // Read data from the stream asynchronously
-                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, tcpContext.StartContext.CancellationToken);
+                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, tcpContext.StartContext.TerminalCancellationToken);
                     if (bytesRead == 0)
                     {
                         // The remote stream is closed, the client is disconnected or we have read all the data.

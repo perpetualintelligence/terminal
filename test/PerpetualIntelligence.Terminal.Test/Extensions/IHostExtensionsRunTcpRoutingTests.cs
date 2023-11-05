@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
-            Func<Task> act = async () => await host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(null!, startContext));
+            Func<Task> act = async () => await host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(null!, startContext));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The network IP endpoint is missing in the TCP server routing request.");
         }
 
@@ -62,7 +62,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Wait for 10 seconds and make sure routingTask is still running
             await Task.WhenAny(routingTask, Task.Delay(10000));
@@ -71,7 +71,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             routingTask.IsCompletedSuccessfully.Should().BeFalse();
 
             // Stop the server by issuing a cancellation
-            tokenSource.CancelAfter(2000);
+            terminalTokenSource.CancelAfter(2000);
 
             // Wait for routingTask to complete
             await routingTask;
@@ -89,10 +89,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start the TCP routing asynchronously with the cancellation token
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Cancel the server after running for a while
-            tokenSource.CancelAfter(2000); // Wait for 2 seconds and then cancel the server
+            terminalTokenSource.CancelAfter(2000); // Wait for 2 seconds and then cancel the server
 
             // Wait for the server task to complete
             await routingTask;
@@ -109,7 +109,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Wait for 3 seconds and make sure routingTask is still running
             await Task.WhenAny(routingTask, Task.Delay(3000));
@@ -118,7 +118,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             routingTask.IsCompletedSuccessfully.Should().BeFalse();
 
             // Stop the server by issuing a cancellation
-            tokenSource.Cancel();
+            terminalTokenSource.Cancel();
 
             // Wait for routingTask to complete or timeout after 500 seconds
             routingTask.Wait(500);
@@ -135,7 +135,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Start the client task
             var clientTask = Task.Run(async () =>
@@ -146,7 +146,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             });
 
             // Cancel both the server and client tasks after a delay
-            tokenSource.CancelAfter(3000);
+            terminalTokenSource.CancelAfter(3000);
 
             // Wait for client and server tasks to complete
             Task.WhenAll(routingTask, clientTask).Wait(5000);
@@ -159,9 +159,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [Fact]
         public async Task RunAsync_Should_Throw_InvalidConfiguration_For_Invalid_StartMode()
         {
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token);
-            var context = new TerminalTcpRoutingContext(serverIpEndPoint, startContext);
-            Func<Task> act = async () => await host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(context);
+            startContext = new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token);
+            var context = new TerminalTcpRouterContext(serverIpEndPoint, startContext);
+            Func<Task> act = async () => await host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(context);
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Custom");
         }
 
@@ -171,9 +171,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
             host = CreateHostWithLogger(ConfigureServicesDefault, nameof(HandleClientConnected_Should_Route_Command_To_Router));
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
-            tokenSource.CancelAfter(2000); // Wait for 2 seconds and then cancel the server
+            terminalTokenSource.CancelAfter(2000); // Wait for 2 seconds and then cancel the server
 
             // Start the client task
             var clientTask = Task.Run(async () =>
@@ -209,7 +209,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             host = CreateHostWithLogger(ConfigureServicesDefault, nameof(HandleClientConnected_Throw_Exception_If_PackageData_Exceeds_LimitAsync));
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Start the client task
             var clientTask = Task.Run(async () =>
@@ -239,7 +239,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             exPublisher.PublishedMessage.Should().Contain("task=");
 
             // Cancel the token source to stop the server and client (if not already completed)
-            tokenSource.Cancel();
+            terminalTokenSource.Cancel();
 
             // Wait for both the routing task and the client task to complete
             await Task.WhenAll(routingTask, clientTask);
@@ -253,7 +253,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             host = CreateHostWithLogger(ConfigureServicesDefault, nameof(HandleClientConnected_Handles_Delimited_Messages_CorrectlyAsync));
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Start the client task
             var clientTask = Task.Run(async () =>
@@ -271,7 +271,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             });
 
             // Cancel the token source to stop the server and client
-            tokenSource.CancelAfter(2000);
+            terminalTokenSource.CancelAfter(2000);
 
             // Wait for both the routing task and the client task to complete
             await Task.WhenAll(routingTask, clientTask);
@@ -295,7 +295,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             host = CreateHostWithLogger(ConfigureServicesDefault, nameof(HandleClientConnected_Handles_Multiple_Delimited_Messages_CorrectlyAsync));
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Start the client task
             var clientTask = Task.Run(async () =>
@@ -320,7 +320,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             });
 
             // Cancel the token source to stop the server and client
-            tokenSource.CancelAfter(4500);
+            terminalTokenSource.CancelAfter(4500);
 
             // Wait for both the routing task and the client task to complete
             await Task.WhenAll(routingTask, clientTask);
@@ -347,7 +347,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             host = CreateHostWithLogger(ConfigureServicesDefault, nameof(HandleClientConnected_Handles_Large_Delimited_Messages_CorrectlyAsync));
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Start the client task
             var clientTask = Task.Run(async () =>
@@ -370,7 +370,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             });
 
             // Cancel the token source to stop the server and client
-            tokenSource.CancelAfter(2000);
+            terminalTokenSource.CancelAfter(2000);
 
             // Wait for both the routing task and the client task to complete
             await Task.WhenAll(routingTask, clientTask);
@@ -412,7 +412,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             host = CreateHostWithLogger(ConfigureServicesDefault, nameof(HandleClientConnected_Handles_Very_Large_Delimited_Messages_CorrectlyAsync));
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Start the client task
             var clientTask = Task.Run(async () =>
@@ -435,7 +435,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             });
 
             // Cancel the token source to stop the server and client
-            tokenSource.CancelAfter(5000);
+            terminalTokenSource.CancelAfter(5000);
 
             // Wait for both the routing task and the client task to complete
             await Task.WhenAll(routingTask, clientTask);
@@ -462,10 +462,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Stop the server by issuing a cancellation
-            tokenSource.CancelAfter(8000);
+            terminalTokenSource.CancelAfter(8000);
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Number of clients to simulate
             int numClients = 5;
@@ -508,10 +508,10 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Cancel so that the client does not go into an infinite loop during stream.Read
-            tokenSource.CancelAfter(2000);
+            terminalTokenSource.CancelAfter(2000);
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Simulate a client connecting to the server after a short delay and sending a malformed delimited message
             var connectTask = Task.Run(async () =>
@@ -545,7 +545,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Start the client task and send a valid delimited message
             var clientTask = Task.Run(async () =>
@@ -573,7 +573,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             exPublisher.Called.Should().BeTrue();
             exPublisher.PublishedMessage.Should().Be("test_error_description. opt1=test1 opt2=test2");
 
-            tokenSource.Cancel();
+            terminalTokenSource.Cancel();
             Task.WaitAll(routingTask, clientTask);
             routingTask.IsCompletedSuccessfully.Should().BeTrue();
             clientTask.IsCompletedSuccessfully.Should().BeTrue();
@@ -589,7 +589,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
             // Start the TCP routing asynchronously
-            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouting, TerminalTcpRoutingContext>(new TerminalTcpRoutingContext(serverIpEndPoint, startContext));
+            var routingTask = host.RunTerminalRoutingAsync<TerminalTcpRouter, TerminalTcpRouterContext>(new TerminalTcpRouterContext(serverIpEndPoint, startContext));
 
             // Start multiple client tasks and send a valid delimited message
             const int numClients = 5;
@@ -615,7 +615,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 }
             });
 
-            tokenSource.CancelAfter(6000); // Stop the server
+            terminalTokenSource.CancelAfter(6000); // Stop the server
 
             await Task.WhenAll(routingTask, multipleClientsTask);
 
@@ -645,14 +645,16 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private void ConfigureServicesDefault(IServiceCollection opt2)
         {
             textHandler = new AsciiTextHandler();
-            tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
+
+            startContext = new TerminalStartContext(TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token);
 
             opt2.AddSingleton<ICommandRouter>(new MockCommandRouter());
             opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            opt2.AddSingleton<ITerminalRouting<TerminalTcpRoutingContext>, TerminalTcpRouting>();
+            opt2.AddSingleton<ITerminalRouter<TerminalTcpRouterContext>, TerminalTcpRouter>();
             opt2.AddSingleton(textHandler);
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
@@ -660,20 +662,23 @@ namespace PerpetualIntelligence.Terminal.Extensions
         private void ConfigureServicesErrorExceptionOnRoute(IServiceCollection opt2)
         {
             textHandler = new AsciiTextHandler();
-            tokenSource = new CancellationTokenSource();
-            startContext = new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Tcp), tokenSource.Token);
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
+
+            startContext = new TerminalStartContext(TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token);
 
             opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, null, new TerminalException("test_error_code", "test_error_description. opt1={0} opt2={1}", "test1", "test2")));
             opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
-            opt2.AddSingleton<ITerminalRouting<TerminalTcpRoutingContext>, TerminalTcpRouting>();
+            opt2.AddSingleton<ITerminalRouter<TerminalTcpRouterContext>, TerminalTcpRouter>();
             opt2.AddSingleton(textHandler);
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
         private IHost host = null!;
-        private CancellationTokenSource tokenSource = null!;
+        private CancellationTokenSource terminalTokenSource = null!;
+        private CancellationTokenSource commandTokenSource = null!;
         private TerminalStartContext startContext = null!;
         private IPEndPoint serverIpEndPoint = null!;
         private ITextHandler textHandler = null!;

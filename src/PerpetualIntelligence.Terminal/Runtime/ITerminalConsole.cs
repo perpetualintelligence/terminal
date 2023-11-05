@@ -16,7 +16,7 @@ namespace PerpetualIntelligence.Terminal.Runtime
     /// <remarks>
     /// <see cref="ITerminalConsole"/> allows application to define a standard or a custom console environment.
     /// </remarks>
-    /// <see cref="TerminalConsoleRouting"/>
+    /// <see cref="TerminalConsoleRouter"/>
     /// <seealso cref="TerminalSystemConsole"/>
     public interface ITerminalConsole
     {

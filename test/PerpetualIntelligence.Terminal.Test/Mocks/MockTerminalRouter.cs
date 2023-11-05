@@ -6,13 +6,21 @@
 */
 
 using PerpetualIntelligence.Terminal.Runtime;
+using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    internal class MockTerminalRoutingContext : TerminalRoutingContext
+    internal class MockTerminalRouter : ITerminalRouter<MockRoutingContext>
     {
-        public MockTerminalRoutingContext(TerminalStartContext startContext) : base(startContext)
+        public bool Called
         {
+            get; private set;
+        }
+
+        public Task RunAsync(MockRoutingContext context)
+        {
+            Called = true;
+            return Task.CompletedTask;
         }
     }
 }

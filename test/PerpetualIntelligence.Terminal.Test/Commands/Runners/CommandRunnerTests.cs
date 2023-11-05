@@ -6,10 +6,9 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Shared.Exceptions;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Commands.Runners.Mocks;
 using PerpetualIntelligence.Terminal.Mocks;
@@ -25,8 +24,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
     {
         public CommandRunnerTests()
         {
-            tokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRoutingContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), tokenSource.Token));
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
+            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
             routerContext = new CommandRouterContext("test", routingContext);
         }
 
@@ -76,7 +76,8 @@ namespace PerpetualIntelligence.Terminal.Commands.Runners
         }
 
         private readonly CommandRouterContext routerContext = null!;
-        private readonly TerminalRoutingContext routingContext = null!;
-        private readonly CancellationTokenSource tokenSource = null!;
+        private readonly TerminalRouterContext routingContext = null!;
+        private readonly CancellationTokenSource terminalTokenSource = null!;
+        private readonly CancellationTokenSource commandTokenSource = null!;
     }
 }

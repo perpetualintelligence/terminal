@@ -1,3 +1,10 @@
+# 5.4.1-rc*
+> Breaking Change
+- Production release for `netstandard2.0` and `netstandard2.1`
+- Merge TerminalStartInfo into TerminalStartContext
+- Support cancellation for Terminal  Routing and Command Routing independently
+- Unit test on `net7`
+
 # 5.3.1-rc*
 > Breaking Change
 - Rename command extractor types to command parser

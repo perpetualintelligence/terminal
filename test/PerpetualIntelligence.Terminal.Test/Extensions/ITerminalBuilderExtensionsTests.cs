@@ -6,15 +6,14 @@
 */
 
 using FluentAssertions;
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Commands.Mappers;
+using PerpetualIntelligence.Terminal.Commands.Parsers;
 using PerpetualIntelligence.Terminal.Commands.Providers;
 using PerpetualIntelligence.Terminal.Commands.Routers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
@@ -102,7 +101,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddStartContextShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddStartContext(new TerminalStartContext(new TerminalStartInfo(TerminalStartMode.Custom), CancellationToken.None));
+            terminalBuilder.AddStartContext(new TerminalStartContext(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None));
 
             var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalStartContext)));
             Assert.IsNotNull(serviceDescriptor);
@@ -331,12 +330,12 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddRoutingShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddRouting<MockRouting, MockRoutingContext>();
+            terminalBuilder.AddRouting<MockTerminalRouter, MockRoutingContext>();
 
-            var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalRouting<MockRoutingContext>)));
+            var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalRouter<MockRoutingContext>)));
             Assert.IsNotNull(router);
             Assert.AreEqual(ServiceLifetime.Singleton, router.Lifetime);
-            Assert.AreEqual(typeof(MockRouting), router.ImplementationType);
+            Assert.AreEqual(typeof(MockTerminalRouter), router.ImplementationType);
         }
 
         [TestMethod]

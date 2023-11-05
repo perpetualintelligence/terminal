@@ -180,7 +180,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }
 
             return services.AddTerminalDefault<TStore, TText, THelp>(setupAction)
-                           .AddRouting<TerminalConsoleRouting, TerminalConsoleRoutingContext>()
+                           .AddRouting<TerminalConsoleRouter, TerminalConsoleRouterContext>()
                            .AddConsole<TConsole>();
         }
     }

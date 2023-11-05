@@ -9,7 +9,7 @@ using PerpetualIntelligence.Terminal.Runtime;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    public class MockRoutingContext : TerminalRoutingContext
+    public class MockRoutingContext : TerminalRouterContext
     {
         public MockRoutingContext(TerminalStartContext startContext) : base(startContext)
         {

@@ -8,15 +8,15 @@
 namespace PerpetualIntelligence.Terminal.Runtime
 {
     /// <summary>
-    /// The <see cref="TerminalRoutingContext"/> for <see cref="TerminalConsoleRouting"/>.
+    /// The <see cref="TerminalRouterContext"/> for <see cref="TerminalCustomRouterContext"/>.
     /// </summary>
-    public sealed class TerminalConsoleRoutingContext : TerminalRoutingContext
+    public abstract class TerminalCustomRouterContext : TerminalRouterContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="startContext">The terminal start context.</param>
-        public TerminalConsoleRoutingContext(TerminalStartContext startContext) : base(startContext)
+        public TerminalCustomRouterContext(TerminalStartContext startContext) : base(startContext)
         {
         }
     }

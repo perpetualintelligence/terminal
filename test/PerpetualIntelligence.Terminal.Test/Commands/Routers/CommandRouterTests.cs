@@ -231,7 +231,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             eventHandler.PassedRoute.Should().BeNull();
             eventHandler.PassedCommand.Should().BeNull();
             eventHandler.PassedRouterResult.Should().BeNull();
-        }        
+        }
 
         protected override void OnTestCleanup()
         {
@@ -250,15 +250,17 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             logger = TestLogger.Create<CommandRouter>();
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandParser, commandHandler, logger, eventHandler);
-            cancellationTokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRoutingContext(new Runtime.TerminalStartContext(new Runtime.TerminalStartInfo(Runtime.TerminalStartMode.Custom), cancellationTokenSource.Token));
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
+            routingContext = new MockTerminalRouterContext(new Runtime.TerminalStartContext(Runtime.TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
         }
 
-        private CancellationTokenSource cancellationTokenSource = null!;
+        private CancellationTokenSource terminalTokenSource = null!;
+        private CancellationTokenSource commandTokenSource = null!;
         private MockCommandParserInner commandParser = null!;
         private MockCommandHandlerInner commandHandler = null!;
         private MockAsyncEventHandler eventHandler = null!;
-        private MockTerminalRoutingContext routingContext = null!;
+        private MockTerminalRouterContext routingContext = null!;
         private IHost host = null!;
         private MockLicenseExtractorInner licenseExtractor = null!;
         private CommandRouter commandRouter = null!;
