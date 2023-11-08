@@ -63,8 +63,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().ContainSingle(">");
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
-            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -101,8 +101,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().BeEmpty();
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
-            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -134,8 +134,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().ContainSingle("$");
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
-            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -166,8 +166,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().ContainSingle(">");
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
-            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -239,8 +239,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().ContainSingle(">$");
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
-            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -266,9 +266,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // The log messages will have N raw string log messages
             string[] logMessages = listLoggerFactory.AllLogMessages.Distinct().ToArray();
             logMessages.Should().HaveCount(3);
-            logMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            logMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
             logMessages[1].Should().Be("The raw string is null or ignored by the terminal console.");
-            logMessages[2].Should().Be("End terminal routing.");
+            logMessages[2].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -297,9 +297,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // The log messages will have N raw string log messages
             string[] logMessages = listLoggerFactory.AllLogMessages.Distinct().ToArray();
             logMessages.Should().HaveCount(3);
-            logMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            logMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
             logMessages[1].Should().Be("The raw string is null or ignored by the terminal console.");
-            logMessages[2].Should().Be("End terminal routing.");
+            logMessages[2].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -359,9 +359,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // The log messages will have N raw string log messages
             string[] logMessages = listLoggerFactory.AllLogMessages.Distinct().ToArray();
             logMessages.Should().HaveCount(3);
-            logMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            logMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
             logMessages[1].Should().Be("The raw string is null or ignored by the terminal console.");
-            logMessages[2].Should().Be("End terminal routing.");
+            logMessages[2].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -393,8 +393,8 @@ namespace PerpetualIntelligence.Terminal.Extensions
             consoleListWriter.Messages.Should().BeEmpty();
 
             listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal routing. router=TerminalConsoleRouter context=TerminalConsoleRouterContext");
-            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal routing.");
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal router.");
         }
 
         private void ConfigureServicesCancelOnRoute(IServiceCollection opt2)

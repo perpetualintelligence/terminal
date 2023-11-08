@@ -57,7 +57,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
             ParsedCommand? extractedCommand = null;
             try
             {
-                logger.LogDebug("Start command routing. route={1}", context.Route.Id);
+                logger.LogDebug("Start command router. type={0} route={1}", this.GetType().Name, context.Route.Id);
 
                 // Issue a before route event if configured
                 if (asyncEventHandler != null)
@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                 }
 
                 // Ensure we have the license extracted before routing
-                License? license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the cli hosted service correctly.");
+                License? license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the hosted service correctly.");
 
                 // Parse the command
                 CommandParserResult parserResult = await commandParser.ParseCommandAsync(new CommandParserContext(context.Route));
@@ -87,7 +87,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Routers
                     await asyncEventHandler.AfterCommandRouteAsync(context.Route, extractedCommand?.Command, result);
                 }
 
-                logger.LogDebug("End command routing. route={0}", context.Route.Id);
+                logger.LogDebug("End command router. route={0}", context.Route.Id);
             }
 
             return result;

@@ -89,7 +89,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
             if (runHelp)
             {                
                 IHelpProvider helpProvider = services.GetRequiredService<IHelpProvider>();
-                logger.LogDebug("Skip runner. Delegate to help provider. type={0}", helpProvider.GetType().FullName);
+                logger.LogDebug("Skip runner. Delegate to help provider. type={0}", helpProvider.GetType().Name);
                 runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, helpProvider, logger);
             }
             else
@@ -153,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                 throw new TerminalException(TerminalErrors.ServerError, "The command checker is not valid. command_name={0} command_id={1} checker={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Checker.Name);
             }
 
-            logger.LogDebug("Found checker. type={0}", checker.GetType().FullName);
+            logger.LogDebug("Found checker. type={0}", checker.GetType().Name);
             return Task.FromResult(checker);
         }
 
@@ -174,7 +174,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Handlers
                 throw new TerminalException(TerminalErrors.ServerError, "The command runner delegate is not configured. command_name={0} command_id={1} runner={2}", context.ParsedCommand.Command.Descriptor.Name, context.ParsedCommand.Command.Descriptor.Id, context.ParsedCommand.Command.Descriptor.Runner.Name);
             }
 
-            logger.LogDebug("Found runner. type={0}", runnerDelegate.GetType().FullName);
+            logger.LogDebug("Found runner. type={0}", runnerDelegate.GetType().Name);
             return Task.FromResult(runnerDelegate);
         }
 
