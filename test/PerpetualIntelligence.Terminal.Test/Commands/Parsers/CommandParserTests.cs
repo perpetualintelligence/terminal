@@ -25,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             textHandler = new UnicodeTextHandler();
             routeParser = new MockCommandRouteParser();
-            commandStore = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
+            commandStore = new InMemoryImmutableCommandStore(textHandler, MockCommands.Commands.Values);
             logger = TestLogger.Create<CommandParser>();
             parser = new CommandParser(routeParser, logger);
         }
@@ -79,7 +79,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
             Assert.IsNull(result.ParsedCommand.Command.Options);
         }
 
-        private ICommandStore commandStore = null!;
+        private IImmutableCommandStore commandStore = null!;
         private ICommandRouteParser routeParser = null!;
         private CommandParser parser = null!;
         private TerminalOptions terminalOptions = null!;

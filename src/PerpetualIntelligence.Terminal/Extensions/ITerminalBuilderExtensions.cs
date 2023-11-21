@@ -19,6 +19,7 @@ using PerpetualIntelligence.Terminal.Commands.Runners;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Events;
 using PerpetualIntelligence.Terminal.Hosting;
+using PerpetualIntelligence.Terminal.Integration;
 using PerpetualIntelligence.Terminal.Licensing;
 using PerpetualIntelligence.Terminal.Runtime;
 using PerpetualIntelligence.Terminal.Stores;
@@ -127,7 +128,23 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// </remarks>
         public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Type assemblyType)
         {
-            IEnumerable<Type> declarativeTypes = assemblyType.Assembly.GetTypes()
+            return AddDeclarativeAssembly(builder, assemblyType.Assembly);
+        }
+
+        /// <summary>
+        /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="assembly">The assembly to inspect.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        /// <remarks>
+        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Assembly)"/> reads the target assembly and inspects all the
+        /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
+        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ITerminalBuilder, Type)"/>.
+        /// </remarks>
+        public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Assembly assembly)
+        {
+            IEnumerable<Type> declarativeTypes = assembly.GetTypes()
                 .Where(e => typeof(IDeclarativeTarget).IsAssignableFrom(e));
 
             foreach (Type type in declarativeTypes)
@@ -178,6 +195,28 @@ namespace PerpetualIntelligence.Terminal.Extensions
             // Add exception publisher
             builder.Services.AddTransient<IExceptionHandler, THandler>();
 
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds integration services to the terminal builder for loading commands from an external source.
+        /// This method registers the specified command source, command source checker, and command source assembly loader as singletons in the service collection.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the context used in the command source, checker, and loader. Must be a class.</typeparam>
+        /// <typeparam name="TSource">The type of the terminal command source. Must be a class implementing <see cref="ITerminalCommandSource{TContext}"/>.</typeparam>
+        /// <typeparam name="TChecker">The type of the terminal command source checker. Must be a class implementing <see cref="ITerminalCommandSourceChecker{TContext}"/>.</typeparam>
+        /// <typeparam name="TLoader">The type of the terminal command source assembly loader. Must be a class implementing <see cref="ITerminalCommandSourceAssemblyLoader{TContext}"/>.</typeparam>
+        /// <param name="builder">The terminal builder to which the integration services are added.</param>
+        /// <returns>The <see cref="ITerminalBuilder"/> with the added integration services, enabling method chaining.</returns>
+        public static ITerminalBuilder AddIntegration<TContext, TSource, TChecker, TLoader>(this ITerminalBuilder builder)
+            where TContext : class
+            where TSource : class, ITerminalCommandSource<TContext>
+            where TChecker : class, ITerminalCommandSourceChecker<TContext>
+            where TLoader : class, ITerminalCommandSourceAssemblyLoader<TContext>
+        {
+            builder.Services.AddSingleton<ITerminalCommandSource<TContext>, TSource>();
+            builder.Services.AddSingleton<ITerminalCommandSourceChecker<TContext>, TChecker>();
+            builder.Services.AddSingleton<ITerminalCommandSourceAssemblyLoader<TContext>, TLoader>();
             return builder;
         }
 
@@ -261,16 +300,22 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ICommandStore"/> to the service collection.
+        /// Adds the <see cref="IImmutableCommandStore"/> or <see cref="IMutableCommandStore"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command descriptor store type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder) where TStore : class, ICommandStore
+        public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder) where TStore : class, IImmutableCommandStore
         {
-            // Add command store
-            builder.Services.AddSingleton<ICommandStore, TStore>();
-
+            // All stores are IImmutableCommandStore, mutable store implement additional IMutableCommandStore
+            if (typeof(IMutableCommandStore).IsAssignableFrom(typeof(TStore)))
+            {
+                builder.Services.AddSingleton(typeof(IMutableCommandStore), typeof(TStore));
+            }
+            else
+            {
+                builder.Services.AddSingleton(typeof(IImmutableCommandStore), typeof(TStore));
+            }
             return builder;
         }
 
@@ -323,12 +368,30 @@ namespace PerpetualIntelligence.Terminal.Extensions
             IEnumerable<OptionDescriptorAttribute> optAttrs = declarativeTarget.GetCustomAttributes<OptionDescriptorAttribute>(false);
             IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<ArgumentDescriptorAttribute>(false);
             IEnumerable<OptionValidationAttribute> optVdls = declarativeTarget.GetCustomAttributes<OptionValidationAttribute>(false);
+            IEnumerable<ArgumentValidationAttribute> argVdls = declarativeTarget.GetCustomAttributes<ArgumentValidationAttribute>(false);
             IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeTarget.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
 
             // Arguments Descriptors
             foreach (ArgumentDescriptorAttribute argAttr in argAttrs)
             {
-                commandBuilder.DefineArgument(argAttr.Order, argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Flags);
+                IArgumentBuilder argBuilder = commandBuilder.DefineArgument(argAttr.Order, argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Flags);
+
+                // Argument validation attribute
+                List<ValidationAttribute>? validationAttributes = null;
+                if (argVdls.Any())
+                {
+                    validationAttributes = new List<ValidationAttribute>();
+                    argVdls.All(e =>
+                    {
+                        if (e.ArgumentId.Equals(argAttr.Id))
+                        {
+                            argBuilder.ValidationAttribute(e.ValidationAttribute, e.ValidationParams);
+                        }
+                        return true;
+                    });
+                }
+
+                argBuilder.Add();
             }
 
             // Options Descriptors
@@ -345,7 +408,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
                     {
                         if (e.OptionId.Equals(optAttr.Id))
                         {
-                            optBuilder.ValidationAttribute(e.ValidationAttribute, e.ValidationArgs);
+                            optBuilder.ValidationAttribute(e.ValidationAttribute, e.ValidationParams);
                         }
                         return true;
                     });
@@ -374,7 +437,6 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 commandBuilder.Tags(tagsAttr.Tags);
             }
 
-            // Command owners
             // Command owners
             CommandOwnersAttribute ownersAttr = declarativeTarget.GetCustomAttribute<CommandOwnersAttribute>(false);
             if (ownersAttr != null)

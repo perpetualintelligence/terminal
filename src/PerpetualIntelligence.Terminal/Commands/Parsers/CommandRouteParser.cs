@@ -56,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
     public class CommandRouteParser : ICommandRouteParser
     {
         private readonly ITextHandler textHandler;
-        private readonly ICommandStore commandStore;
+        private readonly IImmutableCommandStore commandStore;
         private readonly TerminalOptions terminalOptions;
         private readonly ILogger<CommandRouteParser> logger;
 
@@ -67,7 +67,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
         /// <param name="commandStore">The command store handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRouteParser(ITextHandler textHandler, ICommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
+        public CommandRouteParser(ITextHandler textHandler, IImmutableCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
         {
             this.textHandler = textHandler;
             this.commandStore = commandStore;

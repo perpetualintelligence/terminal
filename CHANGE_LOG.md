@@ -1,11 +1,12 @@
 # 5.4.1-rc*
 > Breaking Change
-- Production release for `netstandard2.0` and `netstandard2.1`
+- Support mutable and immutable store
+- Support integration namespace for loading commands from an external source
+- Pre-Production release for `netstandard2.0` and `netstandard2.1`
 - Unit test on `net7`
 - Merge TerminalStartInfo into TerminalStartContext
 - Support cancellation for Terminal  Routing and Command Routing independently
 - Rename `IAsyncEventHandler` to `ITerminalEventHandler` for clarity
-
 
 # 5.3.1-rc*
 > Breaking Change

@@ -17,7 +17,7 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
     {
         public InMemoryCommandDescriptorStoreTests()
         {
-            cmdStore = new InMemoryCommandStore(MockCommands.Commands.TextHandler, MockCommands.Commands.Values);
+            cmdStore = new InMemoryImmutableCommandStore(MockCommands.Commands.TextHandler, MockCommands.Commands.Values);
         }
 
         [Fact]
@@ -50,6 +50,6 @@ namespace PerpetualIntelligence.Terminal.Stores.InMemory
             result.Keys.Should().Contain("id5");
         }
 
-        private InMemoryCommandStore cmdStore = null!;
+        private InMemoryImmutableCommandStore cmdStore = null!;
     }
 }

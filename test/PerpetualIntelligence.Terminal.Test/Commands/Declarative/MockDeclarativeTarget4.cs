@@ -18,6 +18,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
     [OptionDescriptor("opt1", nameof(String), "test arg desc1", OptionFlags.None)]
     [OptionDescriptor("opt2", nameof(String), "test arg desc2", OptionFlags.None)]
     [OptionDescriptor("opt3", nameof(String), "test arg desc3", OptionFlags.None)]
+    [ArgumentDescriptor(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None)]
+    [ArgumentDescriptor(2, "arg2", nameof(String), "test arg desc2", ArgumentFlags.None)]
+    [ArgumentDescriptor(3, "arg3", nameof(System.Double), "test arg desc3", ArgumentFlags.None)]
     public class MockDeclarativeTarget4 : IDeclarativeTarget
     {
     }

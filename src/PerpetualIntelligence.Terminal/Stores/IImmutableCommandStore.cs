@@ -1,4 +1,4 @@
-﻿                        /*
+﻿/*
     Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Stores
 {
     /// <summary>
-    /// A store to lookup a <see cref="CommandDescriptor"/>.
+    /// An immutable store to lookup <see cref="CommandDescriptor"/>.
     /// </summary>
-    public interface ICommandStore
+    public interface IImmutableCommandStore
     {
         /// <summary>
         /// Attempts to finds a <see cref="CommandDescriptor"/> by its id asynchronously.

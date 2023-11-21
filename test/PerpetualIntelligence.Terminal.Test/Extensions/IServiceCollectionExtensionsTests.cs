@@ -60,7 +60,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>(configuration);
+                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(configuration);
             }).Build();
 
             // Check Options are added
@@ -83,7 +83,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>();
+                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>();
             }).Build();
 
             // Check Options are added
@@ -106,7 +106,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>(SetupAction);
+                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(SetupAction);
             }).Build();
 
             // Check Options are added

@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal
         {
             InternalsVisibleToAttribute? internalsVisibleToAttribute = typeof(TerminalHandlers).Assembly.GetCustomAttribute<InternalsVisibleToAttribute>();
             internalsVisibleToAttribute.Should().NotBeNull();
-            internalsVisibleToAttribute!.AssemblyName.Should().Be("PerpetualIntelligence.Terminal.Test");
+            internalsVisibleToAttribute!.AssemblyName.Should().Be("PerpetualIntelligence.Terminal.Tests");
         }
     }
 }

@@ -148,14 +148,25 @@ namespace PerpetualIntelligence.Terminal.Extensions
         }
 
         [TestMethod]
-        public void AddCommandDescriptorStoreShouldCorrectlyInitialize()
+        public void AddCommandImmutableStoreShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddCommandStore<MockCommandDescriptorStore>();
+            terminalBuilder.AddCommandStore<MockImmutableCommandStore>();
 
-            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandStore)));
+            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IImmutableCommandStore)));
             Assert.IsNotNull(serviceDescriptor);
             Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
-            Assert.AreEqual(typeof(MockCommandDescriptorStore), serviceDescriptor.ImplementationType);
+            Assert.AreEqual(typeof(MockImmutableCommandStore), serviceDescriptor.ImplementationType);
+        }
+
+        [TestMethod]
+        public void AddCommandMutableStoreShouldCorrectlyInitialize()
+        {
+            terminalBuilder.AddCommandStore<MockMutableCommandStore>();
+
+            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IMutableCommandStore)));
+            Assert.IsNotNull(serviceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
+            Assert.AreEqual(typeof(MockMutableCommandStore), serviceDescriptor.ImplementationType);
         }
 
         [TestMethod]

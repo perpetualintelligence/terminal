@@ -75,7 +75,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             logger.Messages[1].Should().Be("Header line-1");
             logger.Messages[2].Should().Be("Header line-2");
             logger.Messages[3].Should().Be("---------------------------------------------------------------------------------------------");
-            logger.Messages[4].Should().Be("Starting server \"urn:oneimlx:terminal\" version=1.0.2-local");
+            logger.Messages[4].Should().StartWith("Starting server \"urn:oneimlx:terminal\" version=");
         }
 
         [Fact]
@@ -291,7 +291,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>()
+                services.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
@@ -332,7 +332,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal<InMemoryCommandStore, UnicodeTextHandler>()
+                services.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
                         .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
                     .Add()

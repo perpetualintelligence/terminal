@@ -262,7 +262,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
             valueChecker = new OptionChecker(optionMapper, terminalOptions);
             argumentChecker = new ArgumentChecker(argumentMapper, terminalOptions);
             checker = new CommandChecker(valueChecker, argumentChecker, terminalOptions, TestLogger.Create<CommandChecker>());
-            commands = new InMemoryCommandStore(textHandler, MockCommands.Commands.Values);
+            commands = new InMemoryImmutableCommandStore(textHandler, MockCommands.Commands.Values);
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
@@ -271,7 +271,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
 
         private CommandRoute commandRoute = null!;
         private CommandChecker checker = null!;
-        private ICommandStore commands = null!;
+        private IImmutableCommandStore commands = null!;
         private IDataTypeMapper<Option> optionMapper = null!;
         private IDataTypeMapper<Argument> argumentMapper = null!;
         private TerminalOptions terminalOptions = null!;

@@ -14,18 +14,17 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Stores
 {
     /// <summary>
-    /// The default in-memory <see cref="ICommandStore"/>.
+    /// The default in-memory <see cref="IImmutableCommandStore"/>.
     /// </summary>
-    public class InMemoryCommandStore : ICommandStore
+    public class InMemoryImmutableCommandStore : IImmutableCommandStore
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="textHandler"></param>
         /// <param name="commandDescriptors">The command identities.</param>
-        public InMemoryCommandStore(ITextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
+        public InMemoryImmutableCommandStore(ITextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
         {
-            this.textHandler = textHandler;
             this.commandDescriptors = new CommandDescriptors(textHandler, commandDescriptors);
         }
 
@@ -44,7 +43,20 @@ namespace PerpetualIntelligence.Terminal.Stores
             return Task.FromResult(commandDescriptors.TryGetValue(id, out commandDescriptor));
         }
 
+        /// <inheritdoc/>
+        public Task<bool> TryAddAsync(string id, CommandDescriptor commandDescriptor)
+        {
+            try
+            {
+                commandDescriptors.Add(id, commandDescriptor);
+                return Task.FromResult(true);
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
+        }
+
         private readonly CommandDescriptors commandDescriptors;
-        private readonly ITextHandler textHandler;
     }
 }

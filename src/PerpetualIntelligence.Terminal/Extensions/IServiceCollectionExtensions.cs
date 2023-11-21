@@ -30,13 +30,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <summary>
         /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TStore">The type implementing <see cref="IImmutableCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
         public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, Action<TerminalOptions> setupAction)
-            where TStore : class, ICommandStore
+            where TStore : class, IImmutableCommandStore
             where TText : class, ITextHandler
         {
             if (services == null)
@@ -56,13 +56,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <summary>
         /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TStore">The type implementing <see cref="IImmutableCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <param name="configuration">The configuration to bind to <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
         public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, IConfiguration configuration)
-            where TStore : class, ICommandStore
+            where TStore : class, IImmutableCommandStore
             where TText : class, ITextHandler
         {
             if (services == null)
@@ -82,12 +82,12 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <summary>
         /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TStore">The type implementing <see cref="IImmutableCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
         public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services)
-            where TStore : class, ICommandStore
+            where TStore : class, IImmutableCommandStore
             where TText : class, ITextHandler
         {
             if (services == null)
@@ -123,14 +123,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <summary>
         /// Adds the default terminal services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TStore">The type implementing <see cref="IImmutableCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <typeparam name="THelp">The type implementing <see cref="IHelpProvider"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
         public static ITerminalBuilder AddTerminalDefault<TStore, TText, THelp>(this IServiceCollection services, Action<TerminalOptions> setupAction)
-            where TStore : class, ICommandStore
+            where TStore : class, IImmutableCommandStore, IMutableCommandStore
             where TText : class, ITextHandler
             where THelp : class, IHelpProvider
         {
@@ -156,7 +156,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <summary>
         /// Adds the default terminal services for console applications to the specified <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <typeparam name="TStore">The type implementing <see cref="ICommandStore"/>.</typeparam>
+        /// <typeparam name="TStore">The type implementing <see cref="IImmutableCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <typeparam name="THelp">The type implementing <see cref="IHelpProvider"/>.</typeparam>
         /// <typeparam name="TConsole">The type implementing <see cref="ITerminalConsole"/>.</typeparam>
@@ -164,7 +164,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
         public static ITerminalBuilder AddTerminalConsole<TStore, TText, THelp, TConsole>(this IServiceCollection services, Action<TerminalOptions> setupAction)
-            where TStore : class, ICommandStore
+            where TStore : class, IImmutableCommandStore, IMutableCommandStore
             where TText : class, ITextHandler
             where THelp : class, IHelpProvider
             where TConsole : class, ITerminalConsole

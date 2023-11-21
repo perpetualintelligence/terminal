@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public LicenseChecker(ICommandStore commandStore, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
+        public LicenseChecker(IImmutableCommandStore commandStore, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
         {
             this.commandStore = commandStore;
             this.terminalOptions = terminalOptions;
@@ -224,7 +224,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private readonly ICommandStore commandStore;
+        private readonly IImmutableCommandStore commandStore;
         private readonly ILogger<LicenseChecker> logger;
         private long optionCount;
         private long commandGroupCount;

@@ -4,18 +4,10 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -49,11 +41,16 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public ICommandBuilder Add()
         {
             ServiceProvider lsp = Services.BuildServiceProvider();
-            ArgumentDescriptor? argumentDescriptor = lsp.GetService<ArgumentDescriptor>() ?? throw new TerminalException(TerminalErrors.MissingArgument, "The argument builder is missing an argument descriptor.");
+            ArgumentDescriptor argumentDescriptor = lsp.GetService<ArgumentDescriptor>() ?? throw new TerminalException(TerminalErrors.MissingArgument, "The argument builder is missing an argument descriptor.");
+
+            // Validation Attribute
+            IEnumerable<ValidationAttribute> attributes = lsp.GetServices<ValidationAttribute>();
+            if (attributes.Any())
+            {
+                argumentDescriptor.ValueCheckers = attributes.Select(e => new DataValidationValueChecker<Argument>(e));
+            }
 
             commandBuilder.Services.AddSingleton(argumentDescriptor);
-
-            // Does nothing for now.
             return commandBuilder;
         }
 

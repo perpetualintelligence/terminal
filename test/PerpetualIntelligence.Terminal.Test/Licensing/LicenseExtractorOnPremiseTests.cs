@@ -30,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
 
-            commandStore = new InMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
+            commandStore = new InMemoryImmutableCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
         }
 
         [Theory]
@@ -401,6 +401,6 @@ namespace PerpetualIntelligence.Terminal.Licensing
         private readonly string testOfflineLicPath;
         private ILicenseDebugger licenseDebugger = null!;
         private ILicenseChecker licenseChecker = null!;
-        private ICommandStore commandStore;
+        private IImmutableCommandStore commandStore;
     }
 }

@@ -10,37 +10,37 @@ using System;
 namespace PerpetualIntelligence.Terminal.Commands.Declarative
 {
     /// <summary>
-    /// Declares an <see cref="OptionDescriptor"/> validation attribute.
+    /// Declares an <see cref="ArgumentDescriptor"/> validation attribute.
     /// </summary>
-    /// <seealso cref="OptionDescriptor.ValueCheckers"/>
+    /// <seealso cref="ArgumentDescriptor.ValueCheckers"/>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public sealed class OptionValidationAttribute : Attribute
+    public sealed class ArgumentValidationAttribute : Attribute
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="optionId">The option identifier.</param>
-        /// <param name="validationAttribute">The option validation attribute.</param>
+        /// <param name="argumentId">The argument identifier.</param>
+        /// <param name="validationAttribute">The argument validation attribute.</param>
         /// <param name="validationParams">The validation attribute parameters.</param>
-        public OptionValidationAttribute(string optionId, Type validationAttribute, params object[] validationParams)
+        public ArgumentValidationAttribute(string argumentId, Type validationAttribute, params object[] validationParams)
         {
-            OptionId = optionId;
+            ArgumentId = argumentId;
             ValidationAttribute = validationAttribute;
             ValidationParams = validationParams;
         }
 
         /// <summary>
-        /// The option identifier.
+        /// The argument identifier.
         /// </summary>
-        public string OptionId { get; }
+        public string ArgumentId { get; }
 
         /// <summary>
-        /// The validation attribute parameters.
+        /// The <see cref="ValidationAttribute"/> parameters.
         /// </summary>
         public object[]? ValidationParams { get; }
 
         /// <summary>
-        /// The option validation attribute.
+        /// The attribute validation attribute.
         /// </summary>
         public Type ValidationAttribute { get; }
     }

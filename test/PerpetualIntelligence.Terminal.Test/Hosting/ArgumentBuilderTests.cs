@@ -17,41 +17,41 @@ using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Hosting
 {
-    public class OptionBuilderTests : IDisposable
+    public class ArgumentBuilderTests : IDisposable
     {
-        public OptionBuilderTests()
+        public ArgumentBuilderTests()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
         }
 
         [Fact]
-        public void Nos_OptionDescriptor_Throws()
+        public void No_Argument_Descriptor_Throws()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection);
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
-            OptionBuilder optionBuilder = new(commandBuilder);
-            Action act = () => optionBuilder.Add();
-            act.Should().Throw<TerminalException>().WithMessage("The option builder is missing an option descriptor.");
+            ArgumentBuilder argumentBuilder = new(commandBuilder);
+            Action act = () => argumentBuilder.Add();
+            act.Should().Throw<TerminalException>().WithMessage("The argument builder is missing an argument descriptor.");
         }
 
         [Fact]
-        public void Build_Adds_OptionDescriptor_To_CommandDescriptor()
+        public void Build_Adds_ArgumentDescriptor_To_CommandDescriptor()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection);
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
-            commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None).Add()
-                          .DefineOption("opt2", nameof(String), "test opt desc2", OptionFlags.None).Add()
-                          .DefineOption("opt3", nameof(String), "test opt desc3", OptionFlags.None).Add();
+            commandBuilder.DefineArgument(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None).Add()
+                          .DefineArgument(2, "arg2", nameof(String), "test arg desc2", ArgumentFlags.None).Add()
+                          .DefineArgument(3, "arg3", nameof(String), "test arg desc3", ArgumentFlags.None).Add();
 
             ServiceProvider serviceProvider = commandBuilder.Services.BuildServiceProvider();
-            var optDescriptors = serviceProvider.GetServices<OptionDescriptor>();
-            optDescriptors.Count().Should().Be(3);
-            optDescriptors.Should().Contain(x => x.Id == "opt1");
-            optDescriptors.Should().Contain(x => x.Id == "opt2");
-            optDescriptors.Should().Contain(x => x.Id == "opt3");
+            var argDescriptors = serviceProvider.GetServices<ArgumentDescriptor>();
+            argDescriptors.Count().Should().Be(3);
+            argDescriptors.Should().Contain(x => x.Id == "arg1");
+            argDescriptors.Should().Contain(x => x.Id == "arg2");
+            argDescriptors.Should().Contain(x => x.Id == "arg3");
         }
 
         [Fact]
@@ -60,8 +60,8 @@ namespace PerpetualIntelligence.Terminal.Hosting
             TerminalBuilder terminalBuilder = new(serviceCollection);
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
-            IOptionBuilder optionBuilder = commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None);
-            ICommandBuilder cmdBuilderFromArgBuilder = optionBuilder.Add();
+            IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None);
+            ICommandBuilder cmdBuilderFromArgBuilder = argumentBuilder.Add();
             commandBuilder.Should().BeSameAs(cmdBuilderFromArgBuilder);
         }
 
@@ -75,16 +75,16 @@ namespace PerpetualIntelligence.Terminal.Hosting
         {
             TerminalBuilder terminalBuilder = new(serviceCollection);
             CommandBuilder commandBuilder = new(terminalBuilder);
-            OptionBuilder argumentBuilder = new(commandBuilder);
+            ArgumentBuilder argumentBuilder = new(commandBuilder);
 
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
             argumentBuilder.Services.Should().NotBeSameAs(serviceCollection);
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
         }
 
-        private void ConfigureServicesDelegate(IServiceCollection opt2)
+        private void ConfigureServicesDelegate(IServiceCollection services)
         {
-            serviceCollection = opt2;
+            serviceCollection = services;
         }
 
         private readonly IHost host = null!;

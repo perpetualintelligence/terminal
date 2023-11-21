@@ -9,7 +9,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Shared.Attributes.Validation;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
 using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Terminal.Hosting;
@@ -74,7 +73,41 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void Build_Should_Read_NoOptionDescriptor_Correctly()
+        public void Build_Should_Read_ArgumentValidation_Correctly()
+        {
+            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.ArgumentDescriptors.Should().NotBeNull();
+
+            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!["arg1"];
+            arg1.ValueCheckers.Should().BeNull();
+
+            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors["arg2"];
+            arg2.ValueCheckers.Should().NotBeNull();
+            arg2.ValueCheckers!.Count().Should().Be(2);
+            DataValidationValueChecker<Argument> val2Checker1 = (DataValidationValueChecker<Argument>)arg2.ValueCheckers!.First();
+            val2Checker1.ValidationAttribute.Should().BeOfType<RequiredAttribute>();
+            DataValidationValueChecker<Argument> val2Checker2 = (DataValidationValueChecker<Argument>)arg2.ValueCheckers!.Last();
+            val2Checker2.ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+            OneOfAttribute val2OneOf = (OneOfAttribute)val2Checker2.ValidationAttribute;
+            val2OneOf.AllowedValues.Should().BeEquivalentTo(new string[] { "test1", "test2", "test3" });
+
+            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors["arg3"];
+            arg3.ValueCheckers.Should().NotBeNull();
+            arg3.ValueCheckers!.Count().Should().Be(1);
+            DataValidationValueChecker<Argument> val1Checker3 = (DataValidationValueChecker<Argument>)arg3.ValueCheckers!.First();
+            val1Checker3.ValidationAttribute.Should().BeOfType<RangeAttribute>();
+            RangeAttribute val1Range = (RangeAttribute)val1Checker3.ValidationAttribute;
+            val1Range.Minimum.Should().Be(25.34);
+            val1Range.Maximum.Should().Be(40.56);
+        }
+
+        [Fact]
+        public void Build_Should_Read_NoValueDescriptor_Correctly()
         {
             terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
@@ -83,6 +116,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
 
             CommandDescriptor cmd = cmdDescs.First();
             cmd.OptionDescriptors.Should().BeNull();
+            cmd.ArgumentDescriptors.Should().BeNull();
         }
 
         [Fact]
@@ -110,7 +144,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void Build_Should_Read_NoArgumentValidation_Correctly()
+        public void Build_Should_Read_NoValidation_Correctly()
         {
             terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
@@ -118,6 +152,20 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
+
+            // Arguments
+            cmd.ArgumentDescriptors.Should().NotBeNull();
+
+            ArgumentDescriptor arg1 = cmd.ArgumentDescriptors!["arg1"];
+            arg1.ValueCheckers.Should().BeNull();
+
+            ArgumentDescriptor arg2 = cmd.ArgumentDescriptors["arg2"];
+            arg2.ValueCheckers.Should().BeNull();
+
+            ArgumentDescriptor arg3 = cmd.ArgumentDescriptors["arg3"];
+            arg3.ValueCheckers.Should().BeNull();
+
+            // Options
             cmd.OptionDescriptors.Should().NotBeNull();
 
             OptionDescriptor opt1 = cmd.OptionDescriptors!["opt1"];
@@ -131,28 +179,59 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void Build_ShouldRead_Options_Correctly()
+        public void Build_ShouldRead_Arguments_And_Options_Correctly()
         {
             terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().OptionDescriptors.Should().HaveCount(4);
+            // Arguments
+            cmdDescs.First().ArgumentDescriptors.Should().HaveCount(3);
+            var argDescs = cmdDescs.First().ArgumentDescriptors;
+            argDescs.Should().NotBeNull();
 
+            argDescs!["arg1"].Id.Should().Be("arg1");
+            argDescs["arg1"].Order.Should().Be(1);
+            argDescs["arg1"].DataType.Should().Be(nameof(String));
+            argDescs["arg1"].Description.Should().Be("test arg desc1");
+            argDescs["arg1"].Flags.Should().Be(ArgumentFlags.None);
+            argDescs["arg1"].ValueCheckers.Should().BeNull();
+
+            argDescs["arg2"].Id.Should().Be("arg2");
+            argDescs["arg2"].Order.Should().Be(2);
+            argDescs["arg2"].DataType.Should().Be(nameof(String));
+            argDescs["arg2"].Description.Should().Be("test arg desc2");
+            argDescs["arg2"].Flags.Should().Be(ArgumentFlags.Required | ArgumentFlags.Disabled);
+            argDescs["arg2"].ValueCheckers.Should().NotBeNull();
+            argDescs["arg2"].ValueCheckers.Should().HaveCount(2);
+            argDescs["arg2"].ValueCheckers!.Cast<DataValidationValueChecker<Argument>>().First().ValidationAttribute.Should().BeOfType<RequiredAttribute>();
+            argDescs["arg2"].ValueCheckers!.Cast<DataValidationValueChecker<Argument>>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+
+            argDescs["arg3"].Id.Should().Be("arg3");
+            argDescs["arg3"].Order.Should().Be(3);
+            argDescs["arg3"].DataType.Should().Be(nameof(Double));
+            argDescs["arg3"].Description.Should().Be("test arg desc3");
+            argDescs["arg3"].Flags.Should().Be(ArgumentFlags.Required | ArgumentFlags.Obsolete);
+            argDescs["arg3"].ValueCheckers.Should().NotBeNull();
+            argDescs["arg3"].ValueCheckers.Should().HaveCount(1);
+            argDescs["arg3"].ValueCheckers!.Cast<DataValidationValueChecker<Argument>>().First().ValidationAttribute.Should().BeOfType<RangeAttribute>();
+
+            // Options
+            cmdDescs.First().OptionDescriptors.Should().HaveCount(4);
             var optDescs = cmdDescs.First().OptionDescriptors;
             optDescs.Should().NotBeNull();
 
             optDescs!["opt1"].Id.Should().Be("opt1");
             optDescs["opt1"].DataType.Should().Be(nameof(String));
-            optDescs["opt1"].Description.Should().Be("test arg desc1");
+            optDescs["opt1"].Description.Should().Be("test opt desc1");
             optDescs["opt1"].Flags.Should().Be(OptionFlags.None);
             optDescs["opt1"].Alias.Should().BeNull();
             optDescs["opt1"].ValueCheckers.Should().BeNull();
 
             optDescs["opt2"].Id.Should().Be("opt2");
             optDescs["opt2"].DataType.Should().Be(nameof(String));
-            optDescs["opt2"].Description.Should().Be("test arg desc2");
+            optDescs["opt2"].Description.Should().Be("test opt desc2");
             optDescs["opt2"].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
             optDescs["opt2"].Alias.Should().Be("opt2_alias");
             optDescs["opt2"].ValueCheckers.Should().NotBeNull();
@@ -162,7 +241,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
 
             optDescs["opt2_alias"].Id.Should().Be("opt2");
             optDescs["opt2_alias"].DataType.Should().Be(nameof(String));
-            optDescs["opt2_alias"].Description.Should().Be("test arg desc2");
+            optDescs["opt2_alias"].Description.Should().Be("test opt desc2");
             optDescs["opt2_alias"].Flags.Should().Be(OptionFlags.Required | OptionFlags.Disabled);
             optDescs["opt2_alias"].Alias.Should().Be("opt2_alias");
             optDescs["opt2_alias"].ValueCheckers.Should().NotBeNull();
@@ -171,7 +250,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
             optDescs["opt2_alias"].ValueCheckers!.Cast<DataValidationValueChecker<Option>>().Last().ValidationAttribute.Should().BeOfType<OneOfAttribute>();
 
             optDescs["opt3"].Id.Should().Be("opt3");
-            optDescs["opt3"].Description.Should().Be("test arg desc3");
+            optDescs["opt3"].Description.Should().Be("test opt desc3");
             optDescs["opt3"].DataType.Should().Be(nameof(Double));
             optDescs["opt3"].Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
             optDescs["opt3"].Alias.Should().BeNull();

@@ -42,7 +42,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public ICommandBuilder Add()
         {
             ServiceProvider lsp = Services.BuildServiceProvider();
-            OptionDescriptor? optionDescriptor = lsp.GetService<OptionDescriptor>() ?? throw new TerminalException(TerminalErrors.MissingOption, "The option builder is missing an option descriptor.");
+            OptionDescriptor optionDescriptor = lsp.GetService<OptionDescriptor>() ?? throw new TerminalException(TerminalErrors.MissingOption, "The option builder is missing an option descriptor.");
 
             // Validation Attribute
             IEnumerable<ValidationAttribute> attributes = lsp.GetServices<ValidationAttribute>();

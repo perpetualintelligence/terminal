@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="..\..\build\props\PackageLicense.props" />
+    <Import Project="..\..\build\props\Package.props" />
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
@@ -14,7 +14,8 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.30.1" />        
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.30.1" />
+        <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />        
     </ItemGroup>
 
     <!--

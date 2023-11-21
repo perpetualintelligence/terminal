@@ -44,6 +44,14 @@ namespace PerpetualIntelligence.Terminal.Hosting
             ServiceProvider localServiceProvider = Services.BuildServiceProvider();
             CommandDescriptor commandDescriptor = localServiceProvider.GetRequiredService<CommandDescriptor>();
 
+            // Arguments
+            IEnumerable<ArgumentDescriptor> argumentDescriptors = localServiceProvider.GetServices<ArgumentDescriptor>();
+            if (argumentDescriptors.Any())
+            {
+                // FOMAC MUST UnicodeTextHandler is hard coded
+                commandDescriptor.ArgumentDescriptors = new ArgumentDescriptors(new UnicodeTextHandler(), argumentDescriptors);
+            }
+
             // Options
             IEnumerable<OptionDescriptor> optionDescriptors = localServiceProvider.GetServices<OptionDescriptor>();
             if (optionDescriptors.Any())

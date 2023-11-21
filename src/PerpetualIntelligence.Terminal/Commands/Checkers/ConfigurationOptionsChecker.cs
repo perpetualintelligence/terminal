@@ -126,8 +126,9 @@ namespace PerpetualIntelligence.Terminal.Commands.Checkers
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option separator and option alias prefix cannot be same. separator={0}", options.Parser.OptionValueSeparator);
                 }
 
-                // - FOMAC confusing. Option alias prefix can be same as option prefix but it cannot start with
+                // Option alias prefix can be same as option prefix but it cannot start with
                 // option prefix.
+                // e.g --configuration -c is valid but --configuration and --c is not
                 if (!textHandler.TextEquals(options.Parser.OptionAliasPrefix, options.Parser.OptionPrefix) && options.Parser.OptionAliasPrefix.StartsWith(options.Parser.OptionPrefix, textHandler.Comparison))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option alias prefix cannot start with option prefix. prefix={0}", options.Parser.OptionPrefix);

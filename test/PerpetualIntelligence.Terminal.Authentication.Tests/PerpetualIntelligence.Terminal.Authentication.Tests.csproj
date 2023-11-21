@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <Import Project="..\..\build\props\Test.props" />
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\PerpetualIntelligence.Terminal.Authentication\PerpetualIntelligence.Terminal.Authentication.csproj" />
-    </ItemGroup>
-
-</Project>

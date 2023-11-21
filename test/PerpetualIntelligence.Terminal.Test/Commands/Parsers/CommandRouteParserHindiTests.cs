@@ -24,7 +24,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
     public class CommandRouteParserHindiTests
     {
         private readonly ITextHandler _textHandler;
-        private readonly ICommandStore _commandStore;
+        private readonly IImmutableCommandStore _commandStore;
         private readonly TerminalOptions _terminalOptions;
         private readonly ILogger<CommandRouteParser> _logger;
         private readonly ICommandRouteParser _commandRouteParser;
@@ -51,7 +51,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
                new CommandDescriptor("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"), argumentDescriptors : null, optionDescriptors : options)
             });
 
-            _commandStore = new InMemoryCommandStore(_textHandler, _commandDescriptors.Values);
+            _commandStore = new InMemoryImmutableCommandStore(_textHandler, _commandDescriptors.Values);
             _terminalOptions = MockTerminalOptions.NewAliasOptions();
             _commandRouteParser = new CommandRouteParser(_textHandler, _commandStore, _terminalOptions, _logger);
         }

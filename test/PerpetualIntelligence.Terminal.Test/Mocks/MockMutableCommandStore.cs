@@ -12,9 +12,14 @@ using System.Threading.Tasks;
 
 namespace PerpetualIntelligence.Terminal.Mocks
 {
-    public class MockCommandDescriptorStore : ICommandStore
+    public class MockMutableCommandStore : IMutableCommandStore
     {
         public Task<ReadOnlyDictionary<string, CommandDescriptor>> AllAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> TryAddAsync(string id, CommandDescriptor commandDescriptor)
         {
             throw new System.NotImplementedException();
         }
