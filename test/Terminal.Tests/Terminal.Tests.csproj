@@ -9,7 +9,7 @@
   </ItemGroup>
 
  <ItemGroup>
-    <ProjectReference Include="..\..\src\PerpetualIntelligence.Terminal\Terminal.csproj" />
+    <ProjectReference Include="..\..\src\Terminal\Terminal.csproj" />
   </ItemGroup>
 
 </Project>

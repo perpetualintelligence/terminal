@@ -23,7 +23,7 @@ namespace PerpetualIntelligence.Terminal.Integration
         }
 
         /// <summary>
-        /// The collection of published assembly and its publish folder.
+        /// The collection of published assembly with extension and its publish folder.
         /// </summary>
         public Dictionary<string, string> PublishedAssemblies { get; }
     }

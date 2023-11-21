@@ -61,7 +61,7 @@ namespace PerpetualIntelligence.Terminal.Integration
                 foreach (var kvp in context.PublishedAssemblies)
                 {
                     string assemblyPath = Path.Combine(kvp.Value, kvp.Key);
-                    if (File.Exists(assemblyPath))
+                    if (!File.Exists(assemblyPath))
                     {
                         throw new TerminalException(TerminalErrors.ServerError, "The published command source assembly does not exist. path={0}", assemblyPath);
                     }
@@ -73,6 +73,7 @@ namespace PerpetualIntelligence.Terminal.Integration
                     var existingAssembly = currentLoadedAssemblies.FirstOrDefault(a => AssemblyName.ReferenceMatchesDefinition(a.GetName(), assemblyName));
                     if (existingAssembly != null)
                     {
+                        assemblies.Add(existingAssembly);
                         logger.LogWarning($"Assembly already loaded, load path ignored. path={0} assembly={1}", assemblyPath, assemblyName);
                         continue;
                     }
@@ -95,6 +96,9 @@ namespace PerpetualIntelligence.Terminal.Integration
                             }
                         }
                     }
+
+                    // Register
+                    assemblies.Add(loadedAssembly);
                 }
 
                 return assemblies.AsEnumerable();

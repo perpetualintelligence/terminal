@@ -3,7 +3,7 @@
     <Import Project="..\..\build\props\Test.props" />
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\PerpetualIntelligence.Terminal.Authentication\Terminal.Authentication.csproj" />
+        <ProjectReference Include="..\..\src\Terminal.Authentication\Terminal.Authentication.csproj" />
     </ItemGroup>
 
 </Project>
