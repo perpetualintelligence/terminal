@@ -131,7 +131,7 @@ jobs:
 
     # Build Terminal.DependentAssembly.csproj so it can be loaded during unit tests.
     - name: Build Dependency Project
-      run: dotnet build ./test/Terminal.DependentAssembly/Terminal.DependentAssembly.csproj -c ${{ inputs.config }} --verbosity minimal
+      run: dotnet build ./test/Terminal.DependentAssembly/Terminal.DependentAssembly.csproj -c Release --verbosity minimal
 
     # Publish PerpetualIntelligence.Terminal
     - name: PerpetualIntelligence.Terminal
