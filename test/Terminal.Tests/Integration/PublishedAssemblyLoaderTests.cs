@@ -71,7 +71,10 @@ namespace PerpetualIntelligence.Terminal.Integration
             //     bin/Debug/ or bin/Release/
 
             // Determine the current configuration (Debug/Release)
-            var configuration = Environment.GetEnvironmentVariable("CONFIGURATION") ?? "Debug";
+            var configuration = "Release";
+#if DEBUG
+            configuration = "Debug";
+#endif
             var version = "net7.0";
 
             // Define the relative path to Terminal.DependentAssembly.dll from the unit test binary output directory
