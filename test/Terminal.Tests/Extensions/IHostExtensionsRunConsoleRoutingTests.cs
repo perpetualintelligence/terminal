@@ -185,7 +185,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             await host.StartAsync();
 
             // Issue a callback after 2 seconds.
-            Timer timer = new(HostStopRequestCallback, host, 2000, Timeout.Infinite);
+            Timer timer = new(HostStopRequestCallbackVoidAsync, host, 2000, Timeout.Infinite);
 
             // Run the router for 5 seconds, the callback will stop the host 2 seconds.
             GetCliOptions(host).Router.Timeout = 5000;
@@ -536,11 +536,11 @@ namespace PerpetualIntelligence.Terminal.Extensions
             return host.Services.GetRequiredService<TerminalOptions>();
         }
 
-        private void HostStopRequestCallback(object? state)
+        private async void HostStopRequestCallbackVoidAsync(object? state)
         {
-            IHost? host = state as IHost;
+            IHost host = (IHost)state!;
             host.Should().NotBeNull();
-            host!.StopAsync().GetAwaiter().GetResult();
+            await host.StopAsync();
         }
 
         public Task InitializeAsync()
