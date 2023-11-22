@@ -20,7 +20,7 @@ jobs:
       # GitHub package authentication
       PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
       PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
-      PI_CI_REFERENCE: local
+      PI_CI_REFERENCE: cross
       PI_CLI_TEST_ONLINE_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_ONLINE_LIC }}
       PI_CLI_TEST_OFFLINE_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_OFFLINE_LIC }}
       
@@ -67,7 +67,7 @@ jobs:
       # GitHub package authentication
       PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
       PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
-      PI_CI_REFERENCE: local
+      PI_CI_REFERENCE: cross
       PI_CLI_TEST_ONLINE_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_ONLINE_LIC }}
       PI_CLI_TEST_OFFLINE_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_OFFLINE_LIC }}
       
@@ -114,7 +114,7 @@ jobs:
       # GitHub package authentication
       PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
       PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
-      PI_CI_REFERENCE: local
+      PI_CI_REFERENCE: cross
       PI_CLI_TEST_ONLINE_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_ONLINE_LIC }}
       PI_CLI_TEST_OFFLINE_LIC: ${{ secrets.PI_GITHUB_CLI_TEST_OFFLINE_LIC }}
       

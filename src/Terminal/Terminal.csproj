@@ -14,7 +14,7 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.30.1" />
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.0.3" />
         <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />        
     </ItemGroup>
 
@@ -24,12 +24,12 @@
     <Choose>
         <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
-                <ProjectReference Include="..\..\..\shared\src\PerpetualIntelligence.Shared\PerpetualIntelligence.Shared.csproj" />
+                <ProjectReference Include="..\..\..\shared\src\Shared\Shared.csproj" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="PerpetualIntelligence.Shared" Version="5.3.1" />
+                <PackageReference Include="PerpetualIntelligence.Shared" Version="5.4.1-rc.221123111" />
             </ItemGroup>
         </Otherwise>
     </Choose>
