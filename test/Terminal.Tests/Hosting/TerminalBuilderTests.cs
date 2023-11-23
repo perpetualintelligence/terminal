@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -8,6 +8,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using System;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void TerminalBuilder_ShouldReturn_Same_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection);
+            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
             terminalBuilder.Services.Should().BeSameAs(serviceCollection);
         }
 

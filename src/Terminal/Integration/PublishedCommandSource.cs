@@ -8,6 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Stores;
@@ -43,6 +44,7 @@ namespace PerpetualIntelligence.Terminal.Integration
     /// </remarks>
     public class PublishedCommandSource : ITerminalCommandSource<PublishedCommandSourceContext>
     {
+        private readonly ITextHandler textHandler;
         private readonly ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> assemblyLoader;
         private readonly ITerminalCommandSourceChecker<PublishedCommandSourceContext> terminalCommandSourceChecker;
         private readonly IMutableCommandStore commandStore;
@@ -51,18 +53,21 @@ namespace PerpetualIntelligence.Terminal.Integration
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
+        /// <param name="textHandler">The text handler.</param>
         /// <param name="publishedAssembliesLoader">The published assemblies loader.</param>
-        /// <param name="publisedCommandSourceChecker">The terminal source checker.</param>
+        /// <param name="publishedCommandSourceChecker">The terminal source checker.</param>
         /// <param name="commandStore">The mutable command store.</param>
         /// <param name="logger">The logger.</param>
         public PublishedCommandSource(
+            ITextHandler textHandler,
             ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> publishedAssembliesLoader,
-            ITerminalCommandSourceChecker<PublishedCommandSourceContext> publisedCommandSourceChecker,
+            ITerminalCommandSourceChecker<PublishedCommandSourceContext> publishedCommandSourceChecker,
             IMutableCommandStore commandStore,
             ILogger<PublishedCommandSource> logger)
         {
+            this.textHandler = textHandler;
             this.assemblyLoader = publishedAssembliesLoader;
-            this.terminalCommandSourceChecker = publisedCommandSourceChecker;
+            this.terminalCommandSourceChecker = publishedCommandSourceChecker;
             this.commandStore = commandStore;
             this.logger = logger;
         }
@@ -93,7 +98,7 @@ namespace PerpetualIntelligence.Terminal.Integration
                 // command descriptor.
                 logger.LogInformation("Load command runners. assembly={0}", assembly.GetName());
                 ServiceCollection localServiceCollection = new();
-                ITerminalBuilder terminalBuilder = localServiceCollection.CreateTerminalBuilder();
+                ITerminalBuilder terminalBuilder = localServiceCollection.CreateTerminalBuilder(textHandler);
                 terminalBuilder.AddDeclarativeAssembly(assembly);
                 ServiceProvider serviceProvider = localServiceCollection.BuildServiceProvider();
                 IEnumerable<CommandDescriptor> commands = serviceProvider.GetRequiredService<IEnumerable<CommandDescriptor>>();

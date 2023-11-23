@@ -6,6 +6,7 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 
 namespace PerpetualIntelligence.Terminal.Hosting
 {
@@ -18,5 +19,10 @@ namespace PerpetualIntelligence.Terminal.Hosting
         /// The host service collection.
         /// </summary>
         IServiceCollection Services { get; }
+
+        /// <summary>
+        /// The text handler.
+        /// </summary>
+        ITextHandler TextHandler { get; }
     }
 }

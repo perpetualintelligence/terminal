@@ -7,7 +7,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,27 +40,25 @@ namespace PerpetualIntelligence.Terminal.Hosting
         public ITerminalBuilder Add()
         {
             // Add the command descriptor from local to the global CLI builder.
-            ServiceProvider localServiceProvider = Services.BuildServiceProvider();
-            CommandDescriptor commandDescriptor = localServiceProvider.GetRequiredService<CommandDescriptor>();
+            ServiceProvider lsp = Services.BuildServiceProvider();
+            CommandDescriptor commandDescriptor = lsp.GetRequiredService<CommandDescriptor>();
 
             // Arguments
-            IEnumerable<ArgumentDescriptor> argumentDescriptors = localServiceProvider.GetServices<ArgumentDescriptor>();
+            IEnumerable<ArgumentDescriptor> argumentDescriptors = lsp.GetServices<ArgumentDescriptor>();
             if (argumentDescriptors.Any())
             {
-                // FOMAC MUST UnicodeTextHandler is hard coded
-                commandDescriptor.ArgumentDescriptors = new ArgumentDescriptors(new UnicodeTextHandler(), argumentDescriptors);
+                commandDescriptor.ArgumentDescriptors = new ArgumentDescriptors(terminalBuilder.TextHandler, argumentDescriptors);
             }
 
             // Options
-            IEnumerable<OptionDescriptor> optionDescriptors = localServiceProvider.GetServices<OptionDescriptor>();
+            IEnumerable<OptionDescriptor> optionDescriptors = lsp.GetServices<OptionDescriptor>();
             if (optionDescriptors.Any())
             {
-                // FOMAC MUST UnicodeTextHandler is hard coded
-                commandDescriptor.OptionDescriptors = new OptionDescriptors(new UnicodeTextHandler(), optionDescriptors);
+                commandDescriptor.OptionDescriptors = new OptionDescriptors(terminalBuilder.TextHandler, optionDescriptors);
             }
 
             // Custom Properties
-            IEnumerable<Tuple<string, object>> customProps = localServiceProvider.GetServices<Tuple<string, object>>();
+            IEnumerable<Tuple<string, object>> customProps = lsp.GetServices<Tuple<string, object>>();
             if (customProps.Any())
             {
                 commandDescriptor.CustomProperties = new Dictionary<string, object>();
@@ -73,11 +70,11 @@ namespace PerpetualIntelligence.Terminal.Hosting
             }
 
             // Owners
-            OwnerIdCollection? owners = localServiceProvider.GetService<OwnerIdCollection>();
+            OwnerIdCollection? owners = lsp.GetService<OwnerIdCollection>();
             commandDescriptor.OwnerIds = owners;
 
             // Tags
-            TagIdCollection? tags = localServiceProvider.GetService<TagIdCollection>();
+            TagIdCollection? tags = lsp.GetService<TagIdCollection>();
             commandDescriptor.TagIds = tags;
 
             // Make sure the command runner and checker are added. TODO this may add duplicate types

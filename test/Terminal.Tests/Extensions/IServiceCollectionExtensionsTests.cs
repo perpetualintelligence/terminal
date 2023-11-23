@@ -24,22 +24,30 @@ namespace PerpetualIntelligence.Terminal.Extensions
     public class IServiceCollectionExtensionsTests
     {
         [Fact]
-        public void CreateTerminalBuilderShouldNotAddAnyServices()
+        public void CreateTerminalBuilder_Only_Adds_TextHandler()
         {
             IServiceCollection? serviceDescriptors = null;
+            ITerminalBuilder? terminalBuilder = null;
+            AsciiTextHandler textHandler = new();
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
                 serviceDescriptors = arg;
+                terminalBuilder = serviceDescriptors!.CreateTerminalBuilder(textHandler);
             }).Build();
 
             serviceDescriptors.Should().NotBeNull();
-            ITerminalBuilder? terminalBuilder = serviceDescriptors!.CreateTerminalBuilder();
+
             terminalBuilder.Should().NotBeNull()
                            .And.BeOfType<TerminalBuilder>()
                            .And.Match<TerminalBuilder>(tb => ReferenceEquals(serviceDescriptors, tb.Services));
 
             setupActionCalled.Should().BeFalse();
+
+            // Ensure text handler added
+            ITextHandler? fromServices = host.Services.GetService<ITextHandler>();
+            fromServices.Should().NotBeNull();
+            fromServices.Should().BeSameAs(textHandler);
 
             AssertNoCoreServices(host);
         }
@@ -60,7 +68,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(configuration);
+                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(new UnicodeTextHandler(), configuration);
             }).Build();
 
             // Check Options are added
@@ -83,7 +91,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>();
+                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(new UnicodeTextHandler());
             }).Build();
 
             // Check Options are added
@@ -106,7 +114,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(SetupAction);
+                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(new UnicodeTextHandler(), SetupAction);
             }).Build();
 
             // Check Options are added

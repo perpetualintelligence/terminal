@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Hosting;
 using PerpetualIntelligence.Terminal.Mocks;
 using System;
@@ -29,7 +30,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }).Build();
 
             serviceDescriptors.Should().NotBeNull();
-            terminalBuilder = serviceDescriptors!.CreateTerminalBuilder();
+            terminalBuilder = serviceDescriptors!.CreateTerminalBuilder(new AsciiTextHandler());
             commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "description1", CommandType.SubCommand, CommandFlags.None);
         }
 

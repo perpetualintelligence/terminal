@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Shared.Attributes.Validation;
 using PerpetualIntelligence.Terminal.Commands.Checkers;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Terminal.Hosting;
 using System;
@@ -28,7 +29,7 @@ namespace PerpetualIntelligence.Terminal.Commands.Declarative
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
-            terminalBuilder = new(serviceCollection);
+            terminalBuilder = new(serviceCollection, new AsciiTextHandler());
         }
 
         [Fact]

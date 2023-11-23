@@ -323,11 +323,24 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// Adds the <see cref="ITextHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
+        /// <param name="textHandler">The text handler.</param>
         /// <typeparam name="TTextHandler">The text handler.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddTextHandler<TTextHandler>(this ITerminalBuilder builder) where TTextHandler : class, ITextHandler
+        /// <remarks>
+        /// <para>
+        /// <see cref="AddTextHandler{TTextHandler}(ITerminalBuilder, TTextHandler)"/> requires an instance of <typeparamref name="TTextHandler"/> instead of just its type because the terminal application is
+        /// expected to operate with a single, consistent instance of <see cref="ITextHandler"/> throughout its lifetime. By passing an instance, it allows
+        /// the terminal to maintain state or configuration specific to that instance, ensuring consistent text handling behavior across different parts of the application.
+        /// </para>
+        /// <para>
+        /// This approach also facilitates more flexible initialization patterns, where the <see cref="ITextHandler"/> can be configured or initialized
+        /// outside of the dependency injection container before being registered. This can be particularly useful when the text handler requires complex setup
+        /// or depends on settings or services that aren't readily available within the DI context.
+        /// </para>
+        /// </remarks>
+        public static ITerminalBuilder AddTextHandler<TTextHandler>(this ITerminalBuilder builder, TTextHandler textHandler) where TTextHandler : class, ITextHandler
         {
-            builder.Services.AddSingleton<ITextHandler, TTextHandler>();
+            builder.Services.AddSingleton<ITextHandler>(textHandler);
             return builder;
         }
 

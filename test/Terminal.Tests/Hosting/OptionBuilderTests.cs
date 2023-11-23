@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Terminal.Commands;
+using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Extensions;
 using PerpetualIntelligence.Terminal.Mocks;
 using System;
@@ -28,7 +29,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void Nos_OptionDescriptor_Throws()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection);
+            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             OptionBuilder optionBuilder = new(commandBuilder);
@@ -39,7 +40,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void Build_Adds_OptionDescriptor_To_CommandDescriptor()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection);
+            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None).Add()
@@ -57,7 +58,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_CommandBuilder()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection);
+            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             IOptionBuilder optionBuilder = commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None);
@@ -73,7 +74,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection);
+            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
             CommandBuilder commandBuilder = new(terminalBuilder);
             OptionBuilder argumentBuilder = new(commandBuilder);
 

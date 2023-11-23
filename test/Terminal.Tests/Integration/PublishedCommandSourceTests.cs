@@ -36,7 +36,7 @@ namespace PerpetualIntelligence.Terminal.Integration
             mutableCommandStore = new InMemoryMutableCommandStore(textHandler, Array.Empty<CommandDescriptor>());
             MockListLoggerFactory mockListLoggerFactory = new();
             logger = mockListLoggerFactory.CreateLogger<PublishedCommandSource>();
-            publishedCommandSource = new PublishedCommandSource(assemblyLoader, terminalCommandSourceChecker, mutableCommandStore, logger);
+            publishedCommandSource = new PublishedCommandSource(textHandler, assemblyLoader, terminalCommandSourceChecker, mutableCommandStore, logger);
         }
 
         [Fact]

@@ -33,15 +33,21 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <typeparam name="TStore">The type implementing <see cref="IImmutableCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="textHandler">The text handler.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, Action<TerminalOptions> setupAction)
+        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, TText textHandler, Action<TerminalOptions> setupAction)
             where TStore : class, IImmutableCommandStore
             where TText : class, ITextHandler
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
+            }
+
+            if (textHandler is null)
+            {
+                throw new ArgumentNullException(nameof(textHandler));
             }
 
             if (setupAction == null)
@@ -50,7 +56,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }
 
             services.Configure(setupAction);
-            return services.AddTerminal<TStore, TText>();
+            return services.AddTerminal<TStore, TText>(textHandler);
         }
 
         /// <summary>
@@ -59,15 +65,21 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <typeparam name="TStore">The type implementing <see cref="IImmutableCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="textHandler">The text handler.</param>
         /// <param name="configuration">The configuration to bind to <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, IConfiguration configuration)
+        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, TText textHandler, IConfiguration configuration)
             where TStore : class, IImmutableCommandStore
             where TText : class, ITextHandler
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
+            }
+
+            if (textHandler is null)
+            {
+                throw new ArgumentNullException(nameof(textHandler));
             }
 
             if (configuration == null)
@@ -76,7 +88,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
             }
 
             services.Configure<TerminalOptions>(configuration);
-            return services.AddTerminal<TStore, TText>();
+            return services.AddTerminal<TStore, TText>(textHandler);
         }
 
         /// <summary>
@@ -85,8 +97,9 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <typeparam name="TStore">The type implementing <see cref="IImmutableCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="textHandler">The text handler.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services)
+        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, TText textHandler)
             where TStore : class, IImmutableCommandStore
             where TText : class, ITextHandler
         {
@@ -95,10 +108,14 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 throw new ArgumentNullException(nameof(services));
             }
 
-            return services.CreateTerminalBuilder()
+            if (textHandler is null)
+            {
+                throw new ArgumentNullException(nameof(textHandler));
+            }
+
+            return services.CreateTerminalBuilder(textHandler)
                            .AddConfigurationOptions()
                            .AddCommandStore<TStore>()
-                           .AddTextHandler<TText>()
                            .AddLicensing();
         }
 
@@ -106,18 +123,21 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// Creates a <see cref="ITerminalBuilder"/> for configuring terminal services.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="textHandler">The global text handler.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
         /// <remarks>
         /// This method is part of the terminal infrastructure and is not intended to be used directly from application code.
         /// </remarks>
-        internal static ITerminalBuilder CreateTerminalBuilder(this IServiceCollection services)
+        internal static ITerminalBuilder CreateTerminalBuilder(this IServiceCollection services, ITextHandler textHandler)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            return new TerminalBuilder(services);
+            TerminalBuilder tb = new(services, textHandler);
+            tb.AddTextHandler(textHandler);
+            return tb;
         }
 
         /// <summary>
@@ -127,10 +147,11 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <typeparam name="TText">The type implementing <see cref="ITextHandler"/>.</typeparam>
         /// <typeparam name="THelp">The type implementing <see cref="IHelpProvider"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="textHandler">The text handler.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminalDefault<TStore, TText, THelp>(this IServiceCollection services, Action<TerminalOptions> setupAction)
-            where TStore : class, IImmutableCommandStore, IMutableCommandStore
+        public static ITerminalBuilder AddTerminalDefault<TStore, TText, THelp>(this IServiceCollection services, TText textHandler, Action<TerminalOptions> setupAction)
+            where TStore : class, IImmutableCommandStore
             where TText : class, ITextHandler
             where THelp : class, IHelpProvider
         {
@@ -139,12 +160,17 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 throw new ArgumentNullException(nameof(services));
             }
 
+            if (textHandler is null)
+            {
+                throw new ArgumentNullException(nameof(textHandler));
+            }
+
             if (setupAction == null)
             {
                 throw new ArgumentNullException(nameof(setupAction));
             }
 
-            return services.AddTerminal<TStore, TText>(setupAction)
+            return services.AddTerminal<TStore, TText>(textHandler, setupAction)
                     .AddCommandRouter<CommandRouter, CommandHandler>()
                     .AddCommandParser<CommandParser, CommandRouteParser>()
                     .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
@@ -161,10 +187,11 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <typeparam name="THelp">The type implementing <see cref="IHelpProvider"/>.</typeparam>
         /// <typeparam name="TConsole">The type implementing <see cref="ITerminalConsole"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="textHandler">The text handler.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminalConsole<TStore, TText, THelp, TConsole>(this IServiceCollection services, Action<TerminalOptions> setupAction)
-            where TStore : class, IImmutableCommandStore, IMutableCommandStore
+        public static ITerminalBuilder AddTerminalConsole<TStore, TText, THelp, TConsole>(this IServiceCollection services, TText textHandler, Action<TerminalOptions> setupAction)
+            where TStore : class, IImmutableCommandStore
             where TText : class, ITextHandler
             where THelp : class, IHelpProvider
             where TConsole : class, ITerminalConsole
@@ -174,12 +201,17 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 throw new ArgumentNullException(nameof(services));
             }
 
+            if (textHandler is null)
+            {
+                throw new ArgumentNullException(nameof(textHandler));
+            }
+
             if (setupAction == null)
             {
                 throw new ArgumentNullException(nameof(setupAction));
             }
 
-            return services.AddTerminalDefault<TStore, TText, THelp>(setupAction)
+            return services.AddTerminalDefault<TStore, TText, THelp>(textHandler, setupAction)
                            .AddTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>()
                            .AddConsole<TConsole>();
         }

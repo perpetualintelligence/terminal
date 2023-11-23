@@ -352,12 +352,13 @@ namespace PerpetualIntelligence.Terminal.Extensions
         [TestMethod]
         public void AddTextHandlerShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddTextHandler<UnicodeTextHandler>();
-
+            // AddTextHandler is called within CreateTerminalBuilder
             var comparer = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITextHandler)));
             Assert.IsNotNull(comparer);
             Assert.AreEqual(ServiceLifetime.Singleton, comparer.Lifetime);
-            Assert.AreEqual(typeof(UnicodeTextHandler), comparer.ImplementationType);
+            Assert.IsNotNull(comparer.ImplementationInstance);
+            Assert.IsNull(comparer.ImplementationType);
+            Assert.AreEqual(typeof(UnicodeTextHandler), comparer.ImplementationInstance.GetType());
         }
 
         public ITerminalBuilderExtensionsTests()
@@ -373,7 +374,7 @@ namespace PerpetualIntelligence.Terminal.Extensions
                 throw new InvalidOperationException("Service descriptors not initialized.");
             }
 
-            terminalBuilder = serviceDescriptors.CreateTerminalBuilder();
+            terminalBuilder = serviceDescriptors.CreateTerminalBuilder(new UnicodeTextHandler());
         }
     }
 }
