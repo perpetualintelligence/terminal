@@ -12,7 +12,6 @@ using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
-using PerpetualIntelligence.Terminal.Stores.InMemory;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -370,6 +369,41 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
         {
             Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", $"{cmdStr} --opt1 val1 -opt2 val2"));
             await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any options. command={errCmd}");
+        }
+
+        [Fact]
+        public async Task Invalid_Root_Throws()
+        {
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "root_invalid"));
+            await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command is missing in the command route.");
+        }
+
+        [Fact]
+        public async Task Invalid_Root_With_Group_Throws()
+        {
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "root_invalid grp1"));
+            await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command owner is not valid. owner=root_invalid command=grp1.");
+        }
+
+        [Fact]
+        public async Task Invalid_Group_Throws()
+        {
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "root1 grp1_invalid"));
+            await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=root1");
+        }
+
+        [Fact]
+        public async Task Invalid_Nested_Group_Throws()
+        {
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "root1 grp1 grp2_invalid"));
+            await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=grp1");
+        }
+
+        [Fact]
+        public async Task Invalid_Command_Throws()
+        {
+            Func<Task> func = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "root1 grp1 grp2 cmd_invalid"));
+            await func.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support any arguments. command=grp2");
         }
 
         private readonly TerminalOptions terminalOptions;

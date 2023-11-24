@@ -18,7 +18,7 @@ namespace PerpetualIntelligence.Terminal
             TestHelper.AssertNamespace(typeof(TerminalErrors).Assembly, "PerpetualIntelligence.Terminal");
         }
 
-        [Fact(Skip = "Need to update Shared logic to take into account Root namespace.")]
+        [Fact]
         public void TypesLocationTest()
         {
             TestHelper.AssertAssemblyTypesLocation(typeof(TerminalErrors).Assembly);

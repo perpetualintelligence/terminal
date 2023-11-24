@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;

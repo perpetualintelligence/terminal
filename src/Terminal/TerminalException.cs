@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Shared.Infrastructure;
 
 namespace PerpetualIntelligence.Terminal

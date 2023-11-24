@@ -8,12 +8,10 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using PerpetualIntelligence.Shared.Exceptions;
 using PerpetualIntelligence.Terminal.Commands.Handlers;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Mocks;
 using PerpetualIntelligence.Terminal.Stores;
-using PerpetualIntelligence.Terminal.Stores.InMemory;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -1,3 +1,7 @@
+# 5.5.1-rc*
+> Breaking Change
+- Update AddTextHandler service method to accept the instance. 
+
 # 5.4.1-rc*
 > Breaking Change
 - Support mutable and immutable store
