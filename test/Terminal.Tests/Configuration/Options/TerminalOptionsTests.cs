@@ -32,7 +32,6 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
             options.Handler.Should().NotBeNull();
             options.Licensing.Should().NotBeNull();
             options.Router.Should().NotBeNull();
-            options.Http.Should().NotBeNull();
             options.Help.Should().NotBeNull();
         }
     }

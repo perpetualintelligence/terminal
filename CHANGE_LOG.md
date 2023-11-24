@@ -1,6 +1,7 @@
 # 5.5.1-rc*
 > Breaking Change
-- Update AddTextHandler service method to accept the instance. 
+- Update AddTextHandler service method to accept the instance.
+- Remove HttpOptions and move the options to their respective usage
 
 # 5.4.1-rc*
 > Breaking Change

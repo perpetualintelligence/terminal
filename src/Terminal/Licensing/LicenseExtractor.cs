@@ -156,13 +156,13 @@ namespace PerpetualIntelligence.Terminal.Licensing
             }
 
             // Make sure the HTTP client name is setup
-            if (terminalOptions.Http.HttpClientName == null)
+            if (terminalOptions.Licensing.HttpClientName == null)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The HTTP client name is not configured, see licensing options. licensing_handler={0}", terminalOptions.Handler.LicenseHandler);
             }
 
             // Setup the HTTP client
-            HttpClient httpClient = httpClientFactory.CreateClient(terminalOptions.Http.HttpClientName);
+            HttpClient httpClient = httpClientFactory.CreateClient(terminalOptions.Licensing.HttpClientName);
             return httpClient;
         }
 

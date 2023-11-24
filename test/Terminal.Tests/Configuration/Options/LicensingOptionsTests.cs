@@ -25,6 +25,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
             options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
             options.OnPremiseDeployment.Should().BeNull();
             options.Subject.Should().BeNull();
+            options.HttpClientName.Should().BeNull();
         }
     }
 }

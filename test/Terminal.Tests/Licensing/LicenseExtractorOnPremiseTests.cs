@@ -46,7 +46,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
@@ -70,7 +70,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
@@ -133,7 +133,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";

@@ -7,6 +7,7 @@
 
 using PerpetualIntelligence.Shared.Licensing;
 using PerpetualIntelligence.Terminal.Licensing;
+using System.Net.Http;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
@@ -68,5 +69,14 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         /// of licensing terms to deploy or continue using the framework without a valid active license plan.
         /// </remarks>
         public bool? OnPremiseDeployment { get; set; }
+
+        /// <summary>
+        /// The logical name to create and configure <see cref="HttpClient"/> instance for online licensing checks.
+        /// </summary>
+        /// <remarks>
+        /// The framework uses <see cref="IHttpClientFactory.CreateClient(string)"/> and the configured name
+        /// to create an instance of <see cref="HttpClient"/>.
+        /// </remarks>
+        public string? HttpClientName { get; set; }
     }
 }

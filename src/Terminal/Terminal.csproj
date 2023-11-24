@@ -5,9 +5,9 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <Description>
-            pi-cli is the most flexible cross-platform framework for building modern CLI terminals for your company, product, service, SaaS, development, and testing needs. Users, customers, and enterprises across engineering, manufacturing, technology, artificial intelligence, machine learning, finance, media, creative design, etc., can create simple CLI apps with few flags or advanced CLIs with roots, groups, sub-commands, options, and options. Use microservices architecture principles, dependency injection, and options pattern to build modern and secured CLI applications similar to Github CLI, .NET CLI, Stripe CLI, or CLI terminals with custom formats. Take your app or service to the command line with Unicode support and develop CLI terminals in any user language. Configure your server, provide your self-hosting implementations for stores, and host in an environment of your choice, e.g., Windows, Linux, macOS, Docker, Kubernetes, etc.
+            The most flexible cross-platform framework for building modern CLI and terminal applicaitons.
         </Description>
-        <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos github dotnet oneimlx unicode saas paas pi-cli command-line command-line-tool</PackageTags>
+        <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos oneimlx unicode pi-cli command-line command-line-tool</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>

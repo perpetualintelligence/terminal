@@ -154,7 +154,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -261,7 +261,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = demoLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = DemoIdentifiers.TerminalDemoConsumerTenantId;
             terminalOptions.Licensing.Subject = DemoIdentifiers.TerminalDemoSubject;
             terminalOptions.Licensing.AuthorizedApplicationId = DemoIdentifiers.TerminalDemoAuthorizedApplicationId;
@@ -336,7 +336,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.AuthorizedApplicationId = "invalid_app";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -351,7 +351,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "invalid_consumer";
             terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -365,7 +365,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
@@ -380,7 +380,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
             terminalOptions.Licensing.Subject = "invalid_subject";
@@ -422,7 +422,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-            terminalOptions.Http.HttpClientName = httpClientName;
+            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
             terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
             terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
