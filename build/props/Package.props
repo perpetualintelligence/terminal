@@ -11,6 +11,7 @@
         <Authors>Perpetual Intelligence L.L.C.</Authors>
         <Company>Perpetual Intelligence L.L.C.</Company>
         <Product>oneterminal</Product>
+        <RootNamespace>PerpetualIntelligence.$(MSBuildProjectName)</RootNamespace>
         <AssemblyName>PerpetualIntelligence.$(MSBuildProjectName)</AssemblyName>
         <PackageId>PerpetualIntelligence.$(MSBuildProjectName)</PackageId>
         <PackageProjectUrl>https://www.perpetualintelligence.com</PackageProjectUrl>
