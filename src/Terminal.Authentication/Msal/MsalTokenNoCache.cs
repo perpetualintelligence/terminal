@@ -8,12 +8,12 @@
 using Microsoft.Identity.Client;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Authentication
+namespace PerpetualIntelligence.Terminal.Authentication.Msal
 {
     /// <summary>
-    /// The <see cref="IClientCrossPlatformTokenCache"/> that represents no caching.
+    /// The <see cref="IMsalTokenCache"/> that represents no caching.
     /// </summary>
-    public class ClientCrossPlatformNoTokenCache : IClientCrossPlatformTokenCache
+    public class MsalTokenNoCache : IMsalTokenCache
     {
         /// <summary>
         /// This method does nothing and it is provided for infrastructure consistency.

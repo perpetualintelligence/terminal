@@ -78,6 +78,11 @@ namespace PerpetualIntelligence.Terminal
         public const string MissingClaim = "missing_claim";
 
         /// <summary>
+        /// The identity or an account is missing.
+        /// </summary>
+        public const string MissingIdentity = "missing_identity";
+
+        /// <summary>
         /// The request is canceled.
         /// </summary>
         public const string RequestCanceled = "request_canceled";
