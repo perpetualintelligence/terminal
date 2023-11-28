@@ -12,7 +12,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     /// <summary>
     /// The command router options.
     /// </summary>
-    public class RouterOptions
+    public sealed class RouterOptions
     {
         /// <summary>
         /// The terminal caret to show in the console. The default value is <c>></c>.

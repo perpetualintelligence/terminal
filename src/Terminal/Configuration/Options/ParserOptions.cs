@@ -10,7 +10,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     /// <summary>
     /// The command parser options.
     /// </summary>
-    public class ParserOptions
+    public sealed class ParserOptions
     {
         /// <summary>
         /// The option alias prefix. Defaults to <c>-</c>.

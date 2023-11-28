@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions;
 using Moq;
+using PerpetualIntelligence.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,16 +19,24 @@ using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Authentication.Msal
 {
-    public class MsalPublicClientAuthenticationProviderTests
+    public class MsalKiotaAuthenticationProviderTests
     {
         private readonly Mock<IMsalTokenAcquisition> _msalTokenAcquisitionMock;
-        private readonly Mock<ILogger<MsalPublicClientAuthenticationProvider>> _loggerMock;
-        private readonly IEnumerable<string> _defaultScopes = new[] { "User.Read" };
+        private readonly Mock<ILogger<MsalKiotaAuthProvider>> _loggerMock;
+        private readonly TerminalOptions _terminalOptions;
 
-        public MsalPublicClientAuthenticationProviderTests()
+        public MsalKiotaAuthenticationProviderTests()
         {
             _msalTokenAcquisitionMock = new Mock<IMsalTokenAcquisition>();
-            _loggerMock = new Mock<ILogger<MsalPublicClientAuthenticationProvider>>();
+            _loggerMock = new Mock<ILogger<MsalKiotaAuthProvider>>();
+            _terminalOptions = new TerminalOptions
+            {
+                Authentication = new AuthenticationOptions
+                {
+                    DefaultScopes = new[] { "User.Read" },
+                    ValidHosts = new[] { "graph.microsoft.com" }
+                }
+            };
         }
 
         [Fact]
@@ -118,7 +127,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
                                         tenantId: string.Empty,
                                         account: mockAccounts.First(),
                                         idToken: string.Empty,
-                                        scopes: _defaultScopes.ToArray(),
+                                        scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
                                         Guid.NewGuid()));
 
             var provider = CreateProvider();
@@ -152,7 +161,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
                                         tenantId: string.Empty,
                                         account: Mock.Of<IAccount>(acc => acc.Username == "user@example.com"),
                                         idToken: string.Empty,
-                                        scopes: _defaultScopes.ToArray(),
+                                        scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
                                         Guid.NewGuid()));
 
             var provider = CreateProvider();
@@ -162,16 +171,16 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
 
             // Act & Assert: Call the method with additional scopes.
             await provider.AuthenticateRequestAsync(requestInfo, additionalAuthenticationContext);
-            usedScopes.Should().BeEquivalentTo(_defaultScopes.Concat(additionalScopes));
+            usedScopes.Should().BeEquivalentTo(_terminalOptions.Authentication.DefaultScopes!.Concat(additionalScopes));
 
             // Act & Assert: Call the method without additional scopes and assert default scopes are used.
             await provider.AuthenticateRequestAsync(requestInfo);
-            usedScopes.Should().BeEquivalentTo(_defaultScopes);
+            usedScopes.Should().BeEquivalentTo(_terminalOptions.Authentication.DefaultScopes);
         }
 
-        private MsalPublicClientAuthenticationProvider CreateProvider()
+        private MsalKiotaAuthProvider CreateProvider()
         {
-            return new MsalPublicClientAuthenticationProvider(_msalTokenAcquisitionMock.Object, _loggerMock.Object, _defaultScopes);
+            return new MsalKiotaAuthProvider(_terminalOptions, _msalTokenAcquisitionMock.Object, _loggerMock.Object);
         }
 
         private void SetupMockTokenInteractiveAcquisition(string token = "interactive_token")
@@ -185,7 +194,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
                 tenantId: string.Empty,
                 account: new Mock<IAccount>().Object,
                 idToken: string.Empty,
-                scopes: _defaultScopes.ToArray(),
+                scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
                 Guid.NewGuid());
 
             _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenInteractiveAsync(It.IsAny<IEnumerable<string>>()))
@@ -206,7 +215,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
                 tenantId: string.Empty,
                 account: account,
                 idToken: string.Empty,
-                scopes: _defaultScopes.ToArray(),
+                scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
                 Guid.NewGuid());
 
             _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), account))

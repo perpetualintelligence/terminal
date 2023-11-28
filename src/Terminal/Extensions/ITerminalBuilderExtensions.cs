@@ -305,17 +305,23 @@ namespace PerpetualIntelligence.Terminal.Extensions
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command descriptor store type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder) where TStore : class, IImmutableCommandStore
+        public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder)
+            where TStore : class, IImmutableCommandStore
         {
-            // All stores are IImmutableCommandStore, mutable store implement additional IMutableCommandStore
+            // Register the concrete type
+            builder.Services.AddSingleton<TStore>();
+
+            // Register as IMutableCommandStore if applicable
             if (typeof(IMutableCommandStore).IsAssignableFrom(typeof(TStore)))
             {
-                builder.Services.AddSingleton(typeof(IMutableCommandStore), typeof(TStore));
+                builder.Services.AddSingleton<IMutableCommandStore>(provider =>
+                    (IMutableCommandStore)provider.GetRequiredService(typeof(TStore)));
             }
-            else
-            {
-                builder.Services.AddSingleton(typeof(IImmutableCommandStore), typeof(TStore));
-            }
+
+            // Always register as IImmutableCommandStore
+            builder.Services.AddSingleton<IImmutableCommandStore>(provider =>
+                provider.GetRequiredService<TStore>());
+
             return builder;
         }
 

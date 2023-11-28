@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Moq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -198,6 +199,34 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             // Fluent Assertions method to assert an exception is thrown
             await act.Should().ThrowAsync<TerminalException>()
                 .WithMessage("The access_token is null or empty.");
+        }
+
+        [Fact]
+        public async Task SendAsync_ShouldCallPreflightAsync()
+        {
+            // Arrange
+            var testHandler = new TestMsalAuthenticationProviderDelegatingHandler(_mockAuthenticationProvider.Object, _mockLogger.Object)
+            {
+                InnerHandler = new TestHandler() // Use the existing TestHandler
+            };
+
+            testHandler.PreflightAsyncCalled.Should().BeFalse();
+
+            _mockAuthenticationProvider.Setup(p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+                 .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, cToken) =>
+                 {
+                     reqInfo.Headers["Authorization"] = new List<string>() { "Bearer mock_token" }; // Empty authorization header
+                 })
+                 .Returns(Task.CompletedTask);
+
+            var invoker = new HttpMessageInvoker(testHandler);
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://example.com");
+
+            // Act
+            await invoker.SendAsync(request, new CancellationToken());
+
+            // Assert
+            testHandler.PreflightAsyncCalled.Should().BeTrue();
         }
     }
 }

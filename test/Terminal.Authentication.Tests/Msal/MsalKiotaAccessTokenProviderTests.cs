@@ -13,22 +13,30 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Client;
     using Moq;
+    using PerpetualIntelligence.Terminal.Configuration.Options;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Xunit;
 
-    public class MsalPublicClientAccessTokenProviderTests
+    public class MsalKiotaAccessTokenProviderTests
     {
         private readonly Mock<IMsalTokenAcquisition> _msalTokenAcquisitionMock;
-        private readonly Mock<ILogger<MsalPublicClientAccessTokenProvider>> _loggerMock;
-        private readonly IEnumerable<string> _defaultScopes = new[] { "User.Read" };
-        private readonly IEnumerable<string> _validHosts = new[] { "graph.microsoft.com" };
+        private readonly Mock<ILogger<MsalKiotaAuthProvider>> _loggerMock;
+        private readonly TerminalOptions _terminalOptions;
 
-        public MsalPublicClientAccessTokenProviderTests()
+        public MsalKiotaAccessTokenProviderTests()
         {
             _msalTokenAcquisitionMock = new Mock<IMsalTokenAcquisition>();
-            _loggerMock = new Mock<ILogger<MsalPublicClientAccessTokenProvider>>();
+            _loggerMock = new Mock<ILogger<MsalKiotaAuthProvider>>();
+            _terminalOptions = new TerminalOptions
+            {
+                Authentication = new AuthenticationOptions
+                {
+                    DefaultScopes = new[] { "User.Read" },
+                    ValidHosts = new[] { "graph.microsoft.com" }
+                }
+            };
         }
 
         [Fact]
@@ -54,15 +62,22 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         }
 
         [Fact]
-        public async Task GetAuthorizationTokenAsync_DoesNot_Attempts_InteractiveAcquisition_WhenSilentFails()
+        public async Task GetAuthorizationTokenAsync_Does_Attempts_InteractiveAcquisition_WhenSilentFails()
         {
-            var silentException = new MsalUiRequiredException("error_code", "A problem occurred.");
-            SetupMockTokenAcquisitionForUiRequiredException(silentException);
+            // Arrange
+            var exception = new MsalUiRequiredException("error_code", "A problem occurred.");
+            SetupMockTokenAcquisitionForUiRequiredException(exception);
+
+            string expectedToken = "interactive_token";
+            SetupMockTokenInteractiveAcquisition(expectedToken);
 
             var provider = CreateProvider();
 
-            Func<Task> task = () => provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
-            await task.Should().ThrowAsync<MsalUiRequiredException>();
+            // Act
+            string token = await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
+
+            // Assert
+            expectedToken.Should().Be(token);
         }
 
         [Fact]
@@ -105,13 +120,13 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), new Dictionary<string, object> { { "scopes", additionalScopes } });
 
             // Assert: Check if the used scopes are a combination of default scopes and additional scopes.
-            usedScopes.Should().BeEquivalentTo(_defaultScopes.Concat(additionalScopes));
+            usedScopes.Should().BeEquivalentTo(_terminalOptions.Authentication.DefaultScopes!.Concat(additionalScopes));
 
             // Act: Call the method without additional scopes.
             await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
 
-            // Assert: Check if the used scopes are the default scopes.
-            usedScopes.Should().BeEquivalentTo(_defaultScopes);
+            // Assert: Check if the used scopes are the default scopes from TerminalOptions.
+            usedScopes.Should().BeEquivalentTo(_terminalOptions.Authentication.DefaultScopes);
         }
 
         [Fact]
@@ -138,7 +153,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
                                         tenantId: string.Empty,
                                         account: mockAccounts.First(),
                                         idToken: string.Empty,
-                                        scopes: _defaultScopes.ToArray(),
+                                        scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
                                         Guid.NewGuid()));
 
             var provider = CreateProvider();
@@ -151,9 +166,9 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             usedAccount!.Username.Should().Be("user1@example.com");
         }
 
-        private MsalPublicClientAccessTokenProvider CreateProvider()
+        private MsalKiotaAuthProvider CreateProvider()
         {
-            return new MsalPublicClientAccessTokenProvider(_msalTokenAcquisitionMock.Object, _loggerMock.Object, _defaultScopes, _validHosts);
+            return new MsalKiotaAuthProvider(_terminalOptions, _msalTokenAcquisitionMock.Object, _loggerMock.Object);
         }
 
         private void SetupMockTokenAcquisition(string token)
@@ -170,7 +185,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
                 tenantId: string.Empty,
                 account: account,
                 idToken: string.Empty,
-                scopes: _defaultScopes.ToArray(),
+                scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
                 Guid.NewGuid());
 
             _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), account))
@@ -187,6 +202,24 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         private void SetupMockTokenAcquisitionForNoAccounts()
         {
             _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(Enumerable.Empty<IAccount>());
+        }
+
+        private void SetupMockTokenInteractiveAcquisition(string token = "interactive_token")
+        {
+            var authenticationResult = new AuthenticationResult(
+                accessToken: token,
+                isExtendedLifeTimeToken: false,
+                uniqueId: string.Empty,
+                expiresOn: DateTimeOffset.UtcNow.AddHours(1),
+                extendedExpiresOn: DateTimeOffset.UtcNow.AddHours(2),
+                tenantId: string.Empty,
+                account: new Mock<IAccount>().Object,
+                idToken: string.Empty,
+                scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
+                Guid.NewGuid());
+
+            _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenInteractiveAsync(It.IsAny<IEnumerable<string>>()))
+                                     .ReturnsAsync(authenticationResult);
         }
     }
 }

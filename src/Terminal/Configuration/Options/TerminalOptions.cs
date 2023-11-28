@@ -10,7 +10,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     /// <summary>
     /// The terminal configuration options.
     /// </summary>
-    public class TerminalOptions
+    public sealed class TerminalOptions
     {
         /// <summary>
         /// The terminal identifier.

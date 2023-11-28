@@ -14,20 +14,20 @@
 using PerpetualIntelligence.Test.Services;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal
+namespace PerpetualIntelligence.Terminal.Authentication
 {
     public class AssemblyTests
     {
         [Fact(Skip = "Fix Test")]
         public void TypesNamespaceTest()
         {
-            TestHelper.AssertNamespace(typeof(TerminalErrors).Assembly, "PerpetualIntelligence.Terminal");
+            TestHelper.AssertNamespace(typeof(TerminalErrors).Assembly, "PerpetualIntelligence.Terminal.Authentication");
         }
 
         [Fact(Skip = "Fix Test")]
         public void TypesLocationTest()
         {
-            TestHelper.AssertAssemblyTypesLocation(typeof(TerminalErrors).Assembly);
+            TestHelper.AssertAssemblyTypesLocation(typeof(Extensions.ITerminalBuilderExtensions).Assembly);
         }
     }
 }

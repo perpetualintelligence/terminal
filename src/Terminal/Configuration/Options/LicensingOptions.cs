@@ -22,7 +22,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     /// our test license for quick onboarding and evaluation, please refer to <see href="https://docs.perpetualintelligence.com/articles/pi-demo/intro.html"/>.
     /// </para>
     /// </remarks>
-    public class LicensingOptions
+    public sealed class LicensingOptions
     {
         /// <summary>
         /// The authorized application id. This is also the <c>auth_apps</c> claim from your license key.

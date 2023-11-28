@@ -131,5 +131,29 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             Func<Task> func = () => invoker.SendAsync(request, new CancellationToken());
             await func.Should().ThrowAsync<TerminalException>().WithMessage("The access token is null or empty.");
         }
+
+        [Fact]
+        public async Task SendAsync_ShouldCallPreflightAsync()
+        {
+            // Arrange
+            var testHandler = new TestMsalAccessTokenProviderDelegatingHandler(_mockAccessTokenProvider.Object, _mockLogger.Object)
+            {
+                InnerHandler = new TestHandler() // Use the existing TestHandler
+            };
+
+            testHandler.PreflightAsyncCalled.Should().BeFalse();
+
+            _mockAccessTokenProvider.Setup(x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync("mock_token");
+
+            var invoker = new HttpMessageInvoker(testHandler);
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://example.com");
+
+            // Act
+            await invoker.SendAsync(request, new CancellationToken());
+
+            // Assert
+            testHandler.PreflightAsyncCalled.Should().BeTrue();
+        }
     }
 }

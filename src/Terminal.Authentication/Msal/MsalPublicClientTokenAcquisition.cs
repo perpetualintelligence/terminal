@@ -14,10 +14,10 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Authentication.Msal
 {
     /// <summary>
-    /// The default IMsalTokenAcquisition implementation using the IPublicClientApplication.
+    /// The default <see cref="IMsalTokenAcquisition"/> implementation using the <see cref="IPublicClientApplication"/>.
     /// </summary>
     /// <remarks>
-    /// MsalPublicClientTokenAcquisition is responsible for handling token acquisition from the Microsoft Identity platform.
+    /// <see cref="MsalPublicClientTokenAcquisition"/> is responsible for handling token acquisition from the Microsoft Identity platform.
     /// </remarks>
     public class MsalPublicClientTokenAcquisition : IMsalTokenAcquisition
     {
@@ -59,9 +59,9 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             var firstAccount = accounts.FirstOrDefault();
 
             return await publicClientApplication.AcquireTokenInteractive(scopes)
-                                                 .WithAccount(firstAccount)
-                                                 .WithPrompt(Prompt.SelectAccount)
-                                                 .ExecuteAsync();
+                                                .WithAccount(firstAccount)
+                                                .WithPrompt(Prompt.SelectAccount)
+                                                .ExecuteAsync();
         }
 
         /// <summary>
