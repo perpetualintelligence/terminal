@@ -11,7 +11,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     /// The command, argument, and option checker configuration options.
     /// </summary>
     /// <remarks>The checker options are not filters. The command execution is blocked if any check fails.</remarks>
-    public class CheckerOptions
+    public sealed class CheckerOptions
     {
         /// <summary>
         /// Determines whether the checker allows a command to run with an obsolete argument or an option.

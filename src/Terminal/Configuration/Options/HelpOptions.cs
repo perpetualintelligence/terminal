@@ -10,7 +10,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     /// <summary>
     /// The help options.
     /// </summary>
-    public class HelpOptions
+    public sealed class HelpOptions
     {
         /// <summary>
         /// Disables the help.

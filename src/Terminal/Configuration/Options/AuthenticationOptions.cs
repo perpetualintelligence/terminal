@@ -1,52 +1,49 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The authentication configuration options. Reserved for future use.
+    /// The authentication configuration options.
     /// </summary>
-    public class AuthenticationOptions
+    public sealed class AuthenticationOptions
     {
         /// <summary>
-        /// The authorized application or the client identifier.
+        /// Gets or sets the default authentication scopes.
         /// </summary>
-        public string? ApplicationId { get; set; }
+        /// <remarks>
+        /// These scopes are used by default if no specific scopes are provided during the authentication request.
+        /// </remarks>
+        public string[]? DefaultScopes { get; set; }
 
         /// <summary>
-        /// The authentication authority.
+        /// Gets or sets the valid hosts for generating the authorization token.
         /// </summary>
-        public string? Authority { get; set; }
+        /// <remarks>
+        /// Requests to hosts not listed here will be considered unauthorized.
+        /// </remarks>
+        public string[]? ValidHosts { get; set; }
 
         /// <summary>
-        /// The HTTP client name.
+        /// Gets or sets the base address for HTTP requests.
         /// </summary>
-        public string? HttpClientName { get; set; }
+        /// <remarks>
+        /// This is the base URL to which request URIs will be appended.
+        /// </remarks>
+        public string? BaseAddress { get; set; }
 
         /// <summary>
-        /// The authentication redirect URI. Defaults to <c>http://localhost</c>.
+        /// Gets or sets the timeout duration for HTTP requests.
         /// </summary>
-        /// <seealso href="https://github.com/AzureAD/microsoft-authentication-extensions-for-dotnet/wiki/Cross-platform-Token-Cache"/>
-        /// <seealso href="https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-net-token-cache-serialization?tabs=desktop"/>
-        public string RedirectUri { get; set; } = "http://localhost";
-
-        /// <summary>
-        /// The authentication scopes.
-        /// </summary>
-        public string[]? Scopes { get; set; }
-
-        /// <summary>
-        /// The authentication tenant identifier.
-        /// </summary>
-        public string? TenantId { get; set; }
-
-        /// <summary>
-        /// Specifies if the public client application should used an embedded web browser or the system default browser.
-        /// </summary>
-        public bool? UseEmbeddedView { get; set; }
+        /// <remarks>
+        /// Specifies the time period within which an HTTP request must complete. If exceeded, the request will be aborted.
+        /// </remarks>
+        public TimeSpan? Timeout { get; set; }
     }
 }

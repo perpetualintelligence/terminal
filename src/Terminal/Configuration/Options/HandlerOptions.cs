@@ -10,7 +10,7 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
     /// <summary>
     /// The handler options.
     /// </summary>
-    public class HandlerOptions
+    public sealed class HandlerOptions
     {
         /// <summary>
         /// The license handler. Its value can be <c>online-license</c>, <c>offline-license</c>, or <c>onpremise-license</c>.

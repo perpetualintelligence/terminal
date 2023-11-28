@@ -152,10 +152,29 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             terminalBuilder.AddCommandStore<MockImmutableCommandStore>();
 
-            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IImmutableCommandStore)));
-            Assert.IsNotNull(serviceDescriptor);
-            Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
-            Assert.AreEqual(typeof(MockImmutableCommandStore), serviceDescriptor.ImplementationType);
+            // Check if MockImmutableCommandStore is registered correctly
+            var concreteServiceDescriptor = terminalBuilder.Services
+                .FirstOrDefault(e => e.ServiceType.Equals(typeof(MockImmutableCommandStore)));
+            Assert.IsNotNull(concreteServiceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, concreteServiceDescriptor.Lifetime);
+
+            // Check if IImmutableCommandStore is mapped to MockImmutableCommandStore
+            var immutableInterfaceDescriptor = terminalBuilder.Services
+                .FirstOrDefault(e => e.ServiceType.Equals(typeof(IImmutableCommandStore)));
+            Assert.IsNotNull(immutableInterfaceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, immutableInterfaceDescriptor.Lifetime);
+
+            // Verify the factory for IImmutableCommandStore resolves to MockImmutableCommandStore
+            var serviceProvider = terminalBuilder.Services.BuildServiceProvider();
+            var immutableCommandStore = serviceProvider.GetService<IImmutableCommandStore>();
+            var immutableCommandStore2 = serviceProvider.GetService<IImmutableCommandStore>();
+            Assert.IsNotNull(immutableCommandStore);
+            Assert.IsInstanceOfType(immutableCommandStore, typeof(MockImmutableCommandStore));
+            immutableCommandStore.Should().BeSameAs(immutableCommandStore2);
+
+            // Verify that IMutableCommandStore is not registered
+            var mutableCommandStore = serviceProvider.GetService<IMutableCommandStore>();
+            Assert.IsNull(mutableCommandStore);
         }
 
         [TestMethod]
@@ -163,10 +182,39 @@ namespace PerpetualIntelligence.Terminal.Extensions
         {
             terminalBuilder.AddCommandStore<MockMutableCommandStore>();
 
-            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IMutableCommandStore)));
-            Assert.IsNotNull(serviceDescriptor);
-            Assert.AreEqual(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
-            Assert.AreEqual(typeof(MockMutableCommandStore), serviceDescriptor.ImplementationType);
+            // Check if MockMutableCommandStore is registered correctly
+            var concreteServiceDescriptor = terminalBuilder.Services
+                .FirstOrDefault(e => e.ServiceType.Equals(typeof(MockMutableCommandStore)));
+            Assert.IsNotNull(concreteServiceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, concreteServiceDescriptor.Lifetime);
+
+            // Check if IMutableCommandStore is mapped to MockMutableCommandStore
+            var mutableInterfaceDescriptor = terminalBuilder.Services
+                .FirstOrDefault(e => e.ServiceType.Equals(typeof(IMutableCommandStore)));
+            Assert.IsNotNull(mutableInterfaceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, mutableInterfaceDescriptor.Lifetime);
+
+            // Check if IImmutableCommandStore is mapped to MockMutableCommandStore
+            var immutableInterfaceDescriptor = terminalBuilder.Services
+                .FirstOrDefault(e => e.ServiceType.Equals(typeof(IImmutableCommandStore)));
+            Assert.IsNotNull(immutableInterfaceDescriptor);
+            Assert.AreEqual(ServiceLifetime.Singleton, immutableInterfaceDescriptor.Lifetime);
+
+            // Verify the factories for both interfaces resolve to MockMutableCommandStore
+            var serviceProvider = terminalBuilder.Services.BuildServiceProvider();
+            var mutableCommandStore = serviceProvider.GetService<IMutableCommandStore>();
+            var immutableCommandStore = serviceProvider.GetService<IImmutableCommandStore>();
+            var mutableCommandStore2 = serviceProvider.GetService<IMutableCommandStore>();
+            var immutableCommandStore2 = serviceProvider.GetService<IImmutableCommandStore>();
+            mutableCommandStore.Should().BeSameAs(immutableCommandStore);
+            mutableCommandStore2.Should().BeSameAs(immutableCommandStore2);
+            mutableCommandStore.Should().BeSameAs(mutableCommandStore2);
+
+            Assert.IsNotNull(mutableCommandStore);
+            Assert.IsInstanceOfType(mutableCommandStore, typeof(MockMutableCommandStore));
+
+            Assert.IsNotNull(immutableCommandStore);
+            Assert.IsInstanceOfType(immutableCommandStore, typeof(MockMutableCommandStore));
         }
 
         [TestMethod]

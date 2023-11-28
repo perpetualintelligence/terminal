@@ -38,6 +38,20 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         }
 
         /// <summary>
+        /// Performs preflight processing on the HTTP request message.
+        /// </summary>
+        /// <param name="request">The HTTP request message to be processed.</param>
+        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <remarks>
+        /// This method can be overridden in a derived class to perform custom pre-processing
+        /// on the request before it is sent. The default implementation does nothing.
+        /// </remarks>
+        protected virtual async Task PreflightAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Sends an HTTP request to the inner handler to send to the server as an asynchronous operation.
         /// </summary>
         /// <param name="request">The HTTP request message to send to the server.</param>
@@ -45,6 +59,9 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         /// <returns>A <see cref="Task{HttpResponseMessage}"/> that represents the asynchronous operation.</returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            // Preflight
+            await PreflightAsync(request, cancellationToken);
+
             // Map the HttpRequestMessage method to the appropriate Method enum value.
             var method = MapHttpMethod(request.Method);
 
