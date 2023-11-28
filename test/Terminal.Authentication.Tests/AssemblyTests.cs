@@ -18,13 +18,13 @@ namespace PerpetualIntelligence.Terminal.Authentication
 {
     public class AssemblyTests
     {
-        [Fact(Skip = "Fix Test")]
+        [Fact]
         public void TypesNamespaceTest()
         {
-            TestHelper.AssertNamespace(typeof(TerminalErrors).Assembly, "PerpetualIntelligence.Terminal.Authentication");
+            TestHelper.AssertNamespace(typeof(Extensions.ITerminalBuilderExtensions).Assembly, "PerpetualIntelligence.Terminal.Authentication");
         }
 
-        [Fact(Skip = "Fix Test")]
+        [Fact]
         public void TypesLocationTest()
         {
             TestHelper.AssertAssemblyTypesLocation(typeof(Extensions.ITerminalBuilderExtensions).Assembly);
