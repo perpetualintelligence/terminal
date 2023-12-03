@@ -8,9 +8,9 @@
 [![build-test-push](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-push.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-push.yml)
 [![delete-packages](https://github.com/perpetualintelligence/terminal/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/delete-packages.yml)
 
-`oneimlx-terminal` is the cross-platform adaptable framework designed for crafting modern CLI and terminal applications. We cut through the terminal infrastructure complexity, letting you concentrate on building enterprise grade terminal applications with Unicode support, and extensive command hierarchies.
+`OneImlx.Terminal` is the cross-platform adaptable framework designed for crafting modern CLI and terminal applications. We cut through the terminal infrastructure complexity, letting you concentrate on building enterprise grade terminal applications with Unicode support, and extensive command hierarchies.
 
-Quickly dive in with our [templates and tutorials](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/pi-cli).
+Quickly dive in with our [code samples](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/terminal).
 
 ## **Key Features**:
 - Utilize microservices architecture, Dependency Injection (DI), and options pattern to design and configure your terminal apps.
@@ -18,27 +18,28 @@ Quickly dive in with our [templates and tutorials](https://github.com/perpetuali
 - Opt for high-performance in-memory command storage or integrate with remote storage solutions.
 - Compatible with Windows, Linux, macOS, Docker, Kubernetes, and more.
 - Create deployment-agnostic CLI terminals, test locally, and deploy on-premise, cloud (public, private, or government), or in hybrid environments.
-- Build secure enterprise-level CLI and terminal applications.
+- Develop enterprise-level CLI and terminal applications with secure, zero-trust architecture, complying with OAuth and OpenID Connect (OIDC) standards.
 - Engage with our open-source community to resolve issues and contribute to feature enhancements and documentation.
 - Quickly onboard, evaluate, and test with our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) and ready samples on GitHub, no signup required.
 
 > ***Transform any .NET ecosystem feature into a modern terminal app with ease.***
 
 ## Packages
-
+![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal.svg)
+![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal.Authentication.svg)
 
 ## License and Pricing
-Explore our documentation for detailed information on licensing, redistribution, and pricing:
+Explore our licensing, redistribution, and pricing policies:
 - [Licensing terms](https://terms.perpetualintelligence.com/articles/licensing.html)
 - [Redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html)
 - [Pricing details](https://www.perpetualintelligence.com/products/picli#pricing)
 
-> ***The full-feature `oneimlx-terminal` framework is free for educational and evaluation purposes.***
+> ***The full-feature `OneImlx.Terminal` framework is free for educational and evaluation purposes.***
 
 For non-educational, commercial, or production use, a commercial license is required.
 
 ## Documentation
-Explore our [documentation](https://docs.perpetualintelligence.com/) website for conceptual for detailed guides and code samples.
+For more information explore our [conceptual and API documentation](https://docs.perpetualintelligence.com/).
 
 ## Feedback
-Stay informed and contribute through our [issues and tasks tracker](https://github.com/perpetualintelligence/cli/issues). Learn about our issue handling processes in our [Issues Policy](https://terms.perpetualintelligence.com/articles/issues-policy.html). Our community follows the Contributor Covenant; read our [Code of Conduct](https://terms.perpetualintelligence.com/articles/CODE_OF_CONDUCT.html) for more details.
+Your feedback helps shape `OneImlx.Terminal`. For suggestions, issues, or queries, please visit our [GitHub Repository Issues section](https://github.com/PerpetualIntelligence/terminal/issues).
