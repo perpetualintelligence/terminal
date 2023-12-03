@@ -50,19 +50,19 @@ runs:
     # GITHUB
     - name: Github Push
       if: ${{ inputs.registry == 'github' }}
-      run: dotnet nuget push _packages/PerpetualIntelligence.${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.ghapikey }} --source github
+      run: dotnet nuget push _packages/${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.ghapikey }} --source github
       shell: bash    
 
     # NUGET - 1
     # First push to github (for package cadence, Nuget requires package verification)
     - name: Github Push
       if: ${{ inputs.registry == 'nuget' }}
-      run: dotnet nuget push _packages/PerpetualIntelligence.${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.ghapikey }} --source github
+      run: dotnet nuget push _packages/${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.ghapikey }} --source github
       shell: bash      
       
     # NUGET - 2
     # Second push to Nuget (for package cadence, Github will be used and in production Nuget after package verification)
     - name: Nuget Push
       if: ${{ inputs.registry == 'nuget' }}
-      run: dotnet nuget push _packages/PerpetualIntelligence.${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.nugetapikey }} --source nuget.org
+      run: dotnet nuget push _packages/${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.nugetapikey }} --source nuget.org
       shell: bash

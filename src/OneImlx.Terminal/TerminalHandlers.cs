@@ -7,7 +7,7 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("PerpetualIntelligence.Terminal.Tests")]
+[assembly: InternalsVisibleTo("OneImlx.Terminal.Tests")]
 
 namespace PerpetualIntelligence.Terminal
 {

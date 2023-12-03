@@ -11,9 +11,9 @@
         <Authors>Perpetual Intelligence L.L.C.</Authors>
         <Company>Perpetual Intelligence L.L.C.</Company>
         <Product>oneterminal</Product>
-        <RootNamespace>PerpetualIntelligence.$(MSBuildProjectName)</RootNamespace>
-        <AssemblyName>PerpetualIntelligence.$(MSBuildProjectName)</AssemblyName>
-        <PackageId>PerpetualIntelligence.$(MSBuildProjectName)</PackageId>
+        <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+        <PackageId>$(MSBuildProjectName)</PackageId>
         <PackageProjectUrl>https://www.perpetualintelligence.com</PackageProjectUrl>
         <RepositoryUrl>https://github.com/perpetualintelligence/oneterminal</RepositoryUrl>
         <RepositoryType>git</RepositoryType>

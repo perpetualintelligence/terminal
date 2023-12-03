@@ -16,8 +16,8 @@
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
-        <AssemblyName>PerpetualIntelligence.$(MSBuildProjectName)</AssemblyName>
-        <RootNamespace>PerpetualIntelligence.$(MSBuildProjectName.Replace(".Tests", ""))</RootNamespace>
+        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+        <RootNamespace>$(MSBuildProjectName.Replace(".Tests", ""))</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

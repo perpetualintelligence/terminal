@@ -133,11 +133,22 @@ jobs:
     - name: Build Dependency Project
       run: dotnet build ./test/Terminal.DependentAssembly/Terminal.DependentAssembly.csproj -c Release --verbosity minimal
 
-    # Publish PerpetualIntelligence.Terminal
-    - name: PerpetualIntelligence.Terminal
+    # Publish OneImlx.Terminal
+    - name: OneImlx.Terminal
       uses: ./.github/actions/push-package
       with:
-        project: Terminal
+        project: OneImlx.Terminal
+        config: Release
+        version: ${{ env.PI_CI_PACKAGE_VERSION }}
+        ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
+        nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
+        registry: ${{ env.PI_PUBLISH_REGISTRY }}
+
+    # Publish OneImlx.Terminal.Authentication
+    - name: OneImlx.Terminal.Authentication
+      uses: ./.github/actions/push-package
+      with:
+        project: OneImlx.Terminal.Authentication
         config: Release
         version: ${{ env.PI_CI_PACKAGE_VERSION }}
         ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
