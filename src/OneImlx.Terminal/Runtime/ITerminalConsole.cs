@@ -8,7 +8,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// An abstraction of a console for terminal framework.

@@ -11,9 +11,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Handlers;
 
-namespace PerpetualIntelligence.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands.Routers
 {
     /// <summary>
     /// The command router context.

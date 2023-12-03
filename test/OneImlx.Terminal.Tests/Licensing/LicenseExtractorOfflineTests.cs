@@ -9,8 +9,8 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Json;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     public class LicenseExtractorOfflineTests : IDisposable
     {

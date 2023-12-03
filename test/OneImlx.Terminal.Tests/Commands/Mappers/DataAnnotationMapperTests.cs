@@ -7,15 +7,15 @@
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
 
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Mappers
+namespace OneImlx.Terminal.Commands.Mappers
 {
     [TestClass]
     public class DataAnnotationMapperTests : InitializerTests

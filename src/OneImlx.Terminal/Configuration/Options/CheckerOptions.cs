@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>
     /// The command, argument, and option checker configuration options.

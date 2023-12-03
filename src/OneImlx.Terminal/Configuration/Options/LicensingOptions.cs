@@ -6,10 +6,10 @@
 */
 
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Licensing;
 using System.Net.Http;
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>
     /// The licensing configuration options.

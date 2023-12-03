@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("OneImlx.Terminal.Tests")]
 
-namespace PerpetualIntelligence.Terminal
+namespace OneImlx.Terminal
 {
     /// <summary>
     /// These well-known handlers allow app authors to configure the framework and provide custom implementations.

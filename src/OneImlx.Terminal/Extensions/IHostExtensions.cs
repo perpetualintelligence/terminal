@@ -8,10 +8,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     /// <summary>
     /// The <see cref="IHost"/> extension methods.

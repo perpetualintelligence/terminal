@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
     /// The command parser context.

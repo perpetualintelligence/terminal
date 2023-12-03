@@ -6,14 +6,14 @@
 */
 
 using PerpetualIntelligence.Shared.Infrastructure;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Routers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     public class MockSocketCommandRouter : ICommandRouter
     {

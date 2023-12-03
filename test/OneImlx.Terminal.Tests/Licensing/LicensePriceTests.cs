@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     public class LicensePriceTests
     {

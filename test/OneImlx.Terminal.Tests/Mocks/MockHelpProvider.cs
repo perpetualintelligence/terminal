@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Providers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     internal class MockHelpProvider : IHelpProvider
     {

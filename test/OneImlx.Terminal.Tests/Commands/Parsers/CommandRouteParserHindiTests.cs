@@ -7,17 +7,17 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Stores;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Commands.Parsers
 {
     public class CommandRouteParserHindiTests
     {

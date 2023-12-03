@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Mappers
+namespace OneImlx.Terminal.Commands.Mappers
 {
     /// <summary>
     /// The <see cref="IValue"/> data-type mapper context.

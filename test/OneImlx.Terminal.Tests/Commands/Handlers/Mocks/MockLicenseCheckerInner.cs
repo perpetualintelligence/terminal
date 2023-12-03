@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Licensing;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
+namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
     public class MockLicenseCheckerInner : ILicenseChecker
     {

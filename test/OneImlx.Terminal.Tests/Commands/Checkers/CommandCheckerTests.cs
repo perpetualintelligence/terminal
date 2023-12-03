@@ -7,14 +7,14 @@
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Mappers;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Runtime;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Stores;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     [TestClass]
     public class CommandCheckerTests : InitializerTests

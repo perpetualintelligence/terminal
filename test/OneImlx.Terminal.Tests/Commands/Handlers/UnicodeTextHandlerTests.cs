@@ -6,12 +6,12 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Mocks;
 using System;
 using System.Text;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Commands.Handlers
 {
     public class UnicodeTextHandlerTests
     {

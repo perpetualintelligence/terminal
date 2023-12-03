@@ -6,14 +6,14 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Stores;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     /// <summary>
     /// The default <see cref="ILicenseChecker"/> for all features.

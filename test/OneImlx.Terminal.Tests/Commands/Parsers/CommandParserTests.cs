@@ -8,11 +8,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Mocks;
 using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Commands.Parsers
 {
     [TestClass]
     public class CommandParserTests

@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Runners;
+using OneImlx.Terminal.Commands.Runners;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Providers
+namespace OneImlx.Terminal.Commands.Providers
 {
     /// <summary>
     /// An abstraction to provide help for commands.

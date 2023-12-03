@@ -7,17 +7,17 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Commands.Runners;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Events;
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Events;
+using OneImlx.Terminal.Licensing;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Commands.Handlers
 {
     /// <summary>
     /// The default handler to handle a command request routed from a <see cref="CommandRouter"/>.

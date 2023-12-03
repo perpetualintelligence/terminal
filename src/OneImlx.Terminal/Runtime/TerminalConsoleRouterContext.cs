@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// The <see cref="TerminalRouterContext"/> for <see cref="TerminalConsoleRouter"/>.

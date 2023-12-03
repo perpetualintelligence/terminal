@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// The <see cref="Argument"/> class is a runtime validated representation of an actual command argument and its

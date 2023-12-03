@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Checkers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
+namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
     internal class MockErrorCommandCheckerInner : ICommandChecker
     {

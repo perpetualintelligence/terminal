@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Handlers;
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The command checker context.

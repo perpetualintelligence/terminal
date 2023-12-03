@@ -5,14 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Commands.Runners;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands.Runners;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Events
+namespace OneImlx.Terminal.Events
 {
     /// <summary>
     /// The terminal event handler.

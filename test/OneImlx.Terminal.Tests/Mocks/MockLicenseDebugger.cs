@@ -5,9 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Licensing;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     internal class MockLicenseDebugger : ILicenseDebugger
     {

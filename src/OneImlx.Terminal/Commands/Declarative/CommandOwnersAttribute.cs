@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Declarative
+namespace OneImlx.Terminal.Commands.Declarative
 {
     /// <summary>
     /// Declares a command owners. A command owner is a group or a root.

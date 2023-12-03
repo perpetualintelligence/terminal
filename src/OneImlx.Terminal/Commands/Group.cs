@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// Represents a notional command group  within a <see cref="Root"/>.

@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// The default <see cref="ITerminalRouter{TContext}"/> for custom routing.

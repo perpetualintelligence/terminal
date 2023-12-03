@@ -12,7 +12,7 @@ using PerpetualIntelligence.Shared.Authorization;
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Infrastructure;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -22,7 +22,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     /// <summary>
     /// The default <see cref="ILicenseExtractor"/>
@@ -300,7 +300,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseOnlineCheckModel checkModel = new()
             {
-                Issuer = Shared.Constants.Issuer,
+                Issuer = PerpetualIntelligence.Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = terminalOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
@@ -375,7 +375,7 @@ namespace PerpetualIntelligence.Terminal.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseOfflineCheckModel checkModel = new()
             {
-                Issuer = Shared.Constants.Issuer,
+                Issuer = PerpetualIntelligence.Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = terminalOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,

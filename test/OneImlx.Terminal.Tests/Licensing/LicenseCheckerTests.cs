@@ -7,14 +7,14 @@
 
 using FluentAssertions;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Stores;
 using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     public class LicenseCheckerTests
     {

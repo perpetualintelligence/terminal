@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Integration
+namespace OneImlx.Terminal.Integration
 {
     public class PublishedAssemblyLoaderTests
     {
@@ -65,9 +65,9 @@ namespace PerpetualIntelligence.Terminal.Integration
         {
             // The structure is:
             // test/
-            //   Terminal.Tests/
+            //   OneImlx.Terminal.Tests/
             //     bin/Debug/ or bin/Release/
-            //   Terminal.DependentAssembly/
+            //   OneImlx.Terminal.DependentAssembly/
             //     bin/Debug/ or bin/Release/
 
             // Determine the current configuration (Debug/Release)
@@ -78,7 +78,7 @@ namespace PerpetualIntelligence.Terminal.Integration
             var version = "net7.0";
 
             // Define the relative path to Terminal.DependentAssembly.dll from the unit test binary output directory
-            var relativePathToDependentAssembly = Path.Combine("..", "..", "..", "..", "Terminal.DependentAssembly", "bin", configuration, version);
+            var relativePathToDependentAssembly = Path.Combine("..", "..", "..", "..", "OneImlx.Terminal.DependentAssembly", "bin", configuration, version);
 
             // Get the full path for Terminal.DependentAssembly.dll
             var dependentAssemblyPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), relativePathToDependentAssembly));
@@ -92,22 +92,22 @@ namespace PerpetualIntelligence.Terminal.Integration
             // Make sure the assembly is not loaded
             var assembliesBeforeLoad = AppDomain.CurrentDomain.GetAssemblies();
             Assembly? sharedAlreadyLoaded = assembliesBeforeLoad.FirstOrDefault(e => e.GetName().Name!.Equals("PerpetualIntelligence.Shared"));
-            Assembly? externalNotLoaded = assembliesBeforeLoad.FirstOrDefault(e => e.GetName().Name!.Equals("PerpetualIntelligence.Terminal.DependentAssembly"));
+            Assembly? externalNotLoaded = assembliesBeforeLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Terminal.DependentAssembly"));
             sharedAlreadyLoaded.Should().NotBeNull();
             externalNotLoaded.Should().BeNull();
 
             commandSourceContext.PublishedAssemblies.Add("PerpetualIntelligence.Shared.dll", testBaseDir);
-            commandSourceContext.PublishedAssemblies.Add("PerpetualIntelligence.Terminal.DependentAssembly.dll", dependentAssemblyPath);
+            commandSourceContext.PublishedAssemblies.Add("OneImlx.Terminal.DependentAssembly.dll", dependentAssemblyPath);
 
             var loadedAssemblies = await assemblyLoader.LoadAssembliesAsync(commandSourceContext);
             loadedAssemblies.Should().NotBeNull();
             loadedAssemblies.First().GetName().Name.Should().Be("PerpetualIntelligence.Shared");
-            loadedAssemblies.Last().GetName().Name.Should().Be("PerpetualIntelligence.Terminal.DependentAssembly");
+            loadedAssemblies.Last().GetName().Name.Should().Be("OneImlx.Terminal.DependentAssembly");
 
             // Assert both assemblies stay loaded
             var assembliesAfterLoad = AppDomain.CurrentDomain.GetAssemblies();
             sharedAlreadyLoaded = assembliesAfterLoad.FirstOrDefault(e => e.GetName().Name!.Equals("PerpetualIntelligence.Shared"));
-            externalNotLoaded = assembliesAfterLoad.FirstOrDefault(e => e.GetName().Name!.Equals("PerpetualIntelligence.Terminal.DependentAssembly"));
+            externalNotLoaded = assembliesAfterLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Terminal.DependentAssembly"));
             sharedAlreadyLoaded.Should().NotBeNull();
             externalNotLoaded.Should().NotBeNull();
         }

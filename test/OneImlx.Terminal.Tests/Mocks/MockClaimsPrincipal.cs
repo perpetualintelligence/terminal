@@ -7,7 +7,7 @@
 
 using System.Security.Claims;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     public class MockClaimsPrincipal
     {

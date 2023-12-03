@@ -7,20 +7,20 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Mappers;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Hosting;
-using PerpetualIntelligence.Terminal.Runtime;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Stores;
 using System;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     /// <summary>
     /// Provides extension methods to register terminal services with an <see cref="IServiceCollection"/>.

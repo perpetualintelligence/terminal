@@ -6,12 +6,12 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Hosting;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Hosting;
 using System;
 using System.Linq;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     /// <summary>
     /// The <see cref="ICommandBuilder"/> extension methods.

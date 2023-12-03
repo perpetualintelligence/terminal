@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     /// <summary>
     /// An abstraction to extract the software <see cref="License"/>.

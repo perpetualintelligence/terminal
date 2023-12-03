@@ -6,15 +6,15 @@
 */
 
 using PerpetualIntelligence.Shared.Attributes.Validation;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Runners;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Runners;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     /// <summary>
     /// The mock test commands.

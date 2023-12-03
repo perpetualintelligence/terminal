@@ -8,16 +8,16 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Stores;
-using PerpetualIntelligence.Terminal.Stores.InMemory;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Stores;
+using OneImlx.Terminal.Stores.InMemory;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     public class LicenseExtractorOnPremiseTests : IAsyncLifetime
     {

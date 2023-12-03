@@ -14,14 +14,14 @@
 using PerpetualIntelligence.Test.Services;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Authentication
+namespace OneImlx.Terminal.Authentication
 {
     public class AssemblyTests
     {
         [Fact]
         public void TypesNamespaceTest()
         {
-            TestHelper.AssertNamespace(typeof(Extensions.ITerminalBuilderExtensions).Assembly, "PerpetualIntelligence.Terminal.Authentication");
+            TestHelper.AssertNamespace(typeof(Extensions.ITerminalBuilderExtensions).Assembly, "OneImlx.Terminal.Authentication");
         }
 
         [Fact]

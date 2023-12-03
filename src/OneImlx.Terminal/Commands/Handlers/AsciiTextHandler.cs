@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Commands.Handlers
 {
     /// <summary>
     /// The default <see cref="ITextHandler"/> for <see cref="Encoding.ASCII"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.

@@ -5,12 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Runtime;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Providers
+namespace OneImlx.Terminal.Commands.Providers
 {
     /// <summary>
     /// The default <see cref="IHelpProvider"/> that logs the command help using <see cref="ITerminalConsole"/>.

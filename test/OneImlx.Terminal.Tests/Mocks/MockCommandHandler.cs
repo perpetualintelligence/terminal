@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Handlers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     public class MockCommandHandler : ICommandHandler
     {

@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The default command checker.

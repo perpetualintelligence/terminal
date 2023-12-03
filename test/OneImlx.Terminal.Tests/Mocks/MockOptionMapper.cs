@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Mappers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     public class MockOptionMapper : IDataTypeMapper<Option>
     {

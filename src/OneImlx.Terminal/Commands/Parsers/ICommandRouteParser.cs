@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
     /// An abstraction to parse a command route.

@@ -8,16 +8,16 @@
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Shared.Attributes.Validation;
-using PerpetualIntelligence.Terminal.Commands.Mappers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     [TestClass]
     public class OptionValueCheckerTests : InitializerTests

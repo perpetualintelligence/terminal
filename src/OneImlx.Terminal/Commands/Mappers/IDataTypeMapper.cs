@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Mappers
+namespace OneImlx.Terminal.Commands.Mappers
 {
     /// <summary>
     /// An abstraction to map an <see cref="Option.DataType"/> to <see cref="System.Type"/>.

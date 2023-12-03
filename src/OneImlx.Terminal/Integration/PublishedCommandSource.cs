@@ -7,16 +7,16 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Extensions;
-using PerpetualIntelligence.Terminal.Hosting;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Extensions;
+using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Stores;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Integration
+namespace OneImlx.Terminal.Integration
 {
     /// <summary>
     /// The default implementation of <see cref="ITerminalCommandSource{TContext}"/> that loads terminal commands from assemblies in a published location.

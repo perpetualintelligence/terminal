@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands.Routers
 {
     /// <summary>
     /// An abstraction of a command router.

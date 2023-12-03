@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// Defines a unique command route.

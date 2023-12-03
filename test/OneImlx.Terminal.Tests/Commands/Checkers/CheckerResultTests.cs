@@ -9,7 +9,7 @@ using FluentAssertions;
 using System;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     public class CheckerResultTests
     {

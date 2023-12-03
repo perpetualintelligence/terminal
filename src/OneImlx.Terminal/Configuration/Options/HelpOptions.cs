@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>
     /// The help options.

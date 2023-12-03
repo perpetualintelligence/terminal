@@ -6,12 +6,12 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Mocks;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Stores.InMemory
+namespace OneImlx.Terminal.Stores.InMemory
 {
     public class InMemoryCommandDescriptorStoreTests
     {

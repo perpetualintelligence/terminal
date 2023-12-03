@@ -10,7 +10,7 @@ using PerpetualIntelligence.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Commands.Handlers
 {
     /// <summary>
     /// The default <see cref="IExceptionHandler"/> to handle an <see cref="Exception"/>.

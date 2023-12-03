@@ -5,9 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     public class MockTerminalOptions
     {

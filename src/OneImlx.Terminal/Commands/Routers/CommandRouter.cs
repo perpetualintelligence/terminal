@@ -6,15 +6,15 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Events;
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Events;
+using OneImlx.Terminal.Licensing;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands.Routers
 {
     /// <summary>
     /// The default <see cref="ICommandRouter"/>.

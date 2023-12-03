@@ -8,7 +8,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Commands.Handlers
 {
     /// <summary>
     /// An abstraction to handle <see cref="Exception"/>.

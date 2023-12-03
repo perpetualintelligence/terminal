@@ -6,10 +6,10 @@
 */
 
 using PerpetualIntelligence.Shared.Attributes.Validation;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Declarative;
-using PerpetualIntelligence.Terminal.Integration;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Declarative;
+using OneImlx.Terminal.Integration;
+using OneImlx.Terminal.Mocks;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

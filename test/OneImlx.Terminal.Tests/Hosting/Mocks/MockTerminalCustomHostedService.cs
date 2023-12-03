@@ -7,12 +7,12 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Licensing;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Hosting.Mocks
+namespace OneImlx.Terminal.Hosting.Mocks
 {
     public class MockTerminalCustomHostedService : TerminalHostedService
     {

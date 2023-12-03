@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.DependentAssembly
+namespace OneImlx.Terminal.DependentAssembly
 {
     public class Dummy
     {

@@ -9,7 +9,7 @@ using FluentAssertions;
 using PerpetualIntelligence.Shared.Licensing;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     public class LicensingOptionsTests
     {

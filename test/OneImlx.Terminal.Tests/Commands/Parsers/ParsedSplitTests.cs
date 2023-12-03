@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Commands.Parsers
 {
     public class ParsedSplitTests
     {

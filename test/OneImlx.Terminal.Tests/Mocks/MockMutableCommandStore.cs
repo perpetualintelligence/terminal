@@ -5,12 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Stores;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     public class MockMutableCommandStore : IMutableCommandStore
     {

@@ -5,14 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Commands.Handlers
 {
     /// <summary>
     /// The default <see cref="ITextHandler"/> for <see cref="Encoding.Unicode"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.

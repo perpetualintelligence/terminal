@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// An immutable command. A command is a specific action or a set of actions that a user or an

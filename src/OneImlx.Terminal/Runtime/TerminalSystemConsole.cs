@@ -10,7 +10,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// The default <see cref="ITerminalConsole"/> implementation that use system <see cref="Console"/>.

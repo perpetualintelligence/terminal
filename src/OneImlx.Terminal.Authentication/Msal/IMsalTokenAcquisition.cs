@@ -9,7 +9,7 @@ using Microsoft.Identity.Client;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     /// <summary>
     /// An abstraction to acquire tokens using MSAL.

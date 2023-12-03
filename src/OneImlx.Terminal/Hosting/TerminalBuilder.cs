@@ -6,10 +6,10 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Handlers;
 using System;
 
-namespace PerpetualIntelligence.Terminal.Hosting
+namespace OneImlx.Terminal.Hosting
 {
     /// <summary>
     /// The default <see cref="ITerminalBuilder"/>.

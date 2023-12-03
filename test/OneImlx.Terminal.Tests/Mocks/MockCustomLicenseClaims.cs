@@ -8,7 +8,7 @@
 using PerpetualIntelligence.Shared.Extensions;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     internal class MockCustomLicenseClaims
     {

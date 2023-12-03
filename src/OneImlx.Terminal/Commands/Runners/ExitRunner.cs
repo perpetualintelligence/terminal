@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Runners
+namespace OneImlx.Terminal.Commands.Runners
 {
     /// <summary>
     /// The exit command runner.

@@ -6,10 +6,10 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using System;
 
-namespace PerpetualIntelligence.Terminal.Hosting.Mocks
+namespace OneImlx.Terminal.Hosting.Mocks
 {
     internal class MockTerminalHostedService : TerminalHostedService
     {

@@ -7,14 +7,14 @@
 
 using System;
 
-namespace PerpetualIntelligence.Terminal.Integration
+namespace OneImlx.Terminal.Integration
 {
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
-    using PerpetualIntelligence.Terminal.Commands;
-    using PerpetualIntelligence.Terminal.Commands.Handlers;
-    using PerpetualIntelligence.Terminal.Mocks;
-    using PerpetualIntelligence.Terminal.Stores;
+    using OneImlx.Terminal.Commands;
+    using OneImlx.Terminal.Commands.Handlers;
+    using OneImlx.Terminal.Mocks;
+    using OneImlx.Terminal.Stores;
     using PerpetualIntelligence.Terminals.Integration.Mocks;
     using System.Threading.Tasks;
     using Xunit;

@@ -5,12 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Checkers;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// The <see cref="ArgumentDescriptor"/> class defines the command argument identity, data type, and data validation

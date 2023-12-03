@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Mappers
+namespace OneImlx.Terminal.Commands.Mappers
 {
     /// <summary>
     /// The default option data type mapper.

@@ -6,10 +6,10 @@
 */
 
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Licensing;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     public class MockLicenseExtractorInner : ILicenseExtractor
     {

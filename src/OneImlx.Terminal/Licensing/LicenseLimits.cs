@@ -10,7 +10,7 @@ using PerpetualIntelligence.Shared.Licensing;
 using System;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     /// <summary>
     /// Defines the licensing limits based on the <see cref="TerminalLicensePlans"/>.

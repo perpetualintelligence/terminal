@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal
+namespace OneImlx.Terminal
 {
     /// <summary>
     /// The errors for the Perpetual Intelligence's framework.

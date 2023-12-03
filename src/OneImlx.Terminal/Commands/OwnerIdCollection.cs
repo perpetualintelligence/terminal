@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// Defines a collection of owners for a command.

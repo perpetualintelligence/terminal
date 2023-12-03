@@ -5,12 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Hosting.Mocks
+namespace OneImlx.Terminal.Hosting.Mocks
 {
     /// <summary>
     /// </summary>

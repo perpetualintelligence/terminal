@@ -7,12 +7,12 @@
 
 using PerpetualIntelligence.Shared.Extensions;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Runners
+namespace OneImlx.Terminal.Commands.Runners
 {
     /// <summary>
     /// The default license info runner that outputs the current licensing information to the <see cref="ITerminalConsole"/>.

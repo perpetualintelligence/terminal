@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Runtime;
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands.Routers
 {
     /// <summary>
     /// The generic command router context.

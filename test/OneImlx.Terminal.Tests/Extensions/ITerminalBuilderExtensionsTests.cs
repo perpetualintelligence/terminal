@@ -9,25 +9,25 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Mappers;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Events;
-using PerpetualIntelligence.Terminal.Hosting;
-using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Runtime;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Events;
+using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Stores;
 using System;
 using System.Linq;
 using System.Threading;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     [TestClass]
     public class ITerminalBuilderExtensionsTests

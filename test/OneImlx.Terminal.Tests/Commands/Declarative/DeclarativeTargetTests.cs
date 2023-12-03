@@ -9,10 +9,10 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PerpetualIntelligence.Shared.Attributes.Validation;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Extensions;
-using PerpetualIntelligence.Terminal.Hosting;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Extensions;
+using OneImlx.Terminal.Hosting;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,7 +21,7 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Declarative
+namespace OneImlx.Terminal.Commands.Declarative
 {
     public class DeclarativeTargetTests : IAsyncDisposable
     {

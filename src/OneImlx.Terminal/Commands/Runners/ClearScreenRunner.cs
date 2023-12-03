@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Runners
+namespace OneImlx.Terminal.Commands.Runners
 {
     /// <summary>
     /// The clear screen command runner.

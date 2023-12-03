@@ -10,14 +10,14 @@ using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     /// <summary>
     /// The <c>Kiota</c> authentication and authorization provider for <c>MSAL</c> identity platform.

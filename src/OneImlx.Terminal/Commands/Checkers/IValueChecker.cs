@@ -8,7 +8,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
     /// An abstraction to check a <see cref="IValue"/>.

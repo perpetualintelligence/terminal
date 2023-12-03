@@ -10,7 +10,7 @@ using System;
 using System.Text;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Commands.Handlers
 {
     public class AsciiTextHandlerTests
     {

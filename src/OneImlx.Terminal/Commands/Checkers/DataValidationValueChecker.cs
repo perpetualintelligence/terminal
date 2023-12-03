@@ -9,7 +9,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The default <see cref="IValueChecker{T}"/> that uses <see cref="System.ComponentModel.DataAnnotations.ValidationAttribute"/> to check an option value.

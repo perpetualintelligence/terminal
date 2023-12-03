@@ -6,19 +6,19 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Commands.Runners.Mocks;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Handlers.Mocks;
+using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands.Runners.Mocks;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Runners
+namespace OneImlx.Terminal.Commands.Runners
 {
     public class CommandRunnerTests
     {

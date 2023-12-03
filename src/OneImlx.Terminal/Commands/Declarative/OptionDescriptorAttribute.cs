@@ -7,7 +7,7 @@
 
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Declarative
+namespace OneImlx.Terminal.Commands.Declarative
 {
     /// <summary>
     /// Declares an <see cref="OptionDescriptor"/> for a command.

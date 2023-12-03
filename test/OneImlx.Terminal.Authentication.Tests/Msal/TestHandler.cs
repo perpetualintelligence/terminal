@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     public class TestHandler : DelegatingHandler
     {

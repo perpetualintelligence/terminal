@@ -7,12 +7,12 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The default <see cref="IConfigurationOptionsChecker"/>.

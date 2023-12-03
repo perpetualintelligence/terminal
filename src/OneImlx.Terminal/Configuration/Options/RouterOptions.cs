@@ -7,7 +7,7 @@
 
 using System.Threading;
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>
     /// The command router options.

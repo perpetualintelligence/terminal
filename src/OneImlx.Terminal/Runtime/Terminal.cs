@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// Terminals, also known as command lines, consoles, or CLI applications, allow organizations and users to

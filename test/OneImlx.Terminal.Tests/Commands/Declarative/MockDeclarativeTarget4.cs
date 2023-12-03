@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Mocks;
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Declarative
+namespace OneImlx.Terminal.Commands.Declarative
 {
     [CommandOwners("oid1, oid2")]
     [CommandDescriptor("id4", "name4", "description", CommandType.SubCommand, CommandFlags.None)]

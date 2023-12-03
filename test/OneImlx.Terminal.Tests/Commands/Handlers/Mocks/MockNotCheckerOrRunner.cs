@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
+namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
     internal class MockNotCheckerOrRunner
     {

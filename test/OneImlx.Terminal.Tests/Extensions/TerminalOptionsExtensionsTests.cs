@@ -6,10 +6,10 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     public class TerminalOptionsExtensionsTests
     {

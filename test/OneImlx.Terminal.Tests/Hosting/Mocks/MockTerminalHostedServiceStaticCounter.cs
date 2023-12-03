@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Hosting.Mocks
+namespace OneImlx.Terminal.Hosting.Mocks
 {
     public static class MockTerminalHostedServiceStaticCounter
     {

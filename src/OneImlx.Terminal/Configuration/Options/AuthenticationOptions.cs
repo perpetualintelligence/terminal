@@ -7,7 +7,7 @@
 
 using System.Net.Http;
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>
     /// The authentication configuration options.

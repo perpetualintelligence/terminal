@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace PerpetualIntelligence.Terminal.Commands.Providers
+namespace OneImlx.Terminal.Commands.Providers
 {
     /// <summary>
     /// The <see cref="IHelpProvider"/> context.

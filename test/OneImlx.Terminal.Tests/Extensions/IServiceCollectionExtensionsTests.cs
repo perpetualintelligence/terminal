@@ -9,17 +9,17 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Hosting;
-using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     public class IServiceCollectionExtensionsTests
     {

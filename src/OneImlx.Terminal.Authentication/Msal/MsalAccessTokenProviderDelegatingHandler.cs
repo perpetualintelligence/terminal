@@ -13,7 +13,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     /// <summary>
     /// Delegating handler that adds an access token to the request headers using an <see cref="IAccessTokenProvider"/>.

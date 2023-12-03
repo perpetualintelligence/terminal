@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Commands.Parsers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Routers.Mocks
+namespace OneImlx.Terminal.Commands.Routers.Mocks
 {
     internal class MockCommandParserInner : ICommandParser
     {

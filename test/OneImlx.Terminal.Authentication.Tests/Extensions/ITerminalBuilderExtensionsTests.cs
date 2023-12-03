@@ -10,12 +10,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Moq;
-using PerpetualIntelligence.Terminal.Authentication.Msal;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Hosting;
+using OneImlx.Terminal.Authentication.Msal;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Hosting;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Extensions
+namespace OneImlx.Terminal.Authentication.Extensions
 {
     public class ITerminalBuilderExtensionsTests
     {

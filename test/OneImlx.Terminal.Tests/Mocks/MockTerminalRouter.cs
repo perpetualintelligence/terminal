@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     internal class MockTerminalRouter : ITerminalRouter<MockRoutingContext>
     {

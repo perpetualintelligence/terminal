@@ -9,17 +9,17 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Handlers.Mocks;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Commands.Runners;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Events;
-using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Handlers.Mocks;
+using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Events;
+using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
@@ -28,7 +28,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Commands.Handlers
 {
     [TestClass]
     public class CommandHandlerTests : InitializerTests

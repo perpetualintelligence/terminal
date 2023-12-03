@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     public class MsalAccessTokenProviderDelegatingHandlerTests
     {

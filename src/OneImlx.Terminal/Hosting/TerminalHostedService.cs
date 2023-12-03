@@ -9,18 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Licensing;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Licensing;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Hosting
+namespace OneImlx.Terminal.Hosting
 {
     /// <summary>
     /// The hosted service to manage the application lifetime and terminal customization.
@@ -195,7 +195,7 @@ namespace PerpetualIntelligence.Terminal.Hosting
             logger.LogInformation("Header line-2");
             logger.LogInformation("---------------------------------------------------------------------------------------------");
 
-            logger.LogInformation($"Starting server \"{Shared.Constants.TerminalUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
+            logger.LogInformation($"Starting server \"{PerpetualIntelligence.Shared.Constants.TerminalUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
             return Task.CompletedTask;
         }
 

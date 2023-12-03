@@ -10,7 +10,7 @@ using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     public class RouterOptionsTests : InitializerTests
     {

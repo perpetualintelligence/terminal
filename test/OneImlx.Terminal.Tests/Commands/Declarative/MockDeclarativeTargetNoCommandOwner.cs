@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Mocks;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PerpetualIntelligence.Terminal.Commands.Declarative
+namespace OneImlx.Terminal.Commands.Declarative
 {
     [CommandDescriptor("id1", "name", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandRunner(typeof(MockCommandRunner))]

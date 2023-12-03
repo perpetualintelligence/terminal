@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     [TestClass]
     public class IApplicationBuilderExtensionsTests : InitializerTests

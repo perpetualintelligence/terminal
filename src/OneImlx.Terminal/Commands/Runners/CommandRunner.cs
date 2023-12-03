@@ -6,10 +6,10 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Providers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Runners
+namespace OneImlx.Terminal.Commands.Runners
 {
     /// <summary>
     /// The command runner is where developers implement how commands are executed. It operates asynchronously to handle commands that might take a while to process.

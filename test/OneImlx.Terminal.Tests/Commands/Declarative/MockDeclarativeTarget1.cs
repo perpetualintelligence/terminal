@@ -6,11 +6,11 @@
 */
 
 using PerpetualIntelligence.Shared.Attributes.Validation;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Mocks;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PerpetualIntelligence.Terminal.Commands.Declarative
+namespace OneImlx.Terminal.Commands.Declarative
 {
     [CommandOwners("oid1, oid2")]
     [CommandDescriptor("id1", "name1", "description", CommandType.SubCommand, CommandFlags.None)]

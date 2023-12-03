@@ -7,29 +7,29 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using PerpetualIntelligence.Terminal.Commands;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
-using PerpetualIntelligence.Terminal.Commands.Declarative;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Mappers;
-using PerpetualIntelligence.Terminal.Commands.Parsers;
-using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Commands.Runners;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Events;
-using PerpetualIntelligence.Terminal.Hosting;
-using PerpetualIntelligence.Terminal.Integration;
-using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Terminal.Runtime;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Declarative;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Events;
+using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Integration;
+using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     /// <summary>
     /// The <see cref="ITerminalBuilder"/> extension methods.

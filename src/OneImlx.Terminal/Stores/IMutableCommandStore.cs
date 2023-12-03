@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands;
+using OneImlx.Terminal.Commands;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Stores
+namespace OneImlx.Terminal.Stores
 {
     /// <summary>
     /// A mutable store of <see cref="CommandDescriptor"/>.

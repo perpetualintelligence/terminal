@@ -9,7 +9,7 @@ using FluentAssertions;
 using System;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands.Mappers
+namespace OneImlx.Terminal.Commands.Mappers
 {
     public class MapperResultTests
     {

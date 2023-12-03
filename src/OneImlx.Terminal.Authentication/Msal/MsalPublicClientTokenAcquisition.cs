@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     /// <summary>
     /// The default <see cref="IMsalTokenAcquisition"/> implementation using the <see cref="IPublicClientApplication"/>.

@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Infrastructure;
 
-namespace PerpetualIntelligence.Terminal
+namespace OneImlx.Terminal
 {
     /// <summary>
     /// The exception that represents a terminal error.

@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System;
 
-namespace PerpetualIntelligence.Terminal.Commands.Runners
+namespace OneImlx.Terminal.Commands.Runners
 {
     /// <summary>
     /// The command runner context.

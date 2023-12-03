@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     //example of a unit test for the Root class
     public class RootTests

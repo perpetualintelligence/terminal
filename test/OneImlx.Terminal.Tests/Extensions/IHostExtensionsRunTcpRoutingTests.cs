@@ -8,11 +8,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Commands.Routers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
-using PerpetualIntelligence.Terminal.Runtime;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     [Collection("Sequential")]
     public class IHostExtensionsRunTcpRoutingTests : IAsyncLifetime

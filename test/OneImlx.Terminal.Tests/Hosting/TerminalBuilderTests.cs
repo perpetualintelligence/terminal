@@ -8,11 +8,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Handlers;
 using System;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Hosting
+namespace OneImlx.Terminal.Hosting
 {
     public class TerminalBuilderTests
     {

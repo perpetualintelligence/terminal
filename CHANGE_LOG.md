@@ -1,6 +1,7 @@
-# 5.5.1-rc*
+# 5.6.1-rc*
 > Breaking Change
 - Rename the package to `OneImlx.Terminal`
+- Add `OneImlx.Terminal.Authentication` with MSAL public client support 
 - Update AddTextHandler service method to accept the instance.
 - Remove HttpOptions and move the options to their respective usage
 

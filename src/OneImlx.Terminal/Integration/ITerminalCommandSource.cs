@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Integration
+namespace OneImlx.Terminal.Integration
 {
     /// <summary>
     /// An abstraction of a terminal command source.

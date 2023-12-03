@@ -9,16 +9,16 @@ using FluentAssertions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Commands.Routers.Mocks;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Commands.Routers.Mocks;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands.Routers
 {
     [TestClass]
     public class CommandRouterTests : InitializerTests

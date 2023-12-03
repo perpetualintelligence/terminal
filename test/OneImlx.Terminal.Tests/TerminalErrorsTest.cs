@@ -9,7 +9,7 @@ using FluentAssertions;
 using PerpetualIntelligence.Test.Services;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal
+namespace OneImlx.Terminal
 {
     public class TerminalErrorsTest
     {

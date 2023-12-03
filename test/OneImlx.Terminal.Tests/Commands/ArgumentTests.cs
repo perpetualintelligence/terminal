@@ -17,7 +17,7 @@ using PerpetualIntelligence.Test.Services;
 using System;
 using System.Text.Json.Serialization;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     [TestClass]
     public class ArgumentTests

@@ -7,7 +7,7 @@
 
 using System.Net;
 
-namespace PerpetualIntelligence.Terminal.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// The TCP connection data.

@@ -5,12 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Licensing;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Mocks;
 using System;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Hosting.Mocks
+namespace OneImlx.Terminal.Hosting.Mocks
 {
     /// <summary>
     /// </summary>

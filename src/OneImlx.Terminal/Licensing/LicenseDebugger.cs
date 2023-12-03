@@ -8,7 +8,7 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     /// <summary>
     /// The default <see cref="ILicenseDebugger"/> that uses <see cref="Debugger"/>.

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Integration
+namespace OneImlx.Terminal.Integration
 {
     /// <summary>
     /// An abstraction to load assemblies within your terminal.

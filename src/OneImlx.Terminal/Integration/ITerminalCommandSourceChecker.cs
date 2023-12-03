@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Integration
+namespace OneImlx.Terminal.Integration
 {
     /// <summary>
     /// An abstraction to checks the <see cref="ITerminalCommandSource{TContext}"/>.

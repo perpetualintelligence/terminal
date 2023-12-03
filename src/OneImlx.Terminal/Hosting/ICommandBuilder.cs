@@ -6,9 +6,9 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Terminal.Commands;
+using OneImlx.Terminal.Commands;
 
-namespace PerpetualIntelligence.Terminal.Hosting
+namespace OneImlx.Terminal.Hosting
 {
     /// <summary>
     /// An abstraction of command builder.

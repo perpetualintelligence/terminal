@@ -16,7 +16,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     /// <summary>
     /// Delegating handler that authenticates an HTTP request using an <see cref="IAuthenticationProvider"/>.

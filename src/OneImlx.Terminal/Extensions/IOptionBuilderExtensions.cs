@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Terminal.Hosting;
+using OneImlx.Terminal.Hosting;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     /// <summary>
     /// The <see cref="IOptionBuilder"/> extension methods.

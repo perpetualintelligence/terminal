@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Terminal.Licensing;
+using OneImlx.Terminal.Licensing;
 using PerpetualIntelligence.Shared.Licensing;
 using System.Collections.Generic;
 
-namespace PerpetualIntelligence.Terminal.Mocks
+namespace OneImlx.Terminal.Mocks
 {
     public static class MockLicenses
     {

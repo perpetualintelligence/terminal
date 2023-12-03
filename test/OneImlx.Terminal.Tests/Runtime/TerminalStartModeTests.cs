@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     public class TerminalStartModeTests
     {

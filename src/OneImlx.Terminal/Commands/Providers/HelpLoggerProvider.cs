@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Providers
+namespace OneImlx.Terminal.Commands.Providers
 {
     /// <summary>
     /// The default <see cref="IHelpProvider"/> that logs the command help using <see cref="ILogger"/>.

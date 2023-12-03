@@ -8,11 +8,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions.Authentication;
-using PerpetualIntelligence.Terminal.Authentication.Msal;
-using PerpetualIntelligence.Terminal.Hosting;
+using OneImlx.Terminal.Authentication.Msal;
+using OneImlx.Terminal.Hosting;
 using System.Net.Http;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Extensions
+namespace OneImlx.Terminal.Authentication.Extensions
 {
     /// <summary>
     /// </summary>

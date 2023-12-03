@@ -7,7 +7,7 @@
 
 using PerpetualIntelligence.Shared.Licensing;
 
-namespace PerpetualIntelligence.Terminal.Licensing
+namespace OneImlx.Terminal.Licensing
 {
     /// <summary>
     /// A terminal framework license.

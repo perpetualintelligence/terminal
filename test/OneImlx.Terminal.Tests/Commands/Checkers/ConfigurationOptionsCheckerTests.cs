@@ -8,13 +8,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
 using PerpetualIntelligence.Test.Services;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Checkers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     [TestClass]
     public class ConfigurationOptionsCheckerTests

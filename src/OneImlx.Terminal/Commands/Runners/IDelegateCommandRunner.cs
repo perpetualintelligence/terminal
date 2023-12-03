@@ -6,10 +6,10 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Providers;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Runners
+namespace OneImlx.Terminal.Commands.Runners
 {
     /// <summary>
     /// An abstraction to delegate to <see cref="ICommandRunner{TResult}.RunCommandAsync(CommandRunnerContext)"/>.

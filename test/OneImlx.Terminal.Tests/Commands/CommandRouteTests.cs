@@ -9,7 +9,7 @@ using FluentAssertions;
 using System;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     public class CommandRouteTests
     {

@@ -7,16 +7,16 @@
 
 using Microsoft.Extensions.Logging;
 using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Terminal.Commands.Handlers;
-using PerpetualIntelligence.Terminal.Configuration.Options;
-using PerpetualIntelligence.Terminal.Stores;
+using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
     /// Represents a default command-line parser for processing terminal commands based on defined descriptors.

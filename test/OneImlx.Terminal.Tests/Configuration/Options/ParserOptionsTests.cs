@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     public class ParserOptionsTests
     {

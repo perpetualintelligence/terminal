@@ -10,14 +10,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions;
 using Moq;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     public class MsalKiotaAuthenticationProviderTests
     {

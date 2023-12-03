@@ -6,11 +6,11 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Checkers;
 using System.ComponentModel.DataAnnotations;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Commands
+namespace OneImlx.Terminal.Commands
 {
     public class OptionDescriptorTests
     {

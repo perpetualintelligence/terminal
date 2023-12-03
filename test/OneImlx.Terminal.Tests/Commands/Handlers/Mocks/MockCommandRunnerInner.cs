@@ -6,11 +6,11 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Terminal.Commands.Providers;
-using PerpetualIntelligence.Terminal.Commands.Runners;
+using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Commands.Runners;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminal.Commands.Handlers.Mocks
+namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
     internal class MockCommandRunnerInner : IDelegateCommandRunner, ICommandRunner<CommandRunnerResult>
     {

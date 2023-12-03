@@ -7,13 +7,13 @@
 
 using System.Linq;
 
-namespace PerpetualIntelligence.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication.Msal
 {
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Client;
     using Moq;
-    using PerpetualIntelligence.Terminal.Configuration.Options;
+    using OneImlx.Terminal.Configuration.Options;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;

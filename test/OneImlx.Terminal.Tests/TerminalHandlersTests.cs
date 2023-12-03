@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal
+namespace OneImlx.Terminal
 {
     public class TerminalHandlersTests
     {
@@ -37,7 +37,7 @@ namespace PerpetualIntelligence.Terminal
         {
             InternalsVisibleToAttribute? internalsVisibleToAttribute = typeof(TerminalHandlers).Assembly.GetCustomAttribute<InternalsVisibleToAttribute>();
             internalsVisibleToAttribute.Should().NotBeNull();
-            internalsVisibleToAttribute!.AssemblyName.Should().Be("PerpetualIntelligence.Terminal.Tests");
+            internalsVisibleToAttribute!.AssemblyName.Should().Be("OneImlx.Terminal.Tests");
         }
     }
 }

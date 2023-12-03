@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerpetualIntelligence.Test;
 using PerpetualIntelligence.Test.Services;
 
-namespace PerpetualIntelligence.Terminal.Configuration.Options
+namespace OneImlx.Terminal.Configuration.Options
 {
     [TestClass]
     public class CheckerOptionsTests : InitializerTests

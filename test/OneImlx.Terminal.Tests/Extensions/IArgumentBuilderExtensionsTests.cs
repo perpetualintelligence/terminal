@@ -8,14 +8,14 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using PerpetualIntelligence.Terminal.Hosting;
-using PerpetualIntelligence.Terminal.Mocks;
+using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Mocks;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Xunit;
 
-namespace PerpetualIntelligence.Terminal.Extensions
+namespace OneImlx.Terminal.Extensions
 {
     public class IArgumentBuilderExtensionsTests
     {
