@@ -369,6 +369,7 @@ namespace OneImlx.Terminal.Extensions
             return DefineCommand(builder, id, name, description, typeof(TChecker), typeof(TRunner), commandType, commandFlags);
         }
 
+        /// <exclude />
         private static ITerminalBuilder AddDeclarativeTarget(this ITerminalBuilder builder, Type declarativeTarget)
         {
             // Command descriptor

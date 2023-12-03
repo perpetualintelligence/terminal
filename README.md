@@ -2,7 +2,7 @@
 
 ***Open. Flexible. Cross-Platform.***
 
-> **The most flexible cross-platform framework for building modern and secured CLI and terminal apps.**
+> **The most flexible cross-platform framework for building modern and secured terminal apps.**
 
 [![build-test-cross](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-cross.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-cross.yml)
 [![build-test-push](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-push.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-push.yml)

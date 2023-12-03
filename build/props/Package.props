@@ -26,6 +26,7 @@
         <ImplicitUsings>disable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Version>$(PI_CI_PACKAGE_VERSION)</Version>
     </PropertyGroup>
 
     <!--

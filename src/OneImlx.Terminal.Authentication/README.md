@@ -2,7 +2,7 @@
 
 ***Open. Flexible. Cross-Platform. Secured***
 
-> **The most flexible cross-platform framework for building modern and secured CLI and terminal apps.**
+> **The most flexible cross-platform framework for building modern and secured terminal apps.**
 
 `OneImlx.Terminal.Authentication` extends the `OneImlx.Terminal` framework, offering functionalities to develop enterprise-grade, secure CLI and terminal applications. This package emphasizes a secure, zero-trust architecture and compliance with OAuth and OpenID Connect (OIDC) standards.
 
