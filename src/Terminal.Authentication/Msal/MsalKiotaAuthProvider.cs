@@ -29,12 +29,11 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         private readonly ILogger<MsalKiotaAuthProvider> logger;
 
         /// <summary>
-        ///
+        /// Initializes a new instance.
         /// </summary>
-        /// <param name="terminalOptions"></param>
-        /// <param name="msalTokenAcquisition"></param>
-        /// <param name="logger"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="terminalOptions">The terminal options.</param>
+        /// <param name="msalTokenAcquisition">The MSAL token acquisition.</param>
+        /// <param name="logger">The logger.</param>
         public MsalKiotaAuthProvider(
             TerminalOptions terminalOptions,
             IMsalTokenAcquisition msalTokenAcquisition,
@@ -73,7 +72,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             cancellationToken.ThrowIfCancellationRequested();
 
             // Verify host
-            logger.LogInformation("Acquire authorization token. host={0}", uri);
+            logger.LogDebug("Acquire authorization token. host={0}", uri);
             if (!AllowedHostsValidator.IsUrlHostValid(uri))
             {
                 throw new TerminalException(TerminalErrors.UnauthorizedAccess, "The host is not authorized. uri={0}", uri);
@@ -83,24 +82,49 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             List<string> scopes = ExtractScopesFromContext(additionalAuthenticationContext);
 
             // Get the first account
-            IEnumerable<IAccount> accounts = await msalTokenAcquisition.GetAccountsAsync(userFlow: null);
-            IAccount account = accounts.FirstOrDefault() ?? throw new TerminalException(TerminalErrors.MissingIdentity, "The MSAL account is missing in the request.");
-            logger.LogDebug("Acquired accounts, using the first account. environment={0} account={1}", account.Environment, account.Username);
+            IEnumerable<IAccount> accounts = await msalTokenAcquisition.GetAccountsAsync(terminalOptions.Authentication.UserFlow);
+            IAccount account = accounts.FirstOrDefault();
+            if (account == null)
+            {
+                logger.LogDebug("Failed to acquire accounts. user_flow={1}", terminalOptions.Authentication.UserFlow);
+            }
+            else
+            {
+                logger.LogDebug("Acquired accounts, using the first account. environment={0} account={1}", account.Environment, account.Username);
+            }
 
             AuthenticationResult? result;
             try
             {
-                result = await msalTokenAcquisition.AcquireTokenSilentAsync(scopes, account);
-                logger.LogInformation("Acquired token silently. scopes={0}", scopes);
+                result = await msalTokenAcquisition.AcquireTokenSilentAsync(scopes, account!);
+                logger.LogInformation("Acquired token silently. scopes={0}", scopes.JoinBySpace());
             }
             catch (MsalUiRequiredException ex)
             {
-                logger.LogError(ex, "Acquiring token interactively.");
+                logger.LogDebug("Acquiring token interactively. info={0}", ex.Message);
                 result = await msalTokenAcquisition.AcquireTokenInteractiveAsync(scopes);
-                logger.LogInformation("Acquired token interactively. scopes={0}", scopes);
+                logger.LogInformation("Acquired token interactively. scopes={0}", scopes.JoinBySpace());
             }
 
             return result.AccessToken;
+        }
+
+        /// <summary>
+        /// Authenticates an HTTP request by acquiring an access token and setting it in the request's Authorization header.
+        /// </summary>
+        /// <param name="request">The HTTP request to authenticate.</param>
+        /// <param name="additionalAuthenticationContext">Optional. Additional authentication context that may contain extra scopes or other information.</param>
+        /// <param name="cancellationToken">Optional. The cancellation token to cancel the asynchronous operation.</param>
+        /// <exception cref="TerminalException">Thrown if the URI is not allowed by the AllowedHostsValidator or if token acquisition fails.</exception>
+        /// <remarks>
+        /// This method supports additional scopes provided either as an <see cref="IEnumerable{T}"/> or a single string with scopes separated by spaces.
+        /// The scopes are expected to be provided in the additionalAuthenticationContext dictionary with the key <c>scopes</c>.
+        /// </remarks>
+        public async Task AuthenticateRequestAsync(RequestInformation request, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
+        {
+            string accessToken = await GetAuthorizationTokenAsync(request.URI, additionalAuthenticationContext, cancellationToken);
+            request.Headers["Authorization"] = new List<string> { $"Bearer {accessToken}" };
+            logger.LogInformation("Bearer token set. request_uri={0}", request.URI);
         }
 
         private List<string> ExtractScopesFromContext(Dictionary<string, object>? additionalAuthenticationContext)
@@ -122,25 +146,8 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
                 }
             }
 
+            logger.LogDebug("Acquired authentication scopes. scopes={0}", scopes.JoinBySpace());
             return scopes;
-        }
-
-        /// <summary>
-        /// Authenticates an HTTP request by acquiring an access token and setting it in the request's Authorization header.
-        /// </summary>
-        /// <param name="request">The HTTP request to authenticate.</param>
-        /// <param name="additionalAuthenticationContext">Optional. Additional authentication context that may contain extra scopes or other information.</param>
-        /// <param name="cancellationToken">Optional. The cancellation token to cancel the asynchronous operation.</param>
-        /// <exception cref="TerminalException">Thrown if the URI is not allowed by the AllowedHostsValidator or if token acquisition fails.</exception>
-        /// <remarks>
-        /// This method supports additional scopes provided either as an <see cref="IEnumerable{T}"/> or a single string with scopes separated by spaces.
-        /// The scopes are expected to be provided in the additionalAuthenticationContext dictionary with the key <c>scopes</c>.
-        /// </remarks>
-        public async Task AuthenticateRequestAsync(RequestInformation request, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
-        {
-            string accessToken = await GetAuthorizationTokenAsync(request.URI, additionalAuthenticationContext, cancellationToken);
-            request.Headers["Authorization"] = new List<string> { $"Bearer {accessToken}" };
-            logger.LogInformation("Bearer token set in the request header. uri={0}", request.URI);
         }
     }
 }

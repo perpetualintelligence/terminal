@@ -84,32 +84,15 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             }
 
             // Set the Authorization header with the access token.
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", requestInformation.Headers["Authorization"].FirstOrDefault());
+            request.Headers.Authorization = AuthenticationHeaderValue.Parse(requestInformation.Headers["Authorization"].FirstOrDefault());
 
             // Continue sending the request.
             return await base.SendAsync(request, cancellationToken);
         }
 
-        // Helper method to map HttpMethod to Method enum value.
         private Method MapHttpMethod(HttpMethod httpMethod)
         {
-            switch (httpMethod.Method.ToUpper())
-            {
-                case "GET":
-                    return Method.GET;
-
-                case "POST":
-                    return Method.POST;
-
-                case "PUT":
-                    return Method.PUT;
-
-                case "DELETE":
-                    return Method.DELETE;
-
-                default:
-                    throw new TerminalException(TerminalErrors.InvalidRequest, "The Http method is not supported. method={0}", httpMethod);
-            }
+            return (Method)Enum.Parse(typeof(Method), httpMethod.Method, ignoreCase: true);
         }
     }
 }

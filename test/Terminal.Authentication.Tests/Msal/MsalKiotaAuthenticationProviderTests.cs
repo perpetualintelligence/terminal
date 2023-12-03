@@ -40,17 +40,23 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         }
 
         [Fact]
-        public async Task AuthenticateRequestAsync_Throws_ForNoAccounts()
+        public async Task AuthenticateRequestAsync_AuthenticatesInteractive_ForNoAccounts()
         {
-            // Arrange: Set up the token acquisition mock to simulate no accounts available.
+            // Arrange: Set up the token acquisition mock to simulate no accounts available
+            // that throws interactive required exception.
             SetupMockTokenAcquisitionForNoAccounts();
+
+            string expectedToken = "interactive_token_no_accounts";
+            SetupMockTokenInteractiveAcquisition(expectedToken);
 
             var provider = CreateProvider();
             var requestInfo = new RequestInformation { URI = new Uri("https://graph.microsoft.com") };
 
             // Act & Assert: Ensure that the method throws a TerminalException when no accounts are available.
-            Func<Task> action = async () => await provider.AuthenticateRequestAsync(requestInfo);
-            await action.Should().ThrowAsync<TerminalException>().WithMessage("The MSAL account is missing in the request.");
+            await provider.AuthenticateRequestAsync(requestInfo);
+
+            // Assert
+            requestInfo.Headers["Authorization"].Should().Contain($"Bearer {expectedToken}");
         }
 
         [Fact]
@@ -88,19 +94,6 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
 
             // Assert
             requestInfo.Headers["Authorization"].Should().Contain($"Bearer {expectedToken}");
-        }
-
-        [Fact]
-        public async Task AuthenticateRequestAsync_ShouldThrow_WhenNoAccountsAvailable()
-        {
-            // Arrange
-            SetupMockTokenAcquisitionForNoAccounts();
-            var provider = CreateProvider();
-
-            var requestInfo = new RequestInformation { URI = new Uri("https://graph.microsoft.com") };
-
-            // Act & Assert
-            await Assert.ThrowsAsync<TerminalException>(() => provider.AuthenticateRequestAsync(requestInfo));
         }
 
         [Fact]
@@ -232,6 +225,8 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         private void SetupMockTokenAcquisitionForNoAccounts()
         {
             _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(Enumerable.Empty<IAccount>());
+            _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
+                                     .ThrowsAsync(new MsalUiRequiredException("test_error", "test_error_message"));
         }
     }
 }

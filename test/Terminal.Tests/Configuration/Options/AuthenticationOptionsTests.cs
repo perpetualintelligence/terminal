@@ -19,8 +19,8 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
 
             options.DefaultScopes.Should().BeNull();
             options.ValidHosts.Should().BeNull();
-            options.BaseAddress.Should().BeNull();
-            options.Timeout.Should().BeNull();
+            options.HttpClientName.Should().BeNull();
+            options.UserFlow.Should().BeNull();
         }
     }
 }

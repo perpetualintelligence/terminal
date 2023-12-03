@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace PerpetualIntelligence.Terminal.Authentication.Msal
 {
     /// <summary>
-    /// Defines an interface for acquiring tokens using MSAL.
+    /// An abstraction to acquire tokens using MSAL.
     /// </summary>
     public interface IMsalTokenAcquisition
     {

@@ -81,14 +81,18 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         }
 
         [Fact]
-        public async Task GetAuthorizationTokenAsync_Throws_ForNoAccounts()
+        public async Task GetAuthorizationTokenAsync_AcquiresTokenInteractively_ForNoAccounts()
         {
             SetupMockTokenAcquisitionForNoAccounts();
+
+            string expectedToken = "interactive_token_no_accounts";
+            SetupMockTokenInteractiveAcquisition(expectedToken);
+
             var provider = CreateProvider();
 
-            Func<Task> action = async () => await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
+            string token = await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
 
-            await action.Should().ThrowAsync<TerminalException>().WithMessage("The MSAL account is missing in the request.");
+            token.Should().Be(expectedToken);
         }
 
         [Fact]
@@ -202,6 +206,8 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         private void SetupMockTokenAcquisitionForNoAccounts()
         {
             _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(Enumerable.Empty<IAccount>());
+            _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
+                                     .ThrowsAsync(new MsalUiRequiredException("test_error", "test_error_message"));
         }
 
         private void SetupMockTokenInteractiveAcquisition(string token = "interactive_token")

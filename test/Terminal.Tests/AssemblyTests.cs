@@ -18,13 +18,13 @@ namespace PerpetualIntelligence.Terminal
 {
     public class AssemblyTests
     {
-        [Fact(Skip = "Fix Test")]
+        [Fact]
         public void TypesNamespaceTest()
         {
             TestHelper.AssertNamespace(typeof(TerminalErrors).Assembly, "PerpetualIntelligence.Terminal");
         }
 
-        [Fact(Skip = "Fix Test")]
+        [Fact]
         public void TypesLocationTest()
         {
             TestHelper.AssertAssemblyTypesLocation(typeof(TerminalErrors).Assembly);

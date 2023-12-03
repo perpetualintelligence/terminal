@@ -408,12 +408,12 @@ namespace PerpetualIntelligence.Terminal.Commands.Parsers
             }
 
             logger.LogDebug("Hierarchy={0}", parsedDescriptors.Select(e => e.Id).JoinByComma());
-            logger.LogDebug("Command={0}", parsedDescriptors.Last().Id);
+            logger.LogDebug("Command={0}", parsedDescriptors.LastOrDefault()?.Id);
             logger.LogDebug("Arguments={0}", parsedArguments.JoinByComma());
             logger.LogDebug("Options:");
             foreach (var opt in parsedOptions)
             {
-                logger.LogDebug($"{opt.Key}={opt.Value}");
+                logger.LogDebug($"{opt.Key}=" + "{0}", opt.Value);
             }
         }
 

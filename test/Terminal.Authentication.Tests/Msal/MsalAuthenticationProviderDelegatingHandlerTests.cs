@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Moq;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -155,7 +154,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             // Assert
             request.Headers.Authorization.Should().NotBeNull();
             request.Headers.Authorization!.Scheme.Should().Be("Bearer");
-            request.Headers.Authorization.Parameter.Should().Be("Bearer mock_token");
+            request.Headers.Authorization.Parameter.Should().Be("mock_token");
         }
 
         [Fact]
