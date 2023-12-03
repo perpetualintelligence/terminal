@@ -7,11 +7,10 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
-using PerpetualIntelligence.Terminal.Configuration.Options;
+using Microsoft.Kiota.Abstractions.Authentication;
+using PerpetualIntelligence.Terminal.Authentication.Msal;
 using PerpetualIntelligence.Terminal.Hosting;
-using System;
 using System.Net.Http;
-using System.Threading;
 
 namespace PerpetualIntelligence.Terminal.Authentication.Extensions
 {
@@ -20,37 +19,32 @@ namespace PerpetualIntelligence.Terminal.Authentication.Extensions
     public static class ITerminalBuilderExtensions
     {
         /// <summary>
-        /// Adds <c>MSAL</c> authentication to the service collection.
+        /// Adds MSAL authentication using <see cref="IPublicClientApplication"/> to the service collection.
         /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="publicClientApplication"></param>
-        /// <param name="name">The HTTP client name.</param>
-        /// The HTTP request timeout in milliseconds. Defaults to <c>2</c> minutes or <c>120000</c> milliseconds. We
-        /// recommend a timeout of at least a few minutes, to take into account cases where the user is prompted to
-        /// change password or perform 2FA.
-        /// </param>
+        /// <typeparam name="TAuthenticationProvider">The type of the authentication provider.</typeparam>
+        /// <typeparam name="TAccessTokenProvider">The type of the access token provider.</typeparam>
+        /// <typeparam name="TDelegatingHandler">The type of the custom HTTP delegating handler.</typeparam>
+        /// <param name="builder">The terminal builder.</param>
+        /// <param name="publicClientApplication">The public client application.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddPublicClientMsal<TDelegatingHandler>(
+        public static ITerminalBuilder AddMsalAuthentication<TAuthenticationProvider, TAccessTokenProvider, TDelegatingHandler>(
             this ITerminalBuilder builder,
-            IPublicClientApplication publicClientApplication,
-            string name
+            IPublicClientApplication publicClientApplication
         )
+            where TAuthenticationProvider : class, IAuthenticationProvider
+            where TAccessTokenProvider : class, IAccessTokenProvider
             where TDelegatingHandler : DelegatingHandler
         {
-            // We don't change public client per terminal.
+            // Singleton for the public client application
             builder.Services.AddSingleton(publicClientApplication);
 
-            // TDelegateHandler cannot be singleton.
-            builder.Services.AddScoped<TDelegatingHandler>();
+            // Scoped services for token acquisition and providers
+            builder.Services.AddScoped<IMsalTokenAcquisition, MsalPublicClientTokenAcquisition>();
+            builder.Services.AddScoped<IAuthenticationProvider, TAuthenticationProvider>();
+            builder.Services.AddScoped<IAccessTokenProvider, TAccessTokenProvider>();
 
-            // Configure HttpClient using TerminalOptions
-            builder.Services.AddHttpClient<TDelegatingHandler>(name, (serviceProvider, client) =>
-            {
-                TerminalOptions terminalOptions = serviceProvider.GetRequiredService<TerminalOptions>();
-                AuthenticationOptions authOptions = terminalOptions.Authentication;
-                client.BaseAddress = new Uri(authOptions.BaseAddress);
-                client.Timeout = authOptions.Timeout ?? Timeout.InfiniteTimeSpan;
-            }).AddHttpMessageHandler<TDelegatingHandler>();
+            // Scopes custom Http delegating handler.
+            builder.Services.AddScoped<DelegatingHandler, TDelegatingHandler>();
 
             return builder;
         }

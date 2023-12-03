@@ -15,8 +15,6 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
     {
         public bool SendAsyncCalled { get; private set; } = false;
 
-        
-
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             SendAsyncCalled = true;

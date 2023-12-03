@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
+using System.Net.Http;
 
 namespace PerpetualIntelligence.Terminal.Configuration.Options
 {
@@ -31,19 +31,13 @@ namespace PerpetualIntelligence.Terminal.Configuration.Options
         public string[]? ValidHosts { get; set; }
 
         /// <summary>
-        /// Gets or sets the base address for HTTP requests.
+        /// Gets or sets the name for the named <see cref="HttpClient"/>.
         /// </summary>
-        /// <remarks>
-        /// This is the base URL to which request URIs will be appended.
-        /// </remarks>
-        public string? BaseAddress { get; set; }
+        public string? HttpClientName { get; set; }
 
         /// <summary>
-        /// Gets or sets the timeout duration for HTTP requests.
+        /// Gets or sets the authentication user flow.
         /// </summary>
-        /// <remarks>
-        /// Specifies the time period within which an HTTP request must complete. If exceeded, the request will be aborted.
-        /// </remarks>
-        public TimeSpan? Timeout { get; set; }
+        public string? UserFlow { get; set; }
     }
 }
