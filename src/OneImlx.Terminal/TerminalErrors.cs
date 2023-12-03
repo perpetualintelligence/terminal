@@ -8,7 +8,7 @@
 namespace OneImlx.Terminal
 {
     /// <summary>
-    /// The errors for the Perpetual Intelligence's framework.
+    /// The errors for the terminal framework.
     /// </summary>
     public static class TerminalErrors
     {

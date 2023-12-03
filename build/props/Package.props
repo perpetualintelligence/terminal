@@ -7,7 +7,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     
     <PropertyGroup>
-        <Copyright>Copyright (c) Perpetual Intelligence L.L.C. All Rights Reserved.</Copyright>
+        <Copyright>Copyright (c) 2019 Perpetual Intelligence L.L.C. All Rights Reserved.</Copyright>
         <Authors>Perpetual Intelligence L.L.C.</Authors>
         <Company>Perpetual Intelligence L.L.C.</Company>
         <Product>oneterminal</Product>
@@ -15,7 +15,7 @@
         <AssemblyName>$(MSBuildProjectName)</AssemblyName>
         <PackageId>$(MSBuildProjectName)</PackageId>
         <PackageProjectUrl>https://www.perpetualintelligence.com</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/perpetualintelligence/oneterminal</RepositoryUrl>
+        <RepositoryUrl>https://github.com/perpetualintelligence/terminal</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -43,7 +43,7 @@
         The Include location is relative to the src/<package>/readme.md that will import the props file.
     -->
     <ItemGroup>
-        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\..\src\$(MSBuildProjectName)\README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
     <ItemGroup>
