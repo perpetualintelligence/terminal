@@ -43,8 +43,8 @@ namespace PerpetualIntelligence.Terminal.Authentication.Extensions
             builder.Services.AddScoped<IAuthenticationProvider, TAuthenticationProvider>();
             builder.Services.AddScoped<IAccessTokenProvider, TAccessTokenProvider>();
 
-            // Scopes custom Http delegating handler.
-            builder.Services.AddScoped<DelegatingHandler, TDelegatingHandler>();
+            // Directly add scoped TDelegatingHandler to support custom Http message handler.
+            builder.Services.AddScoped<TDelegatingHandler>();
 
             return builder;
         }

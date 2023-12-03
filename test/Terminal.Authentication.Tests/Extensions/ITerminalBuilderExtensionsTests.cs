@@ -13,7 +13,6 @@ using Moq;
 using PerpetualIntelligence.Terminal.Authentication.Msal;
 using PerpetualIntelligence.Terminal.Configuration.Options;
 using PerpetualIntelligence.Terminal.Hosting;
-using System.Net.Http;
 using Xunit;
 
 namespace PerpetualIntelligence.Terminal.Authentication.Extensions
@@ -39,7 +38,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Extensions
             serviceProvider.GetService<IMsalTokenAcquisition>().Should().NotBeNull();
             serviceProvider.GetService<IAuthenticationProvider>().Should().BeOfType<MsalKiotaAuthProvider>();
             serviceProvider.GetService<IAccessTokenProvider>().Should().BeOfType<MsalKiotaAuthProvider>();
-            serviceProvider.GetService<DelegatingHandler>().Should().BeOfType<TestHandler>();
+            serviceProvider.GetService<TestHandler>().Should().NotBeNull();
 
             services.Should().Contain(descriptor =>
                 descriptor.ServiceType == typeof(IPublicClientApplication) && descriptor.Lifetime == ServiceLifetime.Singleton)
@@ -50,7 +49,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Extensions
                 .And.Contain(descriptor =>
                 descriptor.ServiceType == typeof(IAccessTokenProvider) && descriptor.Lifetime == ServiceLifetime.Scoped)
                 .And.Contain(descriptor =>
-                descriptor.ServiceType == typeof(DelegatingHandler) && descriptor.Lifetime == ServiceLifetime.Scoped);
+                descriptor.ServiceType == typeof(TestHandler) && descriptor.Lifetime == ServiceLifetime.Scoped);
         }
     }
 }
