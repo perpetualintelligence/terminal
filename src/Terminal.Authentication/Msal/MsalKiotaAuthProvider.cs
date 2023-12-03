@@ -72,7 +72,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
             cancellationToken.ThrowIfCancellationRequested();
 
             // Verify host
-            logger.LogInformation("Acquire authorization token. host={0}", uri);
+            logger.LogDebug("Acquire authorization token. host={0}", uri);
             if (!AllowedHostsValidator.IsUrlHostValid(uri))
             {
                 throw new TerminalException(TerminalErrors.UnauthorizedAccess, "The host is not authorized. uri={0}", uri);
@@ -124,7 +124,7 @@ namespace PerpetualIntelligence.Terminal.Authentication.Msal
         {
             string accessToken = await GetAuthorizationTokenAsync(request.URI, additionalAuthenticationContext, cancellationToken);
             request.Headers["Authorization"] = new List<string> { $"Bearer {accessToken}" };
-            logger.LogInformation("Bearer token set in the request header. uri={0}", request.URI);
+            logger.LogInformation("Bearer token set. request_uri={0}", request.URI);
         }
 
         private List<string> ExtractScopesFromContext(Dictionary<string, object>? additionalAuthenticationContext)
