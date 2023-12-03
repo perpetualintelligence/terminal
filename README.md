@@ -1,18 +1,18 @@
-# pi-cli
-![terminal](terminal.png)
+# OneImlx.Terminal
 
-## Open. Flexible. Cross-Platform.
+**Open. Flexible. Cross-Platform.**
+
 > ***The most flexible cross-platform framework for building modern CLI and terminal apps.***
 
-![macOS](https://img.shields.io/badge/macOS-grey?style=flat-square&logo=macos)
-![ubuntu](https://img.shields.io/badge/ubuntu-grey?style=flat-square&logo=ubuntu)
-![windows](https://img.shields.io/badge/windows-grey?style=flat-square&logo=windows)
+[![build-test-cross](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-cross.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-cross.yml)
+[![build-test-push](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-push.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-push.yml)
+[![delete-packages](https://github.com/perpetualintelligence/terminal/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/delete-packages.yml)
 
-`pi-cli` (oneterminal) is a cross-platform adaptable framework designed for crafting CLI and terminal applications, from basic apps with a few options to advanced terminals with extensive command hierarchies.
+`oneimlx.terminal` is the cross-platform adaptable framework designed for crafting modern CLI and terminal applications. We cut through the terminal infrastructure complexity, letting you concentrate on building enterprise grade terminal applications with Unicode support, and extensive command hierarchies.
 
-> ***Take Your App to the Command Line:*** Easily build CLI and terminal applications with Unicode support.
+Quickly dive in with our [templates and tutorials](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/pi-cli).
 
-### **Key Features**:
+## **Key Features**:
 - Utilize microservices architecture, Dependency Injection (DI), and options pattern to design and configure your terminal apps.
 - Access built-in features or develop your own solutions for terminal UX, input parsing, error handling, command validation, data storage, and type verification.
 - Opt for high-performance in-memory command storage or integrate with remote storage solutions.
@@ -22,9 +22,10 @@
 - Engage with our open-source community to resolve issues and contribute to feature enhancements and documentation.
 - Quickly onboard, evaluate, and test with our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) and ready samples on GitHub, no signup required.
 
-`pi-cli` cuts through infrastructure complexity, letting you concentrate on crafting your CLI applications. Quickly dive in with our [templates and tutorials](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/pi-cli).
+> ***Transform any .NET ecosystem feature into a modern terminal app with ease.***
 
-> ***Transform any .NET ecosystem feature into a CLI or terminal app with ease.***
+## Packages
+
 
 ## License and Pricing
 Explore our documentation for detailed information on licensing, redistribution, and pricing:
@@ -32,7 +33,7 @@ Explore our documentation for detailed information on licensing, redistribution,
 - [Redistribution terms](https://terms.perpetualintelligence.com/articles/redistribution.html)
 - [Pricing details](https://www.perpetualintelligence.com/products/picli#pricing)
 
-> ***The full-feature `pi-cli` framework is free for educational and evaluation purposes.***
+> ***The full-feature `oneimlx-terminal` framework is free for educational and evaluation purposes.***
 
 For non-educational, commercial, or production use, a commercial license is required.
 
