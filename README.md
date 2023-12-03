@@ -25,8 +25,8 @@ Quickly dive in with our [code samples](https://github.com/perpetualintelligence
 > ***Transform any .NET ecosystem feature into a modern terminal app with ease.***
 
 ## Packages
-![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal.svg)
-![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal.Authentication.svg)
+![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal?label=OneImlx.Terminal)
+![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal.Authentication?label=OneImlx.Terminal.Authentication)
 
 ## License and Pricing
 Explore our licensing, redistribution, and pricing policies:
