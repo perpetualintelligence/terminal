@@ -1,5 +1,6 @@
 # 5.5.1-rc*
 > Breaking Change
+- Rename the package to `OneImlx.Terminal`
 - Update AddTextHandler service method to accept the instance.
 - Remove HttpOptions and move the options to their respective usage
 
