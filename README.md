@@ -1,6 +1,6 @@
 # OneImlx.Terminal
 
-***Open. Flexible. Cross-Platform.***
+***Open. Flexible. Secured. Cross-Platform.***
 
 > **The most flexible cross-platform framework for building modern and secured terminal apps.**
 
