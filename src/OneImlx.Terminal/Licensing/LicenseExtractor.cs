@@ -8,10 +8,10 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using PerpetualIntelligence.Shared.Authorization;
-using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Shared.Infrastructure;
-using PerpetualIntelligence.Shared.Licensing;
+using OneImlx.Shared.Authorization;
+using OneImlx.Shared.Extensions;
+using OneImlx.Shared.Infrastructure;
+using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.IO;
@@ -282,7 +282,7 @@ namespace OneImlx.Terminal.Licensing
         private License OnPremiseDeploymentLicense()
         {
             return new License(
-                LicenseProviders.PerpetualIntelligence,
+                LicenseProviders.OneImlx,
                 TerminalHandlers.OnPremiseLicenseHandler,
                 terminalOptions.Licensing.LicensePlan,
                 "on-premise-deployment",
@@ -300,7 +300,7 @@ namespace OneImlx.Terminal.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseOnlineCheckModel checkModel = new()
             {
-                Issuer = PerpetualIntelligence.Shared.Constants.Issuer,
+                Issuer = OneImlx.Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = terminalOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
@@ -353,9 +353,9 @@ namespace OneImlx.Terminal.Licensing
                 }
 
                 // Make sure the provider tenant id matches
-                if (providerId != LicenseProviders.PerpetualIntelligence)
+                if (providerId != LicenseProviders.OneImlx)
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized. expected={0} actual={1}", providerId, LicenseProviders.PerpetualIntelligence);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized. expected={0} actual={1}", providerId, LicenseProviders.OneImlx);
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
@@ -375,7 +375,7 @@ namespace OneImlx.Terminal.Licensing
             // Check JWS signed assertion (JWS key)
             LicenseOfflineCheckModel checkModel = new()
             {
-                Issuer = PerpetualIntelligence.Shared.Constants.Issuer,
+                Issuer = OneImlx.Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
                 AuthorizedApplicationId = terminalOptions.Licensing.AuthorizedApplicationId!,
                 AuthorizedParty = licenseFileModel.AuthorizedParty,
@@ -420,9 +420,9 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Make sure the provider tenant id matches
-            if (providerId != LicenseProviders.PerpetualIntelligence)
+            if (providerId != LicenseProviders.OneImlx)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized. expected={0} actual={1}", providerId, LicenseProviders.PerpetualIntelligence);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized. expected={0} actual={1}", providerId, LicenseProviders.OneImlx);
             }
 
             LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);

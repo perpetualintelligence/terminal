@@ -10,8 +10,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test;
+using OneImlx.Test.Services;
 using System;
 using System.Threading.Tasks;
 

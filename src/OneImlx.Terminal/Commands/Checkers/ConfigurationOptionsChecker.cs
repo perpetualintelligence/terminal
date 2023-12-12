@@ -6,7 +6,7 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using PerpetualIntelligence.Shared.Extensions;
+using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using System;

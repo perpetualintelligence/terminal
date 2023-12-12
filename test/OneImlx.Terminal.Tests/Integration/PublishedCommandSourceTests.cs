@@ -15,7 +15,7 @@ namespace OneImlx.Terminal.Integration
     using OneImlx.Terminal.Commands.Handlers;
     using OneImlx.Terminal.Mocks;
     using OneImlx.Terminal.Stores;
-    using PerpetualIntelligence.Terminals.Integration.Mocks;
+    using OneImlx.Terminals.Integration.Mocks;
     using System.Threading.Tasks;
     using Xunit;
 

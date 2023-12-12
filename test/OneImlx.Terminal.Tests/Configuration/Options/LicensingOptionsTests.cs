@@ -6,7 +6,7 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Shared.Licensing;
+using OneImlx.Shared.Licensing;
 using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options

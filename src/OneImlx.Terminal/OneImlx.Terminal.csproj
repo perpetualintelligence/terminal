@@ -24,12 +24,12 @@
     <Choose>
         <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
-                <ProjectReference Include="..\..\..\shared\src\Shared\Shared.csproj" />
+                <ProjectReference Include="..\..\..\shared\src\OneImlx.Shared\OneImlx.Shared.csproj" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="PerpetualIntelligence.Shared" Version="5.5.1" />
+                <PackageReference Include="OneImlx.Shared" Version="5.6.1" />
             </ItemGroup>
         </Otherwise>
     </Choose>

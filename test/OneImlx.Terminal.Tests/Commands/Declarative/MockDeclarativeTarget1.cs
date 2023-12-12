@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Attributes.Validation;
+using OneImlx.Shared.Attributes.Validation;
 using OneImlx.Terminal.Mocks;
 using System;
 using System.ComponentModel.DataAnnotations;

@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Extensions;
+using OneImlx.Shared.Extensions;
 using System.Collections.Generic;
 
 namespace OneImlx.Terminal.Mocks

@@ -516,7 +516,7 @@ namespace OneImlx.Terminal.Extensions
             startContext = new TerminalStartContext(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
 
             // Adding space at the end so that any msg are correctly appended.
-            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, terminalTokenSource, null, new PerpetualIntelligence.Shared.Infrastructure.Error("explicit_error", "explicit_error_description param1={0} param2={1}.", "test_param1", "test_param2")));
+            opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, terminalTokenSource, null, new OneImlx.Shared.Infrastructure.Error("explicit_error", "explicit_error_description param1={0} param2={1}.", "test_param1", "test_param2")));
             opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
             // Tells the logger to write to string writer so we can test it,

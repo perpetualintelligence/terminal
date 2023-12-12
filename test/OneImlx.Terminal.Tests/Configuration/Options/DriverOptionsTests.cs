@@ -6,8 +6,8 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test;
+using OneImlx.Test.Services;
 using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options

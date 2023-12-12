@@ -35,21 +35,21 @@ namespace OneImlx.Terminal.Integration
         [Fact]
         public async Task LoadAssembly_WithValidAssemblyPath_ShouldLoadAssembly()
         {
-            commandSourceContext.PublishedAssemblies.Add("PerpetualIntelligence.Shared.dll", testBaseDir);
+            commandSourceContext.PublishedAssemblies.Add("OneImlx.Shared.dll", testBaseDir);
             var loadedAssemblies = await assemblyLoader.LoadAssembliesAsync(commandSourceContext);
             loadedAssemblies.Should().NotBeNull();
-            loadedAssemblies.Single().GetName().Name.Should().Be("PerpetualIntelligence.Shared");
+            loadedAssemblies.Single().GetName().Name.Should().Be("OneImlx.Shared");
         }
 
         [Fact]
         public async Task LoadAssembly_WithAlreadyLoadedAssemblyPath_ShouldReturnSameAssemblyAsync()
         {
             commandSourceContext.PublishedAssemblies.Add("FluentAssertions.dll", testBaseDir);
-            commandSourceContext.PublishedAssemblies.Add("PerpetualIntelligence.Shared.dll", testBaseDir);
+            commandSourceContext.PublishedAssemblies.Add("OneImlx.Shared.dll", testBaseDir);
             var loadedAssemblies = await assemblyLoader.LoadAssembliesAsync(commandSourceContext);
             loadedAssemblies.Should().NotBeNull();
             loadedAssemblies.First().GetName().Name.Should().Be("FluentAssertions");
-            loadedAssemblies.Last().GetName().Name.Should().Be("PerpetualIntelligence.Shared");
+            loadedAssemblies.Last().GetName().Name.Should().Be("OneImlx.Shared");
         }
 
         [Fact]
@@ -91,22 +91,22 @@ namespace OneImlx.Terminal.Integration
 
             // Make sure the assembly is not loaded
             var assembliesBeforeLoad = AppDomain.CurrentDomain.GetAssemblies();
-            Assembly? sharedAlreadyLoaded = assembliesBeforeLoad.FirstOrDefault(e => e.GetName().Name!.Equals("PerpetualIntelligence.Shared"));
+            Assembly? sharedAlreadyLoaded = assembliesBeforeLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Shared"));
             Assembly? externalNotLoaded = assembliesBeforeLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Terminal.DependentAssembly"));
             sharedAlreadyLoaded.Should().NotBeNull();
             externalNotLoaded.Should().BeNull();
 
-            commandSourceContext.PublishedAssemblies.Add("PerpetualIntelligence.Shared.dll", testBaseDir);
+            commandSourceContext.PublishedAssemblies.Add("OneImlx.Shared.dll", testBaseDir);
             commandSourceContext.PublishedAssemblies.Add("OneImlx.Terminal.DependentAssembly.dll", dependentAssemblyPath);
 
             var loadedAssemblies = await assemblyLoader.LoadAssembliesAsync(commandSourceContext);
             loadedAssemblies.Should().NotBeNull();
-            loadedAssemblies.First().GetName().Name.Should().Be("PerpetualIntelligence.Shared");
+            loadedAssemblies.First().GetName().Name.Should().Be("OneImlx.Shared");
             loadedAssemblies.Last().GetName().Name.Should().Be("OneImlx.Terminal.DependentAssembly");
 
             // Assert both assemblies stay loaded
             var assembliesAfterLoad = AppDomain.CurrentDomain.GetAssemblies();
-            sharedAlreadyLoaded = assembliesAfterLoad.FirstOrDefault(e => e.GetName().Name!.Equals("PerpetualIntelligence.Shared"));
+            sharedAlreadyLoaded = assembliesAfterLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Shared"));
             externalNotLoaded = assembliesAfterLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Terminal.DependentAssembly"));
             sharedAlreadyLoaded.Should().NotBeNull();
             externalNotLoaded.Should().NotBeNull();

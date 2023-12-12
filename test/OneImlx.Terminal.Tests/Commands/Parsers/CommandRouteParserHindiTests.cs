@@ -11,7 +11,7 @@ using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

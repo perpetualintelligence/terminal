@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
-using PerpetualIntelligence.Shared.Extensions;
+using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;

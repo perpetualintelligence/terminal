@@ -5,8 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Extensions;
-using PerpetualIntelligence.Shared.Licensing;
+using OneImlx.Shared.Extensions;
+using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 using System;

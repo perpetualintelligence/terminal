@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Licensing;
+using OneImlx.Shared.Licensing;
 using System;
 using System.Collections.Generic;
 

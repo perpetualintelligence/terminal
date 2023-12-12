@@ -8,7 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Licensing;
+using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
@@ -195,7 +195,7 @@ namespace OneImlx.Terminal.Hosting
             logger.LogInformation("Header line-2");
             logger.LogInformation("---------------------------------------------------------------------------------------------");
 
-            logger.LogInformation($"Starting server \"{PerpetualIntelligence.Shared.Constants.TerminalUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
+            logger.LogInformation($"Starting server \"{OneImlx.Shared.Constants.TerminalUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
             return Task.CompletedTask;
         }
 

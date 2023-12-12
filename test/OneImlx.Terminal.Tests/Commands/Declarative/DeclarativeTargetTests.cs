@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerpetualIntelligence.Shared.Attributes.Validation;
+using OneImlx.Shared.Attributes.Validation;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Extensions;

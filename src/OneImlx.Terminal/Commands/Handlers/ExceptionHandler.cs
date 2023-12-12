@@ -6,7 +6,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Infrastructure;
+using OneImlx.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 

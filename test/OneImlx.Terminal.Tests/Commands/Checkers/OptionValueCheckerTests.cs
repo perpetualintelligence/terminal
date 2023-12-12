@@ -7,12 +7,12 @@
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Shared.Attributes.Validation;
+using OneImlx.Shared.Attributes.Validation;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test;
+using OneImlx.Test.Services;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;

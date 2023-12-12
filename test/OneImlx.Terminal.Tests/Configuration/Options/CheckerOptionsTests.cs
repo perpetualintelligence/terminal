@@ -6,8 +6,8 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Test;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test;
+using OneImlx.Test.Services;
 
 namespace OneImlx.Terminal.Configuration.Options
 {

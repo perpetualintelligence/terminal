@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
+using OneImlx.Shared.Infrastructure;
 using System;
 
 namespace OneImlx.Terminal.Commands.Checkers

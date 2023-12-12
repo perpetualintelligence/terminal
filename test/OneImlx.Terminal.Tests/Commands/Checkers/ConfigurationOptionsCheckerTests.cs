@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test.Services;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Checkers

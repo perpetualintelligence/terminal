@@ -6,7 +6,7 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test.Services;
 using Xunit;
 
 namespace OneImlx.Terminal

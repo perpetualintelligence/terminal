@@ -11,7 +11,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test.Services;
 using Xunit;
 
 namespace OneImlx.Terminal.Authentication

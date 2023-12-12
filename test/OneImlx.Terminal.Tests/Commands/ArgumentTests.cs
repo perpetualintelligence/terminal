@@ -13,7 +13,7 @@
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test.Services;
 using System;
 using System.Text.Json.Serialization;
 

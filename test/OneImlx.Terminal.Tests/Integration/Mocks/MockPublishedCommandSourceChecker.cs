@@ -8,7 +8,7 @@
 using OneImlx.Terminal.Integration;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminals.Integration.Mocks
+namespace OneImlx.Terminals.Integration.Mocks
 {
     internal class MockPublishedCommandSourceChecker : ITerminalCommandSourceChecker<PublishedCommandSourceContext>
     {

@@ -6,7 +6,7 @@
 */
 
 using OneImlx.Terminal.Licensing;
-using PerpetualIntelligence.Shared.Licensing;
+using OneImlx.Shared.Licensing;
 using System.Collections.Generic;
 
 namespace OneImlx.Terminal.Mocks

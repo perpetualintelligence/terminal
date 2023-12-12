@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using PerpetualIntelligence.Shared.Infrastructure;
+using OneImlx.Shared.Infrastructure;
 
 namespace OneImlx.Terminal
 {

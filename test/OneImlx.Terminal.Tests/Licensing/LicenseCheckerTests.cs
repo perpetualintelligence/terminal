@@ -6,11 +6,11 @@
 */
 
 using FluentAssertions;
-using PerpetualIntelligence.Shared.Licensing;
+using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test.Services;
 using System.Threading.Tasks;
 using Xunit;
 

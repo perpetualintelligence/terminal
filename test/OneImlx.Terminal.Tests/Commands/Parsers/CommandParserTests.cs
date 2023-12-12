@@ -9,7 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OneImlx.Terminal.Mocks;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test.Services;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Parsers

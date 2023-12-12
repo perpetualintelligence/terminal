@@ -7,11 +7,11 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using PerpetualIntelligence.Shared.Json;
-using PerpetualIntelligence.Shared.Licensing;
+using OneImlx.Shared.Json;
+using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
-using PerpetualIntelligence.Test.Services;
+using OneImlx.Test.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
