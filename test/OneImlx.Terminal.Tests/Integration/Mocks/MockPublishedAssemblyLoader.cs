@@ -19,7 +19,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 
-namespace PerpetualIntelligence.Terminals.Integration.Mocks
+namespace OneImlx.Terminals.Integration.Mocks
 {
     internal class MockPublishedAssemblyLoader : ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext>
     {
