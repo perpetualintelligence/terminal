@@ -6,7 +6,7 @@
 */
 
 using FluentAssertions;
-using OneImlx.Test.Services;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal
@@ -16,7 +16,7 @@ namespace OneImlx.Terminal
         [Fact]
         public void AssertErrorsAreValid()
         {
-            TestHelper.AssertConstantCount(typeof(TerminalErrors), 20);
+            typeof(TerminalErrors).Should().HaveConstantCount(20);
 
             TerminalErrors.ConnectionClosed.Should().Be("connection_closed");
             TerminalErrors.InvalidCommand.Should().Be("invalid_command");

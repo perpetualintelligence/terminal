@@ -4,16 +4,9 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OneImlx.Test.Services;
 using System;
 using System.Text.Json.Serialization;
 
@@ -49,8 +42,8 @@ namespace OneImlx.Terminal.Commands
         [TestMethod]
         public void JSONPropertyNamesShouldBeCorrect()
         {
-            TestHelper.AssertJsonPropertyName(typeof(Option).GetProperty(nameof(Option.Value)), "value");
-            TestHelper.AssertJsonPropertyName(typeof(Option).GetProperty(nameof(Option.Descriptor)), "descriptor");
+            typeof(Option).GetProperty(nameof(Option.Value)).Should().BeDecoratedWith<JsonPropertyNameAttribute>(attr => attr.Name == "value");
+            typeof(Option).GetProperty(nameof(Option.Descriptor)).Should().BeDecoratedWith<JsonPropertyNameAttribute>(attr => attr.Name == "descriptor");
 
             typeof(Option).GetProperty(nameof(Option.Alias)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
             typeof(Option).GetProperty(nameof(Option.DataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();

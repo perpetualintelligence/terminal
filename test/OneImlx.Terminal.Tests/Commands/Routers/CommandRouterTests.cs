@@ -13,6 +13,7 @@ using OneImlx.Terminal.Commands.Routers.Mocks;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test;
+using OneImlx.Test.FluentAssertions;
 using OneImlx.Test.Services;
 using System;
 using System.Threading;
@@ -33,8 +34,8 @@ namespace OneImlx.Terminal.Commands.Routers
             commandParser.IsExplicitError = true;
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
-
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteCommandAsync(routerContext), "test_parser_error", "test_parser_error_desc");
+            Func<Task> func = async () => await commandRouter.RouteCommandAsync(routerContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_parser_error").WithErrorDescription("test_parser_error_desc");
             Assert.IsTrue(commandParser.Called);
             Assert.IsFalse(commandHandler.Called);
         }
@@ -71,8 +72,8 @@ namespace OneImlx.Terminal.Commands.Routers
             commandHandler.IsExplicitError = true;
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
-
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteCommandAsync(routerContext), "test_handler_error", "test_handler_error_desc");
+            Func<Task> func = async () => await commandRouter.RouteCommandAsync(routerContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_handler_error").WithErrorDescription("test_handler_error_desc");
             Assert.IsTrue(commandHandler.Called);
         }
 
@@ -100,7 +101,8 @@ namespace OneImlx.Terminal.Commands.Routers
             licenseExtractor.NoLicense = true;
 
             CommandRouterContext routerContext = new("test_command_string", routingContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => commandRouter.RouteCommandAsync(routerContext), "invalid_license", "Failed to extract a valid license. Please configure the hosted service correctly.");
+            Func<Task> func = async () => await commandRouter.RouteCommandAsync(routerContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode("invalid_license").WithErrorDescription("Failed to extract a valid license. Please configure the hosted service correctly.");
 
             Assert.IsFalse(commandParser.Called);
             Assert.IsFalse(commandHandler.Called);

@@ -1,12 +1,12 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
-using OneImlx.Test.Services;
+using OneImlx.Test.FluentAssertions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xunit;
@@ -18,9 +18,8 @@ namespace OneImlx.Terminal
         [Fact]
         public void AssertHandlersAreValid()
         {
-            TestHelper.AssertConstantCount(typeof(TerminalHandlers), 9);
+            typeof(TerminalHandlers).Should().HaveConstantCount(9);
 
-            
             TerminalHandlers.CustomHandler.Should().Be("custom");
             TerminalHandlers.DefaultHandler.Should().Be("default");
             TerminalHandlers.InMemoryHandler.Should().Be("in-memory");

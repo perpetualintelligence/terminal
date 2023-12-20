@@ -11,6 +11,7 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 
 using OneImlx.Test;
+using OneImlx.Test.FluentAssertions;
 using OneImlx.Test.Services;
 using System;
 using System.Threading.Tasks;
@@ -58,14 +59,17 @@ namespace OneImlx.Terminal.Commands.Mappers
         public async Task NullOrWhitespaceDataTypeShouldErrorAsync()
         {
             Option test = new(new OptionDescriptor("opt1", "   ", "desc", OptionFlags.None), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
+            Func<Task> func = async () => await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option data type cannot be null or whitespace. option=opt1");
 
             test = new(new OptionDescriptor("opt1", "", "desc", OptionFlags.None), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
+            func = async () => await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option data type cannot be null or whitespace. option=opt1");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             test = new(new OptionDescriptor("opt1", null, "desc", OptionFlags.None), "val1");
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test)), TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option=opt1");
+            func = async () => await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option data type cannot be null or whitespace. option=opt1");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 

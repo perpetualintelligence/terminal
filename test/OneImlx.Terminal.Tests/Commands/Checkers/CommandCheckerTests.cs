@@ -16,6 +16,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test;
+using OneImlx.Test.FluentAssertions;
 using OneImlx.Test.Services;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,9 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.InvalidOption, "The option is disabled. command=id1 option=key1");
+
+            Func<Task> func = () => checker.CheckCommandAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option is disabled. command=id1 option=key1");
         }
 
         [TestMethod]
@@ -117,10 +120,12 @@ namespace OneImlx.Terminal.Commands.Checkers
             CommandCheckerContext context = new(handlerContext);
 
             terminalOptions.Checker.AllowObsolete = null;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command=id1 option=key1");
+            Func<Task> func = async () => await checker.CheckCommandAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option is obsolete. command=id1 option=key1");
 
             terminalOptions.Checker.AllowObsolete = false;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.InvalidOption, "The option is obsolete. command=id1 option=key1");
+            func = async () => await checker.CheckCommandAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option is obsolete. command=id1 option=key1");
         }
 
         [TestMethod]
@@ -137,7 +142,8 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.MissingOption, "The required option is missing. command=id1 option=key1");
+            Func<Task> func = async () => await checker.CheckCommandAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.MissingOption).WithErrorDescription("The required option is missing. command=id1 option=key1");
         }
 
         [TestMethod]
@@ -191,7 +197,8 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckCommandAsync(context), TerminalErrors.InvalidOption, "The option value does not match the mapped type. option=key1 type=System.DateTime data_type=DateTime value_type=String value=non-date");
+            Func<Task> func = async () => await checker.CheckCommandAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value does not match the mapped type. option=key1 type=System.DateTime data_type=DateTime value_type=String value=non-date");
         }
 
         [TestMethod]

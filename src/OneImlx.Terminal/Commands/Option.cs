@@ -35,6 +35,7 @@ namespace OneImlx.Terminal.Commands
         /// </summary>
         /// <param name="optionDescriptor">The option descriptor.</param>
         /// <param name="value">The option value.</param>
+        [JsonConstructor]
         public Option(OptionDescriptor optionDescriptor, object value)
         {
             Value = value;

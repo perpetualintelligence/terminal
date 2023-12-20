@@ -5,7 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Test.Services;
+using FluentAssertions;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal
@@ -15,13 +16,13 @@ namespace OneImlx.Terminal
         [Fact]
         public void TypesNamespaceTest()
         {
-            TestHelper.AssertNamespace(typeof(TerminalErrors).Assembly, "OneImlx.Terminal");
+            typeof(TerminalErrors).Assembly.Should().HaveTypesInRootNamespace("OneImlx.Terminal");
         }
 
         [Fact]
         public void TypesLocationTest()
         {
-            TestHelper.AssertAssemblyTypesLocation(typeof(TerminalErrors).Assembly);
+            typeof(TerminalErrors).Assembly.Should().HaveTypesInValidLocations();
         }
     }
 }

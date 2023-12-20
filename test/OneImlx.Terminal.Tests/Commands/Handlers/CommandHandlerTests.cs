@@ -21,6 +21,7 @@ using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test;
+using OneImlx.Test.FluentAssertions;
 using OneImlx.Test.Services;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,9 @@ namespace OneImlx.Terminal.Commands.Handlers
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => newHandler.HandleCommandAsync(commandContext), TerminalErrors.ServerError, "The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=MockCommandCheckerInner");
+
+            Func<Task> func = () => newHandler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=MockCommandCheckerInner");
         }
 
         [TestMethod]
@@ -64,7 +67,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleCommandAsync(commandContext), "test_checker_error", "test_checker_error_desc");
+            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_checker_error").WithErrorDescription("test_checker_error_desc");
         }
 
         [TestMethod]
@@ -74,7 +78,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleCommandAsync(commandContext), TerminalErrors.ServerError, "The command checker is not configured. command_name=name1 command_id=id1");
+            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command checker is not configured. command_name=name1 command_id=id1");
         }
 
         [TestMethod]
@@ -116,7 +121,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleCommandAsync(commandContext), TerminalErrors.ServerError, "The command checker is not valid. command_name=name1 command_id=id1 checker=MockNotCheckerOrRunner");
+            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command checker is not valid. command_name=name1 command_id=id1 checker=MockNotCheckerOrRunner");
         }
 
         [TestMethod]
@@ -132,7 +138,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleCommandAsync(commandContext), TerminalErrors.ServerError, "The command runner delegate is not configured. command_name=name1 command_id=id1 runner=MockNotCheckerOrRunner");
+            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command runner delegate is not configured. command_name=name1 command_id=id1 runner=MockNotCheckerOrRunner");
         }
 
         [TestMethod]
@@ -153,7 +160,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => newHandler.HandleCommandAsync(commandContext), TerminalErrors.ServerError, "The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
+            Func<Task> func = () => newHandler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
         }
 
         [TestMethod]
@@ -168,7 +176,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleCommandAsync(commandContext), "test_runner_error", "test_runner_error_desc");
+            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_runner_error").WithErrorDescription("test_runner_error_desc");
         }
 
         [TestMethod]
@@ -182,7 +191,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, helpIdCommand.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleCommandAsync(commandContext), "test_runner_help_error", "test_runner_help_error_desc");
+            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_runner_help_error").WithErrorDescription("test_runner_help_error_desc");
         }
 
         [TestMethod]
@@ -350,7 +360,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => handler.HandleCommandAsync(commandContext), TerminalErrors.ServerError, "The command runner is not configured. command_name=name1 command_id=id1");
+            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command runner is not configured. command_name=name1 command_id=id1");
         }
 
         [TestMethod]

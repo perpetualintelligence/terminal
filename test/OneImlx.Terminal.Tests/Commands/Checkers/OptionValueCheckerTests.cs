@@ -12,6 +12,7 @@ using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test;
+using OneImlx.Test.FluentAssertions;
 using OneImlx.Test.Services;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -34,7 +35,9 @@ namespace OneImlx.Terminal.Commands.Checkers
             Option value = new(identity, "non int value");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckOptionAsync(context), TerminalErrors.UnsupportedOption, "The option data type is not supported. option=opt1 data_type=invalid_dt");
+
+            Func<Task> func = () => checker.CheckOptionAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnsupportedOption).WithErrorDescription("The option data type is not supported. option=opt1 data_type=invalid_dt");
         }
 
         [TestMethod]
@@ -46,7 +49,8 @@ namespace OneImlx.Terminal.Commands.Checkers
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckOptionAsync(context), TerminalErrors.InvalidOption, "The option value cannot be null. option=opt1");
+            Func<Task> func = () => checker.CheckOptionAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value cannot be null. option=opt1");
         }
 
         [TestMethod]
@@ -93,7 +97,7 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             OptionCheckerContext context = new(value);
             Func<Task> func = async () => await checker.CheckOptionAsync(context);
-            await func.Should().ThrowAsync<TerminalException>().WithMessage("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -106,7 +110,7 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             OptionCheckerContext context = new(value);
             Func<Task> func = async () => await checker.CheckOptionAsync(context);
-            await func.Should().ThrowAsync<TerminalException>().WithMessage("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]
@@ -118,7 +122,8 @@ namespace OneImlx.Terminal.Commands.Checkers
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckOptionAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
+            Func<Task> func = async () => await checker.CheckOptionAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [TestMethod]
@@ -130,7 +135,8 @@ namespace OneImlx.Terminal.Commands.Checkers
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(value);
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => checker.CheckOptionAsync(context), TerminalErrors.InvalidOption, "The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
+            Func<Task> func = async () => await checker.CheckOptionAsync(context);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
         [TestMethod]

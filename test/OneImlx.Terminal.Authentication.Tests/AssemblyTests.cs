@@ -4,14 +4,9 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using OneImlx.Test.Services;
+using FluentAssertions;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Authentication
@@ -21,13 +16,13 @@ namespace OneImlx.Terminal.Authentication
         [Fact]
         public void TypesNamespaceTest()
         {
-            TestHelper.AssertNamespace(typeof(Extensions.ITerminalBuilderExtensions).Assembly, "OneImlx.Terminal.Authentication");
+            typeof(Extensions.ITerminalBuilderExtensions).Assembly.Should().HaveTypesInRootNamespace("OneImlx.Terminal.Authentication");
         }
 
         [Fact]
         public void TypesLocationTest()
         {
-            TestHelper.AssertAssemblyTypesLocation(typeof(Extensions.ITerminalBuilderExtensions).Assembly);
+            typeof(Extensions.ITerminalBuilderExtensions).Assembly.Should().HaveTypesInValidLocations();
         }
     }
 }

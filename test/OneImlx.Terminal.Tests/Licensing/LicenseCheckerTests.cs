@@ -10,7 +10,9 @@ using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
+using OneImlx.Test.FluentAssertions;
 using OneImlx.Test.Services;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,7 +33,8 @@ namespace OneImlx.Terminal.Licensing
         {
             // Args 13
             license.Limits.OptionLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit=2 current=90");
+            Func<Task> func = async () =>  await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The option limit exceeded. max_limit=2 current=90");
         }
 
         [Fact]
@@ -39,7 +42,8 @@ namespace OneImlx.Terminal.Licensing
         {
             // grouped commands are 3
             license.Limits.GroupedCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The grouped command limit exceeded. max_limit=2 current=3");
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The grouped command limit exceeded. max_limit=2 current=3");
         }
 
         [Fact]
@@ -48,7 +52,8 @@ namespace OneImlx.Terminal.Licensing
             // TODO
             // For now the terminal count are 1 always
             license.Limits.TerminalLimit = 0;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit=0 current=1");
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal limit exceeded. max_limit=0 current=1");
         }
 
         [Fact]
@@ -56,7 +61,8 @@ namespace OneImlx.Terminal.Licensing
         {
             // Root Commands are 3
             license.Limits.RootCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The root command limit exceeded. max_limit=2 current=3");
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The root command limit exceeded. max_limit=2 current=3");
         }
 
         [Fact]
@@ -64,7 +70,8 @@ namespace OneImlx.Terminal.Licensing
         {
             // Subs commands 5
             license.Limits.SubCommandLimit = 2;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit=2 current=5");
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The sub command limit exceeded. max_limit=2 current=5");
         }
 
         [Fact]
@@ -96,12 +103,14 @@ namespace OneImlx.Terminal.Licensing
 
             // Invalid value should error
             terminalOptions.Handler.ServiceHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler=test4");
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured service handler is not allowed for your license edition. service_handler=test4");
 
             // Null limit options but configured option should error
             license.Limits.ServiceHandlers = null;
             terminalOptions.Handler.ServiceHandler = "test5";
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler=test5");
+            func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured service handler is not allowed for your license edition. service_handler=test5");
         }
 
         [Fact]
@@ -117,11 +126,13 @@ namespace OneImlx.Terminal.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             terminalOptions.Handler.ServiceHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler=");
+
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured service handler is not allowed for your license edition. service_handler=");
 
             // Invalid value should error
             terminalOptions.Handler.ServiceHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured service handler is not allowed for your license edition. service_handler=test4");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured service handler is not allowed for your license edition. service_handler=test4");
         }
 
         [Fact]
@@ -140,11 +151,12 @@ namespace OneImlx.Terminal.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             terminalOptions.Handler.LicenseHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler=");
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured license handler is not allowed for your license edition. license_handler=");
 
             // Invalid value should error
             terminalOptions.Handler.LicenseHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler=test4");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured license handler is not allowed for your license edition. license_handler=test4");
         }
 
         [Fact]
@@ -163,11 +175,13 @@ namespace OneImlx.Terminal.Licensing
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             terminalOptions.Handler.StoreHandler = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler=");
+
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured store handler is not allowed for your license edition. store_handler=");
 
             // Invalid value should error
             terminalOptions.Handler.StoreHandler = "test4";
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured store handler is not allowed for your license edition. store_handler=test4");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured store handler is not allowed for your license edition. store_handler=test4");
         }
 
         [Fact]
@@ -176,7 +190,8 @@ namespace OneImlx.Terminal.Licensing
             // Error, not allowed but configured
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictValueType = true;
-            await TestHelper.AssertThrowsErrorExceptionAsync<TerminalException>(() => licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license)), TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured strict option value type is not allowed for your license edition.");
 
             // No error, not allowed configured false
             license.Limits.StrictDataType = false;
