@@ -6,13 +6,11 @@
 */
 
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
-    [TestClass]
     public class CommandParserResultTests
     {
         [Fact]

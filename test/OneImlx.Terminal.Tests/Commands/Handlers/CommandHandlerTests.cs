@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers.Mocks;
 using OneImlx.Terminal.Commands.Parsers;
@@ -20,25 +20,19 @@ using OneImlx.Terminal.Events;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
-using OneImlx.Test;
 using OneImlx.Test.FluentAssertions;
-using OneImlx.Test.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace OneImlx.Terminal.Commands.Handlers
 {
-    [TestClass]
-    public class CommandHandlerTests : InitializerTests
+    public class CommandHandlerTests : IAsyncLifetime
     {
-        public CommandHandlerTests() : base(TestLogger.Create<CommandHandlerTests>())
-        {
-        }
-
-        [TestMethod]
+        [Fact]
         public async Task CheckerConfiguredButNotAddedToServiceCollectionShouldErrorAsync()
         {
             // Mock checker configured
@@ -52,13 +46,13 @@ namespace OneImlx.Terminal.Commands.Handlers
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
+            var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, new LoggerFactory().CreateLogger<CommandHandler>());
 
             Func<Task> func = () => newHandler.HandleCommandAsync(commandContext);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command checker is not registered with service collection. command_name=name1 command_id=id1 checker=MockCommandCheckerInner");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CheckerErrorShouldErrorHandler()
         {
             command.Item1.Checker = typeof(MockErrorCommandCheckerInner);
@@ -71,7 +65,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_checker_error").WithErrorDescription("test_checker_error_desc");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CheckerNotConfiguredShouldError()
         {
             CommandRoute commandRoute = new("test_id", "test_raw");
@@ -82,36 +76,28 @@ namespace OneImlx.Terminal.Commands.Handlers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command checker is not configured. command_name=name1 command_id=id1");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Handler_Does_Process_And_Dispose_ResultAsync()
         {
+            MockCommandRunnerInnerResult tempResult = new ();
+            tempResult.ResultProcessed.Should().BeFalse();
+            tempResult.ResultProcessed.Should().BeFalse();
+
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            // MockCommandRunnerInnerResult.ResultProcessed and MockCommandRunnerInnerResult.ResultDisposed are static
-            // because result is not part of DI, its instance is created by the framework.
-            try
-            {
-                Assert.IsFalse(MockCommandRunnerInnerResult.ResultProcessed);
-                Assert.IsFalse(MockCommandRunnerInnerResult.ResultDisposed);
+            CommandRoute commandRoute = new("test_id", "test_raw");
+            ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
 
-                CommandRoute commandRoute = new("test_id", "test_raw");
-                ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
+            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
+            var result = await handler.HandleCommandAsync(commandContext);
 
-                CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-                await handler.HandleCommandAsync(commandContext);
-
-                Assert.IsTrue(MockCommandRunnerInnerResult.ResultProcessed);
-                Assert.IsTrue(MockCommandRunnerInnerResult.ResultDisposed);
-            }
-            finally
-            {
-                MockCommandRunnerInnerResult.ResultProcessed = false;
-                MockCommandRunnerInnerResult.ResultDisposed = false;
-            }
+            MockCommandRunnerInnerResult runnerResult = (MockCommandRunnerInnerResult)result.RunnerResult;
+            runnerResult.ResultProcessed.Should().BeTrue();
+            runnerResult.ResultDisposed.Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task InvalidCheckerShouldError()
         {
             // Not a ICommandChecker
@@ -125,7 +111,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command checker is not valid. command_name=name1 command_id=id1 checker=MockNotCheckerOrRunner");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task InvalidRunnerShouldError()
         {
             // Make sure checker pass so runner can fail
@@ -142,7 +128,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command runner delegate is not configured. command_name=name1 command_id=id1 runner=MockNotCheckerOrRunner");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunnerConfiguredButNotAddedToServiceCollectionShouldErrorAsync()
         {
             // Make sure checker pass so runner can fail. // No mock runner added to collection. Configure checker so
@@ -154,7 +140,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             using IHost newHost = hostBuilder.Build();
-            var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
+            var newHandler = new CommandHandler(newHost.Services, licenseChecker, terminalOptions, new LoggerFactory().CreateLogger<CommandHandler>());
 
             CommandRoute commandRoute = new("test_id", "test_raw");
             ParsedCommand extractedCommand = new(commandRoute, command.Item2, Root.Default());
@@ -164,7 +150,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command runner is not registered with service collection. command_name=name1 command_id=id1 runner=MockCommandRunnerInner");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunnerErrorShouldErrorHandler()
         {
             // Make sure checker pass so runner can fail
@@ -180,7 +166,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_runner_error").WithErrorDescription("test_runner_error_desc");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HelpErrorShouldErrorHandler()
         {
             // Make sure checker pass so runner can fail
@@ -195,7 +181,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_runner_help_error").WithErrorDescription("test_runner_help_error_desc");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunHelpIdShouldSkipCommandChecker()
         {
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -214,7 +200,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             commandCheckerInner.Called.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunHelpAliasShouldSkipCommandChecker()
         {
             helpAliasCommand.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -233,7 +219,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             commandCheckerInner.Called.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HelpShouldBeCalledIfEnabledAndRequested()
         {
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -256,7 +242,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             commandRunnerInner.RunCalled.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HelpShouldBeCalledAndReturnsNoProcessing()
         {
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -274,7 +260,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             result.RunnerResult.IsProcessed.Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunShouldBeCalledIfHelpIsDisabled()
         {
             terminalOptions.Help.Disabled = true;
@@ -296,7 +282,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             commandRunnerInner.RunCalled.Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunShouldBeCalled()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -316,7 +302,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             commandRunnerInner.RunCalled.Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HelpShouldNotBeCalledIfDisabledAndRequested()
         {
             terminalOptions.Help.Disabled = true;
@@ -334,7 +320,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             mockHelpProvider.HelpCalled.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HelpShouldNotBeCalledIfEnabledAndNotRequested()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -350,7 +336,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             mockHelpProvider.HelpCalled.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunnerNotConfiguredShouldError()
         {
             // Make sure checker pass so runner can fail
@@ -364,7 +350,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.ServerError).WithErrorDescription("The command runner is not configured. command_name=name1 command_id=id1");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValidCheckerAndRunnerShouldCheckCorrectLicenseFeaturesAsync()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -376,12 +362,12 @@ namespace OneImlx.Terminal.Commands.Handlers
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleCommandAsync(commandContext);
 
-            Assert.IsTrue(licenseChecker.Called);
-            Assert.IsNotNull(licenseChecker.ContextCalled);
-            Assert.AreEqual(license, licenseChecker.ContextCalled.License);
+            licenseChecker.Called.Should().BeTrue();
+            licenseChecker.ContextCalled.Should().NotBeNull();
+            licenseChecker.ContextCalled!.License.Should().BeSameAs(license);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValidCheckerAndRunnerShouldAllowHandlerAsync()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -392,14 +378,14 @@ namespace OneImlx.Terminal.Commands.Handlers
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var result = await handler.HandleCommandAsync(commandContext);
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<CommandHandlerResult>(result);
+            result.Should().NotBeNull();
+            result.Should().BeOfType<CommandHandlerResult>();
 
-            Assert.IsNotNull(result.RunnerResult);
-            Assert.IsInstanceOfType<CommandRunnerResult>(result.RunnerResult);
+            result.RunnerResult.Should().NotBeNull();
+            result.RunnerResult.Should().BeOfType<MockCommandRunnerInnerResult>();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValidGenericRunnerShouldAllowHandlerAsync()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
@@ -410,22 +396,22 @@ namespace OneImlx.Terminal.Commands.Handlers
 
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var result = await handler.HandleCommandAsync(commandContext);
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<CommandHandlerResult>(result);
+            result.Should().NotBeNull();
+            result.Should().BeOfType<CommandHandlerResult>();
 
-            Assert.IsNotNull(result.CheckerResult);
-            Assert.IsInstanceOfType<CommandCheckerResult>(result.CheckerResult);
+            result.CheckerResult.Should().NotBeNull();
+            result.CheckerResult.Should().BeOfType<CommandCheckerResult>();
 
-            Assert.IsNotNull(result.RunnerResult);
-            Assert.IsInstanceOfType<MockGenericCommandRunnerResult>(result.RunnerResult);
+            result.RunnerResult.Should().NotBeNull();
+            result.RunnerResult.Should().BeOfType<MockGenericCommandRunnerResult>();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldCallCheckerEventIfConfigured()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, new LoggerFactory().CreateLogger<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -444,12 +430,12 @@ namespace OneImlx.Terminal.Commands.Handlers
             asyncEventHandler.AfterCheckCalled.Should().Be(true);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldCallRunnerEventIfConfigured()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, new LoggerFactory().CreateLogger<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -468,12 +454,12 @@ namespace OneImlx.Terminal.Commands.Handlers
             asyncEventHandler.AfterRunCalled.Should().Be(true);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldNotCallAfterRunnerEventIfConfiguredWithAnError()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, new LoggerFactory().CreateLogger<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -504,12 +490,12 @@ namespace OneImlx.Terminal.Commands.Handlers
             asyncEventHandler.AfterRunCalled.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldNotCallAfterCheckerEventIfConfiguredWithAnError()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesWithEventHandler);
             host = hostBuilder.Build();
-            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, new LoggerFactory().CreateLogger<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
@@ -541,39 +527,6 @@ namespace OneImlx.Terminal.Commands.Handlers
 
             asyncEventHandler.BeforeRunCalled.Should().BeFalse();
             asyncEventHandler.AfterRunCalled.Should().BeFalse();
-        }
-
-        protected override void OnTestInitialize()
-        {
-            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
-            host = hostBuilder.Build();
-
-            terminalTokenSource = new CancellationTokenSource();
-            commandTokenSource = new CancellationTokenSource();
-            terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            license = MockLicenses.TestLicense;
-            licenseChecker = new MockLicenseCheckerInner();
-            command = MockCommands.NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None);
-            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
-            routerContext = new CommandRouterContext("test", routingContext);
-
-            // This mocks the help id request
-            OptionDescriptors helpIdOptionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
-            {
-                new OptionDescriptor(terminalOptions.Help.OptionId, nameof(Boolean), "Help options", OptionFlags.None)
-            });
-            Options helpIdOptions = new(new UnicodeTextHandler(), new Option[] { new Option(helpIdOptionDescriptors.First().Value, true) });
-            helpIdCommand = MockCommands.NewCommandDefinition("helpId1", "helpIdName", "helpIdDesc", CommandType.SubCommand, CommandFlags.None, helpIdOptionDescriptors, options: helpIdOptions);
-
-            // This mocks the help alias request
-            OptionDescriptors helpAliasOptionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
-            {
-                new OptionDescriptor(terminalOptions.Help.OptionAlias, nameof(Boolean), "Help alias options", OptionFlags.None)
-            });
-            Options helpAliasOptions = new(new UnicodeTextHandler(), new Option[] { new Option(helpAliasOptionDescriptors.First().Value, true) });
-            helpAliasCommand = MockCommands.NewCommandDefinition("helpAlias", "helpAliasName", "helpAliasDesc", CommandType.SubCommand, CommandFlags.None, helpAliasOptionDescriptors, options: helpAliasOptions);
-
-            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, TestLogger.Create<CommandHandler>());
         }
 
         private void ConfigureCheckerOnly(IServiceCollection opt2)
@@ -609,6 +562,47 @@ namespace OneImlx.Terminal.Commands.Handlers
             opt2.AddSingleton<ITerminalEventHandler, MockAsyncEventHandler>();
 
             opt2.AddSingleton<IHelpProvider, MockHelpProvider>();
+        }
+
+        public Task InitializeAsync()
+        {
+            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServices);
+            host = hostBuilder.Build();
+
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
+            terminalOptions = MockTerminalOptions.NewLegacyOptions();
+            license = MockLicenses.TestLicense;
+            licenseChecker = new MockLicenseCheckerInner();
+            command = MockCommands.NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None);
+            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
+            routerContext = new CommandRouterContext("test", routingContext);
+
+            // This mocks the help id request
+            OptionDescriptors helpIdOptionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
+            {
+                new OptionDescriptor(terminalOptions.Help.OptionId, nameof(Boolean), "Help options", OptionFlags.None)
+            });
+            Options helpIdOptions = new(new UnicodeTextHandler(), new Option[] { new Option(helpIdOptionDescriptors.First().Value, true) });
+            helpIdCommand = MockCommands.NewCommandDefinition("helpId1", "helpIdName", "helpIdDesc", CommandType.SubCommand, CommandFlags.None, helpIdOptionDescriptors, options: helpIdOptions);
+
+            // This mocks the help alias request
+            OptionDescriptors helpAliasOptionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
+            {
+                new OptionDescriptor(terminalOptions.Help.OptionAlias, nameof(Boolean), "Help alias options", OptionFlags.None)
+            });
+            Options helpAliasOptions = new(new UnicodeTextHandler(), new Option[] { new Option(helpAliasOptionDescriptors.First().Value, true) });
+            helpAliasCommand = MockCommands.NewCommandDefinition("helpAlias", "helpAliasName", "helpAliasDesc", CommandType.SubCommand, CommandFlags.None, helpAliasOptionDescriptors, options: helpAliasOptions);
+
+            handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, new LoggerFactory().CreateLogger<CommandHandler>());
+
+            return Task.CompletedTask;
+        }
+
+        public Task DisposeAsync()
+        {
+            host?.Dispose();
+            return Task.CompletedTask;
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;

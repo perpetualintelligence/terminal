@@ -6,18 +6,12 @@
 */
 
 using FluentAssertions;
-using OneImlx.Test;
-using OneImlx.Test.Services;
 using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options
 {
-    public class TerminalOptionsTests : InitializerTests
+    public class TerminalOptionsTests
     {
-        public TerminalOptionsTests() : base(TestLogger.Create<TerminalOptionsTests>())
-        {
-        }
-
         [Fact]
         public void TerminalOptionsShouldHaveCorrectDefaultValues()
         {

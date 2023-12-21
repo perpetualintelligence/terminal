@@ -6,12 +6,12 @@
 */
 
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
-using OneImlx.Test.Services;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandStore = new InMemoryImmutableCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
-            licenseChecker = new LicenseChecker(commandStore, terminalOptions, TestLogger.Create<LicenseChecker>());
+            licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
             license = new License("testProviderId2", TerminalHandlers.OnlineLicenseHandler, TerminalLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Unlimited), LicensePrice.Create(TerminalLicensePlans.Unlimited));
         }
 
@@ -33,7 +33,7 @@ namespace OneImlx.Terminal.Licensing
         {
             // Args 13
             license.Limits.OptionLimit = 2;
-            Func<Task> func = async () =>  await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The option limit exceeded. max_limit=2 current=90");
         }
 

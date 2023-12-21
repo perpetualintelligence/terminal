@@ -6,40 +6,39 @@
 */
 
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Text.Json.Serialization;
+using Xunit;
 
 namespace OneImlx.Terminal.Commands
 {
-    [TestClass]
     public class ArgumentTests
     {
-        [TestMethod]
+        [Fact]
         public void ArgumentShouldBeSealed()
         {
-            Assert.IsTrue(typeof(Option).IsSealed);
+            typeof(Option).IsSealed.Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public void OptionsWithDifferentIdAreNotEqual()
         {
             Option opt1 = new(new OptionDescriptor("id1", nameof(String), "desc1", OptionFlags.None), "value1");
             Option opt2 = new(new OptionDescriptor("id2", nameof(String), "desc1", OptionFlags.None), "value1");
 
-            Assert.AreNotEqual(opt1, opt2);
+            opt1.Should().NotBe(opt2);
         }
 
-        [TestMethod]
+        [Fact]
         public void OptionsWithSameIdAreEqual()
         {
             Option opt1 = new(new OptionDescriptor("id1", nameof(String), "desc1", OptionFlags.None), "value1");
             Option opt2 = new(new OptionDescriptor("id1", "Custom", "desc1", OptionFlags.None), 25.64);
 
-            Assert.AreEqual(opt1, opt2);
+            opt1.Should().Be(opt2);
         }
 
-        [TestMethod]
+        [Fact]
         public void JSONPropertyNamesShouldBeCorrect()
         {
             typeof(Option).GetProperty(nameof(Option.Value)).Should().BeDecoratedWith<JsonPropertyNameAttribute>(attr => attr.Name == "value");

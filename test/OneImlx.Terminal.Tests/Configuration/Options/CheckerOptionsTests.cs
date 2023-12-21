@@ -5,26 +5,24 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OneImlx.Test;
-using OneImlx.Test.Services;
+using FluentAssertions;
+using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options
 {
-    [TestClass]
-    public class CheckerOptionsTests : InitializerTests
+    public class CheckerOptionsTests
     {
-        public CheckerOptionsTests() : base(TestLogger.Create<CheckerOptionsTests>())
+        public CheckerOptionsTests()
         {
         }
 
-        [TestMethod]
+        [Fact]
         public void CheckerOptionsShouldHaveCorrectDefaultValues()
         {
             CheckerOptions options = new();
 
-            Assert.AreEqual(null, options.AllowObsolete);
-            Assert.AreEqual(null, options.StrictValueType);
+            options.AllowObsolete.Should().BeNull();
+            options.StrictValueType.Should().BeNull();
         }
     }
 }

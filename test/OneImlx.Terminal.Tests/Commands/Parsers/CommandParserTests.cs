@@ -7,24 +7,22 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OneImlx.Terminal.Mocks;
-using OneImlx.Test.Services;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
-    [TestClass]
     public class CommandParserTests
     {
         public CommandParserTests()
         {
             routeParser = new MockCommandRouteParser();
-            logger = TestLogger.Create<CommandParser>();
+            logger = new LoggerFactory().CreateLogger<CommandParser>();
             parser = new CommandParser(routeParser, logger);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Calls_Route_ParserAsync()
         {
             MockCommandRouteParser routeParser = new();
@@ -37,26 +35,26 @@ namespace OneImlx.Terminal.Commands.Parsers
             routeParser.PassedCommandRoute.Raw.Should().Be("id1 test raw string");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task UnspecifiedRequiredValuesShouldNotPopulateIfDisabled()
         {
             // This is just extracting no checking
             CommandParserContext context = new(new CommandRoute("id1", "prefix5_default"));
             var result = await parser.ParseCommandAsync(context);
 
-            Assert.IsNull(result.ParsedCommand.Command.Options);
+            result.ParsedCommand.Command.Options.Should().BeNull();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
             CommandParserContext context = new(new CommandRoute("id1", "prefix4_noargs"));
             var result = await parser.ParseCommandAsync(context);
 
-            Assert.IsNull(result.ParsedCommand.Command.Options);
+            result.ParsedCommand.Command.Options.Should().BeNull();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisabledButProviderNotConfiguredShouldNotThrow()
         {
             CommandParserContext context = new(new CommandRoute("id1", "prefix5_default"));
@@ -64,13 +62,12 @@ namespace OneImlx.Terminal.Commands.Parsers
             await noProviderParser.ParseCommandAsync(context);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CommandWithNoArgsShouldNotErrorAsync()
         {
             CommandParserContext context = new(new CommandRoute("id1", "prefix4_noargs"));
             var result = await parser.ParseCommandAsync(context);
-
-            Assert.IsNull(result.ParsedCommand.Command.Options);
+            result.ParsedCommand.Command.Options.Should().BeNull();
         }
 
         private ICommandRouteParser routeParser = null!;

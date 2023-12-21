@@ -6,18 +6,12 @@
 */
 
 using FluentAssertions;
-using OneImlx.Test;
-using OneImlx.Test.Services;
 using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options
 {
-    public class RouterOptionsTests : InitializerTests
+    public class RouterOptionsTests
     {
-        public RouterOptionsTests() : base(TestLogger.Create<RouterOptionsTests>())
-        {
-        }
-
         [Fact]
         public void RouterOptionsShouldHaveCorrectDefaultValues()
         {

@@ -6,20 +6,13 @@
 */
 
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OneImlx.Test;
-using OneImlx.Test.Services;
+using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options
 {
-    [TestClass]
-    public class HandlerOptionsTests : InitializerTests
+    public class HandlerOptionsTests
     {
-        public HandlerOptionsTests() : base(TestLogger.Create<HandlerOptionsTests>())
-        {
-        }
-
-        [TestMethod]
+        [Fact]
         public void HostingOptionsShouldHaveCorrectDefaultValues()
         {
             HandlerOptions options = new();

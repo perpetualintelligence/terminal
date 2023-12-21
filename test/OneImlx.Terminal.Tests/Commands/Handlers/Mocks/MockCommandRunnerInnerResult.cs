@@ -13,9 +13,9 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
     internal class MockCommandRunnerInnerResult : CommandRunnerResult
     {
-        public static bool ResultDisposed { get; set; }
+        public bool ResultDisposed { get; set; }
 
-        public static bool ResultProcessed { get; set; }
+        public bool ResultProcessed { get; set; }
 
         public override ValueTask DisposeAsync()
         {

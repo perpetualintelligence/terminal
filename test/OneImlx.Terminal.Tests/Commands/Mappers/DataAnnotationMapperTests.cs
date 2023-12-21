@@ -6,29 +6,28 @@
 */
 
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
-
-using OneImlx.Test;
 using OneImlx.Test.FluentAssertions;
-using OneImlx.Test.Services;
 using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace OneImlx.Terminal.Commands.Mappers
 {
-    [TestClass]
-    public class DataAnnotationMapperTests : InitializerTests
+    public class DataAnnotationMapperTests
     {
-        public DataAnnotationMapperTests() : base(TestLogger.Create<DataAnnotationMapperTests>())
+        public DataAnnotationMapperTests()
         {
+            options = MockTerminalOptions.NewLegacyOptions();
+            mapper = new DataTypeMapper<Option>(options, new LoggerFactory().CreateLogger<DataTypeMapper<Option>>());
         }
 
-        [DataTestMethod]
-        [DataRow("invalid")]
-        [DataRow("@[]asdas")]
-        [DataRow("12343")]
+        [Theory]
+        [InlineData("invalid")]
+        [InlineData("@[]asdas")]
+        [InlineData("12343")]
         public async Task MapperShouldThrowForInvalidDataType(string dataType)
         {
             Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
@@ -36,26 +35,26 @@ namespace OneImlx.Terminal.Commands.Mappers
             await result.Should().ThrowAsync<TerminalException>().WithMessage($"The option data type is not supported. option=opt1 data_type={dataType}");
         }
 
-        [DataTestMethod]
-        [DataRow(nameof(Boolean), typeof(bool))]
-        [DataRow(nameof(String), typeof(string))]
-        [DataRow(nameof(Int16), typeof(short))]
-        [DataRow(nameof(UInt16), typeof(ushort))]
-        [DataRow(nameof(Int32), typeof(int))]
-        [DataRow(nameof(UInt32), typeof(uint))]
-        [DataRow(nameof(Int64), typeof(long))]
-        [DataRow(nameof(UInt64), typeof(ulong))]
-        [DataRow(nameof(Single), typeof(float))]
-        [DataRow(nameof(Double), typeof(double))]
-        [DataRow(nameof(DateTime), typeof(DateTime))]
+        [Theory]
+        [InlineData(nameof(Boolean), typeof(bool))]
+        [InlineData(nameof(String), typeof(string))]
+        [InlineData(nameof(Int16), typeof(short))]
+        [InlineData(nameof(UInt16), typeof(ushort))]
+        [InlineData(nameof(Int32), typeof(int))]
+        [InlineData(nameof(UInt32), typeof(uint))]
+        [InlineData(nameof(Int64), typeof(long))]
+        [InlineData(nameof(UInt64), typeof(ulong))]
+        [InlineData(nameof(Single), typeof(float))]
+        [InlineData(nameof(Double), typeof(double))]
+        [InlineData(nameof(DateTime), typeof(DateTime))]
         public async Task MapperShouldReturnCorrectMappingAsync(string dataType, Type systemType)
         {
             Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
             var result = await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(option));
-            Assert.AreEqual(systemType, result.MappedType);
+            result.MappedType.Should().Be(systemType);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NullOrWhitespaceDataTypeShouldErrorAsync()
         {
             Option test = new(new OptionDescriptor("opt1", "   ", "desc", OptionFlags.None), "val1");
@@ -71,12 +70,6 @@ namespace OneImlx.Terminal.Commands.Mappers
             func = async () => await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test));
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option data type cannot be null or whitespace. option=opt1");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-        }
-
-        protected override void OnTestInitialize()
-        {
-            options = MockTerminalOptions.NewLegacyOptions();
-            mapper = new DataTypeMapper<Option>(options, TestLogger.Create<DataTypeMapper<Option>>());
         }
 
         private IDataTypeMapper<Option> mapper = null!;

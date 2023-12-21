@@ -11,7 +11,6 @@ using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
-using OneImlx.Test.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
         public CommandRouteParserHindiTests()
         {
-            _logger = TestLogger.Create<CommandRouteParser>();
+            _logger = new LoggerFactory().CreateLogger<CommandRouteParser>();
             _textHandler = new UnicodeTextHandler();
 
             var options = new OptionDescriptors(new UnicodeTextHandler(), new List<OptionDescriptor>()

@@ -6,28 +6,29 @@
 */
 
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Attributes.Validation;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
-using OneImlx.Test;
 using OneImlx.Test.FluentAssertions;
-using OneImlx.Test.Services;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {
-    [TestClass]
-    public class OptionValueCheckerTests : InitializerTests
+    public class OptionValueCheckerTests
     {
-        public OptionValueCheckerTests() : base(TestLogger.Create<OptionValueCheckerTests>())
+        public OptionValueCheckerTests()
         {
+            options = MockTerminalOptions.NewLegacyOptions();
+            mapper = new DataTypeMapper<Option>(options, new LoggerFactory().CreateLogger<DataTypeMapper<Option>>());
+            checker = new OptionChecker(mapper, options);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MapperFailureShouldErrorAsync()
         {
             // Any failure, we just want to test that mapper failure is correctly returned
@@ -40,7 +41,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnsupportedOption).WithErrorDescription("The option data type is not supported. option=opt1 data_type=invalid_dt");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NullOptionValueShouldErrorAsync()
         {
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
@@ -53,7 +54,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value cannot be null. option=opt1");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeChecking_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
             options.Checker.StrictValueType = true;
@@ -66,11 +67,11 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckOptionAsync(context);
 
             // Check converted
-            Assert.AreEqual("23.69", value.Value);
-            Assert.IsInstanceOfType(value.Value, typeof(string));
+            value.Value.Should().Be("23.69");
+            value.Value.Should().BeOfType<string>();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeCheckingDisabled_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
             options.Checker.StrictValueType = false;
@@ -83,11 +84,11 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckOptionAsync(context);
 
             // Check not converted
-            Assert.AreEqual(23.69, value.Value);
-            Assert.IsInstanceOfType(value.Value, typeof(double));
+            value.Value.Should().Be(23.69);
+            value.Value.Should().BeOfType<double>();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeCheckingDisabled_NotSupportedValue_ShouldErrorAsync()
         {
             options.Checker.StrictValueType = false;
@@ -100,7 +101,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeCheckingDisabled_SystemTypeMatch_AndDataValidationFail_ShouldErrorAsync()
         {
             options.Checker.StrictValueType = false;
@@ -113,7 +114,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeChecking_NotSupportedValue_ShouldErrorAsync()
         {
             options.Checker.StrictValueType = true;
@@ -126,7 +127,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeCheckingSystemTypeMatchAndDataValidationFailShouldErrorAsync()
         {
             options.Checker.StrictValueType = true;
@@ -139,7 +140,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SupportedValueShouldNotErrorAsync()
         {
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2")) } };
@@ -149,7 +150,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckOptionAsync(context);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SystemTypeMatchAndDataValidationSuccessShouldNotErrorAsync()
         {
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
@@ -157,14 +158,7 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             OptionCheckerContext context = new(value);
             var result = await checker.CheckOptionAsync(context);
-            Assert.AreEqual(typeof(string), result.MappedType);
-        }
-
-        protected override void OnTestInitialize()
-        {
-            options = MockTerminalOptions.NewLegacyOptions();
-            mapper = new DataTypeMapper<Option>(options, TestLogger.Create<DataTypeMapper<Option>>());
-            checker = new OptionChecker(mapper, options);
+            result.MappedType.Should().Be(typeof(string));
         }
 
         private IOptionChecker checker = null!;

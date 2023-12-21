@@ -70,12 +70,6 @@ namespace OneImlx.Terminal.Mocks
             return new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()), context.Route);
         }
 
-        public Task<TryResultOrError<ICommandHandler>> TryFindHandlerAsync(CommandRouterContext context)
-        {
-            FindCalled = true;
-            return Task.FromResult(new TryResultOrError<ICommandHandler>(new MockCommandHandler()));
-        }
-
         private readonly CancellationTokenSource? cancelOnRouteCalled;
         private readonly Exception? exception;
         private readonly Error? explicitError;

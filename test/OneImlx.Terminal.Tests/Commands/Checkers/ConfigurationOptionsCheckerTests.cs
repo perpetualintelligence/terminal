@@ -15,10 +15,10 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {
-    [TestClass]
     public class ConfigurationOptionsCheckerTests
     {
         public ConfigurationOptionsCheckerTests()
@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             optionsChecker = new ConfigurationOptionsChecker(host.Services);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Terminal_Id_Is_Required()
         {
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Invoke();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LinkedToRoot_Requires_Terminal_Name()
         {
             options.Driver.Enabled = true;
@@ -95,7 +95,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Invoke();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OptionAliasPrefixCannotBeNullOrWhitespaceAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -112,14 +112,14 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The option alias prefix cannot be null or whitespace.");
         }
 
-        [DataTestMethod]
-        [DataRow("@")]
-        [DataRow("~")]
-        [DataRow("#")]
-        [DataRow("sp")]
-        [DataRow("öö")]
-        [DataRow("माणू")]
-        [DataRow("女性")]
+        [Theory]
+        [InlineData("@")]
+        [InlineData("~")]
+        [InlineData("#")]
+        [InlineData("sp")]
+        [InlineData("öö")]
+        [InlineData("माणू")]
+        [InlineData("女性")]
         public async Task OptionAliasPrefixCannotStartWithOptionPrefix(string prefix)
         {
             options.Parser.OptionPrefix = prefix;
@@ -129,15 +129,15 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The option alias prefix cannot start with option prefix. prefix={prefix}");
         }
 
-        [DataTestMethod]
-        [DataRow("@@@@")]
-        [DataRow("~~~~")]
-        [DataRow("####")]
-        [DataRow("sp----")]
-        [DataRow("öööö")]
-        [DataRow("माणूसस")]
-        [DataRow("女性女性")]
-        [DataRow("-女माö")]
+        [Theory]
+        [InlineData("@@@@")]
+        [InlineData("~~~~")]
+        [InlineData("####")]
+        [InlineData("sp----")]
+        [InlineData("öööö")]
+        [InlineData("माणूसस")]
+        [InlineData("女性女性")]
+        [InlineData("-女माö")]
         public async Task OptionAliasPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
             options.Parser.OptionAliasPrefix = prefix;
@@ -145,7 +145,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The option alias prefix cannot be more than 3 Unicode characters. option_alias_prefix={prefix}");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OptionPrefixCannotBeNullOrWhitespaceAsync()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -162,15 +162,15 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The option prefix cannot be null or whitespace.");
         }
 
-        [DataTestMethod]
-        [DataRow("@@@@")]
-        [DataRow("~~~~")]
-        [DataRow("####")]
-        [DataRow("sp----")]
-        [DataRow("öööö")]
-        [DataRow("माणूसस")]
-        [DataRow("女性女性")]
-        [DataRow("-女माö")]
+        [Theory]
+        [InlineData("@@@@")]
+        [InlineData("~~~~")]
+        [InlineData("####")]
+        [InlineData("sp----")]
+        [InlineData("öööö")]
+        [InlineData("माणूसस")]
+        [InlineData("女性女性")]
+        [InlineData("-女माö")]
         public async Task OptionPrefixWithMoreThan3UnicodeCharsShouldError(string prefix)
         {
             options.Parser.OptionPrefix = prefix;
@@ -178,14 +178,14 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The option prefix cannot be more than 3 Unicode characters. option_prefix={prefix}");
         }
 
-        [DataTestMethod]
-        [DataRow("@")]
-        [DataRow("~")]
-        [DataRow("#")]
-        [DataRow("sp")]
-        [DataRow("öö")]
-        [DataRow("माणूस")]
-        [DataRow("女性")]
+        [Theory]
+        [InlineData("@")]
+        [InlineData("~")]
+        [InlineData("#")]
+        [InlineData("sp")]
+        [InlineData("öö")]
+        [InlineData("माणूस")]
+        [InlineData("女性")]
         public async Task OptionSeparatorAndOptionAliasPrefixCannotBeSameAsync(string separator)
         {
             options.Parser.OptionValueSeparator = separator;
@@ -196,14 +196,14 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The option separator and option alias prefix cannot be same. separator={separator}");
         }
 
-        [DataTestMethod]
-        [DataRow("@")]
-        [DataRow("~")]
-        [DataRow("#")]
-        [DataRow("sp")]
-        [DataRow("öö")]
-        [DataRow("माणूस")]
-        [DataRow("女性")]
+        [Theory]
+        [InlineData("@")]
+        [InlineData("~")]
+        [InlineData("#")]
+        [InlineData("sp")]
+        [InlineData("öö")]
+        [InlineData("माणूस")]
+        [InlineData("女性")]
         public async Task OptionSeparatorAndOptionPrefixCannotBeSameAsync(string separator)
         {
             options.Parser.OptionValueSeparator = separator;
@@ -213,7 +213,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The option separator and option prefix cannot be same. separator={separator}");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OptionSeparatorCannotBeNullOrEmptyAsync()
         {
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
@@ -227,14 +227,14 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The option separator cannot be null or empty.");
         }
 
-        [DataTestMethod]
-        [DataRow(" ")]
-        [DataRow("~")]
-        [DataRow("#")]
-        [DataRow("sp")]
-        [DataRow("öö")]
-        [DataRow("माणूस")]
-        [DataRow("女性")]
+        [Theory]
+        [InlineData(" ")]
+        [InlineData("~")]
+        [InlineData("#")]
+        [InlineData("sp")]
+        [InlineData("öö")]
+        [InlineData("माणूस")]
+        [InlineData("女性")]
         public async Task CommandSeparatorAndOptionPrefixCannotBeSameAsync(string separator)
         {
             options.Parser.Separator = separator;
@@ -244,7 +244,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The command separator and option prefix cannot be same. separator={separator}");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CommandSeparatorCannotBeNullOrEmptyAsync()
         {
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
@@ -258,7 +258,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The command separator cannot be null or empty.");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValueDelimiterStringCannotBeSameAsArgAliasPrefix()
         {
             // Make sure command separator is different so we can fail for option separator below.
@@ -270,7 +270,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be same as the option alias prefix. delimiter=^");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValueDelimiterStringCannotBeSameAsArgPrefix()
         {
             // Make sure command separator is different so we can fail for option separator below.
@@ -281,7 +281,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be same as the option prefix. delimiter=^");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValueDelimiterStringCannotBeSameAsArgSeparator()
         {
             // Make sure command separator is different so we can fail for option separator below.
@@ -292,7 +292,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be same as the option value separator. delimiter=^");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValueDelimiterStringCannotBeSameAsSeparator()
         {
             // Make sure command separator is different so we can fail for option separator below.
@@ -303,7 +303,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be same as the separator. delimiter=^");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValueDelimiterStringCannotBeNullOrWhitespace()
         {
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);

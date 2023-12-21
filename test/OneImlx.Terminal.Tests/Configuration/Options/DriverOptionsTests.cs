@@ -1,23 +1,17 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using FluentAssertions;
-using OneImlx.Test;
-using OneImlx.Test.Services;
 using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options
 {
-    public class DriverOptionsTests : InitializerTests
+    public class DriverOptionsTests
     {
-        public DriverOptionsTests() : base(TestLogger.Create<TerminalOptionsTests>())
-        {
-        }
-
         [Fact]
         public void TerminalOptionsShouldHaveCorrectDefaultValues()
         {

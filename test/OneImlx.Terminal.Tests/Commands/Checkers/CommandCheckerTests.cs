@@ -6,7 +6,7 @@
 */
 
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
@@ -15,24 +15,37 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
-using OneImlx.Test;
 using OneImlx.Test.FluentAssertions;
-using OneImlx.Test.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {
-    [TestClass]
-    public class CommandCheckerTests : InitializerTests
+    public class CommandCheckerTests
     {
-        public CommandCheckerTests() : base(TestLogger.Create<CommandCheckerTests>())
+        public CommandCheckerTests()
         {
+            LoggerFactory loggerFactory = new LoggerFactory();
+
+            commandRoute = new CommandRoute(Guid.NewGuid().ToString(), "test_raw");
+            terminalOptions = MockTerminalOptions.NewLegacyOptions();
+            textHandler = new UnicodeTextHandler();
+            optionMapper = new DataTypeMapper<Option>(terminalOptions, loggerFactory.CreateLogger<DataTypeMapper<Option>>());
+            argumentMapper = new DataTypeMapper<Argument>(terminalOptions, loggerFactory.CreateLogger<DataTypeMapper<Argument>>());
+            valueChecker = new OptionChecker(optionMapper, terminalOptions);
+            argumentChecker = new ArgumentChecker(argumentMapper, terminalOptions);
+            checker = new CommandChecker(valueChecker, argumentChecker, terminalOptions, loggerFactory.CreateLogger<CommandChecker>());
+            commands = new InMemoryImmutableCommandStore(textHandler, MockCommands.Commands.Values);
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
+            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
+            routerContext = new CommandRouterContext("test", routingContext);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Router_Throws_On_CommandString_MaxLimitAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Disabled);
@@ -53,7 +66,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command string is too long. command=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx max=30");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisabledOptionShouldErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Disabled);
@@ -71,7 +84,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option is disabled. command=id1 option=key1");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task EnabledOptionShouldNotErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.None);
@@ -87,7 +100,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckCommandAsync(context);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ObsoleteOptionAndObsoleteAllowedShouldNotErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Obsolete);
@@ -105,7 +118,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckCommandAsync(context);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ObsoleteOptionAndObsoleteNotAllowedShouldErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Obsolete);
@@ -128,7 +141,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option is obsolete. command=id1 option=key1");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequiredOptionMissingShouldErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Required);
@@ -146,7 +159,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.MissingOption).WithErrorDescription("The required option is missing. command=id1 option=key1");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequiredOptionPassedShouldNotErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Required);
@@ -162,7 +175,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckCommandAsync(context);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeCheckingDisabledInvalidValueTypeShouldNotErrorAsync()
         {
             terminalOptions.Checker.StrictValueType = false;
@@ -179,10 +192,10 @@ namespace OneImlx.Terminal.Commands.Checkers
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckCommandAsync(context);
 
-            Assert.AreEqual("non-date", options["key1"].Value);
+            options["key1"].Value.Should().Be("non-date");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeCheckingValueDelimiterValidValueTypeShouldErrorAsync()
         {
             terminalOptions.Checker.StrictValueType = true;
@@ -201,7 +214,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value does not match the mapped type. option=key1 type=System.DateTime data_type=DateTime value_type=String value=non-date");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StrictTypeCheckingWithValidValueTypeShouldChangeTypeCorrectlyAsync()
         {
             terminalOptions.Checker.StrictValueType = true;
@@ -215,7 +228,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             object oldValue = options["key1"].Value;
-            Assert.IsInstanceOfType(oldValue, typeof(string));
+            oldValue.Should().BeOfType<string>();
 
             // Value should pass and converted to date
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
@@ -223,11 +236,11 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckCommandAsync(context);
 
             object newValue = options["key1"].Value;
-            Assert.IsInstanceOfType(newValue, typeof(DateTime));
-            Assert.AreEqual(oldValue, ((DateTime)newValue).ToString("dd-MMM-yyyy"));
+            newValue.Should().BeOfType<DateTime>();
+            ((DateTime)newValue).ToString("dd-MMM-yyyy").Should().Be((string)oldValue);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValueValidCustomDataTypeShouldNotErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(Double), "test desc", OptionFlags.None);
@@ -243,7 +256,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             var result = await checker.CheckCommandAsync(context);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValueValidShouldNotErrorAsync()
         {
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
@@ -257,23 +270,6 @@ namespace OneImlx.Terminal.Commands.Checkers
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
             await checker.CheckCommandAsync(context);
-        }
-
-        protected override void OnTestInitialize()
-        {
-            commandRoute = new CommandRoute(Guid.NewGuid().ToString(), "test_raw");
-            terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            textHandler = new UnicodeTextHandler();
-            optionMapper = new DataTypeMapper<Option>(terminalOptions, TestLogger.Create<DataTypeMapper<Option>>());
-            argumentMapper = new DataTypeMapper<Argument>(terminalOptions, TestLogger.Create<DataTypeMapper<Argument>>());
-            valueChecker = new OptionChecker(optionMapper, terminalOptions);
-            argumentChecker = new ArgumentChecker(argumentMapper, terminalOptions);
-            checker = new CommandChecker(valueChecker, argumentChecker, terminalOptions, TestLogger.Create<CommandChecker>());
-            commands = new InMemoryImmutableCommandStore(textHandler, MockCommands.Commands.Values);
-            terminalTokenSource = new CancellationTokenSource();
-            commandTokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
-            routerContext = new CommandRouterContext("test", routingContext);
         }
 
         private CommandRoute commandRoute = null!;
