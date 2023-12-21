@@ -121,16 +121,19 @@ namespace OneImlx.Terminal.Extensions
             terminalTokenSource.Cancel();
 
             // Wait for routingTask to complete or timeout after 500 seconds
-            routingTask.Wait(500);
+            if (await Task.WhenAny(routingTask, Task.Delay(500)) != routingTask)
+            {
+                throw new TimeoutException("The operation timed out after 500 milliseconds.");
+            }
 
             // Verify that the server stops on cancellation
             routingTask.IsCompletedSuccessfully.Should().BeTrue();
         }
 
         [Fact]
-        public void RunAsync_Should_Stop_Server_And_Client_On_Cancellation()
+        public async Task RunAsync_Should_Stop_Server_And_Client_On_CancellationAsync()
         {
-            host = CreateHostWithLogger(ConfigureServicesDefault, nameof(RunAsync_Should_Stop_Server_And_Client_On_Cancellation));
+            host = CreateHostWithLogger(ConfigureServicesDefault, nameof(RunAsync_Should_Stop_Server_And_Client_On_CancellationAsync));
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
 
@@ -148,8 +151,17 @@ namespace OneImlx.Terminal.Extensions
             // Cancel both the server and client tasks after a delay
             terminalTokenSource.CancelAfter(3000);
 
-            // Wait for client and server tasks to complete
-            Task.WhenAll(routingTask, clientTask).Wait(5000);
+            // Assuming routingTask and clientTask are Tasks
+            var delayTask = Task.Delay(5000);
+            var completedTask = await Task.WhenAny(
+                Task.WhenAll(routingTask, clientTask),
+                delayTask
+            );
+
+            if (completedTask == delayTask)
+            {
+                throw new TimeoutException("The operation timed out in 5000 milliseconds.");
+            }
 
             // Verify that both server and client tasks stopped on cancellation
             routingTask.IsCompletedSuccessfully.Should().BeTrue();
@@ -225,7 +237,7 @@ namespace OneImlx.Terminal.Extensions
             });
 
             // Client handling throws an exception
-            Task.WaitAny(routingTask, clientTask);
+            await Task.WhenAny(routingTask, clientTask);
             routingTask.IsCompletedSuccessfully.Should().BeFalse();
             clientTask.IsCompletedSuccessfully.Should().BeTrue();
 
@@ -560,8 +572,8 @@ namespace OneImlx.Terminal.Extensions
                 await tcpClient.GetStream().FlushAsync();
             });
 
-            // Wait for both the routing task and the client task to complete
-            int idx = Task.WaitAny(routingTask, clientTask);
+            // Wait for the client task to complete
+            await Task.WhenAny(routingTask, clientTask);
             routingTask.IsCompletedSuccessfully.Should().BeFalse();
             clientTask.IsCompletedSuccessfully.Should().BeTrue();
 
@@ -574,7 +586,7 @@ namespace OneImlx.Terminal.Extensions
             exPublisher.PublishedMessage.Should().Be("test_error_description. opt1=test1 opt2=test2");
 
             terminalTokenSource.Cancel();
-            Task.WaitAll(routingTask, clientTask);
+            await Task.WhenAll(routingTask, clientTask);
             routingTask.IsCompletedSuccessfully.Should().BeTrue();
             clientTask.IsCompletedSuccessfully.Should().BeTrue();
         }

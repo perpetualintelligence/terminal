@@ -1,3 +1,8 @@
+# 5.6.4-rc*
+> Breaking Change
+- Use `OneImlx.Shared` and `OneImlx.Test` pacakges. 
+- Migrate all tests from MSTest to xUnit
+
 # 5.6.1-rc*
 > Breaking Change
 - Rename the package to `OneImlx.Terminal`
