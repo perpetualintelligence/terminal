@@ -37,13 +37,6 @@ jobs:
       run: cat .github/package_version.env >> $GITHUB_ENV                
       continue-on-error: false
 
-    # Protocols package version
-    # E.g. 2.3.8-preview.221225369 (latest build version including preview)
-    # PI_DEPENDENCIES_SUFFIX will be empty for release version
-    - name: Dependencies
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $GITHUB_ENV
-      continue-on-error: false
-    
     # Setup .Net with global.json
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -86,13 +79,6 @@ jobs:
       run: cat .github/package_version.env >> $GITHUB_ENV                
       continue-on-error: false
 
-    # Protocols package version
-    # E.g. 2.3.8-preview.221225369 (latest build version including preview)
-    # PI_DEPENDENCIES_SUFFIX will be empty for release version
-    - name: Dependencies
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $GITHUB_ENV
-      continue-on-error: false
-      
     # Setup .Net with global.json
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -135,13 +121,6 @@ jobs:
       run: cat .github/package_version.env >> $env:GITHUB_ENV
       continue-on-error: false
 
-    # Protocols package version
-    # E.g. 2.3.8-preview.221225369 (latest build version including preview)
-    # PI_DEPENDENCIES_SUFFIX will be empty for release version
-    - name: Dependencies
-      run: echo "PI_CI_PACKAGE_VERSION=${{ env.PI_MAJOR_VERSION }}.${{ env.PI_MINOR_VERSION }}.${{ env.PI_PATCH_VERSION }}${{ env.PI_DEPENDENCIES_SUFFIX }}" >> $env:GITHUB_ENV
-      continue-on-error: false
-    
     # Setup .Net with global.json
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
