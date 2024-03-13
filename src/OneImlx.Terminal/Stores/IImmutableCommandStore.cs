@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Stores
         public Task<bool> TryFindByIdAsync(string id, out CommandDescriptor? commandDescriptor);
 
         /// <summary>
-        /// Returns all <see cref="CommandDescriptor"/>s asynchronously.
+        /// Returns all <see cref="CommandDescriptor"/> asynchronously.
         /// </summary>
         /// <returns>A <see cref="Dictionary{TKey, TValue}"/> of command descriptors. </returns>
         public Task<ReadOnlyDictionary<string, CommandDescriptor>> AllAsync();
