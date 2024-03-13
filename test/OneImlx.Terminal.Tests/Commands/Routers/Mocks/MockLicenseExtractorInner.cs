@@ -15,7 +15,7 @@ namespace OneImlx.Terminal.Mocks
     {
         public bool NoLicense { get; set; }
 
-        public License TestLicense { get; set; } = new License("testProviderId", TerminalHandlers.OnlineLicenseHandler, TerminalLicensePlans.Demo, LicenseUsages.RnD, LicenseSources.JsonFile, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+        public License TestLicense { get; set; } = new License(TerminalHandlers.OnlineLicenseHandler, TerminalLicensePlans.Demo, LicenseUsage.RnD, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
 
         public Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context)
         {

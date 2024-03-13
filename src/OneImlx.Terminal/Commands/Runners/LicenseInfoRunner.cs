@@ -6,7 +6,6 @@
 */
 
 using OneImlx.Shared.Extensions;
-using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 using System;
@@ -43,24 +42,15 @@ namespace OneImlx.Terminal.Commands.Runners
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "plan={0}", license.Plan);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "usage={0}", license.Usage);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "handler={0}", license.Handler);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "provider_id={0}", license.ProviderId);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "key_source={0}", license.LicenseKeySource);
-
-                if (license.LicenseKeySource == LicenseSources.JsonFile)
-                {
-                    // Only display key file path
-                    await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "key_file={0}", license.LicenseKey);
-                }
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "key_file={0}", license.LicenseKey);
             }
 
             {
                 // Print Claims
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Claims");
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "name={0}", license.Claims.Name);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "name={0}", license.Claims.TenantName);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "tenant_id={0}", license.Claims.TenantId);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "tenant_country={0}", license.Claims.TenantCountry);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "object_id={0}", license.Claims.ObjectId ?? "-");
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "object_country={0}", license.Claims.ObjectCountry ?? "-");
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "authorized_party={0}", license.Claims.AuthorizedParty);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "audience={0}", license.Claims.Audience);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "issuer={0}", license.Claims.Issuer);

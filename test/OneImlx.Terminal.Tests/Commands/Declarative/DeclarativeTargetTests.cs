@@ -394,7 +394,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         public ValueTask DisposeAsync()
         {
             host.Dispose();
-            return ValueTask.CompletedTask;
+            return new ValueTask(Task.CompletedTask);
         }
 
         private readonly TerminalBuilder terminalBuilder;

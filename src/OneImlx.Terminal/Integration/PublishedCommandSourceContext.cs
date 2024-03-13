@@ -19,12 +19,15 @@ namespace OneImlx.Terminal.Integration
         /// </summary>
         public PublishedCommandSourceContext()
         {
-            PublishedAssemblies = new Dictionary<string, string>();
+            PublishedAssemblies = [];
         }
 
         /// <summary>
         /// The collection of published assembly with extension and its publish folder.
         /// </summary>
+        /// <remarks>
+        /// Key is the published assembly file name with extension, and value is its publish folder that contains all the dependencies and the assembly itself.
+        /// </remarks>
         public Dictionary<string, string> PublishedAssemblies { get; }
     }
 }

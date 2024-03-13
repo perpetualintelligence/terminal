@@ -68,7 +68,7 @@ namespace OneImlx.Terminal.Extensions
             await Task.WhenAny(routingTask, Task.Delay(10000));
 
             // Server is not yet complete
-            routingTask.IsCompletedSuccessfully.Should().BeFalse();
+            routingTask.Status.Should().NotBe(TaskStatus.RanToCompletion, because: "The server task should not be completed successfully.");
 
             // Stop the server by issuing a cancellation
             terminalTokenSource.CancelAfter(2000);
@@ -77,7 +77,7 @@ namespace OneImlx.Terminal.Extensions
             await routingTask;
 
             // Verify that the server runs indefinitely and stops when the cancellation token is triggered
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace OneImlx.Terminal.Extensions
             await routingTask;
 
             // Ensure that the server task has completed successfully
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace OneImlx.Terminal.Extensions
             await Task.WhenAny(routingTask, Task.Delay(3000));
 
             // Server is not yet complete
-            routingTask.IsCompletedSuccessfully.Should().BeFalse();
+            routingTask.Status.Should().NotBe(TaskStatus.RanToCompletion, because: "The server task should not be completed successfully.");
 
             // Stop the server by issuing a cancellation
             terminalTokenSource.Cancel();
@@ -127,7 +127,7 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Verify that the server stops on cancellation
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
         }
 
         [Fact]
@@ -164,8 +164,8 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Verify that both server and client tasks stopped on cancellation
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
         }
 
         [Fact]
@@ -196,7 +196,7 @@ namespace OneImlx.Terminal.Extensions
 
                 // Send a command from the client to the server
                 byte[] messageBytes = textHandler.Encoding.GetBytes(GetCliOptions(host).DelimitedMessage("Test command"));
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
 
@@ -211,8 +211,8 @@ namespace OneImlx.Terminal.Extensions
             // Verify that the server and client tasks have completed
             await routingTask;
             await clientTask;
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
         }
 
         [Fact]
@@ -232,14 +232,14 @@ namespace OneImlx.Terminal.Extensions
 
                 // Send a command that exceeds the configured command string length limit
                 byte[] messageBytes = textHandler.Encoding.GetBytes(GetCliOptions(host).DelimitedMessage(new string('A', 10000))); // Length exceeds the limit
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
 
             // Client handling throws an exception
             await Task.WhenAny(routingTask, clientTask);
-            routingTask.IsCompletedSuccessfully.Should().BeFalse();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().NotBe(TaskStatus.RanToCompletion, because: "The server task should not be completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should be completed successfully.");
 
             // Wait for .5 seconds and make sure tasks are completed
             await Task.Delay(2000);
@@ -255,8 +255,8 @@ namespace OneImlx.Terminal.Extensions
 
             // Wait for both the routing task and the client task to complete
             await Task.WhenAll(routingTask, clientTask);
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
         }
 
         [Fact]
@@ -278,7 +278,7 @@ namespace OneImlx.Terminal.Extensions
                 string testString = GetCliOptions(host).DelimitedMessage("rt1 grp1 cmd1", "rt2 grp2 cmd2", "rt3 grp3 cmd3");
 
                 byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
 
@@ -297,8 +297,8 @@ namespace OneImlx.Terminal.Extensions
             mockCommandRouter.MultipleRawString[2].Should().Be("rt3 grp3 cmd3");
 
             // Verify that the server and client tasks have completed
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
         }
 
         [Fact]
@@ -319,7 +319,7 @@ namespace OneImlx.Terminal.Extensions
                 // Send a command that exceeds the configured command string length limit
                 string testString = GetCliOptions(host).DelimitedMessage("rt1 grp1 cmd1", "rt2 grp2 cmd2", "rt3 grp3 cmd3");
                 byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
 
                 await Task.Delay(3000);
@@ -327,7 +327,7 @@ namespace OneImlx.Terminal.Extensions
                 // Send a command that exceeds the configured command string length limit
                 testString = GetCliOptions(host).DelimitedMessage("rt4 grp4 cmd4", "rt5 grp5 cmd5", "rt6 grp6 cmd6");
                 messageBytes = textHandler.Encoding.GetBytes(testString);
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
 
@@ -349,8 +349,8 @@ namespace OneImlx.Terminal.Extensions
             mockCommandRouter.MultipleRawString[5].Should().Be("rt6 grp6 cmd6");
 
             // Verify that the server and client tasks have completed
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
         }
 
         [Fact]
@@ -377,7 +377,7 @@ namespace OneImlx.Terminal.Extensions
                 string testString = GetCliOptions(host).DelimitedMessage(commandList.ToArray());
 
                 byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
 
@@ -397,11 +397,11 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Verify that the server and client tasks have completed
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
         }
 
-        private IHost CreateHostWithLogger(Action<IServiceCollection> configureServicesDefault, string logName)
+        private static IHost CreateHostWithLogger(Action<IServiceCollection> configureServicesDefault, string logName)
         {
             string logFile = Path.ChangeExtension(logName, ".log");
 
@@ -442,7 +442,7 @@ namespace OneImlx.Terminal.Extensions
                 string testString = GetCliOptions(host).DelimitedMessage(commandList.ToArray());
 
                 byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
 
@@ -462,8 +462,8 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Verify that the server and client tasks have completed
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
         }
 
         [Fact]
@@ -505,10 +505,10 @@ namespace OneImlx.Terminal.Extensions
             await Task.WhenAll(allTasks);
 
             // Verify that the server runs indefinitely and stops when the cancellation token is triggered
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
             for (int i = 0; i < numClients; i++)
             {
-                clientTasks[i].IsCompletedSuccessfully.Should().BeTrue();
+                clientTasks[i].Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
             }
         }
 
@@ -534,7 +534,7 @@ namespace OneImlx.Terminal.Extensions
 
                 // Send a malformed delimited message (without proper delimiters)
                 byte[] messageBytes = textHandler.Encoding.GetBytes("Malformed message without delimiters");
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
 
@@ -544,8 +544,8 @@ namespace OneImlx.Terminal.Extensions
 
             // Assert
             // Check if the client is connected and the server handles the malformed message correctly
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            connectTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            connectTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
         }
 
         [Fact]
@@ -568,17 +568,17 @@ namespace OneImlx.Terminal.Extensions
 
                 // Send a valid delimited message
                 byte[] messageBytes = textHandler.Encoding.GetBytes(GetCliOptions(host).DelimitedMessage("Test command"));
-                await tcpClient.GetStream().WriteAsync(messageBytes);
+                await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
 
             // Wait for the client task to complete
             await Task.WhenAny(routingTask, clientTask);
-            routingTask.IsCompletedSuccessfully.Should().BeFalse();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().NotBe(TaskStatus.RanToCompletion, because: "The server task should not be completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
 
             // Wait for .5 seconds and make sure tasks are completed
-            await Task.Delay(2000);
+            await Task.Delay(2000); 
 
             // Check the published error
             MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
@@ -587,8 +587,8 @@ namespace OneImlx.Terminal.Extensions
 
             terminalTokenSource.Cancel();
             await Task.WhenAll(routingTask, clientTask);
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
-            clientTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
+            clientTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
         }
 
         [Fact]
@@ -616,12 +616,12 @@ namespace OneImlx.Terminal.Extensions
                     _clientTasks[localIdx] = Task.Run(async () =>
                     {
                         using var tcpClient = new TcpClient();
-                        await tcpClient.ConnectAsync(serverIpEndPoint);
+                        await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
                         tcpClient.Connected.Should().BeTrue();
 
                         var command = $"Client-{localIdx + 1} sent test command";
                         var commandBytes = textHandler.Encoding.GetBytes(GetCliOptions(host).DelimitedMessage(command));
-                        await tcpClient.GetStream().WriteAsync(commandBytes);
+                        await tcpClient.GetStream().WriteAsync(commandBytes, 0, commandBytes.Length);
                         await tcpClient.GetStream().FlushAsync();
                     });
                 }
@@ -635,11 +635,11 @@ namespace OneImlx.Terminal.Extensions
             for (int i = 0; i < numClients; i++)
             {
                 await _clientTasks[i];
-                _clientTasks[i].IsCompletedSuccessfully.Should().BeTrue();
+                _clientTasks[i].Status.Should().Be(TaskStatus.RanToCompletion, because: "The client task should have completed successfully.");
             }
 
             await routingTask; // Wait for the routing task to complete
-            routingTask.IsCompletedSuccessfully.Should().BeTrue();
+            routingTask.Status.Should().Be(TaskStatus.RanToCompletion, because: "The server task should have completed successfully.");
 
             // Assert result
             var mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();

@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                 new ArgumentDescriptor(4, "arg4", nameof(Double), "Argument4", ArgumentFlags.None),
                 new ArgumentDescriptor(5, "arg5", nameof(Int64), "Argument5", ArgumentFlags.None),
                 new ArgumentDescriptor(6, "arg6", nameof(String), "Argument6", ArgumentFlags.None),
-                new ArgumentDescriptor(7, "arg7", nameof(DateOnly), "Argument7", ArgumentFlags.None),
+                new ArgumentDescriptor(7, "arg7", nameof(DateTimeOffset), "Argument7", ArgumentFlags.None),
                 new ArgumentDescriptor(8, "arg8", nameof(DateTime), "Argument8", ArgumentFlags.None),
                 new ArgumentDescriptor(9, "arg9", nameof(String), "Argument9", ArgumentFlags.None),
             });

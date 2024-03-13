@@ -3,7 +3,7 @@
     <Import Project="..\..\build\props\PackageLicense.props" />
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
         <Description>
             The flexible cross-platform framework for modern CLI terminals. Use microservices architecture principles, dependency injection, and options pattern to build modern and secured CLI applications similar to Github CLI, .NET CLI, Stripe CLI, or CLI terminals with custom formats. Take your app or service to the command line with Unicode support and develop CLI terminals in any language. Configure your server, provide your self-hosting implementations for stores, and host in an environment of your choice, e.g., Windows, Linux, macOS, Docker, Kubernetes, etc.
         </Description>
@@ -11,8 +11,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Graph.Core" Version="3.1.3" />
-        <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.58.0" />
+        <PackageReference Include="Microsoft.Graph.Core" Version="3.1.8" />
+        <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.59.0" />
     </ItemGroup>
 
     <!--

@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\build\props\Test.props" />
+  <Import Project="..\..\build\props\Test.props" />  
 
   <ItemGroup>    
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />    
     <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="7.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00968" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00972" />
   </ItemGroup>
 
  <ItemGroup>

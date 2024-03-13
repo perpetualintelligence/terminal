@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <summary>
         /// The authorized application id. This is also the <c>auth_apps</c> claim from your license key.
         /// </summary>
-        public string? AuthorizedApplicationId { get; set; }
+        public string? Application { get; set; }
 
         /// <summary>
         /// The license consumer tenant id.
@@ -35,23 +35,14 @@ namespace OneImlx.Terminal.Configuration.Options
         public string? ConsumerTenantId { get; set; }
 
         /// <summary>
-        /// The license key source. Defaults to <see cref="LicenseSources.JsonFile"/>.
+        /// The license key file containing license key.
         /// </summary>
-        public string LicenseKeySource { get; set; } = LicenseSources.JsonFile;
-
-        /// <summary>
-        /// The license key or the file containing license key.
-        /// </summary>
-        /// <remarks>
-        /// If <see cref="LicenseKeySource"/> is set to <see cref="LicenseSources.JsonFile"/>, then this option value must be a
-        /// valid JSON file path containing license key.
-        /// </remarks>
         public string? LicenseKey { get; set; }
 
         /// <summary>
         /// The subject or a licensing context to check the license. Your subscription id establishes your licensing context.
         /// </summary>
-        public string? Subject { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// The license plan. Defaults to <see cref="TerminalLicensePlans.Demo"/>.

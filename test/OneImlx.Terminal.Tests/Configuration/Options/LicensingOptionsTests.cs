@@ -18,13 +18,12 @@ namespace OneImlx.Terminal.Configuration.Options
         {
             LicensingOptions options = new();
 
-            options.AuthorizedApplicationId.Should().BeNull();
+            options.Application.Should().BeNull();
             options.ConsumerTenantId.Should().BeNull();
-            options.LicenseKeySource.Should().Be(LicenseSources.JsonFile);
             options.LicenseKey.Should().BeNull();
             options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
             options.OnPremiseDeployment.Should().BeNull();
-            options.Subject.Should().BeNull();
+            options.Id.Should().BeNull();
             options.HttpClientName.Should().BeNull();
         }
     }

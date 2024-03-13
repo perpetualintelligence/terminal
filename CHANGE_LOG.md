@@ -1,3 +1,8 @@
+# 5.8.3-rc*
+> Breaking Change
+- Support multi-targets net481, net8.0, netstandard2.0 and netstandard2.1
+- Simplify licensing based on tenant
+
 # 5.6.4-rc*
 > Breaking Change
 - Use `OneImlx.Shared` and `OneImlx.Test` pacakges. 

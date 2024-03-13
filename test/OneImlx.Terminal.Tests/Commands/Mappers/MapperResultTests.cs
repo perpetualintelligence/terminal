@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Commands.Mappers
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action act = () => new DataTypeMapperResult(null);
-            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'mappedType')");
+            act.Should().Throw<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }

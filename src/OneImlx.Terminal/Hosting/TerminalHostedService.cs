@@ -129,18 +129,18 @@ namespace OneImlx.Terminal.Hosting
         {
             if (license.Plan == TerminalLicensePlans.Demo)
             {
-                if (license.Usage == LicenseUsages.Educational)
+                if (license.Usage == LicenseUsage.Educational)
                 {
                     logger.LogWarning("Your demo license is free for educational purposes. For non-educational, release, or production environment, you require a commercial license.");
                 }
-                else if (license.Usage == LicenseUsages.RnD)
+                else if (license.Usage == LicenseUsage.RnD)
                 {
                     logger.LogWarning("Your demo license is free for RnD, test, and evaluation purposes. For release, or production environment, you require a commercial license.");
                 }
             }
             else if (license.Plan == TerminalLicensePlans.Custom)
             {
-                if (license.Usage == LicenseUsages.RnD)
+                if (license.Usage == LicenseUsage.RnD)
                 {
                     logger.LogWarning("Your custom license is free for RnD, test and evaluation purposes. For release, or production environment, you require a commercial license.");
                 }
@@ -207,18 +207,13 @@ namespace OneImlx.Terminal.Hosting
         protected virtual Task PrintHostApplicationLicensingAsync(License license)
         {
             // Print the license information
-            logger.LogInformation("consumer={0} ({1})", license.Claims.Name, license.Claims.TenantId);
+            logger.LogInformation("tenant={0} ({1})", license.Claims.TenantName, license.Claims.TenantId);
             logger.LogInformation("country={0}", license.Claims.TenantCountry);
-            logger.LogInformation("subject={0}", options.Licensing.Subject);
-            logger.LogInformation("license_handler={0}", license.Handler);
+            logger.LogInformation("license={0}", options.Licensing.Id);
+            logger.LogInformation("mode={0}", license.Handler);
             logger.LogInformation("usage={0}", license.Usage);
             logger.LogInformation("plan={0}", license.Plan);
-            logger.LogInformation("key_source={0}", options.Licensing.LicenseKeySource);
-            if (license.LicenseKeySource == LicenseSources.JsonFile)
-            {
-                // Don't dump the key, just the lic file path
-                logger.LogInformation("key_file={0}", license.LicenseKey);
-            }
+            logger.LogInformation("key={0}", license.LicenseKey);
             logger.LogInformation($"expiry={0}", license.Claims.Expiry);
 
             return Task.CompletedTask;

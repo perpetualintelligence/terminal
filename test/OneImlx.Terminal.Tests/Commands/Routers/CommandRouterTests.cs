@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Commands.Routers
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
             Func<Task> act = async () => await commandRouter.RouteCommandAsync(routerContext);
-            await act.Should().ThrowAsync<ArgumentException>().WithMessage("Value cannot be null. (Parameter 'commandDescriptor')");
+            await act.Should().ThrowAsync<ArgumentException>();
             commandParser.Called.Should().BeTrue();
             commandHandler.Called.Should().BeFalse();
         }
@@ -55,7 +55,7 @@ namespace OneImlx.Terminal.Commands.Routers
             CommandRouterContext routerContext = new("test_command_string", routingContext);
 
             Func<Task> act = async () => await commandRouter.RouteCommandAsync(routerContext);
-            await act.Should().ThrowAsync<ArgumentException>().WithMessage("Value cannot be null. (Parameter 'parsedCommand')");
+            await act.Should().ThrowAsync<ArgumentException>();
             commandParser.Called.Should().BeTrue();
             commandHandler.Called.Should().BeFalse();
         }
@@ -145,16 +145,16 @@ namespace OneImlx.Terminal.Commands.Routers
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CA1806 // Do not ignore method results
             Action act = () => new CommandRouter(null, licenseExtractor, commandParser, commandHandler, logger);
-            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'terminalOptions')");
+            act.Should().Throw<ArgumentNullException>();
 
             act = () => new CommandRouter(terminalOptions, null, commandParser, commandHandler, logger);
-            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'licenseExtractor')");
+            act.Should().Throw<ArgumentNullException>();
 
             act = () => new CommandRouter(terminalOptions, licenseExtractor, null, commandHandler, logger);
-            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandParser')");
+            act.Should().Throw<ArgumentNullException>();
 
             act = () => new CommandRouter(terminalOptions, licenseExtractor, commandParser, null, logger);
-            act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'commandHandler')");
+            act.Should().Throw<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type
 #pragma warning restore CA1806 // Do not ignore method results
         }

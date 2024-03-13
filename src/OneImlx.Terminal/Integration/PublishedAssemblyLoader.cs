@@ -54,55 +54,52 @@ namespace OneImlx.Terminal.Integration
         /// primary command source assemblies.</returns>
         public Task<IEnumerable<Assembly>> LoadAssembliesAsync(PublishedCommandSourceContext context)
         {
-            return Task.Run(() =>
+            List<Assembly> assemblies = [];
+
+            foreach (var kvp in context.PublishedAssemblies)
             {
-                List<Assembly> assemblies = new();
-
-                foreach (var kvp in context.PublishedAssemblies)
+                string assemblyPath = Path.Combine(kvp.Value, kvp.Key);
+                if (!File.Exists(assemblyPath))
                 {
-                    string assemblyPath = Path.Combine(kvp.Value, kvp.Key);
-                    if (!File.Exists(assemblyPath))
-                    {
-                        throw new TerminalException(TerminalErrors.ServerError, "The published command source assembly does not exist. path={0}", assemblyPath);
-                    }
-
-                    var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
-
-                    // Check if the assembly is already loaded
-                    var currentLoadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-                    var existingAssembly = currentLoadedAssemblies.FirstOrDefault(a => AssemblyName.ReferenceMatchesDefinition(a.GetName(), assemblyName));
-                    if (existingAssembly != null)
-                    {
-                        assemblies.Add(existingAssembly);
-                        logger.LogWarning($"Assembly already loaded, load path ignored. path={0} assembly={1}", assemblyPath, assemblyName);
-                        continue;
-                    }
-
-                    // Load the assembly
-                    Assembly loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
-                    logger.LogInformation($"Loaded assembly. assembly={0}", assemblyName);
-
-                    // Log dependent assemblies
-                    if (logger.IsEnabled(LogLevel.Debug))
-                    {
-                        var newLoadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-                        var diffAssemblies = newLoadedAssemblies.Except(currentLoadedAssemblies);
-
-                        foreach (Assembly asm in diffAssemblies)
-                        {
-                            if (asm != loadedAssembly) // Exclude the primary assembly
-                            {
-                                logger.LogDebug($"Loaded dependent assembly. assembly={0}", asm.GetName());
-                            }
-                        }
-                    }
-
-                    // Register
-                    assemblies.Add(loadedAssembly);
+                    throw new TerminalException(TerminalErrors.ServerError, "The published command source assembly does not exist. path={0}", assemblyPath);
                 }
 
-                return assemblies.AsEnumerable();
-            });
+                var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+
+                // Check if the assembly is already loaded
+                var currentLoadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+                var existingAssembly = currentLoadedAssemblies.FirstOrDefault(a => AssemblyName.ReferenceMatchesDefinition(a.GetName(), assemblyName));
+                if (existingAssembly != null)
+                {
+                    assemblies.Add(existingAssembly);
+                    logger.LogWarning($"Assembly already loaded, load path ignored. path={0} assembly={1}", assemblyPath, assemblyName);
+                    continue;
+                }
+
+                // Load the assembly
+                Assembly loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+                logger.LogInformation($"Loaded assembly. assembly={0}", assemblyName);
+
+                // Log dependent assemblies
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    var newLoadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    var diffAssemblies = newLoadedAssemblies.Except(currentLoadedAssemblies);
+
+                    foreach (Assembly asm in diffAssemblies)
+                    {
+                        if (asm != loadedAssembly) // Exclude the primary assembly
+                        {
+                            logger.LogDebug($"Loaded dependent assembly. assembly={0}", asm.GetName());
+                        }
+                    }
+                }
+
+                // Register
+                assemblies.Add(loadedAssembly);
+            }
+
+            return Task.FromResult(assemblies.AsEnumerable());
         }
     }
 }

@@ -15,7 +15,7 @@ namespace OneImlx.Terminal.Mocks
     {
         static MockLicenses()
         {
-            TestClaims = LicenseClaimsModel.Create(new Dictionary<string, object>()
+            TestClaims = LicenseClaims.Create(new Dictionary<string, object>()
             {
                 {"name", "test_name" },
                 {"country", "test_country" },
@@ -34,10 +34,10 @@ namespace OneImlx.Terminal.Mocks
             TestLimits = LicenseLimits.Create(TerminalLicensePlans.Demo);
             TestPrice = LicensePrice.Create(TerminalLicensePlans.Demo);
 
-            TestLicense = new License("testProviderId1", TerminalHandlers.OfflineLicenseHandler, TerminalLicensePlans.Demo, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey1", TestClaims, TestLimits, TestPrice);
+            TestLicense = new License(TerminalHandlers.OfflineLicenseHandler, TerminalLicensePlans.Demo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestLimits, TestPrice);
         }
 
-        public static LicenseClaimsModel TestClaims = null!;
+        public static LicenseClaims TestClaims = null!;
         public static License TestLicense = null!;
         public static LicenseLimits TestLimits = null!;
         public static LicensePrice TestPrice = null!;

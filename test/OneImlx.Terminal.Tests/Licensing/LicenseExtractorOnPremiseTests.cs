@@ -45,11 +45,10 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicensePlan = licPlan;
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
 
@@ -69,11 +68,10 @@ namespace OneImlx.Terminal.Licensing
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -97,10 +95,9 @@ namespace OneImlx.Terminal.Licensing
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             LicenseExtractorResult? result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -123,7 +120,6 @@ namespace OneImlx.Terminal.Licensing
         {
             // We always check for license if debugger is attached.
             // If debugger is not attached then we check if OnPremiseDeployment is set.
-
             // Onprem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
             terminalOptions.Licensing.OnPremiseDeployment = onPremDeployment;
@@ -131,12 +127,11 @@ namespace OneImlx.Terminal.Licensing
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             LicenseExtractorResult? result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -162,11 +157,10 @@ namespace OneImlx.Terminal.Licensing
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             LicenseExtractorResult? result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -188,12 +182,11 @@ namespace OneImlx.Terminal.Licensing
             licenseFromGet.Should().BeNull();
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Licensing.OnPremiseDeployment = true;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -210,11 +203,9 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
-            result.License.LicenseKeySource.Should().Be(LicenseSources.JsonFile);
             result.License.LicenseKey.Should().Be("on-premise-deployment");
 
             // plan, mode and usage
-            result.License.ProviderId.Should().Be("urn:oneimlx:lic:pvdr:pi");
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
             result.License.Usage.Should().Be("on-premise-deployment");
@@ -229,11 +220,10 @@ namespace OneImlx.Terminal.Licensing
             //result.License.Claims.IssuedAt.Should().BeNull();
             result.License.Claims.Issuer.Should().BeNull();
             result.License.Claims.Jti.Should().BeNull();
-            result.License.Claims.Name.Should().BeNull();
+            result.License.Claims.TenantName.Should().BeNull();
             //result.License.Claims.NotBefore.Should().BeNull();
-            result.License.Claims.ObjectId.Should().BeNull();
-            result.License.Claims.ObjectCountry.Should().BeNull();
-            result.License.Claims.Subject.Should().BeNull(); // Test Microsoft SaaS subscription
+            result.License.Claims.Subject.Should().BeNull(); // subscription
+            result.License.Claims.Id.Should().BeNull(); // Id
             result.License.Claims.Custom.Should().BeNull();
 
             // limits
@@ -273,12 +263,11 @@ namespace OneImlx.Terminal.Licensing
             licenseFromGet.Should().BeNull();
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Licensing.OnPremiseDeployment = true;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -295,11 +284,9 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
-            result.License.LicenseKeySource.Should().Be(LicenseSources.JsonFile);
             result.License.LicenseKey.Should().Be("on-premise-deployment");
 
             // plan, mode and usage
-            result.License.ProviderId.Should().Be("urn:oneimlx:lic:pvdr:pi");
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
             result.License.Usage.Should().Be("on-premise-deployment");
@@ -314,10 +301,8 @@ namespace OneImlx.Terminal.Licensing
             //result.License.Claims.IssuedAt.Should().BeNull();
             result.License.Claims.Issuer.Should().BeNull();
             result.License.Claims.Jti.Should().BeNull();
-            result.License.Claims.Name.Should().BeNull();
+            result.License.Claims.TenantName.Should().BeNull();
             //result.License.Claims.NotBefore.Should().BeNull();
-            result.License.Claims.ObjectId.Should().BeNull();
-            result.License.Claims.ObjectCountry.Should().BeNull();
             result.License.Claims.Subject.Should().BeNull(); // Test Microsoft SaaS subscription
             result.License.Claims.Custom.Should().BeNull();
 
@@ -364,10 +349,9 @@ namespace OneImlx.Terminal.Licensing
 
         private void AssertOnPremiseDeploymentLicense(License license)
         {
-            license.Claims.Should().BeEquivalentTo(new LicenseClaimsModel());
+            license.Claims.Should().BeEquivalentTo(new LicenseClaims());
             license.Handler.Should().Be(TerminalHandlers.OnPremiseLicenseHandler);
             license.LicenseKey.Should().Be("on-premise-deployment");
-            license.LicenseKeySource.Should().Be(LicenseSources.JsonFile);
             license.Plan.Should().Be(terminalOptions.Licensing.LicensePlan);
             license.Usage.Should().Be("on-premise-deployment");
         }

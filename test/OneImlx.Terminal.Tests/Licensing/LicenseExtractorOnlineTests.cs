@@ -14,11 +14,10 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
+
+//using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,8 +29,10 @@ namespace OneImlx.Terminal.Licensing
     {
         public LicenseExtractorOnlineTests()
         {
-            // Read the lic file from Github secrets
-            testLicPath = GetJsonLicenseFIleForLocalHostGithubSecretForCICD("PI_CLI_TEST_ONLINE_LIC");
+            // Local Vs GitHub
+            testOnlineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_CLI_TEST_ONLINE_LIC");
+            testDemoPkeyLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_CLI_TEST_PKEY_DEMO_LIC");
+            testDemoSkeyLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_CLI_TEST_SKEY_DEMO_LIC");
 
             string nonJson = "non json document";
             nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
@@ -45,118 +46,51 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
-        public void CustomAndStandardClaims_ShouldSerializerCorrectly()
-        {
-            LicenseOnlineProvisioningModel model = new()
-            {
-                AcrValues = new[] { "acr1", "acr2", "acr3", "custom" },
-                Audience = "https://login.someone.com/hello-mello-jello/v2.0",
-                AuthorizedApplicationIds = new[] { "app1", "app2" },
-                AuthorizedParty = "authp1",
-                ConsumerTenantCountry = "USA",
-                ConsumerTenantId = "csmr1",
-                ConsumerTenantName = "csmr name",
-                Custom = MockCustomLicenseClaims.CustomClaims(),
-                ExpiresIn = 365,
-                Issuer = "https://api.someone.com",
-                Operation = "delete",
-                BrokerTenantId = "pvdr1",
-                PublisherTenantId = "pbsr1",
-                Subject = "sub1",
-                ConsumerObjectId = "coid",
-                Status = "active"
-            };
-
-            string json = JsonSerializer.Serialize(model);
-
-            LicenseOnlineProvisioningModel? fromJson = JsonSerializer.Deserialize<LicenseOnlineProvisioningModel>(json);
-            fromJson.Should().NotBeNull();
-            fromJson.Should().NotBeSameAs(model);
-
-            fromJson!.AcrValues.Should().BeEquivalentTo(new[] { "acr1", "acr2", "acr3", "custom" });
-            fromJson.Audience.Should().Be("https://login.someone.com/hello-mello-jello/v2.0");
-            fromJson.AuthorizedApplicationIds.Should().BeEquivalentTo(new[] { "app1", "app2" });
-            fromJson.AuthorizedParty.Should().Be("authp1");
-            fromJson.ConsumerTenantCountry.Should().Be("USA");
-            fromJson.ConsumerTenantId.Should().Be("csmr1");
-            fromJson.ConsumerObjectId.Should().Be("coid");
-            fromJson.ConsumerTenantName.Should().Be("csmr name");
-            fromJson.ExpiresIn.Should().Be(365);
-            fromJson.Issuer.Should().Be("https://api.someone.com");
-            fromJson.Operation.Should().Be("delete");
-            fromJson.BrokerTenantId.Should().Be("pvdr1");
-            fromJson.PublisherTenantId.Should().Be("pbsr1");
-            fromJson.Subject.Should().Be("sub1");
-            fromJson.Status.Should().Be("active");
-
-            // custom claims
-            fromJson.Custom.Should().HaveCount(16);
-
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("terminal_limit", 1));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("redistribution_limit", 0));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("root_command_limit", 1));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("grouped_command_limit", 2));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("sub_command_limit", 15));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("option_limit", 100));
-
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("strict_data_type", true));
-
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("data_type_handlers", "default"));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("text_handlers", "unicode ascii"));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("error_handlers", "default"));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("store_handlers", "in-memory"));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("service_handlers", "default"));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("license_handlers", "online-license"));
-
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("currency", "USD"));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("monthly_price", 0.0));
-            fromJson.Custom.Should().Contain(new KeyValuePair<string, object>("yearly_price", 0.0));
-        }
-
-        [Fact]
         public void CustomClaims_ShouldBeDecoratedWith_JsonConverterAttribute()
         {
-            typeof(LicenseClaimsModel).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
-            typeof(LicenseOnlineProvisioningModel).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
+            typeof(LicenseClaims).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
         }
 
         [Fact]
         public void CustomClaims_ShouldNotBeDecoratedWith_JsonExtensionDataAttribute()
         {
-            typeof(LicenseClaimsModel).GetProperty("Custom").Should().NotBeDecoratedWith<JsonExtensionDataAttribute>();
-            typeof(LicenseOnlineProvisioningModel).GetProperty("Custom").Should().NotBeDecoratedWith<JsonExtensionDataAttribute>();
+            typeof(LicenseClaims).GetProperty("Custom").Should().NotBeDecoratedWith<JsonExtensionDataAttribute>();
         }
 
         public void Dispose()
         {
             GC.SuppressFinalize(this);
 
-            if (File.Exists(testLicPath))
+            if (File.Exists(testOnlineLicPath))
             {
-                File.Delete(testLicPath);
+                File.Delete(testOnlineLicPath);
+            }
+
+            if (File.Exists(testDemoPkeyLicPath))
+            {
+                File.Delete(testDemoPkeyLicPath);
+            }
+
+            if (File.Exists(testDemoSkeyLicPath))
+            {
+                File.Delete(testDemoSkeyLicPath);
             }
 
             if (File.Exists(nonJsonLicPath))
             {
                 File.Delete(nonJsonLicPath);
             }
-
-            if (demoLicPath != null && File.Exists(demoLicPath))
-            {
-                File.Delete(demoLicPath);
-            }
         }
 
         [Fact]
         public async Task ExtractFromJsonAsync_InvalidAuthApp_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = "invalid_auth_app";
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.Application = "invalid_auth_app";
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -166,9 +100,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_InvalidKeyFilePath_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseKey = "D:\\lic\\path_does_exist\\invalid.lic";
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file path is not valid, see licensing options. key_file=D:\\lic\\path_does_exist\\invalid.lic");
@@ -177,9 +110,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = null;
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.Application = null;
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -189,9 +121,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_NonJsonLic_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseKey = nonJsonLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
             try
@@ -207,9 +138,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_Invalid_Plan_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.LicensePlan = "invalid_plan";
 
@@ -220,9 +150,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_Invalid_Handler_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
 
             terminalOptions.Handler.LicenseHandler = "invalid_license_handler";
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -230,46 +159,22 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData("primary_key")]
-        [InlineData("secondary_key")]
-        public async Task ExtractFromJsonAsync_OnlineMode_DemoKey_ShouldContainClaimsAsync(string keyType)
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ExtractFromJsonAsync_OnlineMode_DemoKey_ShouldContainClaimsAsync(bool primary)
         {
-            using (HttpResponseMessage response = await GetDemoLicenseAsync())
-            {
-                response.Should().BeSuccessful();
-
-                LicenseModel? licenseKeysModel = await response.Content.ReadFromJsonAsync<LicenseModel>();
-                licenseKeysModel.Should().NotBeNull();
-
-                LicenseFileModel demoFile = new()
-                {
-                    AuthorizedParty = licenseKeysModel!.AuthorizedParty,
-                    ConsumerTenantId = licenseKeysModel.ConsumerTenantId,
-                    ExpiresIn = licenseKeysModel.ExpiresIn,
-                    Key = keyType == "primary_key" ? licenseKeysModel.PrimaryKey : licenseKeysModel.SecondaryKey,
-                    KeyType = keyType,
-                    BrokerId = licenseKeysModel.BrokerTenantId,
-                    Subject = licenseKeysModel.Subject,
-                };
-
-                demoLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
-                File.WriteAllText(demoLicPath, JsonSerializer.Serialize(demoFile));
-            }
-
-            // Ensure we have demo license
-            File.Exists(demoLicPath).Should().BeTrue();
+            string demoFile = primary ? testDemoPkeyLicPath : testDemoSkeyLicPath;
 
             // Before extract get should be null
             License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
             licenseFromGet.Should().BeNull();
 
-            terminalOptions.Licensing.LicenseKey = demoLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.LicenseKey = demoFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = DemoIdentifiers.TerminalDemoConsumerTenantId;
-            terminalOptions.Licensing.Subject = DemoIdentifiers.TerminalDemoSubject;
-            terminalOptions.Licensing.AuthorizedApplicationId = DemoIdentifiers.TerminalDemoAuthorizedApplicationId;
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "1b193175-932e-44f7-8854-990b2490d8cf";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -280,31 +185,28 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
-            result.License.LicenseKeySource.Should().Be(LicenseSources.JsonFile);
-            result.License.LicenseKey.Should().Be(demoLicPath);
+            result.License.LicenseKey.Should().Be(demoFile);
 
             // plan, mode and usage
-            result.License.ProviderId.Should().Be("urn:oneimlx:lic:pvdr:pi");
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:demo");
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:rnd");
 
             // claims
-            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:demo urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
-            result.License.Claims.Audience.Should().Be(AuthEndpoints.PiB2CIssuer(DemoIdentifiers.TerminalDemoConsumerTenantId));
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:demo urn:oneimlx:lic:usage:rnd 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
+            result.License.Claims.Audience.Should().Be(AuthEndpoints.PiB2CIssuer("21d818a5-935c-496f-9faf-d9ff9d9645d8"));
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
-            result.License.Claims.TenantCountry.Should().Be("GLOBAL");
+            result.License.Claims.TenantCountry.Should().Be("USA");
             result.License.Claims.Custom.Should().BeNull();
             //result.License.Claims.Expiry.Date.Should().Be(DateTimeOffset.UtcNow.AddYears(1).ToLocalTime().Date);
             //result.License.Claims.IssuedAt.Date.Should().Be(DateTimeOffset.UtcNow.ToLocalTime().Date);
             result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com");
             result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
-            result.License.Claims.Name.Should().Be(DemoIdentifiers.TerminalDemoConsumerTenantName);
+            result.License.Claims.TenantName.Should().Be("pi-test");
             //result.License.Claims.NotBefore.Date.Should().Be(DateTimeOffset.UtcNow.ToLocalTime().Date);
-            result.License.Claims.ObjectId.Should().BeNull();
-            result.License.Claims.ObjectCountry.Should().BeNull();
-            result.License.Claims.Subject.Should().Be(DemoIdentifiers.TerminalDemoSubject);
-            result.License.Claims.TenantId.Should().Be(DemoIdentifiers.TerminalDemoConsumerTenantId);
+            result.License.Claims.Subject.Should().Be("3dbb973a-5296-4cec-abd8-6a6a1683086b"); // Graph user id
+            result.License.Claims.Id.Should().Be("1b193175-932e-44f7-8854-990b2490d8cf"); // Id
+            result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 
             // Verify limits
             LicenseLimits limits = result.License.Limits;
@@ -319,9 +221,9 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
+            limits.StoreHandlers.Should().BeEquivalentTo(["in-memory",]);
+            limits.ServiceHandlers.Should().BeEquivalentTo(["default"]);
+            limits.LicenseHandlers.Should().BeEquivalentTo(["online-license"]);
 
             // Price
             result.License.Price.Plan.Should().Be("urn:oneimlx:terminal:plan:demo");
@@ -338,13 +240,12 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidApplicationId_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.AuthorizedApplicationId = "invalid_app";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Application = "invalid_app";
+            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -354,12 +255,11 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidConsumerTenant_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.ConsumerTenantId = "invalid_consumer";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -369,13 +269,12 @@ namespace OneImlx.Terminal.Licensing
         [Fact(Skip = "Need to add an jwt token with invalid license provider")]
         public async Task ExtractFromJsonAsync_OnlineMode_InvalidProviderTenant_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -383,27 +282,25 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
-        public async Task ExtractFromJsonAsync_OnlineMode_InvalidSubject_ShouldErrorAsync()
+        public async Task ExtractFromJsonAsync_OnlineMode_InvalidId_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
-            terminalOptions.Licensing.Subject = "invalid_subject";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Licensing.Id = "invalid_id";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The subject is not authorized, see licensing options. subject=invalid_subject");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license is not authorized, see licensing options. id=invalid_id");
         }
 
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientFactory_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -413,9 +310,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientName_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -430,13 +326,12 @@ namespace OneImlx.Terminal.Licensing
             License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
             licenseFromGet.Should().BeNull();
 
-            terminalOptions.Licensing.LicenseKey = testLicPath;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
+            terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "a8379958-ea19-4918-84dc-199bf012361e";
-            terminalOptions.Licensing.Subject = "68d230be-cf83-49a6-c83f-42949fb40f46";
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -452,18 +347,16 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
-            result.License.LicenseKeySource.Should().Be(LicenseSources.JsonFile);
-            result.License.LicenseKey.Should().Be(testLicPath);
+            result.License.LicenseKey.Should().Be(testOnlineLicPath);
 
             // plan, mode and usage
-            result.License.ProviderId.Should().Be("urn:oneimlx:lic:pvdr:pi");
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
-            result.License.Usage.Should().Be("urn:oneimlx:lic:usage:rnd");
+            result.License.Usage.Should().Be("urn:oneimlx:lic:usage:org");
 
             // claims
-            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:unlimited urn:oneimlx:lic:usage:rnd urn:oneimlx:lic:pvdr:pi");
-            result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/a8379958-ea19-4918-84dc-199bf012361e/v2.0");
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:unlimited urn:oneimlx:lic:usage:org 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
+            result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/21d818a5-935c-496f-9faf-d9ff9d9645d8/v2.0");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
             result.License.Claims.TenantCountry.Should().Be("USA");
             result.License.Claims.Custom.Should().BeNull();
@@ -471,12 +364,11 @@ namespace OneImlx.Terminal.Licensing
             //result.License.Claims.IssuedAt.Should().NotBeNull();
             result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com");
             result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
-            result.License.Claims.Name.Should().Be("Perpetual Intelligence L.L.C. - Test");
+            result.License.Claims.TenantName.Should().Be("pi-test");
             //result.License.Claims.NotBefore.Should().NotBeNull();
-            result.License.Claims.ObjectId.Should().BeNull();
-            result.License.Claims.ObjectCountry.Should().BeNull();
-            result.License.Claims.Subject.Should().Be("68d230be-cf83-49a6-c83f-42949fb40f46"); // Test Microsoft SaaS subscription
-            result.License.Claims.TenantId.Should().Be("a8379958-ea19-4918-84dc-199bf012361e");
+            result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // subscription
+            result.License.Claims.Id.Should().Be("98109d8d-ba54-427f-b357-2f44b365b325"); // subscription
+            result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 
             // no custom claims
             result.License.Claims.Custom.Should().BeNull();
@@ -499,23 +391,12 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_WithNoLicenseKey_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.AuthorizedApplicationId = "641e1dc1-7ff3-4510-a8e5-abb787fe0fe1";
+            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseKey = null;
-            terminalOptions.Licensing.LicenseKeySource = LicenseSources.JsonFile;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured, see licensing options. key_source=urn:oneimlx:lic:source:jsonfile");
-        }
-
-        [Fact]
-        public async Task UnsupportedKeySource_ShouldErrorAsync()
-        {
-            terminalOptions.Licensing.LicenseKeySource = "253";
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
-
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license key source is not supported, see licensing options. key_source=253");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured, see licensing options.");
         }
 
         private static async Task<HttpResponseMessage> GetDemoLicenseAsync()
@@ -535,9 +416,9 @@ namespace OneImlx.Terminal.Licensing
             return httpResponseMessage;
         }
 
-        private static string GetJsonLicenseFIleForLocalHostGithubSecretForCICD(string env)
+        private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)
         {
-            // The demo json is too long for system env, so we use path for system env and json for github
+            // The demo json is too long for system env, so we use path for system env and json for GitHub
             string? fileOrJson = Environment.GetEnvironmentVariable(env);
 
             if (fileOrJson == null)
@@ -557,11 +438,12 @@ namespace OneImlx.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private string? demoLicPath;
         private readonly string httpClientName = "prod";
         private ILicenseExtractor licenseExtractor;
         private readonly string nonJsonLicPath;
-        private readonly string testLicPath;
+        private readonly string testOnlineLicPath;
+        private readonly string testDemoPkeyLicPath;
+        private readonly string testDemoSkeyLicPath;
         private readonly ILicenseDebugger licenseDebugger;
     }
 }

@@ -25,7 +25,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandStore = new InMemoryImmutableCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
             licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
-            license = new License("testProviderId2", TerminalHandlers.OnlineLicenseHandler, TerminalLicensePlans.Unlimited, LicenseUsages.RnD, LicenseSources.JsonFile, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Unlimited), LicensePrice.Create(TerminalLicensePlans.Unlimited));
+            license = new License(TerminalHandlers.OnlineLicenseHandler, TerminalLicensePlans.Unlimited, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Unlimited), LicensePrice.Create(TerminalLicensePlans.Unlimited));
         }
 
         [Fact]

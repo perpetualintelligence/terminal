@@ -56,14 +56,7 @@ namespace OneImlx.Terminal.Licensing
             // For singleton DI service we don't extract license keys once extracted.
             if (licenseExtractorResult == null)
             {
-                if (terminalOptions.Licensing.LicenseKeySource == LicenseSources.JsonFile)
-                {
-                    licenseExtractorResult = await ExtractFromJsonAsync();
-                }
-                else
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license key source is not supported, see licensing options. key_source={0}", terminalOptions.Licensing.LicenseKeySource);
-                }
+                licenseExtractorResult = await ExtractFromJsonAsync();
             }
 
             return licenseExtractorResult;
@@ -76,7 +69,7 @@ namespace OneImlx.Terminal.Licensing
             return Task.FromResult(licenseExtractorResult?.License);
         }
 
-        private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseOnlineCheckModel checkModel)
+        private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseCheck checkModel)
         {
             // Setup the HTTP client
             HttpClient httpClient = EnsureHttpClient();
@@ -97,8 +90,14 @@ namespace OneImlx.Terminal.Licensing
             return httpResponseMessage;
         }
 
-        private async Task<LicenseClaimsModel> CheckOfflineLicenseAsync(LicenseOfflineCheckModel checkModel)
+        private async Task<LicenseClaims> CheckOfflineLicenseAsync(LicenseCheck checkModel)
         {
+            // Make sure validation key is not null
+            if (checkModel.ValidationKey == null)
+            {
+                throw new TerminalException(TerminalErrors.MissingClaim, "The validation key is missing in the request.");
+            }
+
             // https://stackoverflow.com/questions/58102904/how-to-verify-a-jwt-token-signed-with-x509-with-only-a-public-key-in-aspnetcore
             X509Certificate2 x509Certificate = new(Convert.FromBase64String(checkModel.ValidationKey));
             X509SecurityKey validationKey = new(x509Certificate);
@@ -135,12 +134,10 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Check Standard claims
-            EnsureClaim(result, "sub", checkModel.Subject, new Error(TerminalErrors.UnauthorizedAccess, "The subject or sub claim is not authorized. sub={0}", checkModel.Subject));
-            EnsureClaim(result, "tid", checkModel.ConsumerTenantId, new Error(TerminalErrors.UnauthorizedAccess, "The consumer tenant or tid claim is not authorized. tid={0}", checkModel.ConsumerTenantId));
-            EnsureClaim(result, "oid", checkModel.ConsumerObjectId, new Error(TerminalErrors.UnauthorizedAccess, "The consumer object or oid claim is not authorized. tid={0}", checkModel.ConsumerObjectId));
-            EnsureClaim(result, "auth_apps", checkModel.AuthorizedApplicationId, new Error(TerminalErrors.UnauthorizedAccess, "The application is not authorized. application_id={0}", checkModel.AuthorizedApplicationId));
+            EnsureClaim(result, "tid", checkModel.TenantId, new Error(TerminalErrors.UnauthorizedAccess, "The consumer tenant is not authorized. tid={0}", checkModel.TenantId));
+            EnsureClaim(result, "apps", checkModel.Application, new Error(TerminalErrors.UnauthorizedAccess, "The application is not authorized. app={0}", checkModel.Application));
 
-            return LicenseClaimsModel.Create(result.Claims);
+            return LicenseClaims.Create(result.Claims);
         }
 
         /// <summary>
@@ -171,7 +168,7 @@ namespace OneImlx.Terminal.Licensing
             logger.LogDebug("Extract from JSON license key.");
 
             // Missing app id
-            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.AuthorizedApplicationId))
+            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.Application))
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The authorized application is not configured, see licensing options.");
             }
@@ -179,7 +176,7 @@ namespace OneImlx.Terminal.Licensing
             // Missing key
             if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.LicenseKey))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not configured, see licensing options. key_source={0}", terminalOptions.Licensing.LicenseKeySource);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not configured, see licensing options.");
             }
 
             // Key not a file
@@ -195,14 +192,14 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Read the json file, avoid file locking for multiple threads.
-            LicenseFileModel? licenseFileModel;
+            LicenseFile? licenseFileModel;
             await semaphoreSlim.WaitAsync();
             try
             {
                 // Make sure the lic stream is disposed to avoid locking.
                 using (Stream licStream = File.OpenRead(terminalOptions.Licensing.LicenseKey))
                 {
-                    licenseFileModel = await JsonSerializer.DeserializeAsync<LicenseFileModel>(licStream);
+                    licenseFileModel = await JsonSerializer.DeserializeAsync<LicenseFile>(licStream);
                 }
             }
             catch (JsonException ex)
@@ -243,9 +240,9 @@ namespace OneImlx.Terminal.Licensing
             return licenseExtractorResult;
         }
 
-        private async Task<LicenseExtractorResult> EnsureOnPremiseLicenseAsync(LicenseFileModel licenseFileModel)
+        private async Task<LicenseExtractorResult> EnsureOnPremiseLicenseAsync(LicenseFile licenseFileModel)
         {
-            logger.LogDebug("Extract on-premise license. subject={0} tenant={1}", licenseFileModel.Subject, licenseFileModel.ConsumerTenantId);
+            logger.LogDebug("Extract on-premise license. id={0} tenant={1}", licenseFileModel.Id, licenseFileModel.TenantId);
 
             if (terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.OnPremise ||
                 terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Unlimited)
@@ -254,7 +251,7 @@ namespace OneImlx.Terminal.Licensing
                 // On-Premise mode we allow developers to work online and offline.
                 if (!licenseDebugger.IsDebuggerAttached() && terminalOptions.Licensing.OnPremiseDeployment.GetValueOrDefault())
                 {
-                    logger.LogDebug("On-premise deployment enabled. Skipping license check. plan={0} subject={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFileModel.Subject, licenseFileModel.ConsumerTenantId);
+                    logger.LogDebug("On-premise deployment enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFileModel.Id, licenseFileModel.TenantId);
                     return new LicenseExtractorResult(OnPremiseDeploymentLicense(), TerminalHandlers.OnPremiseLicenseHandler);
                 }
                 else
@@ -282,34 +279,31 @@ namespace OneImlx.Terminal.Licensing
         private License OnPremiseDeploymentLicense()
         {
             return new License(
-                LicenseProviders.OneImlx,
                 TerminalHandlers.OnPremiseLicenseHandler,
                 terminalOptions.Licensing.LicensePlan,
                 "on-premise-deployment",
-                terminalOptions.Licensing.LicenseKeySource,
                 "on-premise-deployment",
-                new LicenseClaimsModel(),
+                new LicenseClaims(),
                 LicenseLimits.Create(terminalOptions.Licensing.LicensePlan),
                 LicensePrice.Create(terminalOptions.Licensing.LicensePlan));
         }
 
-        private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFileModel licenseFileModel)
+        private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFile licenseFile)
         {
-            logger.LogDebug("Extract online license. subject={0} tenant={1}", licenseFileModel.Subject, licenseFileModel.ConsumerTenantId);
+            logger.LogDebug("Extract online license. id={0} tenant={1} key_type={2}", licenseFile.Id, licenseFile.TenantId, licenseFile.KeyType);
 
             // Check JWS signed assertion (JWS key)
-            LicenseOnlineCheckModel checkModel = new()
+            LicenseCheck checkModel = new()
             {
-                Issuer = OneImlx.Shared.Constants.Issuer,
-                Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
-                AuthorizedApplicationId = terminalOptions.Licensing.AuthorizedApplicationId!,
-                AuthorizedParty = licenseFileModel.AuthorizedParty,
-                ConsumerObjectId = licenseFileModel.ConsumerObjectId,
-                ConsumerTenantId = licenseFileModel.ConsumerTenantId,
-                Key = licenseFileModel.Key,
-                KeyType = licenseFileModel.KeyType,
-                BrokerId = licenseFileModel.BrokerId,
-                Subject = licenseFileModel.Subject
+                Issuer = Shared.Constants.Issuer,
+                Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
+                Application = terminalOptions.Licensing.Application!,
+                AuthorizedParty = Shared.Constants.TerminalUrn,
+                TenantId = licenseFile.TenantId,
+                Key = licenseFile.Key,
+                KeyType = licenseFile.KeyType,
+                Id = licenseFile.Id,
+                Mode = "online_license"
             };
 
             // Make sure we use the full base address
@@ -321,7 +315,7 @@ namespace OneImlx.Terminal.Licensing
                     throw new TerminalException(error!);
                 }
 
-                LicenseClaimsModel? claims = await JsonSerializer.DeserializeAsync<LicenseClaimsModel>(await response.Content.ReadAsStreamAsync()) ?? throw new TerminalException(TerminalErrors.InvalidLicense, "The license claims are invalid.");
+                LicenseClaims? claims = await JsonSerializer.DeserializeAsync<LicenseClaims>(await response.Content.ReadAsStreamAsync()) ?? throw new TerminalException(TerminalErrors.InvalidLicense, "The license claims are invalid.");
 
                 // Check consumer with licensing options.
                 if (claims.TenantId != terminalOptions.Licensing.ConsumerTenantId)
@@ -330,9 +324,9 @@ namespace OneImlx.Terminal.Licensing
                 }
 
                 // Check subject with licensing options.
-                if (claims.Subject != terminalOptions.Licensing.Subject)
+                if (claims.Id != terminalOptions.Licensing.Id)
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", terminalOptions.Licensing.Subject);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license is not authorized, see licensing options. id={0}", terminalOptions.Licensing.Id);
                 }
 
                 // Make sure the acr contains the
@@ -344,7 +338,7 @@ namespace OneImlx.Terminal.Licensing
 
                 string plan = acrValues[0];
                 string usage = acrValues[1];
-                string providerId = acrValues[2];
+                string brokerTenantId = acrValues[2];
 
                 // If the on-prem-deployment plan is set then check
                 if (plan != terminalOptions.Licensing.LicensePlan)
@@ -352,43 +346,42 @@ namespace OneImlx.Terminal.Licensing
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
                 }
 
-                // Make sure the provider tenant id matches
-                if (providerId != LicenseProviders.OneImlx)
+                // We just check the broker tenant to be present in offline mode
+                if (string.IsNullOrWhiteSpace(brokerTenantId))
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized. expected={0} actual={1}", providerId, LicenseProviders.OneImlx);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
                 LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
                 return new LicenseExtractorResult
                 (
-                    new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseKeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
+                    new License(terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
                     TerminalHandlers.OnlineLicenseHandler
                 );
             }
         }
 
-        private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFileModel licenseFileModel)
+        private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFile licenseFile)
         {
-            logger.LogDebug("Extract offline license. subject={0} tenant={1}", licenseFileModel.Subject, licenseFileModel.ConsumerTenantId);
+            logger.LogDebug("Extract offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
             // Check JWS signed assertion (JWS key)
-            LicenseOfflineCheckModel checkModel = new()
+            LicenseCheck checkModel = new()
             {
-                Issuer = OneImlx.Shared.Constants.Issuer,
-                Audience = AuthEndpoints.PiB2CIssuer(licenseFileModel.ConsumerTenantId),
-                AuthorizedApplicationId = terminalOptions.Licensing.AuthorizedApplicationId!,
-                AuthorizedParty = licenseFileModel.AuthorizedParty,
-                ConsumerTenantId = licenseFileModel.ConsumerTenantId,
-                Key = licenseFileModel.Key,
-                KeyType = licenseFileModel.KeyType,
-                BrokerId = licenseFileModel.BrokerId,
-                Subject = licenseFileModel.Subject,
-                ValidationKey = licenseFileModel.ValidationKey
+                Issuer = Shared.Constants.Issuer,
+                Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
+                Application = terminalOptions.Licensing.Application!,
+                AuthorizedParty = Shared.Constants.TerminalUrn,
+                TenantId = licenseFile.TenantId,
+                Key = licenseFile.Key,
+                KeyType = licenseFile.KeyType,
+                Id = licenseFile.Id,
+                ValidationKey = licenseFile.ValidationKey
             };
 
             // Make sure we use the full base address
-            LicenseClaimsModel claims = await CheckOfflineLicenseAsync(checkModel);
+            LicenseClaims claims = await CheckOfflineLicenseAsync(checkModel);
 
             // Check consumer with licensing options.
             if (claims.TenantId != terminalOptions.Licensing.ConsumerTenantId)
@@ -397,9 +390,9 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Check subject with licensing options.
-            if (claims.Subject != terminalOptions.Licensing.Subject)
+            if (claims.Id != terminalOptions.Licensing.Id)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The subject is not authorized, see licensing options. subject={0}", terminalOptions.Licensing.Subject);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license is not authorized, see licensing options. id={0}", terminalOptions.Licensing.Id);
             }
 
             // Make sure the acr contains the
@@ -411,7 +404,7 @@ namespace OneImlx.Terminal.Licensing
 
             string plan = acrValues[0];
             string usage = acrValues[1];
-            string providerId = acrValues[2];
+            string brokerTenantId = acrValues[2];
 
             // If the on-prem-deployment plan is set then check
             if (plan != terminalOptions.Licensing.LicensePlan)
@@ -419,17 +412,17 @@ namespace OneImlx.Terminal.Licensing
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
             }
 
-            // Make sure the provider tenant id matches
-            if (providerId != LicenseProviders.OneImlx)
+            // We just check the broker tenant to be present in offline mode
+            if (string.IsNullOrWhiteSpace(brokerTenantId))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The provider is not authorized. expected={0} actual={1}", providerId, LicenseProviders.OneImlx);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
             }
 
             LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
             LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
             return new LicenseExtractorResult
             (
-                new License(providerId, terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseKeySource, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
+                new License(terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
                 TerminalHandlers.OfflineLicenseHandler
             );
         }

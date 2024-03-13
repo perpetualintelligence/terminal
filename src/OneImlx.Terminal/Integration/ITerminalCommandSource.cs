@@ -13,7 +13,7 @@ namespace OneImlx.Terminal.Integration
     /// An abstraction of a terminal command source.
     /// </summary>
     /// <remarks>
-    ///
+    /// A command source is a provider of terminal commands. It can be a local or remote source.
     /// </remarks>
     public interface ITerminalCommandSource<TContext> where TContext : class
     {
