@@ -83,7 +83,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.Application = "invalid_auth_app";
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -146,7 +146,7 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Application = "invalid_app";
             terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -160,12 +160,12 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "invalid_consumer";
+            terminalOptions.Licensing.TenantId = "invalid_consumer";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The consumer tenant is not authorized, see licensing options. consumer_tenant_id=invalid_consumer");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The tenant is not authorized, see licensing options. tenant=invalid_consumer");
         }
 
         [Fact(Skip = "Need to add an jwt token with invalid license provider")]
@@ -173,7 +173,7 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -187,7 +187,7 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.Id = "invalid_id";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -202,7 +202,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
 
             await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -214,7 +214,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -230,7 +230,7 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());

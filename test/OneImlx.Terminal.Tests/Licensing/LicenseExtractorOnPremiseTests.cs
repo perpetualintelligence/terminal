@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
@@ -69,7 +69,7 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
@@ -95,7 +95,7 @@ namespace OneImlx.Terminal.Licensing
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
@@ -129,7 +129,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
@@ -158,7 +158,7 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
@@ -184,7 +184,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
             terminalOptions.Licensing.OnPremiseDeployment = true;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
@@ -265,7 +265,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.OnPremiseDeployment = true;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
-            terminalOptions.Licensing.ConsumerTenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
+            terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;

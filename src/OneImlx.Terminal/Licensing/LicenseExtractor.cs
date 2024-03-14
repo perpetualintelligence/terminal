@@ -134,7 +134,7 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Check Standard claims
-            EnsureClaim(result, "tid", checkModel.TenantId, new Error(TerminalErrors.UnauthorizedAccess, "The consumer tenant is not authorized. tid={0}", checkModel.TenantId));
+            EnsureClaim(result, "tid", checkModel.TenantId, new Error(TerminalErrors.UnauthorizedAccess, "The tenant is not authorized. tid={0}", checkModel.TenantId));
             EnsureClaim(result, "apps", checkModel.Application, new Error(TerminalErrors.UnauthorizedAccess, "The application is not authorized. app={0}", checkModel.Application));
 
             return LicenseClaims.Create(result.Claims);
@@ -318,9 +318,9 @@ namespace OneImlx.Terminal.Licensing
                 LicenseClaims? claims = await JsonSerializer.DeserializeAsync<LicenseClaims>(await response.Content.ReadAsStreamAsync()) ?? throw new TerminalException(TerminalErrors.InvalidLicense, "The license claims are invalid.");
 
                 // Check consumer with licensing options.
-                if (claims.TenantId != terminalOptions.Licensing.ConsumerTenantId)
+                if (claims.TenantId != terminalOptions.Licensing.TenantId)
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", terminalOptions.Licensing.ConsumerTenantId);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The tenant is not authorized, see licensing options. tenant={0}", terminalOptions.Licensing.TenantId);
                 }
 
                 // Check subject with licensing options.
@@ -384,9 +384,9 @@ namespace OneImlx.Terminal.Licensing
             LicenseClaims claims = await CheckOfflineLicenseAsync(checkModel);
 
             // Check consumer with licensing options.
-            if (claims.TenantId != terminalOptions.Licensing.ConsumerTenantId)
+            if (claims.TenantId != terminalOptions.Licensing.TenantId)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The consumer tenant is not authorized, see licensing options. consumer_tenant_id={0}", terminalOptions.Licensing.ConsumerTenantId);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The tenant is not authorized, see licensing options. tenant={0}", terminalOptions.Licensing.TenantId);
             }
 
             // Check subject with licensing options.

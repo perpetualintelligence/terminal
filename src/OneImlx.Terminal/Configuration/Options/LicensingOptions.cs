@@ -30,17 +30,17 @@ namespace OneImlx.Terminal.Configuration.Options
         public string? Application { get; set; }
 
         /// <summary>
-        /// The license consumer tenant id.
+        /// The license tenant id.
         /// </summary>
-        public string? ConsumerTenantId { get; set; }
+        public string? TenantId { get; set; }
 
         /// <summary>
-        /// The license key file containing license key.
+        /// The license file containing license key.
         /// </summary>
         public string? LicenseKey { get; set; }
 
         /// <summary>
-        /// The subject or a licensing context to check the license. Your subscription id establishes your licensing context.
+        /// The license id that establishes your licensing context.
         /// </summary>
         public string? Id { get; set; }
 
@@ -57,7 +57,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// </summary>
         /// <remarks>
         /// This option can be set for <see cref="TerminalLicensePlans.OnPremise"/> or <see cref="TerminalLicensePlans.Unlimited"/>. It is a violation
-        /// of licensing terms to deploy or continue using the framework without a valid active license plan.
+        /// of licensing terms to deploy or continue using the framework without an active commercial license plan.
         /// </remarks>
         public bool? OnPremiseDeployment { get; set; }
 

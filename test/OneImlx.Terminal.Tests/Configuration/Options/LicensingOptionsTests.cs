@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Configuration.Options
             LicensingOptions options = new();
 
             options.Application.Should().BeNull();
-            options.ConsumerTenantId.Should().BeNull();
+            options.TenantId.Should().BeNull();
             options.LicenseKey.Should().BeNull();
             options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
             options.OnPremiseDeployment.Should().BeNull();
