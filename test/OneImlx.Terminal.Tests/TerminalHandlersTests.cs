@@ -24,9 +24,9 @@ namespace OneImlx.Terminal
             TerminalHandlers.DefaultHandler.Should().Be("default");
             TerminalHandlers.InMemoryHandler.Should().Be("in-memory");
             TerminalHandlers.JsonHandler.Should().Be("json");
-            TerminalHandlers.OfflineLicenseHandler.Should().Be("offline-license");
-            TerminalHandlers.OnlineLicenseHandler.Should().Be("online-license");
-            TerminalHandlers.OnPremiseLicenseHandler.Should().Be("onpremise-license");
+            TerminalHandlers.OfflineLicenseHandler.Should().Be("offline");
+            TerminalHandlers.OnlineLicenseHandler.Should().Be("online");
+            TerminalHandlers.OnPremiseLicenseHandler.Should().Be("onpremise");
             TerminalHandlers.UnicodeHandler.Should().Be("unicode");
             TerminalHandlers.AsciiHandler.Should().Be("ascii");
         }

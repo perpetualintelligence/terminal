@@ -249,9 +249,9 @@ namespace OneImlx.Terminal.Licensing
             {
                 // Check if debugger is attached for on-premise mode.
                 // On-Premise mode we allow developers to work online and offline.
-                if (!licenseDebugger.IsDebuggerAttached() && terminalOptions.Licensing.OnPremiseDeployment.GetValueOrDefault())
+                if (!licenseDebugger.IsDebuggerAttached() && IsOnPremiseDeployment(terminalOptions.Licensing.Deployment))
                 {
-                    logger.LogDebug("On-premise deployment enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFileModel.Id, licenseFileModel.TenantId);
+                    logger.LogDebug("On-premise deployment is enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFileModel.Id, licenseFileModel.TenantId);
                     return new LicenseExtractorResult(OnPremiseDeploymentLicense(), TerminalHandlers.OnPremiseLicenseHandler);
                 }
                 else
@@ -290,7 +290,7 @@ namespace OneImlx.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFile licenseFile)
         {
-            logger.LogDebug("Extract online license. id={0} tenant={1} key_type={2}", licenseFile.Id, licenseFile.TenantId, licenseFile.KeyType);
+            logger.LogDebug("Extract online license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
             // Check JWS signed assertion (JWS key)
             LicenseCheck checkModel = new()
@@ -301,9 +301,8 @@ namespace OneImlx.Terminal.Licensing
                 AuthorizedParty = Shared.Constants.TerminalUrn,
                 TenantId = licenseFile.TenantId,
                 Key = licenseFile.Key,
-                KeyType = licenseFile.KeyType,
                 Id = licenseFile.Id,
-                Mode = "online_license"
+                Mode = TerminalIdentifiers.OnlineLicenseMode
             };
 
             // Make sure we use the full base address
@@ -375,9 +374,9 @@ namespace OneImlx.Terminal.Licensing
                 AuthorizedParty = Shared.Constants.TerminalUrn,
                 TenantId = licenseFile.TenantId,
                 Key = licenseFile.Key,
-                KeyType = licenseFile.KeyType,
                 Id = licenseFile.Id,
-                ValidationKey = licenseFile.ValidationKey
+                ValidationKey = licenseFile.ValidationKey,
+                Mode = TerminalIdentifiers.OfflineLicenseMode
             };
 
             // Make sure we use the full base address
@@ -442,6 +441,11 @@ namespace OneImlx.Terminal.Licensing
             {
                 throw new TerminalException(error);
             }
+        }
+
+        private bool IsOnPremiseDeployment(string? deployment)
+        {
+            return deployment == TerminalIdentifiers.OnPremiseDeployment;
         }
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";

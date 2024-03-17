@@ -86,15 +86,16 @@ namespace OneImlx.Terminal.Hosting
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
             printLic.Invoke(defaultCliHostedService, new[] { MockLicenses.TestLicense });
 
-            logger.Messages.Should().HaveCount(8);
+            logger.Messages.Should().HaveCount(9);
             logger.Messages[0].Should().Be("tenant=test_name (test_tenantid)");
             logger.Messages[1].Should().Be("country=test_country");
-            logger.Messages[2].Should().Be("license=(null)");
-            logger.Messages[3].Should().Be("mode=offline-license");
-            logger.Messages[4].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
-            logger.Messages[5].Should().Be("plan=urn:oneimlx:terminal:plan:demo");
-            logger.Messages[6].Should().Be("key=testLicKey1");
-            logger.Messages[7].Should().StartWith("expiry=");
+            logger.Messages[2].Should().Be("license=test_id");
+            logger.Messages[3].Should().Be("mode=test_mode");
+            logger.Messages[4].Should().Be("deployment=test_deployment");
+            logger.Messages[5].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
+            logger.Messages[6].Should().Be("plan=urn:oneimlx:terminal:plan:demo");
+            logger.Messages[7].Should().StartWith("iat=");
+            logger.Messages[8].Should().StartWith("exp=");
         }
 
         [Fact]

@@ -24,8 +24,8 @@ namespace OneImlx.Terminal.Licensing
         public LicenseExtractorOnPremiseTests()
         {
             // Read the lic file from Github secrets
-            testOnlineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_CLI_TEST_ONLINE_LIC");
-            testOfflineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_CLI_TEST_OFFLINE_LIC");
+            testOnlineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_ONLINE_LIC");
+            testOfflineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_OFFLINE_LIC");
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
@@ -41,13 +41,13 @@ namespace OneImlx.Terminal.Licensing
         public async Task Invalid_LicensePlan_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
-            terminalOptions.Licensing.OnPremiseDeployment = true;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
             terminalOptions.Licensing.LicensePlan = licPlan;
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Id = "48ee7ff0-9874-4098-b4fc-89717f7a9596";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
@@ -58,19 +58,19 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(false, true)]
-        public async Task Does_Not_Extracts_From_Online_If_Validation_Key_Is_Null_And_OnPremiseDeployment(bool isDebuggerAttached, bool? onPremDeployment)
+        [InlineData(false, TerminalIdentifiers.OnPremiseDeployment)]
+        public async Task Does_Not_Extracts_From_Online_If_Validation_Key_Is_Null_And_OnPremiseDeployment(bool isDebuggerAttached, string? onPremDeployment)
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.OnPremiseDeployment = onPremDeployment;
+            terminalOptions.Licensing.Deployment = onPremDeployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Id = "48ee7ff0-9874-4098-b4fc-89717f7a9596";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
@@ -85,18 +85,18 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(false, true)]
-        public async Task Does_Not_Extracts_From_Offline_If_Validation_Key_Is_Not_Null_And_OnPremiseDeployment(bool isDebuggerAttached, bool? onPremDeployment)
+        [InlineData(false, TerminalIdentifiers.OnPremiseDeployment)]
+        public async Task Does_Not_Extracts_From_Offline_If_Validation_Key_Is_Not_Null_And_OnPremiseDeployment(bool isDebuggerAttached, string? deployment)
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.OnPremiseDeployment = onPremDeployment;
+            terminalOptions.Licensing.Deployment = deployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Id = "48ee7ff0-9874-4098-b4fc-89717f7a9596";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
@@ -111,18 +111,18 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(true, true)]
-        [InlineData(true, false)]
+        [InlineData(true, TerminalIdentifiers.OnPremiseDeployment)]
         [InlineData(true, null)]
-        [InlineData(false, false)]
+        [InlineData(true, "custom_deployment")]
+        [InlineData(false, "custom_deployment")]
         [InlineData(false, null)]
-        public async Task Extracts_From_Online_If_Validation_Key_Is_Null_When_Debugger_Is_Attached_Or_OnPrem_Deployment_Is_Enabled(bool isDebuggerAttached, bool? onPremDeployment)
+        public async Task Extracts_From_Online_If_Validation_Key_Is_Null_When_Debugger_Is_Attached_Or_OnPrem_Deployment_Is_Enabled(bool isDebuggerAttached, string? deployment)
         {
             // We always check for license if debugger is attached.
             // If debugger is not attached then we check if OnPremiseDeployment is set.
             // Onprem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.OnPremiseDeployment = onPremDeployment;
+            terminalOptions.Licensing.Deployment = deployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -130,7 +130,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
+            terminalOptions.Licensing.Id = "3626ec63-2d2d-44e5-85d9-7f115dfae1c3";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
@@ -143,23 +143,23 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(true, true)]
-        [InlineData(true, false)]
+        [InlineData(true, TerminalIdentifiers.OnPremiseDeployment)]
         [InlineData(true, null)]
-        [InlineData(false, false)]
+        [InlineData(true, "custom_deployment")]
+        [InlineData(false, "custom_deployment")]
         [InlineData(false, null)]
-        public async Task Extracts_From_Offline_If_Validation_Key_Is_Not_Null_And_Debugger_Is_Attached(bool isDebuggerAttached, bool? onPremDeployment)
+        public async Task Extracts_From_Offline_If_Validation_Key_Is_Not_Null_And_Debugger_Is_Attached(bool isDebuggerAttached, string? deployment)
         {
             // Onprem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.OnPremiseDeployment = onPremDeployment;
+            terminalOptions.Licensing.Deployment = deployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "de4259de-303e-4c48-bb12-2e7acc92b563";
+            terminalOptions.Licensing.Id = "48ee7ff0-9874-4098-b4fc-89717f7a9596";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
@@ -182,10 +182,10 @@ namespace OneImlx.Terminal.Licensing
             licenseFromGet.Should().BeNull();
 
             terminalOptions.Licensing.LicenseKey = testOfflineLicPath;
-            terminalOptions.Licensing.OnPremiseDeployment = true;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Id = "48ee7ff0-9874-4098-b4fc-89717f7a9596";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -263,10 +263,10 @@ namespace OneImlx.Terminal.Licensing
             licenseFromGet.Should().BeNull();
 
             terminalOptions.Licensing.LicenseKey = testOnlineLicPath;
-            terminalOptions.Licensing.OnPremiseDeployment = true;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "eaf50a3b-2e60-4029-cf41-4f1b65fdf749";
+            terminalOptions.Licensing.Id = "48ee7ff0-9874-4098-b4fc-89717f7a9596";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnPremiseLicenseHandler;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());

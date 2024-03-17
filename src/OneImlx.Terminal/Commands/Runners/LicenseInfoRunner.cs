@@ -55,10 +55,10 @@ namespace OneImlx.Terminal.Commands.Runners
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "audience={0}", license.Claims.Audience);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "issuer={0}", license.Claims.Issuer);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "subject={0}", license.Claims.Subject);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "jti={0}", license.Claims.Subject);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "expiry={0}", license.Claims.Expiry.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "issued_at={0}", license.Claims.IssuedAt.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "not_before={0}", license.Claims.NotBefore.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "jti={0}", license.Claims.Subject);                
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "iat={0}", license.Claims.IssuedAt.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "exp={0}", license.Claims.ExpiryAt.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "nbf={0}", license.Claims.NotBefore.ToLocalTime().ToString("dd-MMM-yyyy HH:mm:ss"));
 
                 if (license.Claims.Custom != null)
                 {

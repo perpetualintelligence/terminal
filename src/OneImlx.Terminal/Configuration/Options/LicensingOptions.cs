@@ -50,16 +50,21 @@ namespace OneImlx.Terminal.Configuration.Options
         public string LicensePlan { get; set; } = TerminalLicensePlans.Demo;
 
         /// <summary>
-        /// The on-premise flag to deploy the terminal in a secured environment that is not connected to public internet.
-        /// Defaults to <c>null</c>. If set to <c>true</c>, the <see cref="ILicenseExtractor"/> will not perform licensing check.
-        /// This feature is critical in hardware centric or factory environments where the software stack and the configuration
-        /// is locked down for a device.
+        /// The deployment environment. Defaults to <c>null</c>.
         /// </summary>
         /// <remarks>
-        /// This option can be set for <see cref="TerminalLicensePlans.OnPremise"/> or <see cref="TerminalLicensePlans.Unlimited"/>. It is a violation
-        /// of licensing terms to deploy or continue using the framework without an active commercial license plan.
+        /// <para>
+        /// When set to <see cref="TerminalIdentifiers.OnPremiseDeployment"/>, the <see cref="ILicenseExtractor"/> skips the license check.
+        /// This setting is crucial for environments like secure data centers, hardware-centric locations, or factories, where internet access
+        /// is minimal or nonexistent. In such settings, the software and its configurations are locked to a device, making license file updates
+        /// potentially restricted.
+        /// </para>
+        /// <para>
+        /// <c>NOTE:</c> This option can be set if you have commercial plans <see cref="TerminalLicensePlans.OnPremise"/> or <see cref="TerminalLicensePlans.Unlimited"/>.
+        /// It is a violation of licensing terms to deploy or continue using the framework without an active commercial license plan.
+        /// </para>
         /// </remarks>
-        public bool? OnPremiseDeployment { get; set; }
+        public string? Deployment { get; set; }
 
         /// <summary>
         /// The logical name to create and configure <see cref="HttpClient"/> instance for online licensing checks.

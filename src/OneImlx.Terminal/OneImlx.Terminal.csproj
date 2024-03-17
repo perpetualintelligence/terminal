@@ -29,7 +29,7 @@
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="OneImlx.Shared" Version="5.8.3" />
+                <PackageReference Include="OneImlx.Shared" Version="5.8.5" />
             </ItemGroup>
         </Otherwise>
     </Choose>

@@ -30,9 +30,8 @@ namespace OneImlx.Terminal.Licensing
         public LicenseExtractorOnlineTests()
         {
             // Local Vs GitHub
-            testOnlineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_CLI_TEST_ONLINE_LIC");
-            testDemoPkeyLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_CLI_TEST_PKEY_DEMO_LIC");
-            testDemoSkeyLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_CLI_TEST_SKEY_DEMO_LIC");
+            testOnlineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_ONLINE_LIC");
+            testDemoLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_DEMO_LIC");
 
             string nonJson = "non json document";
             nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
@@ -66,14 +65,9 @@ namespace OneImlx.Terminal.Licensing
                 File.Delete(testOnlineLicPath);
             }
 
-            if (File.Exists(testDemoPkeyLicPath))
+            if (File.Exists(testDemoLicPath))
             {
-                File.Delete(testDemoPkeyLicPath);
-            }
-
-            if (File.Exists(testDemoSkeyLicPath))
-            {
-                File.Delete(testDemoSkeyLicPath);
+                File.Delete(testDemoLicPath);
             }
 
             if (File.Exists(nonJsonLicPath))
@@ -90,7 +84,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
+            terminalOptions.Licensing.Id = "3626ec63-2d2d-44e5-85d9-7f115dfae1c3";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -158,22 +152,18 @@ namespace OneImlx.Terminal.Licensing
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license handler is not valid, see hosting options. licensing_handler=invalid_license_handler");
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task ExtractFromJsonAsync_OnlineMode_DemoKey_ShouldContainClaimsAsync(bool primary)
+        [Fact]
+        public async Task ExtractFromJsonAsync_OnlineMode_DemoKey_ShouldContainClaimsAsync()
         {
-            string demoFile = primary ? testDemoPkeyLicPath : testDemoSkeyLicPath;
-
             // Before extract get should be null
             License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
             licenseFromGet.Should().BeNull();
 
-            terminalOptions.Licensing.LicenseKey = demoFile;
+            terminalOptions.Licensing.LicenseKey = testDemoLicPath;
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "1b193175-932e-44f7-8854-990b2490d8cf";
+            terminalOptions.Licensing.Id = "6cd68a17-83af-4cf4-b613-62b5ce15b6de";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -185,7 +175,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
-            result.License.LicenseKey.Should().Be(demoFile);
+            result.License.LicenseKey.Should().Be(testDemoLicPath);
 
             // plan, mode and usage
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
@@ -205,7 +195,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.TenantName.Should().Be("pi-test");
             //result.License.Claims.NotBefore.Date.Should().Be(DateTimeOffset.UtcNow.ToLocalTime().Date);
             result.License.Claims.Subject.Should().Be("3dbb973a-5296-4cec-abd8-6a6a1683086b"); // Graph user id
-            result.License.Claims.Id.Should().Be("1b193175-932e-44f7-8854-990b2490d8cf"); // Id
+            result.License.Claims.Id.Should().Be("6cd68a17-83af-4cf4-b613-62b5ce15b6de"); // Id
             result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 
             // Verify limits
@@ -223,7 +213,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StoreHandlers.Should().BeEquivalentTo(["in-memory",]);
             limits.ServiceHandlers.Should().BeEquivalentTo(["default"]);
-            limits.LicenseHandlers.Should().BeEquivalentTo(["online-license"]);
+            limits.LicenseHandlers.Should().BeEquivalentTo(["online"]);
 
             // Price
             result.License.Price.Plan.Should().Be("urn:oneimlx:terminal:plan:demo");
@@ -245,7 +235,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Application = "invalid_app";
-            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
+            terminalOptions.Licensing.Id = "3626ec63-2d2d-44e5-85d9-7f115dfae1c3";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -274,7 +264,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
-            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
+            terminalOptions.Licensing.Id = "3626ec63-2d2d-44e5-85d9-7f115dfae1c3";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -304,7 +294,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The IHttpClientFactory is not configured. licensing_handler=online-license");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The IHttpClientFactory is not configured. licensing_handler=online");
         }
 
         [Fact]
@@ -316,7 +306,7 @@ namespace OneImlx.Terminal.Licensing
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The HTTP client name is not configured, see licensing options. licensing_handler=online-license");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The HTTP client name is not configured, see licensing options. licensing_handler=online");
         }
 
         [Fact]
@@ -330,7 +320,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Handler.LicenseHandler = TerminalHandlers.OnlineLicenseHandler;
             terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.TenantId = "21d818a5-935c-496f-9faf-d9ff9d9645d8";
-            terminalOptions.Licensing.Id = "98109d8d-ba54-427f-b357-2f44b365b325";
+            terminalOptions.Licensing.Id = "3626ec63-2d2d-44e5-85d9-7f115dfae1c3";
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -367,7 +357,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.TenantName.Should().Be("pi-test");
             //result.License.Claims.NotBefore.Should().NotBeNull();
             result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // subscription
-            result.License.Claims.Id.Should().Be("98109d8d-ba54-427f-b357-2f44b365b325"); // subscription
+            result.License.Claims.Id.Should().Be("3626ec63-2d2d-44e5-85d9-7f115dfae1c3"); // subscription
             result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 
             // no custom claims
@@ -442,8 +432,7 @@ namespace OneImlx.Terminal.Licensing
         private ILicenseExtractor licenseExtractor;
         private readonly string nonJsonLicPath;
         private readonly string testOnlineLicPath;
-        private readonly string testDemoPkeyLicPath;
-        private readonly string testDemoSkeyLicPath;
+        private readonly string testDemoLicPath;
         private readonly ILicenseDebugger licenseDebugger;
     }
 }

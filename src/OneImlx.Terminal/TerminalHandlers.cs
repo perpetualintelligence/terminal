@@ -44,17 +44,17 @@ namespace OneImlx.Terminal
         /// <summary>
         /// The <c>offline</c> handler.
         /// </summary>
-        public const string OfflineLicenseHandler = "offline-license";
+        public const string OfflineLicenseHandler = "offline";
 
         /// <summary>
         /// The <c>online</c> handler.
         /// </summary>
-        public const string OnlineLicenseHandler = "online-license";
+        public const string OnlineLicenseHandler = "online";
 
         /// <summary>
         /// The <c>on-premise</c> handler.
         /// </summary>
-        public const string OnPremiseLicenseHandler = "onpremise-license";
+        public const string OnPremiseLicenseHandler = "onpremise";
 
         /// <summary>
         /// The <c>unicode</c> handler.

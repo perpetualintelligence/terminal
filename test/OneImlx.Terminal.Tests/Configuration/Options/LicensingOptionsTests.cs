@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Configuration.Options
             options.TenantId.Should().BeNull();
             options.LicenseKey.Should().BeNull();
             options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
-            options.OnPremiseDeployment.Should().BeNull();
+            options.Deployment.Should().BeNull();
             options.Id.Should().BeNull();
             options.HttpClientName.Should().BeNull();
         }

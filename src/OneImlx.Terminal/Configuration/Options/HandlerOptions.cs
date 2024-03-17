@@ -13,7 +13,7 @@ namespace OneImlx.Terminal.Configuration.Options
     public sealed class HandlerOptions
     {
         /// <summary>
-        /// The license handler. Its value can be <c>online-license</c>, <c>offline-license</c>, or <c>onpremise-license</c>.
+        /// The license handler. Its value can be <c>online</c>, <c>offline</c>, or <c>onpremise</c>.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <see cref="TerminalHandlers.OnPremiseLicenseHandler"/> handler checks the license only when your terminal is attached to the debugger on the local developer node. Your terminal does not check license key on your on-premise production or released setup.
         /// </para>
         /// </remarks>
-        public string LicenseHandler { get; set; } = "online-license";
+        public string LicenseHandler { get; set; } = "online";
 
         /// <summary>
         /// The hosting and routing dependency injection services. Its value can be <c>default</c> or <c>custom</c>. The

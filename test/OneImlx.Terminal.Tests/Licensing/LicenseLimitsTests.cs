@@ -79,7 +79,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline" });
         }
 
         [Fact]
@@ -136,7 +136,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "onpremise-license" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline", "onpremise" });
         }
 
         [Fact]
@@ -157,7 +157,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license", "offline-license", "onpremise-license" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline", "onpremise" });
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
         }
 
         [Fact]
@@ -199,7 +199,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json" });
             limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online-license" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
         }
 
         [Fact]

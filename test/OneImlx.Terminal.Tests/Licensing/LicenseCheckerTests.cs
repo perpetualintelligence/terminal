@@ -138,13 +138,13 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task CheckAsync_LicenseHandler_ShouldBehaveCorrectly()
         {
-            terminalOptions.Handler.LicenseHandler = "online-license";
+            terminalOptions.Handler.LicenseHandler = "online";
             await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
 
-            terminalOptions.Handler.LicenseHandler = "offline-license";
+            terminalOptions.Handler.LicenseHandler = "offline";
             await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
 
-            terminalOptions.Handler.LicenseHandler = "onpremise-license";
+            terminalOptions.Handler.LicenseHandler = "onpremise";
             await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
 
             // Null not allowed

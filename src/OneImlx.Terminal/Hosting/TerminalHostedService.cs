@@ -209,12 +209,13 @@ namespace OneImlx.Terminal.Hosting
             // Print the license information
             logger.LogInformation("tenant={0} ({1})", license.Claims.TenantName, license.Claims.TenantId);
             logger.LogInformation("country={0}", license.Claims.TenantCountry);
-            logger.LogInformation("license={0}", options.Licensing.Id);
-            logger.LogInformation("mode={0}", license.Handler);
+            logger.LogInformation("license={0}", license.Claims.Id);
+            logger.LogInformation("mode={0}", license.Claims.Mode);
+            logger.LogInformation("deployment={0}", license.Claims.Deployment);
             logger.LogInformation("usage={0}", license.Usage);
             logger.LogInformation("plan={0}", license.Plan);
-            logger.LogInformation("key={0}", license.LicenseKey);
-            logger.LogInformation($"expiry={0}", license.Claims.Expiry);
+            logger.LogInformation("iat={0}", license.Claims.IssuedAt);
+            logger.LogInformation("exp={0}", license.Claims.ExpiryAt);
 
             return Task.CompletedTask;
         }
