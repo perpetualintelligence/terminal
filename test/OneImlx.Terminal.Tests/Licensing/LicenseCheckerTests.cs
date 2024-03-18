@@ -94,45 +94,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task CheckAsync_OptionsValid_ShouldBehaveCorrectly()
         {
-            // Use Data check as example
-            license.Limits.ServiceHandlers = new[] { "test1", "test2", "test3" };
-
             // Valid value should not error
-            terminalOptions.Handler.ServiceHandler = "test2";
             await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            // Invalid value should error
-            terminalOptions.Handler.ServiceHandler = "test4";
-            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured service handler is not allowed for your license edition. service_handler=test4");
-
-            // Null limit options but configured option should error
-            license.Limits.ServiceHandlers = null;
-            terminalOptions.Handler.ServiceHandler = "test5";
-            func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured service handler is not allowed for your license edition. service_handler=test5");
-        }
-
-        [Fact]
-        public async Task CheckAsync_ServiceHandler_ShouldBehaveCorrectly()
-        {
-            terminalOptions.Handler.ServiceHandler = "default";
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            terminalOptions.Handler.ServiceHandler = "custom";
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            // Null not allowed
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            terminalOptions.Handler.ServiceHandler = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-
-            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured service handler is not allowed for your license edition. service_handler=");
-
-            // Invalid value should error
-            terminalOptions.Handler.ServiceHandler = "test4";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured service handler is not allowed for your license edition. service_handler=test4");
         }
 
         [Fact]
@@ -157,31 +120,6 @@ namespace OneImlx.Terminal.Licensing
             // Invalid value should error
             terminalOptions.Handler.LicenseHandler = "test4";
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured license handler is not allowed for your license edition. license_handler=test4");
-        }
-
-        [Fact]
-        public async Task CheckAsync_StoreHandler_ShouldBehaveCorrectly()
-        {
-            terminalOptions.Handler.StoreHandler = "in-memory";
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            terminalOptions.Handler.StoreHandler = "json";
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            terminalOptions.Handler.StoreHandler = "custom";
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            // Null not allowed
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            terminalOptions.Handler.StoreHandler = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-
-            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured store handler is not allowed for your license edition. store_handler=");
-
-            // Invalid value should error
-            terminalOptions.Handler.StoreHandler = "test4";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured store handler is not allowed for your license edition. store_handler=test4");
         }
 
         [Fact]

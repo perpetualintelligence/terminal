@@ -48,16 +48,6 @@ namespace OneImlx.Terminal.Licensing
         public int? RootCommandLimit { get; internal set; }
 
         /// <summary>
-        /// The service implantations.
-        /// </summary>
-        public string[]? ServiceHandlers { get; internal set; }
-
-        /// <summary>
-        /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
-        /// </summary>
-        public string[]? StoreHandlers { get; internal set; }
-
-        /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
         /// </summary>
         public bool StrictDataType { get; internal set; }
@@ -140,9 +130,7 @@ namespace OneImlx.Terminal.Licensing
 
                 StrictDataType = true,
 
-                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler },
-                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
-                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }
+                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler]
             };
         }
 
@@ -161,8 +149,6 @@ namespace OneImlx.Terminal.Licensing
 
                 StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
 
-                StoreHandlers = customClaims["store_handlers"].ToString().SplitBySpace(),
-                ServiceHandlers = customClaims["service_handlers"].ToString().SplitBySpace(),
                 LicenseHandlers = customClaims["license_handlers"].ToString().SplitBySpace()
             };
 
@@ -183,9 +169,7 @@ namespace OneImlx.Terminal.Licensing
 
                 StrictDataType = true,
 
-                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
-                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
-                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler }
+                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler]
             };
         }
 
@@ -203,9 +187,7 @@ namespace OneImlx.Terminal.Licensing
 
                 StrictDataType = true,
 
-                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
-                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
-                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler }
+                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler]
             };
         }
 
@@ -223,9 +205,7 @@ namespace OneImlx.Terminal.Licensing
 
                 StrictDataType = true,
 
-                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler, TerminalHandlers.CustomHandler },
-                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler, TerminalHandlers.CustomHandler },
-                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler }
+                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler]
             };
         }
 
@@ -243,9 +223,7 @@ namespace OneImlx.Terminal.Licensing
 
                 StrictDataType = false,
 
-                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler },
-                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
-                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }
+                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler]
             };
         }
 
@@ -263,9 +241,7 @@ namespace OneImlx.Terminal.Licensing
 
                 StrictDataType = true,
 
-                StoreHandlers = new[] { TerminalHandlers.InMemoryHandler, TerminalHandlers.JsonHandler },
-                ServiceHandlers = new[] { TerminalHandlers.DefaultHandler },
-                LicenseHandlers = new[] { TerminalHandlers.OnlineLicenseHandler }
+                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler]
             };
         }
     }

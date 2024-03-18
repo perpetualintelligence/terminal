@@ -275,7 +275,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// Creates a license for on-premise production deployment.
         /// </summary>
-        /// <seealso cref="LicensingOptions.OnPremiseDeployment"/>
+        /// <seealso cref="LicensingOptions.Deployment"/>
         private License OnPremiseDeploymentLicense()
         {
             return new License(

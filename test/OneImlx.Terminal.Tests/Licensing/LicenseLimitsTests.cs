@@ -37,7 +37,6 @@ namespace OneImlx.Terminal.Licensing
                 { "strict_data_type", false },
 
                 { "data_type_handlers", "" },
-                { "text_handlers", "t1" },
                 { "error_handlers", "e1 e2 e3" },
                 { "store_handlers", "st1 st2" },
                 { "service_handlers", "s1 s2 s3" },
@@ -56,9 +55,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(false);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "st1", "st2" });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "s1", "s2", "s3" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "l1" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(["l1"]);
         }
 
         [Fact]
@@ -77,9 +74,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(["online"]);
         }
 
         [Fact]
@@ -98,9 +93,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(["online", "offline"]);
         }
 
         [Fact]
@@ -134,9 +127,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline", "onpremise" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(["online", "offline", "onpremise"]);
         }
 
         [Fact]
@@ -155,9 +146,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json", "custom" });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default", "custom" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online", "offline", "onpremise" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(["online", "offline", "onpremise"]);
         }
 
         [Fact]
@@ -176,9 +165,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(false);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory" });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(["online"]);
         }
 
         [Fact]
@@ -197,9 +184,7 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(new string[] { "in-memory", "json" });
-            limits.ServiceHandlers.Should().BeEquivalentTo(new string[] { "default" });
-            limits.LicenseHandlers.Should().BeEquivalentTo(new string[] { "online" });
+            limits.LicenseHandlers.Should().BeEquivalentTo(["online"]);
         }
 
         [Fact]
@@ -219,27 +204,22 @@ namespace OneImlx.Terminal.Licensing
             limits = LicenseLimits.Create(TerminalLicensePlans.Micro, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.SMB, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.Enterprise, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.OnPremise, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
 
             limits = LicenseLimits.Create(TerminalLicensePlans.Unlimited, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
-            limits.ServiceHandlers.Should().NotBeEquivalentTo(new[] { "new1", "new2" });
         }
     }
 }

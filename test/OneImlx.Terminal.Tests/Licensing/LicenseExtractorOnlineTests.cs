@@ -207,8 +207,6 @@ namespace OneImlx.Terminal.Licensing
 
             limits.StrictDataType.Should().Be(true);
 
-            limits.StoreHandlers.Should().BeEquivalentTo(["in-memory",]);
-            limits.ServiceHandlers.Should().BeEquivalentTo(["default"]);
             limits.LicenseHandlers.Should().BeEquivalentTo(["online"]);
 
             // Price

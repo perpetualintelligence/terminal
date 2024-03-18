@@ -26,9 +26,7 @@ namespace OneImlx.Terminal.Mocks
                 { "strict_data_type", true },
 
                 { "data_type_handlers", TerminalHandlers.DefaultHandler },
-                { "text_handlers", new[] { TerminalHandlers.UnicodeHandler, TerminalHandlers.AsciiHandler }.JoinBySpace() },
                 { "error_handlers", TerminalHandlers.DefaultHandler },
-                { "store_handlers", TerminalHandlers.InMemoryHandler },
                 { "service_handlers", TerminalHandlers.DefaultHandler },
                 { "license_handlers", TerminalHandlers.OnlineLicenseHandler },
 

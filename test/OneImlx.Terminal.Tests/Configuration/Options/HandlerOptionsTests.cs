@@ -18,8 +18,6 @@ namespace OneImlx.Terminal.Configuration.Options
             HandlerOptions options = new();
 
             options.LicenseHandler.Should().Be(TerminalHandlers.OnlineLicenseHandler);
-            options.ServiceHandler.Should().Be(TerminalHandlers.DefaultHandler);
-            options.StoreHandler.Should().Be(TerminalHandlers.InMemoryHandler);
         }
     }
 }

@@ -17,11 +17,6 @@ namespace OneImlx.Terminal
     public static class TerminalHandlers
     {
         /// <summary>
-        /// The <c>ascii</c> handler.
-        /// </summary>
-        public const string AsciiHandler = "ascii";
-
-        /// <summary>
         /// The <c>custom</c> handler.
         /// </summary>
         public const string CustomHandler = "custom";
@@ -30,16 +25,6 @@ namespace OneImlx.Terminal
         /// The <c>default</c> handler.
         /// </summary>
         public const string DefaultHandler = "default";
-
-        /// <summary>
-        /// The <c>json</c> handler.
-        /// </summary>
-        public const string InMemoryHandler = "in-memory";
-
-        /// <summary>
-        /// The <c>json</c> handler. Reserved for future use.
-        /// </summary>
-        public const string JsonHandler = "json";
 
         /// <summary>
         /// The <c>offline</c> handler.
@@ -55,10 +40,5 @@ namespace OneImlx.Terminal
         /// The <c>on-premise</c> handler.
         /// </summary>
         public const string OnPremiseLicenseHandler = "onpremise";
-
-        /// <summary>
-        /// The <c>unicode</c> handler.
-        /// </summary>
-        public const string UnicodeHandler = "unicode";
     }
 }
