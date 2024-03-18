@@ -112,14 +112,15 @@ namespace OneImlx.Terminal.Licensing
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictValueType))
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license edition.");
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license plan.");
             }
 
-            // License handler
-            if (!OptionsValid(limits.LicenseHandlers, terminalOptions.Handler.LicenseHandler, allowNullActual: false))
+            // Authentication
+            if (!OptionsValid(limits.Authentication, terminalOptions.Authentication.Enabled))
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured license handler is not allowed for your license edition. license_handler={0}", terminalOptions.Handler.LicenseHandler);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured terminal authentication is not allowed for your license plan.");
             }
+
 
             return Task.CompletedTask;
         }

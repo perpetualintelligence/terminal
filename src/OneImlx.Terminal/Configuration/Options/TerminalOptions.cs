@@ -38,11 +38,6 @@ namespace OneImlx.Terminal.Configuration.Options
         public ParserOptions Parser { get; set; } = new ParserOptions();
 
         /// <summary>
-        /// The handler configuration options.
-        /// </summary>
-        public HandlerOptions Handler { get; set; } = new HandlerOptions();
-
-        /// <summary>
         /// The licensing configuration options.
         /// </summary>
         public LicensingOptions Licensing { get; set; } = new LicensingOptions();

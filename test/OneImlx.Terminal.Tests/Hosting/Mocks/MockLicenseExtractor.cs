@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
                 throw new TerminalException("test_error", "test description. opt1={0} opt2={1}", "val1", "val2");
             }
 
-            return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense, MockLicenses.TestLicense.Handler));
+            return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense, MockLicenses.TestLicense.Claims.Mode));
         }
 
         public Task<License?> GetLicenseAsync()

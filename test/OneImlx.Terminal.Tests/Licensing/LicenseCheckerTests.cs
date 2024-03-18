@@ -25,7 +25,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandStore = new InMemoryImmutableCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
             licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
-            license = new License(TerminalHandlers.OnlineLicenseHandler, TerminalLicensePlans.Unlimited, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Unlimited), LicensePrice.Create(TerminalLicensePlans.Unlimited));
+            license = new License(TerminalLicensePlans.Unlimited, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Unlimited), LicensePrice.Create(TerminalLicensePlans.Unlimited));
         }
 
         [Fact]
@@ -99,37 +99,13 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
-        public async Task CheckAsync_LicenseHandler_ShouldBehaveCorrectly()
-        {
-            terminalOptions.Handler.LicenseHandler = "online";
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            terminalOptions.Handler.LicenseHandler = "offline";
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            terminalOptions.Handler.LicenseHandler = "onpremise";
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-
-            // Null not allowed
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            terminalOptions.Handler.LicenseHandler = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured license handler is not allowed for your license edition. license_handler=");
-
-            // Invalid value should error
-            terminalOptions.Handler.LicenseHandler = "test4";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured license handler is not allowed for your license edition. license_handler=test4");
-        }
-
-        [Fact]
         public async Task CheckAsync_StrictTypeCheck_ShouldBehaveCorrectly()
         {
             // Error, not allowed but configured
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictValueType = true;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured strict option value type is not allowed for your license edition.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured strict option value type is not allowed for your license plan.");
 
             // No error, not allowed configured false
             license.Limits.StrictDataType = false;

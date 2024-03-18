@@ -83,7 +83,7 @@ namespace OneImlx.Terminal.Authentication.Msal
 
             // Get the first account
             IEnumerable<IAccount> accounts = await msalTokenAcquisition.GetAccountsAsync(terminalOptions.Authentication.UserFlow);
-            IAccount account = accounts.FirstOrDefault();
+            IAccount? account = accounts.FirstOrDefault();
             if (account == null)
             {
                 logger.LogDebug("Failed to acquire accounts. user_flow={1}", terminalOptions.Authentication.UserFlow);

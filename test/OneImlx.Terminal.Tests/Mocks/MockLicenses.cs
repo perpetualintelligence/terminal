@@ -11,8 +11,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Licensing;
 using OneImlx.Shared.Licensing;
+using OneImlx.Terminal.Licensing;
 using System.Collections.Generic;
 
 namespace OneImlx.Terminal.Mocks
@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Mocks
             TestLimits = LicenseLimits.Create(TerminalLicensePlans.Demo);
             TestPrice = LicensePrice.Create(TerminalLicensePlans.Demo);
 
-            TestLicense = new License(TerminalHandlers.OfflineLicenseHandler, TerminalLicensePlans.Demo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestLimits, TestPrice);
+            TestLicense = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestLimits, TestPrice);
         }
 
         public static LicenseClaims TestClaims = null!;

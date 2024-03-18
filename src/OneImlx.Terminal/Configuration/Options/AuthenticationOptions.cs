@@ -39,5 +39,10 @@ namespace OneImlx.Terminal.Configuration.Options
         /// Gets or sets the authentication user flow.
         /// </summary>
         public string? UserFlow { get; set; }
+
+        /// <summary>
+        /// Enables the authentication for the terminal.
+        /// </summary>
+        public bool? Enabled { get; set; }
     }
 }

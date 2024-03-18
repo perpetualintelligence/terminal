@@ -2,6 +2,7 @@
 > Breaking Change
 - Support multi-targets net481, net8.0, netstandard2.0 and netstandard2.1
 - Simplify licensing based on tenant and single key
+- Support On-Prem terminals for secured environments
 
 # 5.6.4-rc*
 > Breaking Change

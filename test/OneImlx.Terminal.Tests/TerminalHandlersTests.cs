@@ -18,13 +18,10 @@ namespace OneImlx.Terminal
         [Fact]
         public void AssertHandlersAreValid()
         {
-            typeof(TerminalHandlers).Should().HaveConstantCount(5);
+            typeof(TerminalHandlers).Should().HaveConstantCount(2);
 
             TerminalHandlers.CustomHandler.Should().Be("custom");
             TerminalHandlers.DefaultHandler.Should().Be("default");
-            TerminalHandlers.OfflineLicenseHandler.Should().Be("offline");
-            TerminalHandlers.OnlineLicenseHandler.Should().Be("online");
-            TerminalHandlers.OnPremiseLicenseHandler.Should().Be("onpremise");
         }
 
         [Fact]

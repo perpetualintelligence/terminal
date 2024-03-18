@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Licensing
     {
         public LicenseExtractorOfflineTests()
         {
-            // Read the lic file from Github secrets
+            // Read the lic file from GitHub secrets
             testLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_OFFLINE_LIC");
 
             string nonJson = "non json document";
@@ -43,11 +43,10 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             terminalOptions.Licensing.LicensePlan = "invalid_plan";
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not valid, see licensing options. plan=invalid_plan");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not valid. plan=invalid_plan");
         }
 
         [Fact]
@@ -82,7 +81,6 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.Application = "invalid_auth_app";
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -96,7 +94,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseFile = "D:\\lic\\path_does_exist\\invalid.lic";
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file path is not valid, see licensing options. key_file=D:\\lic\\path_does_exist\\invalid.lic");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file path is not valid. key_file=D:\\lic\\path_does_exist\\invalid.lic");
         }
 
         [Fact]
@@ -104,10 +102,9 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.Application = null;
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The authorized application is not configured, see licensing options.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The authorized application is not configured.");
         }
 
         [Fact]
@@ -115,7 +112,6 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseFile = nonJsonLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
 
             try
             {
@@ -123,7 +119,7 @@ namespace OneImlx.Terminal.Licensing
             }
             catch (TerminalException ex)
             {
-                ex.Message.Should().StartWith("The license file is not valid, see licensing options. key_file=");
+                ex.Message.Should().StartWith("The license file is not valid. key_file=");
             }
         }
 
@@ -131,19 +127,34 @@ namespace OneImlx.Terminal.Licensing
         public async Task ExtractFromJsonAsync_InvalidMode_ShouldErrorAsync()
         {
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
-            terminalOptions.Licensing.LicenseFile = testLicPath;
 
-            terminalOptions.Handler.LicenseHandler = "invalid_lic_mode";
+            string? tempJsonLicPath = null;
 
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license handler is not valid, see hosting options. licensing_handler=invalid_lic_mode");
+            try
+            {
+                // Read testLicPath and replace the mode JSON property with invalid_mode so the code can throw exception
+                string json = File.ReadAllText(testLicPath);
+                json = json.Replace("\"mode\": \"offline\"", "\"mode\": \"invalid_mode\"");
+                tempJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
+                File.WriteAllText(tempJsonLicPath, json);
+                terminalOptions.Licensing.LicenseFile = tempJsonLicPath;
+
+                Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+                await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license mode is not valid. mode=invalid_mode");
+            }
+            finally
+            {
+                if (tempJsonLicPath != null && File.Exists(tempJsonLicPath))
+                {
+                    File.Delete(tempJsonLicPath);
+                }
+            }
         }
 
         [Fact]
         public async Task ExtractFromJsonAsync_InvalidApplicationId_ShouldErrorAsync()
         {
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             terminalOptions.Licensing.Application = "invalid_app";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -155,12 +166,11 @@ namespace OneImlx.Terminal.Licensing
         public async Task ExtractFromJsonAsync_InvalidProviderTenant_ShouldErrorAsync()
         {
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The provider is not authorized, see licensing options. provider_id=invalid_provider");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The provider is not authorized. provider_id=invalid_provider");
         }
 
         [Fact]
@@ -168,7 +178,6 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
 
             await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
         }
@@ -178,7 +187,6 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -192,7 +200,6 @@ namespace OneImlx.Terminal.Licensing
             licenseFromGet.Should().BeNull();
 
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -200,8 +207,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Should().NotBeNull();
 
             // ensure passed and extraction handler
-            result.License.Handler.Should().Be(TerminalHandlers.OfflineLicenseHandler);
-            result.ExtractionHandler.Should().Be(TerminalHandlers.OfflineLicenseHandler);
+            result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
 
             // License claims
             result.License.Claims.Should().NotBeNull();
@@ -212,7 +218,6 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().Be(testLicPath);
 
             // plan, mode and usage
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
             result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:org");
 
@@ -255,10 +260,9 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicenseFile = null;
-            terminalOptions.Handler.LicenseHandler = TerminalHandlers.OfflineLicenseHandler;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured, see licensing options.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured.");
         }
 
         private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)

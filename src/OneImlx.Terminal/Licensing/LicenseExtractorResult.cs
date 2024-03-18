@@ -16,11 +16,11 @@ namespace OneImlx.Terminal.Licensing
         /// Initializes a new instance.
         /// </summary>
         /// <param name="license">The extracted license.</param>
-        /// <param name="extractionHandler">The license handler used to extract the license. The value may be different from <see cref="License.Handler"/>. </param>
-        public LicenseExtractorResult(License license, string extractionHandler)
+        /// <param name="extractionMode"></param>
+        public LicenseExtractorResult(License license, string? extractionMode)
         {
             License = license ?? throw new TerminalException(TerminalErrors.InvalidLicense, "The extracted license cannot be null.");
-            ExtractionHandler = extractionHandler ?? throw new TerminalException(TerminalErrors.InvalidLicense, "The extraction license handler cannot be null.");
+            ExtractionMode = extractionMode;
         }
 
         /// <summary>
@@ -29,11 +29,8 @@ namespace OneImlx.Terminal.Licensing
         public License License { get; }
 
         /// <summary>
-        /// The license handler used to extract the license.
+        /// The license mode used for extraction.
         /// </summary>
-        /// <remarks>
-        /// For <see cref="TerminalHandlers.OnPremiseLicenseHandler"/> license this value may be different from <see cref="License.Handler"/>.
-        /// </remarks>
-        public string ExtractionHandler { get; }
+        public string? ExtractionMode { get; }
     }
 }

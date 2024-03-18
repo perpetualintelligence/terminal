@@ -25,20 +25,5 @@ namespace OneImlx.Terminal
         /// The <c>default</c> handler.
         /// </summary>
         public const string DefaultHandler = "default";
-
-        /// <summary>
-        /// The <c>offline</c> handler.
-        /// </summary>
-        public const string OfflineLicenseHandler = "offline";
-
-        /// <summary>
-        /// The <c>online</c> handler.
-        /// </summary>
-        public const string OnlineLicenseHandler = "online";
-
-        /// <summary>
-        /// The <c>on-premise</c> handler.
-        /// </summary>
-        public const string OnPremiseLicenseHandler = "onpremise";
     }
 }

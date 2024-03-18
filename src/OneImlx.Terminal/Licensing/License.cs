@@ -17,16 +17,14 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="handler">The license handler.</param>
         /// <param name="plan">The license plan.</param>
         /// <param name="usage">The license usage.</param>
         /// <param name="licenseKey">The license key.</param>
         /// <param name="claims">The license claims.</param>
         /// <param name="limits">The license limits.</param>
         /// <param name="price">The license price.</param>
-        public License(string handler, string plan, string usage, string licenseKey, LicenseClaims claims, LicenseLimits limits, LicensePrice price)
+        public License(string plan, string usage, string licenseKey, LicenseClaims claims, LicenseLimits limits, LicensePrice price)
         {
-            Handler = handler;
             Plan = plan;
             Usage = usage;
             this.licenseKey = licenseKey;
@@ -39,11 +37,6 @@ namespace OneImlx.Terminal.Licensing
         /// The license claims.
         /// </summary>
         public LicenseClaims Claims { get; }
-
-        /// <summary>
-        /// The license handler.
-        /// </summary>
-        public string Handler { get; }
 
         /// <summary>
         /// The license key.

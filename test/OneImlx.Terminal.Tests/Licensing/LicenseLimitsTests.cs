@@ -35,12 +35,7 @@ namespace OneImlx.Terminal.Licensing
                 { "option_limit", 6 },
 
                 { "strict_data_type", false },
-
-                { "data_type_handlers", "" },
-                { "error_handlers", "e1 e2 e3" },
-                { "store_handlers", "st1 st2" },
-                { "service_handlers", "s1 s2 s3" },
-                { "license_handlers", "l1" }
+                { "authentication", false },
             };
 
             LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Custom, claims);
@@ -54,8 +49,7 @@ namespace OneImlx.Terminal.Licensing
             limits.OptionLimit.Should().Be(6);
 
             limits.StrictDataType.Should().Be(false);
-
-            limits.LicenseHandlers.Should().BeEquivalentTo(["l1"]);
+            limits.Authentication.Should().Be(false);
         }
 
         [Fact]
@@ -73,8 +67,7 @@ namespace OneImlx.Terminal.Licensing
             limits.OptionLimit.Should().Be(500);
 
             limits.StrictDataType.Should().Be(true);
-
-            limits.LicenseHandlers.Should().BeEquivalentTo(["online"]);
+            limits.Authentication.Should().Be(true);
         }
 
         [Fact]
@@ -92,8 +85,7 @@ namespace OneImlx.Terminal.Licensing
             limits.OptionLimit.Should().Be(2000);
 
             limits.StrictDataType.Should().Be(true);
-
-            limits.LicenseHandlers.Should().BeEquivalentTo(["online", "offline"]);
+            limits.Authentication.Should().Be(true);
         }
 
         [Fact]
@@ -126,8 +118,7 @@ namespace OneImlx.Terminal.Licensing
             limits.OptionLimit.Should().Be(5000);
 
             limits.StrictDataType.Should().Be(true);
-
-            limits.LicenseHandlers.Should().BeEquivalentTo(["online", "offline", "onpremise"]);
+            limits.Authentication.Should().Be(true);
         }
 
         [Fact]
@@ -145,8 +136,7 @@ namespace OneImlx.Terminal.Licensing
             limits.OptionLimit.Should().Be(null);
 
             limits.StrictDataType.Should().Be(true);
-
-            limits.LicenseHandlers.Should().BeEquivalentTo(["online", "offline", "onpremise"]);
+            limits.Authentication.Should().Be(true);
         }
 
         [Fact]
@@ -164,8 +154,7 @@ namespace OneImlx.Terminal.Licensing
             limits.OptionLimit.Should().Be(500);
 
             limits.StrictDataType.Should().Be(false);
-
-            limits.LicenseHandlers.Should().BeEquivalentTo(["online"]);
+            limits.Authentication.Should().Be(false);
         }
 
         [Fact]
@@ -183,18 +172,16 @@ namespace OneImlx.Terminal.Licensing
             limits.OptionLimit.Should().Be(1000);
 
             limits.StrictDataType.Should().Be(true);
-
-            limits.LicenseHandlers.Should().BeEquivalentTo(["online"]);
+            limits.Authentication.Should().Be(false);
         }
 
         [Fact]
-        public void StandardEdition_ShouldIgnoreClaims()
+        public void StandardPlans_ShouldIgnoreClaims()
         {
             Dictionary<string, object> expected = new()
             {
                 { "terminal_limit", 25332343 },
                 { "redistribution_limit", 36523211212212 },
-                { "service_handlers", new[] { "new1", "new2" } }
             };
 
             LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Demo, expected);

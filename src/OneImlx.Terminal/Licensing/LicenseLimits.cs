@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Licensing
     public sealed class LicenseLimits
     {
         /// <summary>
-        /// The maximum options or options. Defaults to <c>null</c> or no limit.
+        /// The maximum options. Defaults to <c>null</c> or no limit.
         /// </summary>
         public long? OptionLimit { get; internal set; }
 
@@ -28,17 +28,12 @@ namespace OneImlx.Terminal.Licensing
         public int? GroupedCommandLimit { get; internal set; }
 
         /// <summary>
-        /// The maximum sub commands. Defaults to <c>null</c> or no redistributions.
-        /// </summary>
-        public string[]? LicenseHandlers { get; internal set; }
-
-        /// <summary>
-        /// The SaaS plan.
+        /// The license plan.
         /// </summary>
         public string? Plan { get; internal set; }
 
         /// <summary>
-        /// The maximum sub commands. Defaults to <c>null</c> or no redistribution limit.
+        /// The maximum redistributions. Defaults to <c>null</c> or no redistribution limit.
         /// </summary>
         public long? RedistributionLimit { get; internal set; }
 
@@ -48,9 +43,14 @@ namespace OneImlx.Terminal.Licensing
         public int? RootCommandLimit { get; internal set; }
 
         /// <summary>
-        /// The maximum sub commands. Defaults to <c>null</c> or no limit.
+        /// The string date type. Defaults to <c>null</c> or no limit.
         /// </summary>
         public bool StrictDataType { get; internal set; }
+
+        /// <summary>
+        /// The terminal authentication. Defaults to <c>null</c> or no limit.
+        /// </summary>
+        public bool? Authentication { get; internal set; }
 
         /// <summary>
         /// The maximum sub commands. Defaults to <c>null</c> or no limit.
@@ -129,8 +129,7 @@ namespace OneImlx.Terminal.Licensing
                 OptionLimit = 500,
 
                 StrictDataType = true,
-
-                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler]
+                Authentication = true
             };
         }
 
@@ -148,8 +147,7 @@ namespace OneImlx.Terminal.Licensing
                 OptionLimit = Convert.ToInt16(customClaims["option_limit"]),
 
                 StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
-
-                LicenseHandlers = customClaims["license_handlers"].ToString().SplitBySpace()
+                Authentication = Convert.ToBoolean(customClaims["authentication"]),
             };
 
             return limits;
@@ -168,8 +166,7 @@ namespace OneImlx.Terminal.Licensing
                 OptionLimit = 2000,
 
                 StrictDataType = true,
-
-                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler]
+                Authentication = true
             };
         }
 
@@ -186,8 +183,7 @@ namespace OneImlx.Terminal.Licensing
                 OptionLimit = 5000,
 
                 StrictDataType = true,
-
-                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler]
+                Authentication = true
             };
         }
 
@@ -204,8 +200,7 @@ namespace OneImlx.Terminal.Licensing
                 OptionLimit = null,
 
                 StrictDataType = true,
-
-                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler, TerminalHandlers.OfflineLicenseHandler, TerminalHandlers.OnPremiseLicenseHandler]
+                Authentication = true
             };
         }
 
@@ -222,8 +217,7 @@ namespace OneImlx.Terminal.Licensing
                 OptionLimit = 500,
 
                 StrictDataType = false,
-
-                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler]
+                Authentication = false
             };
         }
 
@@ -240,8 +234,7 @@ namespace OneImlx.Terminal.Licensing
                 OptionLimit = 1000,
 
                 StrictDataType = true,
-
-                LicenseHandlers = [TerminalHandlers.OnlineLicenseHandler]
+                Authentication = false
             };
         }
     }

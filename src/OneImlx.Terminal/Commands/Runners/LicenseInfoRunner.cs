@@ -41,7 +41,8 @@ namespace OneImlx.Terminal.Commands.Runners
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "License");
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "plan={0}", license.Plan);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "usage={0}", license.Usage);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "handler={0}", license.Handler);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "mode={0}", license.Claims.Mode);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "deployment={0}", license.Claims.Deployment ?? "");
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "key_file={0}", license.LicenseKey);
             }
 
@@ -79,7 +80,7 @@ namespace OneImlx.Terminal.Commands.Runners
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option_limit={0}", PrintNumber(license.Limits.OptionLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "license_handlers={0}", license.Limits.LicenseHandlers.JoinBySpace());
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "authentication={0}", license.Limits.Authentication.ToString());
 
                 if (license.Claims.Custom != null)
                 {

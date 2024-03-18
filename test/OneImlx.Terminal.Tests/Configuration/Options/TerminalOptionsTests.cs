@@ -23,7 +23,6 @@ namespace OneImlx.Terminal.Configuration.Options
             options.Authentication.Should().NotBeNull();
             options.Checker.Should().NotBeNull();
             options.Parser.Should().NotBeNull();
-            options.Handler.Should().NotBeNull();
             options.Licensing.Should().NotBeNull();
             options.Router.Should().NotBeNull();
             options.Help.Should().NotBeNull();
