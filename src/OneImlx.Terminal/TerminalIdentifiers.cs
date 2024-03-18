@@ -13,16 +13,6 @@ namespace OneImlx.Terminal
     public class TerminalIdentifiers
     {
         /// <summary>
-        /// The <c>primary</c> key.
-        /// </summary>
-        public string PrimaryKey = "primary";
-
-        /// <summary>
-        /// The <c>secondary</c> key.
-        /// </summary>
-        public string SecondaryKey = "secondary";
-
-        /// <summary>
         /// The <c>online</c> license mode.
         /// </summary>
         public const string OnlineLicenseMode = "online";

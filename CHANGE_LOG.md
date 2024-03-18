@@ -1,4 +1,4 @@
-# 5.8.4-rc*
+# 5.8.5-rc*
 > Breaking Change
 - Support multi-targets net481, net8.0, netstandard2.0 and netstandard2.1
 - Simplify licensing based on tenant and single key

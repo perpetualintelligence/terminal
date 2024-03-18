@@ -19,11 +19,9 @@ namespace OneImlx.Terminal.Configuration.Options
             LicensingOptions options = new();
 
             options.Application.Should().BeNull();
-            options.TenantId.Should().BeNull();
-            options.LicenseKey.Should().BeNull();
+            options.LicenseFile.Should().BeNull();
             options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
             options.Deployment.Should().BeNull();
-            options.Id.Should().BeNull();
             options.HttpClientName.Should().BeNull();
         }
     }

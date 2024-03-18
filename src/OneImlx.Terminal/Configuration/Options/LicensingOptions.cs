@@ -30,19 +30,9 @@ namespace OneImlx.Terminal.Configuration.Options
         public string? Application { get; set; }
 
         /// <summary>
-        /// The license tenant id.
+        /// The license file location.
         /// </summary>
-        public string? TenantId { get; set; }
-
-        /// <summary>
-        /// The license file containing license key.
-        /// </summary>
-        public string? LicenseKey { get; set; }
-
-        /// <summary>
-        /// The license id that establishes your licensing context.
-        /// </summary>
-        public string? Id { get; set; }
+        public string? LicenseFile { get; set; }
 
         /// <summary>
         /// The license plan. Defaults to <see cref="TerminalLicensePlans.Demo"/>.

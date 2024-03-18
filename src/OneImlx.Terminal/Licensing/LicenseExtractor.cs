@@ -174,15 +174,15 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Missing key
-            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.LicenseKey))
+            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.LicenseFile))
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not configured, see licensing options.");
             }
 
             // Key not a file
-            if (!File.Exists(terminalOptions.Licensing.LicenseKey))
+            if (!File.Exists(terminalOptions.Licensing.LicenseFile))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid, see licensing options. key_file={0}", terminalOptions.Licensing.LicenseKey);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid, see licensing options. key_file={0}", terminalOptions.Licensing.LicenseFile);
             }
 
             // Missing or invalid license plan.
@@ -197,14 +197,14 @@ namespace OneImlx.Terminal.Licensing
             try
             {
                 // Make sure the lic stream is disposed to avoid locking.
-                using (Stream licStream = File.OpenRead(terminalOptions.Licensing.LicenseKey))
+                using (Stream licStream = File.OpenRead(terminalOptions.Licensing.LicenseFile))
                 {
                     licenseFileModel = await JsonSerializer.DeserializeAsync<LicenseFile>(licStream);
                 }
             }
             catch (JsonException ex)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not valid, see licensing options. key_file={0} info={1}", terminalOptions.Licensing.LicenseKey, ex.Message);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not valid, see licensing options. key_file={0} info={1}", terminalOptions.Licensing.LicenseFile, ex.Message);
             }
             finally
             {
@@ -214,7 +214,7 @@ namespace OneImlx.Terminal.Licensing
             // Make sure the model is valid.
             if (licenseFileModel == null)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file cannot be read, see licensing options. key_file={0}", terminalOptions.Licensing.LicenseKey);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file cannot be read, see licensing options. key_file={0}", terminalOptions.Licensing.LicenseFile);
             }
 
             // License check based on configured license handler.
@@ -316,18 +316,6 @@ namespace OneImlx.Terminal.Licensing
 
                 LicenseClaims? claims = await JsonSerializer.DeserializeAsync<LicenseClaims>(await response.Content.ReadAsStreamAsync()) ?? throw new TerminalException(TerminalErrors.InvalidLicense, "The license claims are invalid.");
 
-                // Check consumer with licensing options.
-                if (claims.TenantId != terminalOptions.Licensing.TenantId)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The tenant is not authorized, see licensing options. tenant={0}", terminalOptions.Licensing.TenantId);
-                }
-
-                // Check subject with licensing options.
-                if (claims.Id != terminalOptions.Licensing.Id)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license is not authorized, see licensing options. id={0}", terminalOptions.Licensing.Id);
-                }
-
                 // Make sure the acr contains the
                 string[] acrValues = claims.AcrValues.SplitBySpace();
                 if (acrValues.Length < 3)
@@ -355,7 +343,7 @@ namespace OneImlx.Terminal.Licensing
                 LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
                 return new LicenseExtractorResult
                 (
-                    new License(terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
+                    new License(terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseLimits, licensePrice),
                     TerminalHandlers.OnlineLicenseHandler
                 );
             }
@@ -381,18 +369,6 @@ namespace OneImlx.Terminal.Licensing
 
             // Make sure we use the full base address
             LicenseClaims claims = await CheckOfflineLicenseAsync(checkModel);
-
-            // Check consumer with licensing options.
-            if (claims.TenantId != terminalOptions.Licensing.TenantId)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The tenant is not authorized, see licensing options. tenant={0}", terminalOptions.Licensing.TenantId);
-            }
-
-            // Check subject with licensing options.
-            if (claims.Id != terminalOptions.Licensing.Id)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license is not authorized, see licensing options. id={0}", terminalOptions.Licensing.Id);
-            }
 
             // Make sure the acr contains the
             string[] acrValues = claims.AcrValues.SplitBySpace();
@@ -421,7 +397,7 @@ namespace OneImlx.Terminal.Licensing
             LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
             return new LicenseExtractorResult
             (
-                new License(terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseKey!, claims, licenseLimits, licensePrice),
+                new License(terminalOptions.Handler.LicenseHandler, plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseLimits, licensePrice),
                 TerminalHandlers.OfflineLicenseHandler
             );
         }
