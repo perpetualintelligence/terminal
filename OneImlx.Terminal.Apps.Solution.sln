@@ -1,0 +1,78 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9BD50919-76C1-424C-BD98-F870E6DE8903}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E3A2F609-5E85-4740-8899-6A2B777BE31B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{1A8779C7-3B84-405C-86D7-F000E5EA9AD8}"
+	ProjectSection(SolutionItems) = preProject
+		CHANGE_LOG.md = CHANGE_LOG.md
+		global.json = global.json
+		build\props\Package.props = build\props\Package.props
+		.github\package_version.env = .github\package_version.env
+		build\props\Test.props = build\props\Test.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal", "src\OneImlx.Terminal\OneImlx.Terminal.csproj", "{D75F42D7-E0CF-4CEB-8E94-80611FA81868}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Authentication", "src\OneImlx.Terminal.Authentication\OneImlx.Terminal.Authentication.csproj", "{3CD01797-9179-4CBA-BBDF-DF2BB9E6AA99}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Tests", "test\OneImlx.Terminal.Tests\OneImlx.Terminal.Tests.csproj", "{8611DACD-C82F-4B81-A332-A0392F9A1148}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.DependentAssembly", "test\OneImlx.Terminal.DependentAssembly\OneImlx.Terminal.DependentAssembly.csproj", "{A2BC6DF8-6165-426D-84B5-5783D0A63377}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Authentication.Tests", "test\OneImlx.Terminal.Authentication.Tests\OneImlx.Terminal.Authentication.Tests.csproj", "{519A35B8-EF39-4E69-B264-4CB5B37B8E10}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{9DA2C1B8-6509-4008-81D7-62B319B8E1ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Apps.TestApp", "apps\OneImlx.Terminal.Apps.TestApp\OneImlx.Terminal.Apps.TestApp.csproj", "{6CCD059D-462C-4231-BA22-D3CCC7C9D0ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D75F42D7-E0CF-4CEB-8E94-80611FA81868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75F42D7-E0CF-4CEB-8E94-80611FA81868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75F42D7-E0CF-4CEB-8E94-80611FA81868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75F42D7-E0CF-4CEB-8E94-80611FA81868}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CD01797-9179-4CBA-BBDF-DF2BB9E6AA99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CD01797-9179-4CBA-BBDF-DF2BB9E6AA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CD01797-9179-4CBA-BBDF-DF2BB9E6AA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CD01797-9179-4CBA-BBDF-DF2BB9E6AA99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8611DACD-C82F-4B81-A332-A0392F9A1148}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8611DACD-C82F-4B81-A332-A0392F9A1148}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8611DACD-C82F-4B81-A332-A0392F9A1148}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8611DACD-C82F-4B81-A332-A0392F9A1148}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2BC6DF8-6165-426D-84B5-5783D0A63377}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2BC6DF8-6165-426D-84B5-5783D0A63377}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2BC6DF8-6165-426D-84B5-5783D0A63377}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2BC6DF8-6165-426D-84B5-5783D0A63377}.Release|Any CPU.Build.0 = Release|Any CPU
+		{519A35B8-EF39-4E69-B264-4CB5B37B8E10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{519A35B8-EF39-4E69-B264-4CB5B37B8E10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{519A35B8-EF39-4E69-B264-4CB5B37B8E10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{519A35B8-EF39-4E69-B264-4CB5B37B8E10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CCD059D-462C-4231-BA22-D3CCC7C9D0ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CCD059D-462C-4231-BA22-D3CCC7C9D0ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CCD059D-462C-4231-BA22-D3CCC7C9D0ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CCD059D-462C-4231-BA22-D3CCC7C9D0ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D75F42D7-E0CF-4CEB-8E94-80611FA81868} = {9BD50919-76C1-424C-BD98-F870E6DE8903}
+		{3CD01797-9179-4CBA-BBDF-DF2BB9E6AA99} = {9BD50919-76C1-424C-BD98-F870E6DE8903}
+		{8611DACD-C82F-4B81-A332-A0392F9A1148} = {E3A2F609-5E85-4740-8899-6A2B777BE31B}
+		{A2BC6DF8-6165-426D-84B5-5783D0A63377} = {E3A2F609-5E85-4740-8899-6A2B777BE31B}
+		{519A35B8-EF39-4E69-B264-4CB5B37B8E10} = {E3A2F609-5E85-4740-8899-6A2B777BE31B}
+		{6CCD059D-462C-4231-BA22-D3CCC7C9D0ED} = {9DA2C1B8-6509-4008-81D7-62B319B8E1ED}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FB18F489-0BCB-4389-AE92-18E7DBEA4818}
+	EndGlobalSection
+EndGlobal
