@@ -9,9 +9,9 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Linq;
 using Xunit;
@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Nos_OptionDescriptor_Throws()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             OptionBuilder optionBuilder = new(commandBuilder);
@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Build_Adds_OptionDescriptor_To_CommandDescriptor()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None).Add()
@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_CommandBuilder()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             IOptionBuilder optionBuilder = commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None);
@@ -74,7 +74,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             CommandBuilder commandBuilder = new(terminalBuilder);
             OptionBuilder argumentBuilder = new(commandBuilder);
 

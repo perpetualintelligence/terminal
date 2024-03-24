@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public CommandRouteParserTests()
         {
             terminalOptions = MockTerminalOptions.NewAliasOptions();
-            textHandler = new AsciiTextHandler();
+            textHandler = new TerminalAsciiTextHandler();
             commandDescriptors = new(textHandler, new List<CommandDescriptor>()
             {
                new CommandDescriptor("root1", "root1_name", "root1_desc", CommandType.Root, CommandFlags.None),
@@ -407,7 +408,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private readonly TerminalOptions terminalOptions;
-        private ITextHandler textHandler;
+        private ITerminalTextHandler textHandler;
         private IImmutableCommandStore commandStore;
         private CommandDescriptors commandDescriptors;
         private ICommandRouteParser commandRouteParser;

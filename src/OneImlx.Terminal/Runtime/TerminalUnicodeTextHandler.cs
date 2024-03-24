@@ -12,12 +12,12 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace OneImlx.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITextHandler"/> for <see cref="Encoding.Unicode"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// The default <see cref="ITerminalTextHandler"/> for <see cref="Encoding.Unicode"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.
     /// </summary>
-    public sealed class UnicodeTextHandler : ITextHandler
+    public sealed class TerminalUnicodeTextHandler : ITerminalTextHandler
     {
         /// <summary>
         /// The <see cref="StringComparison.OrdinalIgnoreCase"/> string comparison.

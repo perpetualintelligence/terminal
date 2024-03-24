@@ -10,9 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OneImlx.Shared.Attributes.Validation;
 using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
-            terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
         }
 
         [Fact]

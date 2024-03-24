@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System.Collections.ObjectModel;
 
 namespace OneImlx.Terminal.Commands
@@ -20,7 +20,7 @@ namespace OneImlx.Terminal.Commands
         /// Initialize a new instance.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
-        public KeyAsIdCollection(ITextHandler textHandler) : base(textHandler.EqualityComparer())
+        public KeyAsIdCollection(ITerminalTextHandler textHandler) : base(textHandler.EqualityComparer())
         {
         }
 

@@ -14,6 +14,7 @@ using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace OneImlx.Terminal.Extensions
         {
             IServiceCollection? serviceDescriptors = null;
             ITerminalBuilder? terminalBuilder = null;
-            AsciiTextHandler textHandler = new();
+            TerminalAsciiTextHandler textHandler = new();
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
@@ -45,7 +46,7 @@ namespace OneImlx.Terminal.Extensions
             setupActionCalled.Should().BeFalse();
 
             // Ensure text handler added
-            ITextHandler? fromServices = host.Services.GetService<ITextHandler>();
+            ITerminalTextHandler? fromServices = host.Services.GetService<ITerminalTextHandler>();
             fromServices.Should().NotBeNull();
             fromServices.Should().BeSameAs(textHandler);
 
@@ -68,7 +69,7 @@ namespace OneImlx.Terminal.Extensions
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(new UnicodeTextHandler(), configuration);
+                arg.AddTerminal<InMemoryImmutableCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), configuration);
             }).Build();
 
             // Check Options are added
@@ -91,7 +92,7 @@ namespace OneImlx.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(new UnicodeTextHandler());
+                arg.AddTerminal<InMemoryImmutableCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler());
             }).Build();
 
             // Check Options are added
@@ -114,7 +115,7 @@ namespace OneImlx.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(new UnicodeTextHandler(), SetupAction);
+                arg.AddTerminal<InMemoryImmutableCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), SetupAction);
             }).Build();
 
             // Check Options are added

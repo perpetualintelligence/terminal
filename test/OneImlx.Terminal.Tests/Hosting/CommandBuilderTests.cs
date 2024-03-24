@@ -9,9 +9,9 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Linq;
 using Xunit;
@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Hosting
         public void Build_Adds_Command_To_Global_ServiceCollection()
         {
             // Begin with no command
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             ServiceDescriptor? serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             serviceDescriptor.Should().BeNull();
 
@@ -54,7 +54,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_TerminalBuilder()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
             ITerminalBuilder cliBuilderFromCommandBuilder = commandBuilder.Add();
             terminalBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
@@ -63,7 +63,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             CommandBuilder commandBuilder = new(terminalBuilder);
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
         }

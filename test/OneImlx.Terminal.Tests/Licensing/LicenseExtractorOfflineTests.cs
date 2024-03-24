@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_Invalid_Plan_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testLicPath;
             terminalOptions.Licensing.LicensePlan = "invalid_plan";
 
@@ -79,7 +79,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_InvalidAuthApp_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.Application = "invalid_auth_app";
+            terminalOptions.Id = "invalid_auth_app";
             terminalOptions.Licensing.LicenseFile = testLicPath;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -90,7 +90,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_InvalidKeyFilePath_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = "D:\\lic\\path_does_exist\\invalid.lic";
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -100,17 +100,17 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.Application = null;
+            terminalOptions.Id = null;
             terminalOptions.Licensing.LicenseFile = testLicPath;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The authorized application is not configured.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The authorized application is not configured as a terminal identifier.");
         }
 
         [Fact]
         public async Task ExtractFromJsonAsync_NonJsonLic_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = nonJsonLicPath;
 
             try
@@ -126,7 +126,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_InvalidMode_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
 
             string? tempJsonLicPath = null;
 
@@ -154,8 +154,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_InvalidApplicationId_ShouldErrorAsync()
         {
+            terminalOptions.Id = "invalid_app";
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Licensing.Application = "invalid_app";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -165,8 +165,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact(Skip = "Need to add an jwt token with invalid license provider")]
         public async Task ExtractFromJsonAsync_InvalidProviderTenant_ShouldErrorAsync()
         {
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -176,7 +176,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_NoHttpClientFactory_ShouldNotErrorAsync()
         {
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testLicPath;
 
             await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -185,7 +185,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_NoHttpClientName_ShouldNotErrorAsync()
         {
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testLicPath;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -199,8 +199,8 @@ namespace OneImlx.Terminal.Licensing
             License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
             licenseFromGet.Should().BeNull();
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -258,7 +258,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_WithNoLicenseKey_ShouldErrorAsync()
         {
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = null;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());

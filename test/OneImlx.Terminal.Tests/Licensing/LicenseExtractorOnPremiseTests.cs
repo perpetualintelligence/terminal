@@ -45,8 +45,8 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
             terminalOptions.Licensing.LicensePlan = licPlan;
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
             Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -64,13 +64,12 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
             terminalOptions.Licensing.LicensePlan = licPlan;
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
             await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
         }
-
 
         [Theory]
         [InlineData(false)]
@@ -80,8 +79,8 @@ namespace OneImlx.Terminal.Licensing
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             terminalOptions.Licensing.LicensePlan = null;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
@@ -90,7 +89,6 @@ namespace OneImlx.Terminal.Licensing
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
                 .WithErrorDescription("The license plan is not valid. plan=");
         }
-
 
         [Theory]
         [InlineData(false)]
@@ -103,8 +101,8 @@ namespace OneImlx.Terminal.Licensing
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOnlineLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             await act.Should().ThrowAsync<TerminalException>()
@@ -123,8 +121,8 @@ namespace OneImlx.Terminal.Licensing
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
         }
@@ -140,8 +138,8 @@ namespace OneImlx.Terminal.Licensing
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             result.License.Should().NotBeNull();
@@ -169,8 +167,8 @@ namespace OneImlx.Terminal.Licensing
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             result.License.Should().NotBeNull();
@@ -198,8 +196,8 @@ namespace OneImlx.Terminal.Licensing
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
 
             LicenseExtractorResult? result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             result.License.Should().NotBeNull();
@@ -218,10 +216,10 @@ namespace OneImlx.Terminal.Licensing
             License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
             licenseFromGet.Should().BeNull();
 
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
-            terminalOptions.Licensing.Application = "08c6925f-a734-4e24-8d84-e06737420766";
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());

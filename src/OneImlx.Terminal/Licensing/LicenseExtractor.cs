@@ -168,9 +168,9 @@ namespace OneImlx.Terminal.Licensing
             logger.LogDebug("Extract from JSON license key.");
 
             // Missing app id
-            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.Application))
+            if (string.IsNullOrWhiteSpace(terminalOptions.Id))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The authorized application is not configured.");
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The authorized application is not configured as a terminal identifier.");
             }
 
             // Missing key
@@ -266,7 +266,7 @@ namespace OneImlx.Terminal.Licensing
             {
                 Issuer = Shared.Constants.Issuer,
                 Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
-                Application = terminalOptions.Licensing.Application!,
+                Application = terminalOptions.Id,
                 AuthorizedParty = Shared.Constants.TerminalUrn,
                 TenantId = licenseFile.TenantId,
                 Key = licenseFile.Key,
@@ -352,7 +352,7 @@ namespace OneImlx.Terminal.Licensing
                 {
                     Issuer = Shared.Constants.Issuer,
                     Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
-                    Application = terminalOptions.Licensing.Application!,
+                    Application = terminalOptions.Id,
                     AuthorizedParty = Shared.Constants.TerminalUrn,
                     TenantId = licenseFile.TenantId,
                     Key = licenseFile.Key,

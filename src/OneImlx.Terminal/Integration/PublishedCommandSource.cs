@@ -8,9 +8,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using System.Collections.Generic;
 using System.Reflection;
@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Integration
     /// </remarks>
     public class PublishedCommandSource : ITerminalCommandSource<PublishedCommandSourceContext>
     {
-        private readonly ITextHandler textHandler;
+        private readonly ITerminalTextHandler textHandler;
         private readonly ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> assemblyLoader;
         private readonly ITerminalCommandSourceChecker<PublishedCommandSourceContext> terminalCommandSourceChecker;
         private readonly IMutableCommandStore commandStore;
@@ -59,7 +59,7 @@ namespace OneImlx.Terminal.Integration
         /// <param name="commandStore">The mutable command store.</param>
         /// <param name="logger">The logger.</param>
         public PublishedCommandSource(
-            ITextHandler textHandler,
+            ITerminalTextHandler textHandler,
             ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> publishedAssembliesLoader,
             ITerminalCommandSourceChecker<PublishedCommandSourceContext> publishedCommandSourceChecker,
             IMutableCommandStore commandStore,

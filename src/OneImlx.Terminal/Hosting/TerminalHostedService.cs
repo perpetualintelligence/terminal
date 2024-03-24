@@ -11,9 +11,9 @@ using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -35,10 +35,10 @@ namespace OneImlx.Terminal.Hosting
         /// <param name="logger">The logger.</param>
         public TerminalHostedService(IServiceProvider serviceProvider, TerminalOptions options, ILogger<TerminalHostedService> logger)
         {
-            this.hostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
-            this.serviceProvider = serviceProvider;
-            this.options = options;
-            this.logger = logger;
+            this.HostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
+            this.ServiceProvider = serviceProvider;
+            this.Options = options;
+            this.Logger = logger;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Hosting
             try
             {
                 // Register Application Lifetime events
-                await RegisterHostApplicationEventsAsync(hostApplicationLifetime);
+                await RegisterHostApplicationEventsAsync(HostApplicationLifetime);
 
                 // Print Header
                 await PrintHostApplicationHeaderAsync();
@@ -71,10 +71,10 @@ namespace OneImlx.Terminal.Hosting
                 await PrintHostApplicationMandatoryLicensingAsync(result.License);
 
                 // Do mandatory configuration check
-                await CheckHostApplicationMandatoryConfigurationAsync(options);
+                await CheckHostApplicationMandatoryConfigurationAsync(Options);
 
                 // Do custom configuration check
-                await CheckHostApplicationConfigurationAsync(options);
+                await CheckHostApplicationConfigurationAsync(Options);
 
                 // Register the help options with command descriptors. This is intentionally done at the end so we don't take
                 // performance hit in case there is a license check failure.
@@ -82,7 +82,7 @@ namespace OneImlx.Terminal.Hosting
             }
             catch (TerminalException ex)
             {
-                logger.LogError($"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
+                Logger.LogError($"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
             }
         }
 
@@ -92,7 +92,7 @@ namespace OneImlx.Terminal.Hosting
         /// <returns></returns>
         internal virtual Task RegisterHelpAsync()
         {
-            if (options.Help.Disabled.GetValueOrDefault())
+            if (Options.Help.Disabled.GetValueOrDefault())
             {
                 return Task.CompletedTask;
             }
@@ -100,12 +100,12 @@ namespace OneImlx.Terminal.Hosting
             return Task.Run(() =>
             {
                 // This can be a long list of command, but it is executed only once during startup.
-                IEnumerable<CommandDescriptor> commandDescriptors = serviceProvider.GetServices<CommandDescriptor>();
+                IEnumerable<CommandDescriptor> commandDescriptors = ServiceProvider.GetServices<CommandDescriptor>();
                 foreach (CommandDescriptor commandDescriptor in commandDescriptors)
                 {
-                    OptionDescriptor helpDescriptor = new(options.Help.OptionId, nameof(Boolean), options.Help.OptionDescription, OptionFlags.None, options.Help.OptionAlias);
+                    OptionDescriptor helpDescriptor = new(Options.Help.OptionId, nameof(Boolean), Options.Help.OptionDescription, OptionFlags.None, Options.Help.OptionAlias);
 
-                    commandDescriptor.OptionDescriptors ??= new OptionDescriptors(serviceProvider.GetRequiredService<ITextHandler>());
+                    commandDescriptor.OptionDescriptors ??= new OptionDescriptors(ServiceProvider.GetRequiredService<ITerminalTextHandler>());
                     commandDescriptor.OptionDescriptors.RegisterHelp(helpDescriptor);
                 }
             });
@@ -131,18 +131,18 @@ namespace OneImlx.Terminal.Hosting
             {
                 if (license.Usage == LicenseUsage.Educational)
                 {
-                    logger.LogWarning("Your demo license is free for educational purposes. For non-educational, release, or production environment, you require a commercial license.");
+                    Logger.LogWarning("Your demo license is free for educational purposes. For non-educational, release, or production environment, you require a commercial license.");
                 }
                 else if (license.Usage == LicenseUsage.RnD)
                 {
-                    logger.LogWarning("Your demo license is free for RnD, test, and evaluation purposes. For release, or production environment, you require a commercial license.");
+                    Logger.LogWarning("Your demo license is free for RnD, test, and evaluation purposes. For release, or production environment, you require a commercial license.");
                 }
             }
             else if (license.Plan == TerminalLicensePlans.Custom)
             {
                 if (license.Usage == LicenseUsage.RnD)
                 {
-                    logger.LogWarning("Your custom license is free for RnD, test and evaluation purposes. For release, or production environment, you require a commercial license.");
+                    Logger.LogWarning("Your custom license is free for RnD, test and evaluation purposes. For release, or production environment, you require a commercial license.");
                 }
             }
 
@@ -163,8 +163,8 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         protected virtual void OnStarted()
         {
-            logger.LogInformation("Server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
-            logger.LogInformation("");
+            Logger.LogInformation("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
+            Logger.LogInformation("");
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         protected virtual void OnStopped()
         {
-            logger.LogInformation("Server stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
+            Logger.LogInformation("Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
         }
 
         /// <summary>
@@ -182,22 +182,13 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         protected virtual void OnStopping()
         {
-            logger.LogInformation("Stopping server...");
+            Logger.LogInformation("Stopping application...");
         }
 
         /// <summary>
         /// Allows the host application to print the custom header.
         /// </summary>
-        protected virtual Task PrintHostApplicationHeaderAsync()
-        {
-            logger.LogInformation("---------------------------------------------------------------------------------------------");
-            logger.LogInformation("Header line-1");
-            logger.LogInformation("Header line-2");
-            logger.LogInformation("---------------------------------------------------------------------------------------------");
-
-            logger.LogInformation($"Starting server \"{OneImlx.Shared.Constants.TerminalUrn}\" version={typeof(TerminalHostedService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? " < none > "}");
-            return Task.CompletedTask;
-        }
+        protected abstract Task PrintHostApplicationHeaderAsync();
 
         /// <summary>
         /// Allows host application to print custom licensing information.
@@ -207,15 +198,15 @@ namespace OneImlx.Terminal.Hosting
         protected virtual Task PrintHostApplicationLicensingAsync(License license)
         {
             // Print the license information
-            logger.LogInformation("tenant={0} ({1})", license.Claims.TenantName, license.Claims.TenantId);
-            logger.LogInformation("country={0}", license.Claims.TenantCountry);
-            logger.LogInformation("license={0}", license.Claims.Id);
-            logger.LogInformation("mode={0}", license.Claims.Mode);
-            logger.LogInformation("deployment={0}", license.Claims.Deployment);
-            logger.LogInformation("usage={0}", license.Usage);
-            logger.LogInformation("plan={0}", license.Plan);
-            logger.LogInformation("iat={0}", license.Claims.IssuedAt);
-            logger.LogInformation("exp={0}", license.Claims.ExpiryAt);
+            Logger.LogInformation("tenant={0} ({1})", license.Claims.TenantName, license.Claims.TenantId);
+            Logger.LogInformation("country={0}", license.Claims.TenantCountry);
+            Logger.LogInformation("license={0}", license.Claims.Id);
+            Logger.LogInformation("mode={0}", license.Claims.Mode);
+            Logger.LogInformation("deployment={0}", license.Claims.Deployment);
+            Logger.LogInformation("usage={0}", license.Usage);
+            Logger.LogInformation("plan={0}", license.Plan);
+            Logger.LogInformation("iat={0}", license.Claims.IssuedAt);
+            Logger.LogInformation("exp={0}", license.Claims.ExpiryAt);
 
             return Task.CompletedTask;
         }
@@ -239,26 +230,41 @@ namespace OneImlx.Terminal.Hosting
         /// <returns></returns>
         private async Task CheckHostApplicationMandatoryConfigurationAsync(TerminalOptions options)
         {
-            IConfigurationOptionsChecker optionsChecker = serviceProvider.GetRequiredService<IConfigurationOptionsChecker>();
+            IConfigurationOptionsChecker optionsChecker = ServiceProvider.GetRequiredService<IConfigurationOptionsChecker>();
             await optionsChecker.CheckAsync(options);
         }
 
         private async Task CheckLicenseAsync(LicenseExtractorResult result)
         {
-            ILicenseChecker licenseChecker = serviceProvider.GetRequiredService<ILicenseChecker>();
+            ILicenseChecker licenseChecker = ServiceProvider.GetRequiredService<ILicenseChecker>();
             await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(result.License));
         }
 
         private async Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
-            ILicenseExtractor licenseExtractor = serviceProvider.GetRequiredService<ILicenseExtractor>();
+            ILicenseExtractor licenseExtractor = ServiceProvider.GetRequiredService<ILicenseExtractor>();
             LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             return result;
         }
 
-        private readonly TerminalOptions options;
-        private readonly IHostApplicationLifetime hostApplicationLifetime;
-        private readonly ILogger<TerminalHostedService> logger;
-        private readonly IServiceProvider serviceProvider;
+        /// <summary>
+        /// The terminal configuration options.
+        /// </summary>
+        protected TerminalOptions Options { get; private set; }
+
+        /// <summary>
+        /// The host application lifetime.
+        /// </summary>
+        protected IHostApplicationLifetime HostApplicationLifetime { get; private set; }
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        protected ILogger<TerminalHostedService> Logger { get; private set; }
+
+        /// <summary>
+        /// The service provider.
+        /// </summary>
+        protected IServiceProvider ServiceProvider { get; private set; }
     }
 }

@@ -9,9 +9,9 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Linq;
 using Xunit;
@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void No_Argument_Descriptor_Throws()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             ArgumentBuilder argumentBuilder = new(commandBuilder);
@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Build_Adds_ArgumentDescriptor_To_CommandDescriptor()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             commandBuilder.DefineArgument(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None).Add()
@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_CommandBuilder()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
 
             IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None);
@@ -74,7 +74,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             CommandBuilder commandBuilder = new(terminalBuilder);
             ArgumentBuilder argumentBuilder = new(commandBuilder);
 

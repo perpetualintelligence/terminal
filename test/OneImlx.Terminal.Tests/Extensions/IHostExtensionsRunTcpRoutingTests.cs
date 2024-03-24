@@ -656,7 +656,7 @@ namespace OneImlx.Terminal.Extensions
 
         private void ConfigureServicesDefault(IServiceCollection opt2)
         {
-            textHandler = new AsciiTextHandler();
+            textHandler = new TerminalAsciiTextHandler();
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
 
@@ -673,7 +673,7 @@ namespace OneImlx.Terminal.Extensions
 
         private void ConfigureServicesErrorExceptionOnRoute(IServiceCollection opt2)
         {
-            textHandler = new AsciiTextHandler();
+            textHandler = new TerminalAsciiTextHandler();
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
 
@@ -693,7 +693,7 @@ namespace OneImlx.Terminal.Extensions
         private CancellationTokenSource commandTokenSource = null!;
         private TerminalStartContext startContext = null!;
         private IPEndPoint serverIpEndPoint = null!;
-        private ITextHandler textHandler = null!;
+        private ITerminalTextHandler textHandler = null!;
 
         public Task InitializeAsync()
         {

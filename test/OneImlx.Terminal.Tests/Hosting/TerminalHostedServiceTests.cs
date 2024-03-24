@@ -11,12 +11,12 @@ using Microsoft.Extensions.Hosting;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting.Mocks;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using System;
 using System.Linq;
@@ -51,7 +51,7 @@ namespace OneImlx.Terminal.Hosting
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
                 services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
-                services.AddSingleton<ITextHandler, UnicodeTextHandler>();
+                services.AddSingleton<ITerminalTextHandler, TerminalUnicodeTextHandler>();
             });
             host = hostBuilder.Start();
 
@@ -59,22 +59,6 @@ namespace OneImlx.Terminal.Hosting
             defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, logger);
             mockCustomCliHostedService = new MockTerminalCustomHostedService(host.Services, terminalOptions, logger);
             mockCliEventsHostedService = new MockTerminalEventsHostedService(host.Services, terminalOptions, logger);
-        }
-
-        [Fact]
-        public void StartAsync_Default_ShouldPrint_Application_Header()
-        {
-            // use reflection to call
-            MethodInfo? printAppHeader = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationHeaderAsync", BindingFlags.Instance | BindingFlags.NonPublic);
-            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printAppHeader);
-            printAppHeader.Invoke(defaultCliHostedService, null);
-
-            logger.Messages.Should().HaveCount(5);
-            logger.Messages[0].Should().Be("---------------------------------------------------------------------------------------------");
-            logger.Messages[1].Should().Be("Header line-1");
-            logger.Messages[2].Should().Be("Header line-2");
-            logger.Messages[3].Should().Be("---------------------------------------------------------------------------------------------");
-            logger.Messages[4].Should().StartWith("Starting server \"urn:oneimlx:terminal\" version=");
         }
 
         [Fact]
@@ -148,7 +132,7 @@ namespace OneImlx.Terminal.Hosting
             print.Invoke(defaultCliHostedService, null);
 
             logger.Messages.Should().HaveCount(2);
-            logger.Messages[0].Should().StartWith("Server started on");
+            logger.Messages[0].Should().StartWith("Application started on");
             logger.Messages[1].Should().Be("");
         }
 
@@ -161,7 +145,7 @@ namespace OneImlx.Terminal.Hosting
             print.Invoke(defaultCliHostedService, null);
 
             logger.Messages.Should().HaveCount(1);
-            logger.Messages[0].Should().StartWith("Server stopped on");
+            logger.Messages[0].Should().StartWith("Application stopped on");
         }
 
         [Fact]
@@ -173,7 +157,7 @@ namespace OneImlx.Terminal.Hosting
             print.Invoke(defaultCliHostedService, null);
 
             logger.Messages.Should().HaveCount(1);
-            logger.Messages[0].Should().Be("Stopping server...");
+            logger.Messages[0].Should().Be("Stopping application...");
         }
 
         [Fact]
@@ -290,7 +274,7 @@ namespace OneImlx.Terminal.Hosting
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(new UnicodeTextHandler())
+                services.AddTerminal<InMemoryImmutableCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler())
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add()
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
@@ -303,7 +287,7 @@ namespace OneImlx.Terminal.Hosting
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
                 services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
-                services.AddSingleton<ITextHandler, UnicodeTextHandler>();
+                services.AddSingleton<ITerminalTextHandler, TerminalUnicodeTextHandler>();
             });
             host = await hostBuilder.StartAsync();
 
@@ -331,7 +315,7 @@ namespace OneImlx.Terminal.Hosting
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal<InMemoryImmutableCommandStore, UnicodeTextHandler>(new UnicodeTextHandler())
+                services.AddTerminal<InMemoryImmutableCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler())
                    .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
                         .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
                     .Add()
@@ -348,7 +332,7 @@ namespace OneImlx.Terminal.Hosting
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
                 services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
-                services.AddSingleton<ITextHandler, UnicodeTextHandler>();
+                services.AddSingleton<ITerminalTextHandler, TerminalUnicodeTextHandler>();
             });
             host = await hostBuilder.StartAsync();
 

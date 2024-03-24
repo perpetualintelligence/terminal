@@ -12,7 +12,7 @@ namespace OneImlx.Terminal
     /// <summary>
     /// The exception that represents a terminal error.
     /// </summary>
-    public class TerminalException : ErrorException
+    public sealed class TerminalException : ErrorException
     {
         /// <summary>
         /// Initializes a new instance.

@@ -6,7 +6,7 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Hosting
 {
@@ -23,6 +23,6 @@ namespace OneImlx.Terminal.Hosting
         /// <summary>
         /// The text handler.
         /// </summary>
-        ITextHandler TextHandler { get; }
+        ITerminalTextHandler TextHandler { get; }
     }
 }

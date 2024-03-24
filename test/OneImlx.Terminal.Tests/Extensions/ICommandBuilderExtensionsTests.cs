@@ -9,9 +9,9 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Linq;
 using Xunit;
@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Extensions
             }).Build();
 
             serviceDescriptors.Should().NotBeNull();
-            terminalBuilder = serviceDescriptors!.CreateTerminalBuilder(new AsciiTextHandler());
+            terminalBuilder = serviceDescriptors!.CreateTerminalBuilder(new TerminalAsciiTextHandler());
             commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "description1", CommandType.SubCommand, CommandFlags.None);
         }
 

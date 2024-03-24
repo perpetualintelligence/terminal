@@ -7,6 +7,7 @@
 
 using FluentAssertions;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Text;
 using Xunit;
@@ -15,7 +16,7 @@ namespace OneImlx.Terminal.Commands.Handlers
 {
     public class UnicodeTextHandlerTests
     {
-        private readonly UnicodeTextHandler _textHandler = new();
+        private readonly TerminalUnicodeTextHandler _textHandler = new();
 
         [Theory]
         [InlineData("नमस्ते", "नमस्ते", true)] // Equal

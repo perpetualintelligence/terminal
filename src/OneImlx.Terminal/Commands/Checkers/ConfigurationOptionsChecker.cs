@@ -7,8 +7,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using OneImlx.Shared.Extensions;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
@@ -39,7 +39,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         /// <exception cref="NotImplementedException"></exception>
         public Task CheckAsync(TerminalOptions options)
         {
-            ITextHandler textHandler = serviceProvider.GetRequiredService<ITextHandler>();
+            ITerminalTextHandler textHandler = serviceProvider.GetRequiredService<ITerminalTextHandler>();
 
             // Terminal
             {

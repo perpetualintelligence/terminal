@@ -6,7 +6,7 @@
 */
 
 using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Stores
         /// </summary>
         /// <param name="textHandler"></param>
         /// <param name="commandDescriptors">The command identities.</param>
-        public InMemoryImmutableCommandStore(ITextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
+        public InMemoryImmutableCommandStore(ITerminalTextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
         {
             this.commandDescriptors = new CommandDescriptors(textHandler, commandDescriptors);
         }

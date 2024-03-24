@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 {
     public class CommandRouteParserHindiTests
     {
-        private readonly ITextHandler _textHandler;
+        private readonly ITerminalTextHandler _textHandler;
         private readonly IImmutableCommandStore _commandStore;
         private readonly TerminalOptions _terminalOptions;
         private readonly ILogger<CommandRouteParser> _logger;
@@ -30,9 +31,9 @@ namespace OneImlx.Terminal.Commands.Parsers
         public CommandRouteParserHindiTests()
         {
             _logger = new LoggerFactory().CreateLogger<CommandRouteParser>();
-            _textHandler = new UnicodeTextHandler();
+            _textHandler = new TerminalUnicodeTextHandler();
 
-            var options = new OptionDescriptors(new UnicodeTextHandler(), new List<OptionDescriptor>()
+            var options = new OptionDescriptors(new TerminalUnicodeTextHandler(), new List<OptionDescriptor>()
             {
                 new OptionDescriptor("एक", nameof(String), "पहला तर्क", OptionFlags.None, "एकहै" ),
                 new OptionDescriptor("दो", nameof(Boolean), "दूसरा तर्क", OptionFlags.Required) { },

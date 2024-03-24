@@ -25,11 +25,6 @@ namespace OneImlx.Terminal.Configuration.Options
     public sealed class LicensingOptions
     {
         /// <summary>
-        /// The authorized application id. This is also the <c>auth_apps</c> claim from your license key.
-        /// </summary>
-        public string? Application { get; set; }
-
-        /// <summary>
         /// The license file location.
         /// </summary>
         public string? LicenseFile { get; set; }

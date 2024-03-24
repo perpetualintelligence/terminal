@@ -9,12 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OneImlx.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITextHandler"/> for <see cref="Encoding.ASCII"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// The default <see cref="ITerminalTextHandler"/> for <see cref="Encoding.ASCII"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.
     /// </summary>
-    public sealed class AsciiTextHandler : ITextHandler
+    public sealed class TerminalAsciiTextHandler : ITerminalTextHandler
     {
         /// <summary>
         /// The <see cref="StringComparison.InvariantCultureIgnoreCase"/> string comparison.

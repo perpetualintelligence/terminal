@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System.Collections.Generic;
 
 namespace OneImlx.Terminal.Commands
@@ -20,7 +20,7 @@ namespace OneImlx.Terminal.Commands
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="collection">The command descriptors.</param>
-        public CommandDescriptors(ITextHandler textHandler, IEnumerable<CommandDescriptor> collection) : base(textHandler.EqualityComparer())
+        public CommandDescriptors(ITerminalTextHandler textHandler, IEnumerable<CommandDescriptor> collection) : base(textHandler.EqualityComparer())
         {
             foreach (CommandDescriptor commandDescriptor in collection)
             {
@@ -32,6 +32,6 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// The text handler.
         /// </summary>
-        public ITextHandler TextHandler { get; }
+        public ITerminalTextHandler TextHandler { get; }
     }
 }

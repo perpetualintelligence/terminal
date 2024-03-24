@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -21,7 +21,7 @@ namespace OneImlx.Terminal.Commands
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="collection">The option descriptors.</param>
-        public OptionDescriptors(ITextHandler textHandler, IEnumerable<OptionDescriptor>? collection = null)
+        public OptionDescriptors(ITerminalTextHandler textHandler, IEnumerable<OptionDescriptor>? collection = null)
         {
             TextHandler = textHandler;
             inner = new Dictionary<string, OptionDescriptor>(textHandler.EqualityComparer());
@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// The text handler.
         /// </summary>
-        public ITextHandler TextHandler { get; }
+        public ITerminalTextHandler TextHandler { get; }
 
         /// <inheritdoc/>
         public int Count => inner.Count;

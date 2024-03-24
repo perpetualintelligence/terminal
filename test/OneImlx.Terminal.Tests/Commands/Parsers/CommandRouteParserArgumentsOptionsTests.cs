@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace OneImlx.Terminal.Commands.Parsers
     {
         public CommandRouteParserArgumentsOptionsTests()
         {
-            argumentDescriptors = new ArgumentDescriptors(new AsciiTextHandler(), new List<ArgumentDescriptor>() {
+            argumentDescriptors = new ArgumentDescriptors(new TerminalAsciiTextHandler(), new List<ArgumentDescriptor>() {
                 new ArgumentDescriptor(1, "arg1", nameof(String), "Argument1", ArgumentFlags.None),
                 new ArgumentDescriptor(2, "arg2", nameof(Int32), "Argument2", ArgumentFlags.Required),
                 new ArgumentDescriptor(3, "arg3", nameof(Boolean), "Argument3", ArgumentFlags.None),
@@ -35,7 +36,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                 new ArgumentDescriptor(9, "arg9", nameof(String), "Argument9", ArgumentFlags.None),
             });
 
-            optionDescriptors = new OptionDescriptors(new AsciiTextHandler(), new List<OptionDescriptor>() {
+            optionDescriptors = new OptionDescriptors(new TerminalAsciiTextHandler(), new List<OptionDescriptor>() {
                 new OptionDescriptor( "opt1", nameof(Int32), "Option1", OptionFlags.None),
                 new OptionDescriptor( "opt2", nameof(String), "Option2", OptionFlags.Required),
                 new OptionDescriptor( "opt3", nameof(String), "Option3", OptionFlags.Disabled),
@@ -47,7 +48,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             });
 
             terminalOptions = MockTerminalOptions.NewAliasOptions();
-            textHandler = new AsciiTextHandler();
+            textHandler = new TerminalAsciiTextHandler();
             commandDescriptors = new(textHandler, new List<CommandDescriptor>()
             {
                 new CommandDescriptor("root1", "root1_name", "root1_desc", CommandType.Root, CommandFlags.None, argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors),
@@ -1091,7 +1092,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private readonly TerminalOptions terminalOptions;
-        private ITextHandler textHandler;
+        private ITerminalTextHandler textHandler;
         private IImmutableCommandStore commandStore;
         private CommandDescriptors commandDescriptors;
         private ArgumentDescriptors argumentDescriptors;

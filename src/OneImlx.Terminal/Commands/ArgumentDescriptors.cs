@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public ArgumentDescriptors(ITextHandler textHandler, IEnumerable<ArgumentDescriptor> arguments)
+        public ArgumentDescriptors(ITerminalTextHandler textHandler, IEnumerable<ArgumentDescriptor> arguments)
         {
             inner = new KeyAsIdCollection<ArgumentDescriptor>(textHandler);
             foreach (var argument in arguments)
@@ -33,7 +33,7 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// The text handler.
         /// </summary>
-        public ITextHandler TextHandler { get; }
+        public ITerminalTextHandler TextHandler { get; }
 
         /// <summary>
         /// The argument descriptor count.

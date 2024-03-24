@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System;
 using Xunit;
 
@@ -25,7 +25,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void TerminalBuilder_ShouldReturn_Same_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new AsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
             terminalBuilder.Services.Should().BeSameAs(serviceCollection);
         }
 

@@ -32,7 +32,7 @@ namespace OneImlx.Terminal.Runtime
         private readonly ICommandRouter commandRouter;
         private readonly IExceptionHandler exceptionHandler;
         private readonly TerminalOptions options;
-        private readonly ITextHandler textHandler;
+        private readonly ITerminalTextHandler textHandler;
         private readonly ILogger<TerminalTcpRouter> logger;
         private ConcurrentDictionary<int, ConcurrentQueue<string>>? commandCollection;
         private ConcurrentDictionary<Task, int>? clientConnections;
@@ -54,7 +54,7 @@ namespace OneImlx.Terminal.Runtime
             ICommandRouter commandRouter,
             IExceptionHandler exceptionHandler,
             TerminalOptions options,
-            ITextHandler textHandler,
+            ITerminalTextHandler textHandler,
             ILogger<TerminalTcpRouter> logger)
         {
             this.commandRouter = commandRouter;

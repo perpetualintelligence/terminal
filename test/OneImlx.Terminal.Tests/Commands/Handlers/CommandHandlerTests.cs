@@ -579,19 +579,19 @@ namespace OneImlx.Terminal.Commands.Handlers
             routerContext = new CommandRouterContext("test", routingContext);
 
             // This mocks the help id request
-            OptionDescriptors helpIdOptionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
+            OptionDescriptors helpIdOptionDescriptors = new(new TerminalUnicodeTextHandler(), new List<OptionDescriptor>()
             {
                 new OptionDescriptor(terminalOptions.Help.OptionId, nameof(Boolean), "Help options", OptionFlags.None)
             });
-            Options helpIdOptions = new(new UnicodeTextHandler(), new Option[] { new Option(helpIdOptionDescriptors.First().Value, true) });
+            Options helpIdOptions = new(new TerminalUnicodeTextHandler(), new Option[] { new Option(helpIdOptionDescriptors.First().Value, true) });
             helpIdCommand = MockCommands.NewCommandDefinition("helpId1", "helpIdName", "helpIdDesc", CommandType.SubCommand, CommandFlags.None, helpIdOptionDescriptors, options: helpIdOptions);
 
             // This mocks the help alias request
-            OptionDescriptors helpAliasOptionDescriptors = new(new UnicodeTextHandler(), new List<OptionDescriptor>()
+            OptionDescriptors helpAliasOptionDescriptors = new(new TerminalUnicodeTextHandler(), new List<OptionDescriptor>()
             {
                 new OptionDescriptor(terminalOptions.Help.OptionAlias, nameof(Boolean), "Help alias options", OptionFlags.None)
             });
-            Options helpAliasOptions = new(new UnicodeTextHandler(), new Option[] { new Option(helpAliasOptionDescriptors.First().Value, true) });
+            Options helpAliasOptions = new(new TerminalUnicodeTextHandler(), new Option[] { new Option(helpAliasOptionDescriptors.First().Value, true) });
             helpAliasCommand = MockCommands.NewCommandDefinition("helpAlias", "helpAliasName", "helpAliasDesc", CommandType.SubCommand, CommandFlags.None, helpAliasOptionDescriptors, options: helpAliasOptions);
 
             handler = new CommandHandler(host.Services, licenseChecker, terminalOptions, new LoggerFactory().CreateLogger<CommandHandler>());

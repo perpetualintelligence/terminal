@@ -6,7 +6,7 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System;
 
 namespace OneImlx.Terminal.Hosting
@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Hosting
         /// <param name="services">The global service collection.</param>
         /// <param name="textHandler">The global text handler.</param>
         /// <exception cref="ArgumentNullException">services</exception>
-        public TerminalBuilder(IServiceCollection services, ITextHandler textHandler)
+        public TerminalBuilder(IServiceCollection services, ITerminalTextHandler textHandler)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
             TextHandler = textHandler ?? throw new ArgumentNullException(nameof(textHandler));
@@ -36,6 +36,6 @@ namespace OneImlx.Terminal.Hosting
         /// <summary>
         /// The text handler.
         /// </summary>
-        public ITextHandler TextHandler { get; }
+        public ITerminalTextHandler TextHandler { get; }
     }
 }

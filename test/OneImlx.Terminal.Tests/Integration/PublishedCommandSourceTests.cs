@@ -14,6 +14,7 @@ namespace OneImlx.Terminal.Integration
     using OneImlx.Terminal.Commands;
     using OneImlx.Terminal.Commands.Handlers;
     using OneImlx.Terminal.Mocks;
+    using OneImlx.Terminal.Runtime;
     using OneImlx.Terminal.Stores;
     using OneImlx.Terminals.Integration.Mocks;
     using System.Threading.Tasks;
@@ -26,11 +27,11 @@ namespace OneImlx.Terminal.Integration
         private readonly ILogger<PublishedCommandSource> logger;
         private readonly ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> assemblyLoader;
         private readonly PublishedCommandSource publishedCommandSource;
-        private readonly ITextHandler textHandler;
+        private readonly ITerminalTextHandler textHandler;
 
         public PublishedCommandSourceTests()
         {
-            textHandler = new AsciiTextHandler();
+            textHandler = new TerminalAsciiTextHandler();
             assemblyLoader = new MockPublishedAssemblyLoader();
             terminalCommandSourceChecker = new MockPublishedCommandSourceChecker();
             mutableCommandStore = new InMemoryMutableCommandStore(textHandler, Array.Empty<CommandDescriptor>());

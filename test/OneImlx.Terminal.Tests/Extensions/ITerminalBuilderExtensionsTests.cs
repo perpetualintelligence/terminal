@@ -400,12 +400,12 @@ namespace OneImlx.Terminal.Extensions
         public void AddTextHandlerShouldCorrectlyInitialize()
         {
             // AddTextHandler is called within CreateTerminalBuilder
-            var comparer = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITextHandler)));
+            var comparer = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalTextHandler)));
             comparer.Should().NotBeNull();
             comparer!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             comparer!.ImplementationInstance.Should().NotBeNull();
             comparer.ImplementationType.Should().BeNull();
-            comparer.ImplementationInstance!.GetType().Should().Be(typeof(UnicodeTextHandler));
+            comparer.ImplementationInstance!.GetType().Should().Be(typeof(TerminalUnicodeTextHandler));
         }
 
         public ITerminalBuilderExtensionsTests()
@@ -421,7 +421,7 @@ namespace OneImlx.Terminal.Extensions
                 throw new InvalidOperationException("Service descriptors not initialized.");
             }
 
-            terminalBuilder = serviceDescriptors.CreateTerminalBuilder(new UnicodeTextHandler());
+            terminalBuilder = serviceDescriptors.CreateTerminalBuilder(new TerminalUnicodeTextHandler());
         }
     }
 }

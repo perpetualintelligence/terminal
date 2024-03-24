@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -21,7 +21,7 @@ namespace OneImlx.Terminal.Commands
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="options">The options.</param>
-        public Options(ITextHandler textHandler, IEnumerable<Option>? options = null)
+        public Options(ITerminalTextHandler textHandler, IEnumerable<Option>? options = null)
         {
             TextHandler = textHandler;
 
@@ -52,7 +52,7 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// The text handler.
         /// </summary>
-        public ITextHandler TextHandler { get; }
+        public ITerminalTextHandler TextHandler { get; }
 
         /// <inheritdoc/>
         public IEnumerable<string> Keys => inner.Keys;

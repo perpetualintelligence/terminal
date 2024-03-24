@@ -32,7 +32,7 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             commandRoute = new CommandRoute(Guid.NewGuid().ToString(), "test_raw");
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            textHandler = new UnicodeTextHandler();
+            textHandler = new TerminalUnicodeTextHandler();
             optionMapper = new DataTypeMapper<Option>(terminalOptions, loggerFactory.CreateLogger<DataTypeMapper<Option>>());
             argumentMapper = new DataTypeMapper<Argument>(terminalOptions, loggerFactory.CreateLogger<DataTypeMapper<Argument>>());
             valueChecker = new OptionChecker(optionMapper, terminalOptions);
@@ -278,7 +278,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         private IDataTypeMapper<Option> optionMapper = null!;
         private IDataTypeMapper<Argument> argumentMapper = null!;
         private TerminalOptions terminalOptions = null!;
-        private ITextHandler textHandler = null!;
+        private ITerminalTextHandler textHandler = null!;
         private IOptionChecker valueChecker = null!;
         private IArgumentChecker argumentChecker = null!;
         private CommandRouterContext routerContext = null!;

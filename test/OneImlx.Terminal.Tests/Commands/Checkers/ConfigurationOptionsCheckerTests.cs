@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         public ConfigurationOptionsCheckerTests()
         {
             options = MockTerminalOptions.NewLegacyOptions();
-            textHandler = new UnicodeTextHandler();
+            textHandler = new TerminalUnicodeTextHandler();
 
             hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {
@@ -322,6 +323,6 @@ namespace OneImlx.Terminal.Commands.Checkers
         private readonly IHostBuilder hostBuilder;
         private readonly TerminalOptions options;
         private readonly IConfigurationOptionsChecker optionsChecker;
-        private readonly ITextHandler textHandler;
+        private readonly ITerminalTextHandler textHandler;
     }
 }

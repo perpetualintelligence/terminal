@@ -9,12 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OneImlx.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// An abstraction of text handler.
+    /// An abstraction of a terminal text handler.
     /// </summary>
-    public interface ITextHandler
+    public interface ITerminalTextHandler
     {
         /// <summary>
         /// Gets the <see cref="StringComparison"/> value to compare the two strings.

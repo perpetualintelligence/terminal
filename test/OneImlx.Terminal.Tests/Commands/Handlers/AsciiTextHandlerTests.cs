@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Text;
 using Xunit;
@@ -14,11 +15,11 @@ namespace OneImlx.Terminal.Commands.Handlers
 {
     public class AsciiTextHandlerTests
     {
-        private readonly AsciiTextHandler _handler;
+        private readonly TerminalAsciiTextHandler _handler;
 
         public AsciiTextHandlerTests()
         {
-            _handler = new AsciiTextHandler();
+            _handler = new TerminalAsciiTextHandler();
         }
 
         [Fact]
