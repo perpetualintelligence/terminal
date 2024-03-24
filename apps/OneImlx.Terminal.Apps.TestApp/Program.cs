@@ -8,6 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Apps.TestApp.Runners;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
@@ -70,6 +71,9 @@ namespace OneImlx.Terminal.Apps.TestApp
                     options.Licensing.HttpClientName = "demo-http";
                 }
             );
+
+            // Add commands
+            terminalBuilder.AddDeclarativeAssembly<TestAppRunner>();
         }
 
         /// <summary>
