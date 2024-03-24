@@ -6,7 +6,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Runners
@@ -17,11 +17,11 @@ namespace OneImlx.Terminal.Commands.Runners
     /// </summary>
     public abstract class CommandRunner<TResult> : IDelegateCommandRunner, ICommandRunner<TResult> where TResult : CommandRunnerResult
     {
-        private IHelpProvider? helpProvider;
+        private ITerminalHelpProvider? helpProvider;
         private ILogger? logger;
 
         /// <inheritdoc/>
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
             this.helpProvider = helpProvider;
 
@@ -55,7 +55,7 @@ namespace OneImlx.Terminal.Commands.Runners
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The help provider is missing in the configured services.");
             }
 
-            return helpProvider.ProvideHelpAsync(new HelpProviderContext(context.HandlerContext.ParsedCommand.Command));
+            return helpProvider.ProvideHelpAsync(new TerminalHelpProviderContext(context.HandlerContext.ParsedCommand.Command));
         }
 
         /// <inheritdoc/>

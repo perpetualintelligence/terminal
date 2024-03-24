@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Runtime;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Commands.Providers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="IHelpProvider"/> that logs the command help using <see cref="ITerminalConsole"/>.
+    /// The default <see cref="ITerminalHelpProvider"/> that logs the command help using <see cref="ITerminalConsole"/>.
     /// </summary>
-    public sealed class HelpConsoleProvider : IHelpProvider
+    public sealed class TerminalHelpConsoleProvider : ITerminalHelpProvider
     {
         private readonly TerminalOptions terminalOptions;
         private readonly ITerminalConsole terminalConsole;
@@ -23,14 +23,14 @@ namespace OneImlx.Terminal.Commands.Providers
         /// <summary>
         /// Initializes new instance.
         /// </summary>
-        public HelpConsoleProvider(TerminalOptions terminalOptions, ITerminalConsole terminalConsole)
+        public TerminalHelpConsoleProvider(TerminalOptions terminalOptions, ITerminalConsole terminalConsole)
         {
             this.terminalOptions = terminalOptions;
             this.terminalConsole = terminalConsole ?? throw new System.ArgumentNullException(nameof(terminalConsole));
         }
 
         /// <inheritdoc/>
-        public async Task ProvideHelpAsync(HelpProviderContext context)
+        public async Task ProvideHelpAsync(TerminalHelpProviderContext context)
         {
             int indent = 2;
             await terminalConsole.WriteLineAsync("Command:");

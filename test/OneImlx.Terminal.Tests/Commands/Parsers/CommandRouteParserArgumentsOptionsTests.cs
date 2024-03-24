@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                 new CommandDescriptor("cmd1", "cmd1_name", "cmd1_desc", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("grp1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors),
                 new CommandDescriptor("cmd_nr2", "cmd_nr2_name", "cmd_nr2_desc", CommandType.SubCommand, CommandFlags.None,  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors)
             });
-            commandStore = new InMemoryImmutableCommandStore(textHandler, commandDescriptors.Values);
+            commandStore = new TerminalInMemoryImmutableCommandStore(textHandler, commandDescriptors.Values);
             logger = new NullLogger<CommandRouteParser>();
 
             commandRouteParser = new CommandRouteParser(textHandler, commandStore, terminalOptions, logger);
@@ -1093,7 +1093,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
         private readonly TerminalOptions terminalOptions;
         private ITerminalTextHandler textHandler;
-        private IImmutableCommandStore commandStore;
+        private ITerminalImmutableCommandStore commandStore;
         private CommandDescriptors commandDescriptors;
         private ArgumentDescriptors argumentDescriptors;
         private OptionDescriptors optionDescriptors;

@@ -6,15 +6,15 @@
 */
 
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Providers;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
     internal class MockErrorCommandRunnerInner : IDelegateCommandRunner, ICommandRunner<CommandRunnerResult>
     {
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
             await RunHelpAsync(context);
             return CommandRunnerResult.NoProcessing;

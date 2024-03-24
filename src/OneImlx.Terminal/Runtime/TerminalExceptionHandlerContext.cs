@@ -6,20 +6,21 @@
 */
 
 using System;
+using OneImlx.Terminal.Commands;
 
-namespace OneImlx.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The <see cref="IExceptionHandler"/> context.
+    /// The <see cref="ITerminalExceptionHandler"/> context.
     /// </summary>
-    public class ExceptionHandlerContext
+    public class TerminalExceptionHandlerContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <param name="commandRoute">The command route.</param>
-        public ExceptionHandlerContext(Exception exception, CommandRoute? commandRoute = null)
+        public TerminalExceptionHandlerContext(Exception exception, CommandRoute? commandRoute = null)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
             Route = commandRoute;

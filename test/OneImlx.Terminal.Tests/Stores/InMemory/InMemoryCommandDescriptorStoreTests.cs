@@ -17,7 +17,7 @@ namespace OneImlx.Terminal.Stores.InMemory
     {
         public InMemoryCommandDescriptorStoreTests()
         {
-            cmdStore = new InMemoryImmutableCommandStore(MockCommands.Commands.TextHandler, MockCommands.Commands.Values);
+            cmdStore = new TerminalInMemoryImmutableCommandStore(MockCommands.Commands.TextHandler, MockCommands.Commands.Values);
         }
 
         [Fact]
@@ -50,6 +50,6 @@ namespace OneImlx.Terminal.Stores.InMemory
             result.Keys.Should().Contain("id5");
         }
 
-        private InMemoryImmutableCommandStore cmdStore = null!;
+        private TerminalInMemoryImmutableCommandStore cmdStore = null!;
     }
 }

@@ -6,7 +6,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using System;
@@ -30,7 +29,7 @@ namespace OneImlx.Terminal.Runtime
     public class TerminalTcpRouter : ITerminalRouter<TerminalTcpRouterContext>
     {
         private readonly ICommandRouter commandRouter;
-        private readonly IExceptionHandler exceptionHandler;
+        private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly TerminalOptions options;
         private readonly ITerminalTextHandler textHandler;
         private readonly ILogger<TerminalTcpRouter> logger;
@@ -52,7 +51,7 @@ namespace OneImlx.Terminal.Runtime
         /// </remarks>
         public TerminalTcpRouter(
             ICommandRouter commandRouter,
-            IExceptionHandler exceptionHandler,
+            ITerminalExceptionHandler exceptionHandler,
             TerminalOptions options,
             ITerminalTextHandler textHandler,
             ILogger<TerminalTcpRouter> logger)
@@ -128,7 +127,7 @@ namespace OneImlx.Terminal.Runtime
             catch (Exception ex)
             {
                 // The default exception handler will log the exception and return a generic error message to the client.
-                await exceptionHandler.HandleExceptionAsync(new ExceptionHandlerContext(ex, null));
+                await exceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, null));
             }
             finally
             {
@@ -193,7 +192,7 @@ namespace OneImlx.Terminal.Runtime
                 logger.LogError($"{message} task={0}", taskIdx);
             }
 
-            await exceptionHandler.HandleExceptionAsync(new ExceptionHandlerContext(ex, null));
+            await exceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, null));
         }
 
         /// <summary>

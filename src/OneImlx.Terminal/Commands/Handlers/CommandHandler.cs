@@ -8,12 +8,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Providers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
 using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
@@ -88,7 +88,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             // Run or Help
             if (runHelp)
             {                
-                IHelpProvider helpProvider = services.GetRequiredService<IHelpProvider>();
+                ITerminalHelpProvider helpProvider = services.GetRequiredService<ITerminalHelpProvider>();
                 logger.LogDebug("Skip runner. Delegate to help provider. type={0}", helpProvider.GetType().Name);
                 runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, helpProvider, logger);
             }

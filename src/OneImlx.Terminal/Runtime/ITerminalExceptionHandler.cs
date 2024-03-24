@@ -8,17 +8,17 @@
 using System;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// An abstraction to handle <see cref="Exception"/>.
     /// </summary>
-    public interface IExceptionHandler
+    public interface ITerminalExceptionHandler
     {
         /// <summary>
         /// Handles <see cref="Exception"/> asynchronously.
         /// </summary>
         /// <param name="context">The exception context.</param>
-        public Task HandleExceptionAsync(ExceptionHandlerContext context);
+        public Task HandleExceptionAsync(TerminalExceptionHandlerContext context);
     }
 }

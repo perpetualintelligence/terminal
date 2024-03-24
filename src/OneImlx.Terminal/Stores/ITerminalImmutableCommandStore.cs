@@ -15,7 +15,7 @@ namespace OneImlx.Terminal.Stores
     /// <summary>
     /// An immutable store to lookup <see cref="CommandDescriptor"/>.
     /// </summary>
-    public interface IImmutableCommandStore
+    public interface ITerminalImmutableCommandStore
     {
         /// <summary>
         /// Attempts to finds a <see cref="CommandDescriptor"/> by its id asynchronously.

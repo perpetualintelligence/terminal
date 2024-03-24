@@ -9,7 +9,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
@@ -94,7 +93,7 @@ namespace OneImlx.Terminal.Extensions
             mockCommandRouter.RouteCalled.Should().BeFalse();
 
             // Check output
-            MockExceptionPublisher errorPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher errorPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             errorPublisher.Called.Should().BeTrue();
             errorPublisher.PublishedMessage.Should().Be("Received terminal cancellation token, the terminal routing is canceled.");
 
@@ -124,7 +123,7 @@ namespace OneImlx.Terminal.Extensions
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             publisher.Called.Should().BeTrue();
             publisher.MultiplePublishedMessages.Count.Should().Be(2);
             publisher.MultiplePublishedMessages[0].Should().Be("test_error_description. opt1=test1 opt2=test2");
@@ -156,7 +155,7 @@ namespace OneImlx.Terminal.Extensions
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             publisher.Called.Should().BeTrue();
             publisher.MultiplePublishedMessages.Count.Should().Be(2);
             publisher.MultiplePublishedMessages[0].Should().Be("explicit_error_description param1=test_param1 param2=test_param2.");
@@ -196,7 +195,7 @@ namespace OneImlx.Terminal.Extensions
             mockCommandRouter.RouteCalled.Should().BeTrue();
 
             // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             publisher.Called.Should().BeTrue();
             publisher.MultiplePublishedMessages.Count.Should().Be(1);
             publisher.MultiplePublishedMessages[0].Should().Be("Application is stopping, the terminal routing is canceled.");
@@ -229,7 +228,7 @@ namespace OneImlx.Terminal.Extensions
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             publisher.Called.Should().BeTrue();
             publisher.MultiplePublishedMessages.Count.Should().Be(2);
             publisher.MultiplePublishedMessages[0].Should().Be("Test invalid operation.");
@@ -347,7 +346,7 @@ namespace OneImlx.Terminal.Extensions
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
             // Check the published error
-            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher publisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             publisher.Called.Should().BeTrue();
             publisher.MultiplePublishedMessages.Count.Should().Be(2);
             publisher.MultiplePublishedMessages[0].Should().Be("The command router timed out in 2000 milliseconds.");
@@ -385,7 +384,7 @@ namespace OneImlx.Terminal.Extensions
             titleWriter.Messages.Should().ContainSingle("test_caret");
 
             // Check output
-            MockExceptionPublisher errorPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher errorPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             errorPublisher.Called.Should().BeTrue();
             errorPublisher.PublishedMessage.Should().NotBeNull();
             errorPublisher.PublishedMessage.Should().Be("Received terminal cancellation token, the terminal routing is canceled.");
@@ -412,7 +411,7 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddLogging();
 
             // Add Exception publisher
-            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<ITerminalExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
             opt2.AddSingleton<ITerminalRouter<TerminalConsoleRouterContext>, TerminalConsoleRouter>();
@@ -434,7 +433,7 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddLogging();
 
             // Add Exception publisher
-            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<ITerminalExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
             opt2.AddSingleton<ITerminalRouter<TerminalConsoleRouterContext>, TerminalConsoleRouter>();
@@ -456,7 +455,7 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddLogging();
 
             // Add Exception publisher
-            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<ITerminalExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
             opt2.AddSingleton<ITerminalRouter<TerminalConsoleRouterContext>, TerminalConsoleRouter>();
@@ -478,7 +477,7 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddLogging();
 
             // Add Exception publisher
-            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<ITerminalExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
             opt2.AddSingleton<ITerminalRouter<TerminalConsoleRouterContext>, TerminalConsoleRouter>();
@@ -501,7 +500,7 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddLogging();
 
             // Add Exception publisher
-            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<ITerminalExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
             opt2.AddSingleton<ITerminalRouter<TerminalConsoleRouterContext>, TerminalConsoleRouter>();
@@ -524,7 +523,7 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddLogging();
 
             // Add Exception publisher
-            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<ITerminalExceptionHandler>(new MockExceptionPublisher());
 
             // Add routing service
             opt2.AddSingleton<ITerminalRouter<TerminalConsoleRouterContext>, TerminalConsoleRouter>();

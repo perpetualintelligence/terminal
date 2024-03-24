@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
-    public class MockMutableCommandStore : IMutableCommandStore
+    public class MockMutableCommandStore : ITerminalMutableCommandStore
     {
         public Task<ReadOnlyDictionary<string, CommandDescriptor>> AllAsync()
         {

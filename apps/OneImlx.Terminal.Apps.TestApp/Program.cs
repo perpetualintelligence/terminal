@@ -7,7 +7,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OneImlx.Terminal.Commands.Providers;
+using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
@@ -27,12 +27,22 @@ namespace OneImlx.Terminal.Apps.TestApp
             // Note: The host should only start, the terminal framework will run the router separately
             IHostBuilder hostBuilder = CreateHostBuilder(args);
             hostBuilder.ConfigureServices(ConfigureServicesDelegate);
+            hostBuilder.ConfigureLogging(ConfigureLoggingDelegate);
             IHost host = hostBuilder.Start();
 
             // Setup the terminal context and run the router indefinitely.
             TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalCancellationTokenSource.Token, cancellationTokenSource.Token);
             TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
+        }
+
+        private static void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
+        {
+            // Clear all providers
+            builder.ClearProviders();
+
+            // Add Console
+            builder.AddConsole();
         }
 
         private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection collection)
@@ -52,7 +62,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             collection.AddHttpClient("demo-http");
 
             // Specific your demo or commercial license file.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<InMemoryImmutableCommandStore, TerminalUnicodeTextHandler, HelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryImmutableCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;

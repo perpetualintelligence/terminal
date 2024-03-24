@@ -8,7 +8,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using System;
@@ -24,7 +23,7 @@ namespace OneImlx.Terminal.Runtime
         private readonly ITerminalConsole terminalConsole;
         private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
-        private readonly IExceptionHandler exceptionHandler;
+        private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly TerminalOptions options;
         private readonly ILogger<TerminalConsoleRouter> logger;
 
@@ -41,7 +40,7 @@ namespace OneImlx.Terminal.Runtime
             ITerminalConsole terminalConsole,
             IHostApplicationLifetime applicationLifetime,
             ICommandRouter commandRouter,
-            IExceptionHandler exceptionHandler,
+            ITerminalExceptionHandler exceptionHandler,
             TerminalOptions options,
             ILogger<TerminalConsoleRouter> logger)
         {
@@ -121,14 +120,14 @@ namespace OneImlx.Terminal.Runtime
                     catch (OperationCanceledException oex)
                     {
                         // Routing is canceled.
-                        ExceptionHandlerContext exContext = new(oex, route);
+                        TerminalExceptionHandlerContext exContext = new(oex, route);
                         await exceptionHandler.HandleExceptionAsync(exContext);
                         break;
                     }
                     catch (Exception ex)
                     {
                         // Task.Wait bundles up any exception into Exception.InnerException
-                        ExceptionHandlerContext exContext = new(ex.InnerException ?? ex, route);
+                        TerminalExceptionHandlerContext exContext = new(ex.InnerException ?? ex, route);
                         await exceptionHandler.HandleExceptionAsync(exContext);
                     }
                 };

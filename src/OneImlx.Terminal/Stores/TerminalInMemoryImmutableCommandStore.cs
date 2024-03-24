@@ -14,16 +14,16 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Stores
 {
     /// <summary>
-    /// The default in-memory <see cref="IMutableCommandStore"/>.
+    /// The default in-memory <see cref="ITerminalImmutableCommandStore"/>.
     /// </summary>
-    public class InMemoryMutableCommandStore : IMutableCommandStore
+    public class TerminalInMemoryImmutableCommandStore : ITerminalImmutableCommandStore
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="textHandler"></param>
         /// <param name="commandDescriptors">The command identities.</param>
-        public InMemoryMutableCommandStore(ITerminalTextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
+        public TerminalInMemoryImmutableCommandStore(ITerminalTextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
         {
             this.commandDescriptors = new CommandDescriptors(textHandler, commandDescriptors);
         }

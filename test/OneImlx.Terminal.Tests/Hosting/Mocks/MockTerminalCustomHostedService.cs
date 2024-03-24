@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
 {
     public class MockTerminalCustomHostedService : TerminalHostedService
     {
-        public MockTerminalCustomHostedService(IServiceProvider serviceProvider, TerminalOptions terminalOptions, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, logger)
+        public MockTerminalCustomHostedService(IServiceProvider serviceProvider, TerminalOptions terminalOptions, ITerminalConsole terminalConsole, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, logger)
         {
         }
 
@@ -43,6 +44,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
             PrintMandatoryLicCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;
         }
+
         internal override Task RegisterHelpAsync()
         {
             RegisterHelpArgumentCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);

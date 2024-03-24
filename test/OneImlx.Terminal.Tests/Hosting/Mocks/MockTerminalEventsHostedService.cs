@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
 {
     public class MockTerminalEventsHostedService : TerminalHostedService
     {
-        public MockTerminalEventsHostedService(IServiceProvider serviceProvider, TerminalOptions terminalOptions, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, logger)
+        public MockTerminalEventsHostedService(IServiceProvider serviceProvider, TerminalOptions terminalOptions, ITerminalConsole terminalConsole, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, logger)
         {
         }
 

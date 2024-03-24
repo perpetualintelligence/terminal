@@ -8,23 +8,23 @@
 using OneImlx.Terminal.Commands.Runners;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Commands.Providers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// An abstraction to provide help for commands.
     /// </summary>
     /// <remarks>
-    /// Use <see cref="IHelpProvider"/> to provide a common implementation for all your commands. To provide help for each command individually override <see cref="ICommandRunner{TResult}.RunHelpAsync(CommandRunnerContext)"/>.
+    /// Use <see cref="ITerminalHelpProvider"/> to provide a common implementation for all your commands. To provide help for each command individually override <see cref="ICommandRunner{TResult}.RunHelpAsync(CommandRunnerContext)"/>.
     /// </remarks>
     /// <seealso cref="IDelegateCommandRunner"/>
     /// <seealso cref="ICommandRunner{TResult}"/>
     /// <seealso cref="CommandRunner{TResult}"/>
-    public interface IHelpProvider
+    public interface ITerminalHelpProvider
     {
         /// <summary>
         /// Provides help asynchronously.
         /// </summary>
         /// <returns></returns>
-        public Task ProvideHelpAsync(HelpProviderContext context);
+        public Task ProvideHelpAsync(TerminalHelpProviderContext context);
     }
 }

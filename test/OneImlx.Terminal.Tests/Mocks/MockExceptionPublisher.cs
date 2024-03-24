@@ -5,13 +5,13 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
-    public class MockExceptionPublisher : IExceptionHandler
+    public class MockExceptionPublisher : ITerminalExceptionHandler
     {
         public MockExceptionPublisher()
         {
@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Mocks
 
         public List<string> MultiplePublishedMessages { get; set; }
 
-        public Task HandleExceptionAsync(ExceptionHandlerContext context)
+        public Task HandleExceptionAsync(TerminalExceptionHandlerContext context)
         {
             Called = true;
             PublishedMessage = context.Exception.Message;

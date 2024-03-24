@@ -10,18 +10,18 @@ using OneImlx.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Commands.Handlers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="IExceptionHandler"/> to handle an <see cref="Exception"/>.
+    /// The default <see cref="ITerminalExceptionHandler"/> to handle an <see cref="Exception"/>.
     /// </summary>
-    public class ExceptionHandler : IExceptionHandler
+    public class TerminalExceptionHandler : ITerminalExceptionHandler
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public ExceptionHandler(ILogger<ExceptionHandler> logger)
+        public TerminalExceptionHandler(ILogger<TerminalExceptionHandler> logger)
         {
             this.logger = logger;
         }
@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         /// </summary>
         /// <param name="context">The error to publish.</param>
         /// <returns>The string representation.</returns>
-        public Task HandleExceptionAsync(ExceptionHandlerContext context)
+        public Task HandleExceptionAsync(TerminalExceptionHandlerContext context)
         {
             logger.LogDebug("Handle exception. route={0}", context.Route != null ? context.Route.Id : "<null>");
 
@@ -72,6 +72,6 @@ namespace OneImlx.Terminal.Commands.Handlers
             return Task.CompletedTask;
         }
 
-        private readonly ILogger<ExceptionHandler> logger;
+        private readonly ILogger<TerminalExceptionHandler> logger;
     }
 }

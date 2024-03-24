@@ -6,7 +6,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Runners
@@ -36,6 +36,6 @@ namespace OneImlx.Terminal.Commands.Runners
         /// <param name="helpProvider">The help provider.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>The runner result.</returns>
-        Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider, ILogger? logger = null);
+        Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null);
     }
 }

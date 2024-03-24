@@ -16,7 +16,6 @@ using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,13 +31,19 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="options">The configuration options.</param>
+        /// <param name="terminalConsole"></param>
         /// <param name="logger">The logger.</param>
-        public TerminalHostedService(IServiceProvider serviceProvider, TerminalOptions options, ILogger<TerminalHostedService> logger)
+        public TerminalHostedService(
+            IServiceProvider serviceProvider,
+            TerminalOptions options,
+            ITerminalConsole terminalConsole,
+            ILogger<TerminalHostedService> logger)
         {
-            this.HostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
-            this.ServiceProvider = serviceProvider;
-            this.Options = options;
-            this.Logger = logger;
+            HostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
+            ServiceProvider = serviceProvider;
+            Options = options;
+            TerminalConsole = terminalConsole;
+            Logger = logger;
         }
 
         /// <summary>
@@ -125,28 +130,19 @@ namespace OneImlx.Terminal.Hosting
         /// licensing information, but they can print additional custom information with <see cref="PrintHostApplicationLicensingAsync(License)"/>.
         /// </summary>
         /// <param name="license">The extracted license.</param>
-        internal virtual Task PrintHostApplicationMandatoryLicensingAsync(License license)
+        internal virtual async Task PrintHostApplicationMandatoryLicensingAsync(License license)
         {
             if (license.Plan == TerminalLicensePlans.Demo)
             {
                 if (license.Usage == LicenseUsage.Educational)
                 {
-                    Logger.LogWarning("Your demo license is free for educational purposes. For non-educational, release, or production environment, you require a commercial license.");
+                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "The demo license is free for educational purposes, but non-educational use requires a commercial license.");
                 }
                 else if (license.Usage == LicenseUsage.RnD)
                 {
-                    Logger.LogWarning("Your demo license is free for RnD, test, and evaluation purposes. For release, or production environment, you require a commercial license.");
+                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "The demo license is free for research and development, but production use requires a commercial license.");
                 }
             }
-            else if (license.Plan == TerminalLicensePlans.Custom)
-            {
-                if (license.Usage == LicenseUsage.RnD)
-                {
-                    Logger.LogWarning("Your custom license is free for RnD, test and evaluation purposes. For release, or production environment, you require a commercial license.");
-                }
-            }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -163,8 +159,7 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         protected virtual void OnStarted()
         {
-            Logger.LogInformation("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
-            Logger.LogInformation("");
+            TerminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -173,7 +168,7 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         protected virtual void OnStopped()
         {
-            Logger.LogInformation("Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString());
+            TerminalConsole.WriteLineAsync("Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -182,7 +177,7 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         protected virtual void OnStopping()
         {
-            Logger.LogInformation("Stopping application...");
+            TerminalConsole.WriteLineAsync("Stopping application...").Wait();
         }
 
         /// <summary>
@@ -195,20 +190,18 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         /// <param name="license"></param>
         /// <returns></returns>
-        protected virtual Task PrintHostApplicationLicensingAsync(License license)
+        protected virtual async Task PrintHostApplicationLicensingAsync(License license)
         {
             // Print the license information
-            Logger.LogInformation("tenant={0} ({1})", license.Claims.TenantName, license.Claims.TenantId);
-            Logger.LogInformation("country={0}", license.Claims.TenantCountry);
-            Logger.LogInformation("license={0}", license.Claims.Id);
-            Logger.LogInformation("mode={0}", license.Claims.Mode);
-            Logger.LogInformation("deployment={0}", license.Claims.Deployment);
-            Logger.LogInformation("usage={0}", license.Usage);
-            Logger.LogInformation("plan={0}", license.Plan);
-            Logger.LogInformation("iat={0}", license.Claims.IssuedAt);
-            Logger.LogInformation("exp={0}", license.Claims.ExpiryAt);
-
-            return Task.CompletedTask;
+            await TerminalConsole.WriteLineAsync("tenant={0} ({1})", license.Claims.TenantName, license.Claims.TenantId);
+            await TerminalConsole.WriteLineAsync("country={0}", license.Claims.TenantCountry);
+            await TerminalConsole.WriteLineAsync("license={0}", license.Claims.Id);
+            await TerminalConsole.WriteLineAsync("mode={0}", license.Claims.Mode);
+            await TerminalConsole.WriteLineAsync("deployment={0}", license.Claims.Deployment ?? "");
+            await TerminalConsole.WriteLineAsync("usage={0}", license.Usage);
+            await TerminalConsole.WriteLineAsync("plan={0}", license.Plan);
+            await TerminalConsole.WriteLineAsync("iat={0}", license.Claims.IssuedAt);
+            await TerminalConsole.WriteLineAsync("exp={0}", license.Claims.ExpiryAt);
         }
 
         /// <summary>
@@ -251,6 +244,11 @@ namespace OneImlx.Terminal.Hosting
         /// The terminal configuration options.
         /// </summary>
         protected TerminalOptions Options { get; private set; }
+
+        /// <summary>
+        /// The terminal console.
+        /// </summary>
+        protected ITerminalConsole TerminalConsole { get; }
 
         /// <summary>
         /// The host application lifetime.

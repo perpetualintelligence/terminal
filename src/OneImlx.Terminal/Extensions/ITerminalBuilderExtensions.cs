@@ -13,7 +13,6 @@ using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Commands.Providers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
@@ -105,13 +104,13 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the command <see cref="IHelpProvider"/> to the service collection.
+        /// Adds the command <see cref="ITerminalHelpProvider"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddHelpProvider<THelpProvider>(this ITerminalBuilder builder) where THelpProvider : class, IHelpProvider
+        public static ITerminalBuilder AddHelpProvider<THelpProvider>(this ITerminalBuilder builder) where THelpProvider : class, ITerminalHelpProvider
         {
-            builder.Services.AddSingleton<IHelpProvider, THelpProvider>();
+            builder.Services.AddSingleton<ITerminalHelpProvider, THelpProvider>();
             return builder;
         }
 
@@ -185,15 +184,15 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="IExceptionHandler"/> to the service collection.
+        /// Adds the <see cref="ITerminalExceptionHandler"/> to the service collection.
         /// </summary>
-        /// <typeparam name="THandler">The <see cref="IExceptionHandler"/> type.</typeparam>
+        /// <typeparam name="THandler">The <see cref="ITerminalExceptionHandler"/> type.</typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddExceptionHandler<THandler>(this ITerminalBuilder builder) where THandler : class, IExceptionHandler
+        public static ITerminalBuilder AddExceptionHandler<THandler>(this ITerminalBuilder builder) where THandler : class, ITerminalExceptionHandler
         {
             // Add exception publisher
-            builder.Services.AddTransient<IExceptionHandler, THandler>();
+            builder.Services.AddTransient<ITerminalExceptionHandler, THandler>();
 
             return builder;
         }
@@ -300,26 +299,26 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="IImmutableCommandStore"/> or <see cref="IMutableCommandStore"/> to the service collection.
+        /// Adds the <see cref="ITerminalImmutableCommandStore"/> or <see cref="ITerminalMutableCommandStore"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command descriptor store type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder)
-            where TStore : class, IImmutableCommandStore
+            where TStore : class, ITerminalImmutableCommandStore
         {
             // Register the concrete type
             builder.Services.AddSingleton<TStore>();
 
             // Register as IMutableCommandStore if applicable
-            if (typeof(IMutableCommandStore).IsAssignableFrom(typeof(TStore)))
+            if (typeof(ITerminalMutableCommandStore).IsAssignableFrom(typeof(TStore)))
             {
-                builder.Services.AddSingleton<IMutableCommandStore>(provider =>
-                    (IMutableCommandStore)provider.GetRequiredService(typeof(TStore)));
+                builder.Services.AddSingleton<ITerminalMutableCommandStore>(provider =>
+                    (ITerminalMutableCommandStore)provider.GetRequiredService(typeof(TStore)));
             }
 
             // Always register as IImmutableCommandStore
-            builder.Services.AddSingleton<IImmutableCommandStore>(provider =>
+            builder.Services.AddSingleton<ITerminalImmutableCommandStore>(provider =>
                 provider.GetRequiredService<TStore>());
 
             return builder;

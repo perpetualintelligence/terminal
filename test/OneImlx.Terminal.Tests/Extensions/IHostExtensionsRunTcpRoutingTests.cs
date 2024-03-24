@@ -8,7 +8,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
@@ -245,7 +244,7 @@ namespace OneImlx.Terminal.Extensions
             await Task.Delay(2000);
 
             // Check the published error, task id is variable
-            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             exPublisher.Called.Should().BeTrue();
             exPublisher.PublishedMessage.Should().StartWith("The command string length is over the configured limit. max_length=1024");
             exPublisher.PublishedMessage.Should().Contain("task=");
@@ -581,7 +580,7 @@ namespace OneImlx.Terminal.Extensions
             await Task.Delay(2000); 
 
             // Check the published error
-            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<IExceptionHandler>();
+            MockExceptionPublisher exPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
             exPublisher.Called.Should().BeTrue();
             exPublisher.PublishedMessage.Should().Be("test_error_description. opt1=test1 opt2=test2");
 
@@ -665,7 +664,7 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddSingleton<ICommandRouter>(new MockCommandRouter());
             opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
-            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<ITerminalExceptionHandler>(new MockExceptionPublisher());
             opt2.AddSingleton<ITerminalRouter<TerminalTcpRouterContext>, TerminalTcpRouter>();
             opt2.AddSingleton(textHandler);
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
@@ -682,7 +681,7 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddSingleton<ICommandRouter>(new MockCommandRouter(null, null, new TerminalException("test_error_code", "test_error_description. opt1={0} opt2={1}", "test1", "test2")));
             opt2.AddSingleton(MockTerminalOptions.NewLegacyOptions());
 
-            opt2.AddSingleton<IExceptionHandler>(new MockExceptionPublisher());
+            opt2.AddSingleton<ITerminalExceptionHandler>(new MockExceptionPublisher());
             opt2.AddSingleton<ITerminalRouter<TerminalTcpRouterContext>, TerminalTcpRouter>();
             opt2.AddSingleton(textHandler);
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();

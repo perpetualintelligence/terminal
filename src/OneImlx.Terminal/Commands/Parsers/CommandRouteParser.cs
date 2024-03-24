@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Commands.Parsers
     public class CommandRouteParser : ICommandRouteParser
     {
         private readonly ITerminalTextHandler textHandler;
-        private readonly IImmutableCommandStore commandStore;
+        private readonly ITerminalImmutableCommandStore commandStore;
         private readonly TerminalOptions terminalOptions;
         private readonly ILogger<CommandRouteParser> logger;
 
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <param name="commandStore">The command store handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRouteParser(ITerminalTextHandler textHandler, IImmutableCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
+        public CommandRouteParser(ITerminalTextHandler textHandler, ITerminalImmutableCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
         {
             this.textHandler = textHandler;
             this.commandStore = commandStore;

@@ -5,16 +5,16 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Providers;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
-    internal class MockHelpProvider : IHelpProvider
+    internal class MockHelpProvider : ITerminalHelpProvider
     {
         public bool HelpCalled { get; private set; }
 
-        public Task ProvideHelpAsync(HelpProviderContext context)
+        public Task ProvideHelpAsync(TerminalHelpProviderContext context)
         {
             HelpCalled = true;
             return Task.CompletedTask;

@@ -6,8 +6,8 @@
 */
 
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Providers;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks
@@ -20,9 +20,9 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
         public bool RunCalled { get; private set; }
         public bool DelegateHelpCalled { get; private set; }
 
-        private IHelpProvider helpProvider = null!;
+        private ITerminalHelpProvider helpProvider = null!;
 
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, IHelpProvider helpProvider, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
             this.helpProvider = helpProvider;
             DelegateHelpCalled = true;
@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
 
         public async Task RunHelpAsync(CommandRunnerContext context)
         {
-            await helpProvider.ProvideHelpAsync(new HelpProviderContext(context.HandlerContext.ParsedCommand.Command));
+            await helpProvider.ProvideHelpAsync(new TerminalHelpProviderContext(context.HandlerContext.ParsedCommand.Command));
             HelpCalled = true;
         }
 

@@ -19,8 +19,6 @@ namespace OneImlx.Terminal.Apps.TestApp
     /// </summary>
     public sealed class TestAppHostedService : TerminalHostedService
     {
-        private readonly ITerminalConsole terminalConsole;
-
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
@@ -32,9 +30,8 @@ namespace OneImlx.Terminal.Apps.TestApp
             IServiceProvider serviceProvider,
             TerminalOptions options,
             ITerminalConsole terminalConsole,
-            ILogger<TerminalHostedService> logger) : base(serviceProvider, options, logger)
+            ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, logger)
         {
-            this.terminalConsole = terminalConsole;
         }
 
         /// <summary>
@@ -53,8 +50,8 @@ namespace OneImlx.Terminal.Apps.TestApp
         protected override void OnStarted()
         {
             // These are async calls, but we are blocking here for as the  of the test.
-            terminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
-            terminalConsole.WriteLineAsync().Wait();
+            TerminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineAsync().Wait();
         }
 
         /// <summary>
@@ -62,7 +59,7 @@ namespace OneImlx.Terminal.Apps.TestApp
         /// </summary>
         protected override void OnStopped()
         {
-            terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -70,7 +67,7 @@ namespace OneImlx.Terminal.Apps.TestApp
         /// </summary>
         protected override void OnStopping()
         {
-            terminalConsole.WriteLineAsync("Stopping application...").Wait();
+            TerminalConsole.WriteLineAsync("Stopping application...").Wait();
         }
 
         /// <summary>
@@ -79,13 +76,13 @@ namespace OneImlx.Terminal.Apps.TestApp
         /// <returns></returns>
         protected override async Task PrintHostApplicationHeaderAsync()
         {
-            await terminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
-            await terminalConsole.WriteLineAsync("Copyright (c) Test App. All Rights Reserved.");
-            await terminalConsole.WriteLineAsync("For license, terms, and data policies, go to:");
-            await terminalConsole.WriteLineAsync("https://mytestapp.com");
-            await terminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
+            await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
+            await TerminalConsole.WriteLineAsync("Copyright (c) Test App. All Rights Reserved.");
+            await TerminalConsole.WriteLineAsync("For license, terms, and data policies, go to:");
+            await TerminalConsole.WriteLineAsync("https://mytestapp.com");
+            await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
 
-            await terminalConsole.WriteLineAsync($"Starting application...");
+            await TerminalConsole.WriteLineAsync($"Starting application...");
         }
 
         /// <summary>

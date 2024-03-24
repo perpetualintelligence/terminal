@@ -18,6 +18,10 @@
         <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />        
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Commands\Providers\" />
+    </ItemGroup>
+
     <!--
         CI CONFIG:
     -->

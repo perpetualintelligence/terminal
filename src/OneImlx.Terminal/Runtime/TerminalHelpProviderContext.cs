@@ -5,18 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace OneImlx.Terminal.Commands.Providers
+using OneImlx.Terminal.Commands;
+
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The <see cref="IHelpProvider"/> context.
+    /// The <see cref="ITerminalHelpProvider"/> context.
     /// </summary>
-    public sealed class HelpProviderContext
+    public sealed class TerminalHelpProviderContext
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="command">The command descriptor.</param>
-        public HelpProviderContext(Command command)
+        public TerminalHelpProviderContext(Command command)
         {
             Command = command;
         }

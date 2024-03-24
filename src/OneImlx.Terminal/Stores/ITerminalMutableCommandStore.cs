@@ -13,7 +13,7 @@ namespace OneImlx.Terminal.Stores
     /// <summary>
     /// A mutable store of <see cref="CommandDescriptor"/>.
     /// </summary>
-    public interface IMutableCommandStore : IImmutableCommandStore
+    public interface ITerminalMutableCommandStore : ITerminalImmutableCommandStore
     {
         /// <summary>
         /// Adds a <see cref="CommandDescriptor"/> to the store.

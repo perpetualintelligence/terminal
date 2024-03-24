@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers.Mocks;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Commands.Providers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
@@ -193,7 +192,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleCommandAsync(commandContext);
 
-            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
+            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<ITerminalHelpProvider>();
             mockHelpProvider.HelpCalled.Should().BeTrue();
 
             MockCommandCheckerInner commandCheckerInner = host.Services.GetRequiredService<MockCommandCheckerInner>();
@@ -212,7 +211,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleCommandAsync(commandContext);
 
-            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
+            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<ITerminalHelpProvider>();
             mockHelpProvider.HelpCalled.Should().BeTrue();
 
             MockCommandCheckerInner commandCheckerInner = host.Services.GetRequiredService<MockCommandCheckerInner>();
@@ -231,7 +230,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleCommandAsync(commandContext);
 
-            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
+            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<ITerminalHelpProvider>();
             mockHelpProvider.HelpCalled.Should().BeTrue();
 
             MockCommandRunnerInner commandRunnerInner = host.Services.GetRequiredService<MockCommandRunnerInner>();
@@ -316,7 +315,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleCommandAsync(commandContext);
 
-            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
+            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<ITerminalHelpProvider>();
             mockHelpProvider.HelpCalled.Should().BeFalse();
         }
 
@@ -332,7 +331,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             await handler.HandleCommandAsync(commandContext);
 
-            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<IHelpProvider>();
+            MockHelpProvider mockHelpProvider = (MockHelpProvider)host.Services.GetRequiredService<ITerminalHelpProvider>();
             mockHelpProvider.HelpCalled.Should().BeFalse();
         }
 
@@ -545,7 +544,7 @@ namespace OneImlx.Terminal.Commands.Handlers
 
             opt2.AddSingleton<MockNotCheckerOrRunner>();
 
-            opt2.AddSingleton<IHelpProvider, MockHelpProvider>();
+            opt2.AddSingleton<ITerminalHelpProvider, MockHelpProvider>();
         }
 
         private void ConfigureServicesWithEventHandler(IServiceCollection opt2)
@@ -561,7 +560,7 @@ namespace OneImlx.Terminal.Commands.Handlers
 
             opt2.AddSingleton<ITerminalEventHandler, MockAsyncEventHandler>();
 
-            opt2.AddSingleton<IHelpProvider, MockHelpProvider>();
+            opt2.AddSingleton<ITerminalHelpProvider, MockHelpProvider>();
         }
 
         public Task InitializeAsync()

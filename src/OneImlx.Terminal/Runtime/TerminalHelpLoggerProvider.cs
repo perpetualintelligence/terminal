@@ -6,31 +6,32 @@
 */
 
 using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Commands.Providers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="IHelpProvider"/> that logs the command help using <see cref="ILogger"/>.
+    /// The default <see cref="ITerminalHelpProvider"/> that logs the command help using <see cref="ILogger"/>.
     /// </summary>
-    public sealed class HelpLoggerProvider : IHelpProvider
+    public sealed class TerminalHelpLoggerProvider : ITerminalHelpProvider
     {
         private readonly TerminalOptions terminalOptions;
-        private readonly ILogger<HelpLoggerProvider> _logger;
+        private readonly ILogger<TerminalHelpLoggerProvider> _logger;
 
         /// <summary>
         /// Initializes new instance.
         /// </summary>
-        public HelpLoggerProvider(TerminalOptions terminalOptions, ILogger<HelpLoggerProvider> logger)
+        public TerminalHelpLoggerProvider(TerminalOptions terminalOptions, ILogger<TerminalHelpLoggerProvider> logger)
         {
             this.terminalOptions = terminalOptions;
             _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
         }
 
         /// <inheritdoc/>
-        public Task ProvideHelpAsync(HelpProviderContext context)
+        public Task ProvideHelpAsync(TerminalHelpProviderContext context)
         {
             int indent = 2;
             _logger.LogInformation("Command:");

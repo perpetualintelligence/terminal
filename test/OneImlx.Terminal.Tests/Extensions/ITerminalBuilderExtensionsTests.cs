@@ -13,7 +13,6 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Commands.Providers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
@@ -38,7 +37,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddHelpProvider<MockHelpProvider>();
 
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IHelpProvider)));
+            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalHelpProvider)));
             arg.Should().NotBeNull();
             arg.Lifetime.Should().Be(ServiceLifetime.Singleton);
             arg.ImplementationType.Should().Be(typeof(MockHelpProvider));
@@ -159,20 +158,20 @@ namespace OneImlx.Terminal.Extensions
 
             // Check if IImmutableCommandStore is mapped to MockImmutableCommandStore
             var immutableInterfaceDescriptor = terminalBuilder.Services
-                .FirstOrDefault(e => e.ServiceType.Equals(typeof(IImmutableCommandStore)));
+                .FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalImmutableCommandStore)));
             immutableInterfaceDescriptor.Should().NotBeNull();
             immutableInterfaceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
 
             // Verify the factory for IImmutableCommandStore resolves to MockImmutableCommandStore
             var serviceProvider = terminalBuilder.Services.BuildServiceProvider();
-            var immutableCommandStore = serviceProvider.GetService<IImmutableCommandStore>();
-            var immutableCommandStore2 = serviceProvider.GetService<IImmutableCommandStore>();
+            var immutableCommandStore = serviceProvider.GetService<ITerminalImmutableCommandStore>();
+            var immutableCommandStore2 = serviceProvider.GetService<ITerminalImmutableCommandStore>();
             immutableCommandStore.Should().NotBeNull();
             immutableCommandStore.Should().BeOfType<MockImmutableCommandStore>();
             immutableCommandStore.Should().BeSameAs(immutableCommandStore2);
 
             // Verify that IMutableCommandStore is not registered
-            var mutableCommandStore = serviceProvider.GetService<IMutableCommandStore>();
+            var mutableCommandStore = serviceProvider.GetService<ITerminalMutableCommandStore>();
             mutableCommandStore.Should().BeNull();
         }
 
@@ -189,22 +188,22 @@ namespace OneImlx.Terminal.Extensions
 
             // Check if IMutableCommandStore is mapped to MockMutableCommandStore
             var mutableInterfaceDescriptor = terminalBuilder.Services
-                .FirstOrDefault(e => e.ServiceType.Equals(typeof(IMutableCommandStore)));
+                .FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalMutableCommandStore)));
             mutableInterfaceDescriptor.Should().NotBeNull();
             mutableInterfaceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
 
             // Check if IImmutableCommandStore is mapped to MockMutableCommandStore
             var immutableInterfaceDescriptor = terminalBuilder.Services
-                .FirstOrDefault(e => e.ServiceType.Equals(typeof(IImmutableCommandStore)));
+                .FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalImmutableCommandStore)));
             immutableInterfaceDescriptor.Should().NotBeNull();
             immutableInterfaceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
 
             // Verify the factories for both interfaces resolve to MockMutableCommandStore
             var serviceProvider = terminalBuilder.Services.BuildServiceProvider();
-            var mutableCommandStore = serviceProvider.GetService<IMutableCommandStore>();
-            var immutableCommandStore = serviceProvider.GetService<IImmutableCommandStore>();
-            var mutableCommandStore2 = serviceProvider.GetService<IMutableCommandStore>();
-            var immutableCommandStore2 = serviceProvider.GetService<IImmutableCommandStore>();
+            var mutableCommandStore = serviceProvider.GetService<ITerminalMutableCommandStore>();
+            var immutableCommandStore = serviceProvider.GetService<ITerminalImmutableCommandStore>();
+            var mutableCommandStore2 = serviceProvider.GetService<ITerminalMutableCommandStore>();
+            var immutableCommandStore2 = serviceProvider.GetService<ITerminalImmutableCommandStore>();
             mutableCommandStore.Should().BeSameAs(immutableCommandStore);
             mutableCommandStore2.Should().BeSameAs(immutableCommandStore2);
             mutableCommandStore.Should().BeSameAs(mutableCommandStore2);
@@ -352,7 +351,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddExceptionHandler<MockExceptionPublisher>();
 
-            var exe = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IExceptionHandler)));
+            var exe = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalExceptionHandler)));
             exe.Should().NotBeNull();
             exe.Lifetime.Should().Be(ServiceLifetime.Transient);
             exe.ImplementationType.Should().Be(typeof(MockExceptionPublisher));
