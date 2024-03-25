@@ -1,10 +1,17 @@
 ﻿/*
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+/*
     Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -35,7 +42,7 @@ namespace OneImlx.Terminal.Mocks
                 }
                 else
                 {
-                    throw new InvalidOperationException("Invalid HTTP client name");
+                    clients.Add(Options.DefaultName, new HttpClient());
                 }
             }
 

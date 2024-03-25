@@ -152,15 +152,8 @@ namespace OneImlx.Terminal.Licensing
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The IHttpClientFactory is not configured.");
             }
 
-            // Make sure the HTTP client name is setup
-            if (terminalOptions.Licensing.HttpClientName == null)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The HTTP client name is not configured.");
-            }
-
             // Setup the HTTP client
-            HttpClient httpClient = httpClientFactory.CreateClient(terminalOptions.Licensing.HttpClientName);
-            return httpClient;
+            return httpClientFactory.CreateClient();
         }
 
         private async Task<LicenseExtractorResult> ExtractFromJsonAsync()
@@ -253,6 +246,8 @@ namespace OneImlx.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFile licenseFile)
         {
+            // Online license is obsolete
+            logger.LogWarning("Online license check is obsolete and will be removed in future release. Please use offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
             logger.LogDebug("Extract online license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
             // On_premise deployment is not supported for online license
@@ -321,12 +316,6 @@ namespace OneImlx.Terminal.Licensing
         private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFile licenseFile)
         {
             logger.LogDebug("Extract offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
-
-            // HttpClient should not be configured for offline license
-            if (terminalOptions.Licensing.HttpClientName != null)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The HTTP client name should not configured for offline license.");
-            }
 
             // If debugger is not attached and on-premise deployment is enabled then skip license check and grant claims based on license plan.
             // If debugger is attached we always do a license check.

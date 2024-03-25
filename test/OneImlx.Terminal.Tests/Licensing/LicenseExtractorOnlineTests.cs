@@ -81,7 +81,6 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Id = "invalid_auth_app";
             terminalOptions.Licensing.LicenseFile = testOnlineLicPath;
-            terminalOptions.Licensing.HttpClientName = httpClientName;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -146,7 +145,6 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testDemoLicPath;
-            terminalOptions.Licensing.HttpClientName = httpClientName;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -209,7 +207,6 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Id = "invalid_app";
             terminalOptions.Licensing.LicenseFile = testOnlineLicPath;
-            terminalOptions.Licensing.HttpClientName = httpClientName;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -221,7 +218,6 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOnlineLicPath;
-            terminalOptions.Licensing.HttpClientName = httpClientName;            
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -239,17 +235,6 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
-        public async Task ExtractFromJsonAsync_OnlineMode_NoHttpClientName_ShouldErrorAsync()
-        {
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testOnlineLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The HTTP client name is not configured.");
-        }
-
-        [Fact]
         public async Task ExtractFromJsonAsync_OnlineMode_ValidKey_ShouldContainClaimsAsync()
         {
             // Before extract get should be null
@@ -258,7 +243,6 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOnlineLicPath;
-            terminalOptions.Licensing.HttpClientName = httpClientName;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -362,7 +346,6 @@ namespace OneImlx.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private readonly string httpClientName = "prod";
         private ILicenseExtractor licenseExtractor;
         private readonly string nonJsonLicPath;
         private readonly string testOnlineLicPath;

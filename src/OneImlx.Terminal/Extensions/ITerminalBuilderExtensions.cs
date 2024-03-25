@@ -441,7 +441,7 @@ namespace OneImlx.Terminal.Extensions
             Dictionary<string, object>? cmdCustomProps = null;
             if (cmdPropAttrs.Any())
             {
-                cmdCustomProps = new Dictionary<string, object>();
+                cmdCustomProps = [];
                 cmdPropAttrs.All(e =>
                 {
                     commandBuilder.CustomProperty(e.Key, e.Value);
@@ -450,14 +450,14 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Tags
-            CommandTagsAttribute tagsAttr = declarativeTarget.GetCustomAttribute<CommandTagsAttribute>(false);
+            CommandTagsAttribute? tagsAttr = declarativeTarget.GetCustomAttribute<CommandTagsAttribute>(false);
             if (tagsAttr != null)
             {
                 commandBuilder.Tags(tagsAttr.Tags);
             }
 
             // Command owners
-            CommandOwnersAttribute ownersAttr = declarativeTarget.GetCustomAttribute<CommandOwnersAttribute>(false);
+            CommandOwnersAttribute? ownersAttr = declarativeTarget.GetCustomAttribute<CommandOwnersAttribute>(false);
             if (ownersAttr != null)
             {
                 commandBuilder.Owners(ownersAttr.Owners);

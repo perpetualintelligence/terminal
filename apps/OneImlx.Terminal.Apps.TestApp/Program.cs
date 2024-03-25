@@ -68,7 +68,6 @@ namespace OneImlx.Terminal.Apps.TestApp
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
                     options.Licensing.LicenseFile = "C:\\this\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
-                    options.Licensing.HttpClientName = "demo-http";
                 }
             );
 

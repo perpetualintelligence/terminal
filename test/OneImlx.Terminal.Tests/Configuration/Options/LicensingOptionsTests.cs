@@ -21,7 +21,6 @@ namespace OneImlx.Terminal.Configuration.Options
             options.LicenseFile.Should().BeNull();
             options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
             options.Deployment.Should().BeNull();
-            options.HttpClientName.Should().BeNull();
         }
     }
 }

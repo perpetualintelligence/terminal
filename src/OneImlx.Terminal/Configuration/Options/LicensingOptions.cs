@@ -7,7 +7,6 @@
 
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Licensing;
-using System.Net.Http;
 
 namespace OneImlx.Terminal.Configuration.Options
 {
@@ -27,6 +26,9 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <summary>
         /// The license file location.
         /// </summary>
+        /// <remarks>
+        /// NOTE: The online license mode is obsolete and will be removed in future release. Please use the offline license file.
+        /// </remarks>
         public string? LicenseFile { get; set; }
 
         /// <summary>
@@ -50,14 +52,5 @@ namespace OneImlx.Terminal.Configuration.Options
         /// </para>
         /// </remarks>
         public string? Deployment { get; set; }
-
-        /// <summary>
-        /// The logical name to create and configure <see cref="HttpClient"/> instance for online licensing checks.
-        /// </summary>
-        /// <remarks>
-        /// The framework uses <see cref="IHttpClientFactory.CreateClient(string)"/> and the configured name
-        /// to create an instance of <see cref="HttpClient"/>.
-        /// </remarks>
-        public string? HttpClientName { get; set; }
     }
 }
