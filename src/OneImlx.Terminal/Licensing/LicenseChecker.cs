@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public LicenseChecker(ITerminalImmutableCommandStore commandStore, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
+        public LicenseChecker(ITerminalCommandStore commandStore, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
         {
             this.commandStore = commandStore;
             this.terminalOptions = terminalOptions;
@@ -213,7 +213,7 @@ namespace OneImlx.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private readonly ITerminalImmutableCommandStore commandStore;
+        private readonly ITerminalCommandStore commandStore;
         private readonly ILogger<LicenseChecker> logger;
         private long optionCount;
         private long commandGroupCount;

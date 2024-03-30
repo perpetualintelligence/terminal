@@ -47,8 +47,8 @@ namespace OneImlx.Terminal.Extensions
         /// -
         public static IOptionBuilder ValidationAttribute(this IOptionBuilder builder, Type validationAttribute, params object[]? args)
         {
-            ValidationAttribute validationAttributeInstance = (ValidationAttribute)Activator.CreateInstance(validationAttribute, args);
-            builder.Services.AddSingleton(validationAttributeInstance);
+            ValidationAttribute? validationAttributeInstance = (ValidationAttribute?)Activator.CreateInstance(validationAttribute, args);
+            builder.Services.AddSingleton(validationAttributeInstance!);
             return builder;
         }
     }

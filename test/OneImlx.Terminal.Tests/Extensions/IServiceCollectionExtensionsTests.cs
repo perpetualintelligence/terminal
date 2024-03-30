@@ -69,7 +69,7 @@ namespace OneImlx.Terminal.Extensions
 
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<TerminalInMemoryImmutableCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), configuration);
+                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), configuration);
             }).Build();
 
             // Check Options are added
@@ -92,7 +92,7 @@ namespace OneImlx.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<TerminalInMemoryImmutableCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler());
+                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler());
             }).Build();
 
             // Check Options are added
@@ -115,7 +115,7 @@ namespace OneImlx.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
             {
-                arg.AddTerminal<TerminalInMemoryImmutableCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), SetupAction);
+                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), SetupAction);
             }).Build();
 
             // Check Options are added

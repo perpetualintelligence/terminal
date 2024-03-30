@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             valueChecker = new OptionChecker(optionMapper, terminalOptions);
             argumentChecker = new ArgumentChecker(argumentMapper, terminalOptions);
             checker = new CommandChecker(valueChecker, argumentChecker, terminalOptions, loggerFactory.CreateLogger<CommandChecker>());
-            commands = new TerminalInMemoryImmutableCommandStore(textHandler, MockCommands.Commands.Values);
+            commands = new TerminalInMemoryCommandStore(textHandler, MockCommands.Commands.Values);
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
@@ -274,7 +274,7 @@ namespace OneImlx.Terminal.Commands.Checkers
 
         private CommandRoute commandRoute = null!;
         private CommandChecker checker = null!;
-        private ITerminalImmutableCommandStore commands = null!;
+        private ITerminalCommandStore commands = null!;
         private IDataTypeMapper<Option> optionMapper = null!;
         private IDataTypeMapper<Argument> argumentMapper = null!;
         private TerminalOptions terminalOptions = null!;

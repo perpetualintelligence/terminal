@@ -13,6 +13,7 @@ using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
+using Serilog;
 
 namespace OneImlx.Terminal.Apps.TestApp
 {
@@ -29,6 +30,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             IHostBuilder hostBuilder = CreateHostBuilder(args);
             hostBuilder.ConfigureServices(ConfigureServicesDelegate);
             hostBuilder.ConfigureLogging(ConfigureLoggingDelegate);
+            hostBuilder.UseSerilog();
             IHost host = hostBuilder.Start();
 
             // Setup the terminal context and run the router indefinitely.
@@ -42,14 +44,20 @@ namespace OneImlx.Terminal.Apps.TestApp
             // Clear all providers
             builder.ClearProviders();
 
-            // Add Console
-            builder.AddConsole();
+            // Add the logging based on your preference e.g. Serilog
+            builder.AddSerilog();
         }
 
-        private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection collection)
+        private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
         {
-            // OneImlx.Terminal
-            ConfigureOneImlxTerminal(collection);
+            // Disable hosting status message
+            services.Configure<ConsoleLifetimeOptions>(options =>
+            {
+                options.SuppressStatusMessages = true;
+            });
+
+            // Configure OneImlx.Terminal services
+            ConfigureOneImlxTerminal(services);
 
             // Configure other services
         }
@@ -63,7 +71,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             collection.AddHttpClient("demo-http");
 
             // Specific your demo or commercial license file.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryImmutableCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;

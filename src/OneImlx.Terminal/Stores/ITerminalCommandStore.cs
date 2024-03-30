@@ -13,10 +13,18 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Stores
 {
     /// <summary>
-    /// An immutable store to lookup <see cref="CommandDescriptor"/>.
+    /// A store of <see cref="CommandDescriptor"/>.
     /// </summary>
-    public interface ITerminalImmutableCommandStore
+    public interface ITerminalCommandStore
     {
+        /// <summary>
+        /// Adds a <see cref="CommandDescriptor"/> to the store.
+        /// </summary>
+        /// <param name="id">The command id.</param>
+        /// <param name="commandDescriptor">The command descriptor to add.</param>
+        /// <returns><c>true</c> if added, <c>false</c> otherwise.</returns>
+        public Task<bool> TryAddAsync(string id, CommandDescriptor commandDescriptor);
+
         /// <summary>
         /// Attempts to finds a <see cref="CommandDescriptor"/> by its id asynchronously.
         /// </summary>
@@ -31,6 +39,6 @@ namespace OneImlx.Terminal.Stores
         /// Returns all <see cref="CommandDescriptor"/> asynchronously.
         /// </summary>
         /// <returns>A <see cref="Dictionary{TKey, TValue}"/> of command descriptors. </returns>
-        public Task<ReadOnlyDictionary<string, CommandDescriptor>> AllAsync();
+        public Task<CommandDescriptors> AllAsync();
     }
 }

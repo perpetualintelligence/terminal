@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Integration
     public class PublishedCommandSourceTests
     {
         private readonly MockPublishedCommandSourceChecker terminalCommandSourceChecker;
-        private readonly ITerminalMutableCommandStore mutableCommandStore;
+        private readonly ITerminalCommandStore mutableCommandStore;
         private readonly ILogger<PublishedCommandSource> logger;
         private readonly ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> assemblyLoader;
         private readonly PublishedCommandSource publishedCommandSource;
@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Integration
             textHandler = new TerminalAsciiTextHandler();
             assemblyLoader = new MockPublishedAssemblyLoader();
             terminalCommandSourceChecker = new MockPublishedCommandSourceChecker();
-            mutableCommandStore = new TerminalInMemoryMutableCommandStore(textHandler, Array.Empty<CommandDescriptor>());
+            mutableCommandStore = new TerminalInMemoryCommandStore(textHandler, Array.Empty<CommandDescriptor>());
             MockListLoggerFactory mockListLoggerFactory = new();
             logger = mockListLoggerFactory.CreateLogger<PublishedCommandSource>();
             publishedCommandSource = new PublishedCommandSource(textHandler, assemblyLoader, terminalCommandSourceChecker, mutableCommandStore, logger);

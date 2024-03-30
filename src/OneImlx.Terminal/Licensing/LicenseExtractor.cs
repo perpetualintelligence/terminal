@@ -246,8 +246,7 @@ namespace OneImlx.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFile licenseFile)
         {
-            // Online license is obsolete
-            logger.LogWarning("Online license check is obsolete and will be removed in future release. Please use offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
+            // Online license is obsolete            
             logger.LogDebug("Extract online license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
             // On_premise deployment is not supported for online license
@@ -301,6 +300,12 @@ namespace OneImlx.Terminal.Licensing
                 if (string.IsNullOrWhiteSpace(brokerTenantId))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
+                }
+
+                // Online license is only valid for demo license
+                if(plan != TerminalLicensePlans.Demo)
+                {
+                    logger.LogWarning("Online license check is obsolete and will be removed in future release. Please use offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);

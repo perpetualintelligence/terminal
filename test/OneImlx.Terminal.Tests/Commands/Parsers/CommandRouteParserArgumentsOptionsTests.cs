@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                 new CommandDescriptor("cmd1", "cmd1_name", "cmd1_desc", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("grp1"),  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors),
                 new CommandDescriptor("cmd_nr2", "cmd_nr2_name", "cmd_nr2_desc", CommandType.SubCommand, CommandFlags.None,  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors)
             });
-            commandStore = new TerminalInMemoryImmutableCommandStore(textHandler, commandDescriptors.Values);
+            commandStore = new TerminalInMemoryCommandStore(textHandler, commandDescriptors.Values);
             logger = new NullLogger<CommandRouteParser>();
 
             commandRouteParser = new CommandRouteParser(textHandler, commandStore, terminalOptions, logger);
@@ -450,7 +450,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Invalid_Option_Throws(string invalidOpt, string errOpt)
         {
             Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "root1 grp1 cmd1 " + invalidOpt));
-            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support an option or its alias. command=cmd1 option={errOpt}");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support option or its alias. command=cmd1 option={errOpt}");
         }
 
         [Fact]
@@ -506,14 +506,14 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Unsupported_Option_Throws()
         {
             Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "root1 grp1 cmd1 --opt3_invalid \"  option    delimited  value3  \""));
-            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support an option or its alias. command=cmd1 option=opt3_invalid");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support option or its alias. command=cmd1 option=opt3_invalid");
         }
 
         [Fact]
         public async Task Unsupported_Alias_Throws()
         {
             Func<Task> act = async () => await commandRouteParser.ParseRouteAsync(new CommandRoute("id1", "root1 grp1 cmd1 -opt8_a_invalid true"));
-            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support an option or its alias. command=cmd1 option=opt8_a_invalid");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support option or its alias. command=cmd1 option=opt8_a_invalid");
         }
 
         [Fact]
@@ -1093,7 +1093,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
         private readonly TerminalOptions terminalOptions;
         private ITerminalTextHandler textHandler;
-        private ITerminalImmutableCommandStore commandStore;
+        private ITerminalCommandStore commandStore;
         private CommandDescriptors commandDescriptors;
         private ArgumentDescriptors argumentDescriptors;
         private OptionDescriptors optionDescriptors;

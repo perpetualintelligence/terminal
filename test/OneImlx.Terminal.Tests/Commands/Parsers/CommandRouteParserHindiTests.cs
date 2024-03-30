@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Commands.Parsers
     public class CommandRouteParserHindiTests
     {
         private readonly ITerminalTextHandler _textHandler;
-        private readonly ITerminalImmutableCommandStore _commandStore;
+        private readonly ITerminalCommandStore _commandStore;
         private readonly TerminalOptions _terminalOptions;
         private readonly ILogger<CommandRouteParser> _logger;
         private readonly ICommandRouteParser _commandRouteParser;
@@ -49,7 +49,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                new CommandDescriptor("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("परीक्षण"), argumentDescriptors : null, optionDescriptors : options)
             });
 
-            _commandStore = new TerminalInMemoryImmutableCommandStore(_textHandler, _commandDescriptors.Values);
+            _commandStore = new TerminalInMemoryCommandStore(_textHandler, _commandDescriptors.Values);
             _terminalOptions = MockTerminalOptions.NewAliasOptions();
             _commandRouteParser = new CommandRouteParser(_textHandler, _commandStore, _terminalOptions, _logger);
         }

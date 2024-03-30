@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
 
-            commandStore = new TerminalInMemoryImmutableCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
+            commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
         }
 
         [Theory]
@@ -334,6 +334,6 @@ namespace OneImlx.Terminal.Licensing
         private readonly string testOfflineLicPath;
         private ILicenseDebugger licenseDebugger = null!;
         private ILicenseChecker licenseChecker = null!;
-        private ITerminalImmutableCommandStore commandStore;
+        private ITerminalCommandStore commandStore;
     }
 }

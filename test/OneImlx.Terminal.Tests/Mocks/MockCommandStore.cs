@@ -12,9 +12,14 @@ using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
-    public class MockImmutableCommandStore : ITerminalImmutableCommandStore
+    public class MockCommandStore : ITerminalCommandStore
     {
-        public Task<ReadOnlyDictionary<string, CommandDescriptor>> AllAsync()
+        public Task<CommandDescriptors> AllAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> TryAddAsync(string id, CommandDescriptor commandDescriptor)
         {
             throw new System.NotImplementedException();
         }

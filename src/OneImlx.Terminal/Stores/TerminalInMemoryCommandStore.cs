@@ -14,16 +14,16 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Stores
 {
     /// <summary>
-    /// The default in-memory <see cref="ITerminalImmutableCommandStore"/>.
+    /// The default in-memory <see cref="ITerminalCommandStore"/>.
     /// </summary>
-    public class TerminalInMemoryImmutableCommandStore : ITerminalImmutableCommandStore
+    public class TerminalInMemoryCommandStore : ITerminalCommandStore
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="textHandler"></param>
         /// <param name="commandDescriptors">The command identities.</param>
-        public TerminalInMemoryImmutableCommandStore(ITerminalTextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
+        public TerminalInMemoryCommandStore(ITerminalTextHandler textHandler, IEnumerable<CommandDescriptor> commandDescriptors)
         {
             this.commandDescriptors = new CommandDescriptors(textHandler, commandDescriptors);
         }
@@ -32,9 +32,9 @@ namespace OneImlx.Terminal.Stores
         /// Returns all command descriptors asynchronously.
         /// </summary>
         /// <returns>A <see cref="ReadOnlyDictionary{TKey, TValue}"/> of command descriptors.</returns>
-        public Task<ReadOnlyDictionary<string, CommandDescriptor>> AllAsync()
+        public Task<CommandDescriptors> AllAsync()
         {
-            return Task.FromResult(new ReadOnlyDictionary<string, CommandDescriptor>(commandDescriptors));
+            return Task.FromResult(commandDescriptors);
         }
 
         /// <inheritdoc/>

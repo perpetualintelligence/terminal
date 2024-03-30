@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Licensing
         public LicenseCheckerTests()
         {
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            commandStore = new TerminalInMemoryImmutableCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
+            commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
             licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
             license = new License(TerminalLicensePlans.Unlimited, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Unlimited), LicensePrice.Create(TerminalLicensePlans.Unlimited));
         }
@@ -129,7 +129,7 @@ namespace OneImlx.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private ITerminalImmutableCommandStore commandStore;
+        private ITerminalCommandStore commandStore;
         private readonly License license;
         private readonly ILicenseChecker licenseChecker;
     }

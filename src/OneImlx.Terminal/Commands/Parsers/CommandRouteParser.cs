@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Commands.Parsers
     public class CommandRouteParser : ICommandRouteParser
     {
         private readonly ITerminalTextHandler textHandler;
-        private readonly ITerminalImmutableCommandStore commandStore;
+        private readonly ITerminalCommandStore commandStore;
         private readonly TerminalOptions terminalOptions;
         private readonly ILogger<CommandRouteParser> logger;
 
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <param name="commandStore">The command store handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRouteParser(ITerminalTextHandler textHandler, ITerminalImmutableCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
+        public CommandRouteParser(ITerminalTextHandler textHandler, ITerminalCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
         {
             this.textHandler = textHandler;
             this.commandStore = commandStore;
@@ -570,7 +570,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
                 if (!commandDescriptor.OptionDescriptors.TryGetValue(optionOrAliasKey, out var optionDescriptor))
                 {
-                    throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support an option or its alias. command={0} option={1}", commandDescriptor.Id, optionOrAliasKey);
+                    throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support option or its alias. command={0} option={1}", commandDescriptor.Id, optionOrAliasKey);
                 }
 
                 if (isOption)

@@ -6,8 +6,10 @@
 */
 
 using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Apps.TestApp.Runners
 {
@@ -16,15 +18,22 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
     /// </summary>
     [CommandDescriptor("test", "Test App", "Test application description.", Commands.CommandType.Root, Commands.CommandFlags.None)]
     [CommandRunner(typeof(TestAppRunner))]
+    [CommandChecker(typeof(CommandChecker))]
     public class TestAppRunner : CommandRunner<CommandRunnerResult>, IDeclarativeTarget
     {
-        public TestAppRunner(ILogger<TestAppRunner> logger)
-        {
+        private readonly ITerminalConsole terminalConsole;
+        private readonly ILogger<TestAppRunner> logger;
 
-        }
-        public override Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public TestAppRunner(ITerminalConsole terminalConsole, ILogger<TestAppRunner> logger)
         {
-            throw new NotImplementedException();
+            this.terminalConsole = terminalConsole;
+            this.logger = logger;
+        }
+
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        {
+            await terminalConsole.WriteLineAsync("Test root command called.");
+            return new CommandRunnerResult();
         }
     }
 }

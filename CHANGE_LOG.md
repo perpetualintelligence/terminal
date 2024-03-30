@@ -6,6 +6,7 @@
 - Move `ITextHandler` to `Runtime` namespace
 - Added `apps` for hosting test applications
 - Merge application identifier as terminal identifier
+- Merge Mutable and Immutable store into 1 common `ITerminalCommandStore`
 
 # 5.6.4-rc*
 > Breaking Change

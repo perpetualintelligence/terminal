@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.Integration
         private readonly ITerminalTextHandler textHandler;
         private readonly ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> assemblyLoader;
         private readonly ITerminalCommandSourceChecker<PublishedCommandSourceContext> terminalCommandSourceChecker;
-        private readonly ITerminalMutableCommandStore commandStore;
+        private readonly ITerminalCommandStore commandStore;
         private readonly ILogger<PublishedCommandSource> logger;
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace OneImlx.Terminal.Integration
             ITerminalTextHandler textHandler,
             ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> publishedAssembliesLoader,
             ITerminalCommandSourceChecker<PublishedCommandSourceContext> publishedCommandSourceChecker,
-            ITerminalMutableCommandStore commandStore,
+            ITerminalCommandStore commandStore,
             ILogger<PublishedCommandSource> logger)
         {
             this.textHandler = textHandler;

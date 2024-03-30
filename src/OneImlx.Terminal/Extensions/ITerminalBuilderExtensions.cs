@@ -299,27 +299,15 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ITerminalImmutableCommandStore"/> or <see cref="ITerminalMutableCommandStore"/> to the service collection.
+        /// Adds the <see cref="ITerminalCommandStore"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TStore">The command descriptor store type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder)
-            where TStore : class, ITerminalImmutableCommandStore
+            where TStore : class, ITerminalCommandStore
         {
-            // Register the concrete type
-            builder.Services.AddSingleton<TStore>();
-
-            // Register as IMutableCommandStore if applicable
-            if (typeof(ITerminalMutableCommandStore).IsAssignableFrom(typeof(TStore)))
-            {
-                builder.Services.AddSingleton<ITerminalMutableCommandStore>(provider =>
-                    (ITerminalMutableCommandStore)provider.GetRequiredService(typeof(TStore)));
-            }
-
-            // Always register as IImmutableCommandStore
-            builder.Services.AddSingleton<ITerminalImmutableCommandStore>(provider =>
-                provider.GetRequiredService<TStore>());
+            builder.Services.AddSingleton<ITerminalCommandStore, TStore>();
 
             return builder;
         }
@@ -383,14 +371,9 @@ namespace OneImlx.Terminal.Extensions
             // Establish command builder Default option not set ?
             ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.CommandType, cmdAttr.CommandFlags);
 
-            // Optional
-            IEnumerable<OptionDescriptorAttribute> optAttrs = declarativeTarget.GetCustomAttributes<OptionDescriptorAttribute>(false);
-            IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<ArgumentDescriptorAttribute>(false);
-            IEnumerable<OptionValidationAttribute> optVdls = declarativeTarget.GetCustomAttributes<OptionValidationAttribute>(false);
-            IEnumerable<ArgumentValidationAttribute> argVdls = declarativeTarget.GetCustomAttributes<ArgumentValidationAttribute>(false);
-            IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeTarget.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
-
             // Arguments Descriptors
+            IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<ArgumentDescriptorAttribute>(false);
+            IEnumerable<ArgumentValidationAttribute> argVdls = declarativeTarget.GetCustomAttributes<ArgumentValidationAttribute>(false);
             foreach (ArgumentDescriptorAttribute argAttr in argAttrs)
             {
                 IArgumentBuilder argBuilder = commandBuilder.DefineArgument(argAttr.Order, argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Flags);
@@ -414,6 +397,8 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Options Descriptors
+            IEnumerable<OptionDescriptorAttribute> optAttrs = declarativeTarget.GetCustomAttributes<OptionDescriptorAttribute>(false);
+            IEnumerable<OptionValidationAttribute> optVdls = declarativeTarget.GetCustomAttributes<OptionValidationAttribute>(false);
             foreach (OptionDescriptorAttribute optAttr in optAttrs)
             {
                 IOptionBuilder optBuilder = commandBuilder.DefineOption(optAttr.Id, optAttr.DataType, optAttr.Description, optAttr.Flags, optAttr.Alias);
@@ -438,6 +423,7 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Command custom properties
+            IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeTarget.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
             Dictionary<string, object>? cmdCustomProps = null;
             if (cmdPropAttrs.Any())
             {
@@ -467,6 +453,7 @@ namespace OneImlx.Terminal.Extensions
                 throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command owner.");
             }
 
+            // Build and add the command descriptor to service collection
             return commandBuilder.Add();
         }
 
