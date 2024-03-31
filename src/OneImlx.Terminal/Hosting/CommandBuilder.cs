@@ -6,6 +6,7 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OneImlx.Terminal.Commands;
 using System;
 using System.Collections.Generic;
@@ -61,7 +62,7 @@ namespace OneImlx.Terminal.Hosting
             IEnumerable<Tuple<string, object>> customProps = lsp.GetServices<Tuple<string, object>>();
             if (customProps.Any())
             {
-                commandDescriptor.CustomProperties = new Dictionary<string, object>();
+                commandDescriptor.CustomProperties = [];
                 customProps.All(e =>
                 {
                     commandDescriptor.CustomProperties.Add(e.Item1, e.Item2);
@@ -77,9 +78,7 @@ namespace OneImlx.Terminal.Hosting
             TagIdCollection? tags = lsp.GetService<TagIdCollection>();
             commandDescriptor.TagIds = tags;
 
-            // Make sure the command runner and checker are added. TODO this may add duplicate types
-            terminalBuilder.Services.AddTransient(commandDescriptor.Checker ?? throw new TerminalException(TerminalErrors.InvalidConfiguration, "Checker is not configured in the command descriptor. command={0}", commandDescriptor.Id));
-            terminalBuilder.Services.AddTransient(commandDescriptor.Runner ?? throw new TerminalException(TerminalErrors.InvalidConfiguration, "Runner is not configured in the command descriptor. command={0}", commandDescriptor.Id));
+            // Add the command descriptor to the terminal builder.
             terminalBuilder.Services.AddSingleton(commandDescriptor);
 
             return terminalBuilder;

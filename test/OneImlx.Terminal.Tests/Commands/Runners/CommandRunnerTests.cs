@@ -51,7 +51,7 @@ namespace OneImlx.Terminal.Commands.Runners
             ParsedCommand extractedCommand = new(commandRoute, command, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
-            MockHelpProvider helpProvider = new();
+            MockTerminalHelpProvider helpProvider = new();
             MockDefaultCommandRunner mockCommandRunner = new();
             var result = await mockCommandRunner.DelegateHelpAsync(new CommandRunnerContext(handlerContext), helpProvider);
             mockCommandRunner.HelpCalled.Should().BeTrue();

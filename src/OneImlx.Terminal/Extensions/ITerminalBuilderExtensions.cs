@@ -261,13 +261,16 @@ namespace OneImlx.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandRouter<TRouter, THandler>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler
+        public static ITerminalBuilder AddCommandRouter<TRouter, THandler, TRuntime>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler where TRuntime : class, ICommandRuntime
         {
             // Add command router
             builder.Services.AddTransient<ICommandRouter, TRouter>();
 
             // Add command handler
             builder.Services.AddTransient<ICommandHandler, THandler>();
+
+            // Add command runtime
+            builder.Services.AddTransient<ICommandRuntime, TRuntime>();
 
             return builder;
         }

@@ -72,13 +72,13 @@ namespace OneImlx.Terminal.Integration
                 if (existingAssembly != null)
                 {
                     assemblies.Add(existingAssembly);
-                    logger.LogWarning($"Assembly already loaded, load path ignored. path={0} assembly={1}", assemblyPath, assemblyName);
+                    logger.LogWarning("Assembly already loaded, load path ignored. path={0} assembly={1}", assemblyPath, assemblyName);
                     continue;
                 }
 
                 // Load the assembly
                 Assembly loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
-                logger.LogInformation($"Loaded assembly. assembly={0}", assemblyName);
+                logger.LogInformation("Loaded assembly. assembly={0}", assemblyName);
 
                 // Log dependent assemblies
                 if (logger.IsEnabled(LogLevel.Debug))
@@ -90,7 +90,7 @@ namespace OneImlx.Terminal.Integration
                     {
                         if (asm != loadedAssembly) // Exclude the primary assembly
                         {
-                            logger.LogDebug($"Loaded dependent assembly. assembly={0}", asm.GetName());
+                            logger.LogDebug("Loaded dependent assembly. assembly={0}", asm.GetName());
                         }
                     }
                 }

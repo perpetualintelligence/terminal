@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
-    internal class MockAsyncEventHandler : ITerminalEventHandler
+    internal class MockTerminalEventHandler : ITerminalEventHandler
     {
         public Command? PassedCommand { get; private set; }
         public CommandRouterResult? PassedRouterResult { get; private set; }

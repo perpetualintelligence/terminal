@@ -131,7 +131,7 @@ namespace OneImlx.Terminal.Commands
         {
             if (Options == null)
             {
-                throw new TerminalException(TerminalErrors.UnsupportedOption, $"The command does not support any options. command={0}", Id);
+                throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support any options. command={0}", Id);
             }
 
             return Options.GetOptionValue<TValue>(idOrAlias);

@@ -234,7 +234,7 @@ namespace OneImlx.Terminal.Commands.Routers
             commandParser = new MockCommandParserInner();
             commandHandler = new MockCommandHandlerInner();
             licenseExtractor = new MockLicenseExtractorInner();
-            eventHandler = new MockAsyncEventHandler();
+            eventHandler = new MockTerminalEventHandler();
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             logger = new LoggerFactory().CreateLogger<CommandRouter>();
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandParser, commandHandler, logger, eventHandler);
@@ -256,7 +256,7 @@ namespace OneImlx.Terminal.Commands.Routers
         private CancellationTokenSource commandTokenSource = null!;
         private MockCommandParserInner commandParser = null!;
         private MockCommandHandlerInner commandHandler = null!;
-        private MockAsyncEventHandler eventHandler = null!;
+        private MockTerminalEventHandler eventHandler = null!;
         private MockTerminalRouterContext routingContext = null!;
         private IHost host = null!;
         private MockLicenseExtractorInner licenseExtractor = null!;

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
-    internal class MockCommandCheckerInner : ICommandChecker
+    public class MockCommandCheckerInner : ICommandChecker
     {
         public bool ThrowException { get; set; }
 
@@ -25,7 +25,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
                 throw new TerminalException("test_c_error", "test_c_desc");
             }
 
-            return Task.FromResult(new CommandCheckerResult());
+            return Task.FromResult((CommandCheckerResult)new MockCommandCheckerInnerResult());
         }
     }
 }

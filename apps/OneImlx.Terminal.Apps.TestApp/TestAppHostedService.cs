@@ -81,7 +81,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             await TerminalConsole.WriteLineAsync("https://mytestapp.com");
             await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
 
-            await TerminalConsole.WriteLineAsync($"Starting application...");
+            await TerminalConsole.WriteLineAsync("Starting application...");
         }
 
         /// <summary>

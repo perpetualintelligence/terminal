@@ -257,7 +257,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                     // Now, we use the flag to check if the closing delimiter was found.
                     if (!foundClosingDelimiter)
                     {
-                        throw new ArgumentException($"Option '{option}' value does not have a closing delimiter.");
+                        throw new TerminalException(TerminalErrors.InvalidOption, "Option value does not have a closing delimiter. option={0}", option);
                     }
 
                     // Strip the delimiters if present.

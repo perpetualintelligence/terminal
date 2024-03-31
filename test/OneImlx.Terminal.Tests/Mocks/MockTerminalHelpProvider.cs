@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
-    internal class MockHelpProvider : ITerminalHelpProvider
+    internal class MockTerminalHelpProvider : ITerminalHelpProvider
     {
         public bool HelpCalled { get; private set; }
 

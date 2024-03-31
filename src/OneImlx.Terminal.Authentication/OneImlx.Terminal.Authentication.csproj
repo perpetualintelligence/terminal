@@ -5,7 +5,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
         <Description>
-            The flexible cross-platform framework for modern terminals and CLI applications. Use microservices architecture principles, dependency injection, and options pattern to build modern and secured terminal applications similar to Github CLI, .NET CLI, Stripe CLI, or browser based terminals with custom formats.
+            The most flexible cross-platform framework for building modern and secured terminal apps.
         </Description>
         <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos oneimlx unicode msal identity oauth openid-connect oidc</PackageTags>
     </PropertyGroup>
