@@ -14,17 +14,17 @@ using OneImlx.Terminal.Runtime;
 namespace OneImlx.Terminal.Apps.TestApp.Runners
 {
     /// <summary>
-    /// The root runner for the TestApp.
+    /// The root <c>test</c> runner for the TestApp.
     /// </summary>
     [CommandDescriptor("test", "Test App", "Test application description.", Commands.CommandType.Root, Commands.CommandFlags.None)]
-    [CommandRunner(typeof(TestAppRunner))]
+    [CommandRunner(typeof(TestRunner))]
     [CommandChecker(typeof(CommandChecker))]
-    public class TestAppRunner : CommandRunner<CommandRunnerResult>, IDeclarativeTarget
+    public class TestRunner : CommandRunner<CommandRunnerResult>, IDeclarativeTarget
     {
         private readonly ITerminalConsole terminalConsole;
-        private readonly ILogger<TestAppRunner> logger;
+        private readonly ILogger<TestRunner> logger;
 
-        public TestAppRunner(ITerminalConsole terminalConsole, ILogger<TestAppRunner> logger)
+        public TestRunner(ITerminalConsole terminalConsole, ILogger<TestRunner> logger)
         {
             this.terminalConsole = terminalConsole;
             this.logger = logger;

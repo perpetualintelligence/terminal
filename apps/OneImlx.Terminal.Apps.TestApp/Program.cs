@@ -30,7 +30,6 @@ namespace OneImlx.Terminal.Apps.TestApp
             IHostBuilder hostBuilder = CreateHostBuilder(args);
             hostBuilder.ConfigureServices(ConfigureServicesDelegate);
             hostBuilder.ConfigureLogging(ConfigureLoggingDelegate);
-            hostBuilder.UseSerilog();
             IHost host = hostBuilder.Start();
 
             // Setup the terminal context and run the router indefinitely.
@@ -44,8 +43,14 @@ namespace OneImlx.Terminal.Apps.TestApp
             // Clear all providers
             builder.ClearProviders();
 
+            // Configure logging of your choice, here we are configuring Serilog
+            var loggerConfig = new LoggerConfiguration();
+            loggerConfig.MinimumLevel.Error();
+            loggerConfig.WriteTo.Console();
+
             // Add the logging based on your preference e.g. Serilog
-            builder.AddSerilog();
+            Log.Logger = loggerConfig.CreateLogger();
+            builder.AddSerilog(Log.Logger);
         }
 
         private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
@@ -58,7 +63,7 @@ namespace OneImlx.Terminal.Apps.TestApp
 
             // Configure OneImlx.Terminal services
             ConfigureOneImlxTerminal(services);
-
+            
             // Configure other services
         }
 
@@ -76,11 +81,12 @@ namespace OneImlx.Terminal.Apps.TestApp
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
                     options.Licensing.LicenseFile = "C:\\this\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
+                    options.Router.Caret = "> ";
                 }
             );
 
             // Add commands
-            terminalBuilder.AddDeclarativeAssembly<TestAppRunner>();
+            terminalBuilder.AddDeclarativeAssembly<TestRunner>();
         }
 
         /// <summary>
