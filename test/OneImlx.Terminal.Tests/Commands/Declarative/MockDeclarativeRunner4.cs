@@ -7,22 +7,20 @@
 
 using OneImlx.Terminal.Mocks;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace OneImlx.Terminal.Commands.Declarative
 {
-    [CommandRunner(typeof(MockCommandRunner))]
+    [CommandOwners("oid1, oid2")]
+    [CommandDescriptor("id4", "name4", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]
-    [CommandCustomProperty("key1", "value1")]
-    [CommandCustomProperty("key2", "value2")]
-    [CommandCustomProperty("key3", "value3")]
     [OptionDescriptor("opt1", nameof(String), "test arg desc1", OptionFlags.None)]
     [OptionDescriptor("opt2", nameof(String), "test arg desc2", OptionFlags.None)]
-    [OptionValidation("opt2", typeof(RequiredAttribute))]
-    [OptionDescriptor("ar3", nameof(String), "test arg desc3", OptionFlags.None)]
-    [OptionValidation("opt3", typeof(RangeAttribute), 25, 40)]
-    public class MockDeclarativeTargetNoCommandDescriptor : IDeclarativeTarget
+    [OptionDescriptor("opt3", nameof(String), "test arg desc3", OptionFlags.None)]
+    [ArgumentDescriptor(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None)]
+    [ArgumentDescriptor(2, "arg2", nameof(String), "test arg desc2", ArgumentFlags.None)]
+    [ArgumentDescriptor(3, "arg3", nameof(System.Double), "test arg desc3", ArgumentFlags.None)]
+    public class MockDeclarativeRunner4 : IDeclarativeRunner
     {
     }
 }

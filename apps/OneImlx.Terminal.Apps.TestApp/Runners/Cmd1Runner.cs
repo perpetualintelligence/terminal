@@ -18,9 +18,8 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
     /// </summary>
     [CommandOwners("grp1")]
     [CommandDescriptor("cmd1", "Command 1", "Command1 description.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
-    [CommandRunner(typeof(Cmd1Runner))]
     [CommandChecker(typeof(CommandChecker))]
-    public class Cmd1Runner : CommandRunner<CommandRunnerResult>, IDeclarativeTarget
+    public class Cmd1Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         private readonly ITerminalConsole terminalConsole;
         private readonly ILogger<Cmd1Runner> logger;

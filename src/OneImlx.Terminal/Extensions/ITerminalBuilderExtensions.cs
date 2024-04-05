@@ -115,7 +115,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
+        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="assemblyType">The type whose assembly to inspect and read all the declarative targets.</param>
@@ -123,7 +123,7 @@ namespace OneImlx.Terminal.Extensions
         /// <remarks>
         /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all the
         /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ITerminalBuilder, Type)"/>.
+        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner(ITerminalBuilder, Type)"/>.
         /// </remarks>
         public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Type assemblyType)
         {
@@ -131,7 +131,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
+        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="assembly">The assembly to inspect.</param>
@@ -139,23 +139,23 @@ namespace OneImlx.Terminal.Extensions
         /// <remarks>
         /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Assembly)"/> reads the target assembly and inspects all the
         /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ITerminalBuilder, Type)"/>.
+        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner(ITerminalBuilder, Type)"/>.
         /// </remarks>
         public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Assembly assembly)
         {
             IEnumerable<Type> declarativeTypes = assembly.GetTypes()
-                .Where(e => typeof(IDeclarativeTarget).IsAssignableFrom(e));
+                .Where(e => typeof(IDeclarativeRunner).IsAssignableFrom(e));
 
             foreach (Type type in declarativeTypes)
             {
-                AddDeclarativeTarget(builder, type);
+                AddDeclarativeRunner(builder, type);
             }
 
             return builder;
         }
 
         /// <summary>
-        /// Adds all the <see cref="IDeclarativeTarget"/> implementations to the service collection.
+        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TType">The type whose assembly to inspect and read all the declarative targets.</typeparam>
@@ -163,7 +163,7 @@ namespace OneImlx.Terminal.Extensions
         /// <remarks>
         /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all the
         /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeTarget(ITerminalBuilder, Type)"/>.
+        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner(ITerminalBuilder, Type)"/>.
         /// </remarks>
         public static ITerminalBuilder AddDeclarativeAssembly<TType>(this ITerminalBuilder builder)
         {
@@ -171,16 +171,16 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds a <see cref="IDeclarativeTarget"/> to the service collection.
+        /// Adds a <see cref="IDeclarativeRunner"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>
-        /// The <see cref="AddDeclarativeTarget{TDeclarativeTarget}(ITerminalBuilder)"/> inspects the declarative target type
+        /// The <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/> inspects the declarative target type
         /// using reflection.
         /// </returns>
-        public static ITerminalBuilder AddDeclarativeTarget<TDeclarativeTarget>(this ITerminalBuilder builder) where TDeclarativeTarget : IDeclarativeTarget
+        public static ITerminalBuilder AddDeclarativeRunner<TDeclarativeRunner>(this ITerminalBuilder builder) where TDeclarativeRunner : IDeclarativeRunner
         {
-            return AddDeclarativeTarget(builder, typeof(TDeclarativeTarget));
+            return AddDeclarativeRunner(builder, typeof(TDeclarativeRunner));
         }
 
         /// <summary>
@@ -360,23 +360,21 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <exclude />
-        private static ITerminalBuilder AddDeclarativeTarget(this ITerminalBuilder builder, Type declarativeTarget)
+        private static ITerminalBuilder AddDeclarativeRunner(this ITerminalBuilder builder, Type declarativeRunner)
         {
             // Command descriptor
-            CommandDescriptorAttribute cmdAttr = declarativeTarget.GetCustomAttribute<CommandDescriptorAttribute>(false) ?? throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command descriptor.");
-
-            // Command Runner
-            CommandRunnerAttribute cmdRunner = declarativeTarget.GetCustomAttribute<CommandRunnerAttribute>(false) ?? throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command runner.");
+            // The declarative runner is the command runner.
+            CommandDescriptorAttribute cmdAttr = declarativeRunner.GetCustomAttribute<CommandDescriptorAttribute>(false) ?? throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command descriptor.");
 
             // Command checker
-            CommandCheckerAttribute cmdChecker = declarativeTarget.GetCustomAttribute<CommandCheckerAttribute>(false) ?? throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command checker.");
+            CommandCheckerAttribute cmdChecker = declarativeRunner.GetCustomAttribute<CommandCheckerAttribute>(false) ?? throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command checker.");
 
             // Establish command builder Default option not set ?
-            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Description, cmdChecker.Checker, cmdRunner.Runner, cmdAttr.CommandType, cmdAttr.CommandFlags);
+            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Description, cmdChecker.Checker, declarativeRunner, cmdAttr.CommandType, cmdAttr.CommandFlags);
 
             // Arguments Descriptors
-            IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeTarget.GetCustomAttributes<ArgumentDescriptorAttribute>(false);
-            IEnumerable<ArgumentValidationAttribute> argVdls = declarativeTarget.GetCustomAttributes<ArgumentValidationAttribute>(false);
+            IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeRunner.GetCustomAttributes<ArgumentDescriptorAttribute>(false);
+            IEnumerable<ArgumentValidationAttribute> argVdls = declarativeRunner.GetCustomAttributes<ArgumentValidationAttribute>(false);
             foreach (ArgumentDescriptorAttribute argAttr in argAttrs)
             {
                 IArgumentBuilder argBuilder = commandBuilder.DefineArgument(argAttr.Order, argAttr.Id, argAttr.DataType, argAttr.Description, argAttr.Flags);
@@ -385,7 +383,7 @@ namespace OneImlx.Terminal.Extensions
                 List<ValidationAttribute>? validationAttributes = null;
                 if (argVdls.Any())
                 {
-                    validationAttributes = new List<ValidationAttribute>();
+                    validationAttributes = [];
                     argVdls.All(e =>
                     {
                         if (e.ArgumentId.Equals(argAttr.Id))
@@ -400,8 +398,8 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Options Descriptors
-            IEnumerable<OptionDescriptorAttribute> optAttrs = declarativeTarget.GetCustomAttributes<OptionDescriptorAttribute>(false);
-            IEnumerable<OptionValidationAttribute> optVdls = declarativeTarget.GetCustomAttributes<OptionValidationAttribute>(false);
+            IEnumerable<OptionDescriptorAttribute> optAttrs = declarativeRunner.GetCustomAttributes<OptionDescriptorAttribute>(false);
+            IEnumerable<OptionValidationAttribute> optVdls = declarativeRunner.GetCustomAttributes<OptionValidationAttribute>(false);
             foreach (OptionDescriptorAttribute optAttr in optAttrs)
             {
                 IOptionBuilder optBuilder = commandBuilder.DefineOption(optAttr.Id, optAttr.DataType, optAttr.Description, optAttr.Flags, optAttr.Alias);
@@ -410,7 +408,7 @@ namespace OneImlx.Terminal.Extensions
                 List<ValidationAttribute>? validationAttributes = null;
                 if (optVdls.Any())
                 {
-                    validationAttributes = new List<ValidationAttribute>();
+                    validationAttributes = [];
                     optVdls.All(e =>
                     {
                         if (e.OptionId.Equals(optAttr.Id))
@@ -426,7 +424,7 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Command custom properties
-            IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeTarget.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
+            IEnumerable<CommandCustomPropertyAttribute> cmdPropAttrs = declarativeRunner.GetCustomAttributes<CommandCustomPropertyAttribute>(false);
             Dictionary<string, object>? cmdCustomProps = null;
             if (cmdPropAttrs.Any())
             {
@@ -439,14 +437,14 @@ namespace OneImlx.Terminal.Extensions
             }
 
             // Tags
-            CommandTagsAttribute? tagsAttr = declarativeTarget.GetCustomAttribute<CommandTagsAttribute>(false);
+            CommandTagsAttribute? tagsAttr = declarativeRunner.GetCustomAttribute<CommandTagsAttribute>(false);
             if (tagsAttr != null)
             {
                 commandBuilder.Tags(tagsAttr.Tags);
             }
 
             // Command owners
-            CommandOwnersAttribute? ownersAttr = declarativeTarget.GetCustomAttribute<CommandOwnersAttribute>(false);
+            CommandOwnersAttribute? ownersAttr = declarativeRunner.GetCustomAttribute<CommandOwnersAttribute>(false);
             if (ownersAttr != null)
             {
                 commandBuilder.Owners(ownersAttr.Owners);

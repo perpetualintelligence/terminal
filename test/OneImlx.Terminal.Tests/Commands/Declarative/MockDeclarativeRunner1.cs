@@ -14,7 +14,6 @@ namespace OneImlx.Terminal.Commands.Declarative
 {
     [CommandOwners("oid1, oid2")]
     [CommandDescriptor("id1", "name1", "description", CommandType.SubCommand, CommandFlags.None)]
-    [CommandRunner(typeof(MockCommandRunner))]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]
     [CommandCustomProperty("key1", "value1")]
@@ -32,7 +31,7 @@ namespace OneImlx.Terminal.Commands.Declarative
     [ArgumentValidation("arg2", typeof(OneOfAttribute), "test1", "test2", "test3")]
     [ArgumentDescriptor(3, "arg3", nameof(System.Double), "test arg desc3", ArgumentFlags.Required | ArgumentFlags.Obsolete)]
     [ArgumentValidation("arg3", typeof(RangeAttribute), 25.34, 40.56)]
-    public class MockDeclarativeTarget1 : IDeclarativeTarget
+    public class MockDeclarativeRunner1 : IDeclarativeRunner
     {
     }
 }

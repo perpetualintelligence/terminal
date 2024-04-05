@@ -1,4 +1,4 @@
-# 5.8.5-rc*
+# 5.9.1-rc*
 > Breaking Change
 - Support multi-targets net481, net8.0, netstandard2.0 and netstandard2.1
 - Simplify licensing based on tenant and single key
@@ -7,6 +7,7 @@
 - Added `apps` for hosting test applications
 - Merge application identifier as terminal identifier
 - Merge Mutable and Immutable store into 1 common `ITerminalCommandStore`
+- Remove redundant `CommandRunnerAttribute` and rename declarative target to declarative runner
 
 # 5.6.4-rc*
 > Breaking Change

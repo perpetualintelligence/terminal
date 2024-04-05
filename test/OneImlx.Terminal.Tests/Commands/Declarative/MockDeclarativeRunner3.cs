@@ -11,7 +11,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OneImlx.Terminal.Commands.Declarative
 {
-    [CommandDescriptor("id1", "name", "description", CommandType.SubCommand, CommandFlags.None)]
+    [CommandOwners("oid1, oid2")]
+    [CommandDescriptor("id3", "name3", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]
     [CommandCustomProperty("key1", "value1")]
@@ -22,7 +23,7 @@ namespace OneImlx.Terminal.Commands.Declarative
     [OptionValidation("opt2", typeof(RequiredAttribute))]
     [OptionDescriptor("ar3", nameof(String), "test arg desc3", OptionFlags.None)]
     [OptionValidation("opt3", typeof(RangeAttribute), 25, 40)]
-    public class MockDeclarativeTargetNoCommandRunner : IDeclarativeTarget
+    public class MockDeclarativeRunner3 : IDeclarativeRunner
     {
     }
 }

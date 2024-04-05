@@ -17,9 +17,8 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
     /// The root <c>test</c> runner for the TestApp.
     /// </summary>
     [CommandDescriptor("test", "Test App", "Test application description.", Commands.CommandType.Root, Commands.CommandFlags.None)]
-    [CommandRunner(typeof(TestRunner))]
     [CommandChecker(typeof(CommandChecker))]
-    public class TestRunner : CommandRunner<CommandRunnerResult>, IDeclarativeTarget
+    public class TestRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         private readonly ITerminalConsole terminalConsole;
         private readonly ILogger<TestRunner> logger;

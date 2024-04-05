@@ -8,13 +8,13 @@
 namespace OneImlx.Terminal.Commands.Declarative
 {
     /// <summary>
-    /// Specifies a target that provides declarative command and option descriptors.
+    /// Specifies a runner that provides declarative command and option descriptors.
     /// </summary>
     /// <remarks>
-    /// The DI engine uses reflection to identify all the declarative targets and populate the command and
+    /// The DI engine uses reflection to identify all the declarative runners and populate the command and
     /// option descriptors.
     /// </remarks>
-    public interface IDeclarativeTarget
+    public interface IDeclarativeRunner
     {
     }
 }

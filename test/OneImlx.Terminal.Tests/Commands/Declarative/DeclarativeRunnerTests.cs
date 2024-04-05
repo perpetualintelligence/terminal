@@ -23,9 +23,9 @@ using Xunit;
 
 namespace OneImlx.Terminal.Commands.Declarative
 {
-    public class DeclarativeTargetTests : IAsyncDisposable
+    public class DeclarativeRunnerTests : IAsyncDisposable
     {
-        public DeclarativeTargetTests()
+        public DeclarativeRunnerTests()
         {
             var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
@@ -35,14 +35,14 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void No_CommandOwner_Throws()
         {
-            Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandOwner>();
+            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandOwnerRunner>();
             act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command owner.");
         }
 
         [Fact]
         public void Build_Should_Read_OptionValidation_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -76,7 +76,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_ArgumentValidation_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -110,7 +110,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_NoValueDescriptor_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner5>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -123,7 +123,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_NoCommandTags_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget5>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner5>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -135,7 +135,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_CommandTags_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner4>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -147,7 +147,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Build_Should_Read_NoValidation_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget4>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner4>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -182,7 +182,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Build_ShouldRead_Arguments_And_Options_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -263,9 +263,9 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Builder_ShouldAdd_Descriptors_To_ServiceCollection()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget3>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner2>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner3>();
 
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
@@ -284,7 +284,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Builder_ShouldRead_CustomCommandProps_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -297,7 +297,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Builder_Should_Read_NoCustomCommandProps_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner2>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -308,7 +308,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Builder_ShouldRead_NoTags_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget2>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner2>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -319,7 +319,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void Builder_ShouldRead_Tags_Correctly()
         {
-            terminalBuilder.AddDeclarativeTarget<MockDeclarativeTarget1>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
@@ -330,22 +330,15 @@ namespace OneImlx.Terminal.Commands.Declarative
         [Fact]
         public void TargetMustDefine_CommandChecker()
         {
-            Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandChecker>();
+            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandCheckerRunner>();
             act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command checker.");
         }
 
         [Fact]
         public void TargetMustDefine_CommandDescriptor()
         {
-            Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandDescriptor>();
+            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandDescriptorRunner>();
             act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command descriptor.");
-        }
-
-        [Fact]
-        public void TargetMustDefine_CommandRunner()
-        {
-            Action act = () => terminalBuilder.AddDeclarativeTarget<MockDeclarativeTargetNoCommandRunner>();
-            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command runner.");
         }
 
         [Fact]
@@ -378,7 +371,7 @@ namespace OneImlx.Terminal.Commands.Declarative
             ModuleBuilder mb = ab.DefineDynamicModule(aName.Name!);
 
             // Dynamic type with IDeclarativeTarget
-            var typeBuilder = mb.DefineType("TestMockNoTarget", TypeAttributes.Public, parent: null, interfaces: new Type[] { typeof(IDeclarativeTarget) });
+            var typeBuilder = mb.DefineType("TestMockNoTarget", TypeAttributes.Public, parent: null, interfaces: new Type[] { typeof(IDeclarativeRunner) });
             Type mockType = typeBuilder.CreateType();
 
             // This means that we tried adding the target as it implements IDeclarativeTarget
