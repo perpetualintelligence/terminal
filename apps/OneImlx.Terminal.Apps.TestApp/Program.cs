@@ -76,6 +76,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             collection.AddHttpClient("demo-http");
 
             // Specific your demo or commercial license file.
+            // Note: Replace with your license file.
             ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
                 options =>
                 {

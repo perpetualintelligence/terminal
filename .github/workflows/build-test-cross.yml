@@ -40,17 +40,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       
-    # Restore dependencies
-    - name: Restore
-      run: dotnet restore
-      
     # Build
-    - name: Build
-      run: dotnet build --no-restore
+    - name: Restore & Build
+      run: dotnet build "OneImlx.Terminal.Solution.sln"
       
     # Test
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test "OneImlx.Terminal.Solution.sln" --no-build --verbosity normal
       
   macos:   
     runs-on: macos-latest
@@ -81,17 +77,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       
-    # Restore dependencies
-    - name: Restore
-      run: dotnet restore
-      
     # Build
-    - name: Build
-      run: dotnet build --no-restore
+    - name: Restore & Build
+      run: dotnet build "OneImlx.Terminal.Solution.sln"
       
     # Test
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test "OneImlx.Terminal.Solution.sln" --no-build --verbosity normal
       
   windows:   
     runs-on: windows-latest
@@ -122,14 +114,10 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       
-    # Restore dependencies
-    - name: Restore
-      run: dotnet restore
-      
     # Build
-    - name: Build
-      run: dotnet build --no-restore
+    - name: Restore & Build
+      run: dotnet build "OneImlx.Terminal.Solution.sln"
       
     # Test
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test "OneImlx.Terminal.Solution.sln" --no-build --verbosity normal

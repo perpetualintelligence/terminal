@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Routers;
@@ -51,7 +50,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             ILicenseChecker licenseChecker,
             TerminalOptions options,
             ITerminalHelpProvider terminalHelpProvider,
-            ILogger<CommandHandler> logger): this (commandRuntime, licenseChecker, options, terminalHelpProvider, terminalEventHandler:null, logger)
+            ILogger<CommandHandler> logger) : this(commandRuntime, licenseChecker, options, terminalHelpProvider, terminalEventHandler: null, logger)
         {
         }
 
