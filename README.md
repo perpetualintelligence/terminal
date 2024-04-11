@@ -10,7 +10,12 @@
 
 `OneImlx.Terminal` is the cross-platform adaptable framework designed for crafting modern CLI and terminal applications. We cut through the terminal infrastructure complexity, letting you concentrate on building enterprise grade terminal applications with Unicode support, and extensive command hierarchies.
 
-Quickly dive in with our [code samples](https://github.com/perpetualintelligence/docs/tree/main/samples/templates/terminal).
+Quickly dive in with our [test app](https://github.com/perpetualintelligence/terminal/tree/main/apps/OneImlx.Terminal.Apps.TestApp).
+
+## Packages
+![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal?label=OneImlx.Terminal)
+![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal.Authentication?label=OneImlx.Terminal.Authentication)
+
 
 ## **Key Features**:
 - Utilize microservices architecture, Dependency Injection (DI), and options pattern to design and configure your terminal apps.
@@ -23,10 +28,6 @@ Quickly dive in with our [code samples](https://github.com/perpetualintelligence
 - Quickly onboard, evaluate, and test with our [demo license](https://docs.perpetualintelligence.com/articles/pi-demo/intro.html) and ready samples on GitHub, no signup required.
 
 > ***Transform any .NET ecosystem feature into a modern terminal app with ease.***
-
-## Packages
-![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal?label=OneImlx.Terminal)
-![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal.Authentication?label=OneImlx.Terminal.Authentication)
 
 ## License and Pricing
 Explore our licensing, redistribution, and pricing policies:
