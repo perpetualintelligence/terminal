@@ -173,7 +173,7 @@ namespace OneImlx.Terminal.Extensions
             startContext = new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token);
             var context = new TerminalTcpRouterContext(serverIpEndPoint, startContext);
             Func<Task> act = async () => await host.RunTerminalRouterAsync<TerminalTcpRouter, TerminalTcpRouterContext>(context);
-            await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Custom");
+            await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for TCP routing. start_mode=Custom");
         }
 
         [Fact]

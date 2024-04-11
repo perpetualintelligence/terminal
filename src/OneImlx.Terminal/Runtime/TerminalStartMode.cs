@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Runtime
         Grpc = 3,
 
         /// <summary>
-        /// The terminal starts as a UDP server that listens to an incoming message.  NOT YET SUPPORTED.
+        /// The terminal starts as a UDP server that listens to an incoming message.
         /// </summary>
         Udp = 4,
 

@@ -26,6 +26,8 @@ namespace OneImlx.Terminal.Runtime
     /// The server can be gracefully stopped by canceling the provided cancellation token in the context.
     /// </para>
     /// </remarks>
+    /// <seealso cref="TerminalUdpRouter"/>
+    /// <seealso cref="TerminalConsoleRouter"/>
     public class TerminalTcpRouter : ITerminalRouter<TerminalTcpRouterContext>
     {
         private readonly ICommandRouter commandRouter;
@@ -83,9 +85,10 @@ namespace OneImlx.Terminal.Runtime
             // Ensure we have supported start context
             if (context.StartContext.StartMode != TerminalStartMode.Tcp)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartMode);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for TCP routing. start_mode={0}", context.StartContext.StartMode);
             }
 
+            // Ensure we have a valid IP endpoint
             if (context.IPEndPoint == null)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The network IP endpoint is missing in the TCP server routing request.");
@@ -121,7 +124,7 @@ namespace OneImlx.Terminal.Runtime
                 }
                 else
                 {
-                    logger.LogDebug("Client connections are complete.");
+                    logger.LogDebug("Client connections completed.");
                 }
             }
             catch (Exception ex)
@@ -336,7 +339,7 @@ namespace OneImlx.Terminal.Runtime
                         values = new ConcurrentQueue<string>();
                         commandCollection.TryAdd(taskIdx, values);
                     }
-                    values.Enqueue(raw);
+                    values?.Enqueue(raw);
                 }
             }
         }

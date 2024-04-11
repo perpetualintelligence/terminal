@@ -10,23 +10,23 @@ using System.Net;
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The <see cref="TerminalTcpRouter"/> connection context.
+    /// The <see cref="TerminalUdpRouter"/> connection context.
     /// </summary>
-    public sealed class TerminalTcpRouterContext : TerminalRouterContext
+    public sealed class TerminalUdpRouterContext : TerminalRouterContext
     {
-        /// <summary>
-        /// The network IP endpoint terminal will connect to.
-        /// </summary>
-        public IPEndPoint IPEndPoint { get; private set; }
-
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint server will connect.</param>
-        /// <param name="terminalStartContext">The terminal start context.</param>
-        public TerminalTcpRouterContext(IPEndPoint iPEndPoint, TerminalStartContext terminalStartContext) : base(terminalStartContext)
+        /// <param name="startContext">The terminal start context.</param>
+        public TerminalUdpRouterContext(IPEndPoint iPEndPoint, TerminalStartContext startContext) : base(startContext)
         {
             IPEndPoint = iPEndPoint;
         }
+
+        /// <summary>
+        /// The network IP endpoint terminal will connect.
+        /// </summary>
+        public IPEndPoint IPEndPoint { get; private set; }
     }
 }

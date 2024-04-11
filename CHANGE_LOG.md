@@ -1,3 +1,7 @@
+# 5.10.1-rc*
+> Feature Change
+- Support UDP router `TerminalUdpRouter` for terminal routing
+
 # 5.9.1-rc*
 > Breaking Change
 - Support multi-targets net481, net8.0, netstandard2.0 and netstandard2.1

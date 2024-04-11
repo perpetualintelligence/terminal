@@ -4,13 +4,6 @@
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,7 +12,7 @@ namespace OneImlx.Terminal.Mocks
 {
     public class MockListLoggerFactory : ILoggerFactory
     {
-        public List<string> AllLogMessages { get; } = new List<string>();
+        public List<string> AllLogMessages { get; } = [];
 
         private readonly ConcurrentDictionary<string, MockListLogger> _loggers = new ConcurrentDictionary<string, MockListLogger>();
 
