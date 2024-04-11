@@ -109,10 +109,21 @@ namespace OneImlx.Terminal.Runtime
                         var receivedResult = receiveTask.Result; // Safe because we know the task has completed
                         string receivedText = textHandler.Encoding.GetString(receivedResult.Buffer);
 
-                        // Processing is a background task so it may start the processing before the debug log prints so in this
-                        // case we first log and then enqueue the command.
-                        logger.LogDebug("UDP data packet added to command queue. remote={0} data={1}", receivedResult.RemoteEndPoint, receivedText);
-                        commandQueue.Enqueue((receivedText, receivedResult.RemoteEndPoint));
+                        // This may be multiple commands
+                        string[] splitCmdString = receivedText.Split(new[] { options.Router.MessageDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+                        for (int idx = 0; idx < splitCmdString.Length; ++idx)
+                        {
+                            string raw = splitCmdString[idx];
+                            if (raw.Length > options.Router.MaxMessageLength)
+                            {
+                                throw new TerminalException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0}", options.Router.MaxMessageLength);
+                            }
+
+                            // Processing is a background task so it may start the processing before the debug log prints so in this
+                            // case we first log and then enqueue the command.
+                            logger.LogDebug("UDP data packet added to command queue. remote={0} data={1}", receivedResult.RemoteEndPoint, splitCmdString[idx]);
+                            commandQueue.Enqueue((splitCmdString[idx], receivedResult.RemoteEndPoint));
+                        }
                     }
                     else
                     {
