@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Extensions
     public static class ITerminalBuilderExtensions
     {
         /// <summary>
-        /// Adds the <see cref="IDataTypeMapper{TValur}"/> and <see cref="IOptionChecker"/> to the service collection.
+        /// Adds the <see cref="IDataTypeMapper{TValue}"/> and <see cref="IOptionChecker"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TMapper">The option mapper type.</typeparam>
@@ -50,7 +50,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="IDataTypeMapper{TValur}"/> and <see cref="IArgumentChecker"/> to the service collection.
+        /// Adds the <see cref="IDataTypeMapper{TValue}"/> and <see cref="IArgumentChecker"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TMapper">The argument mapper type.</typeparam>
@@ -123,7 +123,7 @@ namespace OneImlx.Terminal.Extensions
         /// <remarks>
         /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all the
         /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner(ITerminalBuilder, Type)"/>.
+        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
         /// </remarks>
         public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Type assemblyType)
         {
@@ -139,7 +139,7 @@ namespace OneImlx.Terminal.Extensions
         /// <remarks>
         /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Assembly)"/> reads the target assembly and inspects all the
         /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner(ITerminalBuilder, Type)"/>.
+        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
         /// </remarks>
         public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Assembly assembly)
         {
@@ -148,7 +148,7 @@ namespace OneImlx.Terminal.Extensions
 
             foreach (Type type in declarativeTypes)
             {
-                AddDeclarativeRunner(builder, type);
+                AddDeclarativeRunnerInner(builder, type);
             }
 
             return builder;
@@ -163,7 +163,7 @@ namespace OneImlx.Terminal.Extensions
         /// <remarks>
         /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all the
         /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner(ITerminalBuilder, Type)"/>.
+        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
         /// </remarks>
         public static ITerminalBuilder AddDeclarativeAssembly<TType>(this ITerminalBuilder builder)
         {
@@ -180,7 +180,7 @@ namespace OneImlx.Terminal.Extensions
         /// </returns>
         public static ITerminalBuilder AddDeclarativeRunner<TDeclarativeRunner>(this ITerminalBuilder builder) where TDeclarativeRunner : IDeclarativeRunner
         {
-            return AddDeclarativeRunner(builder, typeof(TDeclarativeRunner));
+            return AddDeclarativeRunnerInner(builder, typeof(TDeclarativeRunner));
         }
 
         /// <summary>
@@ -360,7 +360,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <exclude />
-        private static ITerminalBuilder AddDeclarativeRunner(this ITerminalBuilder builder, Type declarativeRunner)
+        private static ITerminalBuilder AddDeclarativeRunnerInner(this ITerminalBuilder builder, Type declarativeRunner)
         {
             // Command descriptor
             // The declarative runner is the command runner.

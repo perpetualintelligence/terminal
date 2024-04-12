@@ -49,6 +49,9 @@ namespace OneImlx.Terminal.Apps.TestApp
         /// </summary>
         protected override void OnStarted()
         {
+            // Set title
+            Console.Title = "Test Application";
+
             // These are async calls, but we are blocking here for as the  of the test.
             TerminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }

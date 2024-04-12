@@ -10,7 +10,7 @@
 
 `OneImlx.Terminal` is the cross-platform adaptable framework designed for crafting modern CLI and terminal applications. We cut through the terminal infrastructure complexity, letting you concentrate on building enterprise grade terminal applications with Unicode support, and extensive command hierarchies.
 
-Quickly dive in with our [test app](https://github.com/perpetualintelligence/terminal/tree/main/apps/OneImlx.Terminal.Apps.TestApp).
+Quickly dive in with our [test apps](https://github.com/perpetualintelligence/terminal/tree/main/apps).
 
 ## Packages
 ![NuGet](https://img.shields.io/nuget/v/OneImlx.Terminal?label=OneImlx.Terminal)

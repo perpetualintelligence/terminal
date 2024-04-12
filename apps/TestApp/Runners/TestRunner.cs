@@ -17,6 +17,7 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
     /// The root <c>test</c> runner for the TestApp.
     /// </summary>
     [CommandDescriptor("test", "Test App", "Test application description.", Commands.CommandType.Root, Commands.CommandFlags.None)]
+    [OptionDescriptor("version", nameof(String), "Test version description", Commands.OptionFlags.None, "v")]
     [CommandChecker(typeof(CommandChecker))]
     public class TestRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
@@ -32,6 +33,13 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             await terminalConsole.WriteLineAsync("Test root command called.");
+
+            // Get the version option value
+            if (context.Command.TryGetOptionValue<string>("version", out string? version))
+            {
+                await terminalConsole.WriteLineAsync("Version option passed.");
+            }
+
             return new CommandRunnerResult();
         }
     }

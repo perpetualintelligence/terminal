@@ -21,9 +21,9 @@ namespace OneImlx.Terminal.Apps.TestApp
     {
         private static async Task Main(string[] args)
         {
-            // Allows cancellation for the terminal.
-            CancellationTokenSource terminalCancellationTokenSource = new();
-            CancellationTokenSource cancellationTokenSource = new();
+            // Allows cancellation for the entire terminal and individual commands.
+            CancellationTokenSource terminalTokenSource = new();
+            CancellationTokenSource commandTokenSource = new();
 
             // Setup and start the host builder.
             // Note: The host should only start, the terminal framework will run the router separately
@@ -33,7 +33,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             IHost host = hostBuilder.Start();
 
             // Setup the terminal context and run the router indefinitely.
-            TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalCancellationTokenSource.Token, cancellationTokenSource.Token);
+            TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
             TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
         }
@@ -47,8 +47,6 @@ namespace OneImlx.Terminal.Apps.TestApp
             var loggerConfig = new LoggerConfiguration();
             loggerConfig.MinimumLevel.Error();
             loggerConfig.WriteTo.Console();
-
-            // Add the logging based on your preference e.g. Serilog
             Log.Logger = loggerConfig.CreateLogger();
             builder.AddSerilog(Log.Logger);
         }
@@ -63,7 +61,7 @@ namespace OneImlx.Terminal.Apps.TestApp
 
             // Configure OneImlx.Terminal services
             ConfigureOneImlxTerminal(services);
-            
+
             // Configure other services
         }
 
@@ -72,11 +70,12 @@ namespace OneImlx.Terminal.Apps.TestApp
             // Configure the hosted service
             collection.AddHostedService<TestAppHostedService>();
 
-            // We are using online license so configure Http
+            // We are using online license so configure HTTP
             collection.AddHttpClient("demo-http");
 
-            // Specific your demo or commercial license file.
-            // Note: Replace with your license file.
+            // NOTE:
+            // Specify your demo or commercial license file.
+            // Specify your application id.
             ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
                 options =>
                 {
@@ -86,7 +85,7 @@ namespace OneImlx.Terminal.Apps.TestApp
                 }
             );
 
-            // Add commands
+            // Add commands using declarative syntax.
             terminalBuilder.AddDeclarativeAssembly<TestRunner>();
         }
 
