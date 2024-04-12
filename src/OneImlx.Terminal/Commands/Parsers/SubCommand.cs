@@ -7,7 +7,7 @@
 
 using System;
 
-namespace OneImlx.Terminal.Commands
+namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
     /// Represents a notional sub-command within a <see cref="Group"/>.

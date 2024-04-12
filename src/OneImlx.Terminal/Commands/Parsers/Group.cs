@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace OneImlx.Terminal.Commands
+namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
     /// Represents a notional command group  within a <see cref="Root"/>.

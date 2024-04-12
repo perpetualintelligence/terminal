@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace OneImlx.Terminal.Commands
+namespace OneImlx.Terminal.Commands.Parsers
 {
     //example of a unit test for the Root class
     public class RootTests

@@ -6,6 +6,7 @@
 */
 
 using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Runtime;
 using System;
 
