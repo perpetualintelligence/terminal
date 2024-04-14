@@ -286,13 +286,18 @@ namespace OneImlx.Terminal.Hosting
             .ConfigureServices(services =>
             {
                 services.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler())
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
+                   .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
+                        .Checker<MockCommandChecker>()
+                        .Add()
+                   .DefineCommand<MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
                        .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
                        .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
+                    .Checker<MockCommandChecker>()
                    .Add()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None).Add();
+                   .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
+                   .Checker<MockCommandChecker>()
+                   .Add();
 
                 // Replace with Mock DIs
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
@@ -327,16 +332,19 @@ namespace OneImlx.Terminal.Hosting
             .ConfigureServices(services =>
             {
                 services.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler())
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
+                   .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
                         .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
+                    .Checker<MockCommandChecker>()
                     .Add()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
+                   .DefineCommand<MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
                        .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
                        .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
+                    .Checker<MockCommandChecker>()
                    .Add()
-                   .DefineCommand<MockCommandChecker, MockCommandRunner>("cmd3", "cmd3", "test1", CommandType.SubCommand, CommandFlags.None)
+                   .DefineCommand<MockCommandRunner>("cmd3", "cmd3", "test1", CommandType.SubCommand, CommandFlags.None)
                         .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
+                    .Checker<MockCommandChecker>()
                     .Add();
 
                 // Replace with Mock DIs

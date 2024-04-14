@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Hosting
         public void Nos_OptionDescriptor_Throws()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             OptionBuilder optionBuilder = new(commandBuilder);
             Action act = () => optionBuilder.Add();
@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Hosting
         public void Build_Adds_OptionDescriptor_To_CommandDescriptor()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None).Add()
                           .DefineOption("opt2", nameof(String), "test opt desc2", OptionFlags.None).Add()
@@ -59,7 +59,7 @@ namespace OneImlx.Terminal.Hosting
         public void Build_Returns_Same_CommandBuilder()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             IOptionBuilder optionBuilder = commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None);
             ICommandBuilder cmdBuilderFromArgBuilder = optionBuilder.Add();

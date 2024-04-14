@@ -22,12 +22,12 @@ using System;
 namespace OneImlx.Terminal.Extensions
 {
     /// <summary>
-    /// Provides extension methods to register terminal services with an <see cref="IServiceCollection"/>.
+    /// Provides extension methods to register <c>OneImlx.Terminal</c> services with an <see cref="IServiceCollection"/>.
     /// </summary>
     public static class IServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
+        /// Adds the <c>OneImlx.Terminal</c> services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
@@ -59,7 +59,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
+        /// Adds the <c>OneImlx.Terminal</c> services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
@@ -91,7 +91,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the terminal services to the specified <see cref="IServiceCollection"/>.
+        /// Adds the <c>OneImlx.Terminal</c> services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
@@ -140,7 +140,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the default terminal services to the specified <see cref="IServiceCollection"/>.
+        /// Adds the default <c>OneImlx.Terminal</c> services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
@@ -179,7 +179,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the default terminal services for console applications to the specified <see cref="IServiceCollection"/>.
+        /// Adds the default <c>OneImlx.Terminal</c> services for console applications to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>

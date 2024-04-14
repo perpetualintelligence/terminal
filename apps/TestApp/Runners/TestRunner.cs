@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
             await terminalConsole.WriteLineAsync("Test root command called.");
 
             // Get the version option value
-            if (context.Command.TryGetOptionValue<string>("version", out string? version))
+            if (context.Command.TryGetOptionValue("version", out string? version))
             {
                 await terminalConsole.WriteLineAsync("Version option passed.");
             }

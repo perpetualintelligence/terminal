@@ -341,7 +341,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Starts a new <see cref="ICommandBuilder"/> definition. Applications must call the
+        /// Starts a new <see cref="ICommandBuilder"/> definition with the default <see cref="CommandChecker"/>. Applications must call the
         /// <see cref="ICommandBuilder.Add"/> method to add the <see cref="CommandDescriptor"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -351,12 +351,11 @@ namespace OneImlx.Terminal.Extensions
         /// <param name="commandType">The command type.</param>
         /// <param name="commandFlags">The command flags.</param>
         /// <typeparam name="TRunner">The command runner type.</typeparam>
-        /// <typeparam name="TChecker">The command checker type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
-        public static ICommandBuilder DefineCommand<TChecker, TRunner>(this ITerminalBuilder builder, string id, string name, string description, CommandType commandType, CommandFlags commandFlags) where TChecker : ICommandChecker where TRunner : ICommandRunner<CommandRunnerResult>
+        public static ICommandBuilder DefineCommand<TRunner>(this ITerminalBuilder builder, string id, string name, string description, CommandType commandType, CommandFlags commandFlags) where TRunner : ICommandRunner<CommandRunnerResult>
         {
-            return DefineCommand(builder, id, name, description, typeof(TChecker), typeof(TRunner), commandType, commandFlags);
+            return DefineCommand(builder, id, name, description, typeof(CommandChecker), typeof(TRunner), commandType, commandFlags);
         }
 
         /// <exclude />

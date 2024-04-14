@@ -31,7 +31,8 @@ namespace OneImlx.Terminal.Extensions
 
             serviceDescriptors.Should().NotBeNull();
             terminalBuilder = serviceDescriptors!.CreateTerminalBuilder(new TerminalAsciiTextHandler());
-            commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "description1", CommandType.SubCommand, CommandFlags.None);
+            commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "description1", CommandType.SubCommand, CommandFlags.None)
+                                            .Checker<MockCommandChecker>();
         }
 
         [Fact]

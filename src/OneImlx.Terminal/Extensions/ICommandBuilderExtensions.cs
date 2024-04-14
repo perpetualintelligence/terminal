@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Hosting;
 using System;
 using System.Linq;
@@ -99,6 +100,28 @@ namespace OneImlx.Terminal.Extensions
 
             builder.Services.AddSingleton(tagIds);
             return builder;
+        }
+
+        /// <summary>
+        /// Updates the checker for the registered command descriptor.
+        /// </summary>
+        /// <param name="builder">The <see cref="ICommandBuilder"/>.</param>
+        /// <typeparam name="TChecker">The checker type.</typeparam>
+        /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
+        public static ICommandBuilder Checker<TChecker>(this ICommandBuilder builder) where TChecker : ICommandChecker
+        {
+            var service = builder.Services.FirstOrDefault(e => e.ServiceType == typeof(CommandDescriptor));
+            if (service != null)
+            {
+                CommandDescriptor? commandDescriptor = (CommandDescriptor?)service.ImplementationInstance;
+                if (commandDescriptor != null)
+                {
+                    commandDescriptor.Checker = typeof(TChecker);
+                    return builder;
+                }
+            }
+
+            throw new InvalidOperationException("Command descriptor is not yet registered.");
         }
     }
 }

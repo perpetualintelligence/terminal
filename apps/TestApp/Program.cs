@@ -8,6 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Apps.TestApp.Runners;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
@@ -81,12 +82,57 @@ namespace OneImlx.Terminal.Apps.TestApp
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
                     options.Licensing.LicenseFile = "C:\\this\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
+                    options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+                    options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                     options.Router.Caret = "> ";
                 }
             );
 
-            // Add commands using declarative syntax.
-            terminalBuilder.AddDeclarativeAssembly<TestRunner>();
+            // You can use declarative or explicit syntax. Here we are using declarative syntax.
+            {
+                // Add commands using declarative syntax.
+                terminalBuilder.AddDeclarativeAssembly<TestRunner>();
+
+                // OR
+
+                // Add commands using explicit syntax.
+                //RegisterCommands(terminalBuilder);
+            }
+        }
+
+        private static void RegisterCommands(ITerminalBuilder terminalBuilder)
+        {
+            // Root Command
+            terminalBuilder.DefineCommand<TestRunner>("test", "Test command", "Test Description", Commands.CommandType.Root, Commands.CommandFlags.None)
+                                .DefineArgument(1, "arg1", nameof(String), "The first argument", Commands.ArgumentFlags.None)
+                                    .Add()
+                                .DefineArgument(2, "arg2", nameof(Int32), "The second argument", Commands.ArgumentFlags.None)
+                                    .Add()
+                                .DefineOption("version", nameof(String), "The version option", Commands.OptionFlags.None, "v")
+                                    .Add()
+                           .Add();
+
+            // Grp1 Command
+            terminalBuilder.DefineCommand<Grp1Runner>("grp1", "Test Group1", "Test Group1 Description", Commands.CommandType.Group, Commands.CommandFlags.None)
+                           .Owners(new Commands.OwnerIdCollection("test"))
+                           .Add();
+
+            // Cmd1 Command
+            terminalBuilder.DefineCommand<Cmd1Runner>("cmd1", "Test Command1", "Test Command2 Description", Commands.CommandType.SubCommand, Commands.CommandFlags.None)
+                           .Owners(new Commands.OwnerIdCollection("grp1"))
+                           .Add();
+
+            // Grp2 Command
+            terminalBuilder.DefineCommand<Grp2Runner>("grp2", "Test Group2", "Test Group1 Description", Commands.CommandType.Group, Commands.CommandFlags.None)
+                           .Owners(new Commands.OwnerIdCollection("grp1"))
+                           .Add();
+
+            // Cmd2 Command
+            terminalBuilder.DefineCommand<Cmd2Runner>("cmd2", "Test Command2", "Test Command2 Description", Commands.CommandType.SubCommand, Commands.CommandFlags.None)
+                           .Owners(new Commands.OwnerIdCollection("grp2"))
+                           .Add();
+
+
         }
 
         /// <summary>

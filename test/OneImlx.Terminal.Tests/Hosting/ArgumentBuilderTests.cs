@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Hosting
         public void No_Argument_Descriptor_Throws()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             ArgumentBuilder argumentBuilder = new(commandBuilder);
             Action act = () => argumentBuilder.Add();
@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Hosting
         public void Build_Adds_ArgumentDescriptor_To_CommandDescriptor()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             commandBuilder.DefineArgument(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None).Add()
                           .DefineArgument(2, "arg2", nameof(String), "test arg desc2", ArgumentFlags.None).Add()
@@ -59,7 +59,7 @@ namespace OneImlx.Terminal.Hosting
         public void Build_Returns_Same_CommandBuilder()
         {
             TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandChecker, MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None);
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None);
             ICommandBuilder cmdBuilderFromArgBuilder = argumentBuilder.Add();
