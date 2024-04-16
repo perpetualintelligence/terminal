@@ -127,7 +127,7 @@ namespace OneImlx.Terminal.Licensing
 
             // Validate the license key
             JsonWebTokenHandler jwtHandler = new();
-            TokenValidationResult result = await jwtHandler.ValidateTokenAsync(checkModel.Key, validationParameters);
+            TokenValidationResult result = await jwtHandler.ValidateTokenAsync(checkModel.LicenseKey, validationParameters);
             if (!result.IsValid)
             {
                 throw new TerminalException(TerminalErrors.UnauthorizedAccess, "License key validation failed. info={0}", result.Exception.Message);
@@ -263,7 +263,7 @@ namespace OneImlx.Terminal.Licensing
                 Application = terminalOptions.Id,
                 AuthorizedParty = Shared.Constants.TerminalUrn,
                 TenantId = licenseFile.TenantId,
-                Key = licenseFile.Key,
+                LicenseKey = licenseFile.LicenseKey,
                 Id = licenseFile.Id,
                 Mode = TerminalIdentifiers.OnlineLicenseMode
             };
@@ -349,7 +349,7 @@ namespace OneImlx.Terminal.Licensing
                     Application = terminalOptions.Id,
                     AuthorizedParty = Shared.Constants.TerminalUrn,
                     TenantId = licenseFile.TenantId,
-                    Key = licenseFile.Key,
+                    LicenseKey = licenseFile.LicenseKey,
                     Id = licenseFile.Id,
                     ValidationKey = licenseFile.ValidationKey,
                     Mode = TerminalIdentifiers.OfflineLicenseMode
