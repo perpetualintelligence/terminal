@@ -233,7 +233,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
             result.License.Claims.TenantName.Should().Be("pi-test");
             //result.License.Claims.NotBefore.Should().NotBeNull();
-            result.License.Claims.Id.Should().Be("48ee7ff0-9874-4098-b4fc-89717f7a9596"); // Test License Id
+            result.License.Claims.Id.Should().Be("bb8969c6-b1a9-42ef-986b-a56db4b155f1"); // Test License Id
             result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // Test subscription
             result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 

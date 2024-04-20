@@ -13,7 +13,6 @@ using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
@@ -99,14 +98,8 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // https://stackoverflow.com/questions/58102904/how-to-verify-a-jwt-token-signed-with-x509-with-only-a-public-key-in-aspnetcore
-            X509Certificate2 x509Certificate = new(Convert.FromBase64String(checkModel.ValidationKey));
+            _ = LicenseX509Service.FromJwtValidationKey(checkModel.ValidationKey, out X509Certificate2 x509Certificate);
             X509SecurityKey validationKey = new(x509Certificate);
-
-            // Validation key cannot be private
-            if (validationKey.PrivateKeyStatus == PrivateKeyStatus.Exists)
-            {
-                throw new TerminalException(TerminalErrors.UnauthorizedAccess, "License validation certificate cannot have private key.");
-            }
 
             // Init token validation params
             TokenValidationParameters validationParameters = new()
@@ -246,7 +239,7 @@ namespace OneImlx.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFile licenseFile)
         {
-            // Online license is obsolete            
+            // Online license is obsolete
             logger.LogDebug("Extract online license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
             // On_premise deployment is not supported for online license
@@ -303,7 +296,7 @@ namespace OneImlx.Terminal.Licensing
                 }
 
                 // Online license is only valid for demo license
-                if(plan != TerminalLicensePlans.Demo)
+                if (plan != TerminalLicensePlans.Demo)
                 {
                     logger.LogWarning("Online license check is obsolete and will be removed in future release. Please use offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
                 }
