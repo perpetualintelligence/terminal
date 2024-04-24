@@ -174,7 +174,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.TenantName.Should().Be("pi-test");
             //result.License.Claims.NotBefore.Date.Should().Be(DateTimeOffset.UtcNow.ToLocalTime().Date);
             result.License.Claims.Subject.Should().Be("3dbb973a-5296-4cec-abd8-6a6a1683086b"); // Graph user id
-            result.License.Claims.Id.Should().Be("6cd68a17-83af-4cf4-b613-62b5ce15b6de"); // Id
+            result.License.Claims.Id.Should().Be("cac4b942-e362-490b-a7b1-c4f7f0daf08f"); // Id
             result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 
             // Verify limits

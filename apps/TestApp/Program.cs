@@ -33,7 +33,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             hostBuilder.ConfigureLogging(ConfigureLoggingDelegate);
             IHost host = hostBuilder.Start();
 
-            // Setup the terminal context and run the router indefinitely.
+            // Setup the terminal context and run the router indefinitely as a console.
             TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
             TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
