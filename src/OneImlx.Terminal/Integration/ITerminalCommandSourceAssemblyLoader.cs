@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Integration
 {
     /// <summary>
-    /// An abstraction to load assemblies within your terminal.
+    /// An abstraction to load assemblies that are command source within your terminal.
     /// </summary>
     public interface ITerminalCommandSourceAssemblyLoader<TContext>
     {
