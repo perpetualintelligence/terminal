@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
@@ -26,10 +26,12 @@ namespace OneImlx.Terminal.Extensions
         public static async Task RunTerminalRouterAsync<TRouting, TContext>(this IHost host, TContext context) where TRouting : class, ITerminalRouter<TContext> where TContext : TerminalRouterContext
         {
             ILogger<ITerminalRouter<TContext>> logger = host.Services.GetRequiredService<ILogger<ITerminalRouter<TContext>>>();
-
             logger.LogDebug("Start terminal router. type={0} context={1}", typeof(TRouting).Name, typeof(TContext).Name);
+
+            // Now run a blocking loop till cancelled.
             ITerminalRouter<TContext> routingService = host.Services.GetRequiredService<ITerminalRouter<TContext>>();
             await routingService.RunAsync(context);
+
             logger.LogDebug("End terminal router.");
         }
     }

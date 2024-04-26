@@ -1,11 +1,4 @@
-﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
@@ -16,15 +9,15 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
     /// <summary>
     /// The group <c>grp1</c> runner for the TestApp.
     /// </summary>
-    [CommandOwners("test")]
-    [CommandDescriptor("grp1", "Group 1", "Group1 description.", Commands.CommandType.Group, Commands.CommandFlags.None)]
+    [CommandOwners("grp1")]
+    [CommandDescriptor("grp2", "Group 2", "Group2 description.", Commands.CommandType.Group, Commands.CommandFlags.None)]
     [CommandChecker(typeof(CommandChecker))]
-    public class Grp1Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
+    public class Grp2Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         private readonly ITerminalConsole terminalConsole;
-        private readonly ILogger<Grp1Runner> logger;
+        private readonly ILogger<Grp2Runner> logger;
 
-        public Grp1Runner(ITerminalConsole terminalConsole, ILogger<Grp1Runner> logger)
+        public Grp2Runner(ITerminalConsole terminalConsole, ILogger<Grp2Runner> logger)
         {
             this.terminalConsole = terminalConsole;
             this.logger = logger;
@@ -32,7 +25,7 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
-            await terminalConsole.WriteLineAsync("Group1 command called.");
+            await terminalConsole.WriteLineAsync("Group2 command called.");
             return new CommandRunnerResult();
         }
     }

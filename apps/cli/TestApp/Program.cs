@@ -1,10 +1,4 @@
-﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,23 +14,29 @@ namespace OneImlx.Terminal.Apps.TestApp
 {
     internal class Program
     {
-        private static async Task Main(string[] args)
+        private static void Main(string[] args)
         {
             // Allows cancellation for the entire terminal and individual commands.
             CancellationTokenSource terminalTokenSource = new();
             CancellationTokenSource commandTokenSource = new();
 
-            // Setup and start the host builder.
-            // Note: The host should only start, the terminal framework will run the router separately
-            IHostBuilder hostBuilder = CreateHostBuilder(args);
-            hostBuilder.ConfigureServices(ConfigureServicesDelegate);
-            hostBuilder.ConfigureLogging(ConfigureLoggingDelegate);
-            IHost host = hostBuilder.Start();
-
             // Setup the terminal context and run the router indefinitely as a console.
             TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
             TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
-            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
+
+            // Start the host builder and run terminal router till cancelled.
+            Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(ConfigureAppConfigurationDelegate)
+                .ConfigureLogging(ConfigureLoggingDelegate)
+                .ConfigureServices(ConfigureServicesDelegate)
+                .RunTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
+        }
+
+        private static void ConfigureAppConfigurationDelegate(HostBuilderContext context, IConfigurationBuilder builder)
+        {
+            var configBuilder = new ConfigurationBuilder();
+            configBuilder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: false);
+            configBuilder.Build();
         }
 
         private static void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
@@ -131,19 +131,6 @@ namespace OneImlx.Terminal.Apps.TestApp
             terminalBuilder.DefineCommand<Cmd2Runner>("cmd2", "Test Command2", "Test Command2 Description", Commands.CommandType.SubCommand, Commands.CommandFlags.None)
                            .Owners(new Commands.OwnerIdCollection("grp2"))
                            .Add();
-
-
-        }
-
-        /// <summary>
-        /// https://learn.microsoft.com/en-us/dotnet/core/extensions/generic-host?tabs=appbuilder
-        /// </summary>
-        /// <param name="args"></param>
-        /// <param name="configureServices"></param>
-        /// <returns></returns>
-        private static IHostBuilder CreateHostBuilder(string[]? args)
-        {
-            return Host.CreateDefaultBuilder(args);
         }
     }
 }

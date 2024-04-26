@@ -6,6 +6,7 @@
 */
 
 using System.Net;
+using System.Net.Sockets;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -15,7 +16,7 @@ namespace OneImlx.Terminal.Runtime
     public sealed class TerminalTcpRouterContext : TerminalRouterContext
     {
         /// <summary>
-        /// The network IP endpoint terminal will connect to.
+        /// The IP endpoint for the <see cref="TcpListener"/>. The clients need to send the messages to this end point.
         /// </summary>
         public IPEndPoint IPEndPoint { get; private set; }
 

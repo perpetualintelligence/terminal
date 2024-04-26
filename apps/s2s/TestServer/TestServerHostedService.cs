@@ -1,23 +1,16 @@
-﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 
-namespace OneImlx.Terminal.Apps.TestApp
+namespace OneImlx.Terminal.Apps.TestServer
 {
     /// <summary>
     /// The <see cref="TerminalHostedService"/> for the test app.
     /// </summary>
-    public sealed class TestAppHostedService : TerminalHostedService
+    public sealed class TestServerHostedService : TerminalHostedService
     {
         /// <summary>
         /// Initializes a new instance.
@@ -26,7 +19,7 @@ namespace OneImlx.Terminal.Apps.TestApp
         /// <param name="options">The terminal configuration options.</param>
         /// <param name="terminalConsole">The terminal console.</param>
         /// <param name="logger">The logger.</param>
-        public TestAppHostedService(
+        public TestServerHostedService(
             IServiceProvider serviceProvider,
             TerminalOptions options,
             ITerminalConsole terminalConsole,
@@ -50,10 +43,10 @@ namespace OneImlx.Terminal.Apps.TestApp
         protected override void OnStarted()
         {
             // Set title
-            Console.Title = "Test Application";
+            Console.Title = "Test Server";
 
             // These are async calls, but we are blocking here for as the  of the test.
-            TerminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineAsync("Test server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -69,7 +62,7 @@ namespace OneImlx.Terminal.Apps.TestApp
         /// </summary>
         protected override void OnStopping()
         {
-            TerminalConsole.WriteLineAsync("Stopping application...").Wait();
+            TerminalConsole.WriteLineAsync("Stopping server...").Wait();
         }
 
         /// <summary>
@@ -78,13 +71,7 @@ namespace OneImlx.Terminal.Apps.TestApp
         /// <returns></returns>
         protected override async Task PrintHostApplicationHeaderAsync()
         {
-            await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
-            await TerminalConsole.WriteLineAsync("Copyright (c) Test App. All Rights Reserved.");
-            await TerminalConsole.WriteLineAsync("For license, terms, and data policies, go to:");
-            await TerminalConsole.WriteLineAsync("https://mytestapp.com");
-            await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
-
-            await TerminalConsole.WriteLineAsync("Starting application...");
+            await TerminalConsole.WriteLineAsync("Starting test server...");
         }
 
         /// <summary>
@@ -94,8 +81,8 @@ namespace OneImlx.Terminal.Apps.TestApp
         /// <returns></returns>
         protected override Task PrintHostApplicationLicensingAsync(License license)
         {
-            // Print custom licensing info or remove it completely.
-            return base.PrintHostApplicationLicensingAsync(license);
+            // Dont print anything
+            return Task.CompletedTask;
         }
     }
 }

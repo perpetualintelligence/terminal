@@ -1,20 +1,13 @@
-﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 
-namespace OneImlx.Terminal.Apps.TestApp.Runners
+namespace OneImlx.Terminal.Apps.TestServer.Runners
 {
     /// <summary>
-    /// The group <c>grp1</c> runner for the TestApp.
+    /// The group <c>grp1</c> runner for the TestServer.
     /// </summary>
     [CommandOwners("grp1")]
     [CommandDescriptor("grp2", "Group 2", "Group2 description.", Commands.CommandType.Group, Commands.CommandFlags.None)]

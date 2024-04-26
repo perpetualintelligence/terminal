@@ -140,7 +140,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the default <c>OneImlx.Terminal</c> services to the specified <see cref="IServiceCollection"/>.
+        /// Adds the default <c>OneImlx.Terminal</c> services to build custom terminal interfaces.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
@@ -179,7 +179,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the default <c>OneImlx.Terminal</c> services for console applications to the specified <see cref="IServiceCollection"/>.
+        /// Adds the default <c>OneImlx.Terminal</c> services for console based terminal applications.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
         /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
@@ -189,6 +189,9 @@ namespace OneImlx.Terminal.Extensions
         /// <param name="textHandler">The text handler.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
+        /// <remarks>
+        /// The console refers to an abstraction of the system console. The console can be a system console, a web console, or a custom console.
+        /// </remarks>
         public static ITerminalBuilder AddTerminalConsole<TStore, TText, THelp, TConsole>(this IServiceCollection services, TText textHandler, Action<TerminalOptions> setupAction)
             where TStore : class, ITerminalCommandStore
             where TText : class, ITerminalTextHandler

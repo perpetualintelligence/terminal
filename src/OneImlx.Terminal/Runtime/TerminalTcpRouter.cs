@@ -266,7 +266,7 @@ namespace OneImlx.Terminal.Runtime
             // Check if the client is connected
             if (!client.Connected)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, $"The client is not connected. task={0}", taskIdx);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The client is not connected. task={0}", taskIdx);
             }
 
             using (NetworkStream stream = client.GetStream())

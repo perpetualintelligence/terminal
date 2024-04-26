@@ -6,6 +6,7 @@
 */
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
@@ -293,10 +294,10 @@ namespace OneImlx.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddTerminalRouter<TRouting, TContext>(this ITerminalBuilder builder) where TRouting : class, ITerminalRouter<TContext> where TContext : TerminalRouterContext
+        public static ITerminalBuilder AddTerminalRouter<TRouter, TContext>(this ITerminalBuilder builder) where TRouter : class, ITerminalRouter<TContext> where TContext : TerminalRouterContext
         {
             // Add terminal routing service.
-            builder.Services.AddSingleton<ITerminalRouter<TContext>, TRouting>();
+            builder.Services.TryAddSingleton<ITerminalRouter<TContext>, TRouter>();
 
             return builder;
         }

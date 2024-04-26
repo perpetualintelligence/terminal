@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>OneImlx.Terminal.Apps</RootNamespace>
+  </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+    
+    <!--
+        DEV CONFIG: REMOVE THIS SECTION IN YOUR APP AND ONLY ADD NUGET PACKAGE REFERENCE
+    -->
+    <Choose>
+        <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
+            <ItemGroup>
+                <ProjectReference Include="..\..\..\src\OneImlx.Terminal.Authentication\OneImlx.Terminal.Authentication.csproj" />
+            </ItemGroup>
+        </When>
+        <Otherwise>
+            <ItemGroup>
+                <PackageReference Include="OneImlx.Terminal.Authentication" Version="5.8.5-rc.253242921" />
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
+</Project>
