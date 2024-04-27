@@ -57,7 +57,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
 
             // Max 30 we are passing 31
-            terminalOptions.Router.MaxMessageLength = 30;
+            terminalOptions.Router.MaxRemoteMessageLength = 30;
             routerContext = new CommandRouterContext(new string('x', 31), routingContext);
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);

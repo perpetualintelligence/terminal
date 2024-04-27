@@ -28,6 +28,7 @@ namespace OneImlx.Terminal.Runtime
         private readonly TerminalRouterContext terminalRouterContext;
         private readonly ILogger logger;
         private ConcurrentQueue<TerminalCommandQueueItem> concurrentQueue;
+        private ConcurrentDictionary<EndPoint, string> partialCommands;
 
         /// <summary>
         /// Initializes a new instance.
@@ -51,6 +52,7 @@ namespace OneImlx.Terminal.Runtime
             this.logger = logger;
 
             concurrentQueue = new ConcurrentQueue<TerminalCommandQueueItem>();
+            partialCommands = new ConcurrentDictionary<EndPoint, string>();
         }
 
         /// <summary>
@@ -60,18 +62,46 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="sender">The endpoint of the sender who issued the command.</param>
         public void Enqueue(string command, EndPoint sender)
         {
-            string[] splitCmdString = command.Split(new[] { terminalOptions.Router.MessageDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string raw in splitCmdString)
+            // Check if the command is complete based on delimiter.
+            bool isPartial = false;
+            if(command.EndsWith(terminalOptions.Router.RemoteMessageDelimiter))
             {
-                if (raw.Length > terminalOptions.Router.MaxMessageLength)
+                logger.LogDebug("Partial command. sender={0} command={1}", sender, command);
+                isPartial = true;
+            }
+
+            // Make sure we concatenate the partial command with the previous partial command.
+            string commandToProcess = command;
+            if (partialCommands.TryGetValue(sender, out string partialCommand))
+            {
+                commandToProcess = partialCommand + command;                
+            }
+
+            // Check if the unprocessed message length is within the configured limit.
+            if (commandToProcess.Length > terminalOptions.Router.MaxRemoteMessageLength)
+            {
+                throw new TerminalException(TerminalErrors.InvalidRequest, "The message length is over the configured limit. max_length={0}", terminalOptions.Router.MaxRemoteMessageLength);
+            }
+
+            // Now start processing command and move the partial command to the partial command dictionary.
+            string[] splitCmdString = command.Split(new[] { terminalOptions.Router.RemoteMessageDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+            for (int idx = 0; idx < splitCmdString.Length; ++idx)
+            {
+                string raw = splitCmdString[idx];
+                bool isLast = idx == splitCmdString.Length - 1;
+
+                if(isLast && isPartial)
                 {
-                    throw new TerminalException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0}", terminalOptions.Router.MaxMessageLength);
+                    partialCommands.AddOrUpdate(sender, raw, (key, value) => value + raw);
                 }
 
-                logger.LogDebug("Enqueueing command. sender={0} command={1}", sender, raw);
+                logger.LogDebug("Enqueue command. sender={0} command={1}", sender, raw);
                 TerminalCommandQueueItem item = new(Guid.NewGuid().ToString(), raw, sender);
                 concurrentQueue.Enqueue(item);
             }
+
+            // Remove the partial command if it is complete.
+            partialCommands.TryRemove(sender, out _);
         }
 
         /// <summary>

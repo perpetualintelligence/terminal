@@ -38,9 +38,9 @@ namespace OneImlx.Terminal.Commands.Checkers
             logger.LogDebug("Check command. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
 
             // Make sure command string raw length is within specified
-            if (context.HandlerContext.RouterContext.Route.Raw.Length > terminalOptions.Router.MaxMessageLength)
+            if (context.HandlerContext.RouterContext.Route.Raw.Length > terminalOptions.Router.MaxRemoteMessageLength)
             {
-                throw new TerminalException(TerminalErrors.InvalidCommand, "The command string is too long. command={0} max={1}", context.HandlerContext.RouterContext.Route.Raw, terminalOptions.Router.MaxMessageLength);
+                throw new TerminalException(TerminalErrors.InvalidCommand, "The command string is too long. command={0} max={1}", context.HandlerContext.RouterContext.Route.Raw, terminalOptions.Router.MaxRemoteMessageLength);
             }
 
             await CheckArgumentsAsync(context);

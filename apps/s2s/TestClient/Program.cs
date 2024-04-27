@@ -71,8 +71,6 @@ namespace OneImlx.Terminal.Apps.TestClient
 
                     // Wait a bit before sending the next message lot
                     Thread.Sleep(5000);
-
-                    throw new Exception("Stop");
                 }
             }
             catch (Exception e)

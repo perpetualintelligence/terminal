@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Extensions
         public TerminalOptionsExtensionsTests()
         {
             _terminalOptions = new TerminalOptions();
-            _terminalOptions.Router.MessageDelimiter = "|";
+            _terminalOptions.Router.RemoteMessageDelimiter = "|";
         }
 
         [Fact]

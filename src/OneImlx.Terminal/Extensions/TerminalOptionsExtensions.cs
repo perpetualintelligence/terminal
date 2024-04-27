@@ -23,12 +23,12 @@ namespace OneImlx.Terminal.Extensions
         /// <returns>The delimited message.</returns>
         /// <remarks>
         /// The <see cref="DelimitedMessage(TerminalOptions, string[])"/> method checks if each element in the raw array ends with the
-        /// <see cref="RouterOptions.MessageDelimiter"/>. If it doesn't, the delimiter is appended to the string element. The formatted strings are then
+        /// <see cref="RouterOptions.RemoteMessageDelimiter"/>. If it doesn't, the delimiter is appended to the string element. The formatted strings are then
         /// joined into a single message.
         /// </remarks>
         public static string DelimitedMessage(this TerminalOptions terminalOptions, params string[] raw)
         {
-            var delimitedStrings = raw.Select(s => s.EndsWith(terminalOptions.Router.MessageDelimiter) ? s : string.Concat(s, terminalOptions.Router.MessageDelimiter));
+            var delimitedStrings = raw.Select(s => s.EndsWith(terminalOptions.Router.RemoteMessageDelimiter) ? s : string.Concat(s, terminalOptions.Router.RemoteMessageDelimiter));
             return string.Join(string.Empty, delimitedStrings);
         }
     }

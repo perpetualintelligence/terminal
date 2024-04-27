@@ -147,7 +147,7 @@ namespace OneImlx.Terminal.Runtime
             Task clientTask = Task.Run(async () =>
             {
                 await Task.Delay(1000); // Wait for router to start
-                await SendUdpMessageAsync($"test123{options.Router.MessageDelimiter}test456{options.Router.MessageDelimiter}test789", routerIpEndpoint);
+                await SendUdpMessageAsync($"test123{options.Router.RemoteMessageDelimiter}test456{options.Router.RemoteMessageDelimiter}test789", routerIpEndpoint);
             });
 
             // Wait for both the routing task and the client task to complete
@@ -165,7 +165,7 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task Router_Errors_If_Message_Length_Greater_Than_Configured()
         {
-            options.Router.MaxMessageLength = 5;
+            options.Router.MaxRemoteMessageLength = 5;
 
             var routerPort = FreeTcpPort();
             var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
@@ -282,7 +282,7 @@ namespace OneImlx.Terminal.Runtime
             List<Task> clientTasks = [];
             for (int i = 0; i < 5; i++)
             {
-                var message = $"test123_{i}{options.Router.MessageDelimiter}test456_{i}";
+                var message = $"test123_{i}{options.Router.RemoteMessageDelimiter}test456_{i}";
                 clientTasks.Add(Task.Run(async () =>
                 {
                     await Task.Delay(1000); // Ensure the router has started
