@@ -38,6 +38,9 @@ namespace OneImlx.Terminal.Runtime
         private ConcurrentDictionary<int, ConcurrentQueue<string>>? commandCollection;
         private ConcurrentDictionary<Task, int>? clientConnections;
         private TcpListener? _server;
+        private TerminalCommandQueue? commandQueue;
+        private SemaphoreSlim connectionLimiter;  // Semaphore to limit concurrent connections
+        private ConcurrentDictionary<int, Task> clientTasks;  // Tracks active client tasks
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalTcpRouter"/> class.
@@ -79,8 +82,11 @@ namespace OneImlx.Terminal.Runtime
         public virtual async Task RunAsync(TerminalTcpRouterContext context)
         {
             // Reset the command queue
+            commandQueue = new TerminalCommandQueue(commandRouter, exceptionHandler, options, context, logger);
             commandCollection = new ConcurrentDictionary<int, ConcurrentQueue<string>>();
             clientConnections = new ConcurrentDictionary<Task, int>();
+            connectionLimiter = new SemaphoreSlim(options.Router.MaxRemoteClients);
+            clientTasks = new ConcurrentDictionary<int, Task>();
 
             // Ensure we have supported start context
             if (context.StartContext.StartMode != TerminalStartMode.Tcp)
@@ -101,15 +107,10 @@ namespace OneImlx.Terminal.Runtime
                 _server.Start();
                 logger.LogDebug("Terminal TCP routing started. endpoint={0}", context.IPEndPoint);
 
-                // Initialize the client connections
-                // Setup tasks to accept client connections
-                logger.LogDebug("Initializing client connections. count={0}", options.Router.MaxRemoteClients);
-                for (int idx = 0; idx < options.Router.MaxRemoteClients; ++idx)
-                {
-                    // Create a local copy of the index for the task
-                    int localIdx = idx + 1;
-                    clientConnections.TryAdd(AcceptClientAsync(context, localIdx), localIdx);
-                }
+                // Start processing the command queue immediately in the background. The code starts the background task for processing commands immediately
+                // and does not wait for it to complete. The _ = discards the returned task since we don't need to await it in this context. It effectively
+                // runs in the background, processing commands as they are enqueued.
+                Task backgroundProcessingTask = commandQueue.StartCommandProcessing();
 
                 // We have initialized the requested client connections. Now we wait for all the client connections to complete until
                 // the cancellation requested. Each time a a client task complete a new task is created to accept a new client connection.
@@ -139,41 +140,77 @@ namespace OneImlx.Terminal.Runtime
             }
         }
 
+        //private async Task AcceptClientsUntilCanceledAsync(TerminalTcpRouterContext context)
+        //{
+        //    if (commandCollection is null || clientConnections is null)
+        //    {
+        //        return;
+        //    }
+
+        //    // Keep accepting new clients till a cancellation token is received.
+        //    CancellationToken cancellationToken = context.StartContext.TerminalCancellationToken;
+        //    while (!cancellationToken.IsCancellationRequested)
+        //    {
+        //        int completedIndex = -1;
+        //        try
+        //        {
+        //            // Process the commands from the completed client connection
+        //            Task completedClient = await Task.WhenAny(clientConnections.Keys);
+        //            completedIndex = clientConnections[completedClient];
+        //            if (commandCollection.TryRemove(completedIndex, out ConcurrentQueue<string> commands))
+        //            {
+        //                foreach (string raw in commands)
+        //                {
+        //                    await ProcessRawCommandsAsync(context, raw, completedIndex);
+        //                }
+        //            }
+
+        //            // Remove the completed client connection and add a new one
+        //            logger.LogWarning("Client connection is exhausted. task={0}", clientConnections[completedClient]);
+        //            clientConnections.TryRemove(completedClient, out int value);
+        //            logger.LogDebug("Initializing a new client connection. task={0}", completedIndex);
+        //            clientConnections.TryAdd(AcceptClientAsync(context, completedIndex), completedIndex);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await HandleTaskIndexedExceptionAsync(ex, completedIndex);
+        //        }
+        //    }
+        //}
+
         private async Task AcceptClientsUntilCanceledAsync(TerminalTcpRouterContext context)
         {
-            if (commandCollection is null || clientConnections is null)
+            while (!context.StartContext.TerminalCancellationToken.IsCancellationRequested)
             {
-                return;
-            }
-
-            // Keep accepting new clients till a cancellation token is received.
-            CancellationToken cancellationToken = context.StartContext.TerminalCancellationToken;
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                int completedIndex = -1;
-                try
+                await connectionLimiter.WaitAsync(context.StartContext.TerminalCancellationToken);
+                _ = Task.Run(async () =>
                 {
-                    // Process the commands from the completed client connection
-                    Task completedClient = await Task.WhenAny(clientConnections.Keys);
-                    completedIndex = clientConnections[completedClient];
-                    if (commandCollection.TryRemove(completedIndex, out ConcurrentQueue<string> commands))
+                    try
                     {
-                        foreach (string raw in commands)
-                        {
-                            await ProcessRawCommandsAsync(context, raw, completedIndex);
-                        }
-                    }
+                        logger.LogDebug("Waiting for client to connect...");
+                        TcpClient client = await _server.AcceptTcpClientAsync();
 
-                    // Remove the completed client connection and add a new one
-                    logger.LogWarning("Client connection is exhausted. task={0}", clientConnections[completedClient]);
-                    clientConnections.TryRemove(completedClient, out int value);
-                    logger.LogDebug("Initializing a new client connection. task={0}", completedIndex);
-                    clientConnections.TryAdd(AcceptClientAsync(context, completedIndex), completedIndex);
-                }
-                catch (Exception ex)
-                {
-                    await HandleTaskIndexedExceptionAsync(ex, completedIndex);
-                }
+                        int clientKey = client.Client.RemoteEndPoint.GetHashCode();
+                        logger.LogDebug("Client connected on task {0}", clientKey);
+
+                        var clientTask = HandleClientConnectedAsync(context, client, clientKey);
+                        logger.LogDebug("Client connection handled on task {0}", clientKey);
+
+                        clientTasks[clientKey] = clientTask;
+                        await clientTask;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Release the semaphore on cancellation
+                        connectionLimiter.Release();
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError($"Error accepting client: {ex.Message}");
+                        // Ensure semaphore is released even on error
+                        connectionLimiter.Release();
+                    }
+                });
             }
         }
 
@@ -222,7 +259,7 @@ namespace OneImlx.Terminal.Runtime
                 using TcpClient tcpClient = tcpClientTask.Result;
                 logger.LogDebug("Client connected on task {0}", taskIdx);
 
-                await HandleClientConnectedAsync(context, tcpClient, taskIdx);
+                //await HandleClientConnectedAsync(context, tcpClient);
                 logger.LogDebug("Client connection handled on task {0}", taskIdx);
             }
             catch (Exception ex)
@@ -271,6 +308,38 @@ namespace OneImlx.Terminal.Runtime
 
             using (NetworkStream stream = client.GetStream())
             {
+                using (NetworkStream stream = client.GetStream())
+                {
+                    byte[] buffer = new byte[options.Router.MaxMessageLength];
+                    StringBuilder receivedData = new StringBuilder();
+
+                    while (client.Connected)
+                    {
+                        int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                        if (bytesRead == 0)
+                        {
+                            break; // client has disconnected
+                        }
+                        receivedData.Append(textHandler.Encoding.GetString(buffer, 0, bytesRead));
+
+                        if (!stream.DataAvailable) // check if all data has been read
+                        {
+                            string fullMessage = receivedData.ToString();
+                            if (!string.IsNullOrWhiteSpace(fullMessage))
+                            {
+                                commandQueue.Enqueue(fullMessage, client.Client.RemoteEndPoint);
+                            }
+                            receivedData.Clear();
+                        }
+                    }
+                }
+
+
+
+
+
+
+
                 // The buffer size is the max command string length plus the delimiter length
                 int bufferSize = options.Router.MaxMessageLength + options.Router.MessageDelimiter.Length;
                 byte[] buffer = new byte[bufferSize];

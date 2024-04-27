@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="command">The command string to enqueue.</param>
         /// <param name="sender">The endpoint of the sender who issued the command.</param>
-        public void Enqueue(string command, IPEndPoint sender)
+        public void Enqueue(string command, EndPoint sender)
         {
             string[] splitCmdString = command.Split(new[] { terminalOptions.Router.MessageDelimiter }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string raw in splitCmdString)

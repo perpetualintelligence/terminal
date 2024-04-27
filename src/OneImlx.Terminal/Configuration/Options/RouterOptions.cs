@@ -45,5 +45,10 @@ namespace OneImlx.Terminal.Configuration.Options
         /// A <see cref="MessageDelimiter"/> is used while streaming a long command string from a remote source such as a network stream.
         /// </remarks>
         public string MessageDelimiter { get; set; } = "$EOM$";
+
+        /// <summary>
+        /// The buffer to start processing the messages.
+        /// </summary>
+        public int MessageBuffer { get; set; }
     }
 }

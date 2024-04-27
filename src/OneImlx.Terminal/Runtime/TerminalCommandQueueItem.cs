@@ -20,7 +20,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="id">The unique identifier for the command item.</param>
         /// <param name="command">The command string to be processed.</param>
         /// <param name="sender">The endpoint from which the command was sent.</param>
-        public TerminalCommandQueueItem(string id, string command, IPEndPoint sender)
+        public TerminalCommandQueueItem(string id, string command, EndPoint sender)
         {
             Id = id;
             Command = command;
@@ -38,8 +38,8 @@ namespace OneImlx.Terminal.Runtime
         public string Command { get; }
 
         /// <summary>
-        /// Gets the IP endpoint of the sender who issued the command.
+        /// Gets the endpoint of the sender who issued the command.
         /// </summary>
-        public IPEndPoint Sender { get; }
+        public EndPoint Sender { get; }
     }
 }
