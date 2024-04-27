@@ -386,8 +386,8 @@ namespace OneImlx.Terminal.Runtime
             // Verify logs for cancellation
             loggerFactory.AllLogMessages.Count.Should().Be(7);
             loggerFactory.AllLogMessages[0].Should().Be($"Terminal UDP router started. endpoint={routerIpEndpoint}");
-            loggerFactory.AllLogMessages[1].Should().StartWith($"UDP data packet added to command queue. remote="); // UDP Remote IP is dynamic
-            loggerFactory.AllLogMessages[1].Should().EndWith("data=test123");
+            loggerFactory.AllLogMessages[1].Should().StartWith($"Enqueueing command. sender="); // UDP Remote IP is dynamic
+            loggerFactory.AllLogMessages[1].Should().EndWith("command=test123");
             loggerFactory.AllLogMessages[2].Should().Be($"Routing the command. raw=test123");
             loggerFactory.AllLogMessages[3].Should().Be("Command queue processing cancelled.");
             loggerFactory.AllLogMessages[4].Should().Be("Terminal UDP router cancelled.");

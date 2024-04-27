@@ -6,12 +6,9 @@
 */
 
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using System;
-using System.Collections.Concurrent;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +37,7 @@ namespace OneImlx.Terminal.Runtime
         private readonly ITerminalTextHandler textHandler;
         private readonly ILogger<TerminalUdpRouter> logger;
         private UdpClient? _udpClient;
-        private ConcurrentQueue<(string command, IPEndPoint sender)>? commandQueue;
+        private TerminalCommandQueue? commandQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalUdpRouter"/> class.
@@ -71,8 +68,8 @@ namespace OneImlx.Terminal.Runtime
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task RunAsync(TerminalUdpRouterContext context)
         {
-            // Reset the command queue
-            commandQueue = new ConcurrentQueue<(string command, IPEndPoint sender)>();
+            // Set up the command queue
+            commandQueue = new TerminalCommandQueue(commandRouter, exceptionHandler, options, context, logger);
 
             if (context.StartContext.StartMode != TerminalStartMode.Udp)
             {
@@ -92,7 +89,7 @@ namespace OneImlx.Terminal.Runtime
                 // Start processing the command queue immediately in the background. The code starts the background task for processing commands immediately
                 // and does not wait for it to complete. The _ = discards the returned task since we don't need to await it in this context. It effectively
                 // runs in the background, processing commands as they are enqueued.
-                Task backgroundProcessingTask = Task.Run(() => ProcessCommandQueueAsync(context));
+                Task backgroundProcessingTask = commandQueue.StartCommandProcessing();
 
                 // Enqueue the UDP data packets till a terminal cancellation is requested.
                 while (!context.StartContext.TerminalCancellationToken.IsCancellationRequested)
@@ -106,24 +103,9 @@ namespace OneImlx.Terminal.Runtime
                     if (receiveOrCancellationTask == receiveTask)
                     {
                         // Process received data
-                        var receivedResult = receiveTask.Result; // Safe because we know the task has completed
+                        UdpReceiveResult receivedResult = receiveTask.Result; // Safe because we know the task has completed
                         string receivedText = textHandler.Encoding.GetString(receivedResult.Buffer);
-
-                        // This may be multiple commands
-                        string[] splitCmdString = receivedText.Split(new[] { options.Router.MessageDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-                        for (int idx = 0; idx < splitCmdString.Length; ++idx)
-                        {
-                            string raw = splitCmdString[idx];
-                            if (raw.Length > options.Router.MaxMessageLength)
-                            {
-                                throw new TerminalException(TerminalErrors.InvalidRequest, "The command string length is over the configured limit. max_length={0}", options.Router.MaxMessageLength);
-                            }
-
-                            // Processing is a background task so it may start the processing before the debug log prints so in this
-                            // case we first log and then enqueue the command.
-                            logger.LogDebug("UDP data packet added to command queue. remote={0} data={1}", receivedResult.RemoteEndPoint, splitCmdString[idx]);
-                            commandQueue.Enqueue((splitCmdString[idx], receivedResult.RemoteEndPoint));
-                        }
+                        commandQueue.Enqueue(receivedText, receivedResult.RemoteEndPoint);
                     }
                     else
                     {
@@ -154,65 +136,6 @@ namespace OneImlx.Terminal.Runtime
                 _udpClient?.Close();
                 logger.LogDebug("Terminal UDP router stopped. endpoint={0}", context.IPEndPoint);
             }
-        }
-
-        /// <summary>
-        /// Processes the command queue asynchronously, handling each received command.
-        /// </summary>
-        /// <param name="context">The context for the current UDP routing operation.</param>
-        /// <returns>A task that represents the asynchronous operation of processing the command queue.</returns>
-        private async Task ProcessCommandQueueAsync(TerminalUdpRouterContext context)
-        {
-            if (commandQueue is null)
-            {
-                return;
-            }
-
-            CancellationToken cancellationToken = context.StartContext.TerminalCancellationToken;
-            CommandRoute? commandRoute = null;
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                if (commandQueue.TryDequeue(out (string, IPEndPoint) commandInfo))
-                {
-                    try
-                    {
-                        commandRoute = await ProcessRawCommandsAsync(context, commandInfo.Item1);
-                    }
-                    catch (Exception ex)
-                    {
-                        await exceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, commandRoute));
-                    }
-                }
-                else
-                {
-                    await Task.Yield();
-                }
-            }
-
-            logger.LogDebug("Command queue processing cancelled.");
-        }
-
-        private async Task<CommandRoute?> ProcessRawCommandsAsync(TerminalUdpRouterContext udpContext, string raw)
-        {
-            logger.LogDebug("Routing the command. raw={0}", raw);
-
-            // Route the command request to router. Wait for the router or the timeout.
-            CommandRouterContext context = new(raw, udpContext);
-            CommandRoute? commandRoute = context.Route;
-            Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(context);
-            if (await Task.WhenAny(routeTask, Task.Delay(options.Router.Timeout, udpContext.StartContext.TerminalCancellationToken)) == routeTask)
-            {
-                // Task completed within timeout.
-                // Consider that the task may have faulted or been canceled.
-                // We re-await the task so that any exceptions/cancellation is re-thrown.
-                await routeTask;
-            }
-            else
-            {
-                throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
-            }
-
-            return commandRoute;
         }
     }
 }
