@@ -1,10 +1,11 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Terminal.Runtime;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -48,8 +49,10 @@ namespace OneImlx.Terminal.Apps.TestClient
 
                 while (true)
                 {
+                    Console.WriteLine("Sent individual commands...");
+
                     // Prepare the message to send
-                    string[] messages = [
+                    string[] individualCommands = [
                         "test",
                         "test -v",
                         "test grp1",
@@ -61,9 +64,10 @@ namespace OneImlx.Terminal.Apps.TestClient
                     ];
 
                     // Send each message over tcp with a delay of 500 ms
-                    foreach (string message in messages)
+                    byte[] data;
+                    foreach (string message in individualCommands)
                     {
-                        byte[] data = Encoding.Unicode.GetBytes(message);
+                        data = Encoding.Unicode.GetBytes(message);
                         stream.Write(data, 0, data.Length);
                         Console.WriteLine("Sent: {0}", message);
                         Thread.Sleep(500);
@@ -71,6 +75,13 @@ namespace OneImlx.Terminal.Apps.TestClient
 
                     // Wait a bit before sending the next message lot
                     Thread.Sleep(5000);
+
+                    // Send delimited message
+                    Console.WriteLine("Sent concatenated commands...");
+                    string concatenatedCommands = TerminalServices.DelimitedMessage("$EOM$", individualCommands);
+                    data = Encoding.Unicode.GetBytes(concatenatedCommands);
+                    stream.Write(data, 0, concatenatedCommands.Length);
+                    Console.WriteLine("Sent: {0}", concatenatedCommands);
                 }
             }
             catch (Exception e)

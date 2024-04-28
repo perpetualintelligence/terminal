@@ -1,6 +1,8 @@
 # 5.10.1-rc*
 > Feature Change
 - Support UDP router `TerminalUdpRouter` for terminal routing
+- Add `TerminalServices` for common terminal services
+- Fixed TCP bug to process the messages as they come
 
 # 5.9.1-rc*
 > Breaking Change

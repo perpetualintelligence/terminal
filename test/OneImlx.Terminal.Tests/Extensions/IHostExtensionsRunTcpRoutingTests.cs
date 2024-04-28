@@ -194,7 +194,7 @@ namespace OneImlx.Terminal.Extensions
                 await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
 
                 // Send a command from the client to the server
-                byte[] messageBytes = textHandler.Encoding.GetBytes(GetCliOptions(host).DelimitedMessage("Test command"));
+                byte[] messageBytes = textHandler.Encoding.GetBytes(TerminalServices.DelimitedMessage(GetCliOptions(host), "Test command"));
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
@@ -230,7 +230,7 @@ namespace OneImlx.Terminal.Extensions
                 await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
 
                 // Send a command that exceeds the configured command string length limit
-                byte[] messageBytes = textHandler.Encoding.GetBytes(GetCliOptions(host).DelimitedMessage(new string('A', 10000))); // Length exceeds the limit
+                byte[] messageBytes = textHandler.Encoding.GetBytes(TerminalServices.DelimitedMessage(GetCliOptions(host), new string('A', 10000))); // Length exceeds the limit
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
@@ -274,7 +274,7 @@ namespace OneImlx.Terminal.Extensions
                 await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
 
                 // Send a command that exceeds the configured command string length limit
-                string testString = GetCliOptions(host).DelimitedMessage("rt1 grp1 cmd1", "rt2 grp2 cmd2", "rt3 grp3 cmd3");
+                string testString = TerminalServices.DelimitedMessage(GetCliOptions(host), "rt1 grp1 cmd1", "rt2 grp2 cmd2", "rt3 grp3 cmd3");
 
                 byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
@@ -316,7 +316,7 @@ namespace OneImlx.Terminal.Extensions
                 await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
 
                 // Send a command that exceeds the configured command string length limit
-                string testString = GetCliOptions(host).DelimitedMessage("rt1 grp1 cmd1", "rt2 grp2 cmd2", "rt3 grp3 cmd3");
+                string testString = TerminalServices.DelimitedMessage(GetCliOptions(host), "rt1 grp1 cmd1", "rt2 grp2 cmd2", "rt3 grp3 cmd3");
                 byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
@@ -324,7 +324,7 @@ namespace OneImlx.Terminal.Extensions
                 await Task.Delay(3000);
 
                 // Send a command that exceeds the configured command string length limit
-                testString = GetCliOptions(host).DelimitedMessage("rt4 grp4 cmd4", "rt5 grp5 cmd5", "rt6 grp6 cmd6");
+                testString = TerminalServices.DelimitedMessage(GetCliOptions(host), "rt4 grp4 cmd4", "rt5 grp5 cmd5", "rt6 grp6 cmd6");
                 messageBytes = textHandler.Encoding.GetBytes(testString);
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
@@ -373,7 +373,7 @@ namespace OneImlx.Terminal.Extensions
                 {
                     commandList.Add($"rt{i} grp{i} cmd{i}");
                 }
-                string testString = GetCliOptions(host).DelimitedMessage(commandList.ToArray());
+                string testString = TerminalServices.DelimitedMessage(GetCliOptions(host), commandList.ToArray());
 
                 byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
@@ -438,7 +438,7 @@ namespace OneImlx.Terminal.Extensions
                 {
                     commandList.Add($"rt{i} grp{i} cmd{i}");
                 }
-                string testString = GetCliOptions(host).DelimitedMessage(commandList.ToArray());
+                string testString = TerminalServices.DelimitedMessage(GetCliOptions(host), commandList.ToArray());
 
                 byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
@@ -566,7 +566,7 @@ namespace OneImlx.Terminal.Extensions
                 await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
 
                 // Send a valid delimited message
-                byte[] messageBytes = textHandler.Encoding.GetBytes(GetCliOptions(host).DelimitedMessage("Test command"));
+                byte[] messageBytes = textHandler.Encoding.GetBytes(TerminalServices.DelimitedMessage(GetCliOptions(host), "Test command"));
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
@@ -619,7 +619,7 @@ namespace OneImlx.Terminal.Extensions
                         tcpClient.Connected.Should().BeTrue();
 
                         var command = $"Client-{localIdx + 1} sent test command";
-                        var commandBytes = textHandler.Encoding.GetBytes(GetCliOptions(host).DelimitedMessage(command));
+                        var commandBytes = textHandler.Encoding.GetBytes(TerminalServices.DelimitedMessage(GetCliOptions(host), command));
                         await tcpClient.GetStream().WriteAsync(commandBytes, 0, commandBytes.Length);
                         await tcpClient.GetStream().FlushAsync();
                     });
