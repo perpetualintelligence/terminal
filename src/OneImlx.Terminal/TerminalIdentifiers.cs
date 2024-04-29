@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -18,21 +18,6 @@ namespace OneImlx.Terminal
     public sealed class TerminalIdentifiers
     {
         /// <summary>
-        /// The <c>online</c> license mode.
-        /// </summary>
-        public const string OnlineLicenseMode = "online";
-
-        /// <summary>
-        /// The <c>offline</c> license mode.
-        /// </summary>
-        public const string OfflineLicenseMode = "offline";
-
-        /// <summary>
-        /// The <c>onpremise</c> deployment.
-        /// </summary>
-        public const string OnPremiseDeployment = "onpremise";
-
-        /// <summary>
         /// The <c>custom</c> handler.
         /// </summary>
         public const string CustomHandler = "custom";
@@ -41,6 +26,31 @@ namespace OneImlx.Terminal
         /// The <c>default</c> handler.
         /// </summary>
         public const string DefaultHandler = "default";
+
+        /// <summary>
+        /// The <c>offline</c> license mode.
+        /// </summary>
+        public const string OfflineLicenseMode = "offline";
+
+        /// <summary>
+        /// The <c>online</c> license mode.
+        /// </summary>
+        public const string OnlineLicenseMode = "online";
+
+        /// <summary>
+        /// The <c>onpremise</c> deployment.
+        /// </summary>
+        public const string OnPremiseDeployment = "onpremise";
+
+        /// <summary>
+        /// The remote command delimiter.
+        /// </summary>
+        public const string RemoteCommandDelimiter = "$c$";
+
+        /// <summary>
+        /// The remote command delimiter.
+        /// </summary>
+        public const string RemoteMessageDelimiter = "$m$";
 
         /// <summary>
         /// The test application identifier for internal testing.

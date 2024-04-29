@@ -1,16 +1,16 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {
@@ -18,8 +18,8 @@ namespace OneImlx.Terminal.Commands.Checkers
     /// The default <see cref="IConfigurationOptionsChecker"/>.
     /// </summary>
     /// <remarks>
-    /// The <see cref="CheckAsync(TerminalOptions)"/> does not return any result. It throws <see cref="TerminalException"/> if
-    /// you do not configure an option correctly.
+    /// The <see cref="CheckAsync(TerminalOptions)"/> does not return any result. It throws
+    /// <see cref="TerminalException"/> if you do not configure an option correctly.
     /// </remarks>
     public class ConfigurationOptionsChecker : IConfigurationOptionsChecker
     {
@@ -126,21 +126,20 @@ namespace OneImlx.Terminal.Commands.Checkers
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option separator and option alias prefix cannot be same. separator={0}", options.Parser.OptionValueSeparator);
                 }
 
-                // Option alias prefix can be same as option prefix but it cannot start with
-                // option prefix.
-                // e.g --configuration -c is valid but --configuration and --c is not
+                // Option alias prefix can be same as option prefix but it cannot start with option prefix. e.g
+                // --configuration -c is valid but --configuration and --c is not
                 if (!textHandler.TextEquals(options.Parser.OptionAliasPrefix, options.Parser.OptionPrefix) && options.Parser.OptionAliasPrefix.StartsWith(options.Parser.OptionPrefix, textHandler.Comparison))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option alias prefix cannot start with option prefix. prefix={0}", options.Parser.OptionPrefix);
                 }
             }
 
-            // String with in
+            // Local Delimiter
             {
                 // Option prefix cannot be null, empty or whitespace
                 if (string.IsNullOrWhiteSpace(options.Parser.ValueDelimiter))
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be null or whitespace.", options.Parser.ValueDelimiter);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be null or whitespace.");
                 }
 
                 // with_in cannot be same as OptionPrefix
@@ -165,6 +164,27 @@ namespace OneImlx.Terminal.Commands.Checkers
                 if (textHandler.TextEquals(options.Parser.OptionValueSeparator, options.Parser.ValueDelimiter))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be same as the option value separator. delimiter={0}", options.Parser.ValueDelimiter);
+                }
+            }
+
+            // Remote Delimiter
+            {
+                // Remote command delimiter cannot be null, empty or whitespace
+                if (string.IsNullOrWhiteSpace(options.Router.RemoteCommandDelimiter))
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The remote command delimiter cannot be null or whitespace.");
+                }
+
+                // Remote message delimiter cannot be null, empty or whitespace
+                if (string.IsNullOrWhiteSpace(options.Router.RemoteMessageDelimiter))
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The remote message delimiter cannot be null or whitespace.");
+                }
+
+                // Remote command delimiter cannot be same as remote message delimiter
+                if (textHandler.TextEquals(options.Router.RemoteCommandDelimiter, options.Router.RemoteMessageDelimiter))
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The remote command delimiter and remote message delimiter cannot be same. delimiter={0}", options.Router.RemoteCommandDelimiter);
                 }
             }
 

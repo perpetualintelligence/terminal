@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -8,48 +8,48 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Apps.TestClient
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
+            cts = new CancellationTokenSource();
             Console.WriteLine("Starting test client...");
 
             // Define the server address and port
             string server = "127.0.0.1";
             int port = 49153; // Example port
 
-            // Create a new TCP client
-            TcpClient client = new();
-
-            // Try to connect to the server repeatedly until successful
-            while (true)
+            // Start all clients simultaneously
+            Task[] clientTasks =
             {
-                try
-                {
-                    Console.WriteLine("Attempting to connect to server...");
-                    client.Connect(IPAddress.Parse(server), port);
-                    Console.WriteLine("Connected to the server on {0}.", server);
-                    break; // Exit the loop once connected
-                }
-                catch (SocketException)
-                {
-                    Console.WriteLine("Server not available, retrying in 5 seconds...");
-                    Thread.Sleep(5000); // Wait for 5 seconds before retrying
-                }
-            }
+                StartClient(server, port),
+                StartClient(server, port),
+                StartClient(server, port),
+                StartClient(server, port)
+            };
 
+            // Wait for all to complete
+            await Task.WhenAll(clientTasks);
+
+            Console.WriteLine("Test client finished.");
+        }
+
+        private static async Task SendIndefinetilyAsync(Socket socket)
+        {
             try
             {
-                // Get the stream for writing and reading through the socket
-                NetworkStream stream = client.GetStream();
-
                 while (true)
                 {
+                    cts.Token.ThrowIfCancellationRequested();
+
+                    Console.WriteLine("Sending delimited individual commands...");
+
                     // Prepare the message to send
-                    string[] messages = [
+                    string[] individualCommands = [
                         "test",
                         "test -v",
                         "test grp1",
@@ -61,18 +61,27 @@ namespace OneImlx.Terminal.Apps.TestClient
                     ];
 
                     // Send each message over tcp with a delay of 500 ms
-                    foreach (string message in messages)
+                    // NOTE: The TestServer enables the remote delimited message feature and uses default $m$ as a delimiter
+                    // so we need to delimit each message.
+                    byte[] data;
+                    foreach (string message in individualCommands)
                     {
-                        byte[] data = Encoding.Unicode.GetBytes(message);
-                        stream.Write(data, 0, data.Length);
-                        Console.WriteLine("Sent: {0}", message);
-                        Thread.Sleep(500);
+                        string delimitedMessage = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, message);
+                        data = Encoding.Unicode.GetBytes(delimitedMessage);
+                        await socket.SendAsync(data, SocketFlags.None, cts.Token);
+                        Console.WriteLine("Sent: {0}", delimitedMessage);
                     }
 
                     // Wait a bit before sending the next message lot
+                    Console.WriteLine("Waiting for 5 seconds...");
                     Thread.Sleep(5000);
 
-                    throw new Exception("Stop");
+                    // Send delimited message
+                    Console.WriteLine("Sending delimited multiple commands...");
+                    string concatenatedCommands = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, individualCommands);
+                    data = Encoding.Unicode.GetBytes(concatenatedCommands);
+                    await socket.SendAsync(data, SocketFlags.None, cts.Token);
+                    Console.WriteLine("Sent: {0}", concatenatedCommands);
                 }
             }
             catch (Exception e)
@@ -81,13 +90,44 @@ namespace OneImlx.Terminal.Apps.TestClient
             }
             finally
             {
-                // Cleanup
-                if (client != null && client.Connected)
-                {
-                    client.Close();
-                }
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
                 Console.WriteLine("Connection closed.");
             }
         }
+
+        private static async Task StartClient(string server, int port)
+        {
+            try
+            {
+                // Create a TCP/IP socket
+                Socket client = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+                // Connect to the server
+                while (true)
+                {
+                    try
+                    {
+                        Console.WriteLine("Attempting to connect to server...");
+                        await client.ConnectAsync(IPAddress.Parse(server), port);
+                        Console.WriteLine("Connected to {0} from {1}.", client.RemoteEndPoint, client.LocalEndPoint);
+                        break; // Exit the loop once connected
+                    }
+                    catch (SocketException)
+                    {
+                        Console.WriteLine("Server not available, retrying in 5 seconds...");
+                        Thread.Sleep(5000);
+                    }
+                }
+
+                await SendIndefinetilyAsync(client);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
+        private static CancellationTokenSource cts;
     }
 }

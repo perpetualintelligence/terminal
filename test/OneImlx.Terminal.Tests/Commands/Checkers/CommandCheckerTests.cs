@@ -1,12 +1,16 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
@@ -16,10 +20,6 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers
@@ -43,27 +43,6 @@ namespace OneImlx.Terminal.Commands.Checkers
             commandTokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
             routerContext = new CommandRouterContext("test", routingContext);
-        }
-
-        [Fact]
-        public async Task Router_Throws_On_CommandString_MaxLimitAsync()
-        {
-            OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Disabled);
-            CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
-
-            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
-
-            Command argsCommand = new(disabledArgsDescriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
-
-            // Max 30 we are passing 31
-            terminalOptions.Router.MaxMessageLength = 30;
-            routerContext = new CommandRouterContext(new string('x', 31), routingContext);
-            CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
-            CommandCheckerContext context = new(handlerContext);
-
-            Func<Task> act = () => checker.CheckCommandAsync(context);
-            await act.Should().ThrowAsync<TerminalException>().WithMessage("The command string is too long. command=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx max=30");
         }
 
         [Fact]
@@ -272,19 +251,19 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckCommandAsync(context);
         }
 
-        private CommandRoute commandRoute = null!;
-        private CommandChecker checker = null!;
-        private ITerminalCommandStore commands = null!;
-        private IDataTypeMapper<Option> optionMapper = null!;
-        private IDataTypeMapper<Argument> argumentMapper = null!;
-        private TerminalOptions terminalOptions = null!;
-        private ITerminalTextHandler textHandler = null!;
-        private IOptionChecker valueChecker = null!;
+        private readonly CommandHandlerContext handlerContext = null!;
         private IArgumentChecker argumentChecker = null!;
+        private IDataTypeMapper<Argument> argumentMapper = null!;
+        private CommandChecker checker = null!;
+        private CommandRoute commandRoute = null!;
+        private ITerminalCommandStore commands = null!;
+        private CancellationTokenSource commandTokenSource = null!;
+        private IDataTypeMapper<Option> optionMapper = null!;
         private CommandRouterContext routerContext = null!;
         private TerminalRouterContext routingContext = null!;
+        private TerminalOptions terminalOptions = null!;
         private CancellationTokenSource terminalTokenSource = null!;
-        private CancellationTokenSource commandTokenSource = null!;
-        private readonly CommandHandlerContext handlerContext = null!;
+        private ITerminalTextHandler textHandler = null!;
+        private IOptionChecker valueChecker = null!;
     }
 }

@@ -1,17 +1,17 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Routers;
-using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -19,26 +19,23 @@ namespace OneImlx.Terminal.Runtime
     /// The default <see cref="ITerminalRouter{TContext}"/> for UDP server communication.
     /// </summary>
     /// <remarks>
-    /// <para>This class implements the <see cref="ITerminalRouter{TContext}"/> interface and is responsible for handling
-    /// UDP server communication. It runs a terminal as a UDP server on the specified IP endpoint and listens for incoming UDP datagrams.
-    /// Unlike TCP, UDP is connectionless, allowing this server to receive messages from multiple clients without establishing a
-    /// dedicated connection for each. Messages can be received and processed concurrently from various sources, making UDP suitable
-    /// for scenarios where low latency or high-throughput communication is required, albeit with the trade-off of reliability.</para>
-    /// <para>The server can be gracefully stopped by canceling the provided cancellation token in the context, ensuring any ongoing
-    /// operations are terminated and resources are cleanly released.</para>
+    /// <para>
+    /// This class implements the <see cref="ITerminalRouter{TContext}"/> interface and is responsible for handling UDP
+    /// server communication. It runs a terminal as a UDP server on the specified IP endpoint and listens for incoming
+    /// UDP datagrams. Unlike TCP, UDP is connectionless, allowing this server to receive messages from multiple clients
+    /// without establishing a dedicated connection for each. Messages can be received and processed concurrently from
+    /// various sources, making UDP suitable for scenarios where low latency or high-throughput communication is
+    /// required, albeit with the trade-off of reliability.
+    /// </para>
+    /// <para>
+    /// The server can be gracefully stopped by canceling the provided cancellation token in the context, ensuring any
+    /// ongoing operations are terminated and resources are cleanly released.
+    /// </para>
     /// </remarks>
     /// <seealso cref="TerminalConsoleRouter"/>
     /// <seealso cref="TerminalTcpRouter"/>
     public sealed class TerminalUdpRouter : ITerminalRouter<TerminalUdpRouterContext>
     {
-        private readonly ICommandRouter commandRouter;
-        private readonly ITerminalExceptionHandler exceptionHandler;
-        private readonly TerminalOptions options;
-        private readonly ITerminalTextHandler textHandler;
-        private readonly ILogger<TerminalUdpRouter> logger;
-        private UdpClient? _udpClient;
-        private TerminalCommandQueue? commandQueue;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalUdpRouter"/> class.
         /// </summary>
@@ -69,7 +66,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task RunAsync(TerminalUdpRouterContext context)
         {
             // Set up the command queue
-            commandQueue = new TerminalCommandQueue(commandRouter, exceptionHandler, options, context, logger);
+            commandQueue = new TerminalRemoteMessageQueue(commandRouter, exceptionHandler, options, context, logger);
 
             if (context.StartContext.StartMode != TerminalStartMode.Udp)
             {
@@ -86,17 +83,19 @@ namespace OneImlx.Terminal.Runtime
                 _udpClient = new UdpClient(context.IPEndPoint);
                 logger.LogDebug($"Terminal UDP router started. endpoint={context.IPEndPoint}");
 
-                // Start processing the command queue immediately in the background. The code starts the background task for processing commands immediately
-                // and does not wait for it to complete. The _ = discards the returned task since we don't need to await it in this context. It effectively
-                // runs in the background, processing commands as they are enqueued.
+                // Start processing the command queue immediately in the background. The code starts the background task
+                // for processing commands immediately and does not wait for it to complete. The _ = discards the
+                // returned task since we don't need to await it in this context. It effectively runs in the background,
+                // processing commands as they are enqueued.
                 Task backgroundProcessingTask = commandQueue.StartCommandProcessing();
 
                 // Enqueue the UDP data packets till a terminal cancellation is requested.
                 while (!context.StartContext.TerminalCancellationToken.IsCancellationRequested)
                 {
-                    // Ensure that application can respond to a cancellation request even when waiting for
-                    // incoming UDP packets. We need to support .NET Framework 4.8.1, .NET Standard, and .NET 8+, and since _udpClient.ReceiveAsync()
-                    // does not accept a CancellationToken directly in all these versions, we implement a workaround using Task.WhenAny to respect the cancellation token.
+                    // Ensure that application can respond to a cancellation request even when waiting for incoming UDP
+                    // packets. We need to support .NET Framework 4.8.1, .NET Standard, and .NET 8+, and since
+                    // _udpClient.ReceiveAsync() does not accept a CancellationToken directly in all these versions, we
+                    // implement a workaround using Task.WhenAny to respect the cancellation token.
                     Task<UdpReceiveResult> receiveTask = _udpClient.ReceiveAsync();
                     Task receiveOrCancellationTask = await Task.WhenAny(receiveTask, Task.Delay(Timeout.Infinite, context.StartContext.TerminalCancellationToken));
 
@@ -104,13 +103,13 @@ namespace OneImlx.Terminal.Runtime
                     {
                         // Process received data
                         UdpReceiveResult receivedResult = receiveTask.Result; // Safe because we know the task has completed
-                        string receivedText = textHandler.Encoding.GetString(receivedResult.Buffer);
-                        commandQueue.Enqueue(receivedText, receivedResult.RemoteEndPoint);
+                        string receivedMessage = textHandler.Encoding.GetString(receivedResult.Buffer);
+                        commandQueue.Enqueue(receivedMessage, receivedResult.RemoteEndPoint, senderId: null);
                     }
                     else
                     {
                         // Cancellation token has been triggered
-                        logger.LogDebug("Terminal UDP router cancelled.");
+                        logger.LogDebug("Terminal UDP router canceled.");
                         break;
                     }
                 }
@@ -137,5 +136,13 @@ namespace OneImlx.Terminal.Runtime
                 logger.LogDebug("Terminal UDP router stopped. endpoint={0}", context.IPEndPoint);
             }
         }
+
+        private readonly ICommandRouter commandRouter;
+        private readonly ITerminalExceptionHandler exceptionHandler;
+        private readonly ILogger<TerminalUdpRouter> logger;
+        private readonly TerminalOptions options;
+        private readonly ITerminalTextHandler textHandler;
+        private UdpClient? _udpClient;
+        private TerminalRemoteMessageQueue? commandQueue;
     }
 }

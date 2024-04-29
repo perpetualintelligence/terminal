@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright (c) 2024 Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -22,7 +22,86 @@ namespace OneImlx.Terminal.Apps.TestServer
 {
     internal class Program
     {
-        private static IHost? host;
+        private static void ConfigureAppConfigurationDelegate(HostBuilderContext context, IConfigurationBuilder builder)
+        {
+            var configBuilder = new ConfigurationBuilder();
+            configBuilder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: false);
+            configBuilder.Build();
+        }
+
+        private static void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
+        {
+            // Clear all providers
+            builder.ClearProviders();
+
+            // Configure logging of your choice, here we are configuring Serilog
+            var loggerConfig = new LoggerConfiguration();
+            loggerConfig.MinimumLevel.Error();
+            loggerConfig.WriteTo.Console();
+            Log.Logger = loggerConfig.CreateLogger();
+            builder.AddSerilog(Log.Logger);
+        }
+
+        private static void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection collection)
+        {
+            // Configure the hosted service
+            collection.AddHostedService<TestServerHostedService>();
+
+            // We are using online license so configure HTTP
+            collection.AddHttpClient("demo-http");
+
+            // NOTE: We are initialized as a console application. This can be a custom console or a custom terminal
+            // interface as well.
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+                options =>
+                {
+                    options.Id = TerminalIdentifiers.TestApplicationId;
+                    options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
+                    options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+                    options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
+
+                    options.Router.RemoteMessageMaxLength = 64000;
+                    options.Router.EnableRemoteDelimiters = true;
+                    options.Router.Caret = "> ";
+                }
+            );
+
+            // Add router based on appsettings.json.
+            string? mode = context.Configuration["testserver:mode"];
+            if (mode == "user")
+            {
+                terminalBuilder.AddTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>();
+            }
+            else if (mode == "tcp")
+            {
+                terminalBuilder.AddTerminalRouter<TerminalTcpRouter, TerminalTcpRouterContext>();
+            }
+            else if (mode == "udp")
+            {
+                terminalBuilder.AddTerminalRouter<TerminalUdpRouter, TerminalUdpRouterContext>();
+            }
+            else
+            {
+                throw new InvalidOperationException($"The mode `{mode}` is not supported.");
+            }
+
+            // Add commands using declarative syntax.
+            terminalBuilder.AddDeclarativeAssembly<TestRunner>();
+        }
+
+        private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
+        {
+            // Disable hosting status message
+            services.Configure<ConsoleLifetimeOptions>(options =>
+            {
+                options.SuppressStatusMessages = true;
+            });
+
+            // Configure OneImlx.Terminal services
+            ConfigureOneImlxTerminal(context, services);
+
+            // Configure other services
+        }
 
         private static async Task Main(string[] args)
         {
@@ -73,82 +152,6 @@ namespace OneImlx.Terminal.Apps.TestServer
             }
         }
 
-        private static void ConfigureAppConfigurationDelegate(HostBuilderContext context, IConfigurationBuilder builder)
-        {
-            var configBuilder = new ConfigurationBuilder();
-            configBuilder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: false);
-            configBuilder.Build();
-        }
-
-        private static void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
-        {
-            // Clear all providers
-            builder.ClearProviders();
-
-            // Configure logging of your choice, here we are configuring Serilog
-            var loggerConfig = new LoggerConfiguration();
-            loggerConfig.MinimumLevel.Debug();
-            loggerConfig.WriteTo.Console();
-            Log.Logger = loggerConfig.CreateLogger();
-            builder.AddSerilog(Log.Logger);
-        }
-
-        private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
-        {
-            // Disable hosting status message
-            services.Configure<ConsoleLifetimeOptions>(options =>
-            {
-                options.SuppressStatusMessages = true;
-            });
-
-            // Configure OneImlx.Terminal services
-            ConfigureOneImlxTerminal(context, services);
-
-            // Configure other services
-        }
-
-        private static void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection collection)
-        {
-            // Configure the hosted service
-            collection.AddHostedService<TestServerHostedService>();
-
-            // We are using online license so configure HTTP
-            collection.AddHttpClient("demo-http");
-
-            // NOTE: We are initialized as a console application.
-            // This can be a custom console or a custom terminal interface as well.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
-                options =>
-                {
-                    options.Id = TerminalIdentifiers.TestApplicationId;
-                    options.Licensing.LicenseFile = "C:\\this\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
-                    options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
-                    options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
-                    options.Router.Caret = "> ";
-                }
-            );
-
-            // Add router based on appsettings.json.
-            string? mode = context.Configuration["testserver:mode"];
-            if (mode == "user")
-            {
-                terminalBuilder.AddTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>();
-            }
-            else if (mode == "tcp")
-            {
-                terminalBuilder.AddTerminalRouter<TerminalTcpRouter, TerminalTcpRouterContext>();
-            }
-            else if (mode == "udp")
-            {
-                terminalBuilder.AddTerminalRouter<TerminalUdpRouter, TerminalUdpRouterContext>();
-            }
-            else
-            {
-                throw new InvalidOperationException($"The mode `{mode}` is not supported.");
-            }
-
-            // Add commands using declarative syntax.
-            terminalBuilder.AddDeclarativeAssembly<TestRunner>();
-        }
+        private static IHost? host;
     }
 }

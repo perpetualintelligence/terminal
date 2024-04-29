@@ -1,21 +1,21 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers
@@ -37,24 +37,35 @@ namespace OneImlx.Terminal.Commands.Checkers
             optionsChecker = new ConfigurationOptionsChecker(host.Services);
         }
 
+        [Theory]
+        [InlineData(" ")]
+        [InlineData("~")]
+        [InlineData("#")]
+        [InlineData("sp")]
+        [InlineData("öö")]
+        [InlineData("माणूस")]
+        [InlineData("女性")]
+        public async Task CommandSeparatorAndOptionPrefixCannotBeSameAsync(string separator)
+        {
+            options.Parser.Separator = separator;
+            options.Parser.OptionPrefix = separator;
+
+            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The command separator and option prefix cannot be same. separator={separator}");
+        }
+
         [Fact]
-        public async Task Terminal_Id_Is_Required()
+        public async Task CommandSeparatorCannotBeNullOrEmptyAsync()
         {
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
 
-            options.Id = "";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The terminal identifier is required.");
-
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Id = null;
+            options.Parser.Separator = null;
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The command separator cannot be null or empty.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The terminal identifier is required.");
 
-            options.Id = "   ";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The terminal identifier is required.");
-
-            options.Id = "asasd";
-            await func.Invoke();
+            options.Parser.Separator = "";
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The command separator cannot be null or empty.");
         }
 
         [Fact]
@@ -228,35 +239,77 @@ namespace OneImlx.Terminal.Commands.Checkers
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The option separator cannot be null or empty.");
         }
 
-        [Theory]
-        [InlineData(" ")]
-        [InlineData("~")]
-        [InlineData("#")]
-        [InlineData("sp")]
-        [InlineData("öö")]
-        [InlineData("माणूस")]
-        [InlineData("女性")]
-        public async Task CommandSeparatorAndOptionPrefixCannotBeSameAsync(string separator)
-        {
-            options.Parser.Separator = separator;
-            options.Parser.OptionPrefix = separator;
-
-            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The command separator and option prefix cannot be same. separator={separator}");
-        }
-
         [Fact]
-        public async Task CommandSeparatorCannotBeNullOrEmptyAsync()
+        public async Task RemoteCommandDelimiter_Cannot_Be_NullOrWhitespace()
         {
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Parser.Separator = null;
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The command separator cannot be null or empty.");
+            options.Router.RemoteCommandDelimiter = null;
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote command delimiter cannot be null or whitespace.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            options.Parser.Separator = "";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The command separator cannot be null or empty.");
+            options.Router.RemoteCommandDelimiter = "   ";
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote command delimiter cannot be null or whitespace.");
+        }
+
+        [Fact]
+        public async Task RemoteCommandDelimiter_RemoteMessageDelimiter_Cannot_be_Same()
+        {
+            options.Router.RemoteCommandDelimiter = "$EOC$";
+            options.Router.RemoteMessageDelimiter = "$EOC$";
+
+            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote command delimiter and remote message delimiter cannot be same. delimiter=$EOC$");
+        }
+
+        [Fact]
+        public async Task RemoteMessageDelimiter_Cannot_Be_NullOrWhitespace()
+        {
+            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            options.Router.RemoteMessageDelimiter = null;
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote message delimiter cannot be null or whitespace.");
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            options.Router.RemoteMessageDelimiter = "   ";
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote message delimiter cannot be null or whitespace.");
+        }
+
+        [Fact]
+        public async Task Terminal_Id_Is_Required()
+        {
+            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
+
+            options.Id = "";
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The terminal identifier is required.");
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            options.Id = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The terminal identifier is required.");
+
+            options.Id = "   ";
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The terminal identifier is required.");
+
+            options.Id = "asasd";
+            await func.Invoke();
+        }
+
+        [Fact]
+        public async Task ValueDelimiterStringCannotBeNullOrWhitespace()
+        {
+            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
+
+            // Make sure command separator is different so we can fail for option separator below.
+            options.Parser.ValueDelimiter = "   ";
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be null or whitespace.");
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            options.Parser.ValueDelimiter = null;
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be null or whitespace.");
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Fact]
@@ -283,7 +336,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         [Fact]
-        public async Task ValueDelimiterStringCannotBeSameAsArgSeparator()
+        public async Task ValueDelimiterStringCannotBeSameAsOptionValueSeparator()
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Parser.OptionValueSeparator = "^";
@@ -302,21 +355,6 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be same as the separator. delimiter=^");
-        }
-
-        [Fact]
-        public async Task ValueDelimiterStringCannotBeNullOrWhitespace()
-        {
-            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
-
-            // Make sure command separator is different so we can fail for option separator below.
-            options.Parser.ValueDelimiter = "   ";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be null or whitespace.");
-
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Parser.ValueDelimiter = null;
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be null or whitespace.");
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         private readonly IHost host;
