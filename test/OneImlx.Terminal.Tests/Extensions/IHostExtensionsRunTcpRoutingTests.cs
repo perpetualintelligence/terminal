@@ -384,7 +384,7 @@ namespace OneImlx.Terminal.Extensions
                         tcpClient.Connected.Should().BeTrue();
 
                         var command = $"Client-{localIdx + 1} sent test command";
-                        var commandBytes = textHandler.Encoding.GetBytes(TerminalServices.DelimitedMessage(GetOptions(host), command));
+                        var commandBytes = textHandler.Encoding.GetBytes(command);
                         await tcpClient.GetStream().WriteAsync(commandBytes, 0, commandBytes.Length);
                         await tcpClient.GetStream().FlushAsync();
                     });
@@ -432,7 +432,7 @@ namespace OneImlx.Terminal.Extensions
                 await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
 
                 // Send a valid delimited message
-                byte[] messageBytes = textHandler.Encoding.GetBytes(TerminalServices.DelimitedMessage(GetOptions(host), "Test command"));
+                byte[] messageBytes = textHandler.Encoding.GetBytes("Test command");
                 await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await tcpClient.GetStream().FlushAsync();
             });
@@ -647,13 +647,15 @@ namespace OneImlx.Terminal.Extensions
         [Fact]
         public async Task RunAsync_Should_Throw_InvalidConfiguration_For_Invalid_StartMode()
         {
+            host = CreateHostWithLogger(ConfigureServicesDefault, nameof(RunAsync_Should_Throw_InvalidConfiguration_For_Invalid_StartMode));
+
             startContext = new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token);
             var context = new TerminalTcpRouterContext(serverIpEndPoint, startContext);
             Func<Task> act = async () => await host.RunTerminalRouterAsync<TerminalTcpRouter, TerminalTcpRouterContext>(context);
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for TCP routing. start_mode=Custom");
         }
 
-        private static IHost CreateHostWithLogger(Action<IServiceCollection> configureServicesDefault, string logName)
+        private static IHost CreateHostWithLogger(Action<IServiceCollection> configureServices, string logName)
         {
             string logFile = Path.ChangeExtension(logName, ".log");
 
@@ -664,7 +666,7 @@ namespace OneImlx.Terminal.Extensions
                .CreateLogger();
 
             var newHostBuilder = Host.CreateDefaultBuilder()
-                                     .ConfigureServices(configureServicesDefault)
+                                     .ConfigureServices(configureServices)
                                      .UseSerilog();
 
             return newHostBuilder.Build();
