@@ -9,63 +9,86 @@ using FluentAssertions;
 using OneImlx.Terminal.Configuration.Options;
 using Xunit;
 
-namespace OneImlx.Terminal.Runtime
+namespace OneImlx.Terminal.Runtime.Tests
 {
     public class TerminalServicesTests
     {
         public TerminalServicesTests()
         {
-            _terminalOptions = new TerminalOptions();
-            _terminalOptions.Router.RemoteMessageDelimiter = "|";
+            _terminalOptions = new TerminalOptions
+            {
+                Router = new RouterOptions
+                {
+                    RemoteCommandDelimiter = ";", // Delimiter to separate commands within a message
+                    RemoteMessageDelimiter = "|"  // Delimiter to mark the end of a complete message
+                }
+            };
         }
 
         [Fact]
-        public void DelimitedCommandString_ShouldAddDelimiterToElement_NotEndingWithDelimiter()
+        public void DelimitedMessage_WithCustomDelimiters_ShouldAddDelimiterToElements_NotEndingWithCommandDelimiter()
         {
-            var input = new[] { "cmd1|", "cmd2", "cmd3" };
-
-            var result = TerminalServices.DelimitedMessage(_terminalOptions, input);
-            result.Should().Be("cmd1|cmd2|cmd3|");
-
-            result = TerminalServices.DelimitedMessage("|", input);
-            result.Should().Be("cmd1|cmd2|cmd3|");
+            var commands = new[] { "cmd1;", "cmd2", "cmd3" };
+            var result = TerminalServices.DelimitedMessage(";", "|", commands);
+            result.Should().Be("cmd1;cmd2;cmd3;|");
         }
 
         [Fact]
-        public void DelimitedCommandString_ShouldReturn_EmptyString_ForEmptyInput()
+        public void DelimitedMessage_WithCustomDelimiters_ShouldReturn_EmptyString_ForEmptyInput()
         {
-            var input = System.Array.Empty<string>();
-
-            var result = TerminalServices.DelimitedMessage(_terminalOptions, input);
-            result.Should().BeEmpty();
-
-            result = TerminalServices.DelimitedMessage("|", input);
-            result.Should().BeEmpty();
+            var commands = System.Array.Empty<string>();
+            var result = TerminalServices.DelimitedMessage(";", "|", commands);
+            result.Should().Be("|");
         }
 
         [Fact]
-        public void DelimitedCommandString_ShouldReturn_ExpectedString_ForMultipleInputs()
+        public void DelimitedMessage_WithCustomDelimiters_ShouldReturn_ExpectedString_ForMultipleInputs()
         {
-            var input = new[] { "cmd1", "cmd2", "cmd3" };
-
-            var result = TerminalServices.DelimitedMessage(_terminalOptions, input);
-            result.Should().Be("cmd1|cmd2|cmd3|");
-
-            result = TerminalServices.DelimitedMessage("|", input);
-            result.Should().Be("cmd1|cmd2|cmd3|");
+            var commands = new[] { "cmd1", "cmd2", "cmd3" };
+            var result = TerminalServices.DelimitedMessage(";", "|", commands);
+            result.Should().Be("cmd1;cmd2;cmd3;|");
         }
 
         [Fact]
-        public void DelimitedCommandString_ShouldReturn_ExpectedString_ForSingleInput()
+        public void DelimitedMessage_WithCustomDelimiters_ShouldReturn_ExpectedString_ForSingleInput()
         {
-            var input = new[] { "cmd1" };
-            var result = TerminalServices.DelimitedMessage(_terminalOptions, input);
-            result.Should().Be("cmd1|");
-
-            result = TerminalServices.DelimitedMessage("|", input);
-            result.Should().Be("cmd1|");
+            var commands = new[] { "cmd1" };
+            var result = TerminalServices.DelimitedMessage(";", "|", commands);
+            result.Should().Be("cmd1;|");
         }
 
-        private TerminalOptions _terminalOptions;
+        [Fact]
+        public void DelimitedMessage_WithOptions_ShouldAddDelimiterToElements_NotEndingWithCommandDelimiter()
+        {
+            var commands = new[] { "cmd1;", "cmd2", "cmd3" };
+            var result = TerminalServices.DelimitedMessage(_terminalOptions, commands);
+            result.Should().Be("cmd1;cmd2;cmd3;|");
+        }
+
+        [Fact]
+        public void DelimitedMessage_WithOptions_ShouldReturn_EmptyString_ForEmptyInput()
+        {
+            var commands = System.Array.Empty<string>();
+            var result = TerminalServices.DelimitedMessage(_terminalOptions, commands);
+            result.Should().Be("|");
+        }
+
+        [Fact]
+        public void DelimitedMessage_WithOptions_ShouldReturn_ExpectedString_ForMultipleInputs()
+        {
+            var commands = new[] { "cmd1", "cmd2", "cmd3" };
+            var result = TerminalServices.DelimitedMessage(_terminalOptions, commands);
+            result.Should().Be("cmd1;cmd2;cmd3;|");
+        }
+
+        [Fact]
+        public void DelimitedMessage_WithOptions_ShouldReturn_ExpectedString_ForSingleInput()
+        {
+            var commands = new[] { "cmd1" };
+            var result = TerminalServices.DelimitedMessage(_terminalOptions, commands);
+            result.Should().Be("cmd1;|");
+        }
+
+        private readonly TerminalOptions _terminalOptions;
     }
 }

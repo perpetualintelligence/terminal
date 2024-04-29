@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -37,12 +37,6 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             logger.LogDebug("Check command. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
 
-            // Make sure command string raw length is within specified
-            if (context.HandlerContext.RouterContext.Route.Raw.Length > terminalOptions.Router.MaxRemoteMessageLength)
-            {
-                throw new TerminalException(TerminalErrors.InvalidCommand, "The command string is too long. command={0} max={1}", context.HandlerContext.RouterContext.Route.Raw, terminalOptions.Router.MaxRemoteMessageLength);
-            }
-
             await CheckArgumentsAsync(context);
 
             await CheckOptionsAsync(context);
@@ -56,7 +50,8 @@ namespace OneImlx.Terminal.Commands.Checkers
             var command = context.HandlerContext.ParsedCommand.Command;
             ArgumentDescriptors? argumentDescriptors = command.Descriptor.ArgumentDescriptors;
 
-            // If the command itself does not support any arguments then there's nothing to check. Parser will reject any unsupported attributes.
+            // If the command itself does not support any arguments then there's nothing to check. Parser will reject
+            // any unsupported attributes.
             if (argumentDescriptors == null)
             {
                 return;
@@ -102,7 +97,8 @@ namespace OneImlx.Terminal.Commands.Checkers
             var command = context.HandlerContext.ParsedCommand.Command;
             OptionDescriptors? optionDescriptors = command.Descriptor.OptionDescriptors;
 
-            // If the command itself does not support any options then there's nothing to check. Parser will reject any unsupported attributes.
+            // If the command itself does not support any options then there's nothing to check. Parser will reject any
+            // unsupported attributes.
             if (optionDescriptors == null)
             {
                 return;
@@ -142,9 +138,9 @@ namespace OneImlx.Terminal.Commands.Checkers
             }
         }
 
-        private readonly IOptionChecker optionChecker;
         private readonly IArgumentChecker argumentChecker;
         private readonly ILogger<CommandChecker> logger;
+        private readonly IOptionChecker optionChecker;
         private readonly TerminalOptions terminalOptions;
     }
 }

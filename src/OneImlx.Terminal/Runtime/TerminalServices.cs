@@ -5,7 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,43 +13,55 @@ using OneImlx.Terminal.Configuration.Options;
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// Defines the common terminal services.
+    /// Provides common terminal services.
     /// </summary>
     public static class TerminalServices
     {
         /// <summary>
-        /// Returns a delimited message for the specified raw messages.
+        /// Constructs a delimited message from specified raw command strings using the settings defined in terminal options.
         /// </summary>
-        /// <param name="raw">The raw strings to be appended to the message delimiter.</param>
-        /// <param name="terminalOptions">The terminal options instance containing the message delimiter.</param>
-        /// <returns>The delimited message.</returns>
+        /// <param name="commands">The raw command strings to process with the message delimiter.</param>
+        /// <param name="terminalOptions">The terminal options that include the delimiter settings.</param>
+        /// <returns>A message string with added delimiters.</returns>
         /// <remarks>
-        /// The <see cref="DelimitedMessage(TerminalOptions, string[])"/> method checks if each element in the raw array
-        /// ends with the <see cref="RouterOptions.RemoteMessageDelimiter"/>. If it doesn't, the delimiter is appended
-        /// to the string element. The formatted strings are then joined into a single message.
+        /// This method verifies that each command string ends with the
+        /// <see cref="RouterOptions.RemoteCommandDelimiter"/>. It appends the delimiter if absent and combines the
+        /// strings into a single message using the <see cref="RouterOptions.RemoteMessageDelimiter"/>.
         /// </remarks>
-        /// <seealso cref="DelimitedMessage(string, string[])"/>
-        public static string DelimitedMessage(TerminalOptions terminalOptions, params string[] raw)
+        /// <seealso cref="DelimitedMessage(string, string, string[])"/>
+        public static string DelimitedMessage(TerminalOptions terminalOptions, params string[] commands)
         {
-            return DelimitedMessage(terminalOptions.Router.RemoteMessageDelimiter, raw);
+            return DelimitedMessage(terminalOptions.Router.RemoteCommandDelimiter, terminalOptions.Router.RemoteMessageDelimiter, commands);
         }
 
         /// <summary>
-        /// Returns a delimited message for the specified raw messages.
+        /// Constructs a delimited message from specified raw strings using provided command and message delimiters.
         /// </summary>
-        /// <param name="raw">The raw strings to be appended to the message delimiter.</param>
-        /// <param name="delimiter">The delimiter.</param>
-        /// <returns>The delimited message.</returns>
+        /// <param name="commands">The raw strings to append with a command delimiter.</param>
+        /// <param name="cmdDelimiter">The command delimiter to use.</param>
+        /// <param name="msgDelimiter">The message delimiter to use.</param>
+        /// <returns>A delimited message ready for transmission or processing.</returns>
         /// <remarks>
-        /// The <see cref="DelimitedMessage(string, string[])"/> method checks if each element in the raw array ends
-        /// with the delimiter. If it doesn't, the delimiter is appended to the string element. The formatted strings
-        /// are then joined into a single message.
+        /// This method checks each command string for the presence of the command delimiter and appends it if missing.
+        /// It then combines these strings into a single message.
         /// </remarks>
         /// <seealso cref="DelimitedMessage(TerminalOptions, string[])"/>
-        public static string DelimitedMessage(string delimiter, params string[] raw)
+        public static string DelimitedMessage(string cmdDelimiter, string msgDelimiter, params string[] commands)
         {
-            var delimitedStrings = raw.Select(s => s.EndsWith(delimiter) ? s : string.Concat(s, delimiter));
-            return string.Join(string.Empty, delimitedStrings);
+            StringBuilder delimitedMessage = new StringBuilder();
+            foreach (string command in commands)
+            {
+                if (!command.EndsWith(cmdDelimiter))
+                {
+                    delimitedMessage.Append(command).Append(cmdDelimiter);
+                }
+                else
+                {
+                    delimitedMessage.Append(command);
+                }
+            }
+
+            return delimitedMessage.Append(msgDelimiter).ToString();
         }
     }
 }

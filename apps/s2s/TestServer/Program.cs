@@ -59,6 +59,9 @@ namespace OneImlx.Terminal.Apps.TestServer
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
+
+                    options.Router.RemoteMessageMaxLength = 64000;
+                    options.Router.EnableRemoteDelimiters = true;
                     options.Router.Caret = "> ";
                 }
             );
