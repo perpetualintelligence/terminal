@@ -5,129 +5,98 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using OneImlx.Shared.Licensing;
+using OneImlx.Terminal.Apps.Runners;
+using OneImlx.Terminal.Extensions;
+using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Stores;
+using Serilog;
 
 namespace OneImlx.Terminal.Apps.TestClient
 {
     internal class Program
     {
+        private static void ConfigureAppConfigurationDelegate(HostBuilderContext context, IConfigurationBuilder builder)
+        {
+            var configBuilder = new ConfigurationBuilder();
+            configBuilder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: false);
+            configBuilder.Build();
+        }
+
+        private static void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
+        {
+            // Clear all providers
+            builder.ClearProviders();
+
+            // Configure logging of your choice, here we are configuring Serilog
+            var loggerConfig = new LoggerConfiguration();
+            loggerConfig.MinimumLevel.Error();
+            loggerConfig.WriteTo.Console();
+            Log.Logger = loggerConfig.CreateLogger();
+            builder.AddSerilog(Log.Logger);
+        }
+
+        private static void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection collection)
+        {
+            // Configure the hosted service
+            collection.AddHostedService<TestClientHostedService>();
+
+            // NOTE: We are initialized as a console application. This can be a custom console or a custom terminal
+            // interface as well.
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+                options =>
+                {
+                    options.Id = TerminalIdentifiers.TestApplicationId;
+                    options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
+                    options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+                    options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
+
+                    options.Router.Caret = "> ";
+                }
+                                                                                                                                                                                          );
+
+            // Add commands using declarative syntax.
+            terminalBuilder.AddDeclarativeAssembly<TestClientRunner>();
+        }
+
+        private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
+        {
+            // Disable hosting status message
+            services.Configure<ConsoleLifetimeOptions>(options =>
+            {
+                options.SuppressStatusMessages = true;
+            });
+
+            // Configure OneImlx.Terminal services
+            ConfigureOneImlxTerminal(context, services);
+
+            // Configure other services
+        }
+
         private static async Task Main(string[] args)
         {
-            cts = new CancellationTokenSource();
-            Console.WriteLine("Starting test client...");
+            // Allows cancellation for the entire terminal and individual commands.
+            CancellationTokenSource terminalTokenSource = new();
+            CancellationTokenSource commandTokenSource = new();
 
-            // Define the server address and port
-            string server = "127.0.0.1";
-            int port = 49153; // Example port
+            // Setup the terminal start context
+            TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
+            TerminalConsoleRouterContext terminalConsoleRouterContext = new(terminalStartContext);
 
-            // Start all clients simultaneously
-            Task[] clientTasks =
-            {
-                StartClient(server, port),
-                StartClient(server, port),
-                StartClient(server, port),
-                StartClient(server, port)
-            };
-
-            // Wait for all to complete
-            await Task.WhenAll(clientTasks);
-
-            Console.WriteLine("Test client finished.");
+            // Start the host so we can configure the terminal router.
+            // NOTE: The host needs to be started with Start API to initialize the hosted service.
+            Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(ConfigureAppConfigurationDelegate)
+                .ConfigureLogging(ConfigureLoggingDelegate)
+                .ConfigureServices(ConfigureServicesDelegate)
+                .RunTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>(terminalConsoleRouterContext);
         }
 
-        private static async Task SendIndefinetilyAsync(Socket socket)
-        {
-            try
-            {
-                while (true)
-                {
-                    cts.Token.ThrowIfCancellationRequested();
-
-                    Console.WriteLine("Sending delimited individual commands...");
-
-                    // Prepare the message to send
-                    string[] individualCommands = [
-                        "test",
-                        "test -v",
-                        "test grp1",
-                        "test grp1 cmd1",
-                        "test grp1 invalid",
-                        "test grp1 grp2",
-                        "test grp1 grp2 cmd2",
-                        "test grp1 grp2 invalid"
-                    ];
-
-                    // Send each message over tcp with a delay of 500 ms
-                    // NOTE: The TestServer enables the remote delimited message feature and uses default $m$ as a delimiter
-                    // so we need to delimit each message.
-                    byte[] data;
-                    foreach (string message in individualCommands)
-                    {
-                        string delimitedMessage = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, message);
-                        data = Encoding.Unicode.GetBytes(delimitedMessage);
-                        await socket.SendAsync(data, SocketFlags.None, cts.Token);
-                        Console.WriteLine("Sent: {0}", delimitedMessage);
-                    }
-
-                    // Wait a bit before sending the next message lot
-                    Console.WriteLine("Waiting for 5 seconds...");
-                    Thread.Sleep(5000);
-
-                    // Send delimited message
-                    Console.WriteLine("Sending delimited multiple commands...");
-                    string concatenatedCommands = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, individualCommands);
-                    data = Encoding.Unicode.GetBytes(concatenatedCommands);
-                    await socket.SendAsync(data, SocketFlags.None, cts.Token);
-                    Console.WriteLine("Sent: {0}", concatenatedCommands);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception: {0}", e.Message);
-            }
-            finally
-            {
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
-                Console.WriteLine("Connection closed.");
-            }
-        }
-
-        private static async Task StartClient(string server, int port)
-        {
-            try
-            {
-                // Create a TCP/IP socket
-                Socket client = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-                // Connect to the server
-                while (true)
-                {
-                    try
-                    {
-                        Console.WriteLine("Attempting to connect to server...");
-                        await client.ConnectAsync(IPAddress.Parse(server), port);
-                        Console.WriteLine("Connected to {0} from {1}.", client.RemoteEndPoint, client.LocalEndPoint);
-                        break; // Exit the loop once connected
-                    }
-                    catch (SocketException)
-                    {
-                        Console.WriteLine("Server not available, retrying in 5 seconds...");
-                        Thread.Sleep(5000);
-                    }
-                }
-
-                await SendIndefinetilyAsync(client);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
-
-        private static CancellationTokenSource cts;
+        private static IHost? host;
     }
 }

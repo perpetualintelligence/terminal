@@ -1,10 +1,15 @@
 /*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -23,11 +28,6 @@ using OneImlx.Terminal.Integration;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
 
 namespace OneImlx.Terminal.Extensions
 {
@@ -36,20 +36,6 @@ namespace OneImlx.Terminal.Extensions
     /// </summary>
     public static class ITerminalBuilderExtensions
     {
-        /// <summary>
-        /// Adds the <see cref="IDataTypeMapper{TValue}"/> and <see cref="IOptionChecker"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <typeparam name="TMapper">The option mapper type.</typeparam>
-        /// <typeparam name="TChecker">The option checker type.</typeparam>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddOptionChecker<TMapper, TChecker>(this ITerminalBuilder builder) where TMapper : class, IDataTypeMapper<Option> where TChecker : class, IOptionChecker
-        {
-            builder.Services.AddTransient<IDataTypeMapper<Option>, TMapper>();
-            builder.Services.AddTransient<IOptionChecker, TChecker>();
-            return builder;
-        }
-
         /// <summary>
         /// Adds the <see cref="IDataTypeMapper{TValue}"/> and <see cref="IArgumentChecker"/> to the service collection.
         /// </summary>
@@ -61,162 +47,6 @@ namespace OneImlx.Terminal.Extensions
         {
             builder.Services.AddTransient<IDataTypeMapper<Argument>, TMapper>();
             builder.Services.AddTransient<IArgumentChecker, TChecker>();
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the <see cref="ITerminalEventHandler"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddEventHandler<TEventHandler>(this ITerminalBuilder builder) where TEventHandler : class, ITerminalEventHandler
-        {
-            builder.Services.AddSingleton<ITerminalEventHandler, TEventHandler>();
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the <see cref="TerminalOptions"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddConfigurationOptions(this ITerminalBuilder builder)
-        {
-            // Add options.
-            builder.Services.AddOptions();
-            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TerminalOptions>>().Value);
-
-            // Add options checker
-            builder.Services.AddSingleton<IConfigurationOptionsChecker, ConfigurationOptionsChecker>();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the <see cref="TerminalStartContext"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="terminalStartContext">The terminal start context.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddStartContext(this ITerminalBuilder builder, TerminalStartContext terminalStartContext)
-        {
-            builder.Services.AddSingleton(terminalStartContext);
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the command <see cref="ITerminalHelpProvider"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddHelpProvider<THelpProvider>(this ITerminalBuilder builder) where THelpProvider : class, ITerminalHelpProvider
-        {
-            builder.Services.AddSingleton<ITerminalHelpProvider, THelpProvider>();
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="assemblyType">The type whose assembly to inspect and read all the declarative targets.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        /// <remarks>
-        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all the
-        /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
-        /// </remarks>
-        public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Type assemblyType)
-        {
-            return AddDeclarativeAssembly(builder, assemblyType.Assembly);
-        }
-
-        /// <summary>
-        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="assembly">The assembly to inspect.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        /// <remarks>
-        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Assembly)"/> reads the target assembly and inspects all the
-        /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
-        /// </remarks>
-        public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Assembly assembly)
-        {
-            IEnumerable<Type> declarativeTypes = assembly.GetTypes()
-                .Where(e => typeof(IDeclarativeRunner).IsAssignableFrom(e));
-
-            foreach (Type type in declarativeTypes)
-            {
-                AddDeclarativeRunnerInner(builder, type);
-            }
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <typeparam name="TType">The type whose assembly to inspect and read all the declarative targets.</typeparam>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        /// <remarks>
-        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all the
-        /// declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized and
-        /// direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
-        /// </remarks>
-        public static ITerminalBuilder AddDeclarativeAssembly<TType>(this ITerminalBuilder builder)
-        {
-            return AddDeclarativeAssembly(builder, typeof(TType));
-        }
-
-        /// <summary>
-        /// Adds a <see cref="IDeclarativeRunner"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>
-        /// The <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/> inspects the declarative target type
-        /// using reflection.
-        /// </returns>
-        public static ITerminalBuilder AddDeclarativeRunner<TDeclarativeRunner>(this ITerminalBuilder builder) where TDeclarativeRunner : IDeclarativeRunner
-        {
-            return AddDeclarativeRunnerInner(builder, typeof(TDeclarativeRunner));
-        }
-
-        /// <summary>
-        /// Adds the <see cref="ITerminalExceptionHandler"/> to the service collection.
-        /// </summary>
-        /// <typeparam name="THandler">The <see cref="ITerminalExceptionHandler"/> type.</typeparam>
-        /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddExceptionHandler<THandler>(this ITerminalBuilder builder) where THandler : class, ITerminalExceptionHandler
-        {
-            // Add exception publisher
-            builder.Services.AddTransient<ITerminalExceptionHandler, THandler>();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds integration services to the terminal builder for loading commands from an external source.
-        /// This method registers the specified command source, command source checker, and command source assembly loader as singletons in the service collection.
-        /// </summary>
-        /// <typeparam name="TContext">The type of the context used in the command source, checker, and loader. Must be a class.</typeparam>
-        /// <typeparam name="TSource">The type of the terminal command source. Must be a class implementing <see cref="ITerminalCommandSource{TContext}"/>.</typeparam>
-        /// <typeparam name="TChecker">The type of the terminal command source checker. Must be a class implementing <see cref="ITerminalCommandSourceChecker{TContext}"/>.</typeparam>
-        /// <typeparam name="TLoader">The type of the terminal command source assembly loader. Must be a class implementing <see cref="ITerminalCommandSourceAssemblyLoader{TContext}"/>.</typeparam>
-        /// <param name="builder">The terminal builder to which the integration services are added.</param>
-        /// <returns>The <see cref="ITerminalBuilder"/> with the added integration services, enabling method chaining.</returns>
-        public static ITerminalBuilder AddIntegration<TContext, TSource, TChecker, TLoader>(this ITerminalBuilder builder)
-            where TContext : class
-            where TSource : class, ITerminalCommandSource<TContext>
-            where TChecker : class, ITerminalCommandSourceChecker<TContext>
-            where TLoader : class, ITerminalCommandSourceAssemblyLoader<TContext>
-        {
-            builder.Services.AddSingleton<ITerminalCommandSource<TContext>, TSource>();
-            builder.Services.AddSingleton<ITerminalCommandSourceChecker<TContext>, TChecker>();
-            builder.Services.AddSingleton<ITerminalCommandSourceAssemblyLoader<TContext>, TLoader>();
             return builder;
         }
 
@@ -234,25 +64,6 @@ namespace OneImlx.Terminal.Extensions
 
             // Add option parser
             builder.Services.AddTransient<ICommandRouteParser, TParser>();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds terminal license handler to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddLicensing(this ITerminalBuilder builder)
-        {
-            // Add license debugger.
-            builder.Services.AddSingleton<ILicenseDebugger, LicenseDebugger>();
-
-            // Add license extractor as singleton
-            builder.Services.AddSingleton<ILicenseExtractor, LicenseExtractor>();
-
-            // Add license checker as singleton
-            builder.Services.AddSingleton<ILicenseChecker, LicenseChecker>();
 
             return builder;
         }
@@ -277,6 +88,37 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
+        /// Adds the <see cref="ITerminalCommandStore"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TStore">The command descriptor store type.</typeparam>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder)
+            where TStore : class, ITerminalCommandStore
+        {
+            builder.Services.AddSingleton<ITerminalCommandStore, TStore>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="TerminalOptions"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddConfigurationOptions(this ITerminalBuilder builder)
+        {
+            // Add options.
+            builder.Services.AddOptions();
+            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TerminalOptions>>().Value);
+
+            // Add options checker
+            builder.Services.AddSingleton<IConfigurationOptionsChecker, ConfigurationOptionsChecker>();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the <see cref="ITerminalConsole"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -286,6 +128,185 @@ namespace OneImlx.Terminal.Extensions
             // Add terminal routing service.
             builder.Services.AddSingleton<ITerminalConsole, TConsole>();
 
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="assemblyType">The type whose assembly to inspect and read all the declarative targets.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        /// <remarks>
+        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all
+        /// the declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized
+        /// and direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
+        /// </remarks>
+        public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Type assemblyType)
+        {
+            return AddDeclarativeAssembly(builder, assemblyType.Assembly);
+        }
+
+        /// <summary>
+        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="assembly">The assembly to inspect.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        /// <remarks>
+        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Assembly)"/> reads the target assembly and inspects
+        /// all the declarative targets using reflection. Reflection may have a performance bottleneck. For more
+        /// optimized and direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
+        /// </remarks>
+        public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Assembly assembly)
+        {
+            IEnumerable<Type> declarativeTypes = assembly.GetTypes()
+                .Where(e => typeof(IDeclarativeRunner).IsAssignableFrom(e));
+
+            foreach (Type type in declarativeTypes)
+            {
+                AddDeclarativeRunnerInner(builder, type);
+            }
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds all the <see cref="IDeclarativeRunner"/> implementations to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TType">The type whose assembly to inspect and read all the declarative targets.</typeparam>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        /// <remarks>
+        /// The <see cref="AddDeclarativeAssembly(ITerminalBuilder, Type)"/> reads the target assembly and inspects all
+        /// the declarative targets using reflection. Reflection may have a performance bottleneck. For more optimized
+        /// and direct declarative target inspection, use <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/>.
+        /// </remarks>
+        public static ITerminalBuilder AddDeclarativeAssembly<TType>(this ITerminalBuilder builder)
+        {
+            return AddDeclarativeAssembly(builder, typeof(TType));
+        }
+
+        /// <summary>
+        /// Adds a <see cref="IDeclarativeRunner"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>
+        /// The <see cref="AddDeclarativeRunner{TDeclarativeRunner}(ITerminalBuilder)"/> inspects the declarative target
+        /// type using reflection.
+        /// </returns>
+        public static ITerminalBuilder AddDeclarativeRunner<TDeclarativeRunner>(this ITerminalBuilder builder) where TDeclarativeRunner : IDeclarativeRunner
+        {
+            return AddDeclarativeRunnerInner(builder, typeof(TDeclarativeRunner));
+        }
+
+        /// <summary>
+        /// Adds the <see cref="ITerminalEventHandler"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddEventHandler<TEventHandler>(this ITerminalBuilder builder) where TEventHandler : class, ITerminalEventHandler
+        {
+            builder.Services.AddSingleton<ITerminalEventHandler, TEventHandler>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="ITerminalExceptionHandler"/> to the service collection.
+        /// </summary>
+        /// <typeparam name="THandler">The <see cref="ITerminalExceptionHandler"/> type.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddExceptionHandler<THandler>(this ITerminalBuilder builder) where THandler : class, ITerminalExceptionHandler
+        {
+            // Add exception publisher
+            builder.Services.AddTransient<ITerminalExceptionHandler, THandler>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the command <see cref="ITerminalHelpProvider"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddHelpProvider<THelpProvider>(this ITerminalBuilder builder) where THelpProvider : class, ITerminalHelpProvider
+        {
+            builder.Services.AddSingleton<ITerminalHelpProvider, THelpProvider>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds integration services to the terminal builder for loading commands from an external source. This method
+        /// registers the specified command source, command source checker, and command source assembly loader as
+        /// singletons in the service collection.
+        /// </summary>
+        /// <typeparam name="TContext">
+        /// The type of the context used in the command source, checker, and loader. Must be a class.
+        /// </typeparam>
+        /// <typeparam name="TSource">The type of the terminal command source. Must be a class implementing <see cref="ITerminalCommandSource{TContext}"/>.</typeparam>
+        /// <typeparam name="TChecker">
+        /// The type of the terminal command source checker. Must be a class implementing <see cref="ITerminalCommandSourceChecker{TContext}"/>.
+        /// </typeparam>
+        /// <typeparam name="TLoader">
+        /// The type of the terminal command source assembly loader. Must be a class implementing <see cref="ITerminalCommandSourceAssemblyLoader{TContext}"/>.
+        /// </typeparam>
+        /// <param name="builder">The terminal builder to which the integration services are added.</param>
+        /// <returns>The <see cref="ITerminalBuilder"/> with the added integration services, enabling method chaining.</returns>
+        public static ITerminalBuilder AddIntegration<TContext, TSource, TChecker, TLoader>(this ITerminalBuilder builder)
+            where TContext : class
+            where TSource : class, ITerminalCommandSource<TContext>
+            where TChecker : class, ITerminalCommandSourceChecker<TContext>
+            where TLoader : class, ITerminalCommandSourceAssemblyLoader<TContext>
+        {
+            builder.Services.AddSingleton<ITerminalCommandSource<TContext>, TSource>();
+            builder.Services.AddSingleton<ITerminalCommandSourceChecker<TContext>, TChecker>();
+            builder.Services.AddSingleton<ITerminalCommandSourceAssemblyLoader<TContext>, TLoader>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds terminal license handler to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddLicensing(this ITerminalBuilder builder)
+        {
+            // Add license debugger.
+            builder.Services.AddSingleton<ILicenseDebugger, LicenseDebugger>();
+
+            // Add license extractor as singleton
+            builder.Services.AddSingleton<ILicenseExtractor, LicenseExtractor>();
+
+            // Add license checker as singleton
+            builder.Services.AddSingleton<ILicenseChecker, LicenseChecker>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="IDataTypeMapper{TValue}"/> and <see cref="IOptionChecker"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TMapper">The option mapper type.</typeparam>
+        /// <typeparam name="TChecker">The option checker type.</typeparam>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddOptionChecker<TMapper, TChecker>(this ITerminalBuilder builder) where TMapper : class, IDataTypeMapper<Option> where TChecker : class, IOptionChecker
+        {
+            builder.Services.AddTransient<IDataTypeMapper<Option>, TMapper>();
+            builder.Services.AddTransient<IOptionChecker, TChecker>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="TerminalStartContext"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="terminalStartContext">The terminal start context.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddStartContext(this ITerminalBuilder builder, TerminalStartContext terminalStartContext)
+        {
+            builder.Services.AddSingleton(terminalStartContext);
             return builder;
         }
 
@@ -303,20 +324,6 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="ITerminalCommandStore"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <typeparam name="TStore">The command descriptor store type.</typeparam>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandStore<TStore>(this ITerminalBuilder builder)
-            where TStore : class, ITerminalCommandStore
-        {
-            builder.Services.AddSingleton<ITerminalCommandStore, TStore>();
-
-            return builder;
-        }
-
-        /// <summary>
         /// Adds the <see cref="ITerminalTextHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -325,14 +332,17 @@ namespace OneImlx.Terminal.Extensions
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
         /// <remarks>
         /// <para>
-        /// <see cref="AddTextHandler{TTextHandler}(ITerminalBuilder, TTextHandler)"/> requires an instance of <typeparamref name="TTextHandler"/> instead of just its type because the terminal application is
-        /// expected to operate with a single, consistent instance of <see cref="ITerminalTextHandler"/> throughout its lifetime. By passing an instance, it allows
-        /// the terminal to maintain state or configuration specific to that instance, ensuring consistent text handling behavior across different parts of the application.
+        /// <see cref="AddTextHandler{TTextHandler}(ITerminalBuilder, TTextHandler)"/> requires an instance of
+        /// <typeparamref name="TTextHandler"/> instead of just its type because the terminal application is expected to
+        /// operate with a single, consistent instance of <see cref="ITerminalTextHandler"/> throughout its lifetime. By
+        /// passing an instance, it allows the terminal to maintain state or configuration specific to that instance,
+        /// ensuring consistent text handling behavior across different parts of the application.
         /// </para>
         /// <para>
-        /// This approach also facilitates more flexible initialization patterns, where the <see cref="ITerminalTextHandler"/> can be configured or initialized
-        /// outside of the dependency injection container before being registered. This can be particularly useful when the text handler requires complex setup
-        /// or depends on settings or services that aren't readily available within the DI context.
+        /// This approach also facilitates more flexible initialization patterns, where the
+        /// <see cref="ITerminalTextHandler"/> can be configured or initialized outside of the dependency injection
+        /// container before being registered. This can be particularly useful when the text handler requires complex
+        /// setup or depends on settings or services that aren't readily available within the DI context.
         /// </para>
         /// </remarks>
         public static ITerminalBuilder AddTextHandler<TTextHandler>(this ITerminalBuilder builder, TTextHandler textHandler) where TTextHandler : class, ITerminalTextHandler
@@ -342,8 +352,9 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Starts a new <see cref="ICommandBuilder"/> definition with the default <see cref="CommandChecker"/>. Applications must call the
-        /// <see cref="ICommandBuilder.Add"/> method to add the <see cref="CommandDescriptor"/> to the service collection.
+        /// Starts a new <see cref="ICommandBuilder"/> definition with the default <see cref="CommandChecker"/>.
+        /// Applications must call the <see cref="ICommandBuilder.Add"/> method to add the
+        /// <see cref="CommandDescriptor"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="id">The command id.</param>
@@ -359,18 +370,22 @@ namespace OneImlx.Terminal.Extensions
             return DefineCommand(builder, id, name, description, typeof(CommandChecker), typeof(TRunner), commandType, commandFlags);
         }
 
-        /// <exclude />
+        /// <exclude/>
         private static ITerminalBuilder AddDeclarativeRunnerInner(this ITerminalBuilder builder, Type declarativeRunner)
         {
-            // Command descriptor
-            // The declarative runner is the command runner.
+            // Command descriptor The declarative runner is the command runner.
             CommandDescriptorAttribute cmdAttr = declarativeRunner.GetCustomAttribute<CommandDescriptorAttribute>(false) ?? throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command descriptor.");
 
-            // Command checker
-            CommandCheckerAttribute cmdChecker = declarativeRunner.GetCustomAttribute<CommandCheckerAttribute>(false) ?? throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command checker.");
+            // Command checker, defaults to CommandChecker if not defined.
+            Type checkerType = typeof(CommandChecker);
+            CommandCheckerAttribute? cmdChecker = declarativeRunner.GetCustomAttribute<CommandCheckerAttribute>(false);
+            if (cmdChecker != null)
+            {
+                checkerType = cmdChecker.Checker;
+            }
 
             // Establish command builder Default option not set ?
-            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Description, cmdChecker.Checker, declarativeRunner, cmdAttr.CommandType, cmdAttr.CommandFlags);
+            ICommandBuilder commandBuilder = builder.DefineCommand(cmdAttr.Id, cmdAttr.Name, cmdAttr.Description, checkerType, declarativeRunner, cmdAttr.CommandType, cmdAttr.CommandFlags);
 
             // Arguments Descriptors
             IEnumerable<ArgumentDescriptorAttribute> argAttrs = declarativeRunner.GetCustomAttributes<ArgumentDescriptorAttribute>(false);

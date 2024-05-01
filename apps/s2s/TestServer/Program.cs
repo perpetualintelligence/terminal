@@ -47,9 +47,6 @@ namespace OneImlx.Terminal.Apps.TestServer
             // Configure the hosted service
             collection.AddHostedService<TestServerHostedService>();
 
-            // We are using online license so configure HTTP
-            collection.AddHttpClient("demo-http");
-
             // NOTE: We are initialized as a console application. This can be a custom console or a custom terminal
             // interface as well.
             ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
@@ -86,7 +83,7 @@ namespace OneImlx.Terminal.Apps.TestServer
             }
 
             // Add commands using declarative syntax.
-            terminalBuilder.AddDeclarativeAssembly<TestRunner>();
+            terminalBuilder.AddDeclarativeAssembly<TestServerRunner>();
         }
 
         private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
@@ -132,8 +129,8 @@ namespace OneImlx.Terminal.Apps.TestServer
                 }
                 else if (mode == "tcp")
                 {
-                    // Adjust this to your whitelisted IP address needs.
-                    string? ipAddress = configuration.GetValue<string>("testserver:ipaddress");
+                    // Adjust this to your white-listed IP address needs.
+                    string? ipAddress = configuration.GetValue<string>("testserver:ip");
                     int port = configuration.GetValue<int>("testserver:port");
                     IPAddress serverLocalIp = IPAddress.Parse(ipAddress!);
                     IPEndPoint iPEndPoint = new(serverLocalIp, port);
@@ -144,6 +141,15 @@ namespace OneImlx.Terminal.Apps.TestServer
                 }
                 else if (mode == "udp")
                 {
+                    // Adjust this to your white-listed IP address needs.
+                    string? ipAddress = configuration.GetValue<string>("testserver:ip");
+                    int port = configuration.GetValue<int>("testserver:port");
+                    IPAddress serverLocalIp = IPAddress.Parse(ipAddress!);
+                    IPEndPoint iPEndPoint = new(serverLocalIp, port);
+                    TerminalStartContext startContext = new(TerminalStartMode.Udp, terminalTokenSource.Token, commandTokenSource.Token);
+
+                    TerminalUdpRouterContext routerContext = new(iPEndPoint, startContext);
+                    await host.RunTerminalRouterAsync<TerminalUdpRouter, TerminalUdpRouterContext>(routerContext);
                 }
                 else
                 {

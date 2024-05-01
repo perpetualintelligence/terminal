@@ -328,10 +328,13 @@ namespace OneImlx.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void TargetMustDefine_CommandChecker()
+        public void Target_Defaults_To_CommandChecker_If_NotDefined()
         {
-            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandCheckerRunner>();
-            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command checker.");
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandCheckerRunner>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+            cmdDescs.First().Checker.Should().Be(typeof(CommandChecker));
         }
 
         [Fact]

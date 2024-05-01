@@ -9,15 +9,14 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
     /// <summary>
     /// The root <c>test</c> runner for the TestServer.
     /// </summary>
-    [CommandDescriptor("test", "Test App", "Test application description.", Commands.CommandType.Root, Commands.CommandFlags.None)]
-    [OptionDescriptor("version", nameof(String), "Test version description", Commands.OptionFlags.None, "v")]
-    [CommandChecker(typeof(CommandChecker))]
-    public class TestRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
+    [CommandDescriptor("ts", "Test Server", "Test server description.", Commands.CommandType.Root, Commands.CommandFlags.None)]
+    [OptionDescriptor("version", nameof(String), "Test server version description", Commands.OptionFlags.None, "v")]
+    public class TestServerRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         private readonly ITerminalConsole terminalConsole;
-        private readonly ILogger<TestRunner> logger;
+        private readonly ILogger<TestServerRunner> logger;
 
-        public TestRunner(ITerminalConsole terminalConsole, ILogger<TestRunner> logger)
+        public TestServerRunner(ITerminalConsole terminalConsole, ILogger<TestServerRunner> logger)
         {
             this.terminalConsole = terminalConsole;
             this.logger = logger;
@@ -25,7 +24,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
-            await terminalConsole.WriteLineAsync("Test root command called.");
+            await terminalConsole.WriteLineAsync("Test server root command called.");
 
             // Get the version option value
             if (context.Command.TryGetOptionValue("version", out string? version))

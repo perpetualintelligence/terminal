@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OneImlx.Terminal.Commands.Declarative
 {
+    [CommandOwners("oid1, oid2")]
     [CommandDescriptor("id1", "name", "description", CommandType.SubCommand, CommandFlags.None)]
     [CommandTags("tag1", "tag2", "tag3")]
     [CommandCustomProperty("key1", "value1")]
