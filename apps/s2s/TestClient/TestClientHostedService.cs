@@ -5,12 +5,12 @@ using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 
-namespace OneImlx.Terminal.Apps.TestServer
+namespace OneImlx.Terminal.Apps.TestClient
 {
     /// <summary>
     /// The <see cref="TerminalHostedService"/> for the test app.
     /// </summary>
-    public sealed class TestServerHostedService : TerminalHostedService
+    public sealed class TestClientHostedService : TerminalHostedService
     {
         /// <summary>
         /// Initializes a new instance.
@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// <param name="options">The terminal configuration options.</param>
         /// <param name="terminalConsole">The terminal console.</param>
         /// <param name="logger">The logger.</param>
-        public TestServerHostedService(
+        public TestClientHostedService(
             IServiceProvider serviceProvider,
             TerminalOptions options,
             ITerminalConsole terminalConsole,
@@ -43,10 +43,10 @@ namespace OneImlx.Terminal.Apps.TestServer
         protected override void OnStarted()
         {
             // Set title
-            Console.Title = "Test Server";
+            Console.Title = "Test Client";
 
             // These are async calls, but we are blocking here for as the  of the test.
-            TerminalConsole.WriteLineAsync("Test server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineAsync("Test client started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// </summary>
         protected override void OnStopped()
         {
-            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Test server stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Test client stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// </summary>
         protected override void OnStopping()
         {
-            TerminalConsole.WriteLineAsync("Stopping server...").Wait();
+            TerminalConsole.WriteLineAsync("Stopping test client...").Wait();
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// <returns></returns>
         protected override async Task PrintHostApplicationHeaderAsync()
         {
-            await TerminalConsole.WriteLineAsync("Starting test server...");
+            await TerminalConsole.WriteLineAsync("Starting test client...");
         }
 
         /// <summary>
