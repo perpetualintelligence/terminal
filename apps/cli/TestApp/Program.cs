@@ -9,6 +9,9 @@ using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Serilog;
+using System;
+using System.IO;
+using System.Threading;
 
 namespace OneImlx.Terminal.Apps.TestApp
 {

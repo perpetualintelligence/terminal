@@ -21,9 +21,9 @@ namespace OneImlx.Terminal.Commands
         None = 0,
 
         /// <summary>
-        /// The command is protected.
+        /// The command is secured.
         /// </summary>
-        Protected = 2,
+        Secured = 2,
 
         /// <summary>
         /// The command is obsolete.

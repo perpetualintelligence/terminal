@@ -16,6 +16,10 @@ using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Serilog;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient
 {
@@ -78,7 +82,7 @@ namespace OneImlx.Terminal.Apps.TestClient
             // Configure other services
         }
 
-        private static async Task Main(string[] args)
+        private static void Main(string[] args)
         {
             // Allows cancellation for the entire terminal and individual commands.
             CancellationTokenSource terminalTokenSource = new();
