@@ -7,12 +7,12 @@ using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.TestServer
+namespace OneImlx.Terminal.Apps.TestAuth
 {
     /// <summary>
     /// The <see cref="TerminalHostedService"/> for the test app.
     /// </summary>
-    public sealed class TestServerHostedService : TerminalHostedService
+    public sealed class TestAuthHostedService : TerminalHostedService
     {
         /// <summary>
         /// Initializes a new instance.
@@ -21,7 +21,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// <param name="options">The terminal configuration options.</param>
         /// <param name="terminalConsole">The terminal console.</param>
         /// <param name="logger">The logger.</param>
-        public TestServerHostedService(
+        public TestAuthHostedService(
             IServiceProvider serviceProvider,
             TerminalOptions options,
             ITerminalConsole terminalConsole,
@@ -45,10 +45,10 @@ namespace OneImlx.Terminal.Apps.TestServer
         protected override void OnStarted()
         {
             // Set title
-            Console.Title = "Test Server";
+            Console.Title = "Test Application";
 
             // These are async calls, but we are blocking here for as the  of the test.
-            TerminalConsole.WriteLineAsync("Test server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// </summary>
         protected override void OnStopped()
         {
-            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Test server stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// </summary>
         protected override void OnStopping()
         {
-            TerminalConsole.WriteLineAsync("Stopping server...").Wait();
+            TerminalConsole.WriteLineAsync("Stopping application...").Wait();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// <returns></returns>
         protected override async Task PrintHostApplicationHeaderAsync()
         {
-            await TerminalConsole.WriteLineAsync("Starting test server...");
+            await TerminalConsole.WriteLineAsync("Starting application...");
         }
 
         /// <summary>
@@ -83,7 +83,6 @@ namespace OneImlx.Terminal.Apps.TestServer
         /// <returns></returns>
         protected override Task PrintHostApplicationLicensingAsync(License license)
         {
-            // Dont print anything
             return Task.CompletedTask;
         }
     }

@@ -17,7 +17,7 @@ namespace OneImlx.Terminal.Mocks
         public Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context)
         {
             Called = true;
-            return Task.FromResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()));
+            return Task.FromResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()));
         }
     }
 }

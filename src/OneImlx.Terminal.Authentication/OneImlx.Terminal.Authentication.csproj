@@ -19,11 +19,6 @@
         CI CONFIG:
     -->
     <Choose>
-        <When Condition="'$(PI_CI_REFERENCE)'=='local'">
-            <ItemGroup>
-                <ProjectReference Include="..\OneImlx.Terminal\OneImlx.Terminal.csproj" />
-            </ItemGroup>
-        </When>
         <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
                 <ProjectReference Include="..\OneImlx.Terminal\OneImlx.Terminal.csproj" />

@@ -6,7 +6,7 @@ using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.TestApp.Runners
+namespace OneImlx.Terminal.Apps.TestAuth.Runners
 {
     /// <summary>
     /// The root <c>test</c> runner for the TestApp.
@@ -16,26 +16,36 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
     [CommandChecker(typeof(CommandChecker))]
     public class TestRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
-        private readonly ITerminalConsole terminalConsole;
-        private readonly ILogger<TestRunner> logger;
-
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="terminalConsole">Terminal console service.</param>
+        /// <param name="logger">Logger instance for logging.</param>
         public TestRunner(ITerminalConsole terminalConsole, ILogger<TestRunner> logger)
         {
-            this.terminalConsole = terminalConsole;
-            this.logger = logger;
+            _terminalConsole = terminalConsole;
+            _logger = logger;
         }
 
+        /// <summary>
+        /// Runs the root command for the TestApp.
+        /// </summary>
+        /// <param name="context">Command runner context.</param>
+        /// <returns>Command runner result.</returns>
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
-            await terminalConsole.WriteLineAsync("Test root command called.");
+            await _terminalConsole.WriteLineAsync("Test root command called.");
 
             // Get the version option value
             if (context.Command.TryGetOptionValue("version", out string? version))
             {
-                await terminalConsole.WriteLineAsync("Version option passed.");
+                await _terminalConsole.WriteLineAsync("Version option passed.");
             }
 
             return new CommandRunnerResult();
         }
+
+        private readonly ILogger<TestRunner> _logger;
+        private readonly ITerminalConsole _terminalConsole;
     }
 }

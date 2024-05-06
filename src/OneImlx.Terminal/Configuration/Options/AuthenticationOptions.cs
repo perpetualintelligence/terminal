@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,6 +15,11 @@ namespace OneImlx.Terminal.Configuration.Options
     public sealed class AuthenticationOptions
     {
         /// <summary>
+        /// Attempts to authorize the request during command routing.
+        /// </summary>
+        public bool? AuthorizeOnRoute { get; set; }
+
+        /// <summary>
         /// Gets or sets the default authentication scopes.
         /// </summary>
         /// <remarks>
@@ -23,12 +28,9 @@ namespace OneImlx.Terminal.Configuration.Options
         public string[]? DefaultScopes { get; set; }
 
         /// <summary>
-        /// Gets or sets the valid hosts for generating the authorization token.
+        /// Enables the authentication for the terminal.
         /// </summary>
-        /// <remarks>
-        /// Requests to hosts not listed here will be considered unauthorized.
-        /// </remarks>
-        public string[]? ValidHosts { get; set; }
+        public bool? Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the name for the named <see cref="HttpClient"/>.
@@ -41,8 +43,9 @@ namespace OneImlx.Terminal.Configuration.Options
         public string? UserFlow { get; set; }
 
         /// <summary>
-        /// Enables the authentication for the terminal.
+        /// Gets or sets the valid hosts for generating the authorization token.
         /// </summary>
-        public bool? Enabled { get; set; }
+        /// <remarks>Requests to hosts not listed here will be considered unauthorized.</remarks>
+        public string[]? ValidHosts { get; set; }
     }
 }

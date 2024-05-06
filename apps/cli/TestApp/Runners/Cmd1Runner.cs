@@ -3,6 +3,7 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestApp.Runners
 {
@@ -11,7 +12,6 @@ namespace OneImlx.Terminal.Apps.TestApp.Runners
     /// </summary>
     [CommandOwners("grp1")]
     [CommandDescriptor("cmd1", "Command 1", "Command1 description.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
-    [CommandChecker(typeof(CommandChecker))]
     public class Cmd1Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         private readonly ITerminalConsole terminalConsole;

@@ -2,8 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using OneImlx.Shared.Licensing;
-using OneImlx.Terminal.Apps.TestClient.Runners;
+using OneImlx.Terminal.Apps.TestAuth.Runners;
+using OneImlx.Terminal.Authentication.Extensions;
+using OneImlx.Terminal.Authentication.Msal;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
@@ -13,7 +16,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace OneImlx.Terminal.Apps.TestClient
+namespace OneImlx.Terminal.Apps.TestAuth
 {
     internal class Program
     {
@@ -37,27 +40,46 @@ namespace OneImlx.Terminal.Apps.TestClient
             builder.AddSerilog(Log.Logger);
         }
 
-        private static void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection collection)
+        private static void ConfigureOneImlxTerminal(IServiceCollection collection)
         {
             // Configure the hosted service
-            collection.AddHostedService<TestClientHostedService>();
+            collection.AddHostedService<TestAuthHostedService>();
 
-            // NOTE: We are initialized as a console application. This can be a custom console or a custom terminal
-            // interface as well.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+            // We are using on-line license so configure HTTP
+            collection.AddHttpClient("demo-http").AddHttpMessageHandler<TestAuthDelegatingHandler>();
+
+            // Before we configure the terminal, we need to configure the public client from MSAL. This is required for
+            // the terminal to authenticate with Azure AD. Replace the client id with your own.
+            IPublicClientApplication publicClientApplication = PublicClientApplicationBuilder.Create("83843fef-5480-42c1-8575-1936f64339b9")
+                .WithAuthority(AzureCloudInstance.AzurePublic, "common") // Use the common authority
+                .WithRedirectUri("http://localhost")
+                .Build();
+
+            // NOTE: Specify your demo or commercial license file. Specify your application id.
+            TerminalUnicodeTextHandler terminalUnicodeTextHandler = new();
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(terminalUnicodeTextHandler,
                 options =>
                 {
+                    options.Authentication.Enabled = true;
+                    options.Authentication.AuthorizeOnRoute = false;
+                    options.Authentication.HttpClientName = "demo-http";
+                    options.Authentication.DefaultScopes = ["email", "profile", "openid"];
+
                     options.Id = TerminalIdentifiers.TestApplicationId;
-                    options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
+                    options.Licensing.LicenseFile = "C:\\Users\\PerpetualAdmin\\source\\repos\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
-
                     options.Router.Caret = "> ";
-                }
-                                                                                                                                                                                          );
+                });
 
-            // Add commands using declarative syntax.
-            terminalBuilder.AddDeclarativeAssembly<TestClientRunner>();
+            // Add terminal authentication
+            terminalBuilder.AddMsalAuthentication<MsalKiotaAuthProvider, MsalKiotaAuthProvider, TestAuthDelegatingHandler>(publicClientApplication);
+
+            // You can use declarative or explicit syntax. Here we are using declarative syntax.
+            {
+                // Add commands using declarative syntax.
+                terminalBuilder.AddDeclarativeAssembly<TestRunner>();
+            }
         }
 
         private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
@@ -69,7 +91,7 @@ namespace OneImlx.Terminal.Apps.TestClient
             });
 
             // Configure OneImlx.Terminal services
-            ConfigureOneImlxTerminal(context, services);
+            ConfigureOneImlxTerminal(services);
 
             // Configure other services
         }
@@ -80,19 +102,16 @@ namespace OneImlx.Terminal.Apps.TestClient
             CancellationTokenSource terminalTokenSource = new();
             CancellationTokenSource commandTokenSource = new();
 
-            // Setup the terminal start context
+            // Setup the terminal context and run the router indefinitely as a console.
             TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
-            TerminalConsoleRouterContext terminalConsoleRouterContext = new(terminalStartContext);
+            TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
 
-            // Start the host so we can configure the terminal router.
-            // NOTE: The host needs to be started with Start API to initialize the hosted service.
+            // Start the host builder and run terminal router till canceled.
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(ConfigureAppConfigurationDelegate)
                 .ConfigureLogging(ConfigureLoggingDelegate)
                 .ConfigureServices(ConfigureServicesDelegate)
-                .RunTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>(terminalConsoleRouterContext);
+                .RunTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
         }
-
-        private static IHost? host;
     }
 }

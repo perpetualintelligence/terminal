@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,14 +15,19 @@ namespace OneImlx.Terminal.Mocks
 {
     internal class MockCommandRuntime : ICommandRuntime
     {
+        public bool ResolveAuthenticatorCalled { get; private set; }
+
         public bool ResolveCheckerCalled { get; private set; }
+
         public bool ResolveRunnerCalled { get; private set; }
-        public IDelegateCommandRunner? ReturnedRunner { get; private set; }
+
         public ICommandChecker? ReturnedChecker { get; private set; }
 
-        public IDelegateCommandRunner? ReturnThisRunner { get; set; }
+        public IDelegateCommandRunner? ReturnedRunner { get; private set; }
 
         public ICommandChecker? ReturnThisChecker { get; set; }
+
+        public IDelegateCommandRunner? ReturnThisRunner { get; set; }
 
         public ICommandChecker ResolveCommandChecker(CommandDescriptor commandDescriptor)
         {

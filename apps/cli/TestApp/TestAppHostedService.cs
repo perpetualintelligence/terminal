@@ -4,6 +4,8 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
+using System;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestApp
 {

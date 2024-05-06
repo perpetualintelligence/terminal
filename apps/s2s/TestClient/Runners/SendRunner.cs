@@ -1,8 +1,9 @@
 ﻿using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
+using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.Runners
+namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
     [CommandOwners("tc")]
     [CommandDescriptor("send", "Send", "Send commands to the server.", Commands.CommandType.Group, Commands.CommandFlags.None)]

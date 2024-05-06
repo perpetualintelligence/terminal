@@ -6,8 +6,10 @@ using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
+using System.Threading;
+using System;
 
-namespace OneImlx.Terminal.Apps.Runners
+namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
     [CommandOwners("send")]
     [CommandDescriptor("udp", "Send UDP", "Send UDP commands to the server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]

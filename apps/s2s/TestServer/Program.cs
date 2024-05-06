@@ -1,11 +1,4 @@
-﻿/*
-    Copyright (c) 2024 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,7 +9,11 @@ using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Serilog;
+using System;
+using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestServer
 {

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -9,22 +9,20 @@ using System.Linq;
 
 namespace OneImlx.Terminal.Authentication.Msal
 {
-    using FluentAssertions;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Identity.Client;
-    using Moq;
-    using OneImlx.Terminal.Configuration.Options;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Identity.Client;
+    using FluentAssertions;
+    using Moq;
+    using OneImlx.Terminal.Configuration.Options;
     using Xunit;
+    using Microsoft.Kiota.Abstractions;
+    using OneImlx.Test.FluentAssertions;
 
     public class MsalKiotaAccessTokenProviderTests
     {
-        private readonly Mock<IMsalTokenAcquisition> _msalTokenAcquisitionMock;
-        private readonly Mock<ILogger<MsalKiotaAuthProvider>> _loggerMock;
-        private readonly TerminalOptions _terminalOptions;
-
         public MsalKiotaAccessTokenProviderTests()
         {
             _msalTokenAcquisitionMock = new Mock<IMsalTokenAcquisition>();
@@ -33,10 +31,60 @@ namespace OneImlx.Terminal.Authentication.Msal
             {
                 Authentication = new AuthenticationOptions
                 {
+                    Enabled = true,
                     DefaultScopes = new[] { "User.Read" },
                     ValidHosts = new[] { "graph.microsoft.com" }
                 }
             };
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(null)]
+        public async Task GetAuthorizationTokenAsync_Throws_If_Authentication_Is_Not_Enabled(bool? enabled)
+        {
+            // Not enabled
+            _terminalOptions.Authentication.Enabled = enabled;
+
+            var provider = CreateProvider();
+            Func<Task> func = async () => await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null); ;
+            await func.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidConfiguration)
+                .WithErrorDescription("The terminal authentication is not enabled.");
+        }
+
+        [Fact]
+        public async Task GetAuthorizationTokenAsync_AcquiresTokenInteractively_ForNoAccounts()
+        {
+            SetupMockTokenAcquisitionForNoAccounts();
+
+            string expectedToken = "interactive_token_no_accounts";
+            SetupMockTokenInteractiveAcquisition(expectedToken);
+
+            var provider = CreateProvider();
+
+            string token = await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
+
+            token.Should().Be(expectedToken);
+        }
+
+        [Fact]
+        public async Task GetAuthorizationTokenAsync_Does_Attempts_InteractiveAcquisition_WhenSilentFails()
+        {
+            // Arrange
+            var exception = new MsalUiRequiredException("error_code", "A problem occurred.");
+            SetupMockTokenAcquisitionForUiRequiredException(exception);
+
+            string expectedToken = "interactive_token";
+            SetupMockTokenInteractiveAcquisition(expectedToken);
+
+            var provider = CreateProvider();
+
+            // Act
+            string token = await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
+
+            // Assert
+            expectedToken.Should().Be(token);
         }
 
         [Fact]
@@ -62,40 +110,6 @@ namespace OneImlx.Terminal.Authentication.Msal
         }
 
         [Fact]
-        public async Task GetAuthorizationTokenAsync_Does_Attempts_InteractiveAcquisition_WhenSilentFails()
-        {
-            // Arrange
-            var exception = new MsalUiRequiredException("error_code", "A problem occurred.");
-            SetupMockTokenAcquisitionForUiRequiredException(exception);
-
-            string expectedToken = "interactive_token";
-            SetupMockTokenInteractiveAcquisition(expectedToken);
-
-            var provider = CreateProvider();
-
-            // Act
-            string token = await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
-
-            // Assert
-            expectedToken.Should().Be(token);
-        }
-
-        [Fact]
-        public async Task GetAuthorizationTokenAsync_AcquiresTokenInteractively_ForNoAccounts()
-        {
-            SetupMockTokenAcquisitionForNoAccounts();
-
-            string expectedToken = "interactive_token_no_accounts";
-            SetupMockTokenInteractiveAcquisition(expectedToken);
-
-            var provider = CreateProvider();
-
-            string token = await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null);
-
-            token.Should().Be(expectedToken);
-        }
-
-        [Fact]
         public async Task GetAuthorizationTokenAsync_UsesCorrectScopes_ForTokenAcquisition()
         {
             // Arrange: Set up a list of mock accounts.
@@ -106,16 +120,16 @@ namespace OneImlx.Terminal.Authentication.Msal
             _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
                                      .Callback<IEnumerable<string>, IAccount>((scopes, account) => usedScopes = scopes)
                                      .ReturnsAsync(new AuthenticationResult(
-                                        accessToken: "expected_token",
-                                        isExtendedLifeTimeToken: false,
-                                        uniqueId: string.Empty,
-                                        expiresOn: DateTimeOffset.UtcNow.AddHours(1),
-                                        extendedExpiresOn: DateTimeOffset.UtcNow.AddHours(2),
-                                        tenantId: string.Empty,
-                                        account: mockAccounts.First(),
-                                        idToken: string.Empty,
-                                        scopes: Array.Empty<string>(),
-                                        Guid.NewGuid()));
+                                         accessToken: "expected_token",
+                                         isExtendedLifeTimeToken: false,
+                                         uniqueId: string.Empty,
+                                         expiresOn: DateTimeOffset.UtcNow.AddHours(1),
+                                         extendedExpiresOn: DateTimeOffset.UtcNow.AddHours(2),
+                                         tenantId: string.Empty,
+                                         account: mockAccounts.First(),
+                                         idToken: string.Empty,
+                                         scopes: Array.Empty<string>(),
+                                         Guid.NewGuid()));
 
             var provider = CreateProvider();
 
@@ -149,16 +163,16 @@ namespace OneImlx.Terminal.Authentication.Msal
             _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
                                      .Callback<IEnumerable<string>, IAccount>((scopes, account) => usedAccount = account) // Capturing the account used.
                                      .ReturnsAsync(new AuthenticationResult(
-                                        accessToken: "expected_token",
-                                        isExtendedLifeTimeToken: false,
-                                        uniqueId: string.Empty,
-                                        expiresOn: DateTimeOffset.UtcNow.AddHours(1),
-                                        extendedExpiresOn: DateTimeOffset.UtcNow.AddHours(2),
-                                        tenantId: string.Empty,
-                                        account: mockAccounts.First(),
-                                        idToken: string.Empty,
-                                        scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
-                                        Guid.NewGuid()));
+                                         accessToken: "expected_token",
+                                         isExtendedLifeTimeToken: false,
+                                         uniqueId: string.Empty,
+                                         expiresOn: DateTimeOffset.UtcNow.AddHours(1),
+                                         extendedExpiresOn: DateTimeOffset.UtcNow.AddHours(2),
+                                         tenantId: string.Empty,
+                                         account: mockAccounts.First(),
+                                         idToken: string.Empty,
+                                         scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
+                                         Guid.NewGuid()));
 
             var provider = CreateProvider();
 
@@ -196,18 +210,18 @@ namespace OneImlx.Terminal.Authentication.Msal
                                      .ReturnsAsync(authenticationResult);
         }
 
-        private void SetupMockTokenAcquisitionForUiRequiredException(MsalUiRequiredException exception)
-        {
-            _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(new[] { new Mock<IAccount>().Object });
-            _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
-                                     .ThrowsAsync(exception);
-        }
-
         private void SetupMockTokenAcquisitionForNoAccounts()
         {
             _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(Enumerable.Empty<IAccount>());
             _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
                                      .ThrowsAsync(new MsalUiRequiredException("test_error", "test_error_message"));
+        }
+
+        private void SetupMockTokenAcquisitionForUiRequiredException(MsalUiRequiredException exception)
+        {
+            _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(new[] { new Mock<IAccount>().Object });
+            _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
+                                     .ThrowsAsync(exception);
         }
 
         private void SetupMockTokenInteractiveAcquisition(string token = "interactive_token")
@@ -227,5 +241,9 @@ namespace OneImlx.Terminal.Authentication.Msal
             _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenInteractiveAsync(It.IsAny<IEnumerable<string>>()))
                                      .ReturnsAsync(authenticationResult);
         }
+
+        private readonly Mock<ILogger<MsalKiotaAuthProvider>> _loggerMock;
+        private readonly Mock<IMsalTokenAcquisition> _msalTokenAcquisitionMock;
+        private readonly TerminalOptions _terminalOptions;
     }
 }
