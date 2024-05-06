@@ -32,18 +32,6 @@ namespace OneImlx.Terminal.Commands.Handlers
         }
 
         /// <summary>
-        /// Resolves the command authenticator for a given command descriptor using dependency injection and activator utilities.
-        /// </summary>
-        /// <param name="commandDescriptor">The command descriptor to identify the authenticator.</param>
-        /// <returns>The resolved command authenticator.</returns>
-        public ICommandAuthenticator ResolveCommandAuthenticator(CommandDescriptor commandDescriptor)
-        {
-            ICommandAuthenticator authenticator = serviceDescriptors.GetRequiredService<ICommandAuthenticator>();
-            logger.LogDebug("Resolved authenticator. type={0}", authenticator.GetType().Name);
-            return authenticator;
-        }
-
-        /// <summary>
         /// Resolves the command checker for a given command descriptor using dependency injection and activator utilities.
         /// </summary>
         /// <param name="commandDescriptor">The command descriptor to identify the checker.</param>

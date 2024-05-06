@@ -62,44 +62,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             // Check the license
             await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(context.License));
 
-            // Authenticate and authorize the command
-            await AuthenticateIfEnabledAsync(context);
-
             // Check and run the command
             Tuple<CommandCheckerResult, CommandRunnerResult> result = await CheckAndRunCommandInnerAsync(context);
 
             // Return the processed result
             return new CommandHandlerResult(result.Item1, result.Item2);
-        }
-
-        private async Task AuthenticateIfEnabledAsync(CommandHandlerContext context)
-        {
-            // Throw if command descriptor requires authorization but authentication is disabled
-            bool authenticationEnabled = options.Authentication.Enabled.GetValueOrDefault();
-            bool authorizeOnRoute = options.Authentication.AuthorizeOnRoute.GetValueOrDefault();
-            if (context.ParsedCommand.Command.Descriptor.Flags.HasFlag(CommandFlags.Authorize) && !authenticationEnabled)
-            {
-                throw new TerminalException(TerminalErrors.UnauthorizedAccess, "The command requires authorization but authentication is disabled. command={0}", context.ParsedCommand.Command.Id);
-            }
-
-            if (authenticationEnabled && authorizeOnRoute)
-            {
-                // Authenticate
-                ICommandAuthenticator authenticator = commandRuntime.ResolveCommandAuthenticator(context.ParsedCommand.Command.Descriptor);
-
-                if (await authenticator.IsAuthenticatedAsync())
-                {
-                    logger.LogDebug("Principal is already authenticated. Skip authentication. command={0}", context.ParsedCommand.Command.Id);
-                    return;
-                }
-                else
-                {
-                    await authenticator.AuthenticateAsync();
-                }
-
-                // Authorize
-                await authenticator.AuthorizeAsync();
-            }
         }
 
         private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandHandlerContext context)

@@ -21,32 +21,13 @@ namespace OneImlx.Terminal.Mocks
 
         public bool ResolveRunnerCalled { get; private set; }
 
-        public ICommandAuthenticator? ReturnedAuthenticator { get; private set; }
-
         public ICommandChecker? ReturnedChecker { get; private set; }
 
         public IDelegateCommandRunner? ReturnedRunner { get; private set; }
 
-        public ICommandAuthenticator? ReturnThisAuthenticator { get; set; }
-
         public ICommandChecker? ReturnThisChecker { get; set; }
 
         public IDelegateCommandRunner? ReturnThisRunner { get; set; }
-
-        public ICommandAuthenticator ResolveCommandAuthenticator(CommandDescriptor commandDescriptor)
-        {
-            ResolveAuthenticatorCalled = true;
-
-            if (ReturnThisAuthenticator != null)
-            {
-                ReturnedAuthenticator = ReturnThisAuthenticator;
-            }
-            else
-            {
-                ReturnedAuthenticator = new MockCommandAuthenticatorInner();
-            }
-            return ReturnedAuthenticator;
-        }
 
         public ICommandChecker ResolveCommandChecker(CommandDescriptor commandDescriptor)
         {

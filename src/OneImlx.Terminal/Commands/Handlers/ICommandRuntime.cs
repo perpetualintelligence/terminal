@@ -18,13 +18,6 @@ namespace OneImlx.Terminal.Commands.Handlers
     public interface ICommandRuntime
     {
         /// <summary>
-        /// Resolves the command authenticator associated with the specified command descriptor.
-        /// </summary>
-        /// <param name="commandDescriptor">The descriptor of the command for which to resolve the checker.</param>
-        /// <returns>The resolved command authenticator instance.</returns>
-        ICommandAuthenticator ResolveCommandAuthenticator(CommandDescriptor commandDescriptor);
-
-        /// <summary>
         /// Resolves the command checker associated with the specified command descriptor.
         /// </summary>
         /// <param name="commandDescriptor">The descriptor of the command for which to resolve the checker.</param>
