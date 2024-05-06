@@ -1,27 +1,25 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Runners;
-using System;
 
 namespace OneImlx.Terminal.Commands.Handlers
 {
     /// <summary>
-    /// The default <see cref="ICommandRuntime"/> using <see cref="ActivatorUtilities.CreateInstance(IServiceProvider, Type, object[])"/>, managing the resolution of
-    /// of command checkers and runners.
+    /// The default <see cref="ICommandRuntime"/> using
+    /// <see cref="ActivatorUtilities.CreateInstance(IServiceProvider, Type, object[])"/>, managing the resolution of of
+    /// command checkers and runners.
     /// </summary>
     public sealed class CommandRuntime : ICommandRuntime
     {
-        private readonly IServiceProvider serviceDescriptors;
-        private readonly ILogger<CommandRuntime> logger;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandRuntime"/> class.
         /// </summary>
@@ -31,6 +29,18 @@ namespace OneImlx.Terminal.Commands.Handlers
         {
             this.serviceDescriptors = serviceDescriptors;
             this.logger = logger;
+        }
+
+        /// <summary>
+        /// Resolves the command authenticator for a given command descriptor using dependency injection and activator utilities.
+        /// </summary>
+        /// <param name="commandDescriptor">The command descriptor to identify the authenticator.</param>
+        /// <returns>The resolved command authenticator.</returns>
+        public ICommandAuthenticator ResolveCommandAuthenticator(CommandDescriptor commandDescriptor)
+        {
+            ICommandAuthenticator authenticator = serviceDescriptors.GetRequiredService<ICommandAuthenticator>();
+            logger.LogDebug("Resolved authenticator. type={0}", authenticator.GetType().Name);
+            return authenticator;
         }
 
         /// <summary>
@@ -80,5 +90,8 @@ namespace OneImlx.Terminal.Commands.Handlers
             logger.LogDebug("Resolved runner. type={0}", runnerDelegate.GetType().Name);
             return runnerDelegate;
         }
+
+        private readonly ILogger<CommandRuntime> logger;
+        private readonly IServiceProvider serviceDescriptors;
     }
 }

@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
             }
             else
             {
-                return Task.FromResult(new CommandHandlerResult(new Runners.CommandRunnerResult(), new Checkers.CommandCheckerResult()));
+                return Task.FromResult(new CommandHandlerResult(new Checkers.CommandCheckerResult(), new Runners.CommandRunnerResult()));
             }
         }
     }

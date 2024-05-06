@@ -1,33 +1,29 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Authentication.Msal
 {
     /// <summary>
-    /// The <c>Kiota</c> authentication and authorization provider for <c>MSAL</c> identity platform.
+    /// The <c>OneImlx</c> terminal <c>Kiota</c> authentication and authorization provider for <c>MSAL</c> identity platform.
     /// </summary>
     public sealed class MsalKiotaAuthProvider : IAuthenticationProvider, IAccessTokenProvider
     {
-        private readonly TerminalOptions terminalOptions;
-        private readonly IMsalTokenAcquisition msalTokenAcquisition;
-        private readonly ILogger<MsalKiotaAuthProvider> logger;
-
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
@@ -56,20 +52,52 @@ namespace OneImlx.Terminal.Authentication.Msal
         }
 
         /// <summary>
+        /// Authenticates an HTTP request by acquiring an access token and setting it in the request's Authorization header.
+        /// </summary>
+        /// <param name="request">The HTTP request to authenticate.</param>
+        /// <param name="additionalAuthenticationContext">
+        /// Optional. Additional authentication context that may contain extra scopes or other information.
+        /// </param>
+        /// <param name="cancellationToken">Optional. The cancellation token to cancel the asynchronous operation.</param>
+        /// <exception cref="TerminalException">
+        /// Thrown if the URI is not allowed by the AllowedHostsValidator or if token acquisition fails.
+        /// </exception>
+        /// <remarks>
+        /// This method supports additional scopes provided either as an <see cref="IEnumerable{T}"/> or a single string
+        /// with scopes separated by spaces. The scopes are expected to be provided in the
+        /// additionalAuthenticationContext dictionary with the key <c>scopes</c>.
+        /// </remarks>
+        public async Task AuthenticateRequestAsync(RequestInformation request, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
+        {
+            string accessToken = await GetAuthorizationTokenAsync(request.URI, additionalAuthenticationContext, cancellationToken);
+            request.Headers["Authorization"] = new List<string> { $"Bearer {accessToken}" };
+            logger.LogInformation("Bearer token set. request_uri={0}", request.URI);
+        }
+
+        /// <summary>
         /// Asynchronously gets an authorization token for the specified URI.
         /// </summary>
         /// <param name="uri">The URI for which the authorization token is required.</param>
-        /// <param name="additionalAuthenticationContext">Optional. Additional authentication context that may contain extra scopes or other information.</param>
+        /// <param name="additionalAuthenticationContext">
+        /// Optional. Additional authentication context that may contain extra scopes or other information.
+        /// </param>
         /// <param name="cancellationToken">Optional. The cancellation token to cancel the asynchronous operation.</param>
         /// <returns>A task that represents the asynchronous operation, containing the authorization token.</returns>
         /// <remarks>
-        /// This method supports additional scopes provided either as an <see cref="IEnumerable{T}"/> or a single string with scopes separated by spaces.
-        /// The scopes are expected to be provided in the additionalAuthenticationContext dictionary with the key <c>scopes</c>.
+        /// This method supports additional scopes provided either as an <see cref="IEnumerable{T}"/> or a single string
+        /// with scopes separated by spaces. The scopes are expected to be provided in the
+        /// additionalAuthenticationContext dictionary with the key <c>scopes</c>.
         /// </remarks>
         /// <exception cref="TerminalException">Thrown if the URI is not allowed by the AllowedHostsValidator.</exception>
         public async Task<string> GetAuthorizationTokenAsync(Uri uri, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            // Ensure authentication is enabled
+            if (!terminalOptions.Authentication.Enabled.GetValueOrDefault())
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The terminal authentication is not enabled.");
+            }
 
             // Verify host
             logger.LogDebug("Acquire authorization token. host={0}", uri);
@@ -109,24 +137,6 @@ namespace OneImlx.Terminal.Authentication.Msal
             return result.AccessToken;
         }
 
-        /// <summary>
-        /// Authenticates an HTTP request by acquiring an access token and setting it in the request's Authorization header.
-        /// </summary>
-        /// <param name="request">The HTTP request to authenticate.</param>
-        /// <param name="additionalAuthenticationContext">Optional. Additional authentication context that may contain extra scopes or other information.</param>
-        /// <param name="cancellationToken">Optional. The cancellation token to cancel the asynchronous operation.</param>
-        /// <exception cref="TerminalException">Thrown if the URI is not allowed by the AllowedHostsValidator or if token acquisition fails.</exception>
-        /// <remarks>
-        /// This method supports additional scopes provided either as an <see cref="IEnumerable{T}"/> or a single string with scopes separated by spaces.
-        /// The scopes are expected to be provided in the additionalAuthenticationContext dictionary with the key <c>scopes</c>.
-        /// </remarks>
-        public async Task AuthenticateRequestAsync(RequestInformation request, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
-        {
-            string accessToken = await GetAuthorizationTokenAsync(request.URI, additionalAuthenticationContext, cancellationToken);
-            request.Headers["Authorization"] = new List<string> { $"Bearer {accessToken}" };
-            logger.LogInformation("Bearer token set. request_uri={0}", request.URI);
-        }
-
         private List<string> ExtractScopesFromContext(Dictionary<string, object>? additionalAuthenticationContext)
         {
             List<string> scopes = new(terminalOptions.Authentication.DefaultScopes ?? Enumerable.Empty<string>());
@@ -149,5 +159,9 @@ namespace OneImlx.Terminal.Authentication.Msal
             logger.LogDebug("Acquired authentication scopes. scopes={0}", scopes.JoinBySpace());
             return scopes;
         }
+
+        private readonly ILogger<MsalKiotaAuthProvider> logger;
+        private readonly IMsalTokenAcquisition msalTokenAcquisition;
+        private readonly TerminalOptions terminalOptions;
     }
 }

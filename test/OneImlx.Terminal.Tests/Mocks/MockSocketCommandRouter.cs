@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Mocks
                 throw new TerminalException(explicitError);
             }
 
-            return new CommandRouterResult(new CommandHandlerResult(new Commands.Runners.CommandRunnerResult(), new Commands.Checkers.CommandCheckerResult()), context.Route);
+            return new CommandRouterResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), context.Route);
         }
 
         private readonly CancellationTokenSource? cancelOnRouteCalled;
