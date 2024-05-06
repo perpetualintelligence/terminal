@@ -5,7 +5,7 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.Runners
+namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
     [CommandDescriptor("tc", "Test client", "Sample test client for testing the server.", Commands.CommandType.Root, Commands.CommandFlags.None)]
     public class TestClientRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner

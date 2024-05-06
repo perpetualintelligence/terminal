@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
             TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
 
-            // Start the host builder and run terminal router till cancelled.
+            // Start the host builder and run terminal router till canceled.
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(ConfigureAppConfigurationDelegate)
                 .ConfigureLogging(ConfigureLoggingDelegate)
@@ -74,7 +74,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             // Configure the hosted service
             collection.AddHostedService<TestAppHostedService>();
 
-            // We are using online license so configure HTTP
+            // We are using on-line license so configure HTTP
             collection.AddHttpClient("demo-http");
 
             // NOTE:
@@ -84,7 +84,7 @@ namespace OneImlx.Terminal.Apps.TestApp
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
-                    options.Licensing.LicenseFile = "C:\\this\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
+                    options.Licensing.LicenseFile = "C:\\Users\\PerpetualAdmin\\source\\repos\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                     options.Router.Caret = "> ";
