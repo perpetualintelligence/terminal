@@ -1,14 +1,15 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Shared.Extensions;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using OneImlx.Shared.Extensions;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -18,21 +19,6 @@ namespace OneImlx.Terminal.Runtime
     public class TerminalSystemConsole : ITerminalConsole
     {
         /// <summary>
-        /// The foreground color.
-        /// </summary>
-        public ConsoleColor ForegroundColor
-        {
-            get
-            {
-                return Console.ForegroundColor;
-            }
-            set
-            {
-                Console.ForegroundColor = value;
-            }
-        }
-
-        /// <summary>
         /// The background color.
         /// </summary>
         public ConsoleColor BackgroundColor
@@ -41,11 +27,38 @@ namespace OneImlx.Terminal.Runtime
             {
                 return Console.BackgroundColor;
             }
+
             set
             {
                 Console.BackgroundColor = value;
             }
         }
+
+        /// <summary>
+        /// The foreground color.
+        /// </summary>
+        public ConsoleColor ForegroundColor
+        {
+            get
+            {
+                return Console.ForegroundColor;
+            }
+
+            set
+            {
+                Console.ForegroundColor = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the standard input stream.
+        /// </summary>
+        public TextReader In => Console.In;
+
+        /// <summary>
+        /// Gets the standard output stream.
+        /// </summary>
+        public TextWriter Out => Console.Out;
 
         /// <summary>
         /// Clears the <see cref="Console"/> buffer and the corresponding display information.
@@ -148,7 +161,8 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
-        /// Writes the specified string value followed by the current newline terminator to the <see cref="Console"/> input stream asynchronously.
+        /// Writes the specified string value followed by the current newline terminator to the <see cref="Console"/>
+        /// input stream asynchronously.
         /// </summary>
         /// <param name="value">The text to write.</param>
         /// <param name="args">The format arguments.</param>
@@ -166,7 +180,8 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
-        /// Writes the specified string value followed by the current newline terminator to the <see cref="Console"/> input stream asynchronously.
+        /// Writes the specified string value followed by the current newline terminator to the <see cref="Console"/>
+        /// input stream asynchronously.
         /// </summary>
         /// <param name="foregroundColor">The foreground text color.</param>
         /// <param name="value">The text to write.</param>

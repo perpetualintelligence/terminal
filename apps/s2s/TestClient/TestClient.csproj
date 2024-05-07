@@ -26,12 +26,12 @@
     <Choose>
         <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
-                <ProjectReference Include="..\..\..\src\OneImlx.Terminal.Authentication\OneImlx.Terminal.Authentication.csproj" />
+                <ProjectReference Include="..\..\..\src\OneImlx.Terminal\OneImlx.Terminal.csproj" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="OneImlx.Terminal.Authentication" Version="5.8.5-rc.253242921" />
+                <PackageReference Include="OneImlx.Terminal" Version="5.11.1" />
             </ItemGroup>
         </Otherwise>
     </Choose>

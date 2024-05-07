@@ -1,0 +1,53 @@
+﻿@page "/webterminal"
+@using Microsoft.Extensions.Hosting
+@using OneImlx.Terminal.Apps.TestWasm.WebTerminal
+@using OneImlx.Terminal.Runtime
+
+@inject TerminalHostProvider TerminalHostProvider
+@inject ITerminalConsole TerminalConsole
+
+<PageTitle>Web Terminal</PageTitle>
+
+<div style="display: flex; flex-direction: column; height: 100%;">
+    <textarea @bind="displayOutput" @onkeydown="HandleInput" style="height: 100%; width: 100%;" placeholder="Type commands here and press Enter..."></textarea>
+</div>
+
+@code {
+    private string displayOutput = "";
+    private IHost? terminalHost;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (TerminalHostProvider.IsTerminalHostRunning)
+        {
+            terminalHost = TerminalHostProvider.GetTerminalHost();
+        }
+        else
+        {
+            terminalHost = await TerminalHostProvider.StartTerminalHostAsync();
+        }
+    }
+
+    private async Task HandleInput(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(GetLastInputLine(displayOutput)))
+        {
+            var inputLine = await TerminalConsole.In.ReadLineAsync();  // Read input asynchronously from the In property
+            displayOutput += $"\n";  // Append a newline for response output
+
+            // Simulating command processing and generating output
+            string response = $"You entered: {inputLine}";
+            await TerminalConsole.Out.WriteLineAsync(response);  // Writes response to the terminal's output
+            displayOutput += $"{response}\n";  // Appends the response to the display
+
+            // Ensure UI updates with new content
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private string GetLastInputLine(string text)
+    {
+        var lines = text.Split('\n');
+        return lines.LastOrDefault() ?? string.Empty;
+    }
+}

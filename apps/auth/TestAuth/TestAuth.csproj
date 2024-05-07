@@ -33,7 +33,7 @@
 		</When>
 		<Otherwise>
 			<ItemGroup>
-				<PackageReference Include="OneImlx.Terminal.Authentication" Version="5.8.5-rc.253242921" />
+				<PackageReference Include="OneImlx.Terminal.Authentication" Version="5.11.1" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>

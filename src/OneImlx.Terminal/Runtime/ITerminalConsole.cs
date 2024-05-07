@@ -1,11 +1,12 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Runtime
@@ -13,13 +14,42 @@ namespace OneImlx.Terminal.Runtime
     /// <summary>
     /// An abstraction of a console for terminal framework.
     /// </summary>
-    /// <remarks>
-    /// <see cref="ITerminalConsole"/> allows application to define a standard or a custom console environment.
-    /// </remarks>
+    /// <remarks><see cref="ITerminalConsole"/> allows application to define a standard or a custom console environment.</remarks>
     /// <see cref="TerminalConsoleRouter"/>
     /// <seealso cref="TerminalSystemConsole"/>
     public interface ITerminalConsole
     {
+        /// <summary>
+        /// The background color of the <see cref="ITerminalConsole"/>.
+        /// </summary>
+        public ConsoleColor BackgroundColor { get; set; }
+
+        /// <summary>
+        /// The foreground color of the <see cref="ITerminalConsole"/>.
+        /// </summary>
+        public ConsoleColor ForegroundColor { get; set; }
+
+        /// <summary>
+        /// Gets the standard console input stream.
+        /// </summary>
+        public TextReader In { get; }
+
+        /// <summary>
+        /// Gets the standard console output stream.
+        /// </summary>
+        public TextWriter Out { get; }
+
+        /// <summary>
+        /// Clears the <see cref="ITerminalConsole"/> buffer and the corresponding display information.
+        /// </summary>
+        public Task ClearAsync();
+
+        /// <summary>
+        /// Return <c>true</c> if the specified string value is ignored by the <see cref="ITerminalConsole"/>, otherwise <c>false</c>.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        public bool Ignore(string? value);
+
         /// <summary>
         /// Prints the question to the <see cref="ITerminalConsole"/> standard output stream and waits for an answer asynchronously.
         /// </summary>
@@ -35,34 +65,6 @@ namespace OneImlx.Terminal.Runtime
         public Task<string?> ReadLineAsync();
 
         /// <summary>
-        /// Writes the current newline terminator to the <see cref="ITerminalConsole"/> input stream asynchronously.
-        /// </summary>
-        public Task WriteLineAsync();
-
-        /// <summary>
-        /// Writes the specified string value followed by the current newline terminator to the <see cref="ITerminalConsole"/> standard output stream.
-        /// </summary>
-        /// <param name="value">The text to write.</param>
-        /// <param name="args">The format arguments.</param>
-        public Task WriteLineAsync(string value, params object[] args);
-
-        /// <summary>
-        /// Writes the specified string value in the foreground color followed by the current newline terminator to the <see cref="ITerminalConsole"/> standard output stream.
-        /// </summary>
-        /// <param name="foregroundColor">The foreground text color.</param>
-        /// <param name="value">The text to write.</param>
-        /// <param name="args">The format arguments.</param>
-        public Task WriteLineColorAsync(ConsoleColor foregroundColor, string value, params object[] args);
-
-        /// <summary>
-        /// Writes the specified string value in the foreground color to the <see cref="ITerminalConsole"/> standard output stream.
-        /// </summary>
-        /// <param name="foregroundColor">The foreground text color.</param>
-        /// <param name="value">The text to write.</param>
-        /// <param name="args">The format arguments.</param>
-        public Task WriteColorAsync(ConsoleColor foregroundColor, string value, params object[] args);
-
-        /// <summary>
         /// Writes the specified string value to the <see cref="ITerminalConsole"/> standard output stream.
         /// </summary>
         /// <param name="value">The text to write.</param>
@@ -70,24 +72,34 @@ namespace OneImlx.Terminal.Runtime
         public Task WriteAsync(string value, params object[] args);
 
         /// <summary>
-        /// Return <c>true</c> if the specified string value is ignored by the <see cref="ITerminalConsole"/>, otherwise <c>false</c>.
+        /// Writes the specified string value in the foreground color to the <see cref="ITerminalConsole"/> standard
+        /// output stream.
         /// </summary>
-        /// <param name="value">The value to check.</param>
-        public bool Ignore(string? value);
+        /// <param name="foregroundColor">The foreground text color.</param>
+        /// <param name="value">The text to write.</param>
+        /// <param name="args">The format arguments.</param>
+        public Task WriteColorAsync(ConsoleColor foregroundColor, string value, params object[] args);
 
         /// <summary>
-        /// Clears the <see cref="ITerminalConsole"/> buffer and the corresponding display information.
+        /// Writes the current newline terminator to the <see cref="ITerminalConsole"/> input stream asynchronously.
         /// </summary>
-        public Task ClearAsync();
+        public Task WriteLineAsync();
 
         /// <summary>
-        /// The foreground color of the <see cref="ITerminalConsole"/>.
+        /// Writes the specified string value followed by the current newline terminator to the
+        /// <see cref="ITerminalConsole"/> standard output stream.
         /// </summary>
-        public ConsoleColor ForegroundColor { get; set; }
+        /// <param name="value">The text to write.</param>
+        /// <param name="args">The format arguments.</param>
+        public Task WriteLineAsync(string value, params object[] args);
 
         /// <summary>
-        /// The background color of the <see cref="ITerminalConsole"/>.
+        /// Writes the specified string value in the foreground color followed by the current newline terminator to the
+        /// <see cref="ITerminalConsole"/> standard output stream.
         /// </summary>
-        public ConsoleColor BackgroundColor { get; set; }
+        /// <param name="foregroundColor">The foreground text color.</param>
+        /// <param name="value">The text to write.</param>
+        /// <param name="args">The format arguments.</param>
+        public Task WriteLineColorAsync(ConsoleColor foregroundColor, string value, params object[] args);
     }
 }
