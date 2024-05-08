@@ -18,7 +18,7 @@ We are considering the addition of support for other Identity Providers (IdPs) b
 For non-educational, commercial, or production use, a commercial license is required.
 
 ## Documentation
-For more information explore our [terminal framework documentation](https://docs.perpetualintelligence.com/articles/terminal/intro.html).
+For more information explore our [framework documentation](https://docs.perpetualintelligence.com/articles/terminal/intro.html).
 
 ## Feedback
 Your feedback helps shape `OneImlx.Terminal`. For suggestions, issues, or queries, please visit our [GitHub Issues](https://github.com/PerpetualIntelligence/terminal/issues).
