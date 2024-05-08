@@ -102,7 +102,7 @@ namespace OneImlx.Terminal.Licensing
         [Theory]
         [InlineData(null)]
         [InlineData("invalid_license_contents")]
-        public async Task ExtractFromJsonAsync_InvalidKeyFilePath_ShouldErrorAsync(string licenseContents)
+        public async Task ExtractFromJsonAsync_InvalidKeyFilePath_ShouldErrorAsync(string? licenseContents)
         {
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = "D:\\lic\\path_does_exist\\invalid.lic";

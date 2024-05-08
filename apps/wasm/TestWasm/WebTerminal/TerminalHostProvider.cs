@@ -6,6 +6,7 @@
 */
 
 using Microsoft.Extensions.Hosting;
+using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Apps.TestWasm.WebTerminal.Runners;
 using OneImlx.Terminal.Extensions;
@@ -21,8 +22,9 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
     /// </summary>
     public sealed class TerminalHostProvider
     {
-        public TerminalHostProvider(ILogger<TerminalHostProvider> logger)
+        public TerminalHostProvider(IHttpClientFactory httpClientFactory, ILogger<TerminalHostProvider> logger)
         {
+            this.httpClientFactory = httpClientFactory;
             this.logger = logger;
         }
 
@@ -58,6 +60,7 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
             {
                 throw new InvalidOperationException("The terminal host is not running.");
             }
+
             return terminalHost!;
         }
 
@@ -73,28 +76,45 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
                 throw new InvalidOperationException("The terminal host is already running.");
             }
 
-            // Setup the terminal context and run the router indefinitely as a console.
-            logger.LogInformation("Starting terminal host...");
-            terminalTokenSource = new CancellationTokenSource();
-            commandTokenSource = new CancellationTokenSource();
-            TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
-            TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
+            logger.LogInformation("Preparing to start terminal host...");
 
-            // Start the host builder and run terminal router till canceled.
-            terminalHost = Host.CreateDefaultBuilder()
-                .ConfigureAppConfiguration(ConfigureAppConfigurationDelegate)
-                .ConfigureLogging(ConfigureLoggingDelegate)
-                .ConfigureServices(ConfigureServicesDelegate)
-                .Build();
+            try
+            {
+                terminalTokenSource = new CancellationTokenSource();
+                commandTokenSource = new CancellationTokenSource();
+                TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
+                TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
 
-            logger.LogInformation("Running terminal router...");
-            await terminalHost.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
+                // Get the license asynchronously so we can initialize the terminal host
+                licenseContents = await GetLicenseContentAsync();
+
+                // Create the terminal host
+                terminalHost = Host.CreateDefaultBuilder()
+                    .ConfigureAppConfiguration(ConfigureAppConfigurationDelegate)
+                    .ConfigureLogging(ConfigureLoggingDelegate)
+                    .ConfigureServices(ConfigureServicesDelegate)
+                    .Build();
+
+                logger.LogInformation("Terminal host built, starting now...");
+                await terminalHost.StartAsync();
+
+                logger.LogInformation("Terminal host started, now starting terminal router...");
+                await terminalHost.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
+
+                logger.LogInformation("Terminal router is now running.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"An error occurred while starting the terminal host: {ex}");
+                throw; // Re-throwing the exception to be handled further up the call stack if necessary.
+            }
         }
+
 
         /// <summary>
         /// Configures application settings from JSON files and other configuration sources.
         /// </summary>
-        private static void ConfigureAppConfigurationDelegate(HostBuilderContext context, IConfigurationBuilder builder)
+        private void ConfigureAppConfigurationDelegate(HostBuilderContext context, IConfigurationBuilder builder)
         {
             builder.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -103,8 +123,10 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// <summary>
         /// Sets up logging services using Serilog for detailed logging throughout the application.
         /// </summary>
-        private static void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
+        private void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
         {
+            builder.ClearProviders();
+
             var loggerConfig = new LoggerConfiguration()
                                .MinimumLevel.Debug()
                                .WriteTo.Console();
@@ -116,16 +138,15 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// Configures and adds terminal-related services to the service collection, setting up command stores,
         /// handlers, and licensing details.
         /// </summary>
-        private static void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection services)
+        private void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection services)
         {
-            var licenseUrl = context.HostingEnvironment.ContentRootPath + "oneimlx-demo.json";
-
             services.AddHostedService<TestWasmHostedService>();
 
             var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalWasmConsole>(new TerminalUnicodeTextHandler(), options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
-                options.Licensing.LicenseFile = licenseUrl;
+                options.Licensing.LicenseFile = "oneimlx-license.json";
+                options.Licensing.LicenseContents = TerminalServices.EncodeLicenseContents(licenseContents.NotNull());
                 options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                 options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                 options.Router.Caret = "> ";
@@ -138,13 +159,25 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// Registers services and configurations specific to the terminal operations. This includes the terminal host
         /// service and any terminal-specific configurations and handlers.
         /// </summary>
-        private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
+        private void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
         {
+            // Add your services
+
+            // Configure the terminal services
             ConfigureOneImlxTerminal(context, services);
         }
 
+        private async Task<string> GetLicenseContentAsync()
+        {
+            HttpClient httpClient = httpClientFactory.CreateClient("base");
+            string licenseContent = await httpClient.GetStringAsync("oneimlx-license.json");
+            return licenseContent;
+        }
+
+        private readonly IHttpClientFactory httpClientFactory;
         private readonly ILogger<TerminalHostProvider> logger;
         private CancellationTokenSource? commandTokenSource;
+        private string? licenseContents;
         private IHost? terminalHost;
         private CancellationTokenSource? terminalTokenSource;
     }

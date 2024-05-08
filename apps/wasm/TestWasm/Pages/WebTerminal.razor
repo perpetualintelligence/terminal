@@ -28,7 +28,7 @@
     private Task? backgroundRouter;
     private Timer? fetchOutputTimer;
 
-    protected async override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         if (TerminalHostProvider.IsTerminalHostRunning)
         {
@@ -37,14 +37,8 @@
         else
         {
             // Start the terminal host in a background task so that the UI can be rendered
-            backgroundRouter = Task.Run(async () => await TerminalHostProvider.StartTerminalHostAsync());
-
-            // Give time for router to initialize.
-            await Task.Delay(500);
+            backgroundRouter = TerminalHostProvider.StartTerminalHostAsync();
         }
-
-        // Initialize terminal console
-        terminalConsole = TerminalHostProvider.GetTerminalConsole();
 
         // Start a timer to periodically fetch output from terminalConsole
         fetchOutputTimer = new Timer(_ => FetchOutput(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(500));
@@ -56,11 +50,11 @@
         {
             if (terminalConsole == null)
             {
-                throw new InvalidOperationException("Terminal console not initialized.");
+                terminalConsole = TerminalHostProvider.GetTerminalConsole();
             }
 
             TerminalWasmConsole terminalWasmConsole = (TerminalWasmConsole)terminalConsole;
-            terminalWasmConsole.SimulateInput(inputLine);
+            terminalWasmConsole.SetUserInput(inputLine);
         }
     }
 

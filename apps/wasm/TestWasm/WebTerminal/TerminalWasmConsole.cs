@@ -5,10 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using OneImlx.Terminal.Runtime;
 
 public class TerminalWasmConsole : ITerminalConsole
@@ -55,13 +51,6 @@ public class TerminalWasmConsole : ITerminalConsole
         return result;
     }
 
-    // No additional methods exposed; handling of input must be done internally or by design
-    public void SimulateInput(string input)
-    {
-        // Set the result of the task source when input is received
-        _inputTaskSource.SetResult(input);
-    }
-
     public Task WriteAsync(string value, params object[] args)
     {
         _outputWriter.Write(string.Format(value, args));
@@ -90,6 +79,13 @@ public class TerminalWasmConsole : ITerminalConsole
         throw new NotImplementedException();
     }
 
+    // No additional methods exposed; handling of input must be done internally or by design
+    internal void SetUserInput(string input)
+    {
+        // Set the result of the task source when input is received
+        _inputTaskSource.SetResult(input);
+    }
+
     private TaskCompletionSource<string?> _inputTaskSource = new TaskCompletionSource<string?>();
-    private StringWriter _outputWriter = new ();
+    private StringWriter _outputWriter = new();
 }

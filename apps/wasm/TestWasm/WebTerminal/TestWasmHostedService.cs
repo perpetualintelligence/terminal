@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// </summary>
         protected override void OnStopped()
         {
-            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Web terminal stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// </summary>
         protected override void OnStopping()
         {
-            TerminalConsole.WriteLineAsync("Stopping application...").Wait();
+            TerminalConsole.WriteLineAsync("Stopping web terminal...").Wait();
         }
 
         /// <summary>
@@ -70,13 +70,7 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// <returns></returns>
         protected override async Task PrintHostApplicationHeaderAsync()
         {
-            await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
-            await TerminalConsole.WriteLineAsync("Copyright (c) Test App. All Rights Reserved.");
-            await TerminalConsole.WriteLineAsync("For license, terms, and data policies, go to:");
-            await TerminalConsole.WriteLineAsync("https://mytestapp.com");
-            await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
-
-            await TerminalConsole.WriteLineAsync("Starting application...");
+            await TerminalConsole.WriteLineAsync("Starting web terminal...");
         }
 
         /// <summary>
