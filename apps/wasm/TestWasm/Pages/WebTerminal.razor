@@ -4,19 +4,31 @@
 @using OneImlx.Terminal.Runtime
 
 @inject TerminalHostProvider TerminalHostProvider
-@inject ITerminalConsole TerminalConsole
+
+@implements IDisposable
 
 <PageTitle>Web Terminal</PageTitle>
 
 <div style="display: flex; flex-direction: column; height: 100%;">
-    <textarea @bind="displayOutput" @onkeydown="HandleInput" style="height: 100%; width: 100%;" placeholder="Type commands here and press Enter..."></textarea>
+
+    <FluentLabel>Command</FluentLabel>
+    <FluentTextField @bind-Value=@inputLine @onkeyup="HandleInput"></FluentTextField>
+
+    <FluentLabel>Output</FluentLabel>
+    <FluentTextArea Rows="10">
+        @string.Join(Environment.NewLine, outputLines)
+    </FluentTextArea>
 </div>
 
 @code {
-    private string displayOutput = "";
+    private string inputLine = "";
+    private List<string> outputLines = new List<string>();
     private IHost? terminalHost;
+    private ITerminalConsole? terminalConsole;
+    private Task? backgroundRouter;
+    private Timer? fetchOutputTimer;
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         if (TerminalHostProvider.IsTerminalHostRunning)
         {
@@ -24,30 +36,53 @@
         }
         else
         {
-            terminalHost = await TerminalHostProvider.StartTerminalHostAsync();
+            // Start the terminal host in a background task so that the UI can be rendered
+            backgroundRouter = Task.Run(async () => await TerminalHostProvider.StartTerminalHostAsync());
+
+            // Give time for router to initialize.
+            await Task.Delay(500);
         }
+
+        // Initialize terminal console
+        terminalConsole = TerminalHostProvider.GetTerminalConsole();
+
+        // Start a timer to periodically fetch output from terminalConsole
+        fetchOutputTimer = new Timer(_ => FetchOutput(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(500));
     }
 
-    private async Task HandleInput(KeyboardEventArgs e)
+    private void HandleInput(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(GetLastInputLine(displayOutput)))
+        if (e.Key == "Enter")
         {
-            var inputLine = await TerminalConsole.In.ReadLineAsync();  // Read input asynchronously from the In property
-            displayOutput += $"\n";  // Append a newline for response output
+            if (terminalConsole == null)
+            {
+                throw new InvalidOperationException("Terminal console not initialized.");
+            }
 
-            // Simulating command processing and generating output
-            string response = $"You entered: {inputLine}";
-            await TerminalConsole.Out.WriteLineAsync(response);  // Writes response to the terminal's output
-            displayOutput += $"{response}\n";  // Appends the response to the display
-
-            // Ensure UI updates with new content
-            await InvokeAsync(StateHasChanged);
+            TerminalWasmConsole terminalWasmConsole = (TerminalWasmConsole)terminalConsole;
+            terminalWasmConsole.SimulateInput(inputLine);
         }
     }
 
-    private string GetLastInputLine(string text)
+    private void FetchOutput()
     {
-        var lines = text.Split('\n');
-        return lines.LastOrDefault() ?? string.Empty;
+        if (terminalConsole is TerminalWasmConsole console)
+        {
+            var output = console.Out.ToString();
+            if (!string.IsNullOrEmpty(output))
+            {
+                InvokeAsync(() =>
+                {
+                    outputLines.Add(output);
+                    ((StringWriter)console.Out).GetStringBuilder().Clear(); // Clear the output after fetching
+                    StateHasChanged();
+                });
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        fetchOutputTimer?.Dispose();
     }
 }

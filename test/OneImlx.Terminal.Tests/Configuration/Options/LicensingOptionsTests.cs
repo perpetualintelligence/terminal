@@ -18,7 +18,8 @@ namespace OneImlx.Terminal.Configuration.Options
         {
             LicensingOptions options = new();
 
-            options.LicenseFile.Should().BeNull();
+            options.LicenseContents.Should().BeNull();
+            options.LicenseFile.Should().BeEmpty();
             options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
             options.Deployment.Should().BeNull();
         }

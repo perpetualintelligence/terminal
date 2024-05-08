@@ -89,6 +89,21 @@ namespace OneImlx.Terminal.Runtime.Tests
             result.Should().Be("cmd1;|");
         }
 
+        [Theory]
+        [InlineData("dGVzdCBsaWNlbnNlY29uZGVudHM=")]
+        [InlineData("[{\"prop1\": \"value1\", \"prop2\": 42, \"prop3\": [\"string\", 3.14, true, {\"nested\": \"object\"}]}]")]
+        public void EncodeLicenseContents_ShouldReturn_ExpectedString(string licenseContents)
+        {
+            // Encode
+            string result = TerminalServices.EncodeLicenseContents(licenseContents);
+            result.Should().NotBe(licenseContents);
+
+            //Decode
+            string decodedContents = TerminalServices.DecodeLicenseContents(result);
+            decodedContents.Should().Be(licenseContents);
+        }
+
+
         private readonly TerminalOptions _terminalOptions;
     }
 }

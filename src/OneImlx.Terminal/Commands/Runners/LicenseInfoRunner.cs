@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Commands.Runners
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "usage={0}", license.Usage);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "mode={0}", license.Claims.Mode);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "deployment={0}", license.Claims.Deployment ?? "");
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "key_file={0}", license.LicenseKey);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "file={0}", license.LicenseKey);
             }
 
             {

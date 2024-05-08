@@ -1,10 +1,18 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -13,13 +21,7 @@ using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
-using System.IO;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -68,27 +70,6 @@ namespace OneImlx.Terminal.Licensing
             return Task.FromResult(licenseExtractorResult?.License);
         }
 
-        private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseCheck checkModel)
-        {
-            // Setup the HTTP client
-            HttpClient httpClient = EnsureHttpClient();
-
-            // Primary and Secondary endpoints E.g. during certificate renewal the primary endpoints may fail so we fall
-            // back to secondary endpoints.
-            HttpResponseMessage httpResponseMessage;
-            var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
-            try
-            {
-                httpResponseMessage = await httpClient.PostAsync(checkLicUrl, checkContent);
-            }
-            catch (HttpRequestException)
-            {
-                logger.LogWarning("The primary endpoint is not healthy. We are falling back to the secondary endpoint. Please contact the support team if you continue to see this warning after 24 hours.");
-                httpResponseMessage = await httpClient.PostAsync(fallbackCheckLicUrl, checkContent);
-            }
-            return httpResponseMessage;
-        }
-
         private async Task<LicenseClaims> CheckOfflineLicenseAsync(LicenseCheck checkModel)
         {
             // Make sure validation key is not null
@@ -133,6 +114,44 @@ namespace OneImlx.Terminal.Licensing
             return LicenseClaims.Create(result.Claims);
         }
 
+        private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseCheck checkModel)
+        {
+            // Setup the HTTP client
+            HttpClient httpClient = EnsureHttpClient();
+
+            // Primary and Secondary endpoints E.g. during certificate renewal the primary endpoints may fail so we fall
+            // back to secondary endpoints.
+            HttpResponseMessage httpResponseMessage;
+            var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
+            try
+            {
+                httpResponseMessage = await httpClient.PostAsync(checkLicUrl, checkContent);
+            }
+            catch (HttpRequestException)
+            {
+                logger.LogWarning("The primary endpoint is not healthy. We are falling back to the secondary endpoint. Please contact the support team if you continue to see this warning after 24 hours.");
+                httpResponseMessage = await httpClient.PostAsync(fallbackCheckLicUrl, checkContent);
+            }
+            return httpResponseMessage;
+        }
+
+        private void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
+        {
+            result.Claims.TryGetValue(claim, out object? jwtValue);
+
+            // Both JSON claim and expected claim do not exist. E.g. oid claim is optional, so the JWT token may not
+            // have it and if check still passes that then it is an error.
+            if (jwtValue == null && expectedValue == null)
+            {
+                return;
+            }
+
+            if (jwtValue == null || !jwtValue.Equals(expectedValue))
+            {
+                throw new TerminalException(error);
+            }
+        }
+
         /// <summary>
         /// Should be called only for online check.
         /// </summary>
@@ -149,92 +168,77 @@ namespace OneImlx.Terminal.Licensing
             return httpClientFactory.CreateClient();
         }
 
-        private async Task<LicenseExtractorResult> ExtractFromJsonAsync()
+        private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFile licenseFile)
         {
-            logger.LogDebug("Extract from JSON license key.");
+            logger.LogDebug("Extract offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
-            // Missing app id
-            if (string.IsNullOrWhiteSpace(terminalOptions.Id))
+            // If debugger is not attached and on-premise deployment is enabled then skip license check and grant claims
+            // based on license plan. If debugger is attached we always do a license check.
+            if (!licenseDebugger.IsDebuggerAttached() && IsOnPremiseDeployment(terminalOptions.Licensing.Deployment))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The authorized application is not configured as a terminal identifier.");
-            }
+                logger.LogDebug("Extract on-premise license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
-            // Missing key
-            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.LicenseFile))
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not configured.");
-            }
-
-            // License file invalid
-            if (!File.Exists(terminalOptions.Licensing.LicenseFile))
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid. key_file={0}", terminalOptions.Licensing.LicenseFile);
-            }
-
-            // Missing or invalid license plan.
-            if (!TerminalLicensePlans.IsValidPlan(terminalOptions.Licensing.LicensePlan))
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid. plan={0}", terminalOptions.Licensing.LicensePlan);
-            }
-
-            // Read the json file, avoid file locking for multiple threads.
-            LicenseFile? licenseFile;
-            await semaphoreSlim.WaitAsync();
-            try
-            {
-                // Make sure the lic stream is disposed to avoid locking.
-                using (Stream licStream = File.OpenRead(terminalOptions.Licensing.LicenseFile))
+                if (terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.OnPremise ||
+                    terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Unlimited)
                 {
-                    licenseFile = await JsonSerializer.DeserializeAsync<LicenseFile>(licStream);
+                    logger.LogDebug("On-premise deployment is enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFile.Id, licenseFile.TenantId);
+                    return new LicenseExtractorResult(OnPremiseDeploymentLicense(), null);
                 }
-            }
-            catch (JsonException ex)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not valid. key_file={0} info={1}", terminalOptions.Licensing.LicenseFile, ex.Message);
-            }
-            finally
-            {
-                semaphoreSlim.Release();
-            }
-
-            // Make sure the model is valid.
-            if (licenseFile == null)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file cannot be read. key_file={0}", terminalOptions.Licensing.LicenseFile);
-            }
-
-            // License check based on configured license handler.
-            LicenseExtractorResult licenseExtractorResult;
-            if (licenseFile.Mode == TerminalIdentifiers.OnlineLicenseMode)
-            {
-                licenseExtractorResult = await EnsureOnlineLicenseAsync(licenseFile);
-            }
-            else if (licenseFile.Mode == TerminalIdentifiers.OfflineLicenseMode)
-            {
-                licenseExtractorResult = await EnsureOfflineLicenseAsync(licenseFile);
+                else
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise deployment. plan={0}", terminalOptions.Licensing.LicensePlan);
+                }
             }
             else
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license mode is not valid. mode={0}", licenseFile.Mode);
+                // Check JWS signed assertion (JWS key)
+                LicenseCheck checkModel = new()
+                {
+                    Issuer = Shared.Constants.Issuer,
+                    Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
+                    Application = terminalOptions.Id,
+                    AuthorizedParty = Shared.Constants.TerminalUrn,
+                    TenantId = licenseFile.TenantId,
+                    LicenseKey = licenseFile.LicenseKey,
+                    Id = licenseFile.Id,
+                    ValidationKey = licenseFile.ValidationKey,
+                    Mode = TerminalIdentifiers.OfflineLicenseMode
+                };
+
+                // Make sure we use the full base address
+                LicenseClaims claims = await CheckOfflineLicenseAsync(checkModel);
+
+                // Make sure the acr contains the
+                string[] acrValues = claims.AcrValues.SplitBySpace();
+                if (acrValues.Length < 3)
+                {
+                    throw new TerminalException(TerminalErrors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
+                }
+
+                string plan = acrValues[0];
+                string usage = acrValues[1];
+                string brokerTenantId = acrValues[2];
+
+                // If the on-prem-deployment plan is set then check
+                if (plan != terminalOptions.Licensing.LicensePlan)
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
+                }
+
+                // We just check the broker tenant to be present in offline mode
+                if (string.IsNullOrWhiteSpace(brokerTenantId))
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
+                }
+
+                LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
+                LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
+                return new LicenseExtractorResult
+                (
+                    new License(plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseLimits, licensePrice),
+                    TerminalIdentifiers.OfflineLicenseMode
+                );
             }
-
-            logger.LogDebug("Extracted license. plan={0} usage={1} subject={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
-            return licenseExtractorResult;
-        }
-
-        /// <summary>
-        /// Creates a license for on-premise production deployment.
-        /// </summary>
-        /// <seealso cref="LicensingOptions.Deployment"/>
-        private License OnPremiseDeploymentLicense()
-        {
-            return new License(
-                terminalOptions.Licensing.LicensePlan,
-                "on-premise-deployment",
-                "on-premise-deployment",
-                new LicenseClaims(),
-                LicenseLimits.Create(terminalOptions.Licensing.LicensePlan),
-                LicensePrice.Create(terminalOptions.Licensing.LicensePlan));
         }
 
         private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFile licenseFile)
@@ -311,94 +315,85 @@ namespace OneImlx.Terminal.Licensing
             }
         }
 
-        private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFile licenseFile)
+        private async Task<LicenseExtractorResult> ExtractFromJsonAsync()
         {
-            logger.LogDebug("Extract offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
+            logger.LogDebug("Extract from JSON license key.");
 
-            // If debugger is not attached and on-premise deployment is enabled then skip license check and grant claims based on license plan.
-            // If debugger is attached we always do a license check.
-            if (!licenseDebugger.IsDebuggerAttached() && IsOnPremiseDeployment(terminalOptions.Licensing.Deployment))
+            // Missing app id
+            if (string.IsNullOrWhiteSpace(terminalOptions.Id))
             {
-                logger.LogDebug("Extract on-premise license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The authorized application is not configured as a terminal identifier.");
+            }
 
-                if (terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.OnPremise ||
-                    terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Unlimited)
+            // Missing key
+            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.LicenseFile))
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not configured.");
+            }
+
+            // License file needs to be a valid path if license contents is not set.
+            if (terminalOptions.Licensing.LicenseContents == null && !File.Exists(terminalOptions.Licensing.LicenseFile))
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid. file={0}", terminalOptions.Licensing.LicenseFile);
+            }
+
+            // Missing or invalid license plan.
+            if (!TerminalLicensePlans.IsValidPlan(terminalOptions.Licensing.LicensePlan))
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid. plan={0}", terminalOptions.Licensing.LicensePlan);
+            }
+
+            // Avoid file locking for multiple threads.
+            LicenseFile? licenseFile;
+            await semaphoreSlim.WaitAsync();
+            try
+            {
+                // Decode the license contents if set.
+                if (terminalOptions.Licensing.LicenseContents != null)
                 {
-                    logger.LogDebug("On-premise deployment is enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFile.Id, licenseFile.TenantId);
-                    return new LicenseExtractorResult(OnPremiseDeploymentLicense(), null);
+                    licenseFile = JsonSerializer.Deserialize<LicenseFile>(TerminalServices.DecodeLicenseContents(terminalOptions.Licensing.LicenseContents));
                 }
                 else
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise deployment. plan={0}", terminalOptions.Licensing.LicensePlan);
+                    // Make sure the lic stream is disposed to avoid locking.
+                    using (Stream licStream = File.OpenRead(terminalOptions.Licensing.LicenseFile))
+                    {
+                        licenseFile = await JsonSerializer.DeserializeAsync<LicenseFile>(licStream);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file or contents are not valid. file={0} info={1}", terminalOptions.Licensing.LicenseFile, ex.Message);
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
+
+            // Make sure the model is valid.
+            if (licenseFile == null)
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file cannot be read. file={0}", terminalOptions.Licensing.LicenseFile);
+            }
+
+            // License check based on configured license handler.
+            LicenseExtractorResult licenseExtractorResult;
+            if (licenseFile.Mode == TerminalIdentifiers.OnlineLicenseMode)
+            {
+                licenseExtractorResult = await EnsureOnlineLicenseAsync(licenseFile);
+            }
+            else if (licenseFile.Mode == TerminalIdentifiers.OfflineLicenseMode)
+            {
+                licenseExtractorResult = await EnsureOfflineLicenseAsync(licenseFile);
             }
             else
             {
-                // Check JWS signed assertion (JWS key)
-                LicenseCheck checkModel = new()
-                {
-                    Issuer = Shared.Constants.Issuer,
-                    Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
-                    Application = terminalOptions.Id,
-                    AuthorizedParty = Shared.Constants.TerminalUrn,
-                    TenantId = licenseFile.TenantId,
-                    LicenseKey = licenseFile.LicenseKey,
-                    Id = licenseFile.Id,
-                    ValidationKey = licenseFile.ValidationKey,
-                    Mode = TerminalIdentifiers.OfflineLicenseMode
-                };
-
-                // Make sure we use the full base address
-                LicenseClaims claims = await CheckOfflineLicenseAsync(checkModel);
-
-                // Make sure the acr contains the
-                string[] acrValues = claims.AcrValues.SplitBySpace();
-                if (acrValues.Length < 3)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
-                }
-
-                string plan = acrValues[0];
-                string usage = acrValues[1];
-                string brokerTenantId = acrValues[2];
-
-                // If the on-prem-deployment plan is set then check
-                if (plan != terminalOptions.Licensing.LicensePlan)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
-                }
-
-                // We just check the broker tenant to be present in offline mode
-                if (string.IsNullOrWhiteSpace(brokerTenantId))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
-                }
-
-                LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
-                LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
-                return new LicenseExtractorResult
-                (
-                    new License(plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseLimits, licensePrice),
-                    TerminalIdentifiers.OfflineLicenseMode
-                );
-            }
-        }
-
-        private void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
-        {
-            result.Claims.TryGetValue(claim, out object? jwtValue);
-
-            // Both JSON claim and expected claim do not exist.
-            // E.g. oid claim is optional, so the JWT token may not have it and if check still passes that then it is an error.
-            if (jwtValue == null && expectedValue == null)
-            {
-                return;
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license mode is not valid. mode={0}", licenseFile.Mode);
             }
 
-            if (jwtValue == null || !jwtValue.Equals(expectedValue))
-            {
-                throw new TerminalException(error);
-            }
+            logger.LogDebug("Extracted license. plan={0} usage={1} subject={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
+            return licenseExtractorResult;
         }
 
         private bool IsOnPremiseDeployment(string? deployment)
@@ -406,12 +401,27 @@ namespace OneImlx.Terminal.Licensing
             return deployment == TerminalIdentifiers.OnPremiseDeployment;
         }
 
+        /// <summary>
+        /// Creates a license for on-premise production deployment.
+        /// </summary>
+        /// <seealso cref="LicensingOptions.Deployment"/>
+        private License OnPremiseDeploymentLicense()
+        {
+            return new License(
+                terminalOptions.Licensing.LicensePlan,
+                "on-premise-deployment",
+                "on-premise-deployment",
+                new LicenseClaims(),
+                LicenseLimits.Create(terminalOptions.Licensing.LicensePlan),
+                LicensePrice.Create(terminalOptions.Licensing.LicensePlan));
+        }
+
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
-        private readonly ILicenseDebugger licenseDebugger;
-        private readonly TerminalOptions terminalOptions;
         private readonly string fallbackCheckLicUrl = "https://piapim.azure-api.net/public/checklicense";
         private readonly IHttpClientFactory? httpClientFactory;
+        private readonly ILicenseDebugger licenseDebugger;
         private readonly ILogger<LicenseExtractor> logger;
+        private readonly TerminalOptions terminalOptions;
         private LicenseExtractorResult? licenseExtractorResult;
         private SemaphoreSlim semaphoreSlim = new(1, 1);
     }

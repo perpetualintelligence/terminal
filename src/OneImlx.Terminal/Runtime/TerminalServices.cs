@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,15 @@ namespace OneImlx.Terminal.Runtime
     /// </summary>
     public static class TerminalServices
     {
+        /// <summary>
+        /// Decodes the license contents to be used by the license extractor.
+        /// </summary>
+        public static string DecodeLicenseContents(string encodedLicenseContents)
+        {
+            // The license contents are always ASCII.
+            return Encoding.ASCII.GetString(Convert.FromBase64String(encodedLicenseContents));
+        }
+
         /// <summary>
         /// Constructs a delimited message from specified raw command strings using the settings defined in terminal options.
         /// </summary>
@@ -62,6 +72,14 @@ namespace OneImlx.Terminal.Runtime
             }
 
             return delimitedMessage.Append(msgDelimiter).ToString();
+        }
+
+        /// <summary>
+        /// Encodes the license contents to set it in the licensing options.
+        /// </summary>
+        public static string EncodeLicenseContents(string licenseContents)
+        {
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(licenseContents));
         }
     }
 }

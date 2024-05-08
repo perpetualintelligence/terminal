@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// already running, preventing multiple instances.
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown if the terminal host is already running.</exception>
-        public async Task<IHost> StartTerminalHostAsync()
+        public async Task StartTerminalHostAsync()
         {
             if (IsTerminalHostRunning)
             {
@@ -89,7 +89,6 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
 
             logger.LogInformation("Running terminal router...");
             await terminalHost.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(consoleRouterContext);
-            return terminalHost;
         }
 
         /// <summary>
@@ -117,14 +116,16 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// Configures and adds terminal-related services to the service collection, setting up command stores,
         /// handlers, and licensing details.
         /// </summary>
-        private static void ConfigureOneImlxTerminal(IServiceCollection services)
+        private static void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection services)
         {
+            var licenseUrl = context.HostingEnvironment.ContentRootPath + "oneimlx-demo.json";
+
             services.AddHostedService<TestWasmHostedService>();
 
-            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(), options =>
+            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalWasmConsole>(new TerminalUnicodeTextHandler(), options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
-                options.Licensing.LicenseFile = "C:\\Users\\PerpetualAdmin\\source\\repos\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
+                options.Licensing.LicenseFile = licenseUrl;
                 options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                 options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                 options.Router.Caret = "> ";
@@ -139,7 +140,7 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// </summary>
         private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
         {
-            ConfigureOneImlxTerminal(services);
+            ConfigureOneImlxTerminal(context, services);
         }
 
         private readonly ILogger<TerminalHostProvider> logger;

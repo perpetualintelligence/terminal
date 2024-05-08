@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,36 +13,30 @@ using OneImlx.Terminal.Runtime;
 
 public class TerminalWasmConsole : ITerminalConsole
 {
-    private StringBuilder _outputBuffer = new StringBuilder();
-    private StringBuilder _inputBuffer = new StringBuilder();
-    private StringWriter _outputWriter;
-    private StringReader _inputReader;
-
     public TerminalWasmConsole()
     {
-        _outputWriter = new StringWriter(_outputBuffer);
-        _inputReader = new StringReader(_inputBuffer.ToString());
+        Out = _outputWriter;
     }
 
     public ConsoleColor BackgroundColor { get; set; }
+
     public ConsoleColor ForegroundColor { get; set; }
 
-    public TextWriter Out => _outputWriter;
-    public TextReader In => _inputReader;
+    public TextReader In { get; }
+
+    // Not actively used unless required for compatibility
+    public TextWriter Out { get; private set; }
 
     public Task ClearAsync()
     {
-        _outputBuffer.Clear();
-        _inputBuffer.Clear();
-        // Reset the output and input streams to reflect cleared buffers
-        _outputWriter = new StringWriter(_outputBuffer);
-        _inputReader = new StringReader(_inputBuffer.ToString());
+        _outputWriter.GetStringBuilder().Clear();
+        _inputTaskSource = new TaskCompletionSource<string?>();
         return Task.CompletedTask;
     }
 
     public bool Ignore(string? value)
     {
-        return value != null && value.StartsWith("IGNORE");
+        return string.IsNullOrWhiteSpace(value);
     }
 
     public Task<string> ReadAnswerAsync(string question, params string[]? answers)
@@ -43,9 +44,22 @@ public class TerminalWasmConsole : ITerminalConsole
         throw new NotImplementedException();
     }
 
-    public Task<string?> ReadLineAsync()
+    public async Task<string?> ReadLineAsync()
     {
-        return _inputReader.ReadLineAsync();
+        // Await directly on the TaskCompletionSource that will be set with input
+        string? result = await _inputTaskSource.Task;
+
+        // Reset for next input
+        _inputTaskSource = new TaskCompletionSource<string?>();
+
+        return result;
+    }
+
+    // No additional methods exposed; handling of input must be done internally or by design
+    public void SimulateInput(string input)
+    {
+        // Set the result of the task source when input is received
+        _inputTaskSource.SetResult(input);
     }
 
     public Task WriteAsync(string value, params object[] args)
@@ -75,4 +89,7 @@ public class TerminalWasmConsole : ITerminalConsole
     {
         throw new NotImplementedException();
     }
+
+    private TaskCompletionSource<string?> _inputTaskSource = new TaskCompletionSource<string?>();
+    private StringWriter _outputWriter = new ();
 }

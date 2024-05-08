@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseFile = "D:\\lic\\path_does_exist\\invalid.lic";
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file path is not valid. key_file=D:\\lic\\path_does_exist\\invalid.lic");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file path is not valid. file=D:\\lic\\path_does_exist\\invalid.lic");
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace OneImlx.Terminal.Licensing
             }
             catch (TerminalException ex)
             {
-                ex.Message.Should().StartWith("The license file is not valid. key_file=");
+                ex.Message.Should().StartWith("The license file or contents are not valid. file=");
             }
         }
 

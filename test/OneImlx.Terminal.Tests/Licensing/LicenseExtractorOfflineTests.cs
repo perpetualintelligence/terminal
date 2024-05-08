@@ -1,22 +1,23 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Shared.Json;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.IO;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Xunit;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -36,17 +37,6 @@ namespace OneImlx.Terminal.Licensing
 
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached: false);
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
-        }
-
-        [Fact]
-        public async Task ExtractFromJsonAsync_Invalid_Plan_ShouldErrorAsync()
-        {
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Licensing.LicensePlan = "invalid_plan";
-
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not valid. plan=invalid_plan");
         }
 
         [Fact]
@@ -77,6 +67,28 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
+        public async Task ExtractFromJsonAsync_Invalid_Plan_ShouldErrorAsync()
+        {
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testLicPath;
+            terminalOptions.Licensing.LicensePlan = "invalid_plan";
+
+            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not valid. plan=invalid_plan");
+        }
+
+        [Fact]
+        public async Task ExtractFromJsonAsync_InvalidApplicationId_ShouldErrorAsync()
+        {
+            terminalOptions.Id = "invalid_app";
+            terminalOptions.Licensing.LicenseFile = testLicPath;
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+
+            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnauthorizedAccess).WithErrorDescription("The application is not authorized. app=invalid_app");
+        }
+
+        [Fact]
         public async Task ExtractFromJsonAsync_InvalidAuthApp_ShouldErrorAsync()
         {
             terminalOptions.Id = "invalid_auth_app";
@@ -87,39 +99,24 @@ namespace OneImlx.Terminal.Licensing
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnauthorizedAccess).WithErrorDescription("The application is not authorized. app=invalid_auth_app");
         }
 
-        [Fact]
-        public async Task ExtractFromJsonAsync_InvalidKeyFilePath_ShouldErrorAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("invalid_license_contents")]
+        public async Task ExtractFromJsonAsync_InvalidKeyFilePath_ShouldErrorAsync(string licenseContents)
         {
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = "D:\\lic\\path_does_exist\\invalid.lic";
+            terminalOptions.Licensing.LicenseContents = licenseContents;
 
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file path is not valid. key_file=D:\\lic\\path_does_exist\\invalid.lic");
-        }
-
-        [Fact]
-        public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
-        {
-            terminalOptions.Id = null;
-            terminalOptions.Licensing.LicenseFile = testLicPath;
-
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The authorized application is not configured as a terminal identifier.");
-        }
-
-        [Fact]
-        public async Task ExtractFromJsonAsync_NonJsonLic_ShouldErrorAsync()
-        {
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = nonJsonLicPath;
-
-            try
+            if (licenseContents != null)
             {
-                await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+                Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+                await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file or contents are not valid. file=D:\\lic\\path_does_exist\\invalid.lic info=The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters.");
             }
-            catch (TerminalException ex)
+            else
             {
-                ex.Message.Should().StartWith("The license file is not valid. key_file=");
+                Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+                await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file path is not valid. file=D:\\lic\\path_does_exist\\invalid.lic");
             }
         }
 
@@ -151,17 +148,6 @@ namespace OneImlx.Terminal.Licensing
             }
         }
 
-        [Fact]
-        public async Task ExtractFromJsonAsync_InvalidApplicationId_ShouldErrorAsync()
-        {
-            terminalOptions.Id = "invalid_app";
-            terminalOptions.Licensing.LicenseFile = testLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnauthorizedAccess).WithErrorDescription("The application is not authorized. app=invalid_app");
-        }
-
         [Fact(Skip = "Need to add an jwt token with invalid license provider")]
         public async Task ExtractFromJsonAsync_InvalidProviderTenant_ShouldErrorAsync()
         {
@@ -171,6 +157,16 @@ namespace OneImlx.Terminal.Licensing
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The provider is not authorized. provider_id=invalid_provider");
+        }
+
+        [Fact]
+        public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
+        {
+            terminalOptions.Id = null;
+            terminalOptions.Licensing.LicenseFile = testLicPath;
+
+            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The authorized application is not configured as a terminal identifier.");
         }
 
         [Fact]
@@ -190,6 +186,22 @@ namespace OneImlx.Terminal.Licensing
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+        }
+
+        [Fact]
+        public async Task ExtractFromJsonAsync_NonJsonLic_ShouldErrorAsync()
+        {
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = nonJsonLicPath;
+
+            try
+            {
+                await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            }
+            catch (TerminalException ex)
+            {
+                ex.Message.Should().StartWith("The license file or contents are not valid. file=");
+            }
         }
 
         [Fact]
@@ -227,11 +239,79 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
             result.License.Claims.TenantCountry.Should().Be("USA");
             result.License.Claims.Custom.Should().BeNull();
+
             //result.License.Claims.Expiry.Should().NotBeNull();
             //result.License.Claims.IssuedAt.Should().NotBeNull();
             result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com");
             result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
             result.License.Claims.TenantName.Should().Be("pi-test");
+
+            //result.License.Claims.NotBefore.Should().NotBeNull();
+            result.License.Claims.Id.Should().Be("bb8969c6-b1a9-42ef-986b-a56db4b155f1"); // Test License Id
+            result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // Test subscription
+            result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
+
+            // no custom claims
+            result.License.Claims.Custom.Should().BeNull();
+
+            // limits
+            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
+
+            // Price
+            result.License.Price.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
+            result.License.Price.Currency.Should().Be("USD");
+            result.License.Price.Monthly.Should().Be(3299.0);
+            result.License.Price.Yearly.Should().Be(35629.0);
+
+            // After extract and Get should return the correct license
+            licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            licenseFromGet.Should().NotBeNull();
+            licenseFromGet.Should().BeSameAs(result.License);
+        }
+
+        [Fact]
+        public async Task ExtractFromJsonAsync_ValidKey_Via_Contents_ShouldContainClaimsAsync()
+        {
+            // Before extract get should be null
+            License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
+            licenseFromGet.Should().BeNull();
+
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseContents = TerminalServices.EncodeLicenseContents(File.ReadAllText(testLicPath));
+            terminalOptions.Licensing.LicenseFile = "license-with-contents";
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+
+            var result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            result.License.Should().NotBeNull();
+
+            // ensure passed and extraction handler
+            result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
+
+            // License claims
+            result.License.Claims.Should().NotBeNull();
+            result.License.Limits.Should().NotBeNull();
+            result.License.LicenseKey.Should().NotBeNull();
+
+            // license key
+            result.License.LicenseKey.Should().Be("license-with-contents");
+
+            // plan, mode and usage
+            result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
+            result.License.Usage.Should().Be("urn:oneimlx:lic:usage:org");
+
+            // claims
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:unlimited urn:oneimlx:lic:usage:org 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
+            result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/21d818a5-935c-496f-9faf-d9ff9d9645d8/v2.0");
+            result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
+            result.License.Claims.TenantCountry.Should().Be("USA");
+            result.License.Claims.Custom.Should().BeNull();
+
+            //result.License.Claims.Expiry.Should().NotBeNull();
+            //result.License.Claims.IssuedAt.Should().NotBeNull();
+            result.License.Claims.Issuer.Should().Be("https://api.perpetualintelligence.com");
+            result.License.Claims.Jti.Should().NotBeNullOrWhiteSpace();
+            result.License.Claims.TenantName.Should().Be("pi-test");
+
             //result.License.Claims.NotBefore.Should().NotBeNull();
             result.License.Claims.Id.Should().Be("bb8969c6-b1a9-42ef-986b-a56db4b155f1"); // Test License Id
             result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // Test subscription
@@ -280,10 +360,10 @@ namespace OneImlx.Terminal.Licensing
             return tempJsonLicPath;
         }
 
-        private readonly TerminalOptions terminalOptions;
-        private ILicenseExtractor licenseExtractor;
-        private readonly string nonJsonLicPath;
-        private readonly string testLicPath;
         private readonly ILicenseDebugger licenseDebugger;
+        private readonly string nonJsonLicPath;
+        private readonly TerminalOptions terminalOptions;
+        private readonly string testLicPath;
+        private ILicenseExtractor licenseExtractor;
     }
 }
