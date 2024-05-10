@@ -14,28 +14,12 @@
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.60.3" />
 		<PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-	</ItemGroup>
+        <PackageReference Include="OneImlx.Terminal.Authentication" Version="5.11.1" />
+    </ItemGroup>
 
-	<ItemGroup>
-	  <None Update="appsettings.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
-
-	<!--
-        DEV CONFIG: REMOVE THIS SECTION IN YOUR APP AND ONLY ADD NUGET PACKAGE REFERENCE
-    -->
-	<Choose>
-		<When Condition="'$(PI_CI_REFERENCE)'=='cross'">
-			<ItemGroup>
-				<ProjectReference Include="..\..\..\src\OneImlx.Terminal.Authentication\OneImlx.Terminal.Authentication.csproj" />
-			</ItemGroup>
-		</When>
-		<Otherwise>
-			<ItemGroup>
-				<PackageReference Include="OneImlx.Terminal.Authentication" Version="5.11.1" />
-			</ItemGroup>
-		</Otherwise>
-	</Choose>
-
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

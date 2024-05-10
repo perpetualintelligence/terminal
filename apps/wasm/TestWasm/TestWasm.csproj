@@ -16,25 +16,10 @@
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.*-* " />
 	  <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
 	  <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+      <PackageReference Include="OneImlx.Terminal" Version="5.11.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
-
-	<!--
-        DEV CONFIG: REMOVE THIS SECTION IN YOUR APP AND ONLY ADD NUGET PACKAGE REFERENCE
-    -->
-	<Choose>
-		<When Condition="'$(PI_CI_REFERENCE)'=='cross'">
-			<ItemGroup>
-				<ProjectReference Include="..\..\..\src\OneImlx.Terminal.Authentication\OneImlx.Terminal.Authentication.csproj" />
-			</ItemGroup>
-		</When>
-		<Otherwise>
-			<ItemGroup>
-				<PackageReference Include="OneImlx.Terminal.Authentication" Version="5.11.1" />
-			</ItemGroup>
-		</Otherwise>
-	</Choose>
 </Project>
