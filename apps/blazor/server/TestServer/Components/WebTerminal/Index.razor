@@ -1,0 +1,107 @@
+﻿@page "/webterminal"
+
+@using Microsoft.Extensions.Hosting
+@using OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
+@using OneImlx.Terminal.Runtime
+@using System.Threading
+@using System.IO
+@using Microsoft.AspNetCore.Components.Web
+@using System.Text
+
+@inject TestBlazorServerHostProvider TerminalHostProvider
+
+@implements IDisposable
+
+<PageTitle>Web Terminal</PageTitle>
+
+<div style="display: flex; flex-direction: column; height: 100%;">
+    <FluentLabel>Terminal</FluentLabel>
+    <FluentTextArea @ref="terminalTextArea" @onkeydown="HandleKeyDown" style="width: 100%;" @bind-Value=@bindValue Rows="20">
+    </FluentTextArea>
+</div>
+
+@code {
+    private FluentTextArea terminalTextArea = null!;
+    private StringBuilder currentInput = new();
+    private StringBuilder currentOutput = new();
+    private string bindValue = "";
+    private ITerminalConsole? terminalConsole;
+    private Timer? fetchOutputTimer;
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (!TerminalHostProvider.IsTerminalHostRunning)
+        {
+            // Start the terminal host in a background task so that the UI can be rendered
+            _ = TerminalHostProvider.StartTerminalHostAsync();
+
+            // Get the terminal console from the terminal host
+            while (!TerminalHostProvider.IsTerminalHostRunning)
+            {
+                await Task.Delay(500);
+            }
+        }
+
+        // Get the terminal console from the terminal host
+        terminalConsole = TerminalHostProvider.GetTerminalConsole();
+
+        // Start a timer to periodically fetch output from terminalConsole
+        fetchOutputTimer = new Timer(_ => FetchOutput(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(500));
+    }
+
+    private Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            ProcessInput();
+        }
+        else if (e.Key == "Backspace" && currentInput.Length > 0)
+        {
+            currentInput.Remove(currentInput.Length - 1, 1);
+        }
+        else
+        {
+            currentInput.Append(e.Key);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void ProcessInput()
+    {
+        if (terminalConsole is TestBlazorServerConsole terminalServerConsole)
+        {
+            // Write the user input to the console so it can be displayed in the terminal.
+            string currentInputString = currentInput.ToString();
+            terminalServerConsole.WriteLineAsync(currentInputString);
+
+            // Set the user input in the console so it can be read by the terminal application to run the command.
+            terminalServerConsole.SetConsoleInput(currentInputString);
+            currentInput.Clear();
+        }
+    }
+
+    private void FetchOutput()
+    {
+        InvokeAsync(() =>
+        {
+            if (terminalConsole is TestBlazorServerConsole console)
+            {
+                currentOutput = console.GetConsoleOutput();
+                RenderOutput();
+
+            }
+        });
+    }
+
+    private void RenderOutput()
+    {
+        bindValue = currentOutput.ToString();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        fetchOutputTimer?.Dispose();
+    }
+}

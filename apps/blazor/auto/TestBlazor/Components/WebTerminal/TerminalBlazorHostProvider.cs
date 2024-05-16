@@ -1,11 +1,8 @@
-﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Apps.TestWasm.WebTerminal.Runners;
@@ -13,18 +10,24 @@ using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Serilog;
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using TestBlazor.Components.WebTerminal;
 
-namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
+namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
 {
     /// <summary>
     /// Manages the life-cycle and configuration of a terminal host. Provides functionality to start and retrieve the
     /// terminal host, ensuring that it can only be started once.
     /// </summary>
-    public sealed class TerminalHostProvider
+    public sealed class TerminalBlazorHostProvider
     {
-        public TerminalHostProvider(IHttpClientFactory httpClientFactory, ILogger<TerminalHostProvider> logger)
+        public TerminalBlazorHostProvider(IWebHostEnvironment webHostEnvironment, ILogger<TerminalBlazorHostProvider> logger)
         {
-            this.httpClientFactory = httpClientFactory;
+            this.webHostEnvironment = webHostEnvironment;
             this.logger = logger;
         }
 
@@ -110,7 +113,6 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
             }
         }
 
-
         /// <summary>
         /// Configures application settings from JSON files and other configuration sources.
         /// </summary>
@@ -140,9 +142,9 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
         /// </summary>
         private void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection services)
         {
-            services.AddHostedService<TestWasmHostedService>();
+            services.AddHostedService<TestBlazorHostedService>();
 
-            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalWasmConsole>(new TerminalUnicodeTextHandler(), options =>
+            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalBlazorConsole>(new TerminalUnicodeTextHandler(), options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
                 options.Licensing.LicenseFile = "oneimlx-license.json";
@@ -169,13 +171,20 @@ namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal
 
         private async Task<string> GetLicenseContentAsync()
         {
-            HttpClient httpClient = httpClientFactory.CreateClient("base");
-            string licenseContent = await httpClient.GetStringAsync("oneimlx-license.json");
-            return licenseContent;
+            var licFile = webHostEnvironment.WebRootFileProvider.GetFileInfo("oneimlx-license.json");
+            if (!licFile.Exists)
+            {
+                throw new InvalidOperationException("The license file does not exist.");
+            }
+
+            using var stream = licFile.CreateReadStream();
+            using var reader = new StreamReader(stream);
+            return await reader.ReadToEndAsync();
         }
 
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly ILogger<TerminalHostProvider> logger;
+        private readonly ILogger<TerminalBlazorHostProvider> logger;
+        private readonly IWebHostEnvironment webHostEnvironment;
         private CancellationTokenSource? commandTokenSource;
         private string? licenseContents;
         private IHost? terminalHost;

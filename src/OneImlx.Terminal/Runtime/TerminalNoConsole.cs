@@ -24,12 +24,6 @@ namespace OneImlx.Terminal.Runtime
         public ConsoleColor ForegroundColor { get; set; }
 
         /// <inheritdoc/>
-        public TextReader In => throw new NotSupportedException();
-
-        /// <inheritdoc/>
-        public TextWriter Out => throw new NotSupportedException();
-
-        /// <inheritdoc/>
         public Task ClearAsync()
         {
             // No operation

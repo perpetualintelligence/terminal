@@ -30,16 +30,6 @@ namespace OneImlx.Terminal.Runtime
         public ConsoleColor ForegroundColor { get; set; }
 
         /// <summary>
-        /// Gets the standard console input stream.
-        /// </summary>
-        public TextReader In { get; }
-
-        /// <summary>
-        /// Gets the standard console output stream.
-        /// </summary>
-        public TextWriter Out { get; }
-
-        /// <summary>
         /// Clears the <see cref="ITerminalConsole"/> buffer and the corresponding display information.
         /// </summary>
         public Task ClearAsync();
@@ -81,7 +71,7 @@ namespace OneImlx.Terminal.Runtime
         public Task WriteColorAsync(ConsoleColor foregroundColor, string value, params object[] args);
 
         /// <summary>
-        /// Writes the current newline terminator to the <see cref="ITerminalConsole"/> input stream asynchronously.
+        /// Writes the current newline terminator to the <see cref="ITerminalConsole"/> standard output stream asynchronously.
         /// </summary>
         public Task WriteLineAsync();
 

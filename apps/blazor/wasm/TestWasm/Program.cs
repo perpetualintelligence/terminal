@@ -1,10 +1,3 @@
-/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -25,7 +18,7 @@ namespace OneImlx.Terminal.Apps.TestWasm
                 client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
             });
 
-            builder.Services.AddSingleton<TerminalHostProvider>();
+            builder.Services.AddSingleton<TerminalWasmHostProvider>();
 
             builder.Services.AddFluentUIComponents();
 

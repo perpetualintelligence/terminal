@@ -51,21 +51,12 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
-        /// Gets the standard input stream.
-        /// </summary>
-        public TextReader In => Console.In;
-
-        /// <summary>
-        /// Gets the standard output stream.
-        /// </summary>
-        public TextWriter Out => Console.Out;
-
-        /// <summary>
         /// Clears the <see cref="Console"/> buffer and the corresponding display information.
         /// </summary>
         public Task ClearAsync()
         {
-            return Task.Run(Console.Clear);
+            Console.Clear();
+            return Task.CompletedTask;
         }
 
         /// <summary>

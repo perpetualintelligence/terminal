@@ -5,11 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Mocks
 {
@@ -24,16 +23,11 @@ namespace OneImlx.Terminal.Mocks
 
         public ConsoleColor ForegroundColor { get; set; }
 
-        public TextReader In => throw new NotImplementedException();
-
         public List<string> Messages { get; }
-
-        public TextWriter Out => throw new NotImplementedException();
 
         public Task ClearAsync()
         {
-            // Optionally, handle the clear operation by clearing the history or by marking a clear point
-            Messages.Add("[Console Cleared]");
+            Messages.Clear();
             return Task.CompletedTask;
         }
 
