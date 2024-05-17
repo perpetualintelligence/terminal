@@ -1,7 +1,13 @@
-﻿@page "/webterminal"
+﻿@*
+   This is a simple example using OneImlx.Terminal to build the Blazor Server terminal.
+   Developers can add more validation and behavior to the terminal UX based on their custom requirements.
+*@
+
+@page "/webterminal"
 
 @using Microsoft.Extensions.Hosting
 @using OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
+@using OneImlx.Terminal.Configuration.Options
 @using OneImlx.Terminal.Runtime
 @using System.Threading
 @using System.IO
@@ -15,8 +21,10 @@
 <PageTitle>Web Terminal</PageTitle>
 
 <div style="display: flex; flex-direction: column; height: 100%;">
-    <FluentLabel>Terminal</FluentLabel>
-    <FluentTextArea @ref="terminalTextArea" @onkeydown="HandleKeyDown" style="width: 100%;" @bind-Value=@bindValue Rows="20">
+    <FluentTextArea @ref="terminalTextArea"
+                    @onkeydown="HandleKeyDown"
+                    @bind-Value=@bindValue Rows="30"
+                    style="width: 100%; height: 100%; font-family: 'Consolas', monospace; resize: none; overflow-y: auto;">
     </FluentTextArea>
 </div>
 
@@ -25,7 +33,10 @@
     private StringBuilder currentInput = new();
     private StringBuilder currentOutput = new();
     private string bindValue = "";
-    private ITerminalConsole? terminalConsole;
+    private string lastUnicode = "";
+    private ITerminalConsole terminalConsole = null!;
+    private ITerminalTextHandler terminalTextHandler = null!;
+    private TerminalOptions terminalOptions = null!;
     private Timer? fetchOutputTimer;
 
     protected async override Task OnInitializedAsync()
@@ -44,9 +55,19 @@
 
         // Get the terminal console from the terminal host
         terminalConsole = TerminalHostProvider.GetTerminalConsole();
+        terminalTextHandler = TerminalHostProvider.GetTerminalTextHandler();
+        terminalOptions = TerminalHostProvider.GetTerminalOptions();
 
         // Start a timer to periodically fetch output from terminalConsole
         fetchOutputTimer = new Timer(_ => FetchOutput(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(500));
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Make sure the text area has focus
+        terminalTextArea.FocusAsync();
+
+        return Task.CompletedTask;
     }
 
     private Task HandleKeyDown(KeyboardEventArgs e)
@@ -57,11 +78,12 @@
         }
         else if (e.Key == "Backspace" && currentInput.Length > 0)
         {
-            currentInput.Remove(currentInput.Length - 1, 1);
+            RemoveLastUnicodeCharacter();
         }
-        else
+        else if (IsPrintableKey(e))
         {
             currentInput.Append(e.Key);
+            lastUnicode = e.Key;
         }
 
         return Task.CompletedTask;
@@ -89,7 +111,6 @@
             {
                 currentOutput = console.GetConsoleOutput();
                 RenderOutput();
-
             }
         });
     }
@@ -103,5 +124,34 @@
     public void Dispose()
     {
         fetchOutputTimer?.Dispose();
+    }
+
+    private bool IsPrintableKey(KeyboardEventArgs e)
+    {
+        // List of non-printable keys to ignore
+        var nonPrintableKeys = new HashSet<string>
+        {
+            "Shift", "Control", "Alt", "CapsLock", "Escape", "Tab", "ArrowUp",
+            "ArrowDown", "ArrowLeft", "ArrowRight", "End", "Home", "Insert",
+            "Delete", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6",
+            "F7", "F8", "F9", "F10", "F11", "F12", "Meta", "ContextMenu", "Pause", "ScrollLock"
+        };
+
+        // Add caret to the list
+        // The cared may be '> ' or >
+        nonPrintableKeys.Add(terminalOptions.Router.Caret.Trim());
+
+        return !nonPrintableKeys.Contains(e.Key);
+    }
+
+    private void RemoveLastUnicodeCharacter()
+    {
+        // Remove the last character using the TerminalTextHandler
+        int currentTextLength = terminalTextHandler!.TextLength(currentInput.ToString());
+        int lastUnicodeLength = terminalTextHandler.TextLength(lastUnicode);
+        if (currentTextLength >= lastUnicodeLength)
+        {
+            currentInput.Remove(currentInput.Length - lastUnicode.Length, lastUnicode.Length);
+        }
     }
 }

@@ -10,7 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Licensing;
-using OneImlx.Terminal.Apps.TestWasm.WebTerminal.Runners;
+using OneImlx.Terminal.Apps.TestServer.Components.WebTerminal.Runners;
+using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
@@ -49,6 +50,36 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
             }
 
             return terminalHost!.Services.GetRequiredService<ITerminalConsole>();
+        }
+
+        /// <summary>
+        /// Gets the terminal text handler.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public ITerminalTextHandler GetTerminalTextHandler()
+        {
+            if (!IsTerminalHostRunning)
+            {
+                throw new InvalidOperationException("The terminal host is not running.");
+            }
+
+            return terminalHost!.Services.GetRequiredService<ITerminalTextHandler>();
+        }
+
+        /// <summary>
+        /// Gets the terminal options.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public TerminalOptions GetTerminalOptions()
+        {
+            if (!IsTerminalHostRunning)
+            {
+                throw new InvalidOperationException("The terminal host is not running.");
+            }
+
+            return terminalHost!.Services.GetRequiredService<TerminalOptions>();
         }
 
         /// <summary>
@@ -131,6 +162,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
             var loggerConfig = new LoggerConfiguration()
                                .MinimumLevel.Debug()
                                .WriteTo.Console();
+
             Log.Logger = loggerConfig.CreateLogger();
             builder.AddSerilog(Log.Logger);
         }
@@ -143,7 +175,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         {
             services.AddHostedService<TestBlazorServerHostedService>();
 
-            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TestBlazorServerConsole>(new TerminalUnicodeTextHandler(), options =>
+            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TestBlazorServerConsole>(new TerminalUnicodeTextHandler(), options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
                 options.Licensing.LicenseFile = "oneimlx-license.json";
@@ -163,6 +195,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         private void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
         {
             // Add your services
+            services.AddLogging();
 
             // Configure the terminal services
             ConfigureOneImlxTerminal(context, services);

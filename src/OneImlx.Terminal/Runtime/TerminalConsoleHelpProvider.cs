@@ -15,7 +15,7 @@ namespace OneImlx.Terminal.Runtime
     /// <summary>
     /// The default <see cref="ITerminalHelpProvider"/> that logs the command help using <see cref="ITerminalConsole"/>.
     /// </summary>
-    public sealed class TerminalHelpConsoleProvider : ITerminalHelpProvider
+    public sealed class TerminalConsoleHelpProvider : ITerminalHelpProvider
     {
         private readonly TerminalOptions terminalOptions;
         private readonly ITerminalConsole terminalConsole;
@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Initializes new instance.
         /// </summary>
-        public TerminalHelpConsoleProvider(TerminalOptions terminalOptions, ITerminalConsole terminalConsole)
+        public TerminalConsoleHelpProvider(TerminalOptions terminalOptions, ITerminalConsole terminalConsole)
         {
             this.terminalOptions = terminalOptions;
             this.terminalConsole = terminalConsole ?? throw new System.ArgumentNullException(nameof(terminalConsole));

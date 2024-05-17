@@ -1,3 +1,13 @@
+# 5.12.1
+> Breaking Change
+- Rename `TerminalExceptionHandler` to `TerminalLoggerExceptionHandler` that logs the error message to ILogger
+- Add `TerminalConsoleExceptioneHandler` that logs the error message to ITerminalConsole
+- Rename `TerminalHelpLoggerProvider` to `TerminalLoggerHelpProvider`
+- Rename `TerminalHelpConsoleProvider` to `TerminalConsoleHelpProvider`
+
+# 5.11.1
+- Production release.
+
 # 5.11.1-rc*
 > Feature Change
 - Support UDP router `TerminalUdpRouter` for terminal routing

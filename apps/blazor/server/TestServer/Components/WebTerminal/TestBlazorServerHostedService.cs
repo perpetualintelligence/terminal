@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         protected override void OnStarted()
         {
             // These are async calls, but we are blocking here for as the of the test.
-            TerminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineAsync("Blazor server web terminal started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         /// </summary>
         protected override void OnStopped()
         {
-            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Web terminal stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Blazor server web terminal stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 
         /// <summary>
@@ -80,8 +80,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         /// <returns></returns>
         protected override Task PrintHostApplicationLicensingAsync(License license)
         {
-            // Print custom licensing info or remove it completely.
-            return base.PrintHostApplicationLicensingAsync(license);
+            return Task.CompletedTask;
         }
     }
 }

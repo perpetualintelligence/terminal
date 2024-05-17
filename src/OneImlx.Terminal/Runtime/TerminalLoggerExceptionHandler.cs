@@ -1,27 +1,28 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
-using OneImlx.Shared.Infrastructure;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OneImlx.Shared.Infrastructure;
 
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalExceptionHandler"/> to handle an <see cref="Exception"/>.
+    /// The default <see cref="ITerminalExceptionHandler"/> to handle an <see cref="Exception"/> and log the error
+    /// message to <see cref="ILogger"/>.
     /// </summary>
-    public class TerminalExceptionHandler : ITerminalExceptionHandler
+    public sealed class TerminalLoggerExceptionHandler : ITerminalExceptionHandler
     {
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public TerminalExceptionHandler(ILogger<TerminalExceptionHandler> logger)
+        public TerminalLoggerExceptionHandler(ILogger<TerminalLoggerExceptionHandler> logger)
         {
             this.logger = logger;
         }
@@ -72,6 +73,6 @@ namespace OneImlx.Terminal.Runtime
             return Task.CompletedTask;
         }
 
-        private readonly ILogger<TerminalExceptionHandler> logger;
+        private readonly ILogger<TerminalLoggerExceptionHandler> logger;
     }
 }

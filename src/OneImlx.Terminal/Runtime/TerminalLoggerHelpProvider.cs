@@ -16,15 +16,15 @@ namespace OneImlx.Terminal.Runtime
     /// <summary>
     /// The default <see cref="ITerminalHelpProvider"/> that logs the command help using <see cref="ILogger"/>.
     /// </summary>
-    public sealed class TerminalHelpLoggerProvider : ITerminalHelpProvider
+    public sealed class TerminalLoggerHelpProvider : ITerminalHelpProvider
     {
         private readonly TerminalOptions terminalOptions;
-        private readonly ILogger<TerminalHelpLoggerProvider> _logger;
+        private readonly ILogger<TerminalLoggerHelpProvider> _logger;
 
         /// <summary>
         /// Initializes new instance.
         /// </summary>
-        public TerminalHelpLoggerProvider(TerminalOptions terminalOptions, ILogger<TerminalHelpLoggerProvider> logger)
+        public TerminalLoggerHelpProvider(TerminalOptions terminalOptions, ILogger<TerminalLoggerHelpProvider> logger)
         {
             this.terminalOptions = terminalOptions;
             _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));

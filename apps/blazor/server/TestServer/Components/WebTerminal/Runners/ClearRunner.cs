@@ -15,8 +15,9 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal.Runners
     /// <summary>
     /// CLears the current terminal buffer.
     /// </summary>
-    [CommandDescriptor("clear", "Clear", "Clear description", Commands.CommandType.Root, Commands.CommandFlags.None)]
-    public class ClearRunner : CommandRunner<CommandRunnerResult>
+    [CommandOwners("test")]
+    [CommandDescriptor("clear", "Clear", "Clear description", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
+    public class ClearRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         public ClearRunner(ITerminalConsole terminalConsole)
         {
