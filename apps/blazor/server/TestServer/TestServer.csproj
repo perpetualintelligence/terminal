@@ -12,11 +12,7 @@
       <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.*-* " />
       <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-      <PackageReference Include="OneImlx.Terminal" Version="5.11.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\OneImlx.Terminal\OneImlx.Terminal.csproj" />
+      <PackageReference Include="OneImlx.Terminal" Version="5.12.1" />
   </ItemGroup>
 
   <ItemGroup>

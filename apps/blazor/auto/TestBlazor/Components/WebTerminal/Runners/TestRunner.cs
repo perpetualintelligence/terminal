@@ -6,7 +6,7 @@ using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal.Runners
+namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal.Runners
 {
     /// <summary>
     /// The root <c>test</c> runner for the TestApp.

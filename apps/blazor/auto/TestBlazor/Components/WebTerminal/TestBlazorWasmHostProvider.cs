@@ -1,21 +1,21 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Licensing;
-using OneImlx.Terminal.Apps.TestWasm.WebTerminal.Runners;
+using OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal.Runners;
+using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Serilog;
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using TestBlazor.Components.WebTerminal;
 
 namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
 {
@@ -23,9 +23,9 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
     /// Manages the life-cycle and configuration of a terminal host. Provides functionality to start and retrieve the
     /// terminal host, ensuring that it can only be started once.
     /// </summary>
-    public sealed class TerminalBlazorHostProvider
+    public sealed class TestBlazorWasmHostProvider
     {
-        public TerminalBlazorHostProvider(IWebHostEnvironment webHostEnvironment, ILogger<TerminalBlazorHostProvider> logger)
+        public TestBlazorWasmHostProvider(IWebHostEnvironment webHostEnvironment, ILogger<TestBlazorWasmHostProvider> logger)
         {
             this.webHostEnvironment = webHostEnvironment;
             this.logger = logger;
@@ -65,6 +65,36 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
             }
 
             return terminalHost!;
+        }
+
+        /// <summary>
+        /// Gets the terminal options.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public TerminalOptions GetTerminalOptions()
+        {
+            if (!IsTerminalHostRunning)
+            {
+                throw new InvalidOperationException("The terminal host is not running.");
+            }
+
+            return terminalHost!.Services.GetRequiredService<TerminalOptions>();
+        }
+
+        /// <summary>
+        /// Gets the terminal text handler.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public ITerminalTextHandler GetTerminalTextHandler()
+        {
+            if (!IsTerminalHostRunning)
+            {
+                throw new InvalidOperationException("The terminal host is not running.");
+            }
+
+            return terminalHost!.Services.GetRequiredService<ITerminalTextHandler>();
         }
 
         /// <summary>
@@ -130,8 +160,9 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
             builder.ClearProviders();
 
             var loggerConfig = new LoggerConfiguration()
-                               .MinimumLevel.Debug()
+                               .MinimumLevel.Error()
                                .WriteTo.Console();
+
             Log.Logger = loggerConfig.CreateLogger();
             builder.AddSerilog(Log.Logger);
         }
@@ -142,9 +173,9 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         /// </summary>
         private void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection services)
         {
-            services.AddHostedService<TestBlazorHostedService>();
+            services.AddHostedService<TestBlazorWasmHostedService>();
 
-            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalBlazorConsole>(new TerminalUnicodeTextHandler(), options =>
+            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TestBlazorWasmConsole>(new TerminalUnicodeTextHandler(), options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
                 options.Licensing.LicenseFile = "oneimlx-license.json";
@@ -164,6 +195,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         private void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
         {
             // Add your services
+            services.AddLogging();
 
             // Configure the terminal services
             ConfigureOneImlxTerminal(context, services);
@@ -182,8 +214,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
             return await reader.ReadToEndAsync();
         }
 
-        private readonly IHttpClientFactory httpClientFactory;
-        private readonly ILogger<TerminalBlazorHostProvider> logger;
+        private readonly ILogger<TestBlazorWasmHostProvider> logger;
         private readonly IWebHostEnvironment webHostEnvironment;
         private CancellationTokenSource? commandTokenSource;
         private string? licenseContents;

@@ -6,7 +6,7 @@ using OneImlx.Terminal.Apps.TestBlazor.Components;
 using OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal;
 using System;
 
-namespace OneImlx.Terminal.Apps.TestBlazor.Client
+namespace OneImlx.Terminal.Apps.TestBlazor
 {
     public class Program
     {
@@ -18,9 +18,10 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Client
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
+
             builder.Services.AddFluentUIComponents();
 
-           builder.Services.AddSingleton<TerminalBlazorHostProvider>();
+            builder.Services.AddSingleton<TestBlazorWasmHostProvider>();
 
             var app = builder.Build();
 

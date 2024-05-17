@@ -49,7 +49,8 @@ namespace OneImlx.Terminal.Apps.TestAuth
             collection.AddHttpClient("demo-http").AddHttpMessageHandler<TestAuthDelegatingHandler>();
 
             // Before we configure the terminal, we need to configure the public client from MSAL. This is required for
-            // the terminal to authenticate with Azure AD. Replace the client id with your own.
+            // the terminal to authenticate with Azure AD.
+            // NOTE: Replace the client id with your own Microsoft Azure AD or Entra client id.
             IPublicClientApplication publicClientApplication = PublicClientApplicationBuilder.Create("83843fef-5480-42c1-8575-1936f64339b9")
                 .WithAuthority(AzureCloudInstance.AzurePublic, "common") // Use the common authority
                 .WithRedirectUri("http://localhost")
@@ -57,7 +58,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
 
             // NOTE: Specify your demo or commercial license file. Specify your application id.
             TerminalUnicodeTextHandler terminalUnicodeTextHandler = new();
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(terminalUnicodeTextHandler,
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(terminalUnicodeTextHandler,
                 options =>
                 {
                     options.Authentication.Enabled = true;

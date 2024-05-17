@@ -119,7 +119,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
                 TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
 
                 // Get the license asynchronously so we can initialize the terminal host
-                licenseContents = await GetLicenseContentAsync();
+                licenseFile = await GetLicenseContentAsync();
 
                 // Create the terminal host
                 terminalHost = Host.CreateDefaultBuilder()
@@ -160,7 +160,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
             builder.ClearProviders();
 
             var loggerConfig = new LoggerConfiguration()
-                               .MinimumLevel.Debug()
+                               .MinimumLevel.Error()
                                .WriteTo.Console();
 
             Log.Logger = loggerConfig.CreateLogger();
@@ -178,8 +178,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
             var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TestBlazorServerConsole>(new TerminalUnicodeTextHandler(), options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
-                options.Licensing.LicenseFile = "oneimlx-license.json";
-                options.Licensing.LicenseContents = TerminalServices.EncodeLicenseContents(licenseContents.NotNull());
+                options.Licensing.LicenseFile = licenseFile!;
                 options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                 options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                 options.Router.Caret = "> ";
@@ -201,7 +200,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
             ConfigureOneImlxTerminal(context, services);
         }
 
-        private async Task<string> GetLicenseContentAsync()
+        private Task<string> GetLicenseContentAsync()
         {
             var licFile = webHostEnvironment.WebRootFileProvider.GetFileInfo("oneimlx-license.json");
             if (!licFile.Exists)
@@ -209,15 +208,18 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
                 throw new InvalidOperationException("The license file does not exist.");
             }
 
-            using var stream = licFile.CreateReadStream();
-            using var reader = new StreamReader(stream);
-            return await reader.ReadToEndAsync();
+            if (licFile.PhysicalPath == null)
+            {
+                throw new InvalidOperationException("The license file path does not exist.");
+            }
+
+            return Task.FromResult(licFile.PhysicalPath);
         }
 
         private readonly ILogger<TestBlazorServerHostProvider> logger;
         private readonly IWebHostEnvironment webHostEnvironment;
         private CancellationTokenSource? commandTokenSource;
-        private string? licenseContents;
+        private string? licenseFile;
         private IHost? terminalHost;
         private CancellationTokenSource? terminalTokenSource;
     }

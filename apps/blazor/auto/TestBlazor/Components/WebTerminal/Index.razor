@@ -6,7 +6,7 @@
 @page "/webterminal"
 
 @using Microsoft.Extensions.Hosting
-@using OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
+@using OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
 @using OneImlx.Terminal.Configuration.Options
 @using OneImlx.Terminal.Runtime
 @using System.Threading
@@ -14,7 +14,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using System.Text
 
-@inject TestBlazorServerHostProvider TerminalHostProvider
+@inject TestBlazorWasmHostProvider TerminalHostProvider
 
 @implements IDisposable
 
@@ -91,7 +91,7 @@
 
     private void ProcessInput()
     {
-        if (terminalConsole is TestBlazorServerConsole terminalServerConsole)
+        if (terminalConsole is TestBlazorWasmConsole terminalServerConsole)
         {
             // Write the user input to the console so it can be displayed in the terminal.
             string currentInputString = currentInput.ToString();
@@ -107,7 +107,7 @@
     {
         InvokeAsync(() =>
         {
-            if (terminalConsole is TestBlazorServerConsole console)
+            if (terminalConsole is TestBlazorWasmConsole console)
             {
                 currentOutput = console.GetConsoleOutput();
                 RenderOutput();
