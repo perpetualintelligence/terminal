@@ -5,11 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Mocks;
-using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +12,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using FluentAssertions;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -180,8 +180,8 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task Router_Processes_Multiple_Messages_From_Single_Client_Correctly()
         {
-            var routerPort = FreeTcpPort();
-            var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
+            int routerPort = FreeTcpPort();
+            IPEndPoint routerIpEndpoint = new (IPAddress.Loopback, routerPort);
 
             var context = new TerminalUdpRouterContext(routerIpEndpoint, startContext);
 
@@ -219,6 +219,11 @@ namespace OneImlx.Terminal.Runtime
 
             // Verify no exceptions were published
             exceptionHandler.Called.Should().BeFalse();
+
+            // Verify the context, udp does not add sender_id in properties
+            commandRouter.PassedContext!.Properties.Should().NotBeNull();
+            commandRouter.PassedContext.Properties!.Count.Should().Be(1);
+            commandRouter.PassedContext.Properties.Should().ContainKey(TerminalIdentifiers.SenderEndpointToken);
         }
 
         [Fact]

@@ -35,20 +35,20 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalTcpRouter"/> class.
         /// </summary>
-        /// <param name="commandRouter">The command router.</param>
-        /// <param name="exceptionHandler">The exception handler.</param>
         /// <param name="options">The configuration options.</param>
+        /// <param name="commandRouter">The command router.</param>
         /// <param name="textHandler">The text handler.</param>
+        /// <param name="exceptionHandler">The exception handler.</param>
         /// <param name="logger">The logger.</param>
         /// <remarks>
         /// This constructor creates a new instance of the <see cref="TerminalTcpRouter"/> class. It takes several
         /// dependencies that are required for handling TCP client-server communication.
         /// </remarks>
         public TerminalTcpRouter(
-            ICommandRouter commandRouter,
-            ITerminalExceptionHandler exceptionHandler,
             TerminalOptions options,
+            ICommandRouter commandRouter,
             ITerminalTextHandler textHandler,
+            ITerminalExceptionHandler exceptionHandler,
             ILogger<TerminalTcpRouter> logger)
         {
             this.commandRouter = commandRouter;
@@ -255,7 +255,7 @@ namespace OneImlx.Terminal.Runtime
         {
             byte[] delimiterBytes = textHandler.Encoding.GetBytes(options.Router.RemoteMessageDelimiter);
             byte[] bufferArray = messageBuffer.ToArray(); // Convert the entire MemoryStream to an array for processing
-            Span<byte> dataSpan = new Span<byte>(bufferArray); // Create a span from the array
+            Span<byte> dataSpan = new(bufferArray); // Create a span from the array
 
             while (true)
             {

@@ -487,7 +487,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None);
             routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
-            routerContext = new CommandRouterContext("test", routingContext);
+            routerContext = new CommandRouterContext("test", routingContext, null);
             commandRuntime = new MockCommandRuntime();
             terminalHelpProvider = new MockTerminalHelpProvider();
             terminalEventHandler = new MockTerminalEventHandler();

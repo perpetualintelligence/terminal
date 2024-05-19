@@ -21,7 +21,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor
 
             builder.Services.AddFluentUIComponents();
 
-            builder.Services.AddSingleton<TestBlazorWasmHostProvider>();
+            builder.Services.AddSingleton<TestBlazorAutoHostProvider>();
 
             var app = builder.Build();
 

@@ -1,12 +1,13 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Runtime;
 using System;
+using System.Collections.Generic;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Routers
 {
@@ -20,7 +21,8 @@ namespace OneImlx.Terminal.Commands.Routers
         /// </summary>
         /// <param name="rawCommandString">The raw command string.</param>
         /// <param name="routingContext">The terminal routing context.</param>
-        public CommandRouterContext(string rawCommandString, TerminalRouterContext routingContext)
+        /// <param name="properties">The additional router properties.</param>
+        public CommandRouterContext(string rawCommandString, TerminalRouterContext routingContext, Dictionary<string, object>? properties)
         {
             if (string.IsNullOrWhiteSpace(rawCommandString))
             {
@@ -28,17 +30,23 @@ namespace OneImlx.Terminal.Commands.Routers
             }
 
             RoutingContext = routingContext;
+            Properties = properties;
             Route = new CommandRoute(Guid.NewGuid().ToString(), rawCommandString);
         }
 
         /// <summary>
-        /// The terminal routing context.
+        /// The additional router properties.
         /// </summary>
-        public TerminalRouterContext RoutingContext { get; }
+        public Dictionary<string, object>? Properties { get; }
 
         /// <summary>
         /// The command route.
         /// </summary>
         public CommandRoute Route { get; }
+
+        /// <summary>
+        /// The terminal routing context.
+        /// </summary>
+        public TerminalRouterContext RoutingContext { get; }
     }
 }

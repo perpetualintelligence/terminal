@@ -1,17 +1,17 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
-using System;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -20,13 +20,6 @@ namespace OneImlx.Terminal.Runtime
     /// </summary>
     public class TerminalConsoleRouter : ITerminalRouter<TerminalConsoleRouterContext>
     {
-        private readonly ITerminalConsole terminalConsole;
-        private readonly IHostApplicationLifetime applicationLifetime;
-        private readonly ICommandRouter commandRouter;
-        private readonly ITerminalExceptionHandler exceptionHandler;
-        private readonly TerminalOptions options;
-        private readonly ILogger<TerminalConsoleRouter> logger;
-
         /// <summary>
         /// Initialize a new <see cref="TerminalConsoleRouter"/> instance.
         /// </summary>
@@ -59,7 +52,7 @@ namespace OneImlx.Terminal.Runtime
         /// <returns></returns>
         public virtual async Task RunAsync(TerminalConsoleRouterContext context)
         {
-            //  Make sure we have supported start context
+            // Make sure we have supported start context
             if (context.StartContext.StartMode != TerminalStartMode.Console)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartMode);
@@ -105,7 +98,7 @@ namespace OneImlx.Terminal.Runtime
                     }
 
                     // Route the request.
-                    CommandRouterContext routerContext = new(raw, context);
+                    CommandRouterContext routerContext = new(raw, context, properties: null);
                     route = routerContext.Route;
                     Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
 
@@ -130,5 +123,12 @@ namespace OneImlx.Terminal.Runtime
                 }
             };
         }
+
+        private readonly IHostApplicationLifetime applicationLifetime;
+        private readonly ICommandRouter commandRouter;
+        private readonly ITerminalExceptionHandler exceptionHandler;
+        private readonly ILogger<TerminalConsoleRouter> logger;
+        private readonly TerminalOptions options;
+        private readonly ITerminalConsole terminalConsole;
     }
 }

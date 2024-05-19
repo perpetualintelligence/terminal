@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.Apps.TestServer
 
             // NOTE: We are initialized as a console application. This can be a custom console or a custom terminal
             // interface as well.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;

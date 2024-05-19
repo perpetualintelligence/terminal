@@ -23,9 +23,9 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
     /// Manages the life-cycle and configuration of a terminal host. Provides functionality to start and retrieve the
     /// terminal host, ensuring that it can only be started once.
     /// </summary>
-    public sealed class TestBlazorWasmHostProvider
+    public sealed class TestBlazorAutoHostProvider
     {
-        public TestBlazorWasmHostProvider(IWebHostEnvironment webHostEnvironment, ILogger<TestBlazorWasmHostProvider> logger)
+        public TestBlazorAutoHostProvider(IWebHostEnvironment webHostEnvironment, ILogger<TestBlazorAutoHostProvider> logger)
         {
             this.webHostEnvironment = webHostEnvironment;
             this.logger = logger;
@@ -173,9 +173,9 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         /// </summary>
         private void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection services)
         {
-            services.AddHostedService<TestBlazorWasmHostedService>();
+            services.AddHostedService<TestBlazorAutoHostedService>();
 
-            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TestBlazorWasmConsole>(new TerminalUnicodeTextHandler(), options =>
+            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TestBlazorAutoConsole>(new TerminalUnicodeTextHandler(), options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
                 options.Licensing.LicenseFile = "oneimlx-license.json";
@@ -214,7 +214,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
             return await reader.ReadToEndAsync();
         }
 
-        private readonly ILogger<TestBlazorWasmHostProvider> logger;
+        private readonly ILogger<TestBlazorAutoHostProvider> logger;
         private readonly IWebHostEnvironment webHostEnvironment;
         private CancellationTokenSource? commandTokenSource;
         private string? licenseContents;

@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using FluentAssertions;
 using OneImlx.Test.FluentAssertions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace OneImlx.Terminal
@@ -26,7 +26,7 @@ namespace OneImlx.Terminal
         [Fact]
         public void TerminalIdentifiers_Defines_Identifiers()
         {
-            typeof(TerminalIdentifiers).Should().HaveConstantCount(8);
+            typeof(TerminalIdentifiers).Should().HaveConstantCount(10);
 
             TerminalIdentifiers.OnlineLicenseMode.Should().Be("online");
             TerminalIdentifiers.OfflineLicenseMode.Should().Be("offline");
@@ -36,6 +36,8 @@ namespace OneImlx.Terminal
             TerminalIdentifiers.TestApplicationId.Should().Be("08c6925f-a734-4e24-8d84-e06737420766");
             TerminalIdentifiers.RemoteCommandDelimiter.Should().Be("$c$");
             TerminalIdentifiers.RemoteMessageDelimiter.Should().Be("$m$");
+            TerminalIdentifiers.SenderIdToken.Should().Be("sender_id");
+            TerminalIdentifiers.SenderEndpointToken.Should().Be("sender_endpoint");
         }
     }
 }

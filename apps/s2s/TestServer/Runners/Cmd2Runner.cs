@@ -13,7 +13,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
     [CommandOwners("grp2")]
     [CommandDescriptor("cmd2", "Command 2", "Command2 description.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
     [CommandChecker(typeof(CommandChecker))]
-    public class Cmd2Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
+    public class Cmd2Runner : CommandRunner<CommandRunnerResultSendToFile>, IDeclarativeRunner
     {
         private readonly ITerminalConsole terminalConsole;
         private readonly ILogger<Cmd2Runner> logger;
@@ -24,10 +24,10 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
             this.logger = logger;
         }
 
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResultSendToFile> RunCommandAsync(CommandRunnerContext context)
         {
             await terminalConsole.WriteLineAsync("Command2 of Group2 called.");
-            return new CommandRunnerResult();
+            return new CommandRunnerResultSendToFile();
         }
     }
 }

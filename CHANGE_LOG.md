@@ -1,9 +1,10 @@
-# 5.12.1
+# 5.12.2
 > Breaking Change
 - Rename `TerminalExceptionHandler` to `TerminalLoggerExceptionHandler` that logs the error message to ILogger
 - Add `TerminalConsoleExceptioneHandler` that logs the error message to ITerminalConsole
 - Rename `TerminalHelpLoggerProvider` to `TerminalLoggerHelpProvider`
 - Rename `TerminalHelpConsoleProvider` to `TerminalConsoleHelpProvider`
+- Add custom properties for each command route 
 
 # 5.11.1
 - Production release.

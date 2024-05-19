@@ -554,7 +554,7 @@ namespace OneImlx.Terminal.Extensions
 
         private IHost BuildHostAndLogger(Action<IServiceCollection> configureServicesDelegate)
         {
-            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(configureServicesDelegate);
+            var hostBuilder = Host.CreateDefaultBuilder([]).ConfigureServices(configureServicesDelegate);
             IHost host = hostBuilder.Build();
 
             // Retrieve the logger to ensure it's created and stored for later assertions.

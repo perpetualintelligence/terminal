@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Extensions
                 .AddInMemoryCollection(myConfiguration!)
                 .Build();
 
-            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
+            using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
             {
                 arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), configuration);
             }).Build();
@@ -148,7 +148,7 @@ namespace OneImlx.Terminal.Extensions
         [Fact]
         public void AddTerminalNoConfigShouldInitializeCorrectly()
         {
-            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
+            using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
             {
                 arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler());
             }).Build();
@@ -171,7 +171,7 @@ namespace OneImlx.Terminal.Extensions
         [Fact]
         public void AddTerminalOptionsShouldInitializeCorrectly()
         {
-            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
+            using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
             {
                 arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), SetupAction);
             }).Build();
@@ -198,7 +198,7 @@ namespace OneImlx.Terminal.Extensions
             ITerminalBuilder? terminalBuilder = null;
             TerminalAsciiTextHandler textHandler = new();
 
-            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
+            using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
             {
                 serviceDescriptors = arg;
                 terminalBuilder = serviceDescriptors!.CreateTerminalBuilder(textHandler);

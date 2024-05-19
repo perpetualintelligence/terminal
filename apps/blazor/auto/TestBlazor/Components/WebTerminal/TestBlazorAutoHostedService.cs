@@ -12,7 +12,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
     /// <summary>
     /// The <see cref="TerminalHostedService"/> for the test app.
     /// </summary>
-    public sealed class TestBlazorWasmHostedService : TerminalHostedService
+    public sealed class TestBlazorAutoHostedService : TerminalHostedService
     {
         /// <summary>
         /// Initializes a new instance.
@@ -21,7 +21,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         /// <param name="options">The terminal configuration options.</param>
         /// <param name="terminalConsole">The terminal console.</param>
         /// <param name="logger">The logger.</param>
-        public TestBlazorWasmHostedService(
+        public TestBlazorAutoHostedService(
             IServiceProvider serviceProvider,
             TerminalOptions options,
             ITerminalConsole terminalConsole,

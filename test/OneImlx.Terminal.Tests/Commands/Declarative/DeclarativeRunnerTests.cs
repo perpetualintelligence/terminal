@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.Commands.Declarative
     {
         public DeclarativeRunnerTests()
         {
-            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
+            var hostBuilder = Host.CreateDefaultBuilder([]).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
             terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
         }

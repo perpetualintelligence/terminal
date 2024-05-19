@@ -53,6 +53,16 @@ namespace OneImlx.Terminal
         public const string RemoteMessageDelimiter = "$m$";
 
         /// <summary>
+        /// The <c>sender_endpoint</c> token.
+        /// </summary>
+        public const string SenderEndpointToken = "sender_endpoint";
+
+        /// <summary>
+        /// The <c>sender_id</c> token.
+        /// </summary>
+        public const string SenderIdToken = "sender_id";
+
+        /// <summary>
         /// The test application identifier for internal testing.
         /// </summary>
         /// <remarks>

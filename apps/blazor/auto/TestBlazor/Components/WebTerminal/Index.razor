@@ -14,7 +14,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using System.Text
 
-@inject TestBlazorWasmHostProvider TerminalHostProvider
+@inject TestBlazorAutoHostProvider TerminalHostProvider
 
 @implements IDisposable
 
@@ -91,7 +91,7 @@
 
     private void ProcessInput()
     {
-        if (terminalConsole is TestBlazorWasmConsole terminalServerConsole)
+        if (terminalConsole is TestBlazorAutoConsole terminalServerConsole)
         {
             // Write the user input to the console so it can be displayed in the terminal.
             string currentInputString = currentInput.ToString();
@@ -107,7 +107,7 @@
     {
         InvokeAsync(() =>
         {
-            if (terminalConsole is TestBlazorWasmConsole console)
+            if (terminalConsole is TestBlazorAutoConsole console)
             {
                 currentOutput = console.GetConsoleOutput();
                 RenderOutput();

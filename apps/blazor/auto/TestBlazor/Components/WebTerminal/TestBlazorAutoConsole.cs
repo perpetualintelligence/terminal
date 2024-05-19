@@ -1,11 +1,4 @@
-﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using OneImlx.Terminal.Runtime;
+﻿using OneImlx.Terminal.Runtime;
 using System;
 using System.IO;
 using System.Text;
@@ -17,7 +10,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
     /// Represents a test Blazor server console. This is a test implementation, you can customize this as per your
     /// application requirement.
     /// </summary>
-    public class TestBlazorWasmConsole : ITerminalConsole
+    public class TestBlazorAutoConsole : ITerminalConsole
     {
         /// <summary>
         /// Gets or sets the background color of the console.

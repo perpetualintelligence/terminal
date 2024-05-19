@@ -378,7 +378,7 @@ namespace OneImlx.Terminal.Extensions
         public ITerminalBuilderExtensionsTests()
         {
             IServiceCollection? serviceDescriptors = null;
-            using var host = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(arg =>
+            using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
             {
                 serviceDescriptors = arg;
             }).Build();

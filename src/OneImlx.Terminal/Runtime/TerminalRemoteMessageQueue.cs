@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -121,7 +122,7 @@ namespace OneImlx.Terminal.Runtime
                 {
                     try
                     {
-                        commandRoute = await ProcessRawCommandAsync(item.CommandString);
+                        commandRoute = await ProcessRawCommandAsync(item);
                     }
                     catch (Exception ex)
                     {
@@ -137,12 +138,20 @@ namespace OneImlx.Terminal.Runtime
             logger.LogDebug("Command queue processing canceled.");
         }
 
-        private async Task<CommandRoute?> ProcessRawCommandAsync(string raw)
+        private async Task<CommandRoute?> ProcessRawCommandAsync(TerminalRemoteMessageItem item)
         {
-            logger.LogDebug("Routing the command. raw={0}", raw);
+            logger.LogDebug("Routing the command. raw={0}", item.CommandString);
+
+            // Setup the remote meta-data for the command.
+            Dictionary<string, object> properties = [];
+            properties.Add(TerminalIdentifiers.SenderEndpointToken, item.SenderEndpoint);
+            if (item.SenderId != null)
+            {
+                properties.Add(TerminalIdentifiers.SenderIdToken, item.SenderId);
+            }
 
             // Route the command request to router. Wait for the router or the timeout.
-            CommandRouterContext context = new(raw, terminalRouterContext);
+            CommandRouterContext context = new(item.CommandString, terminalRouterContext, properties);
             CommandRoute? commandRoute = context.Route;
             Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(context);
             if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Router.Timeout, terminalRouterContext.StartContext.TerminalCancellationToken)) == routeTask)

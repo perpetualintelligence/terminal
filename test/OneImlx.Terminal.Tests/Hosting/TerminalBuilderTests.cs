@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Hosting
     {
         public TerminalBuilderTests()
         {
-            var hostBuilder = Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureServices(ConfigureServicesDelegate);
+            var hostBuilder = Host.CreateDefaultBuilder([]).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
         }
 
