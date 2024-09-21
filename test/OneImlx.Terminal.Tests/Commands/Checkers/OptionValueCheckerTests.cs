@@ -161,8 +161,8 @@ namespace OneImlx.Terminal.Commands.Checkers
             result.MappedType.Should().Be(typeof(string));
         }
 
-        private IOptionChecker checker = null!;
-        private IDataTypeMapper<Option> mapper = null!;
-        private TerminalOptions options = null!;
+        private readonly IOptionChecker checker = null!;
+        private readonly IDataTypeMapper<Option> mapper = null!;
+        private readonly TerminalOptions options = null!;
     }
 }

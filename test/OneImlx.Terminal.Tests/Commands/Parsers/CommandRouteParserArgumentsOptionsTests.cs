@@ -1092,12 +1092,12 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private readonly TerminalOptions terminalOptions;
-        private ITerminalTextHandler textHandler;
-        private ITerminalCommandStore commandStore;
-        private CommandDescriptors commandDescriptors;
-        private ArgumentDescriptors argumentDescriptors;
-        private OptionDescriptors optionDescriptors;
-        private ICommandRouteParser commandRouteParser;
-        private ILogger<CommandRouteParser> logger;
+        private readonly ITerminalTextHandler textHandler;
+        private readonly ITerminalCommandStore commandStore;
+        private readonly CommandDescriptors commandDescriptors;
+        private readonly ArgumentDescriptors argumentDescriptors;
+        private readonly OptionDescriptors optionDescriptors;
+        private readonly ICommandRouteParser commandRouteParser;
+        private readonly ILogger<CommandRouteParser> logger;
     }
 }

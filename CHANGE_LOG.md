@@ -1,4 +1,4 @@
-# 5.12.2
+# 5.12.3
 > Breaking Change
 - Rename `TerminalExceptionHandler` to `TerminalLoggerExceptionHandler` that logs the error message to ILogger
 - Add `TerminalConsoleExceptioneHandler` that logs the error message to ITerminalConsole

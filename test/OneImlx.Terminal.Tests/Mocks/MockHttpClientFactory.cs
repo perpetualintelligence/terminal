@@ -49,6 +49,6 @@ namespace OneImlx.Terminal.Mocks
             return clients[name];
         }
 
-        private Dictionary<string, HttpClient> clients = new();
+        private readonly Dictionary<string, HttpClient> clients = new();
     }
 }

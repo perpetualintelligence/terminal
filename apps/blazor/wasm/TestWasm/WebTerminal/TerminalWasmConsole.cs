@@ -87,5 +87,5 @@ public class TerminalWasmConsole : ITerminalConsole
     }
 
     private TaskCompletionSource<string?> _inputTaskSource = new TaskCompletionSource<string?>();
-    private StringWriter _outputWriter = new();
+    private readonly StringWriter _outputWriter = new();
 }

@@ -80,7 +80,7 @@ namespace OneImlx.Terminal.Apps.TestApp
             // NOTE:
             // Specify your demo or commercial license file.
             // Specify your application id.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;

@@ -129,7 +129,7 @@ namespace OneImlx.Terminal.Licensing
         }
 
         private readonly TerminalOptions terminalOptions;
-        private ITerminalCommandStore commandStore;
+        private readonly ITerminalCommandStore commandStore;
         private readonly License license;
         private readonly ILicenseChecker licenseChecker;
     }

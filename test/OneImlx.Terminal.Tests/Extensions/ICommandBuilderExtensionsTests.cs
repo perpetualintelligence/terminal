@@ -75,7 +75,7 @@ namespace OneImlx.Terminal.Extensions
             option.Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
         }
 
-        private ITerminalBuilder terminalBuilder = null!;
-        private ICommandBuilder commandBuilder = null!;
+        private readonly ITerminalBuilder terminalBuilder = null!;
+        private readonly ICommandBuilder commandBuilder = null!;
     }
 }

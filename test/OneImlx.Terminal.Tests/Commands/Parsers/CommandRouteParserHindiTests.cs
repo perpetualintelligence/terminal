@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         private readonly TerminalOptions _terminalOptions;
         private readonly ILogger<CommandRouteParser> _logger;
         private readonly ICommandRouteParser _commandRouteParser;
-        private CommandDescriptors _commandDescriptors;
+        private readonly CommandDescriptors _commandDescriptors;
 
         public CommandRouteParserHindiTests()
         {

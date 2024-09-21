@@ -150,6 +150,6 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         }
 
         private TaskCompletionSource<string?> _inputTaskSource = new();
-        private StringWriter _outputWriter = new();
+        private readonly StringWriter _outputWriter = new();
     }
 }

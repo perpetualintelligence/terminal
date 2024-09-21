@@ -218,7 +218,7 @@ namespace OneImlx.Terminal.Licensing
         private long optionCount;
         private long commandGroupCount;
         private bool initialized;
-        private SemaphoreSlim semaphoreSlim = new(1, 1);
+        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
         private long rootCommandCount;
         private long subCommandCount;
         private int terminalCount;

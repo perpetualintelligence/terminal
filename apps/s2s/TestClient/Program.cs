@@ -1,4 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿/*
+    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+
+using System;
+using System.IO;
+using System.Threading;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,9 +19,6 @@ using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Serilog;
-using System;
-using System.IO;
-using System.Threading;
 
 namespace OneImlx.Terminal.Apps.TestClient
 {
@@ -44,7 +51,7 @@ namespace OneImlx.Terminal.Apps.TestClient
 
             // NOTE: We are initialized as a console application. This can be a custom console or a custom terminal
             // interface as well.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalHelpConsoleProvider, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
@@ -54,7 +61,7 @@ namespace OneImlx.Terminal.Apps.TestClient
 
                     options.Router.Caret = "> ";
                 }
-                                                                                                                                                                                          );
+                                                                                                                                                                                                                           );
 
             // Add commands using declarative syntax.
             terminalBuilder.AddDeclarativeAssembly<TestClientRunner>();
@@ -93,6 +100,6 @@ namespace OneImlx.Terminal.Apps.TestClient
                 .RunTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>(terminalConsoleRouterContext);
         }
 
-        private static IHost? host;
+        private static readonly IHost? host;
     }
 }

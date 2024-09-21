@@ -72,7 +72,7 @@ namespace OneImlx.Terminal.Commands.Mappers
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
-        private IDataTypeMapper<Option> mapper = null!;
-        private TerminalOptions options = null!;
+        private readonly IDataTypeMapper<Option> mapper = null!;
+        private readonly TerminalOptions options = null!;
     }
 }

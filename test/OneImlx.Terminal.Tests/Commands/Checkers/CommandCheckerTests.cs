@@ -252,18 +252,18 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         private readonly CommandHandlerContext handlerContext = null!;
-        private IArgumentChecker argumentChecker = null!;
-        private IDataTypeMapper<Argument> argumentMapper = null!;
-        private CommandChecker checker = null!;
-        private CommandRoute commandRoute = null!;
-        private ITerminalCommandStore commands = null!;
-        private CancellationTokenSource commandTokenSource = null!;
-        private IDataTypeMapper<Option> optionMapper = null!;
-        private CommandRouterContext routerContext = null!;
-        private TerminalRouterContext routingContext = null!;
-        private TerminalOptions terminalOptions = null!;
-        private CancellationTokenSource terminalTokenSource = null!;
-        private ITerminalTextHandler textHandler = null!;
-        private IOptionChecker valueChecker = null!;
+        private readonly IArgumentChecker argumentChecker = null!;
+        private readonly IDataTypeMapper<Argument> argumentMapper = null!;
+        private readonly CommandChecker checker = null!;
+        private readonly CommandRoute commandRoute = null!;
+        private readonly ITerminalCommandStore commands = null!;
+        private readonly CancellationTokenSource commandTokenSource = null!;
+        private readonly IDataTypeMapper<Option> optionMapper = null!;
+        private readonly CommandRouterContext routerContext = null!;
+        private readonly TerminalRouterContext routingContext = null!;
+        private readonly TerminalOptions terminalOptions = null!;
+        private readonly CancellationTokenSource terminalTokenSource = null!;
+        private readonly ITerminalTextHandler textHandler = null!;
+        private readonly IOptionChecker valueChecker = null!;
     }
 }

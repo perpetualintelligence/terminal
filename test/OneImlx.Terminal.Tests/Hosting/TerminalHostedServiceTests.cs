@@ -388,17 +388,17 @@ namespace OneImlx.Terminal.Hosting
             return Task.CompletedTask;
         }
 
-        private CancellationToken cancellationToken;
-        private CancellationTokenSource cancellationTokenSource;
+        private readonly CancellationToken cancellationToken;
+        private readonly CancellationTokenSource cancellationTokenSource;
         private TerminalHostedService defaultCliHostedService;
         private IHost host;
         private IHostBuilder hostBuilder;
-        private MockTerminalEventsHostedService mockCliEventsHostedService;
-        private MockTerminalCustomHostedService mockCustomCliHostedService;
-        private MockLicenseChecker mockLicenseChecker;
-        private MockLicenseExtractor mockLicenseExtractor;
-        private MockOptionsChecker mockOptionsChecker;
-        private MockTerminalHostedServiceLogger logger = null!;
-        private MockTerminalConsole terminalConsole;
+        private readonly MockTerminalEventsHostedService mockCliEventsHostedService;
+        private readonly MockTerminalCustomHostedService mockCustomCliHostedService;
+        private readonly MockLicenseChecker mockLicenseChecker;
+        private readonly MockLicenseExtractor mockLicenseExtractor;
+        private readonly MockOptionsChecker mockOptionsChecker;
+        private readonly MockTerminalHostedServiceLogger logger = null!;
+        private readonly MockTerminalConsole terminalConsole;
     }
 }

@@ -140,7 +140,14 @@ namespace OneImlx.Terminal.Runtime
 
         private async Task<CommandRoute?> ProcessRawCommandAsync(TerminalRemoteMessageItem item)
         {
-            logger.LogDebug("Routing the command. raw={0}", item.CommandString);
+            if (item.SenderId != null)
+            {
+                logger.LogDebug("Routing the command. raw={0} sender={1}", item.CommandString, item.SenderId);
+            }
+            else
+            {
+                logger.LogDebug("Routing the command. raw={0}", item.CommandString);
+            }
 
             // Setup the remote meta-data for the command.
             Dictionary<string, object> properties = [];
@@ -173,6 +180,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly TerminalOptions terminalOptions;
         private readonly TerminalRouterContext terminalRouterContext;
-        private ConcurrentQueue<TerminalRemoteMessageItem> concurrentQueue;
+        private readonly ConcurrentQueue<TerminalRemoteMessageItem> concurrentQueue;
     }
 }

@@ -423,6 +423,6 @@ namespace OneImlx.Terminal.Licensing
         private readonly ILogger<LicenseExtractor> logger;
         private readonly TerminalOptions terminalOptions;
         private LicenseExtractorResult? licenseExtractorResult;
-        private SemaphoreSlim semaphoreSlim = new(1, 1);
+        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
     }
 }

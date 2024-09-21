@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Integration
         private readonly Mock<ILogger<PublishedAssemblyLoader>> mockLogger;
         private readonly PublishedAssemblyLoader assemblyLoader;
         private readonly PublishedCommandSourceContext commandSourceContext;
-        private string testBaseDir;
+        private readonly string testBaseDir;
 
         public PublishedAssemblyLoaderTests()
         {

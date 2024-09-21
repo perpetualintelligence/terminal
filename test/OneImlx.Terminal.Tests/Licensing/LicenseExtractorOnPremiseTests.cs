@@ -334,6 +334,6 @@ namespace OneImlx.Terminal.Licensing
         private readonly string testOfflineLicPath;
         private ILicenseDebugger licenseDebugger = null!;
         private ILicenseChecker licenseChecker = null!;
-        private ITerminalCommandStore commandStore;
+        private readonly ITerminalCommandStore commandStore;
     }
 }

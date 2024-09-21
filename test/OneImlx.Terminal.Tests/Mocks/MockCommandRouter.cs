@@ -88,6 +88,6 @@ namespace OneImlx.Terminal.Mocks
         private readonly Exception? exception;
         private readonly Error? explicitError;
         private readonly int? routeDelay;
-        private SemaphoreSlim routeLock = new(1, 1);
+        private readonly SemaphoreSlim routeLock = new(1, 1);
     }
 }

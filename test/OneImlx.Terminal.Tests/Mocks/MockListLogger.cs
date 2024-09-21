@@ -13,7 +13,7 @@ namespace OneImlx.Terminal.Mocks
 {
     internal class MockListLogger : ILogger
     {
-        private List<string> logMessages;
+        private readonly List<string> logMessages;
 
         public MockListLogger(List<string> allLogMessages)
         {

@@ -80,6 +80,6 @@ namespace OneImlx.Terminal.Commands
             return inner.GetEnumerator();
         }
 
-        private KeyAsIdCollection<ArgumentDescriptor> inner;
+        private readonly KeyAsIdCollection<ArgumentDescriptor> inner;
     }
 }

@@ -408,10 +408,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private readonly TerminalOptions terminalOptions;
-        private ITerminalTextHandler textHandler;
-        private ITerminalCommandStore commandStore;
-        private CommandDescriptors commandDescriptors;
-        private ICommandRouteParser commandRouteParser;
-        private ILogger<CommandRouteParser> logger;
+        private readonly ITerminalTextHandler textHandler;
+        private readonly ITerminalCommandStore commandStore;
+        private readonly CommandDescriptors commandDescriptors;
+        private readonly ICommandRouteParser commandRouteParser;
+        private readonly ILogger<CommandRouteParser> logger;
     }
 }

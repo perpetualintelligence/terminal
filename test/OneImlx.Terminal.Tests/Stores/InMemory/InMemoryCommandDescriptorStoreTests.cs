@@ -50,6 +50,6 @@ namespace OneImlx.Terminal.Stores.InMemory
             result.Keys.Should().Contain("id5");
         }
 
-        private TerminalInMemoryCommandStore cmdStore = null!;
+        private readonly TerminalInMemoryCommandStore cmdStore = null!;
     }
 }
