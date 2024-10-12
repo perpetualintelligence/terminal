@@ -32,8 +32,8 @@ namespace OneImlx.Terminal.Authentication.Msal
                 Authentication = new AuthenticationOptions
                 {
                     Enabled = true,
-                    DefaultScopes = new[] { "User.Read" },
-                    ValidHosts = new[] { "graph.microsoft.com" }
+                    DefaultScopes = ["User.Read"],
+                    ValidHosts = ["graph.microsoft.com"]
                 }
             };
         }

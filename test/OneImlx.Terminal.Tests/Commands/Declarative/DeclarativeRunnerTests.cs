@@ -141,7 +141,7 @@ namespace OneImlx.Terminal.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.TagIds.Should().BeEquivalentTo(new string[] { "tag1", "tag2", "tag3" });
+            cmd.TagIds.Should().BeEquivalentTo(["tag1", "tag2", "tag3"]);
         }
 
         [Fact]
@@ -290,7 +290,7 @@ namespace OneImlx.Terminal.Commands.Declarative
             cmdDescs.Should().HaveCount(1);
 
             cmdDescs.First().CustomProperties.Should().NotBeNull();
-            cmdDescs.First().CustomProperties!.Keys.Should().Equal(new string[] { "key1", "key2", "key3" });
+            cmdDescs.First().CustomProperties!.Keys.Should().Equal(["key1", "key2", "key3"]);
             cmdDescs.First().CustomProperties!.Values.Should().Equal(new string[] { "value1", "value2", "value3" });
         }
 
@@ -324,7 +324,7 @@ namespace OneImlx.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
-            cmdDescs.First().TagIds.Should().Equal(new string[] { "tag1", "tag2", "tag3" });
+            cmdDescs.First().TagIds.Should().Equal(["tag1", "tag2", "tag3"]);
         }
 
         [Fact]
@@ -374,7 +374,7 @@ namespace OneImlx.Terminal.Commands.Declarative
             ModuleBuilder mb = ab.DefineDynamicModule(aName.Name!);
 
             // Dynamic type with IDeclarativeTarget
-            var typeBuilder = mb.DefineType("TestMockNoTarget", TypeAttributes.Public, parent: null, interfaces: new Type[] { typeof(IDeclarativeRunner) });
+            var typeBuilder = mb.DefineType("TestMockNoTarget", TypeAttributes.Public, parent: null, interfaces: [typeof(IDeclarativeRunner)]);
             Type mockType = typeBuilder.CreateType();
 
             // This means that we tried adding the target as it implements IDeclarativeTarget

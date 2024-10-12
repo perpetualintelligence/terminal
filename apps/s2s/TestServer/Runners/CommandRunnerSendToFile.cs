@@ -1,11 +1,4 @@
-﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Runners;
 using System;
 using System.Collections.Generic;
@@ -31,12 +24,10 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
         {
             // Retrieve properties from context
             Dictionary<string, object> properties = context.HandlerContext.RouterContext.Properties!;
-
-            // Check if the sender_endpoint key exists
-            EndPoint senderEndpoint = (EndPoint)properties[TerminalIdentifiers.SenderEndpointToken];
+            string senderEndpoint = (string) properties[TerminalIdentifiers.SenderEndpointToken];
 
             // Normalize the sender_endpoint to replace ':' and '.' with '_'
-            string normalizedSenderEndpoint = senderEndpoint.ToString()!.Replace(':', '_').Replace('.', '_');
+            string normalizedSenderEndpoint = senderEndpoint.ToString()!.Replace(':', '_').Replace('.', '_').Replace('[', '_').Replace(']', '_');
 
             // Create a file name based on the normalized sender_endpoint
             string fileName = $"{normalizedSenderEndpoint}.txt";

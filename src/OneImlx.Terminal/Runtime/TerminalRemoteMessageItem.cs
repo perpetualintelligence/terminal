@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="command">The command string to be processed.</param>
         /// <param name="senderEndpoint">The sender endpoint from which the command was sent.</param>
         /// <param name="senderId">The sender id if the multiple senders shares same endpoint.</param>
-        public TerminalRemoteMessageItem(string id, string command, EndPoint senderEndpoint, string? senderId)
+        public TerminalRemoteMessageItem(string id, string command, string? senderEndpoint, string? senderId)
         {
             Id = id;
             CommandString = command;
@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Gets the endpoint of the sender who issued the command.
         /// </summary>
-        public EndPoint SenderEndpoint { get; }
+        public string? SenderEndpoint { get; }
 
         /// <summary>
         /// Gets the sender id if the multiple senders shares same endpoint.
