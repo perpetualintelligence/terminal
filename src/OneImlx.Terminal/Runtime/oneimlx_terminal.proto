@@ -1,0 +1,29 @@
+/*
+    Copyright 2019-2025 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+
+syntax = "proto3";
+
+option csharp_namespace = "OneImlx.Terminal.Runtime";
+
+// The OneImlx terminal router command service to route the command.
+service OneImlxGrpcRouterInternal {
+
+    // Enqueues a command asynchronously.
+    rpc EnqueueCommandInternal (OneImlxGrpcRouterRequestInternal) returns (OneImlxGrpcRouterResponseInternal);
+}
+
+// The terminal router command request.
+message OneImlxGrpcRouterRequestInternal {
+
+    // The command string to be routed by the terminal.
+    string Request = 1;
+}
+
+// The terminal router command request.
+message OneImlxGrpcRouterResponseInternal {
+    string Response = 1;
+}

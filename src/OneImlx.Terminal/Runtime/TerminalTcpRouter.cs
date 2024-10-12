@@ -60,6 +60,11 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
+        /// The command queue for the terminal router. This is not supported for TCP routing.
+        /// </summary>
+        public TerminalRemoteMessageQueue? CommandQueue => null;
+
+        /// <summary>
         /// Runs the TCP server for handling client connections asynchronously.
         /// </summary>
         /// <param name="context">The routing context.</param>
@@ -72,9 +77,6 @@ namespace OneImlx.Terminal.Runtime
         /// </remarks>
         public virtual async Task RunAsync(TerminalTcpRouterContext context)
         {
-            // Reset the command queue
-            commandQueue = new TerminalRemoteMessageQueue(commandRouter, exceptionHandler, options, context, logger);
-
             // Ensure we have supported start context
             if (context.StartContext.StartMode != TerminalStartMode.Tcp)
             {
@@ -87,6 +89,8 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The network IP endpoint is missing in the TCP server routing request.");
             }
 
+            // Reset the command queue and start the TCP server
+            commandQueue = new TerminalRemoteMessageQueue(commandRouter, exceptionHandler, options, context, logger);
             _server = new(context.IPEndPoint);
             Task backgroundProcessingTask = Task.CompletedTask;
             try
@@ -99,7 +103,7 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                backgroundProcessingTask = commandQueue.StartCommandProcessing();
+                backgroundProcessingTask = commandQueue.StartCommandProcessingAsync();
 
                 // Blocking call to accept client connections until the cancellation token is requested. We have
                 // initialized the requested client connections. Now we wait for all the client connections to complete
@@ -119,7 +123,6 @@ namespace OneImlx.Terminal.Runtime
 
                 // Ensure the command queue is stopped
                 await backgroundProcessingTask;
-
                 logger.LogDebug("Terminal TCP routing stopped. endpoint={0}", context.IPEndPoint);
             }
         }
@@ -176,7 +179,7 @@ namespace OneImlx.Terminal.Runtime
                     // Wait for any client task to complete before accepting a new one
                     Task completedTask = await Task.WhenAny(clientTasks.Values);
                     var completedKvp = clientTasks.First(e => e.Value.Equals(completedTask));
-                    clientTasks.TryRemove(completedKvp.Key, out Task removedTask);
+                    clientTasks.TryRemove(completedKvp.Key, out Task? removedTask);
                 }
 
                 // If cancellation is requested, break the loop before we setup a new client accept task
@@ -258,7 +261,7 @@ namespace OneImlx.Terminal.Runtime
                         // Directly enqueue messages without processing delimiters. This assumes that the entire buffer
                         // is a single valid command
                         string message = textHandler.Encoding.GetString(buffer, 0, bytesRead);
-                        commandQueue?.Enqueue(message, client.Client.RemoteEndPoint, clientId);
+                        commandQueue?.Enqueue(message, client.Client.RemoteEndPoint.ToString(), clientId);
                     }
                 }
             }
@@ -281,7 +284,7 @@ namespace OneImlx.Terminal.Runtime
                 // Convert the relevant slice of the data span to an array for string conversion
                 byte[] messageBytes = dataSpan.Slice(0, delimiterIndex + delimiterBytes.Length).ToArray();
                 string message = textHandler.Encoding.GetString(messageBytes);
-                commandQueue?.Enqueue(message, clientEndpoint, clientId);
+                commandQueue?.Enqueue(message, clientEndpoint.ToString(), clientId);
 
                 // Move the dataSpan forward past the processed message
                 dataSpan = dataSpan.Slice(delimiterIndex + delimiterBytes.Length);

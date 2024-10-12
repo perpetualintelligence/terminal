@@ -1,15 +1,15 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Runtime;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Extensions
 {
@@ -19,7 +19,8 @@ namespace OneImlx.Terminal.Extensions
     public static class IHostExtensions
     {
         /// <summary>
-        /// Runs the <see cref="ITerminalRouter{TContext}"/> asynchronously, blocking the calling thread until a cancellation request.
+        /// Runs the <see cref="ITerminalRouter{TContext}"/> asynchronously, blocking the calling thread until a
+        /// cancellation request.
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="context">The routing context for terminal console routing.</param>

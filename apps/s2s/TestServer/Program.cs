@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,7 +12,6 @@ using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Serilog;
 using System;
-using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,139 +20,207 @@ namespace OneImlx.Terminal.Apps.TestServer
 {
     internal class Program
     {
-        private static void ConfigureAppConfigurationDelegate(HostBuilderContext context, IConfigurationBuilder builder)
+        private static void ConfigureLoggingDelegate(ILoggingBuilder builder)
         {
-            var configBuilder = new ConfigurationBuilder();
-            configBuilder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: false);
-            configBuilder.Build();
-        }
-
-        private static void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
-        {
-            // Clear all providers
             builder.ClearProviders();
-
-            // Configure logging of your choice, here we are configuring Serilog
-            var loggerConfig = new LoggerConfiguration();
-            loggerConfig.MinimumLevel.Error();
-            loggerConfig.WriteTo.Console();
+            var loggerConfig = new LoggerConfiguration()
+                .MinimumLevel.Error()
+                .WriteTo.Console();
             Log.Logger = loggerConfig.CreateLogger();
             builder.AddSerilog(Log.Logger);
         }
 
-        private static void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection collection)
+        private static void ConfigureServicesDelegate(IConfiguration configuration, IServiceCollection services)
         {
-            // Configure the hosted service
-            collection.AddHostedService<TestServerHostedService>();
+            services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
+            ConfigureTerminalServices(configuration, services);
+        }
 
-            // NOTE: We are initialized as a console application. This can be a custom console or a custom terminal
-            // interface as well.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+        private static void ConfigureTerminalServices(IConfiguration configuration, IServiceCollection services)
+        {
+            services.AddHostedService<TestServerHostedService>();
+
+            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
+                new TerminalUnicodeTextHandler(),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
-
                     options.Router.RemoteMessageMaxLength = 64000;
                     options.Router.EnableRemoteDelimiters = true;
                     options.Router.Caret = "> ";
-                }
-            );
+                });
 
-            // Add router based on appsettings.json.
-            string? mode = context.Configuration["testserver:mode"];
-            if (mode == "user")
+            string? mode = configuration.GetValue<string>("testserver:mode");
+            if (string.IsNullOrWhiteSpace(mode))
             {
-                terminalBuilder.AddTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>();
-            }
-            else if (mode == "tcp")
-            {
-                terminalBuilder.AddTerminalRouter<TerminalTcpRouter, TerminalTcpRouterContext>();
-            }
-            else if (mode == "udp")
-            {
-                terminalBuilder.AddTerminalRouter<TerminalUdpRouter, TerminalUdpRouterContext>();
-            }
-            else
-            {
-                throw new InvalidOperationException($"The mode `{mode}` is not supported.");
+                throw new InvalidOperationException("The 'testserver:mode' configuration value is missing or empty.");
             }
 
-            // Add commands using declarative syntax.
+            switch (mode.ToLowerInvariant())
+            {
+                case "user":
+                    terminalBuilder.AddTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>();
+                    break;
+
+                case "tcp":
+                    terminalBuilder.AddTerminalRouter<TerminalTcpRouter, TerminalTcpRouterContext>();
+                    break;
+
+                case "udp":
+                    terminalBuilder.AddTerminalRouter<TerminalUdpRouter, TerminalUdpRouterContext>();
+                    break;
+
+                case "grpc":
+                    terminalBuilder.AddTerminalRouter<TerminalGrpcRouter, TerminalGrpcRouterContext>();
+                    services.AddGrpc();
+                    services.AddGrpcReflection();
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"The mode '{mode}' is not supported.");
+            }
+
+            // Add the command declarative assembly
             terminalBuilder.AddDeclarativeAssembly<TestServerRunner>();
-        }
-
-        private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
-        {
-            // Disable hosting status message
-            services.Configure<ConsoleLifetimeOptions>(options =>
-            {
-                options.SuppressStatusMessages = true;
-            });
-
-            // Configure OneImlx.Terminal services
-            ConfigureOneImlxTerminal(context, services);
-
-            // Configure other services
         }
 
         private static async Task Main(string[] args)
         {
-            // Allows cancellation for the entire terminal and individual commands.
-            CancellationTokenSource terminalTokenSource = new();
-            CancellationTokenSource commandTokenSource = new();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
 
-            // Start the host so we can configure the terminal router.
-            // NOTE: The host needs to be started with Start API to initialize the hosted service.
-            host = Host.CreateDefaultBuilder(args)
-                       .ConfigureAppConfiguration(ConfigureAppConfigurationDelegate)
-                       .ConfigureLogging(ConfigureLoggingDelegate)
-                       .ConfigureServices(ConfigureServicesDelegate)
-                       .Start();
-
-            using (host)
+            string? mode = config.GetValue<string>("testserver:mode");
+            if (string.IsNullOrWhiteSpace(mode))
             {
-                // Get the mode so we can start the router in a user mode or a service mode.
-                IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
-                string? mode = configuration["testserver:mode"];
+                throw new InvalidOperationException("The 'testserver:mode' configuration value is missing or empty.");
+            }
 
-                // Now configure router based on configuration
-                if (mode == "user")
-                {
-                    TerminalStartContext startContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
-                    TerminalConsoleRouterContext routerContext = new(startContext);
-                    await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(routerContext);
-                }
-                else if (mode == "tcp")
-                {
-                    // Adjust this to your white-listed IP address needs.
-                    string? ipAddress = configuration.GetValue<string>("testserver:ip");
-                    int port = configuration.GetValue<int>("testserver:port");
-                    IPAddress serverLocalIp = IPAddress.Parse(ipAddress!);
-                    IPEndPoint iPEndPoint = new(serverLocalIp, port);
-                    TerminalStartContext startContext = new(TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token);
+            if (mode.Equals("grpc", StringComparison.OrdinalIgnoreCase))
+            {
+                await RunWebApplicationAsync(args, config);
+            }
+            else
+            {
+                await RunHostApplicationAsync(args, config);
+            }
 
-                    TerminalTcpRouterContext routerContext = new(iPEndPoint, startContext);
-                    await host.RunTerminalRouterAsync<TerminalTcpRouter, TerminalTcpRouterContext>(routerContext);
-                }
-                else if (mode == "udp")
-                {
-                    // Adjust this to your white-listed IP address needs.
-                    string? ipAddress = configuration.GetValue<string>("testserver:ip");
-                    int port = configuration.GetValue<int>("testserver:port");
-                    IPAddress serverLocalIp = IPAddress.Parse(ipAddress!);
-                    IPEndPoint iPEndPoint = new(serverLocalIp, port);
-                    TerminalStartContext startContext = new(TerminalStartMode.Udp, terminalTokenSource.Token, commandTokenSource.Token);
+            await host!.WaitForShutdownAsync();
+        }
 
-                    TerminalUdpRouterContext routerContext = new(iPEndPoint, startContext);
-                    await host.RunTerminalRouterAsync<TerminalUdpRouter, TerminalUdpRouterContext>(routerContext);
-                }
-                else
+        private static async Task RunConsoleRouterAsync()
+        {
+            TerminalStartContext startContext = new(TerminalStartMode.Console, CancellationToken.None, CancellationToken.None);
+            TerminalConsoleRouterContext routerContext = new(startContext);
+            await host!.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(routerContext);
+        }
+
+        private static async Task RunGrpcRouterAsync()
+        {
+            TerminalStartContext startContext = new(TerminalStartMode.Grpc, CancellationToken.None, CancellationToken.None);
+            TerminalGrpcRouterContext routerContext = new(startContext);
+            await host!.RunTerminalRouterAsync<TerminalGrpcRouter, TerminalGrpcRouterContext>(routerContext);
+        }
+
+        private static async Task RunHostApplicationAsync(string[] args, IConfiguration configuration)
+        {
+            var builder = Host.CreateApplicationBuilder(args);
+            builder.Configuration.AddConfiguration(configuration);
+            ConfigureLoggingDelegate(builder.Logging);
+            ConfigureServicesDelegate(configuration, builder.Services);
+
+            host = builder.Build();
+            await host.StartAsync();
+            await StartRouterAsync();
+        }
+
+        private static async Task RunTcpRouterAsync(IConfiguration configuration)
+        {
+            string ipAddress = configuration.GetValue<string>("testserver:ip") ?? throw new InvalidOperationException("The 'testserver:ip' configuration value is missing.");
+            int port = configuration.GetValue<int?>("testserver:port") ?? throw new InvalidOperationException("The 'testserver:port' configuration value is missing or invalid.");
+
+            IPAddress serverLocalIp = IPAddress.Parse(ipAddress);
+            IPEndPoint iPEndPoint = new(serverLocalIp, port);
+            TerminalStartContext startContext = new(TerminalStartMode.Tcp, CancellationToken.None, CancellationToken.None);
+            TerminalTcpRouterContext routerContext = new(iPEndPoint, startContext);
+            await host!.RunTerminalRouterAsync<TerminalTcpRouter, TerminalTcpRouterContext>(routerContext);
+        }
+
+        private static async Task RunUdpRouterAsync(IConfiguration configuration)
+        {
+            string ipAddress = configuration.GetValue<string>("testserver:ip") ?? throw new InvalidOperationException("The 'testserver:ip' configuration value is missing.");
+            int port = configuration.GetValue<int?>("testserver:port") ?? throw new InvalidOperationException("The 'testserver:port' configuration value is missing or invalid.");
+
+            IPAddress serverLocalIp = IPAddress.Parse(ipAddress);
+            IPEndPoint iPEndPoint = new(serverLocalIp, port);
+            TerminalStartContext startContext = new(TerminalStartMode.Udp, CancellationToken.None, CancellationToken.None);
+            TerminalUdpRouterContext routerContext = new(iPEndPoint, startContext);
+            await host!.RunTerminalRouterAsync<TerminalUdpRouter, TerminalUdpRouterContext>(routerContext);
+        }
+
+        private static async Task RunWebApplicationAsync(string[] args, IConfiguration configuration)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddConfiguration(configuration);
+            ConfigureLoggingDelegate(builder.Logging);
+
+            string ipAddress = configuration.GetValue<string>("testserver:ip") ?? throw new InvalidOperationException("The 'testserver:ip' configuration value is missing or invalid.");
+            int port = configuration.GetValue<int?>("testserver:port") ?? throw new InvalidOperationException("The 'testserver:port' configuration value is missing or invalid.");
+
+            builder.WebHost.UseKestrel(options =>
+            {
+                options.Listen(IPAddress.Parse(ipAddress), port, listenOptions =>
                 {
-                    throw new InvalidOperationException($"The mode `{mode}` is not supported.");
-                }
+                    listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+                });
+            });
+
+            ConfigureServicesDelegate(builder.Configuration, builder.Services);
+
+            var app = builder.Build();
+            host = app;
+
+            app.MapGrpcService<TerminalGrpcMapService>();
+            app.MapGrpcReflectionService();
+
+            var grpcTask = app.StartAsync();
+            await StartRouterAsync();
+            await grpcTask;
+        }
+
+        private static async Task StartRouterAsync()
+        {
+            if (host == null)
+            {
+                throw new InvalidOperationException("Host is not initialized.");
+            }
+
+            var configuration = host.Services.GetRequiredService<IConfiguration>();
+            string mode = configuration.GetValue<string>("testserver:mode") ?? throw new InvalidOperationException("The 'testserver:mode' configuration value is missing.");
+            switch (mode.ToLowerInvariant())
+            {
+                case "user":
+                    await RunConsoleRouterAsync();
+                    break;
+
+                case "tcp":
+                    await RunTcpRouterAsync(configuration);
+                    break;
+
+                case "udp":
+                    await RunUdpRouterAsync(configuration);
+                    break;
+
+                case "grpc":
+                    await RunGrpcRouterAsync();
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"The mode '{mode}' is not supported.");
             }
         }
 
