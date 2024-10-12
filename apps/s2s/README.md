@@ -1,6 +1,6 @@
 # Introduction
 
-This sample code is designed for developers implementing service-to-service communication using the `OneImlx.Terminal` framework. It covers the setup and operation of a Test Server and Test Client, demonstrating the framework's capabilities in handling networked command execution via TCP and UDP protocols.
+This sample code is designed for developers implementing service-to-service communication using the `OneImlx.Terminal` framework. It covers the setup and operation of a Test Server and Test Client, demonstrating the framework's capabilities in handling networked command execution via TCP, UDP, and gRPC protocols.
 
 ## Overview
 
@@ -16,6 +16,7 @@ This sample code is designed for developers implementing service-to-service comm
   - **Console Mode**: For direct interaction via command console.
   - **TCP Mode**: For reliable, connection-oriented network communication.
   - **UDP Mode**: For faster, connectionless network communication.
+  - **gRPC Mode**: For advanced, structured communication with support for streaming.
 
 - **Configuration**: Server settings are managed through an `appsettings.json` file, which includes parameters like IP, port, and operational mode.
 
@@ -26,7 +27,7 @@ This sample code is designed for developers implementing service-to-service comm
 - Configured to align with the Test Server's network settings and operational mode.
 - Sends a series of predefined commands to the server.
 
->NOTE: The client uses a console router for issuing manual commands during testing. This helps developers understand and verify service-to-service communication in real-time. For automated operations, the client and server can both be automated to handle dynamic network scenarios without manual intervention.
+> **NOTE**: The client uses a console router for issuing manual commands during testing. This helps developers understand and verify service-to-service communication in real-time. For automated operations, the client and server can both be automated to handle dynamic network scenarios without manual intervention.
 
 ## Testing and Validation
 
@@ -40,12 +41,12 @@ Configure the startup projects in the solution to launch both the Test Server an
 
 2. **Test Client**:
    - Configure to ensure compatibility with the server's settings.
-   - Start the client to begin sending commands to the server manually over TCP or UDP.
+   - Start the client to begin sending commands to the server manually over TCP, UDP, or gRPC.
 
 ## Test Execution
 
 - **Monitor Outputs**: Watch both the server and client consoles for output to confirm that commands are received and processed correctly.
-- **Check Connectivity**: For TCP and UDP modes, verify network connectivity and ensure that ports and IP addresses are correctly configured.
+- **Check Connectivity**: For TCP, UDP, and gRPC modes, verify network connectivity and ensure that ports and IP addresses are correctly configured.
 
 ## Troubleshooting
 
@@ -55,7 +56,7 @@ Configure the startup projects in the solution to launch both the Test Server an
 ## Best Practices
 
 - **Error Handling**: Implement robust error handling in both server and client to manage and log exceptions effectively.
-- **Security**: Ensure secure transmission, especially when using TCP or UDP modes, by considering encryption or secure channels.
+- **Security**: Ensure secure transmission, especially when using TCP, UDP, or gRPC modes, by considering encryption or secure channels.
 - **Performance Monitoring**: Regularly monitor the system's performance and optimize as needed to handle expected loads.
 
 ## Conclusion
