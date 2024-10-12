@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="message">The command string to enqueue.</param>
         /// <param name="senderEndpoint">The sender endpoint.</param>
         /// <param name="senderId">The sender id.</param>
-        public void Enqueue(string message, EndPoint senderEndpoint, string? senderId)
+        public void Enqueue(string message, string? senderEndpoint, string? senderId)
         {
             // Check message limit
             if (message.Length > terminalOptions.Router.RemoteMessageMaxLength)
@@ -104,7 +104,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Starts processing the command queue in the background.
         /// </summary>
-        public Task StartCommandProcessing()
+        public Task StartCommandProcessingAsync()
         {
             // Start processing the command queue immediately in the background. The code starts the background task for
             // processing commands immediately and does not wait for it to complete. We do not await it in this context.
@@ -118,7 +118,7 @@ namespace OneImlx.Terminal.Runtime
             CommandRoute? commandRoute = null;
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (concurrentQueue.TryDequeue(out TerminalRemoteMessageItem item))
+                if (concurrentQueue.TryDequeue(out TerminalRemoteMessageItem? item))
                 {
                     try
                     {
@@ -151,7 +151,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Setup the remote meta-data for the command.
             Dictionary<string, object> properties = [];
-            properties.Add(TerminalIdentifiers.SenderEndpointToken, item.SenderEndpoint);
+            properties.Add(TerminalIdentifiers.SenderEndpointToken, item.SenderEndpoint ?? "$none$");
             if (item.SenderId != null)
             {
                 properties.Add(TerminalIdentifiers.SenderIdToken, item.SenderId);

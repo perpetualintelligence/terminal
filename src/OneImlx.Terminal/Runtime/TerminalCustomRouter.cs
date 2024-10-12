@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2024 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -14,6 +14,11 @@ namespace OneImlx.Terminal.Runtime
     /// </summary>
     public abstract class TerminalCustomRouter : ITerminalRouter<TerminalCustomRouterContext>
     {
+        /// <summary>
+        /// The command queue for the terminal router.
+        /// </summary>
+        public abstract TerminalRemoteMessageQueue? CommandQueue { get; }
+
         /// <summary>
         /// Routes to a custom service implementation.
         /// </summary>

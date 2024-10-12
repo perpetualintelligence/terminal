@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2024 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -44,6 +44,11 @@ namespace OneImlx.Terminal.Runtime
             this.options = options;
             this.logger = logger;
         }
+
+        /// <summary>
+        /// The command queue for the terminal router. This is not supported for console routing.
+        /// </summary>
+        public TerminalRemoteMessageQueue? CommandQueue => null;
 
         /// <summary>
         /// Runs to the terminal as a console asynchronously.

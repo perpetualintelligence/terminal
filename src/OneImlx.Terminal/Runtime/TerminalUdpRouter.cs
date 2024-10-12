@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2024 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -59,6 +59,11 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
+        /// The command queue for the terminal router. This is not supported for UDP routing.
+        /// </summary>
+        public TerminalRemoteMessageQueue? CommandQueue => null;
+
+        /// <summary>
         /// Asynchronously runs the UDP router, listening for incoming UDP packets and processing them.
         /// </summary>
         /// <param name="context">The UDP router context containing configuration and runtime information.</param>
@@ -87,7 +92,7 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                Task backgroundProcessingTask = commandQueue.StartCommandProcessing();
+                Task backgroundProcessingTask = commandQueue.StartCommandProcessingAsync();
 
                 // Enqueue the UDP data packets till a terminal cancellation is requested.
                 while (!context.StartContext.TerminalCancellationToken.IsCancellationRequested)
@@ -104,7 +109,7 @@ namespace OneImlx.Terminal.Runtime
                         // Process received data
                         UdpReceiveResult receivedResult = receiveTask.Result; // Safe because we know the task has completed
                         string receivedMessage = textHandler.Encoding.GetString(receivedResult.Buffer);
-                        commandQueue.Enqueue(receivedMessage, receivedResult.RemoteEndPoint, senderId: null);
+                        commandQueue.Enqueue(receivedMessage, receivedResult.RemoteEndPoint.ToString(), senderId: null);
                     }
                     else
                     {

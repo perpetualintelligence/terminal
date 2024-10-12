@@ -1,13 +1,7 @@
-﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,50 +18,39 @@ namespace OneImlx.Terminal.Apps.TestClient
 {
     internal class Program
     {
-        private static void ConfigureAppConfigurationDelegate(HostBuilderContext context, IConfigurationBuilder builder)
+        private static void ConfigureLoggingDelegate(ILoggingBuilder builder)
         {
-            var configBuilder = new ConfigurationBuilder();
-            configBuilder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: false);
-            configBuilder.Build();
-        }
-
-        private static void ConfigureLoggingDelegate(HostBuilderContext context, ILoggingBuilder builder)
-        {
-            // Clear all providers
             builder.ClearProviders();
 
-            // Configure logging of your choice, here we are configuring Serilog
-            var loggerConfig = new LoggerConfiguration();
-            loggerConfig.MinimumLevel.Error();
-            loggerConfig.WriteTo.Console();
+            var loggerConfig = new LoggerConfiguration()
+                .MinimumLevel.Error()
+                .WriteTo.Console();
             Log.Logger = loggerConfig.CreateLogger();
             builder.AddSerilog(Log.Logger);
         }
 
-        private static void ConfigureOneImlxTerminal(HostBuilderContext context, IServiceCollection collection)
+        private static void ConfigureOneImlxTerminal(IConfiguration configuration, IServiceCollection services)
         {
             // Configure the hosted service
-            collection.AddHostedService<TestClientHostedService>();
+            services.AddHostedService<TestClientHostedService>();
 
-            // NOTE: We are initialized as a console application. This can be a custom console or a custom terminal
-            // interface as well.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+            // Initialize the terminal as a console application
+            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
+                new TerminalUnicodeTextHandler(),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
-
                     options.Router.Caret = "> ";
-                }
-                                                                                                                                                                                                                           );
+                });
 
             // Add commands using declarative syntax.
             terminalBuilder.AddDeclarativeAssembly<TestClientRunner>();
         }
 
-        private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
+        private static void ConfigureServicesDelegate(IConfiguration configuration, IServiceCollection services)
         {
             // Disable hosting status message
             services.Configure<ConsoleLifetimeOptions>(options =>
@@ -76,13 +59,23 @@ namespace OneImlx.Terminal.Apps.TestClient
             });
 
             // Configure OneImlx.Terminal services
-            ConfigureOneImlxTerminal(context, services);
+            ConfigureOneImlxTerminal(configuration, services);
 
-            // Configure other services
+            // Configure other services as needed
         }
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
+            var builder = Host.CreateApplicationBuilder(args);
+            builder.Configuration.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: false);
+
+            ConfigureLoggingDelegate(builder.Logging);
+            ConfigureServicesDelegate(builder.Configuration, builder.Services);
+
+            // Build and start the host
+            var host = builder.Build();
+            await host.StartAsync();
+
             // Allows cancellation for the entire terminal and individual commands.
             CancellationTokenSource terminalTokenSource = new();
             CancellationTokenSource commandTokenSource = new();
@@ -91,15 +84,11 @@ namespace OneImlx.Terminal.Apps.TestClient
             TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
             TerminalConsoleRouterContext terminalConsoleRouterContext = new(terminalStartContext);
 
-            // Start the host so we can configure the terminal router.
-            // NOTE: The host needs to be started with Start API to initialize the hosted service.
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(ConfigureAppConfigurationDelegate)
-                .ConfigureLogging(ConfigureLoggingDelegate)
-                .ConfigureServices(ConfigureServicesDelegate)
-                .RunTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>(terminalConsoleRouterContext);
-        }
+            // Run the terminal router
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(terminalConsoleRouterContext);
 
-        private static readonly IHost? host;
+            // Wait for the host to shut down
+            await host.WaitForShutdownAsync();
+        }
     }
 }
