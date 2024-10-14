@@ -9,10 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.AspNetCore.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// Represents the HTTP router responsible for managing HTTP communication in the terminal. This router handles
