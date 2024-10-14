@@ -1,3 +1,10 @@
+# 5.13.1
+> Feature Change
+- Introduce gRPC terminal routing
+- Introduce HTTP terminal routing
+- Introduce OneImlx.Terminal.AspNetCore for hosting terminal servers in ASP.NET Core
+- Introduce OneImlx.Terminal.Client for client application communicating with terminal servers  
+
 # 5.12.3
 > Breaking Change
 - Rename `TerminalExceptionHandler` to `TerminalLoggerExceptionHandler` that logs the error message to ILogger

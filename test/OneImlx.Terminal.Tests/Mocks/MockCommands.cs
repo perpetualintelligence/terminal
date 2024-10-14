@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -28,46 +28,47 @@ namespace OneImlx.Terminal.Mocks
         {
             TerminalUnicodeTextHandler unicodeTextHandler = new();
 
-            TestOptionDescriptors = new(unicodeTextHandler, new List<OptionDescriptor>()
-            {
-                new OptionDescriptor("key1", nameof(String), "Key1 value text", OptionFlags.None),
-                new OptionDescriptor("key2", nameof(String), "Key2 value text", OptionFlags.Required),
-                new OptionDescriptor("key3", nameof(Int64), "Key3 value phone", OptionFlags.None),
-                new OptionDescriptor("key4", nameof(String), "Key4 value email", OptionFlags.None),
-                new OptionDescriptor("key5", nameof(String), "Key5 value url", OptionFlags.None),
-                new OptionDescriptor("key6", nameof(Boolean), "Key6 no value", OptionFlags.None),
-                new OptionDescriptor("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new OneOfAttribute("INR", "USD", "EUR")) } },
-                new OptionDescriptor("key8", nameof(Int32), "Key8 value custom int", OptionFlags.None),
-                new OptionDescriptor("key9", nameof(Double), "Key9 value custom double", OptionFlags.Required) {ValueCheckers = new []{ new DataValidationValueChecker<Option>(new RequiredAttribute()), new DataValidationValueChecker<Option>(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", OptionFlags.Required)
-            });
+            TestOptionDescriptors = new(unicodeTextHandler,
+            [
+                new("key1", nameof(String), "Key1 value text", OptionFlags.None),
+                new("key2", nameof(String), "Key2 value text", OptionFlags.Required),
+                new("key3", nameof(Int64), "Key3 value phone", OptionFlags.None),
+                new("key4", nameof(String), "Key4 value email", OptionFlags.None),
+                new("key5", nameof(String), "Key5 value url", OptionFlags.None),
+                new("key6", nameof(Boolean), "Key6 no value", OptionFlags.None),
+                new("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new OneOfAttribute("INR", "USD", "EUR")) } },
+                new("key8", nameof(Int32), "Key8 value custom int", OptionFlags.None),
+                new("key9", nameof(Double), "Key9 value custom double", OptionFlags.Required) {ValueCheckers = new []{ new DataValidationValueChecker<Option>(new RequiredAttribute()), new DataValidationValueChecker<Option>(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new("key10", nameof(String), "Key10 value custom string", OptionFlags.Required)
+            ]);
 
-            TestOptionsDescriptors = new(unicodeTextHandler, new List<OptionDescriptor>()
-            {
-                new OptionDescriptor("key1", nameof(String), "Key1 value text", OptionFlags.None, "key1_alias"),
-                new OptionDescriptor("key2-er", nameof(String), "Key2 value text", OptionFlags.Required),
-                new OptionDescriptor("key3-a-z-d", nameof(Int64), "Key3 value phone", OptionFlags.None, "k3"),
-                new OptionDescriptor("key4", nameof(String), "Key4 value email", OptionFlags.None),
-                new OptionDescriptor("key5", nameof(String), "Key5 value url", OptionFlags.None),
-                new OptionDescriptor("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", OptionFlags.None),
-                new OptionDescriptor("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationValueChecker<Option>( new OneOfAttribute("INR", "USD", "EUR") )} },
-                new OptionDescriptor("key8", nameof(Int32), "Key8 value int", OptionFlags.None),
-                new OptionDescriptor("key9", nameof(Double), "Key9 invalid default value", OptionFlags.Required) {ValueCheckers = new[] { new DataValidationValueChecker<Option>( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
-                new OptionDescriptor("key10", nameof(String), "Key10 value custom string", OptionFlags.Required, "k10"),
-                new OptionDescriptor("key11", nameof(Boolean), "Key11 value boolean", OptionFlags.Required, "k11"),
-                new OptionDescriptor("key12", nameof(Boolean), "Key12 value default boolean", OptionFlags.Required, "k12")
-            });
+            TestOptionsDescriptors = new(unicodeTextHandler,
+            [
+                new("key1", nameof(String), "Key1 value text", OptionFlags.None, "key1_alias"),
+                new("key2-er", nameof(String), "Key2 value text", OptionFlags.Required),
+                new("key3-a-z-d", nameof(Int64), "Key3 value phone", OptionFlags.None, "k3"),
+                new("key4", nameof(String), "Key4 value email", OptionFlags.None),
+                new("key5", nameof(String), "Key5 value url", OptionFlags.None),
+                new("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", OptionFlags.None),
+                new("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationValueChecker<Option>( new OneOfAttribute("INR", "USD", "EUR") )} },
+                new("key8", nameof(Int32), "Key8 value int", OptionFlags.None),
+                new("key9", nameof(Double), "Key9 invalid default value", OptionFlags.Required) {ValueCheckers = new[] { new DataValidationValueChecker<Option>( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new("key10", nameof(String), "Key10 value custom string", OptionFlags.Required, "k10"),
+                new("key11", nameof(Boolean), "Key11 value boolean", OptionFlags.Required, "k11"),
+                new("key12", nameof(Boolean), "Key12 value default boolean", OptionFlags.Required, "k12")
+            ]);
 
-            TestHindiUnicodeOptionDescriptors = new(unicodeTextHandler, new List<OptionDescriptor>()
-            {
-                new OptionDescriptor("एक", nameof(String), "पहला तर्क", OptionFlags.None, "एकहै" ),
-                new OptionDescriptor("दो", nameof(Boolean), "दूसरा तर्क", OptionFlags.Required) { },
-                new OptionDescriptor("तीन", nameof(String), "तीसरा तर्क", OptionFlags.None, "तीनहै" ),
-                new OptionDescriptor("चार", nameof(Double), "चौथा तर्क", OptionFlags.None, "चारहै"),
-            });
+            TestHindiUnicodeOptionDescriptors = new(unicodeTextHandler,
+            [
+                new("एक", nameof(String), "पहला तर्क", OptionFlags.None, "एकहै" ),
+                new("दो", nameof(Boolean), "दूसरा तर्क", OptionFlags.Required) { },
+                new("तीन", nameof(String), "तीसरा तर्क", OptionFlags.None, "तीनहै" ),
+                new("चार", nameof(Double), "चौथा तर्क", OptionFlags.None, "चारहै"),
+            ]);
 
-            Commands = new(unicodeTextHandler, new List<CommandDescriptor>()
-            {
+            Commands = new(unicodeTextHandler,
+            [
+
                 // Different name and prefix
                 NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner <CommandRunnerResult>)).Item1,
 
@@ -82,10 +83,11 @@ namespace OneImlx.Terminal.Mocks
 
                 // Command with no default arg
                 NewCommandDefinition("id5", "name5", "desc5", CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new TerminalUnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
-            });
+            ]);
 
-            GroupedCommands = new(unicodeTextHandler, new List<CommandDescriptor>()
-            {
+            GroupedCommands = new(unicodeTextHandler,
+            [
+
                 // Different name and prefix
                 NewCommandDefinition("orgid", "pi", "the top org grouped command", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
@@ -103,10 +105,11 @@ namespace OneImlx.Terminal.Mocks
 
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "the slient oauth login command within the slogin group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
-            });
+            ]);
 
-            GroupedOptionsCommands = new(unicodeTextHandler, new List<CommandDescriptor>()
-            {
+            GroupedOptionsCommands = new(unicodeTextHandler,
+            [
+
                 // Different name and prefix
                 NewCommandDefinition("orgid", "pi", "top org cmd group", CommandType.SubCommand, CommandFlags.None, TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
@@ -124,10 +127,11 @@ namespace OneImlx.Terminal.Mocks
 
                 // Same name and prefix with args
                 NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "org auth slogin oauth cmd", CommandType.SubCommand, CommandFlags.None, TestOptionsDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
-            });
+            ]);
 
-            LicensingCommands = new(unicodeTextHandler, new List<CommandDescriptor>()
-            {
+            LicensingCommands = new(unicodeTextHandler,
+            [
+
                 // Different name and prefix
                 NewCommandDefinition("root1", "name1", "desc1", CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
@@ -160,10 +164,11 @@ namespace OneImlx.Terminal.Mocks
 
                 // Command with no default arg
                 NewCommandDefinition("id5", "name5", "desc5",CommandType.SubCommand, CommandFlags.None, new OptionDescriptors( new TerminalUnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
-            });
+            ]);
 
-            UnicodeCommands = new(unicodeTextHandler, new List<CommandDescriptor>()
-            {
+            UnicodeCommands = new(unicodeTextHandler,
+            [
+
                 // --- Hindi --- Root command
                 NewCommandDefinition("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड", CommandType.Root, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
@@ -175,7 +180,7 @@ namespace OneImlx.Terminal.Mocks
 
                 // Subcommand
                 NewCommandDefinition("दूसरा", "दूसरा नाम", "दूसरा आदेश", CommandType.SubCommand, CommandFlags.None, TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
-            });
+            ]);
         }
 
         public static Tuple<CommandDescriptor, Command> NewCommandDefinition(string id, string name, string desc, CommandType commandType, CommandFlags commandFlags, OptionDescriptors? args = null, Type? checker = null, Type? runner = null, Options? options = null)
@@ -193,9 +198,9 @@ namespace OneImlx.Terminal.Mocks
         public static CommandDescriptors GroupedCommands;
         public static CommandDescriptors GroupedOptionsCommands;
         public static CommandDescriptors LicensingCommands;
-        public static CommandDescriptors UnicodeCommands;
-        public static OptionDescriptors TestOptionDescriptors;
         public static OptionDescriptors TestHindiUnicodeOptionDescriptors;
+        public static OptionDescriptors TestOptionDescriptors;
         public static OptionDescriptors TestOptionsDescriptors;
+        public static CommandDescriptors UnicodeCommands;
     }
 }

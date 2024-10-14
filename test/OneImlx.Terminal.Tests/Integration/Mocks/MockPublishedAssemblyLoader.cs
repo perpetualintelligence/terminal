@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -27,31 +27,45 @@ namespace OneImlx.Terminals.Integration.Mocks
 
         public PublishedCommandSourceContext PassedContext { get; private set; } = null!;
 
-        private Assembly CreateDynamicAssembly(string assembly)
+        public Task<IEnumerable<Assembly>> LoadAssembliesAsync(PublishedCommandSourceContext context)
         {
-            // Create a new assembly name
-            AssemblyName assemblyName = new(assembly);
-            AssemblyBuilder assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule("MockModule");
-            CreateDeclarativeType(moduleBuilder, $"{assembly}MockClass1");
-            CreateDeclarativeType(moduleBuilder, $"{assembly}MockClass2");
-            CreateDeclarativeType(moduleBuilder, $"{assembly}MockClass3");
+            Called = true;
+            PassedContext = context;
 
-            // Return the assembly
-            return assemblyBuilder;
+            List<Assembly> assemblies = [];
+
+            foreach (var kvp in context.PublishedAssemblies)
+            {
+                string assemblyName = Path.GetFileNameWithoutExtension(kvp.Key);
+                assemblies.Add(CreateDynamicAssembly(assemblyName));
+            }
+
+            return Task.FromResult(assemblies.AsEnumerable());
+        }
+
+        private static void AddCustomAttribute(TypeBuilder typeBuilder, Type attributeType, params object[] constructorArgs)
+        {
+            // Get the single constructor for the attribute type
+            ConstructorInfo constructor = attributeType.GetConstructors().Single();
+
+            // Create the custom attribute builder with the provided arguments
+            CustomAttributeBuilder customAttributeBuilder = new(constructor, constructorArgs);
+
+            // Apply the custom attribute to the type
+            typeBuilder.SetCustomAttribute(customAttributeBuilder);
         }
 
         private static void CreateDeclarativeType(ModuleBuilder moduleBuilder, string className)
         {
-            // Define a public class in the module
-            // If this is called multiple times for multiple assemblies then className is unique for each assembly.
+            // Define a public class in the module If this is called multiple times for multiple assemblies then
+            // className is unique for each assembly.
             TypeBuilder typeBuilder = moduleBuilder.DefineType(className, TypeAttributes.Public);
 
             // Implement the IDeclarativeTarget interface
             typeBuilder.AddInterfaceImplementation(typeof(IDeclarativeRunner));
 
-            // Add custom attributes to the class
-            // Ensure the commandId is unique across multiple assemblies so we just use className
+            // Add custom attributes to the class Ensure the commandId is unique across multiple assemblies so we just
+            // use className
             AddCustomAttribute(typeBuilder, typeof(CommandOwnersAttribute), [new string[] { "oid1", "oid2" }]);
             AddCustomAttribute(typeBuilder, typeof(CommandDescriptorAttribute), [className, "name1", "description", CommandType.SubCommand, CommandFlags.None]);
             AddCustomAttribute(typeBuilder, typeof(CommandCheckerAttribute), [typeof(MockCommandChecker)]);
@@ -76,32 +90,18 @@ namespace OneImlx.Terminals.Integration.Mocks
             Type mockDeclarativeTarget1Type = typeBuilder.CreateType();
         }
 
-        private static void AddCustomAttribute(TypeBuilder typeBuilder, Type attributeType, params object[] constructorArgs)
+        private Assembly CreateDynamicAssembly(string assembly)
         {
-            // Get the single constructor for the attribute type
-            ConstructorInfo constructor = attributeType.GetConstructors().Single();
+            // Create a new assembly name
+            AssemblyName assemblyName = new(assembly);
+            AssemblyBuilder assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule("MockModule");
+            CreateDeclarativeType(moduleBuilder, $"{assembly}MockClass1");
+            CreateDeclarativeType(moduleBuilder, $"{assembly}MockClass2");
+            CreateDeclarativeType(moduleBuilder, $"{assembly}MockClass3");
 
-            // Create the custom attribute builder with the provided arguments
-            CustomAttributeBuilder customAttributeBuilder = new(constructor, constructorArgs);
-
-            // Apply the custom attribute to the type
-            typeBuilder.SetCustomAttribute(customAttributeBuilder);
-        }
-
-        public Task<IEnumerable<Assembly>> LoadAssembliesAsync(PublishedCommandSourceContext context)
-        {
-            Called = true;
-            PassedContext = context;
-
-            List<Assembly> assemblies = new List<Assembly>();
-
-            foreach (var kvp in context.PublishedAssemblies)
-            {
-                string assemblyName = Path.GetFileNameWithoutExtension(kvp.Key);
-                assemblies.Add(CreateDynamicAssembly(assemblyName));
-            }
-
-            return Task.FromResult(assemblies.AsEnumerable());
+            // Return the assembly
+            return assemblyBuilder;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Mocks
             this.cancelOnRouteCalled = cancelOnRouteCalled;
             this.exception = exception;
             this.explicitError = explicitError;
-            MultipleRawString = new List<string>();
+            MultipleRawString = [];
         }
 
         public bool FindCalled { get; set; }

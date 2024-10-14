@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\src\OneImlx.Terminal\OneImlx.Terminal.csproj" />
+        <ProjectReference Include="..\..\..\src\OneImlx.Terminal.Client\OneImlx.Terminal.Client.csproj" />
     </ItemGroup>
 
     <ItemGroup>

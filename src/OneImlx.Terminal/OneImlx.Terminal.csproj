@@ -3,7 +3,7 @@
     <Import Project="..\..\build\props\Package.props" />
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net481;net8.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
         <Description>
             The most flexible cross-platform framework for building modern and secured terminal apps.
         </Description>
@@ -13,22 +13,15 @@
     <ItemGroup>                
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />        
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
-        <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-        <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    </ItemGroup>
-
-
-    <ItemGroup>
-        <Protobuf Include="Runtime\oneimlx_terminal.proto" GrpcServices="ServerClient" />
-        <PackageReference Include="Google.Protobuf" Version="3.28.2" />
-        <PackageReference Include="Grpc.Net.Common" Version="2.66.0" />
-        <PackageReference Include="Grpc.Tools" Version="2.67.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />        
+        <PackageReference Include="System.Net.Http.Json" Version="8.0.1">
+          <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
-    </ItemGroup>
+        <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0">
+          <TreatAsUsed>true</TreatAsUsed>
+        </PackageReference>
+    </ItemGroup>   
 
     <!--
         CI CONFIG:
@@ -36,7 +29,9 @@
     <Choose>
         <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
-                <ProjectReference Include="..\..\..\shared\src\OneImlx.Shared\OneImlx.Shared.csproj" />
+                <ProjectReference Include="..\..\..\shared\src\OneImlx.Shared\OneImlx.Shared.csproj">
+                  <TreatAsUsed>true</TreatAsUsed>
+                </ProjectReference>
             </ItemGroup>
         </When>
         <Otherwise>

@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Grpc.Core;
 using Grpc.Net.Client;
+using OneImlx.Terminal.Client;
+using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -39,7 +40,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             return CommandRunnerResult.NoProcessing;
         }
 
-        private async Task SendGrpcCommandsAsync(OneImlxGrpcRouterInternal.OneImlxGrpcRouterInternalClient client, CancellationToken cancellationToken)
+        private async Task SendGrpcCommandsAsync(TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client, CancellationToken cancellationToken)
         {
             try
             {
@@ -52,17 +53,13 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
                 foreach (var command in commands)
                 {
-                    string delimitedMessage = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, command);
-                    var request = new OneImlxGrpcRouterRequestInternal { Request = delimitedMessage };
-                    var response = await client.EnqueueCommandInternalAsync(request, cancellationToken: cancellationToken);
+                    TerminalGrpcRouterProtoOutput response = await client.PostSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken: cancellationToken);
                     Console.WriteLine($"Sent command: {command}, Response: {response}");
                 }
 
                 // Sending commands as a batch
                 Console.WriteLine("Sending commands as a batch...");
-                string batchCommands = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, commands);
-                var batchRequest = new OneImlxGrpcRouterRequestInternal { Request = batchCommands };
-                var batchResponse = await client.EnqueueCommandInternalAsync(batchRequest, cancellationToken: cancellationToken);
+                TerminalGrpcRouterProtoOutput batchResponse = await client.PostBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken: cancellationToken);
                 Console.WriteLine($"Batch sent. Response: {batchResponse}");
             }
             catch (RpcException ex)
@@ -80,7 +77,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             try
             {
                 using var channel = GrpcChannel.ForAddress(serverAddress);
-                var client = new OneImlxGrpcRouterInternal.OneImlxGrpcRouterInternalClient(channel);
+                TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client = new TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient(channel);
 
                 await SendGrpcCommandsAsync(client, cancellationToken);
             }

@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.Authentication.Msal
                 .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, props, token) =>
                 {
                     capturedProperties = props;
-                    reqInfo.Headers["Authorization"] = new List<string>() { "Bearer mock_token" }; // Add the authorization header
+                    reqInfo.Headers["Authorization"] = ["Bearer mock_token"]; // Add the authorization header
                 })
                 .Returns(Task.CompletedTask);
 
@@ -71,7 +71,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             _mockAuthenticationProvider.Setup(p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
                                        .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, token) =>
                                        {
-                                           reqInfo.Headers["Authorization"] = new List<string>() { "Bearer mock_token" }; // Add the authorization header
+                                           reqInfo.Headers["Authorization"] = ["Bearer mock_token"]; // Add the authorization header
                                        })
                                        .Returns(Task.CompletedTask);
             var delegatingHandler = new MsalAuthenticationProviderDelegatingHandler(_mockAuthenticationProvider.Object, _mockLogger.Object)
@@ -96,7 +96,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             _mockAuthenticationProvider.Setup(p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
                 .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, token) =>
                 {
-                    reqInfo.Headers["Authorization"] = new List<string>() { "Bearer mock_token" }; // Add the authorization header
+                    reqInfo.Headers["Authorization"] = ["Bearer mock_token"]; // Add the authorization header
                     requestInfoCaptured.Add(reqInfo);
                 })
                 .Returns(Task.CompletedTask);
@@ -141,7 +141,7 @@ namespace OneImlx.Terminal.Authentication.Msal
                                        .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, token) =>
                                        {
                                            // Add the authorization header
-                                           reqInfo.Headers["Authorization"] = new List<string>() { "Bearer mock_token" };
+                                           reqInfo.Headers["Authorization"] = ["Bearer mock_token"];
                                        })
                                        .Returns(Task.CompletedTask);
 
@@ -185,7 +185,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             _mockAuthenticationProvider.Setup(p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
                 .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, cToken) =>
                 {
-                    reqInfo.Headers["Authorization"] = new List<string>() { token! }; // Empty authorization header
+                    reqInfo.Headers["Authorization"] = [token!]; // Empty authorization header
                 })
                 .Returns(Task.CompletedTask);
 
@@ -214,7 +214,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             _mockAuthenticationProvider.Setup(p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
                  .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, cToken) =>
                  {
-                     reqInfo.Headers["Authorization"] = new List<string>() { "Bearer mock_token" }; // Empty authorization header
+                     reqInfo.Headers["Authorization"] = ["Bearer mock_token"]; // Empty authorization header
                  })
                  .Returns(Task.CompletedTask);
 

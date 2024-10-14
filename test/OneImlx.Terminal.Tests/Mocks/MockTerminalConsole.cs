@@ -43,18 +43,18 @@ namespace OneImlx.Terminal.Mocks
             return false;
         }
 
-        public Task<string> ReadAnswerAsync(string question, params string[]? answers)
+        public Task<string?> ReadAnswerAsync(string question, params string[]? answers)
         {
             // Simulate reading an answer by returning a predetermined or mock value
-            string mockAnswer = "mock answer";
+            string? mockAnswer = "mock answer";
             Messages.Add($"Question: {question}, Answer: {mockAnswer}");
-            return Task.FromResult(mockAnswer);
+            return Task.FromResult<string?>(mockAnswer);
         }
 
         public Task<string?> ReadLineAsync()
         {
             // Simulate reading a line by returning a predetermined or mock value
-            string mockInput = "mock input";
+            string? mockInput = "mock input";
             Messages.Add($"ReadLine: {mockInput}");
             return Task.FromResult<string?>(mockInput);
         }

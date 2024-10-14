@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -23,9 +23,6 @@ namespace OneImlx.Terminal.Authentication.Msal
     /// </summary>
     public class MsalAuthenticationProviderDelegatingHandler : DelegatingHandler
     {
-        private readonly IAuthenticationProvider authenticationProvider;
-        private readonly ILogger<MsalAuthenticationProviderDelegatingHandler> logger;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MsalAuthenticationProviderDelegatingHandler"/> class.
         /// </summary>
@@ -43,8 +40,8 @@ namespace OneImlx.Terminal.Authentication.Msal
         /// <param name="request">The HTTP request message to be processed.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
         /// <remarks>
-        /// This method can be overridden in a derived class to perform custom pre-processing
-        /// on the request before it is sent. The default implementation does nothing.
+        /// This method can be overridden in a derived class to perform custom pre-processing on the request before it
+        /// is sent. The default implementation does nothing.
         /// </remarks>
         protected virtual async Task PreflightAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -66,7 +63,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             var method = MapHttpMethod(request.Method);
 
             // Authenticate the request using the authentication provider.
-            Dictionary<string, object>? propertiesDictionary = request.Properties != null ? new Dictionary<string, object>(request.Properties) : new Dictionary<string, object>();
+            Dictionary<string, object>? propertiesDictionary = request.Properties != null ? new Dictionary<string, object>(request.Properties) : [];
             var requestInformation = new RequestInformation(method, request.RequestUri.ToString(), propertiesDictionary);
             await authenticationProvider.AuthenticateRequestAsync(requestInformation, propertiesDictionary, cancellationToken);
 
@@ -77,7 +74,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             }
 
             // Ensure token is not null or empty
-            string token = requestInformation.Headers["Authorization"].FirstOrDefault();
+            string? token = requestInformation.Headers["Authorization"].FirstOrDefault();
             if (string.IsNullOrWhiteSpace(token))
             {
                 throw new TerminalException(TerminalErrors.UnauthorizedAccess, "The access_token is null or empty.");
@@ -94,5 +91,8 @@ namespace OneImlx.Terminal.Authentication.Msal
         {
             return (Method)Enum.Parse(typeof(Method), httpMethod.Method, ignoreCase: true);
         }
+
+        private readonly IAuthenticationProvider authenticationProvider;
+        private readonly ILogger<MsalAuthenticationProviderDelegatingHandler> logger;
     }
 }

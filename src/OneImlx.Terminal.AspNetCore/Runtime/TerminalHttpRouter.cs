@@ -5,35 +5,33 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Runtime;
+using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Runtime
+namespace OneImlx.Terminal.AspNetCore.Runtime
 {
     /// <summary>
-    /// Represents the gRPC router responsible for managing gRPC communication in the terminal. This router handles
-    /// incoming gRPC commands and routes them to the appropriate command runners.
+    /// Represents the HTTP router responsible for managing HTTP communication in the terminal. This router handles
+    /// incoming HTTP commands and routes them to the appropriate command runners.
     /// </summary>
-    public class TerminalGrpcRouter : OneImlxGrpcRouterInternal.OneImlxGrpcRouterInternalBase, ITerminalRouter<TerminalGrpcRouterContext>
+    public class TerminalHttpRouter : ITerminalRouter<TerminalHttpRouterContext>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TerminalGrpcRouter"/> class.
+        /// Initializes a new instance of the <see cref="TerminalHttpRouter"/> class.
         /// </summary>
         /// <param name="commandRouter">The command router for routing commands to specific handlers.</param>
         /// <param name="exceptionHandler">The exception handler for handling errors that occur during command routing.</param>
         /// <param name="options">The options configuration for the terminal router.</param>
         /// <param name="logger">The logger instance for logging router events and errors.</param>
-        public TerminalGrpcRouter(
+        public TerminalHttpRouter(
             ICommandRouter commandRouter,
             ITerminalExceptionHandler exceptionHandler,
             IOptions<TerminalOptions> options,
-            ILogger<TerminalGrpcRouter> logger)
+            ILogger<TerminalHttpRouter> logger)
         {
             this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
@@ -42,43 +40,43 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
-        /// The command queue for the terminal router. This is not supported for console routing.
+        /// The command queue for the terminal router.
         /// </summary>
         public TerminalRemoteMessageQueue? CommandQueue => commandQueue;
 
         /// <summary>
-        /// Runs the gRPC server asynchronously and begins handling client requests indefinitely. The server will
+        /// Runs the HTTP router asynchronously and begins handling client requests indefinitely. The server will
         /// continue running until a cancellation is requested via the context.
         /// </summary>
         /// <param name="context">The terminal context containing configuration and cancellation token.</param>
         /// <returns>A task that represents the asynchronous operation of running the server.</returns>
-        /// <exception cref="TerminalException">Thrown when the start mode is not configured for gRPC.</exception>
-        public async Task RunAsync(TerminalGrpcRouterContext context)
+        /// <exception cref="TerminalException">Thrown when the start mode is not configured for HTTP.</exception>
+        public async Task RunAsync(TerminalHttpRouterContext context)
         {
-            if (context.StartContext.StartMode != TerminalStartMode.Grpc)
+            if (context.StartContext.StartMode != TerminalStartMode.Http)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "Invalid start mode for gRPC.");
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "Invalid start mode for HTTP.");
             }
 
             // Initialize the command queue for remote message processing.
             commandQueue = new TerminalRemoteMessageQueue(commandRouter, exceptionHandler, options.Value, context, logger);
             try
             {
-                logger.LogDebug("Terminal gRPC router started.");
+                logger.LogDebug("Terminal HTTP router started.");
 
-                // Start background command processing and blocking the current thread.
+                // Start background command processing and block the current thread.
                 await commandQueue.StartCommandProcessingAsync();
             }
             finally
             {
-                logger.LogDebug("Terminal gRPC router stopped.");
+                logger.LogDebug("Terminal HTTP router stopped.");
             }
         }
 
         // Private fields to hold injected dependencies and state information.
         private readonly ICommandRouter commandRouter;
         private readonly ITerminalExceptionHandler exceptionHandler;
-        private readonly ILogger<TerminalGrpcRouter> logger;
+        private readonly ILogger<TerminalHttpRouter> logger;
         private readonly IOptions<TerminalOptions> options;
         private TerminalRemoteMessageQueue? commandQueue;
     }

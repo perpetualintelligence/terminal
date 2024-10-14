@@ -1,11 +1,4 @@
-﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using OneImlx.Terminal.Runtime;
+﻿using OneImlx.Terminal.Runtime;
 
 public class TerminalWasmConsole : ITerminalConsole
 {
@@ -18,7 +11,7 @@ public class TerminalWasmConsole : ITerminalConsole
 
     public ConsoleColor ForegroundColor { get; set; }
 
-    public TextReader In { get; }
+    public TextReader? In { get; }
 
     // Not actively used unless required for compatibility
     public TextWriter Out { get; private set; }
@@ -86,6 +79,6 @@ public class TerminalWasmConsole : ITerminalConsole
         _inputTaskSource.SetResult(input);
     }
 
-    private TaskCompletionSource<string?> _inputTaskSource = new TaskCompletionSource<string?>();
     private readonly StringWriter _outputWriter = new();
+    private TaskCompletionSource<string?> _inputTaskSource = new();
 }
