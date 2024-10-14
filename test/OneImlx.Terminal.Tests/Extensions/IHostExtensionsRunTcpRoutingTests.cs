@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -96,7 +96,7 @@ namespace OneImlx.Terminal.Extensions
                 await tcpClient.ConnectAsync(serverIpEndPoint.Address, serverIpEndPoint.Port);
 
                 // Create a large command string with 100 commands
-                List<string> commandList = new();
+                List<string> commandList = [];
                 for (int i = 0; i < 100; i++)
                 {
                     commandList.Add($"rt{i} grp{i} cmd{i}");
@@ -505,7 +505,7 @@ namespace OneImlx.Terminal.Extensions
         public async Task RunAsync_Should_Start_And_Stop_Server()
         {
             host = CreateHostWithLogger(ConfigureServicesDefault, nameof(RunAsync_Should_Start_And_Stop_Server));
-            
+
             // Set the timeout to infinite to avoid cancellation during the test
             GetOptions(host).Router.Timeout = Timeout.Infinite;
 
@@ -633,7 +633,7 @@ namespace OneImlx.Terminal.Extensions
         }
 
         [Fact]
-        public async Task RunAsync_Should_Throw_Exception_If_IPEndPoint_Is_Null()
+        public async Task RunAsync_Throws_If_IPEndPoint_Is_Null()
         {
             var newHostBuilder = Host.CreateDefaultBuilder().ConfigureServices(ConfigureServicesDefault);
             host = newHostBuilder.Build();
@@ -645,9 +645,9 @@ namespace OneImlx.Terminal.Extensions
         }
 
         [Fact]
-        public async Task RunAsync_Should_Throw_InvalidConfiguration_For_Invalid_StartMode()
+        public async Task RunAsync_Throws_InvalidConfiguration_For_Invalid_StartMode()
         {
-            host = CreateHostWithLogger(ConfigureServicesDefault, nameof(RunAsync_Should_Throw_InvalidConfiguration_For_Invalid_StartMode));
+            host = CreateHostWithLogger(ConfigureServicesDefault, nameof(RunAsync_Throws_InvalidConfiguration_For_Invalid_StartMode));
 
             startContext = new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token);
             var context = new TerminalTcpRouterContext(serverIpEndPoint, startContext);
@@ -670,11 +670,6 @@ namespace OneImlx.Terminal.Extensions
                                      .UseSerilog();
 
             return newHostBuilder.Build();
-        }
-
-        private TerminalOptions GetOptions(IHost host)
-        {
-            return host.Services.GetRequiredService<TerminalOptions>();
         }
 
         private void ConfigureServicesDefault(IServiceCollection opt2)
@@ -709,6 +704,11 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddSingleton<ITerminalRouter<TerminalTcpRouterContext>, TerminalTcpRouter>();
             opt2.AddSingleton(textHandler);
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
+        }
+
+        private TerminalOptions GetOptions(IHost host)
+        {
+            return host.Services.GetRequiredService<TerminalOptions>();
         }
 
         private CancellationTokenSource commandTokenSource = null!;

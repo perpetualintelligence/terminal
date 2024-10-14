@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\..\build\props\Package.props" />
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
+        <Description>
+            The cross-platform client library for the OneImlx.Terminal framework.
+        </Description>
+        <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos oneimlx unicode</PackageTags>
+    </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Protos\" />
+  </ItemGroup>
+
+    <!--
+        gRPC configuration and protos.
+    -->
+    <ItemGroup>
+        <Protobuf Include="Protos\oneimlx_terminal.proto" GrpcServices="Client" />
+        <PackageReference Include="Google.Protobuf" Version="3.28.2" />
+        <PackageReference Include="Grpc.Net.Common" Version="2.66.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.67.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+   
+    <!--
+        CI CONFIG:
+    -->
+    <Choose>
+        <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
+            <ItemGroup>
+                <ProjectReference Include="..\OneImlx.Terminal\OneImlx.Terminal.csproj" />
+            </ItemGroup>
+        </When>
+        <Otherwise>
+            <ItemGroup>
+                <PackageReference Include="OneImlx.Terminal" Version="$(PI_CI_PACKAGE_VERSION)" />
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
+
+</Project>

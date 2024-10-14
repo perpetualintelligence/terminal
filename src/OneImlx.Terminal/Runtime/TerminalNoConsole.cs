@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -38,17 +38,17 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public Task<string> ReadAnswerAsync(string question, params string[]? answers)
+        public Task<string?> ReadAnswerAsync(string question, params string[]? answers)
         {
             // Return an empty string as the answer
-            return Task.FromResult(string.Empty);
+            return Task.FromResult<string?>(default);
         }
 
         /// <inheritdoc/>
         public Task<string?> ReadLineAsync()
         {
             // Return null indicating no input
-            return Task.FromResult<string?>(null);
+            return Task.FromResult<string?>(default);
         }
 
         /// <inheritdoc/>

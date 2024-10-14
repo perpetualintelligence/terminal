@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright © 2019-2024 Perpetual Intelligence L.L.C. All rights reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -248,7 +248,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             Task routerTask = tcpRouter.RunAsync(context);
 
             // Create and start 5 client tasks to send TCP messages concurrently
-            List<Task> clientTasks = new();
+            List<Task> clientTasks = [];
             for (int i = 0; i < 5; i++)
             {
                 var message = TerminalServices.DelimitedMessage(options, $"test123_{i}", $"test456_{i}");
@@ -302,7 +302,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             Task routerTask = tcpRouter.RunAsync(context);
 
             // Create and start 5 client tasks to send TCP messages concurrently
-            List<Task> clientTasks = new();
+            List<Task> clientTasks = [];
             for (int i = 0; i < 5; i++)
             {
                 var message = $"test123_{i}";

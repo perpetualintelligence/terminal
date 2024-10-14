@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,8 +15,10 @@ namespace OneImlx.Terminal.Hosting.Mocks
     {
         public MockTerminalHostedServiceLogger()
         {
-            Messages = new List<string>();
+            Messages = [];
         }
+
+        public List<string> Messages { get; private set; }
 
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
@@ -32,7 +34,5 @@ namespace OneImlx.Terminal.Hosting.Mocks
         {
             Messages.Add(formatter.Invoke(state, exception));
         }
-
-        public List<string> Messages { get; private set; }
     }
 }

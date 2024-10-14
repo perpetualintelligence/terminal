@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -77,7 +77,7 @@ namespace OneImlx.Terminal.Runtime
         /// for readability. If specified this method will print the answers with question in the format <c>{question} {answer1}/{answer2}/{answer3}?</c>
         /// </param>
         /// <returns>The answer for the question or <c>null</c> if canceled.</returns>
-        public virtual async Task<string> ReadAnswerAsync(string question, params string[]? answers)
+        public virtual async Task<string?> ReadAnswerAsync(string question, params string[]? answers)
         {
             // Print the question
             if (answers != null)

@@ -1,16 +1,12 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
@@ -20,6 +16,9 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers
@@ -28,7 +27,7 @@ namespace OneImlx.Terminal.Commands.Checkers
     {
         public CommandCheckerTests()
         {
-            LoggerFactory loggerFactory = new LoggerFactory();
+            LoggerFactory loggerFactory = new();
 
             commandRoute = new CommandRoute(Guid.NewGuid().ToString(), "test_raw");
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
@@ -51,7 +50,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Disabled);
             CommandDescriptor disabledArgsDescriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
+            Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(disabledArgsDescriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -69,7 +68,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
+            Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -85,7 +84,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Obsolete);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
+            Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -103,7 +102,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Obsolete);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
+            Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -127,7 +126,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor2 = new("key2", nameof(String), "desc1", OptionFlags.Required);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new Option[] { new Option(optionDescriptor2, "value2") });
+            Options options = new(textHandler, new Option[] { new(optionDescriptor2, "value2") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -144,7 +143,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(String), "desc1", OptionFlags.Required);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new Option[] { new Option(optionDescriptor, "value1") });
+            Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -162,7 +161,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "non-date") });
+            Options options = new(textHandler, [new(optionDescriptor, "non-date")]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -182,7 +181,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "non-date") });
+            Options options = new(textHandler, [new(optionDescriptor, "non-date")]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -201,7 +200,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, "25-Mar-2021") });
+            Options options = new(textHandler, [new(optionDescriptor, "25-Mar-2021")]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -225,7 +224,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(Double), "test desc", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, 25.36) });
+            Options options = new(textHandler, [new(optionDescriptor, 25.36)]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -241,7 +240,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, new[] { optionDescriptor }));
 
-            Options options = new(textHandler, new List<Option>() { new Option(optionDescriptor, DateTime.Now) });
+            Options options = new(textHandler, [new(optionDescriptor, DateTime.Now)]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
             ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
@@ -251,13 +250,13 @@ namespace OneImlx.Terminal.Commands.Checkers
             await checker.CheckCommandAsync(context);
         }
 
-        private readonly CommandHandlerContext handlerContext = null!;
         private readonly IArgumentChecker argumentChecker = null!;
         private readonly IDataTypeMapper<Argument> argumentMapper = null!;
         private readonly CommandChecker checker = null!;
         private readonly CommandRoute commandRoute = null!;
         private readonly ITerminalCommandStore commands = null!;
         private readonly CancellationTokenSource commandTokenSource = null!;
+        private readonly CommandHandlerContext handlerContext = null!;
         private readonly IDataTypeMapper<Option> optionMapper = null!;
         private readonly CommandRouterContext routerContext = null!;
         private readonly TerminalRouterContext routingContext = null!;

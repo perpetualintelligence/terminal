@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -48,12 +48,18 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
+        /// The current count of the message queue.
+        /// </summary>
+        public int Count => concurrentQueue.Count;
+
+        /// <summary>
         /// Enqueues commands in the message for processing in the queue.
         /// </summary>
         /// <param name="message">The command string to enqueue.</param>
         /// <param name="senderEndpoint">The sender endpoint.</param>
         /// <param name="senderId">The sender id.</param>
-        public void Enqueue(string message, string? senderEndpoint, string? senderId)
+        /// <returns>The list of enqueued items.</returns>
+        public IEnumerable<TerminalRemoteMessageItem> Enqueue(string message, string? senderEndpoint, string? senderId)
         {
             // Check message limit
             if (message.Length > terminalOptions.Router.RemoteMessageMaxLength)
@@ -82,6 +88,7 @@ namespace OneImlx.Terminal.Runtime
 
             // If the command is a single command, it is enqueued directly. Otherwise, it is split into multiple
             // commands and enqueued.
+            List<TerminalRemoteMessageItem> items = [];
             if (isPartial)
             {
                 logger.LogDebug("Received delimited message. sender_endpoint={0} sender_id={1} message={2}", senderEndpoint, senderId, message);
@@ -92,13 +99,17 @@ namespace OneImlx.Terminal.Runtime
                 {
                     TerminalRemoteMessageItem item = new(Guid.NewGuid().ToString(), cmd, senderEndpoint, senderId);
                     concurrentQueue.Enqueue(item);
+                    items.Add(item);
                 }
             }
             else
             {
                 TerminalRemoteMessageItem item = new(Guid.NewGuid().ToString(), message, senderEndpoint, senderId);
                 concurrentQueue.Enqueue(item);
+                items.Add(item);
             }
+
+            return items;
         }
 
         /// <summary>
@@ -151,7 +162,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Setup the remote meta-data for the command.
             Dictionary<string, object> properties = [];
-            properties.Add(TerminalIdentifiers.SenderEndpointToken, item.SenderEndpoint ?? "$none$");
+            properties.Add(TerminalIdentifiers.SenderEndpointToken, item.SenderEndpoint ?? "$unknown$");
             if (item.SenderId != null)
             {
                 properties.Add(TerminalIdentifiers.SenderIdToken, item.SenderId);
@@ -176,10 +187,10 @@ namespace OneImlx.Terminal.Runtime
         }
 
         private readonly ICommandRouter commandRouter;
+        private readonly ConcurrentQueue<TerminalRemoteMessageItem> concurrentQueue;
         private readonly ILogger logger;
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly TerminalOptions terminalOptions;
         private readonly TerminalRouterContext terminalRouterContext;
-        private readonly ConcurrentQueue<TerminalRemoteMessageItem> concurrentQueue;
     }
 }

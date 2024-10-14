@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="question">The question to print.</param>
         /// <param name="answers">The optional allowed answers.</param>
         /// <returns>The answer to the question.</returns>
-        public Task<string> ReadAnswerAsync(string question, params string[]? answers);
+        public Task<string?> ReadAnswerAsync(string question, params string[]? answers);
 
         /// <summary>
         /// Reads the next line of characters from the <see cref="ITerminalConsole"/> input stream asynchronously.

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Runtime
         /// <seealso cref="DelimitedMessage(TerminalOptions, string[])"/>
         public static string DelimitedMessage(string cmdDelimiter, string msgDelimiter, params string[] commands)
         {
-            StringBuilder delimitedMessage = new StringBuilder();
+            StringBuilder delimitedMessage = new();
             foreach (string command in commands)
             {
                 if (!command.EndsWith(cmdDelimiter))

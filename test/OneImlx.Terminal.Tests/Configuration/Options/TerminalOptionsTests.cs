@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -26,6 +26,7 @@ namespace OneImlx.Terminal.Configuration.Options
             options.Licensing.Should().NotBeNull();
             options.Router.Should().NotBeNull();
             options.Help.Should().NotBeNull();
+            options.Debug.Should().NotBeNull();
         }
     }
 }

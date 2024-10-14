@@ -62,6 +62,7 @@ namespace OneImlx.Terminal.Apps.TestClient
             ConfigureOneImlxTerminal(configuration, services);
 
             // Configure other services as needed
+            services.AddHttpClient();
         }
 
         private static async Task Main(string[] args)

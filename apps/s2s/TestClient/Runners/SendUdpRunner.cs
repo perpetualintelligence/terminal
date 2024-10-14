@@ -79,7 +79,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
         private async Task StartClientAsync(string server, int port, CancellationToken cToken)
         {
             using var udpClient = new UdpClient();
-            IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Parse(server), port);
+            IPEndPoint remoteEndPoint = new(IPAddress.Parse(server), port);
 
             try
             {
