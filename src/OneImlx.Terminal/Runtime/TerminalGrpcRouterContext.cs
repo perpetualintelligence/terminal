@@ -5,9 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Runtime;
-
-namespace OneImlx.Terminal.AspNetCore.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// Represents the context for configuring and managing the gRPC router in the terminal.

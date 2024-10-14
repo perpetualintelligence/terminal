@@ -5,10 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Runtime;
 using System.Net;
 
-namespace OneImlx.Terminal.AspNetCore.Runtime
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// Represents the context for the terminal router when running in HTTP mode.
