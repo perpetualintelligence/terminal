@@ -6,7 +6,7 @@
 */
 
 using FluentAssertions;
-using OneImlx.Terminal.AspNetCore.Runtime;
+using OneImlx.Terminal.AspNetCore;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
 

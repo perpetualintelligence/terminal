@@ -22,7 +22,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace OneImlx.Terminal.AspNetCore.Runtime
+namespace OneImlx.Terminal.AspNetCore
 {
     public class TerminalHttpMapServiceTests
     {

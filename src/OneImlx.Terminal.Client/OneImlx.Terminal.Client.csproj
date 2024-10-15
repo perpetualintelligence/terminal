@@ -3,16 +3,12 @@
     <Import Project="..\..\build\props\Package.props" />
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net481</TargetFrameworks>
         <Description>
-            The cross-platform client library for the OneImlx.Terminal framework.
+            The cross-platform client library for the `OneImlx.Terminal` hosting framework.
         </Description>
         <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos oneimlx unicode</PackageTags>
     </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Protos\" />
-  </ItemGroup>
 
     <!--
         gRPC configuration and protos.

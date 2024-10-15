@@ -7,13 +7,14 @@
 
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.AspNetCore;
 using OneImlx.Terminal.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.AspNetCore.Runtime
+namespace OneImlx.Terminal.AspNetCore
 {
     /// <summary>
     /// Represents the gRPC service responsible for managing gRPC communication in the <c>OneImlx</c> terminal framework.
@@ -57,6 +58,11 @@ namespace OneImlx.Terminal.AspNetCore.Runtime
             if (terminalRouter.CommandQueue == null)
             {
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal gRPC router is not running.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.CommandString))
+            {
+                throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the gRPC request.");
             }
 
             // Enqueue the command string. The command is queued along with the peer information from the context.

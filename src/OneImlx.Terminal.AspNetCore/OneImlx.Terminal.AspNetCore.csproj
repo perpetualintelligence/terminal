@@ -5,14 +5,10 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <Description>
-            A cross-platform ASP.NET Core integration for hosting OneImlx.Terminal apps with HTTP and gRPC support.
+            A cross-platform hosting framework for `OneImlx.Terminal` server apps, with HTTP and gRPC routing.
         </Description>
         <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos oneimlx unicode</PackageTags>
     </PropertyGroup>
-
-    <ItemGroup>
-      <None Remove="Protos\oneimlx_terminal.proto" />
-    </ItemGroup>
 
     <!--
         https://learn.microsoft.com/en-us/aspnet/core/fundamentals/target-aspnetcore

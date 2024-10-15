@@ -8,7 +8,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OneImlx.Terminal.AspNetCore.Runtime;
 
 namespace OneImlx.Terminal.AspNetCore.Extensions
 {

@@ -5,7 +5,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
         <Description>
-            A cross-platform authentication module for securing OneImlx.Terminal apps and servers.
+            A cross-platform authentication framework for securing `OneImlx.Terminal` apps and servers.
         </Description>
         <PackageTags>terminal cli options flags commands docker kubernetes windows linux macos oneimlx unicode msal identity oauth openid-connect oidc</PackageTags>
     </PropertyGroup>
