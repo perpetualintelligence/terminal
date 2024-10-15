@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
-using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Client.Extensions;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -36,25 +36,21 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             return CommandRunnerResult.NoProcessing;
         }
 
-        private async Task SendCommandsAsync(Socket socket, CancellationToken cToken)
+        private async Task SendCommandsAsync(TcpClient tcpClient, CancellationToken cToken)
         {
             try
             {
-                string[] commands = { "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2" };
+                string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"];
 
                 Console.WriteLine("Sending commands individually...");
                 foreach (string command in commands)
                 {
-                    string formattedCommand = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, command);
-                    byte[] data = Encoding.Unicode.GetBytes(formattedCommand);
-                    await socket.SendAsync(data, SocketFlags.None, cToken);
+                    await tcpClient.SendSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, Encoding.Unicode, cToken);
                     Console.WriteLine($"Command sent: {command}");
                 }
 
                 Console.WriteLine("Sending all commands as a batch...");
-                string concatenatedCommands = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, commands);
-                byte[] batchData = Encoding.Unicode.GetBytes(concatenatedCommands);
-                await socket.SendAsync(batchData, SocketFlags.None, cToken);
+                await tcpClient.SendBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, Encoding.Unicode, cToken);
                 Console.WriteLine("Batch of commands sent successfully.");
             }
             catch (Exception ex)
@@ -63,8 +59,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             }
             finally
             {
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
+                tcpClient.Close();
                 Console.WriteLine("Connection closed.");
             }
         }
@@ -73,14 +68,14 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
         {
             try
             {
-                using var client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                using var tcpClient = new TcpClient();
 
                 while (true)
                 {
                     try
                     {
-                        await client.ConnectAsync(IPAddress.Parse(server), port);
-                        Console.WriteLine($"Connected to {client.RemoteEndPoint}.");
+                        await tcpClient.ConnectAsync(IPAddress.Parse(server), port);
+                        Console.WriteLine($"Connected to {tcpClient.Client.RemoteEndPoint}.");
                         break;
                     }
                     catch (SocketException)
@@ -90,7 +85,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                     }
                 }
 
-                await SendCommandsAsync(client, cToken);
+                await SendCommandsAsync(tcpClient, cToken);
             }
             catch (Exception ex)
             {

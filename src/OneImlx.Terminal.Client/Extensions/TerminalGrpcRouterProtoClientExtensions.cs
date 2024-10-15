@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// The batch command is created by concatenating the provided commands using the specified delimiters. This
         /// method is useful for reducing the number of individual requests when sending multiple commands.
         /// </remarks>
-        public static async Task<TerminalGrpcRouterProtoOutput> PostBatchToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string[] commandStrings, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
+        public static async Task<TerminalGrpcRouterProtoOutput> SendBatchToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string[] commandStrings, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
             string batchCommands = TerminalServices.DelimitedMessage(cmdDelimiter, msgDelimiter, commandStrings);
             TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = batchCommands }, cancellationToken: cancellationToken);
@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// The command is formatted using the provided delimiters and sent to the terminal server. The response
         /// contains the terminal's reaction to the command, useful for ensuring proper execution of commands.
         /// </remarks>
-        public static async Task<TerminalGrpcRouterProtoOutput> PostSingleToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string commandString, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
+        public static async Task<TerminalGrpcRouterProtoOutput> SendSingleToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string commandString, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
             string delimitedCommand = TerminalServices.DelimitedMessage(cmdDelimiter, msgDelimiter, commandString);
             TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = delimitedCommand }, cancellationToken: cancellationToken);
@@ -86,7 +86,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// This method sends a single command to the terminal without delimiters. Delimiters are not required for
         /// single commands and are only necessary when sending batch commands.
         /// </remarks>
-        public static async Task<TerminalGrpcRouterProtoOutput> PostSingleToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string commandString, CancellationToken cancellationToken)
+        public static async Task<TerminalGrpcRouterProtoOutput> SendSingleToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string commandString, CancellationToken cancellationToken)
         {
             TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = commandString }, cancellationToken: cancellationToken);
             return response;
