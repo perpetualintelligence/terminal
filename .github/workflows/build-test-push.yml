@@ -137,6 +137,28 @@ jobs:
         nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
         registry: ${{ env.PI_PUBLISH_REGISTRY }}
 
+    # Publish OneImlx.Terminal.AspNetCore
+    - name: OneImlx.Terminal.AspNetCore
+      uses: ./.github/actions/push-package
+      with:
+        project: OneImlx.Terminal.AspNetCore
+        config: Release
+        version: ${{ env.PI_CI_PACKAGE_VERSION }}
+        ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
+        nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
+        registry: ${{ env.PI_PUBLISH_REGISTRY }}
+
+    # Publish OneImlx.Terminal.Client
+    - name: OneImlx.Terminal.Client
+      uses: ./.github/actions/push-package
+      with:
+        project: OneImlx.Terminal.Client
+        config: Release
+        version: ${{ env.PI_CI_PACKAGE_VERSION }}
+        ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
+        nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
+        registry: ${{ env.PI_PUBLISH_REGISTRY }}
+
     # Publish OneImlx.Terminal.Authentication
     - name: OneImlx.Terminal.Authentication
       uses: ./.github/actions/push-package
