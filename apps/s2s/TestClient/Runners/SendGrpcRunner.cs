@@ -47,19 +47,19 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 Console.WriteLine("Sending individual gRPC commands...");
 
                 string[] commands =
-                {
+                [
                     "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"
-                };
+                ];
 
                 foreach (var command in commands)
                 {
-                    TerminalGrpcRouterProtoOutput response = await client.PostSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken: cancellationToken);
+                    TerminalGrpcRouterProtoOutput response = await client.SendSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken: cancellationToken);
                     Console.WriteLine($"Sent command: {command}, Response: {response}");
                 }
 
                 // Sending commands as a batch
                 Console.WriteLine("Sending commands as a batch...");
-                TerminalGrpcRouterProtoOutput batchResponse = await client.PostBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken: cancellationToken);
+                TerminalGrpcRouterProtoOutput batchResponse = await client.SendBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken: cancellationToken);
                 Console.WriteLine($"Batch sent. Response: {batchResponse}");
             }
             catch (RpcException ex)

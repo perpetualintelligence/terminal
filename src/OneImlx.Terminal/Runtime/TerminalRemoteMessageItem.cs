@@ -1,11 +1,12 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -19,13 +20,14 @@ namespace OneImlx.Terminal.Runtime
         /// Initializes a new instance of the <see cref="TerminalRemoteMessageItem"/> class.
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
-        /// <param name="command">The command string to be processed.</param>
+        /// <param name="commandString">The command string to be processed.</param>
         /// <param name="senderEndpoint">The sender endpoint from which the command was sent.</param>
         /// <param name="senderId">The sender id if the multiple senders shares same endpoint.</param>
-        public TerminalRemoteMessageItem(string id, string command, string? senderEndpoint, string? senderId)
+        [JsonConstructor]
+        public TerminalRemoteMessageItem(string id, string commandString, string? senderEndpoint, string? senderId)
         {
             Id = id;
-            CommandString = command;
+            CommandString = commandString;
             SenderId = senderId;
             SenderEndpoint = senderEndpoint;
         }
@@ -33,21 +35,27 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Gets the command string that needs to be processed.
         /// </summary>
+        [JsonPropertyName("command_string")]
         public string CommandString { get; }
 
         /// <summary>
         /// Gets the unique identifier for the command item.
         /// </summary>
+        [JsonPropertyName("id")]
         public string Id { get; }
 
         /// <summary>
         /// Gets the endpoint of the sender who issued the command.
         /// </summary>
+        [JsonPropertyName("sender_endpoint")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? SenderEndpoint { get; }
 
         /// <summary>
         /// Gets the sender id if the multiple senders shares same endpoint.
         /// </summary>
+        [JsonPropertyName("sender_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? SenderId { get; }
     }
 }

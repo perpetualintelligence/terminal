@@ -3,7 +3,7 @@
     <Import Project="..\..\build\props\Package.props" />
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net481</TargetFrameworks>
         <Description>
             The most flexible cross-platform framework for building modern and secured terminal apps.
         </Description>
@@ -36,7 +36,7 @@
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="OneImlx.Shared" Version="5.8.8" />
+                <PackageReference Include="OneImlx.Shared" Version="5.13.1" />
             </ItemGroup>
         </Otherwise>
     </Choose>

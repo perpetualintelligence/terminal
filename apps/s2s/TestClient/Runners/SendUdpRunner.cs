@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
@@ -27,13 +28,13 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             int port = configuration.GetValue<int?>("testclient:testserver:port")
                            ?? throw new InvalidOperationException("Server port is missing or invalid.");
 
-            Task[] clientTasks = new Task[]
-            {
+            Task[] clientTasks =
+            [
                 StartClientAsync(server, port, context.StartContext.TerminalCancellationToken),
                 StartClientAsync(server, port, context.StartContext.TerminalCancellationToken),
                 StartClientAsync(server, port, context.StartContext.TerminalCancellationToken),
                 StartClientAsync(server, port, context.StartContext.TerminalCancellationToken)
-            };
+            ];
 
             await Task.WhenAll(clientTasks);
             Console.WriteLine("All UDP client tasks completed.");
@@ -45,24 +46,20 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             try
             {
                 string[] commands =
-                {
+                [
                     "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"
-                };
+                ];
 
                 Console.WriteLine("Sending commands individually...");
                 foreach (string command in commands)
                 {
-                    string formattedCommand = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, command);
-                    byte[] data = Encoding.Unicode.GetBytes(formattedCommand);
-                    await udpClient.SendAsync(data, data.Length, remoteEndPoint);
+                    await udpClient.SendSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, Encoding.Unicode, remoteEndPoint, cToken);
                     Console.WriteLine($"Command sent: {command}");
                 }
 
                 // Send all commands as a batch
                 Console.WriteLine("Sending all commands as a batch...");
-                string batchCommands = TerminalServices.DelimitedMessage(TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, commands);
-                byte[] batchData = Encoding.Unicode.GetBytes(batchCommands);
-                await udpClient.SendAsync(batchData, batchData.Length, remoteEndPoint);
+                await udpClient.SendBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, Encoding.Unicode, remoteEndPoint, cToken);
                 Console.WriteLine("Batch of commands sent successfully.");
             }
             catch (Exception ex)

@@ -39,7 +39,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         ?? throw new InvalidOperationException("The server IP address is missing.");
             string port = configuration.GetValue<string>("testclient:testserver:port")
                           ?? throw new InvalidOperationException("The server port is missing.");
-            string serverTemplate = "http://{0}:{1}/oneimlx/terminal/commands";
+            string serverTemplate = "http://{0}:{1}";
             string serverAddress = string.Format(serverTemplate, ip, port);
 
             // Create multiple tasks to send HTTP commands in parallel.
@@ -69,22 +69,22 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
                 // Array of commands to be sent to the server.
                 string[] commands =
-                {
+                [
                     "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"
-                };
+                ];
 
                 // Iterate through each command and send it via HTTP POST.
                 foreach (var command in commands)
                 {
                     // Send individual command to the server.
-                    var response = await client.PostSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken);
+                    var response = await client.SendSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken);
                     response.EnsureSuccessStatusCode(); // Ensure the request was successful.
                     Console.WriteLine($"Sent command: {command}, Server Response: {await response.Content.ReadAsStringAsync()}");
                 }
 
                 // Send all commands in a single batch request.
                 Console.WriteLine("Sending commands as a batch...");
-                var batchResponse = await client.PostBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken);
+                var batchResponse = await client.SendBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken);
                 batchResponse.EnsureSuccessStatusCode();
                 Console.WriteLine($"Batch sent. Server Response: {await batchResponse.Content.ReadAsStringAsync()}");
             }

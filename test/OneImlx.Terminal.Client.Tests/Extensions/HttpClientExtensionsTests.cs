@@ -50,7 +50,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var msgDelimiter = "|";
 
             // Act
-            var response = await _httpClient.PostBatchToTerminalAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            var response = await _httpClient.SendBatchToTerminalAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -70,7 +70,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var msgDelimiter = "|";
 
             // Act
-            var response = await _httpClient.PostSingleToTerminalAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            var response = await _httpClient.SendSingleToTerminalAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -88,7 +88,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var command = "test-command";
 
             // Act
-            var response = await _httpClient.PostSingleToTerminalAsync(command, CancellationToken.None);
+            var response = await _httpClient.SendSingleToTerminalAsync(command, CancellationToken.None);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
