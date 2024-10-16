@@ -75,15 +75,10 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <returns>A task that represents the asynchronous operation.</returns>
         private static async Task SendMessageToTerminalAsync(TcpClient tcpClient, string message, Encoding encoding, CancellationToken cancellationToken)
         {
-            if (tcpClient == null)
-            {
-                throw new ArgumentNullException(nameof(tcpClient));
-            }
-
             // Ensure the TCP client is connected
             if (!tcpClient.Connected)
             {
-                throw new InvalidOperationException("TcpClient is not connected.");
+                throw new TerminalException(TerminalErrors.ConnectionClosed, "The TCP client is not connected.");
             }
 
             // Write the message to the NetworkStream

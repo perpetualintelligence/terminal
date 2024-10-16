@@ -80,11 +80,6 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <returns>A task that represents the asynchronous operation.</returns>
         private static async Task SendMessageToUdpAsync(UdpClient udpClient, string message, Encoding encoding, IPEndPoint remoteEndPoint, CancellationToken cancellationToken)
         {
-            if (udpClient == null)
-            {
-                throw new ArgumentNullException(nameof(udpClient));
-            }
-
             // Send the message asynchronously
             byte[] messageBytes = encoding.GetBytes(message);
             await udpClient.SendAsync(messageBytes, messageBytes.Length, remoteEndPoint);

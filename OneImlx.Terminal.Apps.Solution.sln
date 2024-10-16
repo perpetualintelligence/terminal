@@ -63,9 +63,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.AspNetCore
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.AspNetCore.Tests", "test\OneImlx.Terminal.AspNetCore.Tests\OneImlx.Terminal.AspNetCore.Tests.csproj", "{B960BA41-7E3B-4C64-8185-033AA6155B9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneImlx.Terminal.Client", "src\OneImlx.Terminal.Client\OneImlx.Terminal.Client.csproj", "{243A070F-F038-4072-9C3F-240C2D4C4C85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Client", "src\OneImlx.Terminal.Client\OneImlx.Terminal.Client.csproj", "{243A070F-F038-4072-9C3F-240C2D4C4C85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneImlx.Terminal.Client.Tests", "test\OneImlx.Terminal.Client.Tests\OneImlx.Terminal.Client.Tests.csproj", "{A48FB407-91B1-4FC5-A2E0-C45517842EB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Client.Tests", "test\OneImlx.Terminal.Client.Tests\OneImlx.Terminal.Client.Tests.csproj", "{A48FB407-91B1-4FC5-A2E0-C45517842EB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
