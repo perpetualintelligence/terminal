@@ -20,7 +20,7 @@ jobs:
       # GitHub package authentication
       PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
       PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
-      PI_CI_REFERENCE: local
+      PI_CI_REFERENCE: cross
       PI_TERMINAL_TEST_ONLINE_LIC: ${{ secrets.PI_TERMINAL_TEST_ONLINE_LIC }}
       PI_TERMINAL_TEST_OFFLINE_LIC: ${{ secrets.PI_TERMINAL_TEST_OFFLINE_LIC }}
       PI_TERMINAL_TEST_DEMO_LIC: ${{ secrets.PI_TERMINAL_TEST_DEMO_LIC }}
@@ -57,7 +57,7 @@ jobs:
       # GitHub package authentication
       PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
       PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
-      PI_CI_REFERENCE: local
+      PI_CI_REFERENCE: cross
       PI_TERMINAL_TEST_ONLINE_LIC: ${{ secrets.PI_TERMINAL_TEST_ONLINE_LIC }}
       PI_TERMINAL_TEST_OFFLINE_LIC: ${{ secrets.PI_TERMINAL_TEST_OFFLINE_LIC }}
       PI_TERMINAL_TEST_DEMO_LIC: ${{ secrets.PI_TERMINAL_TEST_DEMO_LIC }}
@@ -94,7 +94,7 @@ jobs:
       # GitHub package authentication
       PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
       PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
-      PI_CI_REFERENCE: local
+      PI_CI_REFERENCE: cross
       PI_TERMINAL_TEST_ONLINE_LIC: ${{ secrets.PI_TERMINAL_TEST_ONLINE_LIC }}
       PI_TERMINAL_TEST_OFFLINE_LIC: ${{ secrets.PI_TERMINAL_TEST_OFFLINE_LIC }}
       PI_TERMINAL_TEST_DEMO_LIC: ${{ secrets.PI_TERMINAL_TEST_DEMO_LIC }}
