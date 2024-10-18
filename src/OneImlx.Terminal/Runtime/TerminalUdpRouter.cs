@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright © 2019-2024 Perpetual Intelligence L.L.C. All rights reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router. This is not supported for UDP routing.
         /// </summary>
-        public TerminalRemoteMessageQueue? CommandQueue => null;
+        public TerminalRemoteQueue? CommandQueue => null;
 
         /// <summary>
         /// Asynchronously runs the UDP router, listening for incoming UDP packets and processing them.
@@ -71,7 +71,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task RunAsync(TerminalUdpRouterContext context)
         {
             // Set up the command queue
-            commandQueue = new TerminalRemoteMessageQueue(commandRouter, exceptionHandler, options, context, logger);
+            commandQueue = new TerminalRemoteQueue(commandRouter, exceptionHandler, options, context, logger);
 
             if (context.StartContext.StartMode != TerminalStartMode.Udp)
             {
@@ -92,44 +92,24 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                Task backgroundProcessingTask = commandQueue.StartCommandProcessingAsync();
-
-                // Enqueue the UDP data packets till a terminal cancellation is requested.
+                Task backgroundProcessingTask = commandQueue.StartBackgroundCommandProcessingAsync();
                 while (!context.StartContext.TerminalCancellationToken.IsCancellationRequested)
                 {
-                    // Ensure that application can respond to a cancellation request even when waiting for incoming UDP
-                    // packets. We need to support .NET Framework 4.8.1, .NET Standard, and .NET 8+, and since
-                    // _udpClient.ReceiveAsync() does not accept a CancellationToken directly in all these versions, we
-                    // implement a workaround using Task.WhenAny to respect the cancellation token.
-                    Task<UdpReceiveResult> receiveTask = _udpClient.ReceiveAsync();
-                    Task receiveOrCancellationTask = await Task.WhenAny(receiveTask, Task.Delay(Timeout.Infinite, context.StartContext.TerminalCancellationToken));
+                    // Await either the receive task or a cancellation.
+                    var receiveTask = _udpClient.ReceiveAsync();
+                    await Task.WhenAny(receiveTask, Task.Delay(Timeout.Infinite, context.StartContext.TerminalCancellationToken));
 
-                    if (receiveOrCancellationTask == receiveTask)
+                    // Process received data if the receive task completes.
+                    if (receiveTask.Status == TaskStatus.RanToCompletion)
                     {
-                        // Process received data
-                        UdpReceiveResult receivedResult = receiveTask.Result; // Safe because we know the task has completed
+                        var receivedResult = receiveTask.Result;
                         string receivedMessage = textHandler.Encoding.GetString(receivedResult.Buffer);
                         commandQueue.Enqueue(receivedMessage, receivedResult.RemoteEndPoint.ToString(), senderId: null);
-                    }
-                    else
-                    {
-                        // Cancellation token has been triggered
-                        logger.LogDebug("Terminal UDP router canceled.");
-                        break;
                     }
                 }
 
                 // If we are here then that means a cancellation is requested, gracefully stop the background process.
-                Task routerTimeout = Task.Delay(options.Router.Timeout);
-                var completedTask = await Task.WhenAny(backgroundProcessingTask, routerTimeout);
-                if (completedTask == routerTimeout)
-                {
-                    logger.LogError("Command processing task failed to complete. timeout={0}", options.Router.Timeout);
-                }
-                else
-                {
-                    logger.LogDebug("Command processing task completed.");
-                }
+                await commandQueue.StopBackgroundCommandProcessingAsync();
             }
             catch (Exception ex)
             {
@@ -148,6 +128,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly TerminalOptions options;
         private readonly ITerminalTextHandler textHandler;
         private UdpClient? _udpClient;
-        private TerminalRemoteMessageQueue? commandQueue;
+        private TerminalRemoteQueue? commandQueue;
     }
 }

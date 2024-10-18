@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.AspNetCore
             string jsonCommand = JsonSerializer.Serialize(new TerminalJsonCommandRequest("test-command"));
             httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(jsonCommand));
 
-            var mockCommandQueue = new TerminalRemoteMessageQueue(
+            var mockCommandQueue = new TerminalRemoteQueue(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
                 new TerminalOptions(),
                 new TerminalHttpRouterContext(new IPEndPoint(IPAddress.Loopback, 8000), new TerminalStartContext(TerminalStartMode.Http, default, default)),
@@ -54,13 +54,13 @@ namespace OneImlx.Terminal.AspNetCore
             mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns(mockCommandQueue);
 
             // Act
-            mockCommandQueue.Count.Should().Be(0);
+            mockCommandQueue.RequestCount.Should().Be(0);
             var items = await terminalHttpMapService.RouteCommandAsync(httpContext);
 
             // Assert
-            mockCommandQueue.Count.Should().Be(1);
+            mockCommandQueue.RequestCount.Should().Be(1);
             items.Should().HaveCount(1);
-            TerminalRemoteMessageItem item = items.First();
+            TerminalRemoteQueueRequest item = items.First();
             item.Id.Should().NotBeEmpty();
             item.CommandString.Should().Be("test-command");
             item.SenderEndpoint.Should().Be("$unknown$");
@@ -73,7 +73,7 @@ namespace OneImlx.Terminal.AspNetCore
             // Arrange
             string jsonCommand = JsonSerializer.Serialize(new TerminalJsonCommandRequest("")); // Missing command
             httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(jsonCommand));
-            var mockCommandQueue = new TerminalRemoteMessageQueue(
+            var mockCommandQueue = new TerminalRemoteQueue(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
                 new TerminalOptions(),
                 new TerminalHttpRouterContext(new IPEndPoint(IPAddress.Loopback, 8000), new TerminalStartContext(TerminalStartMode.Http, default, default)),
@@ -98,7 +98,7 @@ namespace OneImlx.Terminal.AspNetCore
             httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(jsonCommand));
 
             // Simulate router not running
-            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns((TerminalRemoteMessageQueue?)null);
+            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns((TerminalRemoteQueue?)null);
 
             // Act
             Func<Task> act = async () => await terminalHttpMapService.RouteCommandAsync(httpContext);

@@ -23,6 +23,6 @@ namespace OneImlx.Terminal.Mocks
             return Task.CompletedTask;
         }
 
-        public TerminalRemoteMessageQueue? CommandQueue => null;
+        public TerminalRemoteQueue? CommandQueue => null;
     }
 }

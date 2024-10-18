@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Runners;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands.Runners;
 
 namespace OneImlx.Terminal.Apps.TestServer.Runners
 {
@@ -23,27 +23,30 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
         public override async Task ProcessAsync(CommandRunnerContext context, ILogger? logger = null)
         {
             // Retrieve properties from context
-            Dictionary<string, object> properties = context.HandlerContext.RouterContext.Properties!;
-            string senderEndpoint = (string) properties[TerminalIdentifiers.SenderEndpointToken];
-
-            // Normalize the sender_endpoint to replace ':' and '.' with '_'
-            string normalizedSenderEndpoint = senderEndpoint.ToString()!.Replace(':', '_').Replace('.', '_').Replace('[', '_').Replace(']', '_');
-
-            // Create a file name based on the normalized sender_endpoint
-            string fileName = $"{normalizedSenderEndpoint}.txt";
-
-            // Retrieve the command string from context
-            string commandString = context.HandlerContext.RouterContext.Route.Raw ?? string.Empty;
-
-            // Append the command string to the file in a thread-safe manner
-            await Semaphore.WaitAsync();
-            try
+            if (context.HandlerContext.RouterContext.Properties != null)
             {
-                await File.AppendAllTextAsync(fileName, commandString + Environment.NewLine);
-            }
-            finally
-            {
-                Semaphore.Release();
+                Dictionary<string, object> properties = context.HandlerContext.RouterContext.Properties!;
+                string senderEndpoint = (string)properties[TerminalIdentifiers.SenderEndpointToken];
+
+                // Normalize the sender_endpoint to replace ':' and '.' with '_'
+                string normalizedSenderEndpoint = senderEndpoint.ToString()!.Replace(':', '_').Replace('.', '_').Replace('[', '_').Replace(']', '_');
+
+                // Create a file name based on the normalized sender_endpoint
+                string fileName = $"{normalizedSenderEndpoint}.txt";
+
+                // Retrieve the command string from context
+                string commandString = context.HandlerContext.RouterContext.Route.Raw ?? string.Empty;
+
+                // Append the command string to the file in a thread-safe manner
+                await Semaphore.WaitAsync();
+                try
+                {
+                    await File.AppendAllTextAsync(fileName, commandString + Environment.NewLine);
+                }
+                finally
+                {
+                    Semaphore.Release();
+                }
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -10,10 +10,11 @@ using System;
 namespace OneImlx.Terminal.Commands
 {
     /// <summary>
-    /// Defines a unique command route.
+    /// Defines a command route with a unique identifier.
     /// </summary>
     /// <remarks>
-    /// The <see cref="CommandRoute"/> implements <see cref="IEquatable{T}"/> with property <see cref="Id"/>.
+    /// The <see cref="CommandRoute"/> implements <see cref="IEquatable{T}"/> with property <see cref="Id"/>. This helps
+    /// identify each command execution uniquely, as same command can be executed multiple times.
     /// </remarks>
     public sealed class CommandRoute : IEquatable<CommandRoute?>
     {
@@ -31,7 +32,7 @@ namespace OneImlx.Terminal.Commands
 
             if (string.IsNullOrWhiteSpace(raw))
             {
-                throw new ArgumentNullException($"'{nameof(raw)}' cannot be null or whitespace.", nameof(raw));
+                throw new ArgumentNullException(nameof(raw), $"'{nameof(raw)}' cannot be null or whitespace.");
             }
 
             Id = id;
@@ -47,6 +48,18 @@ namespace OneImlx.Terminal.Commands
         /// The raw command string.
         /// </summary>
         public string Raw { get; }
+
+        /// <inheritdoc/>
+        public static bool operator !=(CommandRoute? left, CommandRoute? right)
+        {
+            return !Equals(left, right);
+        }
+
+        /// <inheritdoc/>
+        public static bool operator ==(CommandRoute? left, CommandRoute? right)
+        {
+            return Equals(left, right);
+        }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)
@@ -65,18 +78,6 @@ namespace OneImlx.Terminal.Commands
         public override int GetHashCode()
         {
             return Id.GetHashCode();
-        }
-
-        /// <inheritdoc/>
-        public static bool operator ==(CommandRoute? left, CommandRoute? right)
-        {
-            return Equals(left, right);
-        }
-
-        /// <inheritdoc/>
-        public static bool operator !=(CommandRoute? left, CommandRoute? right)
-        {
-            return !Equals(left, right);
         }
     }
 }

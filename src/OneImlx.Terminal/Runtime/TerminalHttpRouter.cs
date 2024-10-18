@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router.
         /// </summary>
-        public TerminalRemoteMessageQueue? CommandQueue => commandQueue;
+        public TerminalRemoteQueue? CommandQueue => commandQueue;
 
         /// <summary>
         /// Runs the HTTP router asynchronously and begins handling client requests indefinitely. The server will
@@ -58,13 +58,13 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Initialize the command queue for remote message processing.
-            commandQueue = new TerminalRemoteMessageQueue(commandRouter, exceptionHandler, options.Value, context, logger);
+            commandQueue = new TerminalRemoteQueue(commandRouter, exceptionHandler, options.Value, context, logger);
             try
             {
                 logger.LogDebug("Terminal HTTP router started.");
 
                 // Start background command processing and block the current thread.
-                await commandQueue.StartCommandProcessingAsync();
+                await commandQueue.StartBackgroundCommandProcessingAsync();
             }
             finally
             {
@@ -77,6 +77,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly ILogger<TerminalHttpRouter> logger;
         private readonly IOptions<TerminalOptions> options;
-        private TerminalRemoteMessageQueue? commandQueue;
+        private TerminalRemoteQueue? commandQueue;
     }
 }

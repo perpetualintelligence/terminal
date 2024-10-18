@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router.
         /// </summary>
-        public TerminalRemoteMessageQueue? CommandQueue { get; }
+        public TerminalRemoteQueue? CommandQueue { get; }
 
         /// <summary>
         /// Runs terminal router asynchronously.

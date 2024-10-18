@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
             _mockCommandRouter = new Mock<ICommandRouter>();
             _mockTerminalRouter = new Mock<ITerminalRouter<TerminalHttpRouterContext>>();
             _mockExceptionHandler = new Mock<ITerminalExceptionHandler>();
-            _mockQueueLogger = new Mock<ILogger<TerminalRemoteMessageQueue>>();
+            _mockQueueLogger = new Mock<ILogger<TerminalRemoteQueue>>();
             _mockTerminalServiceLogger = new Mock<ILogger<TerminalHttpMapService>>();
             _terminalOptions = new TerminalOptions();
 
@@ -50,7 +50,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
         {
             // We are using a real instance of TerminalRemoteMessageQueue instead of mocking it, because we want to
             // verify that the queue's state changes after a POST request.
-            var terminalQueue = new TerminalRemoteMessageQueue(
+            var terminalQueue = new TerminalRemoteQueue(
                 _mockCommandRouter.Object,
                 _mockExceptionHandler.Object,
                 _terminalOptions,
@@ -92,7 +92,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
 
             // Pre-condition check: Ensure that the queue starts empty. This is critical because we are testing that the
             // POST request triggers the queue to enqueue a command.
-            terminalQueue.Count.Should().Be(0, "the queue should start empty before the POST request");
+            terminalQueue.RequestCount.Should().Be(0, "the queue should start empty before the POST request");
 
             // Act: Sending a POST request to the `/oneimlx/terminal/httprouter` endpoint with a sample command.
             var jsonRequestBody = JsonSerializer.Serialize(new TerminalJsonCommandRequest("test_command"));
@@ -102,12 +102,12 @@ namespace OneImlx.Terminal.AspNetCore.Tests
 
             // Post-condition check: After the POST request, there should be exactly one item in the queue. This
             // validates that the request correctly triggered the command to be enqueued in the queue.
-            terminalQueue.Count.Should().Be(1, "one command should be enqueued after processing the POST request");
+            terminalQueue.RequestCount.Should().Be(1, "one command should be enqueued after processing the POST request");
         }
 
         private readonly Mock<ICommandRouter> _mockCommandRouter;
         private readonly Mock<ITerminalExceptionHandler> _mockExceptionHandler;
-        private readonly Mock<ILogger<TerminalRemoteMessageQueue>> _mockQueueLogger;
+        private readonly Mock<ILogger<TerminalRemoteQueue>> _mockQueueLogger;
         private readonly Mock<ITerminalRouter<TerminalHttpRouterContext>> _mockTerminalRouter;
         private readonly Mock<ILogger<TerminalHttpMapService>> _mockTerminalServiceLogger;
         private readonly TerminalOptions _terminalOptions;

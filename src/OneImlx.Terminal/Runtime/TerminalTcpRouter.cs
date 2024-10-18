@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright © 2019-2024 Perpetual Intelligence L.L.C. All rights reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -62,7 +62,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router. This is not supported for TCP routing.
         /// </summary>
-        public TerminalRemoteMessageQueue? CommandQueue => null;
+        public TerminalRemoteQueue? CommandQueue => null;
 
         /// <summary>
         /// Runs the TCP server for handling client connections asynchronously.
@@ -90,7 +90,7 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Reset the command queue and start the TCP server
-            commandQueue = new TerminalRemoteMessageQueue(commandRouter, exceptionHandler, options, context, logger);
+            commandQueue = new TerminalRemoteQueue(commandRouter, exceptionHandler, options, context, logger);
             _server = new(context.IPEndPoint);
             Task backgroundProcessingTask = Task.CompletedTask;
             try
@@ -103,13 +103,16 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                backgroundProcessingTask = commandQueue.StartCommandProcessingAsync();
+                backgroundProcessingTask = commandQueue.StartBackgroundCommandProcessingAsync();
 
                 // Blocking call to accept client connections until the cancellation token is requested. We have
                 // initialized the requested client connections. Now we wait for all the client connections to complete
                 // until the cancellation requested. Each time a a client task complete a new task is created to accept
                 // a new client connection.
                 await AcceptClientsUntilCanceledAsync(context);
+
+                // Stop and await for the background command processing to complete
+                await commandQueue.StopBackgroundCommandProcessingAsync();
             }
             catch (Exception ex)
             {
@@ -122,7 +125,6 @@ namespace OneImlx.Terminal.Runtime
                 _server.Stop();
 
                 // Ensure the command queue is stopped
-                await backgroundProcessingTask;
                 logger.LogDebug("Terminal TCP routing stopped. endpoint={0}", context.IPEndPoint);
             }
         }
@@ -304,6 +306,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly TerminalOptions options;
         private readonly ITerminalTextHandler textHandler;
         private TcpListener? _server;
-        private TerminalRemoteMessageQueue? commandQueue;
+        private TerminalRemoteQueue? commandQueue;
     }
 }

@@ -70,13 +70,11 @@ namespace OneImlx.Terminal.Runtime
             commandRouter.RouteCalled.Should().BeTrue();
 
             // Verify logs for cancellation
-            loggerFactory.AllLogMessages.Count.Should().Be(6);
+            loggerFactory.AllLogMessages.Count.Should().Be(4);
             loggerFactory.AllLogMessages[0].Should().Be($"Terminal UDP router started. endpoint={routerIpEndpoint}");
             loggerFactory.AllLogMessages[1].Should().Be($"Routing the command. raw=test123");
             loggerFactory.AllLogMessages[2].Should().Be("Command queue processing canceled.");
-            loggerFactory.AllLogMessages[3].Should().Be("Terminal UDP router canceled.");
-            loggerFactory.AllLogMessages[4].Should().Be("Command processing task completed.");
-            loggerFactory.AllLogMessages[5].Should().Be($"Terminal UDP router stopped. endpoint={routerIpEndpoint}");
+            loggerFactory.AllLogMessages[3].Should().Be($"Terminal UDP router stopped. endpoint={routerIpEndpoint}");
 
             exceptionHandler.Called.Should().BeFalse();
         }
@@ -399,12 +397,10 @@ namespace OneImlx.Terminal.Runtime
             await routerTask;
 
             // Verify that the router has started correctly
-            loggerFactory.AllLogMessages.Count.Should().Be(5);
+            loggerFactory.AllLogMessages.Count.Should().Be(3);
             loggerFactory.AllLogMessages[0].Should().Be($"Terminal UDP router started. endpoint={routerIpEndpoint}");
             loggerFactory.AllLogMessages[1].Should().Be("Command queue processing canceled.");
-            loggerFactory.AllLogMessages[2].Should().Be("Terminal UDP router canceled.");
-            loggerFactory.AllLogMessages[3].Should().Be("Command processing task completed.");
-            loggerFactory.AllLogMessages[4].Should().Be($"Terminal UDP router stopped. endpoint={routerIpEndpoint}");
+            loggerFactory.AllLogMessages[2].Should().Be($"Terminal UDP router stopped. endpoint={routerIpEndpoint}");
 
             // Wait a moment for any potential additional processing
             await Task.Delay(500);

@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.AspNetCore
             var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
 
             // Real command queue used for testing the behavior of enqueuing items
-            var mockCommandQueue = new TerminalRemoteMessageQueue(
+            var mockCommandQueue = new TerminalRemoteQueue(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
                 new TerminalOptions(),
                 new TerminalGrpcRouterContext(new TerminalStartContext(TerminalStartMode.Grpc, default, default)),
@@ -55,16 +55,16 @@ namespace OneImlx.Terminal.AspNetCore
             mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns(mockCommandQueue);
 
             // Act
-            mockCommandQueue.Count.Should().Be(0); // Ensure the queue is initially empty
+            mockCommandQueue.RequestCount.Should().Be(0); // Ensure the queue is initially empty
             var response = await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
 
             // Assert
-            mockCommandQueue.Count.Should().Be(1); // Queue should have exactly one item
-            TerminalRemoteMessageItem[]? items = JsonSerializer.Deserialize<TerminalRemoteMessageItem[]>(response.MessageItemsJson);
+            mockCommandQueue.RequestCount.Should().Be(1); // Queue should have exactly one item
+            TerminalRemoteQueueRequest[]? items = JsonSerializer.Deserialize<TerminalRemoteQueueRequest[]>(response.MessageItemsJson);
             items!.Should().HaveCount(1); // Ensure the response contains one item
 
             // Validate the properties of the enqueued item
-            TerminalRemoteMessageItem item = items.First();
+            TerminalRemoteQueueRequest item = items.First();
             item.CommandString.Should().Be("test-command");
             item.SenderEndpoint.Should().Be("test_peer");
             item.SenderId.Should().NotBeEmpty(); // SenderId should be generated
@@ -78,7 +78,7 @@ namespace OneImlx.Terminal.AspNetCore
             var input = new TerminalGrpcRouterProtoInput { CommandString = "  " }; // Empty command string
 
             // Setup the real command queue
-            var mockCommandQueue = new TerminalRemoteMessageQueue(
+            var mockCommandQueue = new TerminalRemoteQueue(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
                 new TerminalOptions(),
                 new TerminalGrpcRouterContext(new TerminalStartContext(TerminalStartMode.Http, default, default)),
@@ -103,7 +103,7 @@ namespace OneImlx.Terminal.AspNetCore
             var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
 
             // Simulate terminal router not running by returning null for CommandQueue
-            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns((TerminalRemoteMessageQueue?)null);
+            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns((TerminalRemoteQueue?)null);
 
             // Act
             Func<Task> act = async () => await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
