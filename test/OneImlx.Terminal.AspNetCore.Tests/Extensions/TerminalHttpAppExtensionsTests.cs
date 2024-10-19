@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
             _mockCommandRouter = new Mock<ICommandRouter>();
             _mockTerminalRouter = new Mock<ITerminalRouter<TerminalHttpRouterContext>>();
             _mockExceptionHandler = new Mock<ITerminalExceptionHandler>();
-            _mockQueueLogger = new Mock<ILogger<TerminalRemoteQueue>>();
+            _mockQueueLogger = new Mock<ILogger<TerminalQueue>>();
             _mockTerminalServiceLogger = new Mock<ILogger<TerminalHttpMapService>>();
             _terminalOptions = new TerminalOptions();
 
@@ -50,7 +50,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
         {
             // We are using a real instance of TerminalRemoteMessageQueue instead of mocking it, because we want to
             // verify that the queue's state changes after a POST request.
-            var terminalQueue = new TerminalRemoteQueue(
+            var terminalQueue = new TerminalQueue(
                 _mockCommandRouter.Object,
                 _mockExceptionHandler.Object,
                 _terminalOptions,
@@ -107,7 +107,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
 
         private readonly Mock<ICommandRouter> _mockCommandRouter;
         private readonly Mock<ITerminalExceptionHandler> _mockExceptionHandler;
-        private readonly Mock<ILogger<TerminalRemoteQueue>> _mockQueueLogger;
+        private readonly Mock<ILogger<TerminalQueue>> _mockQueueLogger;
         private readonly Mock<ITerminalRouter<TerminalHttpRouterContext>> _mockTerminalRouter;
         private readonly Mock<ILogger<TerminalHttpMapService>> _mockTerminalServiceLogger;
         private readonly TerminalOptions _terminalOptions;

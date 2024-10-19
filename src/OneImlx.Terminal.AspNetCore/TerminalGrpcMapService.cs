@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.AspNetCore
             }
 
             // Enqueue the command string. The command is queued along with the peer information from the context.
-            IEnumerable<TerminalRemoteQueueRequest> queuedItems = terminalRouter.CommandQueue.Enqueue(request.CommandString, context.Peer, Guid.NewGuid().ToString());
+            IEnumerable<TerminalQueueRequest> queuedItems = terminalRouter.CommandQueue.Enqueue(request.CommandString, context.Peer, Guid.NewGuid().ToString());
 
             // Return the serialized byte array as part of the gRPC response.
             return Task.FromResult(new TerminalGrpcRouterProtoOutput()

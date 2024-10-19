@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router.
         /// </summary>
-        public TerminalRemoteQueue? CommandQueue => commandQueue;
+        public TerminalQueue? CommandQueue => commandQueue;
 
         /// <summary>
         /// Runs the HTTP router asynchronously and begins handling client requests indefinitely. The server will
@@ -58,13 +58,13 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Initialize the command queue for remote message processing.
-            commandQueue = new TerminalRemoteQueue(commandRouter, exceptionHandler, options.Value, context, logger);
+            commandQueue = new TerminalQueue(commandRouter, exceptionHandler, options.Value, context, logger);
             try
             {
                 logger.LogDebug("Terminal HTTP router started.");
 
                 // Start background command processing and block the current thread.
-                await commandQueue.StartBackgroundCommandProcessingAsync();
+                await commandQueue.StartBackgroundProcessingAsync(context.StartContext.TerminalCancellationToken);
             }
             finally
             {
@@ -77,6 +77,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly ILogger<TerminalHttpRouter> logger;
         private readonly IOptions<TerminalOptions> options;
-        private TerminalRemoteQueue? commandQueue;
+        private TerminalQueue? commandQueue;
     }
 }

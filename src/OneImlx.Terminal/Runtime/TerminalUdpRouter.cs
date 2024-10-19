@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router. This is not supported for UDP routing.
         /// </summary>
-        public TerminalRemoteQueue? CommandQueue => null;
+        public TerminalQueue? CommandQueue => null;
 
         /// <summary>
         /// Asynchronously runs the UDP router, listening for incoming UDP packets and processing them.
@@ -71,7 +71,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task RunAsync(TerminalUdpRouterContext context)
         {
             // Set up the command queue
-            commandQueue = new TerminalRemoteQueue(commandRouter, exceptionHandler, options, context, logger);
+            commandQueue = new TerminalQueue(commandRouter, exceptionHandler, options, context, logger);
 
             if (context.StartContext.StartMode != TerminalStartMode.Udp)
             {
@@ -92,7 +92,7 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                Task backgroundProcessingTask = commandQueue.StartBackgroundCommandProcessingAsync();
+                Task backgroundProcessingTask = commandQueue.StartBackgroundProcessingAsync(context.StartContext.TerminalCancellationToken);
                 while (!context.StartContext.TerminalCancellationToken.IsCancellationRequested)
                 {
                     // Await either the receive task or a cancellation.
@@ -109,7 +109,7 @@ namespace OneImlx.Terminal.Runtime
                 }
 
                 // If we are here then that means a cancellation is requested, gracefully stop the background process.
-                await commandQueue.StopBackgroundCommandProcessingAsync();
+                await commandQueue.StopBackgroundProcessingAsync(Timeout.InfiniteTimeSpan);
             }
             catch (Exception ex)
             {
@@ -128,6 +128,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly TerminalOptions options;
         private readonly ITerminalTextHandler textHandler;
         private UdpClient? _udpClient;
-        private TerminalRemoteQueue? commandQueue;
+        private TerminalQueue? commandQueue;
     }
 }

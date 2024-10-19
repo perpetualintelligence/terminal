@@ -11,20 +11,20 @@ using System.Text.Json.Serialization;
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// Represents a <see cref="TerminalRemoteQueue"/> item received from a remote sender to be processed by the
+    /// Represents a <see cref="TerminalQueue"/> item received from a remote sender to be processed by the
     /// terminal router.
     /// </summary>
-    public sealed class TerminalRemoteQueueRequest
+    public sealed class TerminalQueueRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TerminalRemoteQueueRequest"/> class.
+        /// Initializes a new instance of the <see cref="TerminalQueueRequest"/> class.
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
         /// <param name="commandString">The command string to be processed.</param>
         /// <param name="senderEndpoint">The sender endpoint from which the command was sent.</param>
         /// <param name="senderId">The sender id if the multiple senders shares same endpoint.</param>
         [JsonConstructor]
-        public TerminalRemoteQueueRequest(string id, string commandString, string? senderEndpoint, string? senderId)
+        public TerminalQueueRequest(string id, string commandString, string? senderEndpoint, string? senderId)
         {
             Id = id;
             CommandString = commandString;

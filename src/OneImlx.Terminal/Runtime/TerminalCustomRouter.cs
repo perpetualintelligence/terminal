@@ -17,7 +17,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router.
         /// </summary>
-        public abstract TerminalRemoteQueue? CommandQueue { get; }
+        public abstract TerminalQueue? CommandQueue { get; }
 
         /// <summary>
         /// Routes to a custom service implementation.

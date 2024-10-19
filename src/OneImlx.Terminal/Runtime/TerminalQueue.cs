@@ -20,7 +20,7 @@ namespace OneImlx.Terminal.Runtime
     /// <summary>
     /// Manages the queue of terminal commands and processes them asynchronously.
     /// </summary>
-    public sealed class TerminalRemoteQueue
+    public sealed class TerminalQueue : ITerminalQueue
     {
         /// <summary>
         /// Initializes a new instance.
@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="terminalOptions">Configuration options for the terminal.</param>
         /// <param name="terminalRouterContext">Context information for the terminal router.</param>
         /// <param name="logger">Logger for logging operations within the queue.</param>
-        public TerminalRemoteQueue(
+        public TerminalQueue(
             ICommandRouter commandRouter,
             ITerminalExceptionHandler terminalExceptionHandler,
             TerminalOptions terminalOptions,
@@ -43,7 +43,8 @@ namespace OneImlx.Terminal.Runtime
             this.terminalRouterContext = terminalRouterContext;
             this.logger = logger;
 
-            concurrentRequestQueue = new ConcurrentQueue<TerminalRemoteQueueRequest>();
+            concurrentRequestQueue = new ConcurrentQueue<TerminalQueueRequest>();
+            concurrentResponseQueue = new ConcurrentDictionary<string, TerminalQueueResult>();
             requestProcessing = Task.CompletedTask;
             responseProcessing = Task.CompletedTask;
         }
@@ -60,7 +61,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="senderEndpoint">The sender endpoint.</param>
         /// <param name="senderId">The sender id.</param>
         /// <returns>The list of enqueued items.</returns>
-        public IEnumerable<TerminalRemoteQueueRequest> Enqueue(string message, string? senderEndpoint, string? senderId)
+        public IEnumerable<TerminalQueueRequest> Enqueue(string message, string? senderEndpoint, string? senderId)
         {
             // Check message limit
             if (message.Length > terminalOptions.Router.RemoteMessageMaxLength)
@@ -89,7 +90,7 @@ namespace OneImlx.Terminal.Runtime
 
             // If the command is a single command, it is enqueued directly. Otherwise, it is split into multiple
             // commands and enqueued.
-            List<TerminalRemoteQueueRequest> items = [];
+            List<TerminalQueueRequest> items = [];
             if (isPartial)
             {
                 logger.LogDebug("Received delimited message. sender_endpoint={0} sender_id={1} message={2}", senderEndpoint, senderId, message);
@@ -98,14 +99,14 @@ namespace OneImlx.Terminal.Runtime
                 string[] splitCommands = message.Split(new[] { terminalOptions.Router.RemoteCommandDelimiter, terminalOptions.Router.RemoteMessageDelimiter }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string cmd in splitCommands)
                 {
-                    TerminalRemoteQueueRequest item = new(Guid.NewGuid().ToString(), cmd, senderEndpoint, senderId);
+                    TerminalQueueRequest item = new(Guid.NewGuid().ToString(), cmd, senderEndpoint, senderId);
                     concurrentRequestQueue.Enqueue(item);
                     items.Add(item);
                 }
             }
             else
             {
-                TerminalRemoteQueueRequest item = new(Guid.NewGuid().ToString(), message, senderEndpoint, senderId);
+                TerminalQueueRequest item = new(Guid.NewGuid().ToString(), message, senderEndpoint, senderId);
                 concurrentRequestQueue.Enqueue(item);
                 items.Add(item);
             }
@@ -116,17 +117,17 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Starts processing the command request and response queue in the background.
         /// </summary>
-        public Task StartBackgroundCommandProcessingAsync()
+        public Task StartBackgroundProcessingAsync(CancellationToken cancellationToken)
         {
             // Start processing the command request queue immediately in the background. The code starts the background
             // task for processing commands immediately and does not wait for it to complete. We do not await it in this
             // context. It effectively runs in the background, processing commands as they are enqueued.
-            requestProcessing = StartRequestProcessingAsync();
+            requestProcessing = StartRequestProcessingAsync(cancellationToken);
 
             // Start processing the command response queue immediately in the background. The code starts the background
             // task for processing commands immediately and does not wait for it to complete. We do not await it in this
             // context. It effectively runs in the background, processing commands as they are enqueued.
-            responseProcessing = StartResponseProcessingAsync();
+            responseProcessing = StartResponseProcessingAsync(cancellationToken);
 
             return Task.WhenAll(requestProcessing, responseProcessing);
         }
@@ -134,7 +135,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public async Task StopBackgroundCommandProcessingAsync()
+        public async Task StopBackgroundProcessingAsync(TimeSpan timeout)
         {
             // Stop processing the command request queue.
             await requestProcessing;
@@ -143,7 +144,7 @@ namespace OneImlx.Terminal.Runtime
             await responseProcessing;
         }
 
-        private async Task<CommandRoute?> ProcessRawCommandAsync(TerminalRemoteQueueRequest item)
+        private async Task<CommandRoute?> ProcessRawCommandAsync(TerminalQueueRequest item)
         {
             if (item.SenderId != null)
             {
@@ -180,15 +181,14 @@ namespace OneImlx.Terminal.Runtime
             return commandRoute;
         }
 
-        private Task StartRequestProcessingAsync()
+        private Task StartRequestProcessingAsync(CancellationToken cancellationToken)
         {
             return Task.Run(async () =>
             {
-                CancellationToken cancellationToken = terminalRouterContext.StartContext.TerminalCancellationToken;
                 CommandRoute? commandRoute = null;
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    if (concurrentRequestQueue.TryDequeue(out TerminalRemoteQueueRequest? item))
+                    if (concurrentRequestQueue.TryDequeue(out TerminalQueueRequest? item))
                     {
                         try
                         {
@@ -213,13 +213,14 @@ namespace OneImlx.Terminal.Runtime
             });
         }
 
-        private Task StartResponseProcessingAsync()
+        private Task StartResponseProcessingAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
         private readonly ICommandRouter commandRouter;
-        private readonly ConcurrentQueue<TerminalRemoteQueueRequest> concurrentRequestQueue;
+        private readonly ConcurrentQueue<TerminalQueueRequest> concurrentRequestQueue;
+        private readonly ConcurrentDictionary<string, TerminalQueueResult> concurrentResponseQueue;
         private readonly ILogger logger;
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly TerminalOptions terminalOptions;

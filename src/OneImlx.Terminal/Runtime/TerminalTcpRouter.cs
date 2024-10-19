@@ -62,7 +62,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router. This is not supported for TCP routing.
         /// </summary>
-        public TerminalRemoteQueue? CommandQueue => null;
+        public TerminalQueue? CommandQueue => null;
 
         /// <summary>
         /// Runs the TCP server for handling client connections asynchronously.
@@ -90,7 +90,7 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Reset the command queue and start the TCP server
-            commandQueue = new TerminalRemoteQueue(commandRouter, exceptionHandler, options, context, logger);
+            commandQueue = new TerminalQueue(commandRouter, exceptionHandler, options, context, logger);
             _server = new(context.IPEndPoint);
             Task backgroundProcessingTask = Task.CompletedTask;
             try
@@ -103,7 +103,7 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                backgroundProcessingTask = commandQueue.StartBackgroundCommandProcessingAsync();
+                backgroundProcessingTask = commandQueue.StartBackgroundProcessingAsync(context.StartContext.TerminalCancellationToken);
 
                 // Blocking call to accept client connections until the cancellation token is requested. We have
                 // initialized the requested client connections. Now we wait for all the client connections to complete
@@ -112,7 +112,7 @@ namespace OneImlx.Terminal.Runtime
                 await AcceptClientsUntilCanceledAsync(context);
 
                 // Stop and await for the background command processing to complete
-                await commandQueue.StopBackgroundProcessingAsync();
+                await commandQueue.StopBackgroundProcessingAsync(Timeout.InfiniteTimeSpan);
             }
             catch (Exception ex)
             {
@@ -306,6 +306,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly TerminalOptions options;
         private readonly ITerminalTextHandler textHandler;
         private TcpListener? _server;
-        private TerminalRemoteQueue? commandQueue;
+        private TerminalQueue? commandQueue;
     }
 }

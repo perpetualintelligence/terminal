@@ -12,18 +12,18 @@ using System.Text.Json.Serialization;
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// Represents a <see cref="TerminalRemoteQueue"/> item received from a remote sender to be processed by the
+    /// Represents a <see cref="TerminalQueue"/> item received from a remote sender to be processed by the
     /// terminal router.
     /// </summary>
-    public sealed class TerminalRemoteQueueResponse
+    public sealed class TerminalQueueResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TerminalRemoteQueueRequest"/> class.
+        /// Initializes a new instance of the <see cref="TerminalQueueRequest"/> class.
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
         /// <param name="response">The response stream.</param>
         [JsonConstructor]
-        public TerminalRemoteQueueResponse(string id, Stream response)
+        public TerminalQueueResult(string id, Stream response)
         {
             Id = id;
             Response = response;

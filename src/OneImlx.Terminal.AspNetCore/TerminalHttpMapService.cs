@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.AspNetCore
         /// This method is primarily intended to be called by HTTP clients. It should not be invoked directly from
         /// within the application without proper context, as it depends on HTTP infrastructure and client context information.
         /// </remarks>
-        public async Task<IEnumerable<TerminalRemoteQueueRequest>> RouteCommandAsync(HttpContext context)
+        public async Task<IEnumerable<TerminalQueueRequest>> RouteCommandAsync(HttpContext context)
         {
             if (terminalRouter.CommandQueue == null)
             {

@@ -48,7 +48,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command queue for the terminal router. This is not supported for console routing.
         /// </summary>
-        public TerminalRemoteQueue? CommandQueue => null;
+        public TerminalQueue? CommandQueue => null;
 
         /// <summary>
         /// Runs to the terminal as a console asynchronously.
