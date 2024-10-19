@@ -112,7 +112,7 @@ namespace OneImlx.Terminal.Runtime
                 await AcceptClientsUntilCanceledAsync(context);
 
                 // Stop and await for the background command processing to complete
-                await commandQueue.StopBackgroundCommandProcessingAsync();
+                await commandQueue.StopBackgroundProcessingAsync();
             }
             catch (Exception ex)
             {
