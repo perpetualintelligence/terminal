@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -43,14 +43,14 @@ namespace OneImlx.Terminal
         public const string OnPremiseDeployment = "onpremise";
 
         /// <summary>
-        /// The remote command delimiter.
+        /// The remote batch delimiter.
         /// </summary>
-        public const string RemoteCommandDelimiter = "$c$";
+        public const string RemoteBatchDelimiter = "$b$";
 
         /// <summary>
         /// The remote command delimiter.
         /// </summary>
-        public const string RemoteMessageDelimiter = "$m$";
+        public const string RemoteCommandDelimiter = "$c$";
 
         /// <summary>
         /// The <c>sender_endpoint</c> token.

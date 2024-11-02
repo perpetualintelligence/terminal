@@ -53,13 +53,13 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
                 foreach (var command in commands)
                 {
-                    TerminalGrpcRouterProtoOutput response = await client.SendSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken: cancellationToken);
+                    TerminalGrpcRouterProtoOutput response = await client.SendSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken: cancellationToken);
                     Console.WriteLine($"Sent command: {command}, Response: {response}");
                 }
 
                 // Sending commands as a batch
                 Console.WriteLine("Sending commands as a batch...");
-                TerminalGrpcRouterProtoOutput batchResponse = await client.SendBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, cancellationToken: cancellationToken);
+                TerminalGrpcRouterProtoOutput batchResponse = await client.SendBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken: cancellationToken);
                 Console.WriteLine($"Batch sent. Response: {batchResponse}");
             }
             catch (RpcException ex)

@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Client.Extensions
             // Verify that the HTTP request content was correct
             TerminalJsonCommandRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonCommandRequest>();
             actualContent.Should().NotBeNull();
-            actualContent!.CommandString.Should().Be("command1;command2;command3;|");
+            actualContent!.CommandString.Should().Be("command1;command2;command3|");
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace OneImlx.Terminal.Client.Extensions
             // Verify that the HTTP request content was correct
             TerminalJsonCommandRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonCommandRequest>();
             actualContent.Should().NotBeNull();
-            actualContent!.CommandString.Should().Be("test-command;|");
+            actualContent!.CommandString.Should().Be("test-command|");
         }
 
         [Fact]

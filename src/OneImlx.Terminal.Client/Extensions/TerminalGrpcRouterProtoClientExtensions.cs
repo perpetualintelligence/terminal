@@ -42,8 +42,8 @@ namespace OneImlx.Terminal.Client.Extensions
         /// </remarks>
         public static async Task<TerminalGrpcRouterProtoOutput> SendBatchToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string[] commandStrings, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
-            string batchCommands = TerminalServices.DelimitedMessage(cmdDelimiter, msgDelimiter, commandStrings);
-            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = batchCommands }, cancellationToken: cancellationToken);
+            string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commandStrings);
+            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = batch }, cancellationToken: cancellationToken);
             return response;
         }
 
@@ -66,8 +66,8 @@ namespace OneImlx.Terminal.Client.Extensions
         /// </remarks>
         public static async Task<TerminalGrpcRouterProtoOutput> SendSingleToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string commandString, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
-            string delimitedCommand = TerminalServices.DelimitedMessage(cmdDelimiter, msgDelimiter, commandString);
-            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = delimitedCommand }, cancellationToken: cancellationToken);
+            string batchedCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [commandString]);
+            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = batchedCommand }, cancellationToken: cancellationToken);
             return response;
         }
 

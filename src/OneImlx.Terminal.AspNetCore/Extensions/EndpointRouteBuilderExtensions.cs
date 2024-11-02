@@ -12,9 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace OneImlx.Terminal.AspNetCore.Extensions
 {
     /// <summary>
-    /// Extension methods for mapping terminal HTTP commands in ASP.NET Core applications.
+    /// The <see cref="IEndpointRouteBuilder"/> extension methods.
     /// </summary>
-    public static class TerminalHttpAppExtensions
+    public static class EndpointRouteBuilderExtensions
     {
         /// <summary>
         /// Maps the terminal HTTP commands endpoint to handle incoming HTTP requests for the terminal server.

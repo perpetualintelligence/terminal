@@ -32,9 +32,9 @@ namespace OneImlx.Terminal.AspNetCore
 
         protected override string PeerCore => peer;
 
-        protected override Metadata RequestHeadersCore => new Metadata();
+        protected override Metadata RequestHeadersCore => [];
 
-        protected override Metadata ResponseTrailersCore => new Metadata();
+        protected override Metadata ResponseTrailersCore => [];
 
         protected override Status StatusCore { get; set; }
 

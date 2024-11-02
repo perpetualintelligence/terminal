@@ -8,15 +8,14 @@
 using FluentAssertions;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
-using OneImlx.Terminal.AspNetCore;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
 using System;
-using System.Linq;
-using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,9 +28,12 @@ namespace OneImlx.Terminal.AspNetCore
             // Initialize the mocks for the TerminalRouter and Logger
             mockTerminalRouter = new Mock<ITerminalRouter<TerminalGrpcRouterContext>>();
             mockLogger = new Mock<ILogger<TerminalGrpcMapService>>();
+            mockProcessor = new Mock<ITerminalProcessor>();
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
 
             // Create an instance of TerminalGrpcMapService with the mocked dependencies
-            terminalGrpcMapService = new TerminalGrpcMapService(mockTerminalRouter.Object, mockLogger.Object);
+            terminalGrpcMapService = new TerminalGrpcMapService(mockTerminalRouter.Object, mockProcessor.Object, mockLogger.Object);
 
             // Create a TestServerCallContext to simulate gRPC context with a "test_peer"
             testServerCallContext = new MockServerCallContext("test_peer");
@@ -39,35 +41,40 @@ namespace OneImlx.Terminal.AspNetCore
 
         // Test case to validate that the command is processed successfully and enqueued in the queue
         [Fact]
-        public async Task RouteCommand_Should_Enqueue_Command_Successfully()
+        public async Task RouteCommand_Adds_Command_Successfully()
         {
             // Arrange
             var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
 
             // Real command queue used for testing the behavior of enqueuing items
-            var mockCommandQueue = new TerminalQueue(
+            var mockCommandQueue = new TerminalProcessor(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
-                new TerminalOptions(),
-                new TerminalGrpcRouterContext(new TerminalStartContext(TerminalStartMode.Grpc, default, default)),
-                Mock.Of<ILogger>());
+                Options.Create(new TerminalOptions()),
+                new TerminalAsciiTextHandler(),
+                Mock.Of<ILogger<TerminalProcessor>>());
 
-            // Setup the terminal router mock to return the real queue
-            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns(mockCommandQueue);
+            // Ensure the terminal router is running
+            mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
+            mockProcessor.Setup(x => x.IsProcessing).Returns(true);
+
+            // Setup processor add method to capture the added item
+            TerminalProcessorRequest? addedRequest = null;
+            mockProcessor.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<string, string, string>((message, endpoint, senderId) =>
+                {
+                    addedRequest = new TerminalProcessorRequest("id1", message, endpoint, senderId);
+                });
 
             // Act
-            mockCommandQueue.RequestCount.Should().Be(0); // Ensure the queue is initially empty
+            addedRequest.Should().BeNull();
             var response = await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
 
             // Assert
-            mockCommandQueue.RequestCount.Should().Be(1); // Queue should have exactly one item
-            TerminalQueueRequest[]? items = JsonSerializer.Deserialize<TerminalQueueRequest[]>(response.MessageItemsJson);
-            items!.Should().HaveCount(1); // Ensure the response contains one item
-
-            // Validate the properties of the enqueued item
-            TerminalQueueRequest item = items.First();
-            item.CommandString.Should().Be("test-command");
-            item.SenderEndpoint.Should().Be("test_peer");
-            item.SenderId.Should().NotBeEmpty(); // SenderId should be generated
+            addedRequest.Should().NotBeNull();
+            addedRequest!.Id.Should().Be("id1");
+            addedRequest.CommandString.Should().Be("test-command");
+            addedRequest.SenderEndpoint.Should().Be("test_peer");
+            addedRequest.SenderId.Should().NotBeEmpty();
         }
 
         // Test case to validate that a missing command string results in an exception
@@ -78,13 +85,11 @@ namespace OneImlx.Terminal.AspNetCore
             var input = new TerminalGrpcRouterProtoInput { CommandString = "  " }; // Empty command string
 
             // Setup the real command queue
-            var mockCommandQueue = new TerminalQueue(
+            var mockCommandQueue = new TerminalProcessor(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
-                new TerminalOptions(),
-                new TerminalGrpcRouterContext(new TerminalStartContext(TerminalStartMode.Http, default, default)),
-                Mock.Of<ILogger>());
-
-            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns(mockCommandQueue);
+                Options.Create(new TerminalOptions()),
+                new TerminalAsciiTextHandler(),
+                Mock.Of<ILogger<TerminalProcessor>>());
 
             // Act
             Func<Task> act = async () => await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
@@ -97,13 +102,30 @@ namespace OneImlx.Terminal.AspNetCore
 
         // Test case to validate that if the CommandQueue is null, the system throws an exception
         [Fact]
-        public async Task RouteCommand_Throws_When_CommandQueue_Is_Null()
+        public async Task RouteCommand_Throws_When_Processor_Is_Not_Running()
         {
             // Arrange
             var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
+            mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
+            mockProcessor.Setup(x => x.IsProcessing).Returns(false);
 
-            // Simulate terminal router not running by returning null for CommandQueue
-            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns((TerminalQueue?)null);
+            // Act
+            Func<Task> act = async () => await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
+
+            // Assert
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode("server_error")
+                .WithErrorDescription("The terminal processor is not processing.");
+        }
+
+        // Test case to validate that if the CommandQueue is null, the system throws an exception
+        [Fact]
+        public async Task RouteCommand_Throws_When_Router_Is_Not_Running()
+        {
+            // Arrange
+            var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
+            mockTerminalRouter.Setup(x => x.IsRunning).Returns(false);
+            mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 
             // Act
             Func<Task> act = async () => await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
@@ -114,10 +136,12 @@ namespace OneImlx.Terminal.AspNetCore
                 .WithErrorDescription("The terminal gRPC router is not running.");
         }
 
-        // Mock objects used in the test
+        private readonly CancellationTokenSource commandTokenSource;
         private readonly Mock<ILogger<TerminalGrpcMapService>> mockLogger;
+        private readonly Mock<ITerminalProcessor> mockProcessor;
         private readonly Mock<ITerminalRouter<TerminalGrpcRouterContext>> mockTerminalRouter;
         private readonly TerminalGrpcMapService terminalGrpcMapService;
-        private readonly ServerCallContext testServerCallContext; // Using TestServerCallContext for simulating gRPC context
+        private readonly CancellationTokenSource terminalTokenSource;
+        private readonly ServerCallContext testServerCallContext;
     }
 }

@@ -19,10 +19,10 @@ namespace OneImlx.Terminal.Configuration.Options
 
             options.Caret.Should().Be(">");
             options.Timeout.Should().Be(25000);
-            options.RemoteMessageMaxLength.Should().Be(1024);
+            options.RemoteBatchMaxLength.Should().Be(1024);
             options.MaxRemoteClients.Should().Be(5);
             options.EnableRemoteDelimiters.Should().BeNull();
-            options.RemoteMessageDelimiter.Should().Be("$m$");
+            options.RemoteBatchDelimiter.Should().Be("$b$");
             options.RemoteCommandDelimiter.Should().Be("$c$");
         }
     }

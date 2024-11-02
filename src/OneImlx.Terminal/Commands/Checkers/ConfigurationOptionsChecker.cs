@@ -176,13 +176,13 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // Remote message delimiter cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Router.RemoteMessageDelimiter))
+                if (string.IsNullOrWhiteSpace(options.Router.RemoteBatchDelimiter))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The remote message delimiter cannot be null or whitespace.");
                 }
 
                 // Remote command delimiter cannot be same as remote message delimiter
-                if (textHandler.TextEquals(options.Router.RemoteCommandDelimiter, options.Router.RemoteMessageDelimiter))
+                if (textHandler.TextEquals(options.Router.RemoteCommandDelimiter, options.Router.RemoteBatchDelimiter))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The remote command delimiter and remote message delimiter cannot be same. delimiter={0}", options.Router.RemoteCommandDelimiter);
                 }

@@ -41,8 +41,8 @@ namespace OneImlx.Terminal.Client.Extensions
         /// </remarks>
         public static Task<HttpResponseMessage> SendBatchToTerminalAsync(this HttpClient httpClient, string[] commands, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
-            string batchCommands = TerminalServices.DelimitedMessage(cmdDelimiter, msgDelimiter, commands);
-            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(batchCommands), cancellationToken);
+            string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commands);
+            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(batch), cancellationToken);
         }
 
         /// <summary>
@@ -63,8 +63,8 @@ namespace OneImlx.Terminal.Client.Extensions
         /// </remarks>
         public static Task<HttpResponseMessage> SendSingleToTerminalAsync(this HttpClient httpClient, string commandString, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
-            string delimitedCommand = TerminalServices.DelimitedMessage(cmdDelimiter, msgDelimiter, commandString);
-            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(delimitedCommand), cancellationToken);
+            string batchedCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [commandString]);
+            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(batchedCommand), cancellationToken);
         }
 
         /// <summary>

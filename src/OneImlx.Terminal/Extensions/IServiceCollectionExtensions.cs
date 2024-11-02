@@ -115,7 +115,9 @@ namespace OneImlx.Terminal.Extensions
             return services.CreateTerminalBuilder(textHandler)
                            .AddConfigurationOptions()
                            .AddCommandStore<TStore>()
+                           .AddProcessor<TerminalProcessor>()
                            .AddLicensing();
+
         }
 
         /// <summary>

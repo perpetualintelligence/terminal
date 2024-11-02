@@ -24,24 +24,27 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="commandRouter">The command router for routing commands to specific handlers.</param>
         /// <param name="exceptionHandler">The exception handler for handling errors that occur during command routing.</param>
+        /// <param name="terminalProcessor">The terminal processing queue.</param>
         /// <param name="options">The options configuration for the terminal router.</param>
         /// <param name="logger">The logger instance for logging router events and errors.</param>
         public TerminalHttpRouter(
             ICommandRouter commandRouter,
             ITerminalExceptionHandler exceptionHandler,
+            ITerminalProcessor terminalProcessor,
             IOptions<TerminalOptions> options,
             ILogger<TerminalHttpRouter> logger)
         {
             this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
+            this.terminalProcessor = terminalProcessor;
             this.options = options;
             this.logger = logger;
         }
 
         /// <summary>
-        /// The command queue for the terminal router.
+        /// Gets a value indicating whether the <see cref="TerminalHttpRouter"/> is running.
         /// </summary>
-        public TerminalQueue? CommandQueue => commandQueue;
+        public bool IsRunning { get; protected set; }
 
         /// <summary>
         /// Runs the HTTP router asynchronously and begins handling client requests indefinitely. The server will
@@ -57,18 +60,22 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "Invalid start mode for HTTP.");
             }
 
-            // Initialize the command queue for remote message processing.
-            commandQueue = new TerminalQueue(commandRouter, exceptionHandler, options.Value, context, logger);
             try
             {
                 logger.LogDebug("Terminal HTTP router started.");
+                IsRunning = true;
 
                 // Start background command processing and block the current thread.
-                await commandQueue.StartBackgroundProcessingAsync(context.StartContext.TerminalCancellationToken);
+                terminalProcessor.StartProcessing(context);
+
+                // Wait for the terminal to be canceled.
+                await terminalProcessor.WaitAsync(context);
             }
             finally
             {
+                await terminalProcessor.StopProcessingAsync(options.Value.Router.Timeout);
                 logger.LogDebug("Terminal HTTP router stopped.");
+                IsRunning = false;
             }
         }
 
@@ -77,6 +84,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly ILogger<TerminalHttpRouter> logger;
         private readonly IOptions<TerminalOptions> options;
-        private TerminalQueue? commandQueue;
+        private readonly ITerminalProcessor terminalProcessor;
     }
 }

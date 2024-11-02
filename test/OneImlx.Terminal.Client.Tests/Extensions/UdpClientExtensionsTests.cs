@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Client.Extensions
                     string receivedMessage = Encoding.UTF8.GetString(result.Buffer);
 
                     // Assert: Verify the server received the correct message
-                    receivedMessage.Should().Be("command1;command2;|");
+                    receivedMessage.Should().Be("command1;command2|");
                 }
             });
 
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Client.Extensions
                     string receivedMessage = Encoding.UTF8.GetString(result.Buffer);
 
                     // Assert: Verify the server received the correct message
-                    receivedMessage.Should().Be("single-command;|");
+                    receivedMessage.Should().Be("single-command|");
                 }
             });
 

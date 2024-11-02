@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var commands = new[] { "command1", "command2", "command3" };
             var cmdDelimiter = ";";
             var msgDelimiter = "|";
-            var expectedCommandString = "command1;command2;command3;|";
+            var expectedCommandString = "command1;command2;command3|";
 
             // Act
             var response = await grpcClientMock.Object.SendBatchToTerminalAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var command = "test-command";
             var cmdDelimiter = ";";
             var msgDelimiter = "|";
-            var expectedCommandString = "test-command;|";
+            var expectedCommandString = "test-command|";
 
             // Act
             var response = await grpcClientMock.Object.SendSingleToTerminalAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
