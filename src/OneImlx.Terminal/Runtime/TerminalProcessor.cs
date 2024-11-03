@@ -9,6 +9,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -45,6 +46,7 @@ namespace OneImlx.Terminal.Runtime
             this.textHandler = textHandler;
             this.logger = logger;
 
+            batchBuilder = new StringBuilder();
             concurrentRequestQueue = new ConcurrentQueue<TerminalProcessorRequest>();
             concurrentResponseQueue = new ConcurrentDictionary<string, TerminalProcessorResponse>();
             requestProcessing = Task.CompletedTask;
@@ -68,45 +70,37 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Asynchronously adds a terminal request for processing from a string.
         /// </summary>
-        public Task AddAsync(string batch, string? senderEndpoint, string? senderId)
+        /// <param name="potential">The potential command or a batch to add to processor.</param>
+        /// <param name="senderEndpoint">The optional sender endpoint.</param>
+        /// <param name="senderId">The optional sender identifier.</param>
+        public Task AddAsync(string potential, string? senderEndpoint, string? senderId)
         {
             return Task.Run(() =>
             {
-                if (string.IsNullOrWhiteSpace(batch))
+                if (string.IsNullOrWhiteSpace(potential))
                 {
                     throw new TerminalException(TerminalErrors.InvalidRequest, "The batch cannot be empty.");
                 }
 
-                if (batch.Length > terminalOptions.Value.Router.RemoteBatchMaxLength)
+                if (potential.Length > terminalOptions.Value.Router.RemoteBatchMaxLength)
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "Batch length exceeds configured maximum. max_length={0}", terminalOptions.Value.Router.RemoteBatchMaxLength);
                 }
 
-                bool isBatch = false;
-                if (terminalOptions.Value.Router.EnableRemoteDelimiters.GetValueOrDefault())
+                // Check if the message is a batch or a single command
+                bool isBatchEnabled = terminalOptions.Value.Router.EnableRemoteDelimiters.GetValueOrDefault();
+                if (isBatchEnabled)
                 {
-                    if (!batch.EndsWith(terminalOptions.Value.Router.RemoteBatchDelimiter, textHandler.Comparison))
+                    // The batches cab be empty if the potential is a partial batch
+                    string[] batches = SyncAndExtractBatches(potential);
+                    foreach (string batch in batches)
                     {
-                        throw new TerminalException(TerminalErrors.InvalidConfiguration, "Batch processing is enabled but message does not ends with a batch delimiter.");
+                        EnqueueBatch(batch, senderEndpoint, senderId);
                     }
-
-                    isBatch = true;
                 }
                 else
                 {
-                    if (batch.EndsWith(terminalOptions.Value.Router.RemoteBatchDelimiter, textHandler.Comparison))
-                    {
-                        throw new TerminalException(TerminalErrors.InvalidConfiguration, "Batch processing is not enabled but message ends with a batch delimiter.");
-                    }
-                }
-
-                if (isBatch)
-                {
-                    EnqueueBatch(batch, senderEndpoint, senderId);
-                }
-                else
-                {
-                    EnqueueCommand(batch, senderEndpoint, senderId);
+                    EnqueueCommand(potential, senderEndpoint, senderId);
                 }
             });
         }
@@ -167,10 +161,10 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         private void EnqueueBatch(string batch, string? senderEndpoint, string? senderId)
         {
-            string[] messages = batch.Split(new[] { terminalOptions.Value.Router.RemoteCommandDelimiter, terminalOptions.Value.Router.RemoteBatchDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string msd in messages)
+            string[] commands = batch.Split(new[] { terminalOptions.Value.Router.RemoteCommandDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string cmd in commands)
             {
-                EnqueueCommand(msd, senderEndpoint, senderId);
+                EnqueueCommand(cmd, senderEndpoint, senderId);
             }
         }
 
@@ -246,6 +240,41 @@ namespace OneImlx.Terminal.Runtime
 
         private Task StartResponseProcessingAsync(TerminalRouterContext terminalRouterContext) => Task.CompletedTask;
 
+        private string[] SyncAndExtractBatches(string potential)
+        {
+            // If the potential ends with a delimiter then it is a complete batch, else it is a partial batch
+            bool isPartial = true;
+            if (potential.EndsWith(terminalOptions.Value.Router.RemoteBatchDelimiter, textHandler.Comparison))
+            {
+                isPartial = false;
+            }
+
+            // Add the potential to the batchBuilder so we take into account any previous unprocessed partial commands.
+            string potentialAndPrevious = potential;
+            if (batchBuilder.Length > 0)
+            {
+                batchBuilder.Append(potential);
+                potentialAndPrevious = batchBuilder.ToString();
+                batchBuilder.Clear();
+            }
+
+            // If the potential is a partial batch, then split it into multiple batches but ignore the last one. The
+            // last one needs to be added to the next batch.
+            string[] batches = potentialAndPrevious.Split(new[] { terminalOptions.Value.Router.RemoteBatchDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+            if (isPartial)
+            {
+                // For partial batch add it to the batchBuilder so we take that in to account for the next batch.
+                string last = batches.Last();
+                batchBuilder.Append(last);
+
+                return batches.Take(batches.Length - 1).ToArray();
+            }
+            else
+            {
+                return batches;
+            }
+        }
+
         private readonly ICommandRouter commandRouter;
         private readonly ConcurrentQueue<TerminalProcessorRequest> concurrentRequestQueue;
         private readonly ConcurrentDictionary<string, TerminalProcessorResponse> concurrentResponseQueue;
@@ -253,6 +282,7 @@ namespace OneImlx.Terminal.Runtime
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly IOptions<TerminalOptions> terminalOptions;
         private readonly ITerminalTextHandler textHandler;
+        private StringBuilder batchBuilder;
         private Task requestProcessing;
         private Task responseProcessing;
     }

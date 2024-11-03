@@ -5,18 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
-using OneImlx.Terminal.Commands.Routers;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using FluentAssertions;
+using Moq;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -69,7 +69,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task AddAsync_DoesNot_Throws_When_BatchDelimiter_Missing_In_Non_BatchMode()
+        public async Task AddAsync_Does_Add_When_BatchDelimiter_Missing_In_Non_BatchMode()
         {
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = false;
 
@@ -82,12 +82,24 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
+        public async Task AddAsync_DoesNot_Add_When_BatchDelimiter_Missing_In_BatchMode()
+        {
+            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
+
+            // Act
+            await _terminalProcessor.AddAsync("command1", "endpoint", "sender");
+
+            // Assert only a single command was processed
+            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
+        }
+
+        [Fact]
         public async Task AddAsync_HandlesConcurrentCalls()
         {
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = false;
 
             // Mock the setup for the command router
-            HashSet<string> routedCommands = [];
+            List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
                 .Callback<CommandRouterContext>(c => routedCommands.Add(c.Route.Raw));
 
@@ -102,7 +114,128 @@ namespace OneImlx.Terminal.Runtime
             await Task.Delay(500);
 
             // Assert all were processed without error
-            routedCommands.Should().HaveCount(500);
+            routedCommands.Distinct().Should().HaveCount(500);
+        }
+
+        [Theory]
+        [InlineData("command1,command2,command3,command4,command5,command6|")]
+        [InlineData("command1,command2,command3,command4,command5,command6,|")]
+        [InlineData("command1,|command2,command3,|command4,command5,command6|")]
+        [InlineData("command1,,,command2,command3,|command4,command5,command6|")]
+        [InlineData("command1,command2,command3,|||||command4,command5,command6|")]
+        [InlineData("command1|command2|command3|command4|command5|command6|")]
+        public async Task AddAsync_Processes_BatchCommands_WhenBatchModeEnabled(string message)
+        {
+            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
+
+            // Act
+            await _terminalProcessor.AddAsync(message, "endpoint", "sender");
+            _terminalProcessor.UnprocessedRequests.Should().HaveCount(6);
+            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command1").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command2").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command3").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command4").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command5").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command6").Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task AddAsync_Processes_MultipleBatch_SplitInto_Chunks_Independently()
+        {
+            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
+            _mockOptions.Object.Value.Router.RemoteBatchMaxLength = 4780000;
+
+            // Create sets of commands
+            HashSet<string> commands1 = new(Enumerable.Range(0, 100000).Select(i => $"command_1.{i}"));
+            HashSet<string> commands2 = new(Enumerable.Range(0, 100000).Select(i => $"command_2.{i}"));
+            HashSet<string> commands3 = new(Enumerable.Range(0, 100000).Select(i => $"command_3.{i}"));
+            HashSet<string> allCommands = new(commands1.Concat(commands2).Concat(commands3));
+
+            // Create 3 batches
+            var longBatch1 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands1.ToArray());
+            var longBatch2 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands2.ToArray());
+            var longBatch3 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands3.ToArray());
+
+            // Create a single combined batch from all commands
+            var combinedBatch = longBatch1 + longBatch2 + longBatch3;
+
+            // Split the combined batch string into 20 equal parts
+            int partSize = combinedBatch.Length / 20;
+            var batchChunks = new string[20];
+            for (int i = 0; i < 20; i++)
+            {
+                int startIndex = i * partSize;
+                int length = (i == 19) ? combinedBatch.Length - startIndex : partSize;
+                batchChunks[i] = combinedBatch.Substring(startIndex, length);
+            }
+
+            // Send each chunk independently via AddAsync
+            foreach (var chunk in batchChunks)
+            {
+                await _terminalProcessor.AddAsync(chunk, "endpoint", "sender");
+            }
+
+            // Verify all commands are in the unprocessed requests
+            _terminalProcessor.UnprocessedRequests.Should().HaveCount(300000);
+            foreach (var request in _terminalProcessor.UnprocessedRequests)
+            {
+                if (allCommands.Contains(request.CommandString))
+                {
+                    allCommands.Remove(request.CommandString);
+                }
+                else
+                {
+                    throw new InvalidOperationException($"An unexpected command was added to the unprocessed requests. command={request}");
+                }
+            }
+            allCommands.Should().BeEmpty("All commands are accounted for.");
+        }
+
+        [Fact]
+        public async Task AddAsync_Processes_SingleBatch_SplitInto_Chunks_Independently()
+        {
+            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
+            _mockOptions.Object.Value.Router.RemoteBatchMaxLength = 4780000;
+
+            // Create sets of commands
+            HashSet<string> commands1 = new(Enumerable.Range(0, 100000).Select(i => $"command_1.{i}"));
+            HashSet<string> commands2 = new(Enumerable.Range(0, 100000).Select(i => $"command_2.{i}"));
+            HashSet<string> commands3 = new(Enumerable.Range(0, 100000).Select(i => $"command_3.{i}"));
+            HashSet<string> allCommands = new(commands1.Concat(commands2).Concat(commands3));
+
+            // Create a single combined batch from all commands
+            var combinedBatch = TerminalServices.CreateBatch(_mockOptions.Object.Value, allCommands.ToArray());
+
+            // Split the combined batch string into 20 equal parts
+            int partSize = combinedBatch.Length / 20;
+            var batchChunks = new string[20];
+            for (int i = 0; i < 20; i++)
+            {
+                int startIndex = i * partSize;
+                int length = (i == 19) ? combinedBatch.Length - startIndex : partSize;
+                batchChunks[i] = combinedBatch.Substring(startIndex, length);
+            }
+
+            // Send each chunk independently via AddAsync
+            foreach (var chunk in batchChunks)
+            {
+                await _terminalProcessor.AddAsync(chunk, "endpoint", "sender");
+            }
+
+            // Verify all commands are in the unprocessed requests
+            _terminalProcessor.UnprocessedRequests.Should().HaveCount(300000);
+            foreach (var request in _terminalProcessor.UnprocessedRequests)
+            {
+                if (allCommands.Contains(request.CommandString))
+                {
+                    allCommands.Remove(request.CommandString);
+                }
+                else
+                {
+                    throw new InvalidOperationException($"An unexpected command was added to the unprocessed requests. command={request}");
+                }
+            }
+            allCommands.Should().BeEmpty("All commands are accounted for.");
         }
 
         [Fact]
@@ -112,8 +245,8 @@ namespace OneImlx.Terminal.Runtime
             _mockOptions.Object.Value.Router.RemoteBatchMaxLength = 1500000;
 
             // Send batch of 100000 commands by using TerminalServices
-            HashSet<string> commands = new(Enumerable.Range(0, 100000).Select(i => $"command{i}"));
-            var longBatch = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands.ToArray());
+            HashSet<string> allCommands = new(Enumerable.Range(0, 100000).Select(i => $"command{i}"));
+            var longBatch = TerminalServices.CreateBatch(_mockOptions.Object.Value, allCommands.ToArray());
             await _terminalProcessor.AddAsync(longBatch, "endpoint", "sender");
 
             // We are iterating over a large number of unprocessed requests, so we need to ensure that the validation
@@ -122,15 +255,16 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(100000);
             foreach (var request in _terminalProcessor.UnprocessedRequests)
             {
-                if (commands.Contains(request.CommandString))
+                if (allCommands.Contains(request.CommandString))
                 {
-                    commands.Remove(request.CommandString);
+                    allCommands.Remove(request.CommandString);
                 }
                 else
                 {
                     throw new InvalidOperationException($"An unexpected command was added to the unprocessed requests. command={request}");
                 }
             }
+            allCommands.Should().BeEmpty("All commands are accounted for.");
         }
 
         [Fact]
@@ -169,73 +303,7 @@ namespace OneImlx.Terminal.Runtime
                     throw new InvalidOperationException($"An unexpected command was added to the unprocessed requests. command={request}");
                 }
             }
-        }
-
-        [Fact]
-        public async Task AddAsync_Processes_CombinedBatch_SplitInto_Chunks_Independently()
-        {
-            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
-            _mockOptions.Object.Value.Router.RemoteBatchMaxLength = 4780000;
-
-            // Create sets of commands
-            HashSet<string> commands1 = new(Enumerable.Range(0, 100000).Select(i => $"command_1.{i}"));
-            HashSet<string> commands2 = new(Enumerable.Range(0, 100000).Select(i => $"command_2.{i}"));
-            HashSet<string> commands3 = new(Enumerable.Range(0, 100000).Select(i => $"command_3.{i}"));
-            HashSet<string> allCommands = new(commands1.Concat(commands2).Concat(commands3));
-
-            // Create a single combined batch from all commands
-            var combinedBatch = TerminalServices.CreateBatch(_mockOptions.Object.Value, allCommands.ToArray());
-
-            // Split the combined batch string into 20 equal parts
-            int partSize = combinedBatch.Length / 20;
-            var batchChunks = Enumerable.Range(0, 20)
-                                        .Select(i => combinedBatch.Substring(i * partSize,
-                                                      (i == 19) ? combinedBatch.Length - (i * partSize) : partSize))
-                                        .ToArray();
-
-            // Send each chunk independently via AddAsync
-            foreach (var chunk in batchChunks)
-            {
-                await _terminalProcessor.AddAsync(chunk, "endpoint", "sender");
-            }
-
-            // Verify all commands are in the unprocessed requests
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(300000);
-            foreach (var request in _terminalProcessor.UnprocessedRequests)
-            {
-                if (allCommands.Contains(request.CommandString))
-                {
-                    allCommands.Remove(request.CommandString);
-                }
-                else
-                {
-                    throw new InvalidOperationException($"An unexpected command was added to the unprocessed requests. command={request}");
-                }
-            }
-        }
-
-
-
-        [Theory]
-        [InlineData("command1,command2,command3,command4,command5,command6|")]
-        [InlineData("command1,command2,command3,command4,command5,command6,|")]
-        [InlineData("command1,|command2,command3,|command4,command5,command6|")]
-        [InlineData("command1,,,command2,command3,|command4,command5,command6|")]
-        [InlineData("command1,command2,command3,|||||command4,command5,command6|")]
-        [InlineData("command1|command2|command3|command4|command5|command6|")]
-        public async Task AddAsync_ProcessesBatchCommands_WhenBatchModeEnabled(string message)
-        {
-            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
-
-            // Act
-            await _terminalProcessor.AddAsync(message, "endpoint", "sender");
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(6);
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command1").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command2").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command3").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command4").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command5").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command6").Should().BeTrue();
+            allCommands.Should().BeEmpty("All commands are accounted for.");
         }
 
         [Theory]
@@ -255,17 +323,6 @@ namespace OneImlx.Terminal.Runtime
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The batch cannot be empty.");
-        }
-
-        [Fact]
-        public async Task AddAsync_Throws_When_BatchDelimiter_Missing_In_BatchMode()
-        {
-            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
-
-            Func<Task> act = () => _terminalProcessor.AddAsync("command1", "endpoint", "sender");
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_configuration")
-                .WithErrorDescription("Batch processing is enabled but message does not ends with a batch delimiter.");
         }
 
         [Fact]
@@ -289,7 +346,7 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task StartProcessing_HandlesRouterException()
         {
-            Exception handeledException = new();
+            Exception? handeledException = null;
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).ThrowsAsync(new Exception("Router error"));
             _mockExceptionHandler.Setup(e => e.HandleExceptionAsync(It.IsAny<TerminalExceptionHandlerContext>())).Callback<TerminalExceptionHandlerContext>(c => handeledException = c.Exception);
 
@@ -298,7 +355,7 @@ namespace OneImlx.Terminal.Runtime
             await Task.Delay(500);
 
             handeledException.Should().NotBeNull();
-            handeledException.Message.Should().Be("Router error");
+            handeledException!.Message.Should().Be("Router error");
         }
 
         [Fact]
@@ -308,6 +365,60 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
             _terminalProcessor.IsProcessing.Should().BeTrue();
             _terminalTokenSource.Cancel();
+        }
+
+        [Fact]
+        public async Task StartProcessing_With_Add_Routes_Command_To_Router()
+        {
+            CommandRouterContext? routeContext = null;
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).Callback<CommandRouterContext>(c => routeContext = c);
+
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
+
+            // Add with sender endpoint and sender id
+            await _terminalProcessor.AddAsync("command1|", "sender_endpoint_1", "sender_1");
+            await Task.Delay(500);
+
+            routeContext.Should().NotBeNull();
+            routeContext!.Properties.Should().HaveCount(2);
+            routeContext.Properties!["sender_endpoint"].Should().Be("sender_endpoint_1");
+            routeContext.Properties!["sender_id"].Should().Be("sender_1");
+
+            routeContext.Route.Id.Should().NotBeNullOrWhiteSpace();
+            routeContext.Route.Raw.Should().Be("command1");
+
+            routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
+
+            // Add without sender endpoint and sender id
+            routeContext = null;
+            await _terminalProcessor.AddAsync("command2|", null, null);
+            await Task.Delay(500);
+
+            routeContext.Should().NotBeNull();
+            routeContext!.Properties.Should().HaveCount(1);
+            routeContext.Properties!["sender_endpoint"].Should().Be("$unknown$");
+
+            routeContext.Route.Id.Should().NotBeNullOrWhiteSpace();
+            routeContext.Route.Raw.Should().Be("command2");
+
+            routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
+        }
+
+        [Fact]
+        public async Task StopProcessing_With_Add_Does_Not_Routes_Command_To_Router()
+        {
+            CommandRouterContext? routeContext = null;
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).Callback<CommandRouterContext>(c => routeContext = c);
+
+            // Add with sender endpoint and sender id
+            await _terminalProcessor.AddAsync("command1|", "sender_endpoint_1", "sender_1");
+            await Task.Delay(500);
+            routeContext.Should().BeNull();
+
+            // Add without sender endpoint and sender id
+            await _terminalProcessor.AddAsync("command2|", null, null);
+            await Task.Delay(500);
+            routeContext.Should().BeNull();
         }
 
         [Theory]
