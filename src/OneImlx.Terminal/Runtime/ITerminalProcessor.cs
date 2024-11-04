@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,7 +17,7 @@ namespace OneImlx.Terminal.Runtime
     /// <summary>
     /// An abstraction to process command requests and responses in the background.
     /// </summary>
-    public interface ITerminalProcessor
+    public interface ITerminalProcessor : IAsyncDisposable
     {
         /// <summary>
         /// Gets a value indicating whether the processor is currently processing requests.
@@ -35,6 +36,12 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="senderEndpoint">The sender's endpoint.</param>
         /// <param name="senderId">The sender's ID.</param>
         Task AddAsync(string batch, string? senderEndpoint, string? senderId);
+
+        /// <summary>
+        /// Generates a new unique identifier.
+        /// </summary>
+        /// <param name="hint">The hint to generate the unique identifier.</param>
+        string NewUniqueId(string? hint = null);
 
         /// <summary>
         /// Starts background processing.

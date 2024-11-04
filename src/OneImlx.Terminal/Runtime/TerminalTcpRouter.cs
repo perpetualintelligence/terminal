@@ -196,7 +196,7 @@ namespace OneImlx.Terminal.Runtime
                 }
 
                 // Initialize a new client connection. Note: we are not awaiting the task here to allow multiple client connections.
-                string clientId = Guid.NewGuid().ToString();
+                string clientId = terminalProcessor.NewUniqueId("client");
                 Task clientTask = AcceptClientAsync(context, terminalCancellationToken, clientId);
                 clientTasks.TryAdd(clientId, clientTask);
             }

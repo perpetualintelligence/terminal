@@ -20,15 +20,22 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
         /// <param name="commandString">The command string to be processed.</param>
+        /// <param name="batchId">The batch identifier.</param>
         /// <param name="senderEndpoint">The sender endpoint from which the command was sent.</param>
         /// <param name="senderId">The sender id if the multiple senders shares same endpoint.</param>
-        public TerminalProcessorRequest(string id, string commandString, string? senderEndpoint, string? senderId)
+        public TerminalProcessorRequest(string id, string commandString, string? batchId, string? senderEndpoint, string? senderId)
         {
             Id = id;
             CommandString = commandString;
+            BatchId = batchId;
             SenderId = senderId;
             SenderEndpoint = senderEndpoint;
         }
+
+        /// <summary>
+        /// The batch the command string is part of.
+        /// </summary>
+        public string? BatchId { get; }
 
         /// <summary>
         /// Gets the command string that needs to be processed.
@@ -49,5 +56,18 @@ namespace OneImlx.Terminal.Runtime
         /// Gets the sender id if the multiple senders shares same endpoint.
         /// </summary>
         public string? SenderId { get; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            if (BatchId != null)
+            {
+                return $"{BatchId} | {CommandString}";
+            }
+            else
+            {
+                return $"{CommandString}";
+            }
+        }
     }
 }

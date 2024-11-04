@@ -55,6 +55,32 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
+        public async Task AddAsync_Batch_Commands_HandlesConcurrentCalls()
+        {
+            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
+
+            // Mock the setup for the command router
+            List<string> routedCommands = [];
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Route.Raw));
+
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
+            int idx = 0;
+            var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
+            {
+                ++idx;
+                string batch = TerminalServices.CreateBatch(_mockOptions.Object.Value, [$"command_{idx}_0", $"command_{idx}_1", $"command_{idx}_2"]);
+                return _terminalProcessor.AddAsync(batch, "endpoint", "sender");
+            });
+            await Task.WhenAll(tasks);
+
+            await Task.Delay(500);
+
+            // Assert all were processed without error
+            routedCommands.Distinct().Should().HaveCount(1500);
+        }
+
+        [Fact]
         public async Task AddAsync_CallsExceptionHandler_WhenRouterFails()
         {
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).ThrowsAsync(new Exception("Router error"));
@@ -94,27 +120,69 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task AddAsync_HandlesConcurrentCalls()
+        public async Task AddAsync_Processes_BatchCommand_In_Order_WhenBatchModeEnabled()
         {
-            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = false;
+            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
+            _mockOptions.Object.Value.Router.RemoteBatchMaxLength = 1500000;
 
-            // Mock the setup for the command router
-            List<string> routedCommands = [];
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Route.Raw));
+            // Create sets of commands to simulate batch processing
+            List<string> commands1 = new(Enumerable.Range(0, 1000).Select(i => $"command_1_{i}"));
+            List<string> commands2 = new(Enumerable.Range(0, 1000).Select(i => $"command_2_{i}"));
+            List<string> commands3 = new(Enumerable.Range(0, 1000).Select(i => $"command_3_{i}"));
+            List<string> commands4 = new(Enumerable.Range(0, 1000).Select(i => $"command_4_{i}"));
+            List<string> commands5 = new(Enumerable.Range(0, 1000).Select(i => $"command_5_{i}"));
+            List<string> commands6 = new(Enumerable.Range(0, 1000).Select(i => $"command_6_{i}"));
+            List<string> commands7 = new(Enumerable.Range(0, 1000).Select(i => $"command_7_{i}"));
+            List<string> commands8 = new(Enumerable.Range(0, 1000).Select(i => $"command_8_{i}"));
+            List<string> commands9 = new(Enumerable.Range(0, 1000).Select(i => $"command_9_{i}"));
+            List<string> commands10 = new(Enumerable.Range(0, 1000).Select(i => $"command_10_{i}"));
 
-            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
-            int idx = 1;
-            var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
-            {
-                return _terminalProcessor.AddAsync($"command{idx++}", "endpoint", "sender");
-            });
-            await Task.WhenAll(tasks);
+            // Create batches for each command collection
+            var batch1 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands1.ToArray());
+            var batch2 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands2.ToArray());
+            var batch3 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands3.ToArray());
+            var batch4 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands4.ToArray());
+            var batch5 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands5.ToArray());
+            var batch6 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands6.ToArray());
+            var batch7 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands7.ToArray());
+            var batch8 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands8.ToArray());
+            var batch9 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands9.ToArray());
+            var batch10 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands10.ToArray());
 
-            await Task.Delay(500);
+            // Add all batches asynchronously
+            Task addBatch1 = _terminalProcessor.AddAsync(batch1, "endpoint1", "sender1");
+            Task addBatch2 = _terminalProcessor.AddAsync(batch2, "endpoint2", "sender2");
+            Task addBatch3 = _terminalProcessor.AddAsync(batch3, "endpoint3", "sender3");
+            Task addBatch4 = _terminalProcessor.AddAsync(batch4, "endpoint4", "sender4");
+            Task addBatch5 = _terminalProcessor.AddAsync(batch5, "endpoint5", "sender5");
+            Task addBatch6 = _terminalProcessor.AddAsync(batch6, "endpoint6", "sender6");
+            Task addBatch7 = _terminalProcessor.AddAsync(batch7, "endpoint7", "sender7");
+            Task addBatch8 = _terminalProcessor.AddAsync(batch8, "endpoint8", "sender8");
+            Task addBatch9 = _terminalProcessor.AddAsync(batch9, "endpoint9", "sender9");
+            Task addBatch10 = _terminalProcessor.AddAsync(batch10, "endpoint10", "sender10");
 
-            // Assert all were processed without error
-            routedCommands.Distinct().Should().HaveCount(500);
+            // Wait for all batches to be processed
+            await Task.WhenAll(addBatch1, addBatch2, addBatch3, addBatch4, addBatch5, addBatch6, addBatch7, addBatch8, addBatch9, addBatch10);
+
+            // Verify all commands are processed
+            _terminalProcessor.UnprocessedRequests.Should().HaveCount(10000);
+
+            // Collect the processed commands into groups by their prefixes (e.g., "command_1_", "command_2_", etc.)
+            var groupedCommands = _terminalProcessor.UnprocessedRequests
+                .GroupBy(r => r.CommandString.Split('_')[1])
+                .ToDictionary(g => g.Key, g => g.Select(r => r.CommandString).ToList());
+
+            // Verify that each group of commands is in the expected order
+            groupedCommands["1"].Should().BeEquivalentTo(commands1, options => options.WithStrictOrdering());
+            groupedCommands["2"].Should().BeEquivalentTo(commands2, options => options.WithStrictOrdering());
+            groupedCommands["3"].Should().BeEquivalentTo(commands3, options => options.WithStrictOrdering());
+            groupedCommands["4"].Should().BeEquivalentTo(commands4, options => options.WithStrictOrdering());
+            groupedCommands["5"].Should().BeEquivalentTo(commands5, options => options.WithStrictOrdering());
+            groupedCommands["6"].Should().BeEquivalentTo(commands6, options => options.WithStrictOrdering());
+            groupedCommands["7"].Should().BeEquivalentTo(commands7, options => options.WithStrictOrdering());
+            groupedCommands["8"].Should().BeEquivalentTo(commands8, options => options.WithStrictOrdering());
+            groupedCommands["9"].Should().BeEquivalentTo(commands9, options => options.WithStrictOrdering());
+            groupedCommands["10"].Should().BeEquivalentTo(commands10, options => options.WithStrictOrdering());
         }
 
         [Theory]
@@ -124,7 +192,7 @@ namespace OneImlx.Terminal.Runtime
         [InlineData("command1,,,command2,command3,|command4,command5,command6|")]
         [InlineData("command1,command2,command3,|||||command4,command5,command6|")]
         [InlineData("command1|command2|command3|command4|command5|command6|")]
-        public async Task AddAsync_Processes_BatchCommands_WhenBatchModeEnabled(string message)
+        public async Task AddAsync_Processes_BatchCommands_By_Ignoring_Empty_Commands_Or_Empty_Batches(string message)
         {
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
 
@@ -306,6 +374,30 @@ namespace OneImlx.Terminal.Runtime
             allCommands.Should().BeEmpty("All commands are accounted for.");
         }
 
+        [Fact]
+        public async Task AddAsync_Single_Commands_HandlesConcurrentCalls()
+        {
+            _mockOptions.Object.Value.Router.EnableRemoteDelimiters = false;
+
+            // Mock the setup for the command router
+            List<string> routedCommands = [];
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Route.Raw));
+
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
+            int idx = 1;
+            var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
+            {
+                return _terminalProcessor.AddAsync($"command{idx++}", "endpoint", "sender");
+            });
+            await Task.WhenAll(tasks);
+
+            await Task.Delay(500);
+
+            // Assert all were processed without error
+            routedCommands.Distinct().Should().HaveCount(500);
+        }
+
         [Theory]
         [InlineData("")]
         [InlineData("   ")]
@@ -316,13 +408,13 @@ namespace OneImlx.Terminal.Runtime
             Func<Task> act = () => _terminalProcessor.AddAsync(batch!, "endpoint", "sender");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
-                .WithErrorDescription("The batch cannot be empty.");
+                .WithErrorDescription("The command or batch cannot be empty.");
 
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
             act = () => _terminalProcessor.AddAsync(batch!, "endpoint", "sender");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
-                .WithErrorDescription("The batch cannot be empty.");
+                .WithErrorDescription("The command or batch cannot be empty.");
         }
 
         [Fact]
@@ -334,13 +426,47 @@ namespace OneImlx.Terminal.Runtime
             Func<Task> act = () => _terminalProcessor.AddAsync(longBatch, "endpoint", "sender");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_configuration")
-                .WithErrorDescription("Batch length exceeds configured maximum. max_length=1000");
+                .WithErrorDescription("The batch length exceeds configured maximum. max_length=1000");
         }
 
         [Fact]
         public void ByDefault_Processor_Is_NotProcessing()
         {
             _terminalProcessor.IsProcessing.Should().BeFalse();
+        }
+
+        [Fact]
+        public void NewUniqueId_Generates_Unique_Id()
+        {
+            string testId = _terminalProcessor.NewUniqueId();
+            Guid.TryParse(testId, out _).Should().BeTrue();
+
+            testId = _terminalProcessor.NewUniqueId(null);
+            Guid.TryParse(testId, out _).Should().BeTrue();
+
+            testId = _terminalProcessor.NewUniqueId("   ");
+            Guid.TryParse(testId, out _).Should().BeTrue();
+
+            testId = _terminalProcessor.NewUniqueId("blah");
+            Guid.TryParse(testId, out _).Should().BeTrue();
+
+            for (int idx = 0; idx < 100; ++idx)
+            {
+                testId = _terminalProcessor.NewUniqueId("batch");
+                testId.Should().Be($"b{idx}");
+            }
+
+            for (int idx = 0; idx < 1000; ++idx)
+            {
+                testId = _terminalProcessor.NewUniqueId("client");
+                testId.Should().Be($"c{idx}");
+            }
+
+            for (int idx = 0; idx < 10000; ++idx)
+            {
+                testId = _terminalProcessor.NewUniqueId("route");
+                testId.Should().Be($"r{idx}");
+            }
         }
 
         [Fact]

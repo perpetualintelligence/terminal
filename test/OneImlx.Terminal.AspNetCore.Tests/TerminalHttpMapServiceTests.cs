@@ -59,7 +59,7 @@ namespace OneImlx.Terminal.AspNetCore
             mockProcessor.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string, string>((message, endpoint, senderId) =>
                 {
-                    addedRequest = new TerminalProcessorRequest("id1", message, endpoint, senderId);
+                    addedRequest = new TerminalProcessorRequest("id1", message, batchId: null, endpoint, senderId);
                 });
 
             // Act
@@ -72,6 +72,7 @@ namespace OneImlx.Terminal.AspNetCore
             addedRequest.CommandString.Should().Be("test-command");
             addedRequest.SenderEndpoint.Should().Be("$unknown$");
             addedRequest.SenderId.Should().NotBeEmpty();
+            addedRequest.BatchId.Should().BeNull();
         }
 
         // Test case to validate that a missing command string results in an exception
