@@ -104,7 +104,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Assert only a single command was processed
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(1);
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command1").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command1").Should().BeTrue();
         }
 
         [Fact]
@@ -169,8 +169,8 @@ namespace OneImlx.Terminal.Runtime
 
             // Collect the processed commands into groups by their prefixes (e.g., "command_1_", "command_2_", etc.)
             var groupedCommands = _terminalProcessor.UnprocessedRequests
-                .GroupBy(r => r.CommandString.Split('_')[1])
-                .ToDictionary(g => g.Key, g => g.Select(r => r.CommandString).ToList());
+                .GroupBy(r => r.Raw.Split('_')[1])
+                .ToDictionary(g => g.Key, g => g.Select(r => r.Raw).ToList());
 
             // Verify that each group of commands is in the expected order
             groupedCommands["1"].Should().BeEquivalentTo(commands1, options => options.WithStrictOrdering());
@@ -199,12 +199,12 @@ namespace OneImlx.Terminal.Runtime
             // Act
             await _terminalProcessor.AddAsync(message, "endpoint", "sender");
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(6);
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command1").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command2").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command3").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command4").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command5").Should().BeTrue();
-            _terminalProcessor.UnprocessedRequests.Any(r => r.CommandString == "command6").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command1").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command2").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command3").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command4").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command5").Should().BeTrue();
+            _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command6").Should().BeTrue();
         }
 
         [Fact]
@@ -247,9 +247,9 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(300000);
             foreach (var request in _terminalProcessor.UnprocessedRequests)
             {
-                if (allCommands.Contains(request.CommandString))
+                if (allCommands.Contains(request.Raw))
                 {
-                    allCommands.Remove(request.CommandString);
+                    allCommands.Remove(request.Raw);
                 }
                 else
                 {
@@ -294,9 +294,9 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(300000);
             foreach (var request in _terminalProcessor.UnprocessedRequests)
             {
-                if (allCommands.Contains(request.CommandString))
+                if (allCommands.Contains(request.Raw))
                 {
-                    allCommands.Remove(request.CommandString);
+                    allCommands.Remove(request.Raw);
                 }
                 else
                 {
@@ -323,9 +323,9 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(100000);
             foreach (var request in _terminalProcessor.UnprocessedRequests)
             {
-                if (allCommands.Contains(request.CommandString))
+                if (allCommands.Contains(request.Raw))
                 {
-                    allCommands.Remove(request.CommandString);
+                    allCommands.Remove(request.Raw);
                 }
                 else
                 {
@@ -362,9 +362,9 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(300000);
             foreach (var request in _terminalProcessor.UnprocessedRequests)
             {
-                if (allCommands.Contains(request.CommandString))
+                if (allCommands.Contains(request.Raw))
                 {
-                    allCommands.Remove(request.CommandString);
+                    allCommands.Remove(request.Raw);
                 }
                 else
                 {

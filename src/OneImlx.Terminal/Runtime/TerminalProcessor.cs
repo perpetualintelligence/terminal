@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -107,17 +106,17 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Asynchronously adds a terminal request for processing from a string.
         /// </summary>
-        /// <param name="potential">The potential command or a batch to add to the processor.</param>
+        /// <param name="raw">The raw command or a batch to add to the processor.</param>
         /// <param name="senderEndpoint">The optional sender endpoint.</param>
         /// <param name="senderId">The optional sender identifier.</param>
-        public async Task AddAsync(string potential, string? senderEndpoint, string? senderId)
+        public async Task AddAsync(string raw, string? senderEndpoint, string? senderId)
         {
-            if (string.IsNullOrWhiteSpace(potential))
+            if (string.IsNullOrWhiteSpace(raw))
             {
                 throw new TerminalException(TerminalErrors.InvalidRequest, "The command or batch cannot be empty.");
             }
 
-            if (potential.Length > terminalOptions.Value.Router.RemoteBatchMaxLength)
+            if (raw.Length > terminalOptions.Value.Router.RemoteBatchMaxLength)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The batch length exceeds configured maximum. max_length={0}", terminalOptions.Value.Router.RemoteBatchMaxLength);
             }
@@ -125,11 +124,11 @@ namespace OneImlx.Terminal.Runtime
             bool isBatchEnabled = terminalOptions.Value.Router.EnableRemoteDelimiters.GetValueOrDefault();
             if (isBatchEnabled)
             {
-                await EnqueueBatchesConcurrentAsync(potential, senderEndpoint, senderId);
+                await EnqueueBatchesConcurrentAsync(raw, senderEndpoint, senderId);
             }
             else
             {
-                EnqueueCommandNonConcurrent(potential, batchId: null, senderEndpoint, senderId);
+                EnqueueCommandNonConcurrent(raw, batchId: null, senderEndpoint, senderId);
             }
         }
 
@@ -214,26 +213,26 @@ namespace OneImlx.Terminal.Runtime
             }
         }
 
-        private async Task EnqueueBatchesConcurrentAsync(string potential, string? senderEndpoint, string? senderId)
+        private async Task EnqueueBatchesConcurrentAsync(string raw, string? senderEndpoint, string? senderId)
         {
             // Check if the potential batch string ends with the batch delimiter. If it doesn't, the batch is incomplete
             // (i.e., a partial batch that may be combined with future input).
-            bool isPartial = !potential.EndsWith(terminalOptions.Value.Router.RemoteBatchDelimiter, textHandler.Comparison);
+            bool isPartial = !raw.EndsWith(terminalOptions.Value.Router.RemoteBatchDelimiter, textHandler.Comparison);
 
             // If there is a previously stored partial batch, append the current potential batch to it. Otherwise, use
             // the current potential batch as is. This step ensures we try to form a complete batch whenever possible.
-            string potentialAndPrevious = partialBatchBuilder.Length > 0 ? partialBatchBuilder.Append(potential).ToString() : potential;
-            string[] potentialBatches = potentialAndPrevious.Split(new[] { terminalOptions.Value.Router.RemoteBatchDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+            string rawAndPrevious = partialBatchBuilder.Length > 0 ? partialBatchBuilder.Append(raw).ToString() : raw;
+            string[] rawBatches = rawAndPrevious.Split(new[] { terminalOptions.Value.Router.RemoteBatchDelimiter }, StringSplitOptions.RemoveEmptyEntries);
             partialBatchBuilder.Clear();
 
             // Determine the number of complete batches. If the current batch is partial, we skip processing the last
             // batch, storing it for future use.
-            int batchLength = potentialBatches.Length;
+            int batchLength = rawBatches.Length;
             if (isPartial)
             {
                 // Array is 0-based, so we need to decrement the length to get the last index.
                 batchLength -= 1;
-                partialBatchBuilder.Append(potentialBatches[batchLength]);
+                partialBatchBuilder.Append(rawBatches[batchLength]);
             }
 
             // Enqueue each complete batch for processing. The last partial batch is stored for future use and ignored
@@ -245,7 +244,7 @@ namespace OneImlx.Terminal.Runtime
                 try
                 {
                     string batchId = NewUniqueId("batch");
-                    string[] commands = potentialBatches[idx].Split(new[] { terminalOptions.Value.Router.RemoteCommandDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] commands = rawBatches[idx].Split(new[] { terminalOptions.Value.Router.RemoteCommandDelimiter }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (string cmd in commands)
                     {
                         EnqueueCommandNonConcurrent(cmd, batchId, senderEndpoint, senderId);
@@ -272,11 +271,11 @@ namespace OneImlx.Terminal.Runtime
         {
             if (item.SenderId != null)
             {
-                logger.LogDebug("Routing the command. raw={0} sender={1}", item.CommandString, item.SenderId);
+                logger.LogDebug("Routing the command. raw={0} sender={1}", item.Raw, item.SenderId);
             }
             else
             {
-                logger.LogDebug("Routing the command. raw={0}", item.CommandString);
+                logger.LogDebug("Routing the command. raw={0}", item.Raw);
             }
 
             Dictionary<string, object> properties = new()
@@ -289,7 +288,7 @@ namespace OneImlx.Terminal.Runtime
                 properties.Add(TerminalIdentifiers.SenderIdToken, item.SenderId);
             }
 
-            var context = new CommandRouterContext(item.CommandString, terminalRouterContext, properties);
+            var context = new CommandRouterContext(item.Raw, terminalRouterContext, properties);
             var routeTask = commandRouter.RouteCommandAsync(context);
 
             if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.StartContext.TerminalCancellationToken)) == routeTask)

@@ -19,14 +19,14 @@ namespace OneImlx.Terminal.Runtime
         /// Initializes a new instance of the <see cref="TerminalProcessorRequest"/> class.
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
-        /// <param name="commandString">The command string to be processed.</param>
+        /// <param name="raw">The raw command string to be processed.</param>
         /// <param name="batchId">The batch identifier.</param>
         /// <param name="senderEndpoint">The sender endpoint from which the command was sent.</param>
         /// <param name="senderId">The sender id if the multiple senders shares same endpoint.</param>
-        public TerminalProcessorRequest(string id, string commandString, string? batchId, string? senderEndpoint, string? senderId)
+        public TerminalProcessorRequest(string id, string raw, string? batchId, string? senderEndpoint, string? senderId)
         {
             Id = id;
-            CommandString = commandString;
+            Raw = raw;
             BatchId = batchId;
             SenderId = senderId;
             SenderEndpoint = senderEndpoint;
@@ -38,14 +38,14 @@ namespace OneImlx.Terminal.Runtime
         public string? BatchId { get; }
 
         /// <summary>
-        /// Gets the command string that needs to be processed.
-        /// </summary>
-        public string CommandString { get; }
-
-        /// <summary>
         /// Gets the unique identifier for the command item.
         /// </summary>
         public string Id { get; }
+
+        /// <summary>
+        /// The raw command or a batch that needs to be processed.
+        /// </summary>
+        public string Raw { get; }
 
         /// <summary>
         /// Gets the endpoint of the sender who issued the command.
@@ -62,11 +62,11 @@ namespace OneImlx.Terminal.Runtime
         {
             if (BatchId != null)
             {
-                return $"{BatchId} | {CommandString}";
+                return $"{BatchId} | {Raw}";
             }
             else
             {
-                return $"{CommandString}";
+                return $"{Raw}";
             }
         }
     }

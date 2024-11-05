@@ -69,7 +69,7 @@ namespace OneImlx.Terminal.AspNetCore
             // Assert
             addedRequest.Should().NotBeNull();
             addedRequest!.Id.Should().Be("id1");
-            addedRequest.CommandString.Should().Be("test-command");
+            addedRequest.Raw.Should().Be("test-command");
             addedRequest.SenderEndpoint.Should().Be("$unknown$");
             addedRequest.SenderId.Should().NotBeEmpty();
             addedRequest.BatchId.Should().BeNull();

@@ -32,10 +32,11 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Asynchronously adds a terminal request for processing from a string.
         /// </summary>
-        /// <param name="batch">The message to enqueue.</param>
+        /// <param name="raw">The raw command or batch to enqueue.</param>
         /// <param name="senderEndpoint">The sender's endpoint.</param>
         /// <param name="senderId">The sender's ID.</param>
-        Task AddAsync(string batch, string? senderEndpoint, string? senderId);
+        /// <returns>The request id that was added for asynchronous processing.</returns>
+        Task AddAsync(string raw, string? senderEndpoint, string? senderId);
 
         /// <summary>
         /// Generates a new unique identifier.
