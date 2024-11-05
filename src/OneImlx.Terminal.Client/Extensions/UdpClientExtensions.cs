@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="remoteEndPoint">The remote server endpoint to send the commands to.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendBatchToTerminalAsync(this UdpClient udpClient, string[] commands, string cmdDelimiter, string msgDelimiter, Encoding encoding, IPEndPoint remoteEndPoint, CancellationToken cancellationToken)
+        public static async Task SendBatchAsync(this UdpClient udpClient, string[] commands, string cmdDelimiter, string msgDelimiter, Encoding encoding, IPEndPoint remoteEndPoint, CancellationToken cancellationToken)
         {
             string batchCommands = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commands);
             await SendMessageToUdpAsync(udpClient, batchCommands, encoding, remoteEndPoint, cancellationToken);
@@ -48,7 +48,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="remoteEndPoint">The remote server endpoint to send the command to.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendSingleToTerminalAsync(this UdpClient udpClient, string commandString, string cmdDelimiter, string msgDelimiter, Encoding encoding, IPEndPoint remoteEndPoint, CancellationToken cancellationToken)
+        public static async Task SendSingleAsync(this UdpClient udpClient, string commandString, string cmdDelimiter, string msgDelimiter, Encoding encoding, IPEndPoint remoteEndPoint, CancellationToken cancellationToken)
         {
             string delimitedCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [commandString]);
             await SendMessageToUdpAsync(udpClient, delimitedCommand, encoding, remoteEndPoint, cancellationToken);
@@ -63,7 +63,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="remoteEndPoint">The remote server endpoint to send the command to.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendSingleToTerminalAsync(this UdpClient udpClient, string commandString, Encoding encoding, IPEndPoint remoteEndPoint, CancellationToken cancellationToken)
+        public static async Task SendSingleAsync(this UdpClient udpClient, string commandString, Encoding encoding, IPEndPoint remoteEndPoint, CancellationToken cancellationToken)
         {
             await SendMessageToUdpAsync(udpClient, commandString, encoding, remoteEndPoint, cancellationToken);
         }

@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var expectedCommandString = "command1;command2;command3|";
 
             // Act
-            var response = await grpcClientMock.Object.SendBatchToTerminalAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            var response = await grpcClientMock.Object.SendBatchAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var expectedCommandString = "test-command|";
 
             // Act
-            var response = await grpcClientMock.Object.SendSingleToTerminalAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            var response = await grpcClientMock.Object.SendSingleAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
@@ -85,7 +85,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var expectedCommandString = "test-command";
 
             // Act
-            var response = await grpcClientMock.Object.SendSingleToTerminalAsync(command, CancellationToken.None);
+            var response = await grpcClientMock.Object.SendSingleAsync(command, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();

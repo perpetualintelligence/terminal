@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Client.Extensions
                 await serverReady.Task;
                 var remoteEndPoint = new IPEndPoint(IPAddress.Parse(localHost), port);
                 string[] commands = { "command1", "command2" };
-                await udpClient.SendBatchToTerminalAsync(commands, ";", "|", Encoding.UTF8, remoteEndPoint, CancellationToken.None);
+                await udpClient.SendBatchAsync(commands, ";", "|", Encoding.UTF8, remoteEndPoint, CancellationToken.None);
 
                 // Wait for the server to receive the message
                 await serverTask;
@@ -76,7 +76,7 @@ namespace OneImlx.Terminal.Client.Extensions
                 await serverReady.Task;
                 var remoteEndPoint = new IPEndPoint(IPAddress.Parse(localHost), port);
                 string command = "single-command";
-                await udpClient.SendSingleToTerminalAsync(command, ";", "|", Encoding.UTF8, remoteEndPoint, CancellationToken.None);
+                await udpClient.SendSingleAsync(command, ";", "|", Encoding.UTF8, remoteEndPoint, CancellationToken.None);
 
                 // Wait for the server to receive the message
                 await serverTask;
@@ -108,7 +108,7 @@ namespace OneImlx.Terminal.Client.Extensions
                 await serverReady.Task;
                 var remoteEndPoint = new IPEndPoint(IPAddress.Parse(localHost), port);
                 string command = "single-command";
-                await udpClient.SendSingleToTerminalAsync(command, Encoding.UTF8, remoteEndPoint, CancellationToken.None);
+                await udpClient.SendSingleAsync(command, Encoding.UTF8, remoteEndPoint, CancellationToken.None);
 
                 // Wait for the server to receive the message
                 await serverTask;
@@ -124,7 +124,7 @@ namespace OneImlx.Terminal.Client.Extensions
                 udpClient.Close();
 
                 // Act
-                Func<Task> act = async () => await udpClient.SendSingleToTerminalAsync("test-command", Encoding.UTF8, new IPEndPoint(IPAddress.Parse(localHost), port), CancellationToken.None);
+                Func<Task> act = async () => await udpClient.SendSingleAsync("test-command", Encoding.UTF8, new IPEndPoint(IPAddress.Parse(localHost), port), CancellationToken.None);
 
                 // Assert: Expect an ObjectDisposedException because the UdpClient is closed
                 await act.Should().ThrowAsync<ObjectDisposedException>();

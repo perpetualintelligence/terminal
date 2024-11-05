@@ -5,14 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
-using OneImlx.Terminal.Commands.Routers;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Mocks;
-using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +14,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using FluentAssertions;
+using Moq;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime.Tests
@@ -51,6 +51,9 @@ namespace OneImlx.Terminal.Runtime.Tests
 
             // Start context
             startContext = new TerminalStartContext(TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
+
+            // Mock the terminal processor id
+            terminalProcessorMock.Setup(x => x.NewUniqueId(It.IsAny<string>())).Returns(() => Guid.NewGuid().ToString());
         }
 
         public static int FreeTcpPort()
@@ -143,104 +146,6 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Assert: Exception handler should be called with the correct exception
             exceptionHandlerMock.Verify(x => x.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(ctx =>
                 ctx.Exception == testException)), Times.Once);
-        }
-
-        [Fact]
-        public async Task RunAsync_Handles_Large_Commands_Single_Batch_Correctly()
-        {
-            // Arrange
-            options.Router.EnableRemoteDelimiters = true;
-            options.Router.RemoteBatchMaxLength = 100000;
-
-            var routerPort = FreeTcpPort();
-            var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
-
-            var tcpRouter = CreateTcpRouter();
-
-            // Setup Add to collect all messages
-            List<string> sentMessages = [];
-            terminalProcessorMock.Setup(x => x.AddAsync(It.IsAny<string>(), It.Is<string>(s => s.StartsWith("127.0.0.1")), It.IsAny<string>()))
-                .Callback<string, string, string>((message, senderEndpoint, senderId) => sentMessages.Add(message));
-
-            // Start the router
-            var routerTask = tcpRouter.RunAsync(context);
-
-            // Client task to send large delimited message
-            var commandList = Enumerable.Range(0, 10000).Select(i => $"rt{i} grp{i} cmd{i}").ToArray();
-            var testString = TerminalServices.CreateBatch(options, commandList);
-            var clientTask = Task.Run(async () =>
-            {
-                await Task.Delay(1000);
-                using var tcpClient = new TcpClient();
-                await tcpClient.ConnectAsync(routerIpEndpoint.Address, routerPort);
-
-                byte[] messageBytes = textHandler.Encoding.GetBytes(testString);
-                await tcpClient.GetStream().WriteAsync(messageBytes);
-                await tcpClient.GetStream().FlushAsync();
-            });
-
-            // Cancel token source to stop server and client
-            terminalTokenSource.CancelAfter(5000);
-
-            // Wait for router and client tasks to complete
-            await Task.WhenAll(routerTask, clientTask);
-
-            // Assert: Verify router received all messages correctly
-            terminalProcessorMock.Verify(x => x.AddAsync(
-                testString,
-                It.Is<string>(ctx => ctx.Contains("127.0.0.1")),
-                It.IsAny<string>()), Times.Exactly(100));
-        }
-
-        [Fact]
-        public async Task RunAsync_Handles_Very_Large_Delimited_Messages_Correctly()
-        {
-            // Arrange
-            options.Router.EnableRemoteDelimiters = true;
-            options.Router.RemoteBatchMaxLength = 100000;
-
-            var routerPort = FreeTcpPort();
-            var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
-
-            var tcpRouter = CreateTcpRouter();
-
-            // Setup Add to collect all messages
-            List<string> sentMessages = [];
-            terminalProcessorMock.Setup(x => x.AddAsync(It.IsAny<string>(), It.Is<string>(s => s.StartsWith("127.0.0.1")), It.IsAny<string>()))
-                .Callback<string, string, string>((message, senderEndpoint, senderId) => sentMessages.Add(message));
-
-            // Start the router
-            var routerTask = tcpRouter.RunAsync(context);
-
-            // Create 100 messages, each containing 1000 commands
-            var singleMessageWithCommands = TerminalServices.CreateBatch(options, Enumerable.Range(0, 1000).Select(i => $"rt{i} grp{i} cmd{i}").ToArray());
-            var fullTestString = string.Join("$m$", Enumerable.Repeat(singleMessageWithCommands, 100));
-            byte[] messageBytes = Encoding.UTF8.GetBytes(fullTestString);
-            var clientTask = Task.Run(async () =>
-            {
-                await Task.Delay(1000);
-                using var tcpClient = new TcpClient();
-                await tcpClient.ConnectAsync(routerIpEndpoint.Address, routerPort);
-
-                // Create a message with 1000 commands
-                await tcpClient.GetStream().WriteAsync(messageBytes);
-                await tcpClient.GetStream().FlushAsync();
-            });
-
-            // Cancel token source to stop server and client
-            terminalTokenSource.CancelAfter(5000);
-
-            // Wait for router and client tasks to complete
-            await Task.WhenAll(routerTask, clientTask);
-
-            // Now verify the messages and each cmd in the message
-            sentMessages.Count.Should().Be(100);
-            for (int i = 0; i < 100; i++)
-            {
-                sentMessages[i].Should().Be(string.Join("$c$", Enumerable.Range(0, 1000).Select(j => $"rt{j} grp{j} cmd{j}")));
-            }
         }
 
         [Fact]

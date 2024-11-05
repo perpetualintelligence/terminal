@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Hosting;
@@ -14,6 +15,8 @@ namespace OneImlx.Terminal.Apps.TestServer
     /// </summary>
     public sealed class TestServerHostedService : TerminalHostedService
     {
+        private readonly IConfiguration configuration;
+
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
@@ -25,8 +28,10 @@ namespace OneImlx.Terminal.Apps.TestServer
             IServiceProvider serviceProvider,
             TerminalOptions options,
             ITerminalConsole terminalConsole,
+            IConfiguration configuration,
             ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, logger)
         {
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -48,7 +53,9 @@ namespace OneImlx.Terminal.Apps.TestServer
             Console.Title = "Test Server";
 
             // These are async calls, but we are blocking here for as the  of the test.
+            string mode = configuration["testserver:mode"] ?? "unknown";
             TerminalConsole.WriteLineAsync("Test server started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
+            TerminalConsole.WriteLineColorAsync(ConsoleColor.Blue, "Communication Protocol={0}", mode).Wait();
         }
 
         /// <summary>

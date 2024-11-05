@@ -39,7 +39,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// efficiency by reducing the number of HTTP requests when multiple commands need to be sent. Delimiters are
         /// mandatory for batch requests.
         /// </remarks>
-        public static Task<HttpResponseMessage> SendBatchToTerminalAsync(this HttpClient httpClient, string[] commands, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
+        public static Task<HttpResponseMessage> SendBatchAsync(this HttpClient httpClient, string[] commands, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
             string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commands);
             return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(batch), cancellationToken);
@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// The command string is formatted using the provided delimiters before being sent. These delimiters separate
         /// different parts of the command for correct parsing by the terminal server.
         /// </remarks>
-        public static Task<HttpResponseMessage> SendSingleToTerminalAsync(this HttpClient httpClient, string commandString, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
+        public static Task<HttpResponseMessage> SendSingleAsync(this HttpClient httpClient, string commandString, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
             string batchedCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [commandString]);
             return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(batchedCommand), cancellationToken);
@@ -77,8 +77,8 @@ namespace OneImlx.Terminal.Client.Extensions
         /// A <see cref="HttpResponseMessage"/> representing the HTTP response. This response does not indicate the
         /// execution result of the command on the terminal.
         /// </returns>
-        /// <remarks>The command string is sent without any delimiters. To include delimiters, use the method <see cref="SendSingleToTerminalAsync(HttpClient, string, string, string, CancellationToken)"/>.</remarks>
-        public static Task<HttpResponseMessage> SendSingleToTerminalAsync(this HttpClient httpClient, string commandString, CancellationToken cancellationToken)
+        /// <remarks>The command string is sent without any delimiters. To include delimiters, use the method <see cref="SendSingleAsync(HttpClient, string, string, string, CancellationToken)"/>.</remarks>
+        public static Task<HttpResponseMessage> SendSingleAsync(this HttpClient httpClient, string commandString, CancellationToken cancellationToken)
         {
             return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(commandString), cancellationToken);
         }

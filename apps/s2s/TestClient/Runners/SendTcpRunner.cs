@@ -45,12 +45,12 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 Console.WriteLine("Sending commands individually...");
                 foreach (string command in commands)
                 {
-                    await tcpClient.SendSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, Encoding.Unicode, cToken);
+                    await tcpClient.SendSingleAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, Encoding.Unicode, cToken);
                     Console.WriteLine($"Command sent: {command}");
                 }
 
                 Console.WriteLine("Sending all commands as a batch...");
-                await tcpClient.SendBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, Encoding.Unicode, cToken);
+                await tcpClient.SendBatchAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, Encoding.Unicode, cToken);
                 Console.WriteLine("Batch of commands sent successfully.");
             }
             catch (Exception ex)
