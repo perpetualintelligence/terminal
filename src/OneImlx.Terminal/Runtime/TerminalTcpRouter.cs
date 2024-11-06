@@ -209,9 +209,6 @@ namespace OneImlx.Terminal.Runtime
         {
             while (true)
             {
-                // Release the current thread to avoid busy-wait
-                await Task.Yield();
-
                 if (tcpContext.StartContext.TerminalCancellationToken.IsCancellationRequested)
                 {
                     logger.LogDebug("Client request is canceled. client={0}", clientId);
@@ -235,8 +232,7 @@ namespace OneImlx.Terminal.Runtime
                 }
                 else
                 {
-                    string message = textHandler.Encoding.GetString(bytesRead, 0, result);
-                    await terminalProcessor.AddAsync(message, client.Client.RemoteEndPoint?.ToString(), clientId);
+                    await terminalProcessor.AddRequestAsync(textHandler.Encoding.GetString(bytesRead, 0, result), client.Client.RemoteEndPoint?.ToString(), clientId);
                 }
             }
         }

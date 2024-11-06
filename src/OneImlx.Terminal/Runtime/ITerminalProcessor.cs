@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="senderEndpoint">The sender's endpoint.</param>
         /// <param name="senderId">The sender's ID.</param>
         /// <returns>The request id that was added for asynchronous processing.</returns>
-        Task AddAsync(string raw, string? senderEndpoint, string? senderId);
+        Task AddRequestAsync(string raw, string? senderEndpoint, string? senderId);
 
         /// <summary>
         /// Generates a new unique identifier.

@@ -90,7 +90,7 @@ namespace OneImlx.Terminal.Runtime.Tests
 
             // Verify invocations
             terminalProcessorMock.Verify(x => x.StartProcessing(context), Times.Once);
-            terminalProcessorMock.Verify(x => x.AddAsync(
+            terminalProcessorMock.Verify(x => x.AddRequestAsync(
                 "test message",
                 It.Is<string>(ctx => ctx.StartsWith("127.0.0.1")),
                 It.IsAny<string>()), Times.Once);
@@ -201,7 +201,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Assert: Verify terminal processor received 5 messages
             for (int i = 0; i < 5; i++)
             {
-                terminalProcessorMock.Verify(x => x.AddAsync(
+                terminalProcessorMock.Verify(x => x.AddRequestAsync(
                 $"test message {i}",
                 It.Is<string>(ctx => ctx.StartsWith("127.0.0.1")),
                 It.IsAny<string>()), Times.Once);
@@ -259,7 +259,7 @@ namespace OneImlx.Terminal.Runtime.Tests
                 }
 
                 var delimitedMessage = TerminalServices.CreateBatch(options, [.. messages]);
-                terminalProcessorMock.Verify(x => x.AddAsync(
+                terminalProcessorMock.Verify(x => x.AddRequestAsync(
                 delimitedMessage,
                 It.Is<string>(ctx => ctx.Contains("127.0.0.1")),
                 It.IsAny<string>()), Times.Once);

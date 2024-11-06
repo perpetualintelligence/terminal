@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.AspNetCore
 
             // Setup processor add method to capture the added item
             TerminalProcessorRequest? addedRequest = null;
-            mockProcessor.Setup(x => x.AddAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockProcessor.Setup(x => x.AddRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string, string>((message, endpoint, senderId) =>
                 {
                     addedRequest = new TerminalProcessorRequest("id1", message, batchId: null, endpoint, senderId);

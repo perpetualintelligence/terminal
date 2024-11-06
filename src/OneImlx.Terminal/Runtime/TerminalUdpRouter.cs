@@ -109,7 +109,7 @@ namespace OneImlx.Terminal.Runtime
                     {
                         var receivedResult = receiveTask.Result;
                         string receivedMessage = textHandler.Encoding.GetString(receivedResult.Buffer);
-                        await terminalProcessor.AddAsync(receivedMessage, receivedResult.RemoteEndPoint.ToString(), senderId: null);
+                        await terminalProcessor.AddRequestAsync(receivedMessage, receivedResult.RemoteEndPoint.ToString(), senderId: null);
                     }
                 }
             }

@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Client.Extensions
             {
                 await serverReady.Task;
                 var remoteEndPoint = new IPEndPoint(IPAddress.Parse(localHost), port);
-                string[] commands = { "command1", "command2" };
+                string[] commands = ["command1", "command2"];
                 await udpClient.SendBatchAsync(commands, ";", "|", Encoding.UTF8, remoteEndPoint, CancellationToken.None);
 
                 // Wait for the server to receive the message

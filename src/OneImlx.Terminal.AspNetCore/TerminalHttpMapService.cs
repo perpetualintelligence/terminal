@@ -80,7 +80,7 @@ namespace OneImlx.Terminal.AspNetCore
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
             }
 
-            await terminalProcessor.AddAsync(request.CommandString, httpContext.Connection.RemoteIpAddress?.ToString() ?? "$unknown$", Guid.NewGuid().ToString());
+            await terminalProcessor.AddRequestAsync(request.CommandString, httpContext.Connection.RemoteIpAddress?.ToString() ?? "$unknown$", Guid.NewGuid().ToString());
         }
 
         // Private fields to hold injected dependencies and state information.

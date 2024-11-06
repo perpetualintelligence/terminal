@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
             bool routeCalled = false;
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);
-            mockTerminalProcessor.Setup(x => x.AddAsync("test-command", It.IsAny<string>(), It.IsAny<string>()))
+            mockTerminalProcessor.Setup(x => x.AddRequestAsync("test-command", It.IsAny<string>(), It.IsAny<string>()))
                                  .Callback(() => routeCalled = true);
 
             // Act: Post to /oneimlx/terminal/httprouter

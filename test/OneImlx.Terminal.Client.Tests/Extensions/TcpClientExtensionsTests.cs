@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 {
                     await tcpClient.ConnectAsync(localHost, port);
 
-                    string[] commands = { "command1", "command2" };
+                    string[] commands = ["command1", "command2"];
                     await tcpClient.SendBatchAsync(commands, ";", "|", Encoding.UTF8, CancellationToken.None);
 
                     // Wait for the server to complete
