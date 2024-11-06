@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -22,26 +22,23 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalGrpcRouter"/> class.
         /// </summary>
-        /// <param name="commandRouter">The command router for routing commands to specific handlers.</param>
-        /// <param name="exceptionHandler">The exception handler for handling errors that occur during command routing.</param>
+        /// <param name="terminalProcessor">The terminal router queue.</param>
         /// <param name="options">The options configuration for the terminal router.</param>
         /// <param name="logger">The logger instance for logging router events and errors.</param>
         public TerminalGrpcRouter(
-            ICommandRouter commandRouter,
-            ITerminalExceptionHandler exceptionHandler,
+            ITerminalProcessor terminalProcessor,
             IOptions<TerminalOptions> options,
             ILogger<TerminalGrpcRouter> logger)
         {
-            this.commandRouter = commandRouter;
-            this.exceptionHandler = exceptionHandler;
+            this.terminalProcessor = terminalProcessor;
             this.options = options;
             this.logger = logger;
         }
 
         /// <summary>
-        /// The command queue for the terminal router.
+        /// Gets a value indicating whether the <see cref="TerminalGrpcRouter"/> is running.
         /// </summary>
-        public TerminalQueue? CommandQueue => commandQueue;
+        public bool IsRunning { get; protected set; }
 
         /// <summary>
         /// Runs the gRPC server asynchronously and begins handling client requests indefinitely. The server will
@@ -58,25 +55,28 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Initialize the command queue for remote message processing.
-            commandQueue = new TerminalQueue(commandRouter, exceptionHandler, options.Value, context, logger);
             try
             {
                 logger.LogDebug("Terminal gRPC router started.");
+                IsRunning = true;
 
                 // Start background command processing and blocking the current thread.
-                await commandQueue.StartBackgroundProcessingAsync(context.StartContext.TerminalCancellationToken);
+                terminalProcessor.StartProcessing(context);
+
+                // Run indefinitely until the cancellation token is triggered
+                await terminalProcessor.WaitAsync(context);
             }
             finally
             {
+                await terminalProcessor.StopProcessingAsync(options.Value.Router.Timeout);
                 logger.LogInformation("Terminal gRPC router stopped.");
+                IsRunning = false;
             }
         }
 
         // Private fields to hold injected dependencies and state information.
-        private readonly ICommandRouter commandRouter;
-        private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly ILogger<TerminalGrpcRouter> logger;
         private readonly IOptions<TerminalOptions> options;
-        private TerminalQueue? commandQueue;
+        private readonly ITerminalProcessor terminalProcessor;
     }
 }

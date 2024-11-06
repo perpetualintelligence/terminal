@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright © 2019-2024 Perpetual Intelligence L.L.C. All rights reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Runtime
     /// <summary>
     /// The default <see cref="ITerminalRouter{TContext}"/> for console based terminals.
     /// </summary>
-    public class TerminalConsoleRouter : ITerminalRouter<TerminalConsoleRouterContext>
+    public sealed class TerminalConsoleRouter : ITerminalRouter<TerminalConsoleRouterContext>
     {
         /// <summary>
         /// Initialize a new <see cref="TerminalConsoleRouter"/> instance.
@@ -46,16 +46,16 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
-        /// The command queue for the terminal router. This is not supported for console routing.
+        /// Gets a value indicating whether the console terminal is running.
         /// </summary>
-        public TerminalQueue? CommandQueue => null;
+        public bool IsRunning { get; private set; }
 
         /// <summary>
         /// Runs to the terminal as a console asynchronously.
         /// </summary>
         /// <param name="context">The routing service context.</param>
         /// <returns></returns>
-        public virtual async Task RunAsync(TerminalConsoleRouterContext context)
+        public async Task RunAsync(TerminalConsoleRouterContext context)
         {
             // Make sure we have supported start context
             if (context.StartContext.StartMode != TerminalStartMode.Console)
@@ -64,69 +64,77 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Track the application lifetime so we can know whether cancellation is requested.
-            while (true)
+            try
             {
-                CommandRoute? route = null;
-
-                try
+                IsRunning = true;
+                while (true)
                 {
-                    // Wait for a bit to avoid CPU hogging and give time for cancellation token to be set.
-                    await Task.Delay(100);
+                    CommandRoute? route = null;
 
-                    // Honor the cancellation request.
-                    if (context.StartContext.TerminalCancellationToken.IsCancellationRequested)
+                    try
                     {
-                        throw new OperationCanceledException("Received terminal cancellation token, the terminal routing is canceled.");
-                    }
+                        // Wait for a bit to avoid CPU hogging and give time for cancellation token to be set.
+                        await Task.Delay(100);
 
-                    // Check if application is stopping
-                    if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
+                        // Honor the cancellation request.
+                        if (context.StartContext.TerminalCancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Received terminal cancellation token, the terminal routing is canceled.");
+                        }
+
+                        // Check if application is stopping
+                        if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Application is stopping, the terminal routing is canceled.");
+                        }
+
+                        // Print the caret
+                        if (options.Router.Caret != null)
+                        {
+                            await terminalConsole.WriteAsync(options.Router.Caret);
+                        }
+
+                        // Read the user input
+                        string? raw = await terminalConsole.ReadLineAsync();
+
+                        // Ignore empty commands
+                        if (raw == null || terminalConsole.Ignore(raw))
+                        {
+                            // Wait for next command.
+                            logger.LogDebug("The raw string is null or ignored by the terminal console.");
+                            continue;
+                        }
+
+                        // Route the request.
+                        CommandRouterContext routerContext = new(raw, context, properties: null);
+                        route = routerContext.Route;
+                        Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
+
+                        bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.TerminalCancellationToken);
+                        if (!success)
+                        {
+                            throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
+                        }
+                    }
+                    catch (OperationCanceledException oex)
                     {
-                        throw new OperationCanceledException("Application is stopping, the terminal routing is canceled.");
+                        // Routing is canceled.
+                        TerminalExceptionHandlerContext exContext = new(oex, route);
+                        await exceptionHandler.HandleExceptionAsync(exContext);
+                        break;
                     }
-
-                    // Print the caret
-                    if (options.Router.Caret != null)
+                    catch (Exception ex)
                     {
-                        await terminalConsole.WriteAsync(options.Router.Caret);
+                        // Task.Wait bundles up any exception into Exception.InnerException
+                        TerminalExceptionHandlerContext exContext = new(ex.InnerException ?? ex, route);
+                        await exceptionHandler.HandleExceptionAsync(exContext);
                     }
-
-                    // Read the user input
-                    string? raw = await terminalConsole.ReadLineAsync();
-
-                    // Ignore empty commands
-                    if (raw == null || terminalConsole.Ignore(raw))
-                    {
-                        // Wait for next command.
-                        logger.LogDebug("The raw string is null or ignored by the terminal console.");
-                        continue;
-                    }
-
-                    // Route the request.
-                    CommandRouterContext routerContext = new(raw, context, properties: null);
-                    route = routerContext.Route;
-                    Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
-
-                    bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.TerminalCancellationToken);
-                    if (!success)
-                    {
-                        throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
-                    }
-                }
-                catch (OperationCanceledException oex)
-                {
-                    // Routing is canceled.
-                    TerminalExceptionHandlerContext exContext = new(oex, route);
-                    await exceptionHandler.HandleExceptionAsync(exContext);
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    // Task.Wait bundles up any exception into Exception.InnerException
-                    TerminalExceptionHandlerContext exContext = new(ex.InnerException ?? ex, route);
-                    await exceptionHandler.HandleExceptionAsync(exContext);
-                }
-            };
+                };
+            }
+            finally
+            {
+                IsRunning = false;
+            }
         }
 
         private readonly IHostApplicationLifetime applicationLifetime;

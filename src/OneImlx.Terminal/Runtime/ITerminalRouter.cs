@@ -21,9 +21,9 @@ namespace OneImlx.Terminal.Runtime
     public interface ITerminalRouter<TContext> where TContext : TerminalRouterContext
     {
         /// <summary>
-        /// The command queue for the terminal router.
+        /// Gets a value indicating whether the terminal router is running.
         /// </summary>
-        public TerminalQueue? CommandQueue { get; }
+        public bool IsRunning { get; }
 
         /// <summary>
         /// Runs terminal router asynchronously.

@@ -1,5 +1,5 @@
 /*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -295,6 +295,19 @@ namespace OneImlx.Terminal.Extensions
         {
             builder.Services.AddTransient<IDataTypeMapper<Option>, TMapper>();
             builder.Services.AddTransient<IOptionChecker, TChecker>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="ITerminalProcessor"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TTerminalProcessor">The terminal processor type.</typeparam>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddProcessor<TTerminalProcessor>(this ITerminalBuilder builder)
+            where TTerminalProcessor : class, ITerminalProcessor
+        {
+            builder.Services.AddSingleton<ITerminalProcessor, TTerminalProcessor>();
             return builder;
         }
 

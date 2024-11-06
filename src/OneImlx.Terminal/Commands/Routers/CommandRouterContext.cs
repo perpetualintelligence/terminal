@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Commands.Routers
                 throw new ArgumentException($"'{nameof(rawCommandString)}' cannot be null or whitespace.", nameof(rawCommandString));
             }
 
-            RoutingContext = routingContext;
+            TerminalContext = routingContext;
             Properties = properties;
             Route = new CommandRoute(Guid.NewGuid().ToString(), rawCommandString);
         }
@@ -47,6 +47,6 @@ namespace OneImlx.Terminal.Commands.Routers
         /// <summary>
         /// The terminal routing context.
         /// </summary>
-        public TerminalRouterContext RoutingContext { get; }
+        public TerminalRouterContext TerminalContext { get; }
     }
 }

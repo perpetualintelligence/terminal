@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -19,75 +19,45 @@ namespace OneImlx.Terminal.Runtime.Tests
             {
                 Router = new RouterOptions
                 {
-                    RemoteCommandDelimiter = ";", // Delimiter to separate commands within a message
-                    RemoteMessageDelimiter = "|"  // Delimiter to mark the end of a complete message
+                    RemoteCommandDelimiter = ";", // Delimiter to separate commands within a batch
+                    RemoteBatchDelimiter = "|"   // Delimiter to mark the end of a complete batch
                 }
             };
         }
 
         [Fact]
-        public void DelimitedMessage_WithCustomDelimiters_ShouldAddDelimiterToElements_NotEndingWithCommandDelimiter()
+        public void CreateBatch_WithCustomDelimiters_ShouldJoinCommandsAndEndWithMessageDelimiter()
         {
-            var commands = new[] { "cmd1;", "cmd2", "cmd3" };
-            var result = TerminalServices.DelimitedMessage(";", "|", commands);
-            result.Should().Be("cmd1;cmd2;cmd3;|");
+            var commands = new[] { "cmd1", "cmd2", "cmd3" };
+            var result = TerminalServices.CreateBatch(";", "|", commands);
+            result.Should().Be("cmd1;cmd2;cmd3|");
         }
 
         [Fact]
-        public void DelimitedMessage_WithCustomDelimiters_ShouldReturn_EmptyString_ForEmptyInput()
+        public void CreateBatch_WithEmptyCommands_ShouldReturnOnlyMessageDelimiter()
         {
             var commands = System.Array.Empty<string>();
-            var result = TerminalServices.DelimitedMessage(";", "|", commands);
+            var result = TerminalServices.CreateBatch(";", "|", commands);
             result.Should().Be("|");
         }
 
         [Fact]
-        public void DelimitedMessage_WithCustomDelimiters_ShouldReturn_ExpectedString_ForMultipleInputs()
+        public void CreateBatch_WithOptions_ShouldJoinCommandsAndEndWithMessageDelimiter()
         {
             var commands = new[] { "cmd1", "cmd2", "cmd3" };
-            var result = TerminalServices.DelimitedMessage(";", "|", commands);
-            result.Should().Be("cmd1;cmd2;cmd3;|");
+            var result = TerminalServices.CreateBatch(_terminalOptions, commands);
+            result.Should().Be("cmd1;cmd2;cmd3|");
         }
 
         [Fact]
-        public void DelimitedMessage_WithCustomDelimiters_ShouldReturn_ExpectedString_ForSingleInput()
+        public void CreateBatch_WithSingleCommand_ShouldAppendMessageDelimiter()
         {
             var commands = new[] { "cmd1" };
-            var result = TerminalServices.DelimitedMessage(";", "|", commands);
-            result.Should().Be("cmd1;|");
+            var result = TerminalServices.CreateBatch(";", "|", commands);
+            result.Should().Be("cmd1|");
         }
 
-        [Fact]
-        public void DelimitedMessage_WithOptions_ShouldAddDelimiterToElements_NotEndingWithCommandDelimiter()
-        {
-            var commands = new[] { "cmd1;", "cmd2", "cmd3" };
-            var result = TerminalServices.DelimitedMessage(_terminalOptions, commands);
-            result.Should().Be("cmd1;cmd2;cmd3;|");
-        }
-
-        [Fact]
-        public void DelimitedMessage_WithOptions_ShouldReturn_EmptyString_ForEmptyInput()
-        {
-            var commands = System.Array.Empty<string>();
-            var result = TerminalServices.DelimitedMessage(_terminalOptions, commands);
-            result.Should().Be("|");
-        }
-
-        [Fact]
-        public void DelimitedMessage_WithOptions_ShouldReturn_ExpectedString_ForMultipleInputs()
-        {
-            var commands = new[] { "cmd1", "cmd2", "cmd3" };
-            var result = TerminalServices.DelimitedMessage(_terminalOptions, commands);
-            result.Should().Be("cmd1;cmd2;cmd3;|");
-        }
-
-        [Fact]
-        public void DelimitedMessage_WithOptions_ShouldReturn_ExpectedString_ForSingleInput()
-        {
-            var commands = new[] { "cmd1" };
-            var result = TerminalServices.DelimitedMessage(_terminalOptions, commands);
-            result.Should().Be("cmd1;|");
-        }
+        // Tests for Encode and Decode License Contents
 
         [Theory]
         [InlineData("dGVzdCBsaWNlbnNlY29uZGVudHM=")]
@@ -98,11 +68,10 @@ namespace OneImlx.Terminal.Runtime.Tests
             string result = TerminalServices.EncodeLicenseContents(licenseContents);
             result.Should().NotBe(licenseContents);
 
-            //Decode
+            // Decode
             string decodedContents = TerminalServices.DecodeLicenseContents(result);
             decodedContents.Should().Be(licenseContents);
         }
-
 
         private readonly TerminalOptions _terminalOptions;
     }

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -17,12 +17,13 @@ namespace OneImlx.Terminal.Mocks
             get; private set;
         }
 
+        public bool IsRunning { get; private set; } = false;
+
         public Task RunAsync(MockRoutingContext context)
         {
             Called = true;
+            IsRunning = true;
             return Task.CompletedTask;
         }
-
-        public TerminalQueue? CommandQueue => null;
     }
 }

@@ -14,6 +14,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 
@@ -40,29 +41,32 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="commandRouter">The command router.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
+        /// <param name="terminalProcessor">The terminal processing queue.</param>
         /// <param name="logger">The logger.</param>
         /// <remarks>
         /// This constructor creates a new instance of the <see cref="TerminalTcpRouter"/> class. It takes several
         /// dependencies that are required for handling TCP client-server communication.
         /// </remarks>
         public TerminalTcpRouter(
-            TerminalOptions options,
+            IOptions<TerminalOptions> options,
             ICommandRouter commandRouter,
             ITerminalTextHandler textHandler,
             ITerminalExceptionHandler exceptionHandler,
+            ITerminalProcessor terminalProcessor,
             ILogger<TerminalTcpRouter> logger)
         {
             this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
+            this.terminalProcessor = terminalProcessor;
             this.options = options;
             this.textHandler = textHandler;
             this.logger = logger;
         }
 
         /// <summary>
-        /// The command queue for the terminal router. This is not supported for TCP routing.
+        /// Gets a value indicating whether the <see cref="TerminalTcpRouter"/> is running.
         /// </summary>
-        public TerminalQueue? CommandQueue => null;
+        public bool IsRunning { get; protected set; }
 
         /// <summary>
         /// Runs the TCP server for handling client connections asynchronously.
@@ -89,21 +93,21 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The network IP endpoint is missing in the TCP server routing request.");
             }
 
-            // Reset the command queue and start the TCP server
-            commandQueue = new TerminalQueue(commandRouter, exceptionHandler, options, context, logger);
+            // Start the TCP server
             _server = new(context.IPEndPoint);
             Task backgroundProcessingTask = Task.CompletedTask;
             try
             {
                 // Start the TCP server
                 _server.Start();
-                logger.LogDebug("Terminal TCP routing started. endpoint={0}", context.IPEndPoint);
+                logger.LogDebug("Terminal TCP router started. endpoint={0}", context.IPEndPoint);
+                IsRunning = true;
 
                 // Start processing the command queue immediately in the background. The code starts the background task
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                backgroundProcessingTask = commandQueue.StartBackgroundProcessingAsync(context.StartContext.TerminalCancellationToken);
+                terminalProcessor.StartProcessing(context);
 
                 // Blocking call to accept client connections until the cancellation token is requested. We have
                 // initialized the requested client connections. Now we wait for all the client connections to complete
@@ -111,8 +115,8 @@ namespace OneImlx.Terminal.Runtime
                 // a new client connection.
                 await AcceptClientsUntilCanceledAsync(context);
 
-                // Stop and await for the background command processing to complete
-                await commandQueue.StopBackgroundProcessingAsync(Timeout.InfiniteTimeSpan);
+                // Throw if canceled
+                context.StartContext.TerminalCancellationToken.ThrowIfCancellationRequested();
             }
             catch (Exception ex)
             {
@@ -124,8 +128,12 @@ namespace OneImlx.Terminal.Runtime
                 // Stop the TCP server
                 _server.Stop();
 
+                // Stop and await for the background command processing to complete
+                await terminalProcessor.StopProcessingAsync(options.Value.Router.Timeout);
+
                 // Ensure the command queue is stopped
-                logger.LogDebug("Terminal TCP routing stopped. endpoint={0}", context.IPEndPoint);
+                logger.LogDebug("Terminal TCP router stopped. endpoint={0}", context.IPEndPoint);
+                IsRunning = false;
             }
         }
 
@@ -133,31 +141,27 @@ namespace OneImlx.Terminal.Runtime
         {
             try
             {
-                logger.LogDebug("Client connection active. client={0}", clientId);
-
                 // Wait for the client to connect, take into account the cancellation token for .NET Standard 2.0
                 var acceptTask = _server!.AcceptTcpClientAsync();
                 var cancellationTask = Task.Delay(Timeout.Infinite, terminalCancellationToken);
                 var completedTask = await Task.WhenAny(acceptTask, cancellationTask);
                 if (completedTask == cancellationTask)
                 {
-                    terminalCancellationToken.ThrowIfCancellationRequested();
+                    return;
                 }
 
                 // Wait for the client connection acceptance to complete
-                TcpClient acceptClient = await acceptTask;
-                logger.LogDebug("Client connection assigned. client={0}", clientId);
+                using (TcpClient acceptClient = await acceptTask)
+                {
+                    logger.LogDebug("Client connected. client={0} remote={1}", clientId, acceptClient.Client.RemoteEndPoint?.ToString());
 
-                // Handle the client connection
-                await HandleClientConnectedAsync(context, acceptClient, clientId);
+                    // Handle the client connection
+                    await HandleClientConnectedAsync(context, acceptClient, clientId);
+                }
             }
             catch (Exception ex)
             {
-                logger.LogDebug("Client connection interrupted. client={0} info={1}", clientId, ex.InnerException != null ? ex.InnerException.Message : ex.Message);
                 await exceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, null));
-            }
-            finally
-            {
             }
         }
 
@@ -176,7 +180,7 @@ namespace OneImlx.Terminal.Runtime
             while (true)
             {
                 // Ensure we have not reached the maximum number of remote clients
-                if (clientTasks.Count >= options.Router.MaxRemoteClients)
+                if (clientTasks.Count >= options.Value.Router.MaxRemoteClients)
                 {
                     // Wait for any client task to complete before accepting a new one
                     Task completedTask = await Task.WhenAny(clientTasks.Values);
@@ -187,11 +191,12 @@ namespace OneImlx.Terminal.Runtime
                 // If cancellation is requested, break the loop before we setup a new client accept task
                 if (terminalCancellationToken.IsCancellationRequested)
                 {
+                    logger.LogDebug("Terminal TCP router canceled.");
                     break;
                 }
 
                 // Initialize a new client connection. Note: we are not awaiting the task here to allow multiple client connections.
-                string clientId = Guid.NewGuid().ToString();
+                string clientId = terminalProcessor.NewUniqueId("client");
                 Task clientTask = AcceptClientAsync(context, terminalCancellationToken, clientId);
                 clientTasks.TryAdd(clientId, clientTask);
             }
@@ -200,112 +205,44 @@ namespace OneImlx.Terminal.Runtime
             await Task.WhenAll(clientTasks.Values);
         }
 
-        private int FindFirstDelimiter(Span<byte> bufferSpan, Span<byte> delimiterSpan)
-        {
-            for (int i = 0; i <= bufferSpan.Length - delimiterSpan.Length; i++)
-            {
-                if (bufferSpan.Slice(i, delimiterSpan.Length).SequenceEqual(delimiterSpan))
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
         private async Task HandleClientConnectedAsync(TerminalTcpRouterContext tcpContext, TcpClient client, string clientId)
         {
-            using (NetworkStream stream = client.GetStream())
-            {
-                byte[] buffer = new byte[4096];
-                MemoryStream messageBuffer = new();
-                bool delimetersEnabled = options.Router.EnableRemoteDelimiters.GetValueOrDefault();
-
-                while (true)
-                {
-                    // Release the current thread to avoid busy-wait
-                    await Task.Yield();
-
-                    if (tcpContext.StartContext.TerminalCancellationToken.IsCancellationRequested)
-                    {
-                        logger.LogDebug("Client request is canceled. client={0}", clientId);
-                        break;
-                    }
-
-                    // The stream is closed, the client is disconnected.
-                    if (!client.Connected)
-                    {
-                        logger.LogDebug("Client is disconnected. client={0}", clientId);
-                        break;
-                    }
-
-                    // Ensure we can read from the stream
-                    if (!stream.CanRead)
-                    {
-                        throw new TerminalException(TerminalErrors.ServerError, "The client stream is not readable. client={0}", clientId);
-                    }
-
-                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, tcpContext.StartContext.TerminalCancellationToken);
-                    if (bytesRead == 0)
-                    {
-                        logger.LogDebug("Client stream is empty. client={0}", clientId);
-                        break;
-                    }
-
-                    // Process messages based on whether delimiters are enabled
-                    if (delimetersEnabled)
-                    {
-                        // Write to buffer and process complete messages
-                        messageBuffer.Write(buffer, 0, bytesRead);
-                        ProcessCompleteMessages(messageBuffer, client.Client.RemoteEndPoint, clientId);
-                    }
-                    else
-                    {
-                        // Directly enqueue messages without processing delimiters. This assumes that the entire buffer
-                        // is a single valid command
-                        string message = textHandler.Encoding.GetString(buffer, 0, bytesRead);
-                        commandQueue?.Enqueue(message, client.Client.RemoteEndPoint.ToString(), clientId);
-                    }
-                }
-            }
-        }
-
-        private void ProcessCompleteMessages(MemoryStream messageBuffer, EndPoint clientEndpoint, string clientId)
-        {
-            byte[] delimiterBytes = textHandler.Encoding.GetBytes(options.Router.RemoteMessageDelimiter);
-            byte[] bufferArray = messageBuffer.ToArray(); // Convert the entire MemoryStream to an array for processing
-            Span<byte> dataSpan = new(bufferArray); // Create a span from the array
-
             while (true)
             {
-                int delimiterIndex = FindFirstDelimiter(dataSpan, delimiterBytes.AsSpan());
-                if (delimiterIndex == -1)
+                if (tcpContext.StartContext.TerminalCancellationToken.IsCancellationRequested)
                 {
+                    logger.LogDebug("Client request is canceled. client={0}", clientId);
                     break;
                 }
 
-                // Convert the relevant slice of the data span to an array for string conversion
-                byte[] messageBytes = dataSpan.Slice(0, delimiterIndex + delimiterBytes.Length).ToArray();
-                string message = textHandler.Encoding.GetString(messageBytes);
-                commandQueue?.Enqueue(message, clientEndpoint.ToString(), clientId);
+                // The stream is closed, the client is disconnected.
+                if (!client.Connected)
+                {
+                    logger.LogDebug("Client is disconnected. client={0}", clientId);
+                    break;
+                }
 
-                // Move the dataSpan forward past the processed message
-                dataSpan = dataSpan.Slice(delimiterIndex + delimiterBytes.Length);
-            }
-
-            // Reset the messageBuffer to only contain any unprocessed data
-            messageBuffer.SetLength(0);
-            if (dataSpan.Length > 0)
-            {
-                messageBuffer.Write(dataSpan.ToArray(), 0, dataSpan.Length); // Write remaining unprocessed data back into the buffer
+                // Add to the terminal processor
+                byte[] bytesRead = new byte[2048];
+                int result = await client.GetStream().ReadAsync(bytesRead, 0, 2048);
+                if (result == 0)
+                {
+                    logger.LogDebug("Client is disconnected. client={0}", clientId);
+                    break;
+                }
+                else
+                {
+                    await terminalProcessor.AddRequestAsync(textHandler.Encoding.GetString(bytesRead, 0, result), client.Client.RemoteEndPoint?.ToString(), clientId);
+                }
             }
         }
 
         private readonly ICommandRouter commandRouter;
         private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly ILogger<TerminalTcpRouter> logger;
-        private readonly TerminalOptions options;
+        private readonly IOptions<TerminalOptions> options;
+        private readonly ITerminalProcessor terminalProcessor;
         private readonly ITerminalTextHandler textHandler;
         private TcpListener? _server;
-        private TerminalQueue? commandQueue;
     }
 }

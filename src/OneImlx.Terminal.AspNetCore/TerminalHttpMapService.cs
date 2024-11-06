@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Runtime;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -26,19 +25,22 @@ namespace OneImlx.Terminal.AspNetCore
         /// Initializes a new instance of the <see cref="TerminalHttpMapService"/> class.
         /// </summary>
         /// <param name="terminalRouter">The terminal router.</param>
+        /// <param name="terminalProcessor">The terminal processor.</param>
         /// <param name="logger">The logger instance for logging router events and errors.</param>
         public TerminalHttpMapService(
             ITerminalRouter<TerminalHttpRouterContext> terminalRouter,
+            ITerminalProcessor terminalProcessor,
             ILogger<TerminalHttpMapService> logger)
         {
             this.terminalRouter = terminalRouter;
+            this.terminalProcessor = terminalProcessor;
             this.logger = logger;
         }
 
         /// <summary>
         /// Routes the command string to an appropriate runner via HTTP.
         /// </summary>
-        /// <param name="context">The HTTP context containing the request.</param>
+        /// <param name="httpContext">The HTTP context containing the request.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         /// <exception cref="TerminalException">Thrown when the terminal HTTP router is not running.</exception>
         /// <remarks>
@@ -53,16 +55,11 @@ namespace OneImlx.Terminal.AspNetCore
         /// This method is primarily intended to be called by HTTP clients. It should not be invoked directly from
         /// within the application without proper context, as it depends on HTTP infrastructure and client context information.
         /// </remarks>
-        public async Task<IEnumerable<TerminalQueueRequest>> RouteCommandAsync(HttpContext context)
+        public async Task RouteCommandAsync(HttpContext httpContext)
         {
-            if (terminalRouter.CommandQueue == null)
-            {
-                throw new TerminalException(TerminalErrors.ServerError, "The terminal HTTP router is not running.");
-            }
-
             // Read the JSON body from the HTTP request and deserialize it into the TerminalHttpRequest object.
             TerminalJsonCommandRequest? request;
-            using (var reader = new StreamReader(context.Request.Body))
+            using (var reader = new StreamReader(httpContext.Request.Body))
             {
                 var requestBody = await reader.ReadToEndAsync();
                 request = JsonSerializer.Deserialize<TerminalJsonCommandRequest>(requestBody);
@@ -73,13 +70,22 @@ namespace OneImlx.Terminal.AspNetCore
                 throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the HTTP request.");
             }
 
-            // Enqueue the command string. The command is queued along with the client's IP address from the HTTP context.
-            string peer = context.Connection.RemoteIpAddress?.ToString() ?? "$unknown$";
-            return terminalRouter.CommandQueue.Enqueue(request.CommandString, peer, Guid.NewGuid().ToString());
+            if (!terminalRouter.IsRunning)
+            {
+                throw new TerminalException(TerminalErrors.ServerError, "The terminal HTTP router is not running.");
+            }
+
+            if (!terminalProcessor.IsProcessing)
+            {
+                throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
+            }
+
+            await terminalProcessor.AddRequestAsync(request.CommandString, httpContext.Connection.RemoteIpAddress?.ToString() ?? "$unknown$", Guid.NewGuid().ToString());
         }
 
         // Private fields to hold injected dependencies and state information.
         private readonly ILogger<TerminalHttpMapService> logger;
+        private readonly ITerminalProcessor terminalProcessor;
         private readonly ITerminalRouter<TerminalHttpRouterContext> terminalRouter;
     }
 }

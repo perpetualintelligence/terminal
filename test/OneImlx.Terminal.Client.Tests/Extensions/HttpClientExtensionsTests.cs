@@ -50,7 +50,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var msgDelimiter = "|";
 
             // Act
-            var response = await _httpClient.SendBatchToTerminalAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            var response = await _httpClient.SendBatchAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Client.Extensions
             // Verify that the HTTP request content was correct
             TerminalJsonCommandRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonCommandRequest>();
             actualContent.Should().NotBeNull();
-            actualContent!.CommandString.Should().Be("command1;command2;command3;|");
+            actualContent!.CommandString.Should().Be("command1;command2;command3|");
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var msgDelimiter = "|";
 
             // Act
-            var response = await _httpClient.SendSingleToTerminalAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            var response = await _httpClient.SendSingleAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -78,7 +78,7 @@ namespace OneImlx.Terminal.Client.Extensions
             // Verify that the HTTP request content was correct
             TerminalJsonCommandRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonCommandRequest>();
             actualContent.Should().NotBeNull();
-            actualContent!.CommandString.Should().Be("test-command;|");
+            actualContent!.CommandString.Should().Be("test-command|");
         }
 
         [Fact]
@@ -88,7 +88,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var command = "test-command";
 
             // Act
-            var response = await _httpClient.SendSingleToTerminalAsync(command, CancellationToken.None);
+            var response = await _httpClient.SendSingleAsync(command, CancellationToken.None);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

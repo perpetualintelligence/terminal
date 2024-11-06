@@ -29,10 +29,10 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="encoding">The <see cref="Encoding"/> used to encode the message before sending.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendBatchToTerminalAsync(this TcpClient tcpClient, string[] commands, string cmdDelimiter, string msgDelimiter, Encoding encoding, CancellationToken cancellationToken)
+        public static async Task SendBatchAsync(this TcpClient tcpClient, string[] commands, string cmdDelimiter, string msgDelimiter, Encoding encoding, CancellationToken cancellationToken)
         {
-            string batchCommands = TerminalServices.DelimitedMessage(cmdDelimiter, msgDelimiter, commands);
-            await SendMessageToTerminalAsync(tcpClient, batchCommands, encoding, cancellationToken);
+            string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commands);
+            await SendMessageToTerminalAsync(tcpClient, batch, encoding, cancellationToken);
         }
 
         /// <summary>
@@ -45,10 +45,10 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="encoding">The <see cref="Encoding"/> used to encode the message before sending.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendSingleToTerminalAsync(this TcpClient tcpClient, string commandString, string cmdDelimiter, string msgDelimiter, Encoding encoding, CancellationToken cancellationToken)
+        public static async Task SendSingleAsync(this TcpClient tcpClient, string commandString, string cmdDelimiter, string msgDelimiter, Encoding encoding, CancellationToken cancellationToken)
         {
-            string delimitedCommand = TerminalServices.DelimitedMessage(cmdDelimiter, msgDelimiter, commandString);
-            await SendMessageToTerminalAsync(tcpClient, delimitedCommand, encoding, cancellationToken);
+            string batchCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [commandString]);
+            await SendMessageToTerminalAsync(tcpClient, batchCommand, encoding, cancellationToken);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="encoding">The <see cref="Encoding"/> used to encode the message before sending.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendSingleToTerminalAsync(this TcpClient tcpClient, string commandString, Encoding encoding, CancellationToken cancellationToken)
+        public static async Task SendSingleAsync(this TcpClient tcpClient, string commandString, Encoding encoding, CancellationToken cancellationToken)
         {
             await SendMessageToTerminalAsync(tcpClient, commandString, encoding, cancellationToken);
         }

@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Commands.Runners
         /// <summary>
         /// The terminal start context.
         /// </summary>
-        public TerminalStartContext StartContext => HandlerContext.RouterContext.RoutingContext.StartContext;
+        public TerminalStartContext StartContext => HandlerContext.RouterContext.TerminalContext.StartContext;
 
         /// <summary>
         /// The hierarchy of the command to run.

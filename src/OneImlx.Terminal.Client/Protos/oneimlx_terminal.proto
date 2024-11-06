@@ -23,6 +23,4 @@ message TerminalGrpcRouterProtoInput {
 
 // The terminal router command request.
 message TerminalGrpcRouterProtoOutput {
-    // The routing response. This is not the result of the actual command execution.
-    string MessageItemsJson = 1;
 }

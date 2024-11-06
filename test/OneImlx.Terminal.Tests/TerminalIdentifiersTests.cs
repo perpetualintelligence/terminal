@@ -35,7 +35,7 @@ namespace OneImlx.Terminal
             TerminalIdentifiers.DefaultHandler.Should().Be("default");
             TerminalIdentifiers.TestApplicationId.Should().Be("08c6925f-a734-4e24-8d84-e06737420766");
             TerminalIdentifiers.RemoteCommandDelimiter.Should().Be("$c$");
-            TerminalIdentifiers.RemoteMessageDelimiter.Should().Be("$m$");
+            TerminalIdentifiers.RemoteBatchDelimiter.Should().Be("$b$");
             TerminalIdentifiers.SenderIdToken.Should().Be("sender_id");
             TerminalIdentifiers.SenderEndpointToken.Should().Be("sender_endpoint");
         }
