@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Runtime
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalProcessorRequest"/> items that are
+    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalProcessorRequest123"/> items that are
     /// processed in the background. It routes these commands to the <see cref="ICommandRouter"/> for execution. The
     /// processor supports handling both single commands and batches of commands, as well as partial batches for
     /// single-client scenarios.
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Runtime
             this.textHandler = textHandler;
             this.logger = logger;
 
-            requestQueue = new Queue<TerminalProcessorRequest>();
+            requestQueue = new Queue<TerminalProcessorRequest123>();
             requestProcessing = Task.CompletedTask;
             responseProcessing = Task.CompletedTask;
             queueSignal = new SemaphoreSlim(0);
@@ -86,7 +86,7 @@ namespace OneImlx.Terminal.Runtime
         /// <remarks>
         /// THIS METHOD IS PART OF INTERNAL INFRASTRUCTURE AND IS NOT INTENDED TO BE USED BY APPLICATION CODE.
         /// </remarks>
-        public IReadOnlyCollection<TerminalProcessorRequest> UnprocessedRequests
+        public IReadOnlyCollection<TerminalProcessorRequest123> UnprocessedRequests
         {
             get
             {
@@ -252,12 +252,12 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         private void EnqueueCommandNonConcurrent(string command, string? batchId, string? senderEndpoint, string? senderId)
         {
-            var request = new TerminalProcessorRequest(NewUniqueId(), command, batchId, senderEndpoint, senderId);
+            var request = new TerminalProcessorRequest123(NewUniqueId(), command, batchId, senderEndpoint, senderId);
             requestQueue.Enqueue(request);
             queueSignal.Release();
         }
 
-        private async Task ProcessRawCommandAsync(TerminalProcessorRequest item, TerminalRouterContext terminalRouterContext)
+        private async Task ProcessRawCommandAsync(TerminalProcessorRequest123 item, TerminalRouterContext terminalRouterContext)
         {
             if (item.SenderId != null)
             {
@@ -312,7 +312,7 @@ namespace OneImlx.Terminal.Runtime
                         {
                             if (requestQueue.Count > 0)
                             {
-                                TerminalProcessorRequest item = requestQueue.Dequeue();
+                                TerminalProcessorRequest123 item = requestQueue.Dequeue();
                                 await ProcessRawCommandAsync(item, terminalRouterContext);
                             }
                         }
@@ -341,7 +341,7 @@ namespace OneImlx.Terminal.Runtime
         private readonly ILogger logger;
         private readonly SemaphoreSlim queueLock;
         private readonly SemaphoreSlim queueSignal;
-        private readonly Queue<TerminalProcessorRequest> requestQueue;
+        private readonly Queue<TerminalProcessorRequest123> requestQueue;
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly IOptions<TerminalOptions> terminalOptions;
         private readonly ITerminalTextHandler textHandler;

@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The unprocessed requests at the time of query.
         /// </summary>
-        IReadOnlyCollection<TerminalProcessorRequest> UnprocessedRequests { get; }
+        IReadOnlyCollection<TerminalProcessorRequest123> UnprocessedRequests { get; }
 
         /// <summary>
         /// Asynchronously adds a terminal request for processing from a string.
