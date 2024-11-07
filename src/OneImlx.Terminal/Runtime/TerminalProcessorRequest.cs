@@ -5,15 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text.Json.Serialization;
 
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// A request that is processed by the a <see cref="ITerminalProcessor"/>.
+    /// A <see cref="ITerminalProcessor"/> request that is equatable over its identifier.
     /// </summary>
-    public sealed class TerminalProcessorRequest
+    public sealed class TerminalProcessorRequest : IEquatable<TerminalProcessorRequest?>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalProcessorRequest"/> class.
@@ -56,6 +58,42 @@ namespace OneImlx.Terminal.Runtime
         /// Gets the sender id if the multiple senders shares same endpoint.
         /// </summary>
         public string? SenderId { get; }
+
+        /// <inheritdoc/>
+        public static bool operator !=(TerminalProcessorRequest? left, TerminalProcessorRequest? right)
+        {
+            return !(left == right);
+        }
+
+        /// <inheritdoc/>
+        public static bool operator ==(TerminalProcessorRequest? left, TerminalProcessorRequest? right)
+        {
+            if (left is null)
+            {
+                return right is null;
+            }
+
+            return left.Equals(right);
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as TerminalProcessorRequest);
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(TerminalProcessorRequest? other)
+        {
+            return other is not null &&
+                   Id == other.Id;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
 
         /// <inheritdoc/>
         public override string ToString()
