@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using OneImlx.Terminal.Runtime;
 using System;
 using Xunit;
 

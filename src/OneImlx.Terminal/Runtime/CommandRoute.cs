@@ -7,7 +7,7 @@
 
 using System;
 
-namespace OneImlx.Terminal.Commands
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// Defines a command route with a unique identifier.

@@ -6,7 +6,6 @@
 */
 
 using System;
-using OneImlx.Terminal.Commands;
 
 namespace OneImlx.Terminal.Runtime
 {

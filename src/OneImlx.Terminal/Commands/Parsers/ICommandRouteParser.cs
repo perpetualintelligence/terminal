@@ -6,6 +6,7 @@
 */
 
 using System.Threading.Tasks;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {

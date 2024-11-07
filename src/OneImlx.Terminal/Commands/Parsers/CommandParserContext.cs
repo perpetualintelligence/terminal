@@ -6,6 +6,7 @@
 */
 
 using System;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {

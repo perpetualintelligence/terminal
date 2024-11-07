@@ -8,6 +8,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 using Xunit;
 
