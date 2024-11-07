@@ -161,7 +161,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// might allow for further optimizations. But for diverse and comprehensive parsing scenarios, this default
         /// implementation provides a well-rounded and efficient solution.
         /// </remarks>
-        public async Task<ParsedCommand> ParseRouteAsync(CommandRoute commandRoute)
+        public async Task<ParsedCommand> ParseRouteAsync(TerminalProcessorRequest commandRoute)
         {
             logger.LogDebug("Parse route. route={0} raw={1}", commandRoute.Id, commandRoute.Raw);
 
@@ -397,7 +397,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return parsedOptions;
         }
 
-        private Queue<ParsedSplit> ExtractQueue(CommandRoute commandRoute)
+        private Queue<ParsedSplit> ExtractQueue(TerminalProcessorRequest commandRoute)
         {
             var queue = new Queue<ParsedSplit>();
 
@@ -529,7 +529,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return new Arguments(textHandler, arguments);
         }
 
-        private ParsedCommand ParseCommand(CommandRoute commandRoute, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
+        private ParsedCommand ParseCommand(TerminalProcessorRequest commandRoute, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
         {
             if (!parsedDescriptors.Any())
             {

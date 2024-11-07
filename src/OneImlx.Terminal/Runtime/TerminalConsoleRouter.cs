@@ -68,7 +68,7 @@ namespace OneImlx.Terminal.Runtime
                 IsRunning = true;
                 while (true)
                 {
-                    CommandRoute? route = null;
+                    TerminalProcessorRequest? route = null;
 
                     try
                     {
@@ -106,7 +106,7 @@ namespace OneImlx.Terminal.Runtime
 
                         // Route the request.
                         CommandRouterContext routerContext = new(raw, context, properties: null);
-                        route = routerContext.Route;
+                        route = routerContext.Request;
                         Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
 
                         bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.TerminalCancellationToken);

@@ -92,8 +92,8 @@ namespace OneImlx.Terminal.Runtime.Tests
             terminalProcessorMock.Verify(x => x.StartProcessing(context), Times.Once);
             terminalProcessorMock.Verify(x => x.AddRequestAsync(
                 "test message",
-                It.Is<string>(ctx => ctx.StartsWith("127.0.0.1")),
-                It.IsAny<string>()), Times.Once);
+                It.IsAny<string>(),
+                It.Is<string>(ctx => ctx.StartsWith("127.0.0.1"))), Times.Once);
             terminalProcessorMock.Verify(x => x.StopProcessingAsync(options.Router.Timeout), Times.Once);
         }
 
@@ -203,8 +203,8 @@ namespace OneImlx.Terminal.Runtime.Tests
             {
                 terminalProcessorMock.Verify(x => x.AddRequestAsync(
                 $"test message {i}",
-                It.Is<string>(ctx => ctx.StartsWith("127.0.0.1")),
-                It.IsAny<string>()), Times.Once);
+                It.IsAny<string>(),
+                It.Is<string>(ctx => ctx.StartsWith("127.0.0.1"))), Times.Once);
             }
         }
 
@@ -261,8 +261,8 @@ namespace OneImlx.Terminal.Runtime.Tests
                 var delimitedMessage = TerminalServices.CreateBatch(options, [.. messages]);
                 terminalProcessorMock.Verify(x => x.AddRequestAsync(
                 delimitedMessage,
-                It.Is<string>(ctx => ctx.Contains("127.0.0.1")),
-                It.IsAny<string>()), Times.Once);
+                It.IsAny<string>(),
+                It.Is<string>(ctx => ctx.Contains("127.0.0.1"))), Times.Once);
             }
         }
 

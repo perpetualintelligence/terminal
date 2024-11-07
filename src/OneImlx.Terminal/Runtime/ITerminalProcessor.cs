@@ -27,16 +27,16 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The unprocessed requests at the time of query.
         /// </summary>
-        IReadOnlyCollection<TerminalProcessorRequest123> UnprocessedRequests { get; }
+        IReadOnlyCollection<TerminalProcessorRequest> UnprocessedRequests { get; }
 
         /// <summary>
         /// Asynchronously adds a terminal request for processing from a string.
         /// </summary>
         /// <param name="raw">The raw command or batch to enqueue.</param>
-        /// <param name="senderEndpoint">The sender's endpoint.</param>
         /// <param name="senderId">The sender's ID.</param>
+        /// <param name="senderEndpoint">The sender's endpoint.</param>
         /// <returns>The request id that was added for asynchronous processing.</returns>
-        Task AddRequestAsync(string raw, string? senderEndpoint, string? senderId);
+        Task AddRequestAsync(string raw, string? senderId, string? senderEndpoint);
 
         /// <summary>
         /// Generates a new unique identifier.

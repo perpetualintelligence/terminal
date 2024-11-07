@@ -62,7 +62,7 @@ namespace OneImlx.Terminal.Runtime
             // Mock the setup for the command router
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Route.Raw));
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
             int idx = 0;
@@ -70,7 +70,7 @@ namespace OneImlx.Terminal.Runtime
             {
                 ++idx;
                 string batch = TerminalServices.CreateBatch(_mockOptions.Object.Value, [$"command_{idx}_0", $"command_{idx}_1", $"command_{idx}_2"]);
-                return _terminalProcessor.AddRequestAsync(batch, "endpoint", "sender");
+                return _terminalProcessor.AddRequestAsync(batch, "sender", "endpoint");
             });
             await Task.WhenAll(tasks);
 
@@ -87,7 +87,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
-            await _terminalProcessor.AddRequestAsync("command1|", "endpoint", "sender");
+            await _terminalProcessor.AddRequestAsync("command1|", "sender", "endpoint");
             await Task.Delay(500);
 
             // Assert exception handler was called
@@ -100,7 +100,7 @@ namespace OneImlx.Terminal.Runtime
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = false;
 
             // Act
-            await _terminalProcessor.AddRequestAsync("command1", "endpoint", "sender");
+            await _terminalProcessor.AddRequestAsync("command1", "sender", "endpoint");
 
             // Assert only a single command was processed
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(1);
@@ -138,16 +138,16 @@ namespace OneImlx.Terminal.Runtime
             var batch10 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands10.ToArray());
 
             // Add all batches asynchronously
-            Task addBatch1 = _terminalProcessor.AddRequestAsync(batch1, "endpoint1", "sender1");
-            Task addBatch2 = _terminalProcessor.AddRequestAsync(batch2, "endpoint2", "sender2");
-            Task addBatch3 = _terminalProcessor.AddRequestAsync(batch3, "endpoint3", "sender3");
-            Task addBatch4 = _terminalProcessor.AddRequestAsync(batch4, "endpoint4", "sender4");
-            Task addBatch5 = _terminalProcessor.AddRequestAsync(batch5, "endpoint5", "sender5");
-            Task addBatch6 = _terminalProcessor.AddRequestAsync(batch6, "endpoint6", "sender6");
-            Task addBatch7 = _terminalProcessor.AddRequestAsync(batch7, "endpoint7", "sender7");
-            Task addBatch8 = _terminalProcessor.AddRequestAsync(batch8, "endpoint8", "sender8");
-            Task addBatch9 = _terminalProcessor.AddRequestAsync(batch9, "endpoint9", "sender9");
-            Task addBatch10 = _terminalProcessor.AddRequestAsync(batch10, "endpoint10", "sender10");
+            Task addBatch1 = _terminalProcessor.AddRequestAsync(batch1, "sender1", "endpoint1");
+            Task addBatch2 = _terminalProcessor.AddRequestAsync(batch2, "sender2", "endpoint2");
+            Task addBatch3 = _terminalProcessor.AddRequestAsync(batch3, "sender3", "endpoint3");
+            Task addBatch4 = _terminalProcessor.AddRequestAsync(batch4, "sender4", "endpoint4");
+            Task addBatch5 = _terminalProcessor.AddRequestAsync(batch5, "sender5", "endpoint5");
+            Task addBatch6 = _terminalProcessor.AddRequestAsync(batch6, "sender6", "endpoint6");
+            Task addBatch7 = _terminalProcessor.AddRequestAsync(batch7, "sender7", "endpoint7");
+            Task addBatch8 = _terminalProcessor.AddRequestAsync(batch8, "sender8", "endpoint8");
+            Task addBatch9 = _terminalProcessor.AddRequestAsync(batch9, "sender9", "endpoint9");
+            Task addBatch10 = _terminalProcessor.AddRequestAsync(batch10, "sender10", "endpoint10");
 
             // Wait for all batches to be processed
             await Task.WhenAll(addBatch1, addBatch2, addBatch3, addBatch4, addBatch5, addBatch6, addBatch7, addBatch8, addBatch9, addBatch10);
@@ -182,7 +182,7 @@ namespace OneImlx.Terminal.Runtime
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
 
             // Act
-            await _terminalProcessor.AddRequestAsync(message, "endpoint", "sender");
+            await _terminalProcessor.AddRequestAsync(message, "sender", "endpoint");
             _terminalProcessor.UnprocessedRequests.Should().HaveCount(6);
             _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command1").Should().BeTrue();
             _terminalProcessor.UnprocessedRequests.Any(r => r.Raw == "command2").Should().BeTrue();
@@ -201,7 +201,7 @@ namespace OneImlx.Terminal.Runtime
             // Send batch of 100000 commands by using TerminalServices
             HashSet<string> allCommands = new(Enumerable.Range(0, 100000).Select(i => $"command{i}"));
             var longBatch = TerminalServices.CreateBatch(_mockOptions.Object.Value, allCommands.ToArray());
-            await _terminalProcessor.AddRequestAsync(longBatch, "endpoint", "sender");
+            await _terminalProcessor.AddRequestAsync(longBatch, "sender", "endpoint");
 
             // We are iterating over a large number of unprocessed requests, so we need to ensure that the validation
             // code is not too slow. We are also checking that all commands are present in the batch at the same time
@@ -229,13 +229,13 @@ namespace OneImlx.Terminal.Runtime
             // Mock the setup for the command router
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Route.Raw));
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
             int idx = 1;
             var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
             {
-                return _terminalProcessor.AddRequestAsync($"command{idx++}", "endpoint", "sender");
+                return _terminalProcessor.AddRequestAsync($"command{idx++}", "sender", "endpoint");
             });
             await Task.WhenAll(tasks);
 
@@ -252,13 +252,13 @@ namespace OneImlx.Terminal.Runtime
         public async Task AddAsync_Throws_On_EmptyBatch(string? batch)
         {
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = false;
-            Func<Task> act = () => _terminalProcessor.AddRequestAsync(batch!, "endpoint", "sender");
+            Func<Task> act = () => _terminalProcessor.AddRequestAsync(batch!, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The command or batch cannot be empty.");
 
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
-            act = () => _terminalProcessor.AddRequestAsync(batch!, "endpoint", "sender");
+            act = () => _terminalProcessor.AddRequestAsync(batch!, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The command or batch cannot be empty.");
@@ -272,7 +272,7 @@ namespace OneImlx.Terminal.Runtime
             _mockOptions.Object.Value.Router.RemoteBatchDelimiter = "$m$";
 
             // Act
-            Func<Task> act = () => _terminalProcessor.AddRequestAsync("c", "endpoint", "sender");
+            Func<Task> act = () => _terminalProcessor.AddRequestAsync("c", "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The raw batch must end with the batch delimiter.");
@@ -297,7 +297,7 @@ namespace OneImlx.Terminal.Runtime
             _mockOptions.Object.Value.Router.EnableRemoteDelimiters = true;
 
             // Act
-            Func<Task> act = () => _terminalProcessor.AddRequestAsync(batch, "endpoint", "sender");
+            Func<Task> act = () => _terminalProcessor.AddRequestAsync(batch, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The raw batch must have a single delimiter at the end, not missing or placed elsewhere.");
@@ -312,7 +312,7 @@ namespace OneImlx.Terminal.Runtime
             _mockOptions.Object.Value.Router.RemoteBatchMaxLength = 1000;
 
             var longBatch = new string('A', 1001);
-            Func<Task> act = () => _terminalProcessor.AddRequestAsync(longBatch, "endpoint", "sender");
+            Func<Task> act = () => _terminalProcessor.AddRequestAsync(longBatch, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_configuration")
                 .WithErrorDescription("The batch length exceeds configured maximum. max_length=1000");
@@ -366,7 +366,7 @@ namespace OneImlx.Terminal.Runtime
             _mockExceptionHandler.Setup(e => e.HandleExceptionAsync(It.IsAny<TerminalExceptionHandlerContext>())).Callback<TerminalExceptionHandlerContext>(c => handeledException = c.Exception);
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
-            await _terminalProcessor.AddRequestAsync("command1|", "endpoint", "sender");
+            await _terminalProcessor.AddRequestAsync("command1|", "sender", "endpoint");
             await Task.Delay(500);
 
             handeledException.Should().NotBeNull();
@@ -391,7 +391,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object);
 
             // Add with sender endpoint and sender id
-            await _terminalProcessor.AddRequestAsync("command1|", "sender_endpoint_1", "sender_1");
+            await _terminalProcessor.AddRequestAsync("command1|", "sender_1", "sender_endpoint_1");
             await Task.Delay(500);
 
             routeContext.Should().NotBeNull();
@@ -399,8 +399,8 @@ namespace OneImlx.Terminal.Runtime
             routeContext.Properties!["sender_endpoint"].Should().Be("sender_endpoint_1");
             routeContext.Properties!["sender_id"].Should().Be("sender_1");
 
-            routeContext.Route.Id.Should().NotBeNullOrWhiteSpace();
-            routeContext.Route.Raw.Should().Be("command1");
+            routeContext.Request.Id.Should().NotBeNullOrWhiteSpace();
+            routeContext.Request.Raw.Should().Be("command1");
 
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
@@ -413,8 +413,8 @@ namespace OneImlx.Terminal.Runtime
             routeContext!.Properties.Should().HaveCount(1);
             routeContext.Properties!["sender_endpoint"].Should().Be("$unknown$");
 
-            routeContext.Route.Id.Should().NotBeNullOrWhiteSpace();
-            routeContext.Route.Raw.Should().Be("command2");
+            routeContext.Request.Id.Should().NotBeNullOrWhiteSpace();
+            routeContext.Request.Raw.Should().Be("command2");
 
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
         }
@@ -426,7 +426,7 @@ namespace OneImlx.Terminal.Runtime
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).Callback<CommandRouterContext>(c => routeContext = c);
 
             // Add with sender endpoint and sender id
-            await _terminalProcessor.AddRequestAsync("command1|", "sender_endpoint_1", "sender_1");
+            await _terminalProcessor.AddRequestAsync("command1|", "sender_1", "sender_endpoint_1");
             await Task.Delay(500);
             routeContext.Should().BeNull();
 

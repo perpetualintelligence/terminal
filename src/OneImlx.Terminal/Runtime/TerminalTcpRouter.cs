@@ -232,7 +232,7 @@ namespace OneImlx.Terminal.Runtime
                 }
                 else
                 {
-                    await terminalProcessor.AddRequestAsync(textHandler.Encoding.GetString(bytesRead, 0, result), client.Client.RemoteEndPoint?.ToString(), clientId);
+                    await terminalProcessor.AddRequestAsync(textHandler.Encoding.GetString(bytesRead, 0, result), clientId, client.Client.RemoteEndPoint?.ToString());
                 }
             }
         }

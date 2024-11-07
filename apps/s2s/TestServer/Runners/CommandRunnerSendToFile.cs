@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
                 string fileName = $"{normalizedSenderEndpoint}.txt";
 
                 // Retrieve the command string from context
-                string commandString = context.HandlerContext.RouterContext.Route.Raw ?? string.Empty;
+                string commandString = context.HandlerContext.RouterContext.Request.Raw ?? string.Empty;
 
                 // Append the command string to the file in a thread-safe manner
                 await Semaphore.WaitAsync();

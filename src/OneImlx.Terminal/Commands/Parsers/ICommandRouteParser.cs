@@ -20,6 +20,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// </summary>
         /// <param name="commandRoute">The command route to parse.</param>
         /// <returns></returns>
-        Task<ParsedCommand> ParseRouteAsync(CommandRoute commandRoute);
+        Task<ParsedCommand> ParseRouteAsync(TerminalProcessorRequest commandRoute);
     }
 }

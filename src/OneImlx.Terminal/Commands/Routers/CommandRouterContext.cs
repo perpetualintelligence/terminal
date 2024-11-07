@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Commands.Routers
 
             TerminalContext = routingContext;
             Properties = properties;
-            Route = new CommandRoute(Guid.NewGuid().ToString(), rawCommandString);
+            Request = new TerminalProcessorRequest(Guid.NewGuid().ToString(), rawCommandString);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Commands.Routers
         /// <summary>
         /// The command route.
         /// </summary>
-        public CommandRoute Route { get; }
+        public TerminalProcessorRequest Request { get; }
 
         /// <summary>
         /// The terminal routing context.

@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Mocks
         {
             // Stats
             RouteCalled = true;
-            RawCommandStrings.Add(context.Route.Raw);
+            RawCommandStrings.Add(context.Request.Raw);
             RouteCounter += 1;
 
             // Add delay
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Mocks
                 throw new TerminalException(explicitError);
             }
 
-            return new CommandRouterResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), context.Route);
+            return new CommandRouterResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), context.Request);
         }
 
         private readonly CancellationTokenSource? cancelOnRouteCalled;

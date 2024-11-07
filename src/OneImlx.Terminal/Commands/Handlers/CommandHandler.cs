@@ -57,7 +57,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         /// <inheritdoc/>
         public async Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context)
         {
-            logger.LogDebug("Handle route. route={0}", context.RouterContext.Route.Id);
+            logger.LogDebug("Handle route. route={0}", context.RouterContext.Request.Id);
 
             // Check the license
             await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(context.License));

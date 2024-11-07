@@ -57,37 +57,37 @@ namespace OneImlx.Terminal.Commands.Routers
             ParsedCommand? extractedCommand = null;
             try
             {
-                logger.LogDebug("Start command router. type={0} route={1}", this.GetType().Name, context.Route.Id);
+                logger.LogDebug("Start command router. type={0} route={1}", this.GetType().Name, context.Request.Id);
 
                 // Issue a before route event if configured
                 if (asyncEventHandler != null)
                 {
-                    logger.LogDebug("Fire event. event={0} route={1}", nameof(asyncEventHandler.BeforeCommandRouteAsync), context.Route.Id);
-                    await asyncEventHandler.BeforeCommandRouteAsync(context.Route);
+                    logger.LogDebug("Fire event. event={0} route={1}", nameof(asyncEventHandler.BeforeCommandRouteAsync), context.Request.Id);
+                    await asyncEventHandler.BeforeCommandRouteAsync(context.Request);
                 }
 
                 // Ensure we have the license extracted before routing
                 License? license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the hosted service correctly.");
 
                 // Parse the command
-                CommandParserResult parserResult = await commandParser.ParseCommandAsync(new CommandParserContext(context.Route));
+                CommandParserResult parserResult = await commandParser.ParseCommandAsync(new CommandParserContext(context.Request));
                 extractedCommand = parserResult.ParsedCommand;
 
                 // Delegate to handler
                 CommandHandlerContext handlerContext = new(context, parserResult.ParsedCommand, license);
                 var handlerResult = await commandHandler.HandleCommandAsync(handlerContext);
-                result = new CommandRouterResult(handlerResult, context.Route);
+                result = new CommandRouterResult(handlerResult, context.Request);
             }
             finally
             {
                 // Issue a after route event if configured
                 if (asyncEventHandler != null)
                 {
-                    logger.LogDebug("Fire event. event={0} route={1}", nameof(asyncEventHandler.AfterCommandRouteAsync), context.Route.Id);
-                    await asyncEventHandler.AfterCommandRouteAsync(context.Route, extractedCommand?.Command, result);
+                    logger.LogDebug("Fire event. event={0} route={1}", nameof(asyncEventHandler.AfterCommandRouteAsync), context.Request.Id);
+                    await asyncEventHandler.AfterCommandRouteAsync(context.Request, extractedCommand?.Command, result);
                 }
 
-                logger.LogDebug("End command router. route={0}", context.Route.Id);
+                logger.LogDebug("End command router. route={0}", context.Request.Id);
             }
 
             return result;

@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             LoggerFactory loggerFactory = new();
 
-            commandRoute = new CommandRoute(Guid.NewGuid().ToString(), "test_raw");
+            commandRoute = new TerminalProcessorRequest(Guid.NewGuid().ToString(), "test_raw");
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             textHandler = new TerminalUnicodeTextHandler();
             optionMapper = new DataTypeMapper<Option>(terminalOptions, loggerFactory.CreateLogger<DataTypeMapper<Option>>());
@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(disabledArgsDescriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -71,7 +71,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -87,7 +87,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -105,7 +105,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -129,7 +129,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, new Option[] { new(optionDescriptor2, "value2") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -146,7 +146,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, new Option[] { new(optionDescriptor, "value1") });
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -164,7 +164,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, [new(optionDescriptor, "non-date")]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -184,7 +184,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, [new(optionDescriptor, "non-date")]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -203,7 +203,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, [new(optionDescriptor, "25-Mar-2021")]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             object oldValue = options["key1"].Value;
             oldValue.Should().BeOfType<string>();
@@ -227,7 +227,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, [new(optionDescriptor, 25.36)]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -243,7 +243,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Options options = new(textHandler, [new(optionDescriptor, DateTime.Now)]);
 
             Command argsCommand = new(descriptor, arguments: null, options);
-            ParsedCommand extractedCommand = new(routerContext.Route, argsCommand, Root.Default());
+            ParsedCommand extractedCommand = new(routerContext.Request, argsCommand, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             CommandCheckerContext context = new(handlerContext);
@@ -253,7 +253,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         private readonly IArgumentChecker argumentChecker = null!;
         private readonly IDataTypeMapper<Argument> argumentMapper = null!;
         private readonly CommandChecker checker = null!;
-        private readonly CommandRoute commandRoute = null!;
+        private readonly TerminalProcessorRequest commandRoute = null!;
         private readonly ITerminalCommandStore commands = null!;
         private readonly CancellationTokenSource commandTokenSource = null!;
         private readonly CommandHandlerContext handlerContext = null!;

@@ -121,7 +121,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Assert
             terminalProcessorMock.Verify(x => x.StartProcessing(context), Times.Once);
-            terminalProcessorMock.Verify(x => x.AddRequestAsync("test message", It.Is<string>(ctx => ctx.Contains("127.0.0.1")), It.IsAny<string>()), Times.Once);
+            terminalProcessorMock.Verify(x => x.AddRequestAsync("test message", It.IsAny<string>(), It.Is<string>(ctx => ctx.Contains("127.0.0.1"))), Times.Once);
             terminalProcessorMock.Verify(x => x.StopProcessingAsync(options.Router.Timeout), Times.Once);
         }
 

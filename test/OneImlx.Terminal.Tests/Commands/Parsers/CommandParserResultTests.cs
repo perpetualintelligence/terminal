@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = () => new CommandParserResult(new ParsedCommand(new CommandRoute("test_route", "test cmd"), new Command(null), null));
+            Action act = () => new CommandParserResult(new ParsedCommand(new TerminalProcessorRequest("test_route", "test cmd"), new Command(null), null));
             act.Should().Throw<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results

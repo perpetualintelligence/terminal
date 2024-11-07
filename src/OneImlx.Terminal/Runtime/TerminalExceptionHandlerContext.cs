@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <param name="commandRoute">The command route.</param>
-        public TerminalExceptionHandlerContext(Exception exception, CommandRoute? commandRoute = null)
+        public TerminalExceptionHandlerContext(Exception exception, TerminalProcessorRequest? commandRoute = null)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
             Route = commandRoute;
@@ -33,6 +33,6 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command route.
         /// </summary>
-        public CommandRoute? Route { get; }
+        public TerminalProcessorRequest? Route { get; }
     }
 }

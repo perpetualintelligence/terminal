@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.AspNetCore
             // Arrange
             var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
 
-            // Real command queue used for testing the behavior of enqueuing items
+            // Real command queue used for testing the behavior of queuing items
             var mockCommandQueue = new TerminalProcessor(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
                 Options.Create(new TerminalOptions()),
@@ -58,11 +58,11 @@ namespace OneImlx.Terminal.AspNetCore
             mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 
             // Setup processor add method to capture the added item
-            TerminalProcessorRequest123? addedRequest = null;
+            TerminalProcessorRequest? addedRequest = null;
             mockProcessor.Setup(x => x.AddRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string, string>((message, endpoint, senderId) =>
                 {
-                    addedRequest = new TerminalProcessorRequest123("id1", message, batchId: null, endpoint, senderId);
+                    addedRequest = new TerminalProcessorRequest("id1", message, batchId: null, endpoint, senderId);
                 });
 
             // Act

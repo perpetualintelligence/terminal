@@ -70,7 +70,7 @@ namespace OneImlx.Terminal.AspNetCore
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
             }
 
-            await terminalProcessor.AddRequestAsync(request.CommandString, context.Peer ?? "$unknown$", Guid.NewGuid().ToString());
+            await terminalProcessor.AddRequestAsync(request.CommandString, Guid.NewGuid().ToString(), context.Peer ?? "$unknown$");
 
             // Return the serialized byte array as part of the gRPC response.
             return new TerminalGrpcRouterProtoOutput();

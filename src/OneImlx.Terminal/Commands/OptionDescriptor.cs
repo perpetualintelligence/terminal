@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Commands
     /// behavior. We also refer to options as command options or command flags.
     /// </summary>
     /// <seealso cref="Option"/>
-    /// <seealso cref="CommandRoute"/>
+    /// <seealso cref="TerminalProcessorRequest"/>
     /// <seealso cref="CommandDescriptor"/>
     public sealed class OptionDescriptor
     {

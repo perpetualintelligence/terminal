@@ -134,9 +134,9 @@ namespace OneImlx.Terminal.Commands.Routers
             CommandRouterContext context2 = new("test", routingContext, null);
             CommandRouterContext context3 = new("test", routingContext, null);
 
-            context1.Route.Id.Should().NotBe(context2.Route.Id);
-            context2.Route.Id.Should().NotBe(context3.Route.Id);
-            context1.Route.Id.Should().NotBe(context3.Route.Id);
+            context1.Request.Id.Should().NotBe(context2.Request.Id);
+            context2.Request.Id.Should().NotBe(context3.Request.Id);
+            context1.Request.Id.Should().NotBe(context3.Request.Id);
         }
 
         [Fact]
