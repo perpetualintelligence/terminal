@@ -52,7 +52,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             // Wait for all client tasks to complete.
             await Task.WhenAll(clientTasks);
             Console.WriteLine("All HTTP client tasks completed successfully.");
-            return CommandRunnerResult.NoProcessing;
+            return new CommandRunnerResult();
         }
 
         /// <summary>

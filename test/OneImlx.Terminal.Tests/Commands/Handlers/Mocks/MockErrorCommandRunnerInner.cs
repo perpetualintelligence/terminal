@@ -17,7 +17,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
         public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
             await RunHelpAsync(context);
-            return CommandRunnerResult.NoProcessing;
+            return new CommandRunnerResult();
         }
 
         public Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context, ILogger? logger = null)

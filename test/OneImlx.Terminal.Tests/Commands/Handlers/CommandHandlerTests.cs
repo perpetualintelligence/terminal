@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Handlers.Mocks;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Commands.Routers;
-using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
@@ -242,27 +241,6 @@ namespace OneImlx.Terminal.Commands.Handlers
         }
 
         [Fact]
-        public async Task Handler_Does_Process_And_Dispose_ResultAsync()
-        {
-            MockCommandRunnerInnerResult tempResult = new();
-            tempResult.ResultProcessed.Should().BeFalse();
-            tempResult.ResultProcessed.Should().BeFalse();
-
-            command.Item1.Checker = typeof(MockCommandCheckerInner);
-            command.Item1.Runner = typeof(MockCommandRunnerInner);
-
-            TerminalProcessorRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, Root.Default());
-
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
-
-            MockCommandRunnerInnerResult runnerResult = (MockCommandRunnerInnerResult)result.RunnerResult;
-            runnerResult.ResultProcessed.Should().BeTrue();
-            runnerResult.ResultDisposed.Should().BeTrue();
-        }
-
-        [Fact]
         public async Task HelpErrorShouldErrorHandler()
         {
             // Make sure checker pass so runner can fail
@@ -280,7 +258,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         }
 
         [Fact]
-        public async Task HelpShouldBeCalledAndReturnsNoProcessing()
+        public async Task HelpShouldBeCalledAndReturnsResult()
         {
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpIdCommand.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -291,10 +269,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
             var result = await handler.HandleCommandAsync(commandContext);
 
-            result.RunnerResult.Should().NotBeEquivalentTo(CommandRunnerResult.NoProcessing);
-
-            result.RunnerResult.IsDisposed.Should().BeTrue();
-            result.RunnerResult.IsProcessed.Should().BeTrue();
+            result.RunnerResult.Should().NotBeNull();
         }
 
         [Fact]

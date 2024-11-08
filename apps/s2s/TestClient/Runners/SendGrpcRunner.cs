@@ -37,7 +37,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
             await Task.WhenAll(clientTasks);
             Console.WriteLine("All gRPC client tasks completed.");
-            return CommandRunnerResult.NoProcessing;
+            return new CommandRunnerResult();
         }
 
         private async Task SendGrpcCommandsAsync(TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client, CancellationToken cancellationToken)

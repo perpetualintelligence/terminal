@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
             await Task.WhenAll(clientTasks);
             Console.WriteLine("All UDP client tasks completed.");
-            return CommandRunnerResult.NoProcessing;
+            return new CommandRunnerResult();
         }
 
         private async Task SendCommandsAsync(UdpClient udpClient, IPEndPoint remoteEndPoint, CancellationToken cToken)

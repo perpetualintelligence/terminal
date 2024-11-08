@@ -1,25 +1,23 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Runtime;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Runners
 {
     /// <summary>
-    /// The command runner is where developers implement how commands are executed. It operates asynchronously to handle commands that might take a while to process.
-    /// The framework routes each parsed command to its specific runner, helping to organize and manage the command execution logic within your application.
+    /// The command runner is where developers implement how commands are executed. It operates asynchronously to handle
+    /// commands that might take a while to process. The framework routes each parsed command to its specific runner,
+    /// helping to organize and manage the command execution logic within your application.
     /// </summary>
     public abstract class CommandRunner<TResult> : IDelegateCommandRunner, ICommandRunner<TResult> where TResult : CommandRunnerResult
     {
-        private ITerminalHelpProvider? helpProvider;
-        private ILogger? logger;
-
         /// <inheritdoc/>
         public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
@@ -29,7 +27,7 @@ namespace OneImlx.Terminal.Commands.Runners
             logger?.LogDebug("Run help. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
 
             await RunHelpAsync(context);
-            return CommandRunnerResult.NoProcessing;
+            return new CommandRunnerResult();
         }
 
         /// <inheritdoc/>
@@ -41,6 +39,9 @@ namespace OneImlx.Terminal.Commands.Runners
             var result = await RunCommandAsync(context);
             return (CommandRunnerResult)(object)result;
         }
+
+        /// <inheritdoc/>
+        public abstract Task<TResult> RunCommandAsync(CommandRunnerContext context);
 
         /// <summary>
         /// Runs the command help asynchronously.
@@ -58,7 +59,7 @@ namespace OneImlx.Terminal.Commands.Runners
             return helpProvider.ProvideHelpAsync(new TerminalHelpProviderContext(context.HandlerContext.ParsedCommand.Command));
         }
 
-        /// <inheritdoc/>
-        public abstract Task<TResult> RunCommandAsync(CommandRunnerContext context);
+        private ITerminalHelpProvider? helpProvider;
+        private ILogger? logger;
     }
 }

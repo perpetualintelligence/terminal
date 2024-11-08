@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -137,18 +137,12 @@ namespace OneImlx.Terminal.Commands.Handlers
                 runnerResult = await commandRunner.DelegateRunAsync(runnerContext, logger);
             }
 
-            // Process the result.
-            await runnerResult.ProcessAsync(runnerContext, logger);
-
             // Issue a after run event if configured
             if (terminalEventHandler != null)
             {
                 logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.AfterCommandRunAsync), context.ParsedCommand.Command.Id);
                 await terminalEventHandler.AfterCommandRunAsync(context.ParsedCommand.Command, runnerResult);
             }
-
-            // Dispose the result.
-            await runnerResult.DisposeAsync();
 
             return runnerResult;
         }

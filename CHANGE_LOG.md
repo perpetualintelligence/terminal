@@ -1,5 +1,5 @@
-# 5.13.1
-> Feature Change
+# 6.0.0
+> Feature Change | Breaking Change
 - Introduce gRPC terminal routing
 - Introduce HTTP terminal routing
 - Introduce OneImlx.Terminal.AspNetCore for hosting terminal servers in ASP.NET Core

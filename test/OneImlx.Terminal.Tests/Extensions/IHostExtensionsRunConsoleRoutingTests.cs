@@ -1,23 +1,23 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Routers;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Mocks;
-using OneImlx.Terminal.Runtime;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using FluentAssertions;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using Xunit;
 
 namespace OneImlx.Terminal.Extensions
@@ -25,6 +25,28 @@ namespace OneImlx.Terminal.Extensions
     [Collection("Sequential")]
     public class IHostExtensionsRunConsoleRoutingTests : IAsyncLifetime
     {
+        public Task DisposeAsync()
+        {
+            // Reset console.
+            Console.SetOut(originalWriter);
+            Console.SetIn(originalReader);
+
+            listLoggerFactory?.AllLogMessages.Clear();
+            consoleListWriter?.Dispose();
+
+            return Task.CompletedTask;
+        }
+
+        public Task InitializeAsync()
+        {
+            consoleListWriter = new MockListWriter();
+
+            originalWriter = Console.Out;
+            originalReader = Console.In;
+
+            return Task.CompletedTask;
+        }
+
         [Fact]
         public async Task Non_Console_Start_Mode_Throws_Invalid_Configuration()
         {
@@ -37,6 +59,64 @@ namespace OneImlx.Terminal.Extensions
             startContext = new TerminalStartContext(TerminalStartMode.Grpc, terminalTokenSource.Token, commandTokenSource.Token);
             Func<Task> act = async () => await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The requested start mode is not valid for console routing. start_mode=Grpc");
+        }
+
+        [Fact]
+        public async Task RunConsoleRouting_Returns_RunnerResultAsync()
+        {
+            // Mock Console read and write
+            using var output = new StringWriter();
+            Console.SetOut(output);
+
+            // Mock the multiple lines here so that RunConsoleRoutingAsync can read line multiple times
+            using var input = new StringReader("does not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter");
+            Console.SetIn(input);
+
+            using IHost host = BuildHostAndLogger(ConfigureServicesDefault);
+
+            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
+            mockCommandRouter.ReturnedRouterResult.Should().BeNull();
+
+            // Send cancellation after 2 seconds. Idea is in 2 seconds the router will request multiple times till canceled.
+            terminalTokenSource.CancelAfter(2000);
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+
+            // Result is processed and disposed by handler not the routing service.
+            mockCommandRouter.ReturnedRouterResult.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task RunConsoleRoutingCaretShouldBeSetCorrectlyAsync()
+        {
+            // Mock Console read and write
+            using MockListWriter titleWriter = new();
+            Console.SetOut(titleWriter);
+
+            using var input = new StringReader("does not matter");
+            Console.SetIn(input);
+
+            // Cancel on first request
+            using IHost host = BuildHostAndLogger(ConfigureServicesCancelOnRoute);
+
+            // cancel the token after 2 seconds so routing will be called and it will raise an exception
+            terminalTokenSource.CancelAfter(2000);
+            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
+            GetCliOptions(host).Router.Caret = "test_caret";
+            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
+            titleWriter.Messages.Should().ContainSingle("test_caret");
+
+            // Check output
+            MockExceptionPublisher errorPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
+            errorPublisher.Called.Should().BeTrue();
+            errorPublisher.PublishedMessage.Should().NotBeNull();
+            errorPublisher.PublishedMessage.Should().Be("Received terminal cancellation token, the terminal routing is canceled.");
+
+            consoleListWriter.Messages.Should().BeEmpty();
+
+            listLoggerFactory.AllLogMessages.Should().HaveCount(2);
+            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
+            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal router.");
         }
 
         [Fact]
@@ -302,33 +382,6 @@ namespace OneImlx.Terminal.Extensions
         }
 
         [Fact]
-        public async Task RunConsoleRouting_DoesNot_Process_Or_Dispose_RunnerResultAsync()
-        {
-            // Mock Console read and write
-            using var output = new StringWriter();
-            Console.SetOut(output);
-
-            // Mock the multiple lines here so that RunConsoleRoutingAsync can read line multiple times
-            using var input = new StringReader("does not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter\ndoes not matter");
-            Console.SetIn(input);
-
-            using IHost host = BuildHostAndLogger(ConfigureServicesDefault);
-
-            MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
-            mockCommandRouter.ReturnedRouterResult.Should().BeNull();
-
-            // Send cancellation after 2 seconds. Idea is in 2 seconds the router will request multiple times till canceled.
-            terminalTokenSource.CancelAfter(2000);
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
-
-            // Result is processed and disposed by handler not the routing service.
-            mockCommandRouter.ReturnedRouterResult.Should().NotBeNull();
-            mockCommandRouter.ReturnedRouterResult!.HandlerResult.RunnerResult.IsProcessed.Should().BeFalse();
-            mockCommandRouter.ReturnedRouterResult!.HandlerResult.RunnerResult.IsDisposed.Should().BeFalse();
-        }
-
-        [Fact]
         public async Task RunConsoleRoutingShouldTimeOutCorrectlyAsync()
         {
             // Mock Console read and write
@@ -363,37 +416,20 @@ namespace OneImlx.Terminal.Extensions
             logMessages[2].Should().Be("End terminal router.");
         }
 
-        [Fact]
-        public async Task RunConsoleRoutingCaretShouldBeSetCorrectlyAsync()
+        private static TerminalOptions GetCliOptions(IHost host)
         {
-            // Mock Console read and write
-            using MockListWriter titleWriter = new();
-            Console.SetOut(titleWriter);
+            return host.Services.GetRequiredService<TerminalOptions>();
+        }
 
-            using var input = new StringReader("does not matter");
-            Console.SetIn(input);
+        private IHost BuildHostAndLogger(Action<IServiceCollection> configureServicesDelegate)
+        {
+            var hostBuilder = Host.CreateDefaultBuilder([]).ConfigureServices(configureServicesDelegate);
+            IHost host = hostBuilder.Build();
 
-            // Cancel on first request
-            using IHost host = BuildHostAndLogger(ConfigureServicesCancelOnRoute);
+            // Retrieve the logger to ensure it's created and stored for later assertions.
+            listLoggerFactory = (MockListLoggerFactory)host.Services.GetRequiredService<ILoggerFactory>();
 
-            // cancel the token after 2 seconds so routing will be called and it will raise an exception
-            terminalTokenSource.CancelAfter(2000);
-            GetCliOptions(host).Router.Timeout = Timeout.Infinite;
-            GetCliOptions(host).Router.Caret = "test_caret";
-            await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
-            titleWriter.Messages.Should().ContainSingle("test_caret");
-
-            // Check output
-            MockExceptionPublisher errorPublisher = (MockExceptionPublisher)host.Services.GetRequiredService<ITerminalExceptionHandler>();
-            errorPublisher.Called.Should().BeTrue();
-            errorPublisher.PublishedMessage.Should().NotBeNull();
-            errorPublisher.PublishedMessage.Should().Be("Received terminal cancellation token, the terminal routing is canceled.");
-
-            consoleListWriter.Messages.Should().BeEmpty();
-
-            listLoggerFactory.AllLogMessages.Should().HaveCount(2);
-            listLoggerFactory.AllLogMessages[0].Should().Be("Start terminal router. type=TerminalConsoleRouter context=TerminalConsoleRouterContext");
-            listLoggerFactory.AllLogMessages[1].Should().Be("End terminal router.");
+            return host;
         }
 
         private void ConfigureServicesCancelOnRoute(IServiceCollection opt2)
@@ -530,11 +566,6 @@ namespace OneImlx.Terminal.Extensions
             opt2.AddSingleton<ITerminalConsole, TerminalSystemConsole>();
         }
 
-        private static TerminalOptions GetCliOptions(IHost host)
-        {
-            return host.Services.GetRequiredService<TerminalOptions>();
-        }
-
         private async void HostStopRequestCallbackVoidAsync(object? state)
         {
             IHost host = (IHost)state!;
@@ -542,45 +573,12 @@ namespace OneImlx.Terminal.Extensions
             await host.StopAsync();
         }
 
-        public Task InitializeAsync()
-        {
-            consoleListWriter = new MockListWriter();
-
-            originalWriter = Console.Out;
-            originalReader = Console.In;
-
-            return Task.CompletedTask;
-        }
-
-        private IHost BuildHostAndLogger(Action<IServiceCollection> configureServicesDelegate)
-        {
-            var hostBuilder = Host.CreateDefaultBuilder([]).ConfigureServices(configureServicesDelegate);
-            IHost host = hostBuilder.Build();
-
-            // Retrieve the logger to ensure it's created and stored for later assertions.
-            listLoggerFactory = (MockListLoggerFactory)host.Services.GetRequiredService<ILoggerFactory>();
-
-            return host;
-        }
-
-        public Task DisposeAsync()
-        {
-            // Reset console.
-            Console.SetOut(originalWriter);
-            Console.SetIn(originalReader);
-
-            listLoggerFactory?.AllLogMessages.Clear();
-            consoleListWriter?.Dispose();
-
-            return Task.CompletedTask;
-        }
-
+        private CancellationTokenSource commandTokenSource = null!;
         private MockListWriter consoleListWriter = null!;
         private MockListLoggerFactory listLoggerFactory = null!;
-        private TextWriter originalWriter = null!;
         private TextReader originalReader = null!;
-        private CancellationTokenSource terminalTokenSource = null!;
-        private CancellationTokenSource commandTokenSource = null!;
+        private TextWriter originalWriter = null!;
         private TerminalStartContext startContext = null!;
+        private CancellationTokenSource terminalTokenSource = null!;
     }
 }

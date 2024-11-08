@@ -33,7 +33,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
             await Task.WhenAll(clientTasks);
             Console.WriteLine("All client tasks completed successfully.");
-            return CommandRunnerResult.NoProcessing;
+            return new CommandRunnerResult();
         }
 
         private async Task SendCommandsAsync(TcpClient tcpClient, CancellationToken cToken)

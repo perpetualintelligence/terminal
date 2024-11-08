@@ -1,18 +1,10 @@
-﻿/*
-    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
+﻿using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands.Runners;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Runners;
 
 namespace OneImlx.Terminal.Apps.TestServer.Runners
 {
@@ -27,7 +19,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
         /// <param name="context">The command runner context containing the command and properties.</param>
         /// <param name="logger">An optional logger instance for logging.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public override async Task ProcessAsync(CommandRunnerContext context, ILogger? logger = null)
+        public async Task ProcessAsync(CommandRunnerContext context, ILogger? logger = null)
         {
             // Retrieve properties from context
             if (context.HandlerContext.RouterContext.Properties != null)
