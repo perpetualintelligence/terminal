@@ -278,7 +278,7 @@ namespace OneImlx.Terminal.Runtime
                 properties.Add(TerminalIdentifiers.SenderIdToken, item.SenderId);
             }
 
-            var context = new CommandRouterContext(item.Raw, terminalRouterContext, properties);
+            var context = new CommandRouterContext(item, terminalRouterContext, properties);
             var routeTask = commandRouter.RouteCommandAsync(context);
 
             if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.StartContext.TerminalCancellationToken)) == routeTask)

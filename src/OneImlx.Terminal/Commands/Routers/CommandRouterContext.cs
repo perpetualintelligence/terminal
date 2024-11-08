@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Routers
@@ -19,19 +20,14 @@ namespace OneImlx.Terminal.Commands.Routers
         /// <summary>
         /// The command string.
         /// </summary>
-        /// <param name="rawCommandString">The raw command string.</param>
-        /// <param name="routingContext">The terminal routing context.</param>
+        /// <param name="request">The request to process.</param>
+        /// <param name="context">The terminal routing context.</param>
         /// <param name="properties">The additional router properties.</param>
-        public CommandRouterContext(string rawCommandString, TerminalRouterContext routingContext, Dictionary<string, object>? properties)
+        public CommandRouterContext(TerminalProcessorRequest request, TerminalRouterContext context, Dictionary<string, object>? properties)
         {
-            if (string.IsNullOrWhiteSpace(rawCommandString))
-            {
-                throw new ArgumentException($"'{nameof(rawCommandString)}' cannot be null or whitespace.", nameof(rawCommandString));
-            }
-
-            TerminalContext = routingContext;
+            TerminalContext = context ?? throw new ArgumentNullException(nameof(context));
             Properties = properties;
-            Request = new TerminalProcessorRequest(Guid.NewGuid().ToString(), rawCommandString);
+            Request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
         /// <summary>

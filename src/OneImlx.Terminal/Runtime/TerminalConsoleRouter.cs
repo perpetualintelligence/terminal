@@ -105,7 +105,8 @@ namespace OneImlx.Terminal.Runtime
                         }
 
                         // Request the request.
-                        CommandRouterContext routerContext = new(raw, context, properties: null);
+                        request = new(Guid.NewGuid().ToString(), raw);
+                        CommandRouterContext routerContext = new(request, context, properties: null);
                         request = routerContext.Request;
                         Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
 
