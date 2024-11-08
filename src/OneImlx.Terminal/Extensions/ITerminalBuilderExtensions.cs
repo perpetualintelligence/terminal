@@ -55,15 +55,15 @@ namespace OneImlx.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command parser type.</typeparam>
-        /// <typeparam name="TParser">The command route parser type.</typeparam>
+        /// <typeparam name="TParser">The command request parser type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandParser<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandParser where TParser : class, ICommandRouteParser
+        public static ITerminalBuilder AddCommandParser<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandParser where TParser : class, ICommandRequestParser
         {
             // Add command parser
             builder.Services.AddTransient<ICommandParser, TCommand>();
 
             // Add option parser
-            builder.Services.AddTransient<ICommandRouteParser, TParser>();
+            builder.Services.AddTransient<ICommandRequestParser, TParser>();
 
             return builder;
         }

@@ -32,7 +32,7 @@ namespace OneImlx.Terminal.AspNetCore.Extensions
                 // Resolve TerminalHttpMapService from DI and process the command
                 var terminalHttpMapService = context.RequestServices.GetRequiredService<TerminalHttpMapService>();
 
-                // Route the command received from the HTTP request to the terminal server. The command gets added to
+                // Request the command received from the HTTP request to the terminal server. The command gets added to
                 // the command queue and is processed by the terminal server's command loop.
                 await terminalHttpMapService.RouteCommandAsync(context);
             });

@@ -57,12 +57,12 @@ namespace OneImlx.Terminal.Commands.Routers
             ParsedCommand? extractedCommand = null;
             try
             {
-                logger.LogDebug("Start command router. type={0} route={1}", this.GetType().Name, context.Request.Id);
+                logger.LogDebug("Start command router. type={0} request={1}", this.GetType().Name, context.Request.Id);
 
-                // Issue a before route event if configured
+                // Issue a before request event if configured
                 if (asyncEventHandler != null)
                 {
-                    logger.LogDebug("Fire event. event={0} route={1}", nameof(asyncEventHandler.BeforeCommandRouteAsync), context.Request.Id);
+                    logger.LogDebug("Fire event. event={0} request={1}", nameof(asyncEventHandler.BeforeCommandRouteAsync), context.Request.Id);
                     await asyncEventHandler.BeforeCommandRouteAsync(context.Request);
                 }
 
@@ -80,14 +80,14 @@ namespace OneImlx.Terminal.Commands.Routers
             }
             finally
             {
-                // Issue a after route event if configured
+                // Issue a after request event if configured
                 if (asyncEventHandler != null)
                 {
-                    logger.LogDebug("Fire event. event={0} route={1}", nameof(asyncEventHandler.AfterCommandRouteAsync), context.Request.Id);
+                    logger.LogDebug("Fire event. event={0} request={1}", nameof(asyncEventHandler.AfterCommandRouteAsync), context.Request.Id);
                     await asyncEventHandler.AfterCommandRouteAsync(context.Request, extractedCommand?.Command, result);
                 }
 
-                logger.LogDebug("End command router. route={0}", context.Request.Id);
+                logger.LogDebug("End command router. request={0}", context.Request.Id);
             }
 
             return result;

@@ -353,7 +353,7 @@ namespace OneImlx.Terminal.Runtime
 
             for (int idx = 0; idx < 10000; ++idx)
             {
-                testId = _terminalProcessor.NewUniqueId("route");
+                testId = _terminalProcessor.NewUniqueId("request");
                 testId.Should().Be($"r{idx}");
             }
         }

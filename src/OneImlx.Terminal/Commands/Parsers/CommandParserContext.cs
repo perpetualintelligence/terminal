@@ -18,15 +18,15 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
-        public CommandParserContext(TerminalProcessorRequest commandRoute)
+        /// <param name="request">The command request.</param>
+        public CommandParserContext(TerminalProcessorRequest request)
         {
-            Route = commandRoute ?? throw new ArgumentNullException(nameof(commandRoute));
+            Request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
         /// <summary>
-        /// The command route.
+        /// The command request.
         /// </summary>
-        public TerminalProcessorRequest Route { get; set; }
+        public TerminalProcessorRequest Request { get; set; }
     }
 }

@@ -27,19 +27,19 @@ namespace OneImlx.Terminal.Commands.Routers
         public CommandHandlerResult HandlerResult { get; }
 
         /// <summary>
-        /// The command route.
+        /// The command request.
         /// </summary>
-        public TerminalProcessorRequest Route { get; }
+        public TerminalProcessorRequest Request { get; }
 
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="handlerResult">The handler result.</param>
-        /// <param name="route">The command route.</param>
-        public CommandRouterResult(CommandHandlerResult handlerResult, TerminalProcessorRequest route)
+        /// <param name="request">The command request.</param>
+        public CommandRouterResult(CommandHandlerResult handlerResult, TerminalProcessorRequest request)
         {
             HandlerResult = handlerResult;
-            Route = route;
+            Request = request;
         }
     }
 }

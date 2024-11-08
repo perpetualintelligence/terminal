@@ -68,7 +68,7 @@ namespace OneImlx.Terminal.Runtime
                 IsRunning = true;
                 while (true)
                 {
-                    TerminalProcessorRequest? route = null;
+                    TerminalProcessorRequest? request = null;
 
                     try
                     {
@@ -104,9 +104,9 @@ namespace OneImlx.Terminal.Runtime
                             continue;
                         }
 
-                        // Route the request.
+                        // Request the request.
                         CommandRouterContext routerContext = new(raw, context, properties: null);
-                        route = routerContext.Request;
+                        request = routerContext.Request;
                         Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
 
                         bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.TerminalCancellationToken);
@@ -118,14 +118,14 @@ namespace OneImlx.Terminal.Runtime
                     catch (OperationCanceledException oex)
                     {
                         // Routing is canceled.
-                        TerminalExceptionHandlerContext exContext = new(oex, route);
+                        TerminalExceptionHandlerContext exContext = new(oex, request);
                         await exceptionHandler.HandleExceptionAsync(exContext);
                         break;
                     }
                     catch (Exception ex)
                     {
                         // Task.Wait bundles up any exception into Exception.InnerException
-                        TerminalExceptionHandlerContext exContext = new(ex.InnerException ?? ex, route);
+                        TerminalExceptionHandlerContext exContext = new(ex.InnerException ?? ex, request);
                         await exceptionHandler.HandleExceptionAsync(exContext);
                     }
                 };

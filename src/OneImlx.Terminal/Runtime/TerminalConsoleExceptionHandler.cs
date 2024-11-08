@@ -50,9 +50,9 @@ namespace OneImlx.Terminal.Runtime
             }
             else if (context.Exception is OperationCanceledException)
             {
-                if (context.Route != null)
+                if (context.Request != null)
                 {
-                    terminalConsole.WriteLineAsync("The request was canceled. route={0} command={1}", context.Route.Id, context.Route.Raw);
+                    terminalConsole.WriteLineAsync("The request was canceled. request={0} command={1}", context.Request.Id, context.Request.Raw);
                 }
                 else
                 {
@@ -61,9 +61,9 @@ namespace OneImlx.Terminal.Runtime
             }
             else
             {
-                if (context.Route != null)
+                if (context.Request != null)
                 {
-                    terminalConsole.WriteLineAsync("The request failed. route={0} command={1} info={2}", context.Route.Id, context.Route.Raw, context.Exception.Message);
+                    terminalConsole.WriteLineAsync("The request failed. request={0} command={1} info={2}", context.Request.Id, context.Request.Raw, context.Exception.Message);
                 }
                 else
                 {

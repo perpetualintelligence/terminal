@@ -21,15 +21,15 @@ namespace OneImlx.Terminal.Events
     public interface ITerminalEventHandler
     {
         /// <summary>
-        /// Override this method if you will perform an asynchronous operation before <see cref="ICommandRouter"/> starts a command route.
+        /// Override this method if you will perform an asynchronous operation before <see cref="ICommandRouter"/> starts a command request.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
-        public Task BeforeCommandRouteAsync(TerminalProcessorRequest commandRoute);
+        /// <param name="request">The command request.</param>
+        public Task BeforeCommandRouteAsync(TerminalProcessorRequest request);
 
         /// <summary>
-        /// Override this method if you will perform an asynchronous operation after <see cref="ICommandRouter"/> ends a command route and process the command result.
+        /// Override this method if you will perform an asynchronous operation after <see cref="ICommandRouter"/> ends a command request and process the command result.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
+        /// <param name="request">The command request.</param>
         /// <param name="command">The command object. May be <c>null</c>.</param>
         /// <param name="result">The command router result. May be <c>null</c>.</param>
         /// <remarks>
@@ -37,7 +37,7 @@ namespace OneImlx.Terminal.Events
         /// The <c>command</c> and <c>result</c> parameters may be <c>null</c>. The router constructs a <c>command</c> object if the parser, handler, and checker pass
         /// and routes a command to run.
         /// </remarks>
-        public Task AfterCommandRouteAsync(TerminalProcessorRequest commandRoute, Command? command, CommandRouterResult? result);
+        public Task AfterCommandRouteAsync(TerminalProcessorRequest request, Command? command, CommandRouterResult? result);
 
         /// <summary>
         /// Override this method if you will perform an asynchronous operation before <see cref="ICommandHandler"/> starts a command run.

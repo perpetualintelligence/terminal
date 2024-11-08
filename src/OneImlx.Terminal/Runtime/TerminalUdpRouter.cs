@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalUdpRouter"/> class.
         /// </summary>
-        /// <param name="commandRouter">The command router to route commands to.</param>
+        /// <param name="commandRouter">The command router to request commands to.</param>
         /// <param name="exceptionHandler">The handler for exceptions that occur during routing.</param>
         /// <param name="terminalOptions">Configuration options for the terminal.</param>
         /// <param name="textHandler">The handler for processing text data.</param>

@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
-    internal class MockCommandRouteParser : ICommandRouteParser
+    internal class MockCommandRouteParser : ICommandRequestParser
     {
         public TerminalProcessorRequest PassedCommandRoute { get; private set; } = null!;
 
         public bool Called { get; private set; }
 
-        public Task<ParsedCommand> ParseRouteAsync(TerminalProcessorRequest commandRoute)
+        public Task<ParsedCommand> ParseRequestAsync(TerminalProcessorRequest request)
         {
-            PassedCommandRoute = commandRoute;
+            PassedCommandRoute = request;
             Called = true;
-            return Task.FromResult(new ParsedCommand(commandRoute, new Command(new CommandDescriptor("id", "name", "description", CommandType.SubCommand, CommandFlags.None)), Root.Default()));
+            return Task.FromResult(new ParsedCommand(request, new Command(new CommandDescriptor("id", "name", "description", CommandType.SubCommand, CommandFlags.None)), Root.Default()));
         }
     }
 }

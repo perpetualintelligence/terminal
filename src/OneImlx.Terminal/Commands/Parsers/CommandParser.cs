@@ -21,23 +21,23 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandRouteParser">The command route parser.</param>
+        /// <param name="commandRequestParser">The command request parser.</param>
         /// <param name="logger">The logger.</param>
-        public CommandParser(ICommandRouteParser commandRouteParser, ILogger<CommandParser> logger)
+        public CommandParser(ICommandRequestParser commandRequestParser, ILogger<CommandParser> logger)
         {
-            this.commandRouteParser = commandRouteParser ?? throw new ArgumentNullException(nameof(commandRouteParser));
+            this.commandRequestParser = commandRequestParser ?? throw new ArgumentNullException(nameof(commandRequestParser));
             this.logger = logger;
         }
 
         /// <inheritdoc/>
         public async Task<CommandParserResult> ParseCommandAsync(CommandParserContext context)
         {
-            logger.LogDebug("Parse command. route={0}", context.Route.Id);
-            ParsedCommand parsedCommand = await commandRouteParser.ParseRouteAsync(context.Route);
+            logger.LogDebug("Parse command. request={0}", context.Request.Id);
+            ParsedCommand parsedCommand = await commandRequestParser.ParseRequestAsync(context.Request);
             return new CommandParserResult(parsedCommand);
         }
 
-        private readonly ICommandRouteParser commandRouteParser;
+        private readonly ICommandRequestParser commandRequestParser;
         private readonly ILogger<CommandParser> logger;
     }
 }

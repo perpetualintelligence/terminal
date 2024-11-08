@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Commands.Routers
         public Dictionary<string, object>? Properties { get; }
 
         /// <summary>
-        /// The command route.
+        /// The command request.
         /// </summary>
         public TerminalProcessorRequest Request { get; }
 

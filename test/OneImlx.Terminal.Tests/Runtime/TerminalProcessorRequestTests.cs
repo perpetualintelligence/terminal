@@ -48,8 +48,8 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public void Equals_ShouldReturnFalse_WhenComparingObjectToNull()
         {
-            var route = new TerminalProcessorRequest("id1", "test");
-            route.Equals(null).Should().BeFalse();
+            var request = new TerminalProcessorRequest("id1", "test");
+            request.Equals(null).Should().BeFalse();
         }
 
         [Fact]

@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Runtime
         /// <returns>The string representation.</returns>
         public Task HandleExceptionAsync(TerminalExceptionHandlerContext context)
         {
-            logger.LogDebug("Handle exception. route={0}", context.Route != null ? context.Route.Id : "<null>");
+            logger.LogDebug("Handle exception. request={0}", context.Request != null ? context.Request.Id : "<null>");
 
             if (context.Exception is TerminalException ee)
             {
@@ -49,9 +49,9 @@ namespace OneImlx.Terminal.Runtime
             }
             else if (context.Exception is OperationCanceledException oe)
             {
-                if (context.Route != null)
+                if (context.Request != null)
                 {
-                    logger.LogError("The request was canceled. route={0} command={1}", context.Route.Id, context.Route.Raw);
+                    logger.LogError("The request was canceled. request={0} command={1}", context.Request.Id, context.Request.Raw);
                 }
                 else
                 {
@@ -60,9 +60,9 @@ namespace OneImlx.Terminal.Runtime
             }
             else
             {
-                if (context.Route != null)
+                if (context.Request != null)
                 {
-                    logger.LogError("The request failed. route={0} command={1} info={2}", context.Route.Id, context.Route.Raw, context.Exception.Message);
+                    logger.LogError("The request failed. request={0} command={1} info={2}", context.Request.Id, context.Request.Raw, context.Exception.Message);
                 }
                 else
                 {

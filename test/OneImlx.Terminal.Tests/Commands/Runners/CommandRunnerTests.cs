@@ -33,9 +33,9 @@ namespace OneImlx.Terminal.Commands.Runners
         [Fact]
         public async Task HelpShouldThrowIfIHelpProviderIsNullAsync()
         {
-            TerminalProcessorRequest commandRoute = new("id1", "test1");
+            TerminalProcessorRequest request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
-            ParsedCommand extractedCommand = new(commandRoute, command, Root.Default());
+            ParsedCommand extractedCommand = new(request, command, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockDefaultCommandRunner mockCommandRunner = new();
@@ -46,9 +46,9 @@ namespace OneImlx.Terminal.Commands.Runners
         [Fact]
         public async Task DelegateHelpShouldCallHelpAsync()
         {
-            TerminalProcessorRequest commandRoute = new("id1", "test1");
+            TerminalProcessorRequest request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
-            ParsedCommand extractedCommand = new(commandRoute, command, Root.Default());
+            ParsedCommand extractedCommand = new(request, command, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockTerminalHelpProvider helpProvider = new();
@@ -63,9 +63,9 @@ namespace OneImlx.Terminal.Commands.Runners
         [Fact]
         public async Task DelegateRunShouldCallRunAsync()
         {
-            TerminalProcessorRequest commandRoute = new("id1", "test1");
+            TerminalProcessorRequest request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
-            ParsedCommand extractedCommand = new(commandRoute, command, Root.Default());
+            ParsedCommand extractedCommand = new(request, command, Root.Default());
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockDefaultCommandRunner mockCommandRunner = new();

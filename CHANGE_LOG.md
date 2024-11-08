@@ -11,7 +11,7 @@
 - Add `TerminalConsoleExceptioneHandler` that logs the error message to ITerminalConsole
 - Rename `TerminalHelpLoggerProvider` to `TerminalLoggerHelpProvider`
 - Rename `TerminalHelpConsoleProvider` to `TerminalConsoleHelpProvider`
-- Add custom properties for each command route 
+- Add custom properties for each command request 
 
 # 5.11.1
 - Production release.

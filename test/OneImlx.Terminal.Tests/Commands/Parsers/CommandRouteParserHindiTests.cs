@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Commands.Parsers
     {
         public CommandRouteParserHindiTests()
         {
-            _logger = new LoggerFactory().CreateLogger<CommandRouteParser>();
+            _logger = new LoggerFactory().CreateLogger<CommandRequestParser>();
             _textHandler = new TerminalUnicodeTextHandler();
 
             var options = new OptionDescriptors(new TerminalUnicodeTextHandler(),
@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             _commandStore = new TerminalInMemoryCommandStore(_textHandler, _commandDescriptors.Values);
             _terminalOptions = MockTerminalOptions.NewAliasOptions();
-            _commandRouteParser = new CommandRouteParser(_textHandler, _commandStore, _terminalOptions, _logger);
+            _commandRouteParser = new CommandRequestParser(_textHandler, _commandStore, _terminalOptions, _logger);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Here space is not treated as separator so it is included in the value.
             _terminalOptions.Parser.ParseHierarchy = true;
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39{oSep}{oSep}{oSep}{cSep}{cSep}{cSep}"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39{oSep}{oSep}{oSep}{cSep}{cSep}{cSep}"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
@@ -120,7 +120,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Here space is not treated as separator so it is included in the value.
             _terminalOptions.Parser.ParseHierarchy = true;
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"{oSep}{oSep}{oSep}{cSep}{cSep}{cSep}यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"{oSep}{oSep}{oSep}{cSep}{cSep}{cSep}यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
@@ -168,7 +168,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             _terminalOptions.Parser.Separator = separator;
             _terminalOptions.Parser.ParseHierarchy = true;
 
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{separator}परीक्षण"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{separator}परीक्षण"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Group);
@@ -197,7 +197,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Here we are using a space in the command name to test that the parser will throw an error. The separator
             // is set to "एस" so the parser will not be able to find the command 'परीक्षण '
-            Func<Task> act = async () => await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", "यूनिकोडएसपरीक्षण  "));
+            Func<Task> act = async () => await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", "यूनिकोडएसपरीक्षण  "));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support any arguments. command=यूनिकोड");
         }
 
@@ -212,7 +212,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Here space is not a separation so any space is considered part of the command name. Because there is not
             // command with name ' परीक्षण' the parser will interpret it as argument and throw.
-            Func<Task> act = async () => await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"{separator}यूनिकोड{separator}{separator}{separator}  परीक्षण{separator}{separator}{separator}{separator}"));
+            Func<Task> act = async () => await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"{separator}यूनिकोड{separator}{separator}{separator}  परीक्षण{separator}{separator}{separator}{separator}"));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support any arguments. command=यूनिकोड");
         }
 
@@ -223,7 +223,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             _terminalOptions.Parser.Separator = separator;
             _terminalOptions.Parser.ParseHierarchy = true;
 
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"{separator}यूनिकोड{separator}{separator}{separator}परीक्षण{separator}{separator}{separator}{separator}"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"{separator}यूनिकोड{separator}{separator}{separator}परीक्षण{separator}{separator}{separator}{separator}"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Group);
@@ -247,7 +247,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Unicode_Hindi_Root_Extracts_Correctly()
         {
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", "यूनिकोड"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", "यूनिकोड"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Root);
@@ -266,7 +266,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             _terminalOptions.Parser.Separator = separator;
             _terminalOptions.Parser.ParseHierarchy = true;
 
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("प्रिंट", $"यूनिकोड{separator}परीक्षण{separator}प्रिंट"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("प्रिंट", $"यूनिकोड{separator}परीक्षण{separator}प्रिंट"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
@@ -303,7 +303,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             _terminalOptions.Parser.OptionAliasPrefix = alias;
 
             _terminalOptions.Parser.ParseHierarchy = true;
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}{sep}{sep}प्रथम मान{sep}{sep}{sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}{sep}{sep}प्रथम मान{sep}{sep}{sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
@@ -351,7 +351,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             _terminalOptions.Parser.Separator = separator;
             _terminalOptions.Parser.ParseHierarchy = true;
 
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{separator}परीक्षण{separator}दूसरा"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{separator}परीक्षण{separator}दूसरा"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
@@ -390,7 +390,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Here space is not treated as separator so it is included in the value.
             _terminalOptions.Parser.ParseHierarchy = true;
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{cSep}परीक्षण{cSep}प्रिंट{cSep}{prefix}एक{oSep}  प्रथम   मान   {oSep}{prefix}दो{oSep}{alias}तीनहै{oSep}\"तीसरा मान\"{oSep}{prefix}चार{oSep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
@@ -446,7 +446,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Here space is not treated as separator so it is included in the value.
             _terminalOptions.Parser.ParseHierarchy = true;
-            var parsedCommand = await _commandRouteParser.ParseRouteAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}  प्रथम   मान   {sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
+            var parsedCommand = await _commandRouteParser.ParseRequestAsync(new TerminalProcessorRequest("id1", $"यूनिकोड{sep}परीक्षण{sep}प्रिंट{sep}{prefix}एक{sep}  प्रथम   मान   {sep}{prefix}दो{sep}{alias}तीनहै{sep}\"तीसरा मान\"{sep}{prefix}चार{sep}86.39"));
 
             parsedCommand.Command.Descriptor.Should().NotBeNull();
             parsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
@@ -488,9 +488,9 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private readonly CommandDescriptors _commandDescriptors;
-        private readonly ICommandRouteParser _commandRouteParser;
+        private readonly ICommandRequestParser _commandRouteParser;
         private readonly ITerminalCommandStore _commandStore;
-        private readonly ILogger<CommandRouteParser> _logger;
+        private readonly ILogger<CommandRequestParser> _logger;
         private readonly TerminalOptions _terminalOptions;
         private readonly ITerminalTextHandler _textHandler;
     }

@@ -11,25 +11,25 @@ using OneImlx.Terminal.Runtime;
 namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// Represents a parsed command from a command route.
+    /// Represents a parsed command from a command request.
     /// </summary>
     public sealed class ParsedCommand
     {
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
+        /// <param name="request">The command request.</param>
         /// <param name="command">The command.</param>
         /// <param name="hierarchy">The command hierarchy.</param>
-        public ParsedCommand(TerminalProcessorRequest commandRoute, Command command, Root? hierarchy = null)
+        public ParsedCommand(TerminalProcessorRequest request, Command command, Root? hierarchy = null)
         {
-            CommandRoute = commandRoute ?? throw new System.ArgumentNullException(nameof(commandRoute));
+            CommandRoute = request ?? throw new System.ArgumentNullException(nameof(request));
             Command = command ?? throw new System.ArgumentNullException(nameof(command));
             Hierarchy = hierarchy;
         }
 
         /// <summary>
-        /// The command route.
+        /// The command request.
         /// </summary>
         public TerminalProcessorRequest CommandRoute { get; }
 

@@ -71,7 +71,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             result.ParsedCommand.Command.Options.Should().BeNull();
         }
 
-        private readonly ICommandRouteParser routeParser = null!;
+        private readonly ICommandRequestParser routeParser = null!;
         private readonly CommandParser parser = null!;
         private readonly ILogger<CommandParser> logger = null!;
     }

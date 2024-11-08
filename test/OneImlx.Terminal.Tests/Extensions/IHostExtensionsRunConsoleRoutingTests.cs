@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Extensions
         [Fact]
         public async Task Non_Console_Start_Mode_Throws_Invalid_Configuration()
         {
-            // Cancel on first route so we can test user input without this we will go in infinite loop
+            // Cancel on first request so we can test user input without this we will go in infinite loop
             using IHost host = BuildHostAndLogger(ConfigureServicesCancelOnRoute);
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
@@ -49,7 +49,7 @@ namespace OneImlx.Terminal.Extensions
             using var input = new StringReader("User has entered this command string");
             Console.SetIn(input);
 
-            // Cancel on first route so we can test user input without this we will go in infinite loop
+            // Cancel on first request so we can test user input without this we will go in infinite loop
             using IHost host = BuildHostAndLogger(ConfigureServicesCancelOnRoute);
 
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
@@ -76,7 +76,7 @@ namespace OneImlx.Terminal.Extensions
             using var input = new StringReader("does not matter");
             Console.SetIn(input);
 
-            // Cancel on route
+            // Cancel on request
             using IHost host = BuildHostAndLogger(ConfigureServicesCancelOnRoute);
 
             // send cancellation after 2 seconds
@@ -114,7 +114,7 @@ namespace OneImlx.Terminal.Extensions
             using var input = new StringReader("User has entered this command string");
             Console.SetIn(input);
 
-            // Cancel on first route and set delay so we can timeout and break the routing loop.
+            // Cancel on first request and set delay so we can timeout and break the routing loop.
             using IHost host = BuildHostAndLogger(ConfigureServicesErrorExceptionAndCancelOnRoute);
 
             // Router will throw exception and then routing will get canceled
@@ -147,7 +147,7 @@ namespace OneImlx.Terminal.Extensions
             using var input = new StringReader("User has entered this command string");
             Console.SetIn(input);
 
-            // Cancel on first route and set delay so we can timeout and break the routing loop.
+            // Cancel on first request and set delay so we can timeout and break the routing loop.
             using IHost host = BuildHostAndLogger(ConfigureServicesExplicitErrorAndCancelOnRoute);
 
             // Router will throw exception and then routing will get canceled
@@ -179,7 +179,7 @@ namespace OneImlx.Terminal.Extensions
             using var input = new StringReader("does not matter");
             Console.SetIn(input);
 
-            // Cancel on route
+            // Cancel on request
             using IHost host = BuildHostAndLogger(ConfigureServicesDefault);
             await host.StartAsync();
 
@@ -190,7 +190,7 @@ namespace OneImlx.Terminal.Extensions
             GetCliOptions(host).Router.Timeout = 5000;
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
-            // Till the timer callback cancel the route will be called multiple times.
+            // Till the timer callback cancel the request will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeTrue();
 
@@ -219,7 +219,7 @@ namespace OneImlx.Terminal.Extensions
             using var input = new StringReader("User has entered this command string");
             Console.SetIn(input);
 
-            // Cancel on first route and set delay so we can timeout and break the routing loop.
+            // Cancel on first request and set delay so we can timeout and break the routing loop.
             using IHost host = BuildHostAndLogger(ConfigureServicesExceptionAndCancelOnRoute);
 
             // Router will throw exception and then routing will get canceled
@@ -283,15 +283,15 @@ namespace OneImlx.Terminal.Extensions
 
             using IHost host = BuildHostAndLogger(ConfigureServicesDefault);
 
-            // send cancellation after 3 seconds. Idea is that in 3 seconds the router will route multiple times till canceled.
+            // send cancellation after 3 seconds. Idea is that in 3 seconds the router will request multiple times till canceled.
             terminalTokenSource.CancelAfter(3000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
-            // In 3 seconds the Route will be called multiple times.
+            // In 3 seconds the Request will be called multiple times.
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.RouteCalled.Should().BeTrue();
-            mockCommandRouter.RouteCounter.Should().BeGreaterThan(10, $"This route counter {mockCommandRouter.RouteCounter} is just a guess, it should be called indefinitely till canceled.");
+            mockCommandRouter.RouteCounter.Should().BeGreaterThan(10, $"This request counter {mockCommandRouter.RouteCounter} is just a guess, it should be called indefinitely till canceled.");
 
             // The log messages will have N raw string log messages
             string[] logMessages = listLoggerFactory.AllLogMessages.Distinct().ToArray();
@@ -317,7 +317,7 @@ namespace OneImlx.Terminal.Extensions
             MockCommandRouter mockCommandRouter = (MockCommandRouter)host.Services.GetRequiredService<ICommandRouter>();
             mockCommandRouter.ReturnedRouterResult.Should().BeNull();
 
-            // Send cancellation after 2 seconds. Idea is in 2 seconds the router will route multiple times till canceled.
+            // Send cancellation after 2 seconds. Idea is in 2 seconds the router will request multiple times till canceled.
             terminalTokenSource.CancelAfter(2000);
             GetCliOptions(host).Router.Timeout = Timeout.Infinite;
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
@@ -338,10 +338,10 @@ namespace OneImlx.Terminal.Extensions
             using var input = new StringReader("User has entered this command string. ");
             Console.SetIn(input);
 
-            // Cancel on first route and set delay so we can timeout and break the routing loop.
+            // Cancel on first request and set delay so we can timeout and break the routing loop.
             using IHost host = BuildHostAndLogger(ConfigureServicesDelayAndCancelOnRoute);
 
-            // Route delay is set to 3000 and timeout is 2000
+            // Request delay is set to 3000 and timeout is 2000
             GetCliOptions(host).Router.Timeout = 2000;
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(new TerminalConsoleRouterContext(startContext));
 
@@ -373,7 +373,7 @@ namespace OneImlx.Terminal.Extensions
             using var input = new StringReader("does not matter");
             Console.SetIn(input);
 
-            // Cancel on first route
+            // Cancel on first request
             using IHost host = BuildHostAndLogger(ConfigureServicesCancelOnRoute);
 
             // cancel the token after 2 seconds so routing will be called and it will raise an exception

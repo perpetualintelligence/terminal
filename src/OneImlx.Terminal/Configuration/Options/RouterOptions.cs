@@ -73,7 +73,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <see cref="Timeout.Infinite"/> for infinite timeout.
         /// </summary>
         /// <remarks>
-        /// A command route starts at a request to execute the command and ends when the command run is complete or at
+        /// A command request starts at a request to execute the command and ends when the command run is complete or at
         /// an error.
         /// </remarks>
         public int Timeout { get; set; } = 25000;

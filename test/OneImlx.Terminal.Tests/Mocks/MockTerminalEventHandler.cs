@@ -34,9 +34,9 @@ namespace OneImlx.Terminal.Mocks
             return Task.CompletedTask;
         }
 
-        public Task AfterCommandRouteAsync(TerminalProcessorRequest route, Command? command, CommandRouterResult? result)
+        public Task AfterCommandRouteAsync(TerminalProcessorRequest request, Command? command, CommandRouterResult? result)
         {
-            PassedRoute = route;
+            PassedRoute = request;
             PassedCommand = command;
             PassedRouterResult = result;
 
@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Mocks
             return Task.CompletedTask;
         }
 
-        public Task BeforeCommandRouteAsync(TerminalProcessorRequest commandRoute)
+        public Task BeforeCommandRouteAsync(TerminalProcessorRequest request)
         {
             BeforeRouteCalled = true;
             return Task.CompletedTask;
