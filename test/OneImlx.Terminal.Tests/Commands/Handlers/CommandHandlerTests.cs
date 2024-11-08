@@ -7,6 +7,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands.Handlers.Mocks;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Commands.Routers;
@@ -147,7 +148,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         public async Task DoesNotError_If_TerminalEventHandler_Is_NOT_Configured()
         {
             // Pass null to terminal event handler
-            handler = new CommandHandler(commandRuntime, licenseChecker, terminalOptions, terminalHelpProvider, null, new LoggerFactory().CreateLogger<CommandHandler>());
+            handler = new CommandHandler(commandRuntime, licenseChecker, terminalOptions, terminalHelpProvider, new LoggerFactory().CreateLogger<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -306,7 +307,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public async Task HelpShouldNotBeCalledIfDisabledAndRequested()
         {
-            terminalOptions.Help.Disabled = true;
+            terminalOptions.Value.Help.Disabled = true;
 
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpIdCommand.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -339,7 +340,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         {
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
-            terminalOptions = MockTerminalOptions.NewLegacyOptions();
+            terminalOptions = Microsoft.Extensions.Options.Options.Create(MockTerminalOptions.NewLegacyOptions());
             license = MockLicenses.TestLicense;
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None);
@@ -352,7 +353,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             // This mocks the help id request
             OptionDescriptors helpIdOptionDescriptors = new(new TerminalUnicodeTextHandler(),
             [
-                new(terminalOptions.Help.OptionId, nameof(Boolean), "Help options", OptionFlags.None)
+                new(terminalOptions.Value.Help.OptionId, nameof(Boolean), "Help options", OptionFlags.None)
             ]);
             Options helpIdOptions = new(new TerminalUnicodeTextHandler(), new Option[] { new(helpIdOptionDescriptors.First().Value, true) });
             helpIdCommand = MockCommands.NewCommandDefinition("helpId1", "helpIdName", "helpIdDesc", CommandType.SubCommand, CommandFlags.None, helpIdOptionDescriptors, options: helpIdOptions);
@@ -360,12 +361,12 @@ namespace OneImlx.Terminal.Commands.Handlers
             // This mocks the help alias request
             OptionDescriptors helpAliasOptionDescriptors = new(new TerminalUnicodeTextHandler(),
             [
-                new(terminalOptions.Help.OptionAlias, nameof(Boolean), "Help alias options", OptionFlags.None)
+                new(terminalOptions.Value.Help.OptionAlias, nameof(Boolean), "Help alias options", OptionFlags.None)
             ]);
             Options helpAliasOptions = new(new TerminalUnicodeTextHandler(), new Option[] { new(helpAliasOptionDescriptors.First().Value, true) });
             helpAliasCommand = MockCommands.NewCommandDefinition("helpAlias", "helpAliasName", "helpAliasDesc", CommandType.SubCommand, CommandFlags.None, helpAliasOptionDescriptors, options: helpAliasOptions);
 
-            handler = new CommandHandler(commandRuntime, licenseChecker, terminalOptions, terminalHelpProvider, terminalEventHandler, new LoggerFactory().CreateLogger<CommandHandler>());
+            handler = new CommandHandler(commandRuntime, licenseChecker, terminalOptions, terminalHelpProvider, new LoggerFactory().CreateLogger<CommandHandler>(), terminalEventHandler);
 
             return Task.CompletedTask;
         }
@@ -452,7 +453,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public async Task RunShouldBeCalledIfHelpIsDisabled()
         {
-            terminalOptions.Help.Disabled = true;
+            terminalOptions.Value.Help.Disabled = true;
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -504,7 +505,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         private TerminalRouterContext routingContext = null!;
         private MockTerminalEventHandler terminalEventHandler = null!;
         private MockTerminalHelpProvider terminalHelpProvider = null!;
-        private TerminalOptions terminalOptions = null!;
+        private IOptions<TerminalOptions> terminalOptions = null!;
         private CancellationTokenSource terminalTokenSource = null!;
     }
 }

@@ -8,6 +8,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
@@ -29,29 +30,19 @@ namespace OneImlx.Terminal.Commands.Handlers
         public CommandHandler(
             ICommandRuntime commandRuntime,
             ILicenseChecker licenseChecker,
-            TerminalOptions options,
+            IOptions<TerminalOptions> options,
             ITerminalHelpProvider terminalHelpProvider,
-            ITerminalEventHandler? terminalEventHandler,
-            ILogger<CommandHandler> logger)
+            ILogger<CommandHandler> logger,
+            ITerminalEventHandler? terminalEventHandler = null)
         {
             this.commandRuntime = commandRuntime ?? throw new ArgumentNullException(nameof(commandRuntime));
             this.licenseChecker = licenseChecker ?? throw new ArgumentNullException(nameof(licenseChecker));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.terminalHelpProvider = terminalHelpProvider ?? throw new ArgumentNullException(nameof(terminalHelpProvider));
-            this.terminalEventHandler = terminalEventHandler; // Optional
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
 
-        /// <summary>
-        /// Initialize a news instance.
-        /// </summary>
-        public CommandHandler(
-            ICommandRuntime commandRuntime,
-            ILicenseChecker licenseChecker,
-            TerminalOptions options,
-            ITerminalHelpProvider terminalHelpProvider,
-            ILogger<CommandHandler> logger) : this(commandRuntime, licenseChecker, options, terminalHelpProvider, terminalEventHandler: null, logger)
-        {
+            // Optional, only is application wants events
+            this.terminalEventHandler = terminalEventHandler;
         }
 
         /// <inheritdoc/>
@@ -72,9 +63,9 @@ namespace OneImlx.Terminal.Commands.Handlers
         private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandHandlerContext context)
         {
             // If we are executing a help command then we need to bypass all the checks.
-            if (!options.Help.Disabled.GetValueOrDefault() &&
-                (context.ParsedCommand.Command.TryGetOption(options.Help.OptionId, out Option? helpOption) ||
-                 context.ParsedCommand.Command.TryGetOption(options.Help.OptionAlias, out helpOption)
+            if (!options.Value.Help.Disabled.GetValueOrDefault() &&
+                (context.ParsedCommand.Command.TryGetOption(options.Value.Help.OptionId, out Option? helpOption) ||
+                 context.ParsedCommand.Command.TryGetOption(options.Value.Help.OptionAlias, out helpOption)
                 ))
             {
                 logger.LogDebug("Found help option. option={0}", helpOption != null ? helpOption.Id : "?");
@@ -150,7 +141,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         private readonly ICommandRuntime commandRuntime;
         private readonly ILicenseChecker licenseChecker;
         private readonly ILogger<CommandHandler> logger;
-        private readonly TerminalOptions options;
+        private readonly IOptions<TerminalOptions> options;
         private readonly ITerminalEventHandler? terminalEventHandler;
         private readonly ITerminalHelpProvider terminalHelpProvider;
     }
