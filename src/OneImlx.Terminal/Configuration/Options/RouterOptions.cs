@@ -37,6 +37,11 @@ namespace OneImlx.Terminal.Configuration.Options
         public bool? EnableRemoteDelimiters { get; set; }
 
         /// <summary>
+        /// Indicates whether to enable responses for the router. The default value is <c>false</c>.
+        /// </summary>
+        public bool? EnableResponses { get; set; }
+
+        /// <summary>
         /// The maximum number of active remote client connections the router can accept. The default value is <c>5</c>.
         /// </summary>
         public int MaxRemoteClients { get; set; } = 5;
