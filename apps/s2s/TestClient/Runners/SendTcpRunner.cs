@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Client.Extensions;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -15,8 +16,9 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
     [CommandDescriptor("tcp", "Send TCP", "Send TCP commands to the server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
     public class SendTcpRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
-        public SendTcpRunner(IConfiguration configuration)
+        public SendTcpRunner(ITerminalTextHandler terminalTextHandler, IConfiguration configuration)
         {
+            this.terminalTextHandler = terminalTextHandler;
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
@@ -25,7 +27,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             string server = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
             int port = configuration.GetValue<int>("testclient:testserver:port");
 
-            var clientTasks = new Task[4];
+            var clientTasks = new Task[5];
             for (int i = 0; i < clientTasks.Length; i++)
             {
                 clientTasks[i] = StartClientAsync(server, port, context.StartContext.TerminalCancellationToken);
@@ -45,8 +47,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 Console.WriteLine("Sending commands individually...");
                 foreach (string command in commands)
                 {
-                    await tcpClient.SendSingleAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, Encoding.Unicode, cToken);
-                    Console.WriteLine($"Command sent: {command}");
+                    await tcpClient.SendSingleAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, terminalTextHandler.Encoding, cToken);
+                    Console.WriteLine($"Request: {command}");
                 }
 
                 Console.WriteLine("Sending all commands as a batch...");
@@ -93,6 +95,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             }
         }
 
+        private readonly ITerminalTextHandler terminalTextHandler;
         private readonly IConfiguration configuration;
     }
 }

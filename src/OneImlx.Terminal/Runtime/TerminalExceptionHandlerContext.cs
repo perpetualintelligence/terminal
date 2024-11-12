@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <param name="request">The command request.</param>
-        public TerminalExceptionHandlerContext(Exception exception, TerminalProcessorRequest? request = null)
+        public TerminalExceptionHandlerContext(Exception exception, TerminalRequest? request = null)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
             Request = request;
@@ -33,6 +33,6 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The command request.
         /// </summary>
-        public TerminalProcessorRequest? Request { get; }
+        public TerminalRequest? Request { get; }
     }
 }

@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                terminalProcessor.StartProcessing(context);
+                terminalProcessor.StartProcessing(context, background: true);
                 while (true)
                 {
                     // Throw if cancellation is requested.

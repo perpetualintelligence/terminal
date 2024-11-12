@@ -60,11 +60,11 @@ namespace OneImlx.Terminal.Runtime
                 logger.LogDebug("Terminal gRPC router started.");
                 IsRunning = true;
 
-                // Start background command processing and blocking the current thread.
-                terminalProcessor.StartProcessing(context);
+                // gRPC is command and response so start command processing without background queue.
+                terminalProcessor.StartProcessing(context, background: false);
 
                 // Run indefinitely until the cancellation token is triggered
-                await terminalProcessor.WaitAsync(context);
+                await terminalProcessor.WaitUntilCanceledAsync(context.StartContext.TerminalCancellationToken);
             }
             finally
             {

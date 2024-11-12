@@ -54,7 +54,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 foreach (var command in commands)
                 {
                     TerminalGrpcRouterProtoOutput response = await client.SendSingleAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken: cancellationToken);
-                    Console.WriteLine($"Sent command: {command}, Response: {response}");
+                    Console.WriteLine($"Request: {command}, Response: {response}");
                 }
 
                 // Sending commands as a batch

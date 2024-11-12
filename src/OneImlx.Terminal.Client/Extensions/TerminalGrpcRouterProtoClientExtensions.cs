@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="grpcClient">
         /// The <see cref="TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient"/> instance used to send the request.
         /// </param>
-        /// <param name="commandStrings">An array of command strings to send as a batch.</param>
+        /// <param name="commands">An array of command strings to send as a batch.</param>
         /// <param name="cmdDelimiter">The delimiter used to separate commands in the batch.</param>
         /// <param name="msgDelimiter">The delimiter used to separate message parts.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
@@ -40,10 +40,10 @@ namespace OneImlx.Terminal.Client.Extensions
         /// The batch command is created by concatenating the provided commands using the specified delimiters. This
         /// method is useful for reducing the number of individual requests when sending multiple commands.
         /// </remarks>
-        public static async Task<TerminalGrpcRouterProtoOutput> SendBatchAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string[] commandStrings, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
+        public static async Task<TerminalGrpcRouterProtoOutput> SendBatchAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string[] commands, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
-            string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commandStrings);
-            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = batch }, cancellationToken: cancellationToken);
+            string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commands);
+            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Raw = batch }, cancellationToken: cancellationToken);
             return response;
         }
 
@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="grpcClient">
         /// The <see cref="TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient"/> instance used to send the request.
         /// </param>
-        /// <param name="commandString">The command string to send.</param>
+        /// <param name="command">The command string to send.</param>
         /// <param name="cmdDelimiter">The delimiter used to separate commands.</param>
         /// <param name="msgDelimiter">The delimiter used to separate message parts.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
@@ -64,10 +64,10 @@ namespace OneImlx.Terminal.Client.Extensions
         /// The command is formatted using the provided delimiters and sent to the terminal server. The response
         /// contains the terminal's reaction to the command, useful for ensuring proper execution of commands.
         /// </remarks>
-        public static async Task<TerminalGrpcRouterProtoOutput> SendSingleAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string commandString, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
+        public static async Task<TerminalGrpcRouterProtoOutput> SendSingleAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string command, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
-            string batchedCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [commandString]);
-            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = batchedCommand }, cancellationToken: cancellationToken);
+            string batchedCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [command]);
+            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Raw = batchedCommand }, cancellationToken: cancellationToken);
             return response;
         }
 
@@ -77,7 +77,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="grpcClient">
         /// The <see cref="TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient"/> instance used to send the request.
         /// </param>
-        /// <param name="commandString">The command string to send.</param>
+        /// <param name="command">The command string to send.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <returns>
         /// A <see cref="TerminalGrpcRouterProtoOutput"/> response representing the server's response to the command.
@@ -86,9 +86,9 @@ namespace OneImlx.Terminal.Client.Extensions
         /// This method sends a single command to the terminal without delimiters. Delimiters are not required for
         /// single commands and are only necessary when sending batch commands.
         /// </remarks>
-        public static async Task<TerminalGrpcRouterProtoOutput> SendSingleAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string commandString, CancellationToken cancellationToken)
+        public static async Task<TerminalGrpcRouterProtoOutput> SendSingleAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string command, CancellationToken cancellationToken)
         {
-            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { CommandString = commandString }, cancellationToken: cancellationToken);
+            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Raw = command }, cancellationToken: cancellationToken);
             return response;
         }
     }

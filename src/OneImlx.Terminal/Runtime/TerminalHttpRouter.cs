@@ -65,11 +65,11 @@ namespace OneImlx.Terminal.Runtime
                 logger.LogDebug("Terminal HTTP router started.");
                 IsRunning = true;
 
-                // Start background command processing and block the current thread.
-                terminalProcessor.StartProcessing(context);
+                // Http is command and response so start command processing without background queue.
+                terminalProcessor.StartProcessing(context, background: false);
 
                 // Wait for the terminal to be canceled.
-                await terminalProcessor.WaitAsync(context);
+                await terminalProcessor.WaitUntilCanceledAsync(context.StartContext.TerminalCancellationToken);
             }
             finally
             {

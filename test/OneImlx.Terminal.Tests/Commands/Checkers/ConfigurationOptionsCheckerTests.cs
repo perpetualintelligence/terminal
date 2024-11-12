@@ -245,19 +245,19 @@ namespace OneImlx.Terminal.Commands.Checkers
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Router.RemoteCommandDelimiter = null;
+            options.Router.CommandDelimiter = null;
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote command delimiter cannot be null or whitespace.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            options.Router.RemoteCommandDelimiter = "   ";
+            options.Router.CommandDelimiter = "   ";
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote command delimiter cannot be null or whitespace.");
         }
 
         [Fact]
         public async Task RemoteCommandDelimiter_RemoteMessageDelimiter_Cannot_be_Same()
         {
-            options.Router.RemoteCommandDelimiter = "$EOC$";
-            options.Router.RemoteBatchDelimiter = "$EOC$";
+            options.Router.CommandDelimiter = "$EOC$";
+            options.Router.BatchDelimiter = "$EOC$";
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote command delimiter and remote message delimiter cannot be same. delimiter=$EOC$");
@@ -269,11 +269,11 @@ namespace OneImlx.Terminal.Commands.Checkers
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Router.RemoteBatchDelimiter = null;
+            options.Router.BatchDelimiter = null;
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote message delimiter cannot be null or whitespace.");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            options.Router.RemoteBatchDelimiter = "   ";
+            options.Router.BatchDelimiter = "   ";
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The remote message delimiter cannot be null or whitespace.");
         }
 

@@ -21,7 +21,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <param name="request">The command request.</param>
         /// <param name="command">The command.</param>
         /// <param name="hierarchy">The command hierarchy.</param>
-        public ParsedCommand(TerminalProcessorRequest request, Command command, Root? hierarchy = null)
+        public ParsedCommand(TerminalRequest request, Command command, Root? hierarchy = null)
         {
             CommandRoute = request ?? throw new System.ArgumentNullException(nameof(request));
             Command = command ?? throw new System.ArgumentNullException(nameof(command));
@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <summary>
         /// The command request.
         /// </summary>
-        public TerminalProcessorRequest CommandRoute { get; }
+        public TerminalRequest CommandRoute { get; }
 
         /// <summary>
         /// The parsed raw command.

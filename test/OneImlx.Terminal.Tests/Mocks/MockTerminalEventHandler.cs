@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Mocks
     {
         public Command? PassedCommand { get; private set; }
         public CommandRouterResult? PassedRouterResult { get; private set; }
-        public TerminalProcessorRequest? PassedRoute { get; private set; }
+        public TerminalRequest? PassedRoute { get; private set; }
 
         public bool AfterRouteCalled { get; private set; }
         public bool BeforeRouteCalled { get; private set; }
@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Mocks
             return Task.CompletedTask;
         }
 
-        public Task AfterCommandRouteAsync(TerminalProcessorRequest request, Command? command, CommandRouterResult? result)
+        public Task AfterCommandRouteAsync(TerminalRequest request, Command? command, CommandRouterResult? result)
         {
             PassedRoute = request;
             PassedCommand = command;
@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Mocks
             return Task.CompletedTask;
         }
 
-        public Task BeforeCommandRouteAsync(TerminalProcessorRequest request)
+        public Task BeforeCommandRouteAsync(TerminalRequest request)
         {
             BeforeRouteCalled = true;
             return Task.CompletedTask;

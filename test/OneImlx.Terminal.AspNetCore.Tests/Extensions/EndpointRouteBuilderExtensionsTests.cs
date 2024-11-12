@@ -58,11 +58,12 @@ namespace OneImlx.Terminal.AspNetCore.Tests
             bool routeCalled = false;
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);
-            mockTerminalProcessor.Setup(x => x.AddRequestAsync("test-command", It.IsAny<string>(), It.IsAny<string>()))
-                                 .Callback(() => routeCalled = true);
+            mockTerminalProcessor.Setup(x => x.ProcessRequestAsync("test-command", It.IsAny<string>(), It.IsAny<string>()))
+                                 .Callback(() => routeCalled = true)
+                                 .ReturnsAsync(new TerminalResponse(1, null));
 
             // Act: Post to /oneimlx/terminal/httprouter
-            var response = await client.PostAsJsonAsync("/oneimlx/terminal/httprouter", new TerminalJsonCommandRequest("test-command"));
+            var response = await client.PostAsJsonAsync("/oneimlx/terminal/httprouter", new TerminalJsonRequest("test-command"));
 
             // Assert: Ensure TerminalHttpMapService's RouteCommandAsync method is invoked correctly
             response.EnsureSuccessStatusCode();

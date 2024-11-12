@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             MockCommandRouteParser routeParser = new();
             CommandParser parser = new(routeParser, logger);
 
-            CommandParserContext context = new(new TerminalProcessorRequest("id1", "id1 test raw string"));
+            CommandParserContext context = new(new TerminalRequest("id1", "id1 test raw string"));
             await parser.ParseCommandAsync(context);
 
             routeParser.Called.Should().BeTrue();
@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task UnspecifiedRequiredValuesShouldNotPopulateIfDisabled()
         {
             // This is just extracting no checking
-            CommandParserContext context = new(new TerminalProcessorRequest("id1", "prefix5_default"));
+            CommandParserContext context = new(new TerminalRequest("id1", "prefix5_default"));
             var result = await parser.ParseCommandAsync(context);
 
             result.ParsedCommand.Command.Options.Should().BeNull();
@@ -49,7 +49,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task ConfiguredCommandWithNoArgsShouldNotErrorAsync()
         {
-            CommandParserContext context = new(new TerminalProcessorRequest("id1", "prefix4_noargs"));
+            CommandParserContext context = new(new TerminalRequest("id1", "prefix4_noargs"));
             var result = await parser.ParseCommandAsync(context);
 
             result.ParsedCommand.Command.Options.Should().BeNull();
@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task DisabledButProviderNotConfiguredShouldNotThrow()
         {
-            CommandParserContext context = new(new TerminalProcessorRequest("id1", "prefix5_default"));
+            CommandParserContext context = new(new TerminalRequest("id1", "prefix5_default"));
             CommandParser noProviderParser = new(routeParser, logger);
             await noProviderParser.ParseCommandAsync(context);
         }
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task CommandWithNoArgsShouldNotErrorAsync()
         {
-            CommandParserContext context = new(new TerminalProcessorRequest("id1", "prefix4_noargs"));
+            CommandParserContext context = new(new TerminalRequest("id1", "prefix4_noargs"));
             var result = await parser.ParseCommandAsync(context);
             result.ParsedCommand.Command.Options.Should().BeNull();
         }

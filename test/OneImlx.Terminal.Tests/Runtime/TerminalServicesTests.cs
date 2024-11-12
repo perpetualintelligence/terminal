@@ -19,8 +19,8 @@ namespace OneImlx.Terminal.Runtime.Tests
             {
                 Router = new RouterOptions
                 {
-                    RemoteCommandDelimiter = ";", // Delimiter to separate commands within a batch
-                    RemoteBatchDelimiter = "|"   // Delimiter to mark the end of a complete batch
+                    CommandDelimiter = ";", // Delimiter to separate commands within a batch
+                    BatchDelimiter = "|"   // Delimiter to mark the end of a complete batch
                 }
             };
         }

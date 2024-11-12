@@ -39,15 +39,15 @@ namespace OneImlx.Terminal.Client.Extensions
         /// Sends a single command string to a terminal server via a TCP message using the specified encoding and delimiters.
         /// </summary>
         /// <param name="tcpClient">The <see cref="TcpClient"/> instance used to send the request.</param>
-        /// <param name="commandString">The command string to send.</param>
+        /// <param name="raw">The command string to send.</param>
         /// <param name="cmdDelimiter">The delimiter used to separate commands.</param>
         /// <param name="msgDelimiter">The delimiter used to separate parts of the message.</param>
         /// <param name="encoding">The <see cref="Encoding"/> used to encode the message before sending.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendSingleAsync(this TcpClient tcpClient, string commandString, string cmdDelimiter, string msgDelimiter, Encoding encoding, CancellationToken cancellationToken)
+        public static async Task SendSingleAsync(this TcpClient tcpClient, string raw, string cmdDelimiter, string msgDelimiter, Encoding encoding, CancellationToken cancellationToken)
         {
-            string batchCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [commandString]);
+            string batchCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [raw]);
             await SendMessageToTerminalAsync(tcpClient, batchCommand, encoding, cancellationToken);
         }
 
@@ -84,6 +84,7 @@ namespace OneImlx.Terminal.Client.Extensions
             // Write the message to the NetworkStream
             byte[] messageBytes = encoding.GetBytes(message);
             await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length, cancellationToken);
+            await tcpClient.GetStream().FlushAsync();
         }
     }
 }

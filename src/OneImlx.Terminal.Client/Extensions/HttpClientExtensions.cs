@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Client.Extensions
         public static Task<HttpResponseMessage> SendBatchAsync(this HttpClient httpClient, string[] commands, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
             string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commands);
-            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(batch), cancellationToken);
+            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonRequest(batch), cancellationToken);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.Client.Extensions
         public static Task<HttpResponseMessage> SendSingleAsync(this HttpClient httpClient, string commandString, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
             string batchedCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [commandString]);
-            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(batchedCommand), cancellationToken);
+            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonRequest(batchedCommand), cancellationToken);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <remarks>The command string is sent without any delimiters. To include delimiters, use the method <see cref="SendSingleAsync(HttpClient, string, string, string, CancellationToken)"/>.</remarks>
         public static Task<HttpResponseMessage> SendSingleAsync(this HttpClient httpClient, string commandString, CancellationToken cancellationToken)
         {
-            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonCommandRequest(commandString), cancellationToken);
+            return httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", new TerminalJsonRequest(commandString), cancellationToken);
         }
     }
 }

@@ -12,17 +12,17 @@ namespace OneImlx.Terminal.Runtime
     /// <summary>
     /// A <see cref="ITerminalProcessor"/> request that is equatable over its identifier.
     /// </summary>
-    public sealed class TerminalProcessorRequest : IEquatable<TerminalProcessorRequest?>
+    public sealed class TerminalRequest : IEquatable<TerminalRequest?>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TerminalProcessorRequest"/> class.
+        /// Initializes a new instance of the <see cref="TerminalRequest"/> class.
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
         /// <param name="raw">The raw command string to be processed.</param>
         /// <param name="batchId">The batch identifier.</param>
         /// <param name="senderId">The sender id if the multiple senders shares same endpoint.</param>
         /// <param name="senderEndpoint">The sender endpoint from which the command was sent.</param>
-        public TerminalProcessorRequest(string id, string raw, string? batchId = null, string? senderId = null, string? senderEndpoint = null)
+        public TerminalRequest(string id, string raw, string? batchId = null, string? senderId = null, string? senderEndpoint = null)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -62,13 +62,13 @@ namespace OneImlx.Terminal.Runtime
         public string? SenderId { get; }
 
         /// <inheritdoc/>
-        public static bool operator !=(TerminalProcessorRequest? left, TerminalProcessorRequest? right)
+        public static bool operator !=(TerminalRequest? left, TerminalRequest? right)
         {
             return !(left == right);
         }
 
         /// <inheritdoc/>
-        public static bool operator ==(TerminalProcessorRequest? left, TerminalProcessorRequest? right)
+        public static bool operator ==(TerminalRequest? left, TerminalRequest? right)
         {
             if (left is null)
             {
@@ -81,11 +81,11 @@ namespace OneImlx.Terminal.Runtime
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            return Equals(obj as TerminalProcessorRequest);
+            return Equals(obj as TerminalRequest);
         }
 
         /// <inheritdoc/>
-        public bool Equals(TerminalProcessorRequest? other)
+        public bool Equals(TerminalRequest? other)
         {
             return other is not null &&
                    Id == other.Id;

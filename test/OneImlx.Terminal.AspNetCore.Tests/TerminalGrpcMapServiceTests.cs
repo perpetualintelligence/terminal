@@ -41,10 +41,10 @@ namespace OneImlx.Terminal.AspNetCore
 
         // Test case to validate that the command is processed successfully and enqueued in the queue
         [Fact]
-        public async Task RouteCommand_Adds_Command_Successfully()
+        public async Task RouteCommand_Processes_Command_Successfully()
         {
             // Arrange
-            var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
+            var input = new TerminalGrpcRouterProtoInput { Raw = "test-command" };
 
             // Real command queue used for testing the behavior of queuing items
             var mockCommandQueue = new TerminalProcessor(
@@ -57,25 +57,29 @@ namespace OneImlx.Terminal.AspNetCore
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 
-            // Setup processor add method to capture the added item
-            TerminalProcessorRequest? addedRequest = null;
-            mockProcessor.Setup(x => x.AddRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<string, string, string>((message, endpoint, senderId) =>
+            TerminalResponse? addedResponse = null;
+            mockProcessor.Setup(x => x.ProcessRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<string, string?, string?>((raw, senderId, senderEndpoint) =>
                 {
-                    addedRequest = new TerminalProcessorRequest("id1", message, batchId: null, endpoint, senderId);
-                });
+                    // Create and assign a mock response based on the input parameters
+                    addedResponse = new TerminalResponse(1, null);
+                    addedResponse.Requests[0] = new TerminalRequest("id1", raw, null, senderId, senderEndpoint);
+                })
+                .ReturnsAsync(() => addedResponse!);
 
             // Act
-            addedRequest.Should().BeNull();
+            addedResponse.Should().BeNull();
             var response = await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
 
             // Assert
-            addedRequest.Should().NotBeNull();
-            addedRequest!.Id.Should().Be("id1");
-            addedRequest.Raw.Should().Be("test-command");
-            addedRequest.SenderEndpoint.Should().Be("test_peer");
-            addedRequest.SenderId.Should().NotBeEmpty();
-            addedRequest.BatchId.Should().BeNull();
+            addedResponse.Should().NotBeNull();
+            addedResponse!.Requests.Should().HaveCount(1);
+
+            addedResponse.Requests[0].Id.Should().Be("id1");
+            addedResponse.Requests[0].Raw.Should().Be("test-command");
+            addedResponse.Requests[0].SenderEndpoint.Should().Be("test_peer");
+            addedResponse.Requests[0].SenderId.Should().NotBeEmpty();
+            addedResponse.BatchId.Should().BeNull();
         }
 
         // Test case to validate that a missing command string results in an exception
@@ -83,7 +87,7 @@ namespace OneImlx.Terminal.AspNetCore
         public async Task RouteCommand_Throws_When_Command_Is_Missing()
         {
             // Arrange
-            var input = new TerminalGrpcRouterProtoInput { CommandString = "  " }; // Empty command string
+            var input = new TerminalGrpcRouterProtoInput { Raw = "  " }; // Empty command string
 
             // Setup the real command queue
             var mockCommandQueue = new TerminalProcessor(
@@ -106,7 +110,7 @@ namespace OneImlx.Terminal.AspNetCore
         public async Task RouteCommand_Throws_When_Processor_Is_Not_Running()
         {
             // Arrange
-            var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
+            var input = new TerminalGrpcRouterProtoInput { Raw = "test-command" };
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockProcessor.Setup(x => x.IsProcessing).Returns(false);
 
@@ -124,7 +128,7 @@ namespace OneImlx.Terminal.AspNetCore
         public async Task RouteCommand_Throws_When_Router_Is_Not_Running()
         {
             // Arrange
-            var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
+            var input = new TerminalGrpcRouterProtoInput { Raw = "test-command" };
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(false);
             mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 

@@ -56,9 +56,9 @@ namespace OneImlx.Terminal.Client.Extensions
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // Verify that the HTTP request content was correct
-            TerminalJsonCommandRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonCommandRequest>();
+            TerminalJsonRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonRequest>();
             actualContent.Should().NotBeNull();
-            actualContent!.CommandString.Should().Be("command1;command2;command3|");
+            actualContent!.Raw.Should().Be("command1;command2;command3|");
         }
 
         [Fact]
@@ -76,9 +76,9 @@ namespace OneImlx.Terminal.Client.Extensions
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // Verify that the HTTP request content was correct
-            TerminalJsonCommandRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonCommandRequest>();
+            TerminalJsonRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonRequest>();
             actualContent.Should().NotBeNull();
-            actualContent!.CommandString.Should().Be("test-command|");
+            actualContent!.Raw.Should().Be("test-command|");
         }
 
         [Fact]
@@ -94,9 +94,9 @@ namespace OneImlx.Terminal.Client.Extensions
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // Verify that the HTTP request content was correct
-            TerminalJsonCommandRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonCommandRequest>();
+            TerminalJsonRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonRequest>();
             actualContent.Should().NotBeNull();
-            actualContent!.CommandString.Should().Be("test-command");
+            actualContent!.Raw.Should().Be("test-command");
         }
 
         private readonly HttpClient _httpClient;

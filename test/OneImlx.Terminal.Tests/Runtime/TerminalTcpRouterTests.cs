@@ -5,23 +5,22 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using FluentAssertions;
-using Moq;
-using OneImlx.Terminal.Commands.Routers;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Mocks;
-using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime.Tests
@@ -81,7 +80,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             tcpRouter.IsRunning.Should().BeTrue();
 
             // Send a real TCP message
-            await SendTcpMessageAsync("test message", routerIpEndpoint);
+            byte[] sentBytes = await SendTcpMessageAsync("test message", routerIpEndpoint);
             await Task.Delay(200); // Allow time for processing
             terminalTokenSource.Cancel(); // Stop the router
             await routerTask;
@@ -89,9 +88,9 @@ namespace OneImlx.Terminal.Runtime.Tests
             tcpRouter.IsRunning.Should().BeFalse();
 
             // Verify invocations
-            terminalProcessorMock.Verify(x => x.StartProcessing(context), Times.Once);
-            terminalProcessorMock.Verify(x => x.AddRequestAsync(
-                "test message",
+            terminalProcessorMock.Verify(x => x.StartProcessing(context, true), Times.Once);
+            terminalProcessorMock.Verify(x => x.StreamRequestAsync(
+                sentBytes,
                 It.IsAny<string>(),
                 It.Is<string>(ctx => ctx.StartsWith("127.0.0.1"))), Times.Once);
             terminalProcessorMock.Verify(x => x.StopProcessingAsync(options.Router.Timeout), Times.Once);
@@ -136,7 +135,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             var testException = new Exception("Test exception");
 
             // Setup terminal processor to throw an exception during StartProcessing
-            terminalProcessorMock.Setup(x => x.StartProcessing(context)).Throws(testException);
+            terminalProcessorMock.Setup(x => x.StartProcessing(context, true)).Throws(testException);
 
             var tcpRouter = CreateTcpRouter();
 
@@ -179,34 +178,43 @@ namespace OneImlx.Terminal.Runtime.Tests
 
             var tcpRouter = CreateTcpRouter();
 
-            // Start the router and stop after 3 seconds
+            // Start the router and stop after a brief delay
             var routerTask = tcpRouter.RunAsync(context);
             await Task.Delay(500);
 
             // Start 5 clients concurrently
-            var clientTasks = new List<Task>();
-            for (int i = 0; i < 5; i++)
+            var clientTasks = new List<Task<byte[]>>();
+            for (int idx = 0; idx < 5; idx++)
             {
-                clientTasks.Add(SendTcpMessageAsync($"test message {i}", routerIpEndpoint));
+                int localIdx = idx; // Ensure correct variable capture for each iteration
+                Task<byte[]> clientTask = Task.Run(async () =>
+                {
+                    string message = $"test message {localIdx}";
+                    return await SendTcpMessageAsync(message, routerIpEndpoint);
+                });
+
+                clientTasks.Add(clientTask);
             }
 
-            // Wait till client send all messages and wait for 1 second for server to process them
-            await Task.WhenAll(clientTasks);
-            await Task.Delay(1000);
+            // Wait for all client tasks to complete and give time for server to process.
+            var sentBytesArray = await Task.WhenAll(clientTasks);
+            await Task.Delay(2000);
 
             // Stop the router
-            terminalTokenSource.Cancel();
+            terminalTokenSource.Cancel();            
             await routerTask;
+            
 
-            // Assert: Verify terminal processor received 5 messages
+            // Assert: Verify terminal processor received the expected number of messages
             for (int i = 0; i < 5; i++)
             {
-                terminalProcessorMock.Verify(x => x.AddRequestAsync(
-                $"test message {i}",
-                It.IsAny<string>(),
-                It.Is<string>(ctx => ctx.StartsWith("127.0.0.1"))), Times.Once);
+                terminalProcessorMock.Verify(x => x.StreamRequestAsync(
+                    sentBytesArray[i],
+                    It.IsAny<string>(),
+                    It.Is<string>(ctx => ctx.StartsWith("127.0.0.1"))), Times.Once);
             }
         }
+
 
         [Fact]
         public async Task RunAsync_Processes_Multiple_Clients_Delimited_Messages_Concurrently()
@@ -310,16 +318,18 @@ namespace OneImlx.Terminal.Runtime.Tests
         }
 
         // Helper to send TCP message
-        private async Task SendTcpMessageAsync(string message, IPEndPoint endpoint)
+        private async Task<byte[]> SendTcpMessageAsync(string message, IPEndPoint endpoint)
         {
+            byte[] bytes = Encoding.UTF8.GetBytes(message);
             using (var tcpClient = new TcpClient())
             {
                 await tcpClient.ConnectAsync(endpoint.Address, endpoint.Port);
                 var stream = tcpClient.GetStream();
 
-                await stream.WriteAsync(textHandler.Encoding.GetBytes(message));
+                await stream.WriteAsync(bytes);
                 await stream.FlushAsync(); // Ensures all data is sent
             }
+            return bytes;
         }
 
         private readonly Mock<ICommandRouter> commandRouterMock;

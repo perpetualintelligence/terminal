@@ -16,13 +16,30 @@ namespace OneImlx.Terminal.Configuration.Options
     public sealed class RouterOptions
     {
         /// <summary>
+        /// The delimiter to identify a complete batch. The default value is <c>$b$</c>.
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="BatchDelimiter"/> is used while streaming a multiple command string from a remote source such
+        /// as a network stream.
+        /// </remarks>
+        public string BatchDelimiter { get; set; } = TerminalIdentifiers.RemoteBatchDelimiter;
+
+        /// <summary>
         /// The terminal caret to show in the console. The default value is <c>&gt;</c>.
         /// </summary>
         public string Caret { get; set; } = ">";
 
         /// <summary>
-        /// Indicates whether to enable the remote delimiters. The actual delimiter values can be set by
-        /// <seealso cref="RemoteCommandDelimiter"/> and <see cref="RemoteBatchDelimiter"/>.
+        /// The delimiter to identify a complete command. The default value is <c>$c$</c>.
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="CommandDelimiter"/> is used while streaming a long command string from a remote source such as
+        /// a network stream.
+        /// </remarks>
+        public string CommandDelimiter { get; set; } = TerminalIdentifiers.RemoteCommandDelimiter;
+
+        /// <summary>
+        /// Indicates whether to enable the command batch.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -32,9 +49,9 @@ namespace OneImlx.Terminal.Configuration.Options
         /// </para>
         /// <para>To construct a correct a delimited batch, use the <see cref="TerminalServices.CreateBatch(TerminalOptions, string[])"/></para>
         /// </remarks>
-        /// <seealso cref="RemoteCommandDelimiter"/>
-        /// <seealso cref="RemoteBatchDelimiter"/>
-        public bool? EnableRemoteDelimiters { get; set; }
+        /// <seealso cref="CommandDelimiter"/>
+        /// <seealso cref="BatchDelimiter"/>
+        public bool? EnableBatch { get; set; }
 
         /// <summary>
         /// Indicates whether to enable responses for the router. The default value is <c>false</c>.
@@ -44,34 +61,16 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <summary>
         /// The maximum number of active remote client connections the router can accept. The default value is <c>5</c>.
         /// </summary>
-        public int MaxRemoteClients { get; set; } = 5;
+        public int MaxClients { get; set; } = 5;
 
         /// <summary>
-        /// The delimiter to identify a complete batch. The default value is <c>$b$</c>.
-        /// </summary>
-        /// <remarks>
-        /// A <see cref="RemoteBatchDelimiter"/> is used while streaming a multiple command string from a remote source
-        /// such as a network stream.
-        /// </remarks>
-        public string RemoteBatchDelimiter { get; set; } = TerminalIdentifiers.RemoteBatchDelimiter;
-
-        /// <summary>
-        /// The maximum length of a single unprocessed remote batch. The default value is <c>1024</c> characters.
+        /// The maximum length of a single unprocessed command or batch. The default value is <c>1024</c> characters.
         /// </summary>
         /// <remarks>
         /// This is not the actual command string length, but the length of the batch that is being streamed from a
         /// remote source.
         /// </remarks>
-        public int RemoteBatchMaxLength { get; set; } = 1024;
-
-        /// <summary>
-        /// The delimiter to identify a complete command. The default value is <c>$c$</c>.
-        /// </summary>
-        /// <remarks>
-        /// A <see cref="RemoteCommandDelimiter"/> is used while streaming a long command string from a remote source
-        /// such as a network stream.
-        /// </remarks>
-        public string RemoteCommandDelimiter { get; set; } = TerminalIdentifiers.RemoteCommandDelimiter;
+        public int MaxLength { get; set; } = 1024;
 
         /// <summary>
         /// The command router timeout in milliseconds. The default value is <c>25</c> seconds. Use

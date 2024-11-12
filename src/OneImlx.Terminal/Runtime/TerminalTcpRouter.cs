@@ -107,7 +107,7 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                terminalProcessor.StartProcessing(context);
+                terminalProcessor.StartProcessing(context, background: true);
 
                 // Blocking call to accept client connections until the cancellation token is requested. We have
                 // initialized the requested client connections. Now we wait for all the client connections to complete
@@ -180,7 +180,7 @@ namespace OneImlx.Terminal.Runtime
             while (true)
             {
                 // Ensure we have not reached the maximum number of remote clients
-                if (clientTasks.Count >= options.Value.Router.MaxRemoteClients)
+                if (clientTasks.Count >= options.Value.Router.MaxClients)
                 {
                     // Wait for any client task to complete before accepting a new one
                     Task completedTask = await Task.WhenAny(clientTasks.Values);
@@ -207,6 +207,7 @@ namespace OneImlx.Terminal.Runtime
 
         private async Task HandleClientConnectedAsync(TerminalTcpRouterContext tcpContext, TcpClient client, string clientId)
         {
+            byte[] buffer = new byte[2048];
             while (true)
             {
                 if (tcpContext.StartContext.TerminalCancellationToken.IsCancellationRequested)
@@ -223,16 +224,15 @@ namespace OneImlx.Terminal.Runtime
                 }
 
                 // Add to the terminal processor
-                byte[] bytesRead = new byte[2048];
-                int result = await client.GetStream().ReadAsync(bytesRead, 0, 2048);
-                if (result == 0)
+                int bytesRead = await client.GetStream().ReadAsync(buffer, 0, 2048);
+                if (bytesRead == 0)
                 {
                     logger.LogDebug("Client is disconnected. client={0}", clientId);
                     break;
                 }
                 else
                 {
-                    await terminalProcessor.AddRequestAsync(textHandler.Encoding.GetString(bytesRead, 0, result), clientId, client.Client.RemoteEndPoint?.ToString());
+                    await terminalProcessor.StreamRequestAsync(buffer.Take(bytesRead).ToArray(), clientId, client.Client.RemoteEndPoint?.ToString());
                 }
             }
         }

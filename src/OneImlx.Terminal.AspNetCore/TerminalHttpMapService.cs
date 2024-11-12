@@ -8,8 +8,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Runtime;
-using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -58,14 +58,14 @@ namespace OneImlx.Terminal.AspNetCore
         public async Task RouteCommandAsync(HttpContext httpContext)
         {
             // Read the JSON body from the HTTP request and deserialize it into the TerminalHttpRequest object.
-            TerminalJsonCommandRequest? request;
+            TerminalJsonRequest? request;
             using (var reader = new StreamReader(httpContext.Request.Body))
             {
                 var requestBody = await reader.ReadToEndAsync();
-                request = JsonSerializer.Deserialize<TerminalJsonCommandRequest>(requestBody);
+                request = JsonSerializer.Deserialize<TerminalJsonRequest>(requestBody);
             }
 
-            if (request == null || string.IsNullOrWhiteSpace(request.CommandString))
+            if (request == null || string.IsNullOrWhiteSpace(request.Raw))
             {
                 throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the HTTP request.");
             }
@@ -80,7 +80,8 @@ namespace OneImlx.Terminal.AspNetCore
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
             }
 
-            await terminalProcessor.AddRequestAsync(request.CommandString, Guid.NewGuid().ToString(), httpContext.Connection.RemoteIpAddress?.ToString() ?? "$unknown$");
+            TerminalResponse response = await terminalProcessor.ProcessRequestAsync(request.Raw, terminalProcessor.NewUniqueId(), httpContext.Connection.RemoteIpAddress?.ToString() ?? "$unknown$");
+            await httpContext.Response.WriteAsJsonAsync(response.Results);
         }
 
         // Private fields to hold injected dependencies and state information.

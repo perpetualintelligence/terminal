@@ -7,61 +7,105 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands.Routers;
 
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// An abstraction to process command requests and responses in the background.
+    /// An abstraction for processing command requests and optionally handling responses asynchronously in the background.
     /// </summary>
     public interface ITerminalProcessor : IAsyncDisposable
     {
         /// <summary>
-        /// Gets a value indicating whether the processor is currently processing requests.
+        /// Gets a value indicating whether the processor is running a queue in the background.
+        /// </summary>
+        bool IsBackground { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the processor is actively processing requests.
         /// </summary>
         bool IsProcessing { get; }
 
         /// <summary>
-        /// The unprocessed requests at the time of query.
+        /// Retrieves a collection of requests that are yet to be processed.
         /// </summary>
-        IReadOnlyCollection<TerminalProcessorRequest> UnprocessedRequests { get; }
+        /// <remarks>
+        /// The returned collection is a snapshot at the time of the query and may not accurately reflect the state of
+        /// the queue by the time it is processed by the caller.
+        /// </remarks>
+        IReadOnlyCollection<TerminalRequest> UnprocessedRequests { get; }
 
         /// <summary>
-        /// Asynchronously adds a terminal request for processing from a string.
+        /// Asynchronously adds a raw command or batch of commands to the processing queue.
         /// </summary>
-        /// <param name="raw">The raw command or batch to enqueue.</param>
-        /// <param name="senderId">The sender's ID.</param>
-        /// <param name="senderEndpoint">The sender's endpoint.</param>
-        /// <returns>The request id that was added for asynchronous processing.</returns>
+        /// <param name="raw">The raw command or batch of commands to enqueue.</param>
+        /// <param name="senderId">The optional identifier of the sender.</param>
+        /// <param name="senderEndpoint">The optional endpoint of the sender.</param>
+        /// <returns>A task representing the asynchronous operation, containing the request ID of the added request.</returns>
         Task AddRequestAsync(string raw, string? senderId, string? senderEndpoint);
 
         /// <summary>
-        /// Generates a new unique identifier.
+        /// Generates a new unique identifier for use in request tracking.
         /// </summary>
-        /// <param name="hint">The hint to generate the unique identifier.</param>
+        /// <param name="hint">An optional hint to customize the generated identifier.</param>
+        /// <returns>A unique identifier string.</returns>
         string NewUniqueId(string? hint = null);
 
         /// <summary>
-        /// Starts background processing.
+        /// Asynchronously processes a terminal request by executing a raw command or batch of commands and returning
+        /// the responses.
         /// </summary>
-        /// <param name="terminalRouterContext">The terminal router context.</param>
-        void StartProcessing(TerminalRouterContext terminalRouterContext);
+        /// <param name="raw">The raw command or batch to be processed.</param>
+        /// <param name="senderId">The optional identifier of the sender.</param>
+        /// <param name="senderEndpoint">The optional endpoint of the sender.</param>
+        /// <returns>A task representing the asynchronous operation, containing an array of <see cref="TerminalResponse"/>.</returns>
+        /// <remarks>
+        /// Commands in a batch are executed sequentially in the order they appear, and the corresponding responses are
+        /// returned in the same order. This ensures consistency between the input commands and their results.
+        /// </remarks>
+        Task<TerminalResponse> ProcessRequestAsync(string raw, string? senderId, string? senderEndpoint);
 
         /// <summary>
-        /// Attempts to stop the background processing asynchronously.
+        /// Registers a handler for processing responses after command execution.
         /// </summary>
-        /// <param name="timeout">The timeout in milliseconds.</param>
-        /// <returns><c>true</c> if the processing times out, <c>false</c> otherwise.</returns>
+        /// <param name="handler">The response handler delegate that processes a <see cref="TerminalResponse"/>.</param>
+        void RegisterResponseHandler(Func<TerminalResponse, Task> handler);
+
+        /// <summary>
+        /// Starts the terminal processing with the specified context and configuration.
+        /// </summary>
+        /// <param name="terminalRouterContext">The context for the terminal router.</param>
+        /// <param name="background">
+        /// If set to <c>true</c>, the processor runs in the background, processing multiple requests asynchronously. If
+        /// <c>false</c>, the processor handles individual requests and sends responses asynchronously.
+        /// </param>
+        void StartProcessing(TerminalRouterContext terminalRouterContext, bool background);
+
+        /// <summary>
+        /// Attempts to stop the background processing within the specified timeout period.
+        /// </summary>
+        /// <param name="timeout">The timeout duration, in milliseconds.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation, returning <c>true</c> if the processing stopped within the
+        /// timeout; otherwise, <c>false</c>.
+        /// </returns>
         Task<bool> StopProcessingAsync(int timeout);
 
         /// <summary>
-        /// Starts a <see cref="Task.Delay(int, CancellationToken)"/> indefinitely until
-        /// <see cref="TerminalStartContext.TerminalCancellationToken"/> is triggered.
+        /// Asynchronously processes a raw command or batch of commands and returns the responses.
         /// </summary>
-        /// <param name="terminalRouterContext">The terminal router context.</param>
-        Task WaitAsync(TerminalRouterContext terminalRouterContext);
+        /// <param name="bytes"></param>
+        /// <param name="senderId"></param>
+        /// <param name="senderEndpoint"></param>
+        /// <returns></returns>
+        Task StreamRequestAsync(byte[] bytes, string senderId, string? senderEndpoint);
+
+        /// <summary>
+        /// Initiates an indefinite delay task that continues until the cancellation is triggered.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task WaitUntilCanceledAsync(CancellationToken cancellationToken);
     }
 }

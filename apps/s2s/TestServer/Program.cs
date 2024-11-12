@@ -63,8 +63,8 @@ namespace OneImlx.Terminal.Apps.TestServer
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json"; // License file path.
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo; // License plan to use (Demo in this case).
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment; // Set deployment type.
-                    options.Router.RemoteBatchMaxLength = 64000; // Set max length for remote messages.
-                    options.Router.EnableRemoteDelimiters = true; // Enable remote delimiters for message processing.
+                    options.Router.MaxLength = 64000; // Set max length for remote messages.
+                    options.Router.EnableBatch = true; // Enable remote delimiters for message processing.
                     options.Router.Caret = "> "; // Caret for the terminal.
                 });
 

@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Runtime
         /// <returns>A string representing the complete batch of delimited commands, ending with the message delimiter.</returns>
         public static string CreateBatch(TerminalOptions terminalOptions, params string[] commands)
         {
-            return CreateBatch(terminalOptions.Router.RemoteCommandDelimiter, terminalOptions.Router.RemoteBatchDelimiter, commands);
+            return CreateBatch(terminalOptions.Router.CommandDelimiter, terminalOptions.Router.BatchDelimiter, commands);
         }
 
         /// <summary>
