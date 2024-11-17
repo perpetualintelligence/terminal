@@ -68,10 +68,16 @@ namespace OneImlx.Terminal.Runtime
         Task<TerminalResponse> ProcessRequestAsync(string raw, string? senderId, string? senderEndpoint);
 
         /// <summary>
-        /// Registers a handler for processing responses after command execution.
+        /// Serializes the results of a command execution to a UTF8 bytes.
         /// </summary>
-        /// <param name="handler">The response handler delegate that processes a <see cref="TerminalResponse"/>.</param>
-        void RegisterResponseHandler(Func<TerminalResponse, Task> handler);
+        /// <param name="result">The result to serialize.</param>
+        byte[] SerializeToJsonBytes(object? result);
+
+        /// <summary>
+        /// Serializes the results of a command execution to a string representation.
+        /// </summary>
+        /// <param name="results">The results to serialize.</param>
+        string SerializeToJsonString(object?[] results);
 
         /// <summary>
         /// Starts the terminal processing with the specified context and configuration.
@@ -81,7 +87,8 @@ namespace OneImlx.Terminal.Runtime
         /// If set to <c>true</c>, the processor runs in the background, processing multiple requests asynchronously. If
         /// <c>false</c>, the processor handles individual requests and sends responses asynchronously.
         /// </param>
-        void StartProcessing(TerminalRouterContext terminalRouterContext, bool background);
+        /// <param name="responseHandler">The response handler.</param>
+        void StartProcessing(TerminalRouterContext terminalRouterContext, bool background, Func<TerminalResponse, Task>? responseHandler = null);
 
         /// <summary>
         /// Attempts to stop the background processing within the specified timeout period.

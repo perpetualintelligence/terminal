@@ -48,7 +48,7 @@ namespace OneImlx.Terminal.Client.Extensions
 
             // Validate the captured request with FluentAssertions
             capturedRequest.Should().NotBeNull();
-            capturedRequest!.Raw.Should().Be(expectedCommandString); // Using FluentAssertions for validation
+            capturedRequest!.Request.Should().Be(expectedCommandString); // Using FluentAssertions for validation
 
             // Ensure that RouteCommandAsync was called exactly once
             routeCommandCallCount.Should().Be(1); // Using FluentAssertions to verify the call count
@@ -71,7 +71,7 @@ namespace OneImlx.Terminal.Client.Extensions
 
             // Validate the captured request with FluentAssertions
             capturedRequest.Should().NotBeNull();
-            capturedRequest!.Raw.Should().Be(expectedCommandString); // Using FluentAssertions for validation
+            capturedRequest!.Request.Should().Be(expectedCommandString); // Using FluentAssertions for validation
 
             // Ensure that RouteCommandAsync was called exactly once
             routeCommandCallCount.Should().Be(1); // Using FluentAssertions to verify the call count
@@ -92,7 +92,7 @@ namespace OneImlx.Terminal.Client.Extensions
 
             // Validate the captured request with FluentAssertions
             capturedRequest.Should().NotBeNull();
-            capturedRequest!.Raw.Should().Be(expectedCommandString); // Using FluentAssertions for validation
+            capturedRequest!.Request.Should().Be(expectedCommandString); // Using FluentAssertions for validation
 
             // Ensure that RouteCommandAsync was called exactly once
             routeCommandCallCount.Should().Be(1); // Using FluentAssertions to verify the call count

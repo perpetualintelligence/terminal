@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Moq;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Test.FluentAssertions;
 using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using FluentAssertions;
-using Moq;
-using OneImlx.Terminal.Runtime;
-using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.AspNetCore
@@ -58,8 +58,8 @@ namespace OneImlx.Terminal.AspNetCore
                 .Callback<string, string?, string?>((raw, senderId, senderEndpoint) =>
                 {
                     // Create and assign a mock response based on the input parameters
-                    addedResponse = new TerminalResponse(1, null);
-                    addedResponse.Requests[0] = new TerminalRequest("id1", raw, null, senderId, senderEndpoint);
+                    addedResponse = new TerminalResponse(1, null, senderId, senderEndpoint);
+                    addedResponse.Requests[0] = new TerminalRequest("id1", raw);
                 })
                 .ReturnsAsync(() => addedResponse!);
 
@@ -73,8 +73,6 @@ namespace OneImlx.Terminal.AspNetCore
 
             addedResponse.Requests[0].Id.Should().Be("id1");
             addedResponse.Requests[0].Raw.Should().Be("test-command");
-            addedResponse.Requests[0].SenderEndpoint.Should().Be("$unknown$");
-            addedResponse.Requests[0].SenderId.Should().NotBeEmpty();
             addedResponse.BatchId.Should().BeNull();
         }
 

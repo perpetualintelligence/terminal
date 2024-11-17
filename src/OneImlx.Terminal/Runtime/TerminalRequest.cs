@@ -19,10 +19,7 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
         /// <param name="raw">The raw command string to be processed.</param>
-        /// <param name="batchId">The batch identifier.</param>
-        /// <param name="senderId">The sender id if the multiple senders shares same endpoint.</param>
-        /// <param name="senderEndpoint">The sender endpoint from which the command was sent.</param>
-        public TerminalRequest(string id, string raw, string? batchId = null, string? senderId = null, string? senderEndpoint = null)
+        public TerminalRequest(string id, string raw)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -31,15 +28,7 @@ namespace OneImlx.Terminal.Runtime
 
             Id = id;
             Raw = raw;
-            BatchId = batchId;
-            SenderId = senderId;
-            SenderEndpoint = senderEndpoint;
         }
-
-        /// <summary>
-        /// The batch the command string is part of.
-        /// </summary>
-        public string? BatchId { get; }
 
         /// <summary>
         /// Gets the unique identifier for the command item.
@@ -50,16 +39,6 @@ namespace OneImlx.Terminal.Runtime
         /// The raw command or a batch that needs to be processed.
         /// </summary>
         public string Raw { get; }
-
-        /// <summary>
-        /// Gets the endpoint of the sender who issued the command.
-        /// </summary>
-        public string? SenderEndpoint { get; }
-
-        /// <summary>
-        /// Gets the sender id if the multiple senders shares same endpoint.
-        /// </summary>
-        public string? SenderId { get; }
 
         /// <inheritdoc/>
         public static bool operator !=(TerminalRequest? left, TerminalRequest? right)
@@ -100,14 +79,7 @@ namespace OneImlx.Terminal.Runtime
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (BatchId != null)
-            {
-                return $"{BatchId} | {Raw}";
-            }
-            else
-            {
-                return $"{Raw}";
-            }
+            return $"{Raw}";
         }
     }
 }

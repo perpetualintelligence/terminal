@@ -65,6 +65,7 @@ namespace OneImlx.Terminal.Apps.TestServer
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment; // Set deployment type.
                     options.Router.MaxLength = 64000; // Set max length for remote messages.
                     options.Router.EnableBatch = true; // Enable remote delimiters for message processing.
+                    options.Router.EnableResponses = true;
                     options.Router.Caret = "> "; // Caret for the terminal.
                 });
 

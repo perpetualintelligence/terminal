@@ -15,10 +15,7 @@ using Moq;
 using OneImlx.Terminal.AspNetCore.Extensions;
 using OneImlx.Terminal.Runtime;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -60,7 +57,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);
             mockTerminalProcessor.Setup(x => x.ProcessRequestAsync("test-command", It.IsAny<string>(), It.IsAny<string>()))
                                  .Callback(() => routeCalled = true)
-                                 .ReturnsAsync(new TerminalResponse(1, null));
+                                 .ReturnsAsync(new TerminalResponse(1, null, null, null));
 
             // Act: Post to /oneimlx/terminal/httprouter
             var response = await client.PostAsJsonAsync("/oneimlx/terminal/httprouter", new TerminalJsonRequest("test-command"));

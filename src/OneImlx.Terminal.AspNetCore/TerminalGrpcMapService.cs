@@ -55,7 +55,7 @@ namespace OneImlx.Terminal.AspNetCore
         /// </remarks>
         public override async Task<TerminalGrpcRouterProtoOutput> RouteCommand(TerminalGrpcRouterProtoInput request, ServerCallContext context)
         {
-            if (string.IsNullOrWhiteSpace(request.Raw))
+            if (string.IsNullOrWhiteSpace(request.Request))
             {
                 throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the gRPC request.");
             }
@@ -70,12 +70,12 @@ namespace OneImlx.Terminal.AspNetCore
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
             }
 
-            TerminalResponse response = await terminalProcessor.ProcessRequestAsync(request.Raw, terminalProcessor.NewUniqueId(), context.Peer ?? "$unknown$");
+            TerminalResponse response = await terminalProcessor.ProcessRequestAsync(request.Request, terminalProcessor.NewUniqueId(), context.Peer ?? "$unknown$");
 
             // Return the serialized byte array as part of the gRPC response.
             var output = new TerminalGrpcRouterProtoOutput
             {
-                Response = JsonSerializer.Serialize(response.Results)
+                Response = terminalProcessor.SerializeToJsonString(response.Results)
             };
             return output;
         }

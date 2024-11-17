@@ -18,7 +18,7 @@ service TerminalGrpcRouterProto {
 // The terminal router command request.
 message TerminalGrpcRouterProtoInput {
     // The raw command or a batch of commands.
-    string Raw = 1;
+    string Request = 1;
 }
 
 // The terminal router command request.

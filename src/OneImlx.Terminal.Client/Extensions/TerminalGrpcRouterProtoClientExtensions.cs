@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Client.Extensions
         public static async Task<TerminalGrpcRouterProtoOutput> SendBatchAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string[] commands, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
             string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commands);
-            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Raw = batch }, cancellationToken: cancellationToken);
+            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Request = batch }, cancellationToken: cancellationToken);
             return response;
         }
 
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Client.Extensions
         public static async Task<TerminalGrpcRouterProtoOutput> SendSingleAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string command, string cmdDelimiter, string msgDelimiter, CancellationToken cancellationToken)
         {
             string batchedCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [command]);
-            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Raw = batchedCommand }, cancellationToken: cancellationToken);
+            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Request = batchedCommand }, cancellationToken: cancellationToken);
             return response;
         }
 
@@ -88,7 +88,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// </remarks>
         public static async Task<TerminalGrpcRouterProtoOutput> SendSingleAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, string command, CancellationToken cancellationToken)
         {
-            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Raw = command }, cancellationToken: cancellationToken);
+            TerminalGrpcRouterProtoOutput response = await grpcClient.RouteCommandAsync(new TerminalGrpcRouterProtoInput { Request = command }, cancellationToken: cancellationToken);
             return response;
         }
     }

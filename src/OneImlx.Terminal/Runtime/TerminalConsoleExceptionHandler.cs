@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -38,36 +38,36 @@ namespace OneImlx.Terminal.Runtime
             if (context.Exception is TerminalException ee)
             {
                 object[] args = ee.Error.Args != null ? ee.Error.Args.Select(e => e ?? "").ToArray() : [];
-                terminalConsole.WriteLineAsync(ee.Error.ErrorDescription, args);
+                terminalConsole.WriteLineColorAsync(ConsoleColor.Red, ee.Error.ErrorDescription, args);
             }
             else if (context.Exception is MultiErrorException me)
             {
                 foreach (Error err in me.Errors)
                 {
                     object[] args = err.Args != null ? err.Args.Select(e => e ?? "").ToArray() : [];
-                    terminalConsole.WriteLineAsync(err.ErrorDescription, args);
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, err.ErrorDescription, args);
                 }
             }
             else if (context.Exception is OperationCanceledException)
             {
                 if (context.Request != null)
                 {
-                    terminalConsole.WriteLineAsync("The request was canceled. request={0} command={1}", context.Request.Id, context.Request.Raw);
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The request was canceled. request={0} command={1}", context.Request.Id, context.Request.Raw);
                 }
                 else
                 {
-                    terminalConsole.WriteLineAsync("The request was canceled.");
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The request was canceled.");
                 }
             }
             else
             {
                 if (context.Request != null)
                 {
-                    terminalConsole.WriteLineAsync("The request failed. request={0} command={1} info={2}", context.Request.Id, context.Request.Raw, context.Exception.Message);
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The request failed. request={0} command={1} info={2}", context.Request.Id, context.Request.Raw, context.Exception.Message);
                 }
                 else
                 {
-                    terminalConsole.WriteLineAsync("The request failed.");
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The request failed. info={0}", context.Exception.Message);
                 }
             }
 

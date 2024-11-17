@@ -5,18 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -78,7 +80,8 @@ namespace OneImlx.Terminal.Runtime
             // Mock the setup for the command router
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
+                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
             int idx = 0;
@@ -140,7 +143,8 @@ namespace OneImlx.Terminal.Runtime
             // Setup that the mock command router was invoked
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
+                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
 
             // Create sets of commands to simulate batch processing
             List<string> commands1 = new(Enumerable.Range(0, 1000).Select(i => $"command_1_{i}"));
@@ -217,7 +221,8 @@ namespace OneImlx.Terminal.Runtime
             // Setup that the mock command router was invoked
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
+                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
 
             await _terminalProcessor.AddRequestAsync(message, "sender", "endpoint");
 
@@ -243,7 +248,8 @@ namespace OneImlx.Terminal.Runtime
             // Setup that the mock command router was invoked
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
+                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
 
             // Send batch of 100000 commands by using TerminalServices
             HashSet<string> allCommands = new(Enumerable.Range(0, 100000).Select(i => $"command{i}"));
@@ -306,13 +312,13 @@ namespace OneImlx.Terminal.Runtime
             Func<Task> act = () => _terminalProcessor.AddRequestAsync(batch!, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
-                .WithErrorDescription("The command or batch cannot be empty.");
+                .WithErrorDescription("The raw command or batch cannot be empty.");
 
             _mockOptions.Object.Value.Router.EnableBatch = true;
             act = () => _terminalProcessor.AddRequestAsync(batch!, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
-                .WithErrorDescription("The command or batch cannot be empty.");
+                .WithErrorDescription("The raw command or batch cannot be empty.");
         }
 
         [Fact]
@@ -370,7 +376,7 @@ namespace OneImlx.Terminal.Runtime
             Func<Task> act = () => _terminalProcessor.AddRequestAsync(longBatch, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_configuration")
-                .WithErrorDescription("The batch length exceeds configured maximum. max_length=1000");
+                .WithErrorDescription("The raw command or batch length exceeds configured maximum. max_length=1000");
         }
 
         [Fact]
@@ -419,25 +425,25 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task ProcessAsync_Routes_Batched_Commands_And_Processes_In_Order()
         {
-            TerminalRequest testRequest = new("id1", "command1,command2,command3|", "sender_1", "sender_endpoint_1");
+            TerminalRequest testRequest = new("id1", "command1,command2,command3|");
 
             // Create mock command router results for each command
             CommandRouterResult routerResult1 = new(new Commands.Handlers.CommandHandlerResult(
                 new Commands.Checkers.CommandCheckerResult(),
                 new Commands.Runners.CommandRunnerResult("sender_result1")),
-                new TerminalRequest("id1", "command1|", "sender_1", "sender_endpoint_1")
+                new TerminalRequest("id1", "command1|")
                                                    );
 
             CommandRouterResult routerResult2 = new(new Commands.Handlers.CommandHandlerResult(
                 new Commands.Checkers.CommandCheckerResult(),
                 new Commands.Runners.CommandRunnerResult("sender_result2")),
-                new TerminalRequest("id2", "command2|", "sender_1", "sender_endpoint_1")
+                new TerminalRequest("id2", "command2|")
                                                    );
 
             CommandRouterResult routerResult3 = new(new Commands.Handlers.CommandHandlerResult(
                 new Commands.Checkers.CommandCheckerResult(),
                 new Commands.Runners.CommandRunnerResult("sender_result3")),
-                new TerminalRequest("id3", "command3|", "sender_1", "sender_endpoint_1")
+                new TerminalRequest("id3", "command3|")
                                                    );
 
             // Arrange
@@ -486,37 +492,37 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task ProcessAsync_Routes_Batched_Commands_With_Null_Value_Result()
         {
-            TerminalRequest testRequest = new("id1", "command1,command2,command3,command4,command5|", "sender_1", "sender_endpoint_1");
+            TerminalRequest testRequest = new("id1", "command1,command2,command3,command4,command5|");
 
             // Create mock command router results: 4 valid and 1 null
             CommandRouterResult routerResult1 = new(new Commands.Handlers.CommandHandlerResult(
                 new Commands.Checkers.CommandCheckerResult(),
                 new Commands.Runners.CommandRunnerResult("sender_result1")),
-                new TerminalRequest("id1", "command1|", "sender_1", "sender_endpoint_1")
+                new TerminalRequest("id1", "command1|")
                                                    );
 
             CommandRouterResult routerResult2 = new(new Commands.Handlers.CommandHandlerResult(
                 new Commands.Checkers.CommandCheckerResult(),
                 new Commands.Runners.CommandRunnerResult("sender_result2")),
-                new TerminalRequest("id2", "command2|", "sender_1", "sender_endpoint_1")
+                new TerminalRequest("id2", "command2|")
                                                    );
 
             CommandRouterResult routerResult3 = new(new Commands.Handlers.CommandHandlerResult(
                 new Commands.Checkers.CommandCheckerResult(),
                 new Commands.Runners.CommandRunnerResult("sender_result3")),
-                new TerminalRequest("id3", "command3|", "sender_1", "sender_endpoint_1")
+                new TerminalRequest("id3", "command3|")
                                                    );
 
             CommandRouterResult routerResult4 = new(new Commands.Handlers.CommandHandlerResult(
                 new Commands.Checkers.CommandCheckerResult(),
                 new Commands.Runners.CommandRunnerResult()), // Null Value
-                new TerminalRequest("id4", "command4|", "sender_1", "sender_endpoint_1")
+                new TerminalRequest("id4", "command4|")
                                                    );
 
             CommandRouterResult routerResult5 = new(new Commands.Handlers.CommandHandlerResult(
                 new Commands.Checkers.CommandCheckerResult(),
                 new Commands.Runners.CommandRunnerResult("sender_result5")),
-                new TerminalRequest("id5", "command5|", "sender_1", "sender_endpoint_1")
+                new TerminalRequest("id5", "command5|")
                                                    );
 
             // Arrange
@@ -571,7 +577,7 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task ProcessAsync_Routes_Command_And_Returns_Result()
         {
-            TerminalRequest testRequest = new("id1", "command1|", "sender_1", "sender_endpoint_1");
+            TerminalRequest testRequest = new("id1", "command1|");
 
             // Create a mock command router result with
             CommandRouterResult routerResult = new(new Commands.Handlers.CommandHandlerResult(
@@ -602,12 +608,13 @@ namespace OneImlx.Terminal.Runtime
 
             // Make sure response is correct
             response.Should().NotBeNull();
+            response.SenderId.Should().Be("sender_1");
+            response.SenderEndpoint.Should().Be("sender_endpoint_1");
+
             response.Requests.Should().HaveCount(1);
             response.Requests[0].Id.Should().NotBeNullOrWhiteSpace();
             response.Requests[0].Raw.Should().Be("command1");
-            response.Requests[0].BatchId.Should().NotBeNullOrWhiteSpace();
-            response.Requests[0].SenderId.Should().Be("sender_1");
-            response.Requests[0].SenderEndpoint.Should().Be("sender_endpoint_1");
+
             response.Results.Should().HaveCount(1);
             response.Results[0].Should().Be("sender_result");
         }
@@ -755,6 +762,180 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
+        public async Task StreamRequestAsync_Processes_Incomplete_Batch_correctly()
+        {
+            // Arrange
+            var senderId = "large_data_sender";
+            var senderEndpoint = "large_data_endpoint";
+            string? processedCommand = null;
+            var lockObj = new object();
+
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(ctx =>
+                {
+                    processedCommand = ctx.Request.Raw;
+                });
+
+            // Start the processor
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
+
+            // Act: Stream data in chunks to the processor
+            byte[] bytes = _textHandler.Encoding.GetBytes("command1");
+            await _terminalProcessor.StreamRequestAsync(bytes, senderId, senderEndpoint);
+
+            // Allow time for processing to complete
+            await Task.Delay(100);
+
+            // Assert: Verify command was not processed since the batch is incomplete
+            processedCommand.Should().BeNull();
+
+            // Ensure there are not unprocessed requests since the batch is incomplete
+            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public async Task StreamRequestAsync_Processes_Large_Data_Received_In_Chunks_Maintaining_Order()
+        {
+            // Arrange
+            var senderId = "large_data_sender";
+            var senderEndpoint = "large_data_endpoint";
+            var processedCommands = new ConcurrentQueue<string>();
+            var lockObj = new object();
+
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(ctx =>
+                {
+                    processedCommands.Enqueue(ctx.Request.Raw);
+                });
+
+            // Create a large batch of commands to simulate streaming
+            var commands = Enumerable.Range(1, 1500).Select(i => $"command{i}").ToArray();
+            var completeBatch = string.Join("|", commands) + "|"; // Ensure the batch ends with the delimiter
+            var completeBatchBytes = Encoding.UTF8.GetBytes(completeBatch);
+
+            // Split the data into sizable chunks to simulate streaming
+            int chunkSize = 30;
+            var chunks = completeBatchBytes.Chunk(chunkSize).ToArray();
+
+            // Start the processor
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
+
+            // Act: Stream data in chunks to the processor
+            foreach (var chunk in chunks)
+            {
+                await _terminalProcessor.StreamRequestAsync(chunk, senderId, senderEndpoint);
+            }
+
+            // Allow time for processing to complete
+            await Task.Delay(3000);
+
+            // Assert: Verify all commands were processed in the correct order
+            processedCommands.ToArray().Should().BeEquivalentTo(commands);
+
+            // Ensure no unprocessed requests are left
+            _terminalProcessor.UnprocessedRequests.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task StreamRequestAsync_Processes_Partial_Batch_correctly()
+        {
+            // Arrange
+            var senderId = "large_data_sender";
+            var senderEndpoint = "large_data_endpoint";
+            List<string> processedCommands = [];
+            var lockObj = new object();
+
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(ctx =>
+                {
+                    processedCommands.Add(ctx.Request.Raw);
+                });
+
+            // Start the processor
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
+
+            // Act: Stream data in chunks to the processor
+            byte[] bytes = _textHandler.Encoding.GetBytes("command1|command2|command3");
+            await _terminalProcessor.StreamRequestAsync(bytes, senderId, senderEndpoint);
+
+            // Allow time for processing to complete
+            await Task.Delay(100);
+
+            // Assert: Verify command was are processed since the batch is partial
+            processedCommands.Should().HaveCount(2);
+            processedCommands.Should().BeEquivalentTo(["command1", "command2"]);
+
+            // Ensure there are not unprocessed requests since the batch is partial
+            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public async Task StreamRequestAsync_Processes_Partial_Batch_With_Command_Delimiter_Correctly()
+        {
+            // Arrange
+            var senderId = "large_data_sender";
+            var senderEndpoint = "large_data_endpoint";
+            List<string> processedCommands = [];
+            var lockObj = new object();
+
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(ctx =>
+                {
+                    processedCommands.Add(ctx.Request.Raw);
+                })
+                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
+
+            // Start the processor
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
+
+            // Act: Stream data in chunks to the processor
+            byte[] bytes = _textHandler.Encoding.GetBytes("command1,command2,command3|command4,command5,command6|command7");
+            await _terminalProcessor.StreamRequestAsync(bytes, senderId, senderEndpoint);
+
+            // Allow time for processing to complete
+            await Task.Delay(100);
+
+            // Assert: Verify command was are processed since the batch is partial
+            processedCommands.Should().HaveCount(6);
+            processedCommands.Should().BeEquivalentTo(["command1", "command2", "command3", "command4", "command5", "command6"]);
+
+            // Ensure there are not unprocessed requests since the batch is partial
+            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public async Task StreamRequestAsync_Processes_Single_Batch_correctly()
+        {
+            // Arrange
+            var senderId = "large_data_sender";
+            var senderEndpoint = "large_data_endpoint";
+            var processedCommand = "";
+            var lockObj = new object();
+
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(ctx =>
+                {
+                    processedCommand = ctx.Request.Raw;
+                });
+
+            // Start the processor
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
+
+            // Act: Stream data in chunks to the processor
+            byte[] bytes = _textHandler.Encoding.GetBytes("command1|");
+            await _terminalProcessor.StreamRequestAsync(bytes, senderId, senderEndpoint);
+
+            // Allow time for processing to complete
+            await Task.Delay(100);
+
+            // Assert: Verify all commands were processed in the correct order
+            processedCommand.Should().Be("command1");
+
+            // Ensure no unprocessed requests are left
+            _terminalProcessor.UnprocessedRequests.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task WaitAsync_CancelsIndefiniteProcessing()
         {
             // Start the WaitAsync task
@@ -778,9 +959,9 @@ namespace OneImlx.Terminal.Runtime
         private readonly Mock<ILogger<TerminalProcessor>> _mockLogger;
         private readonly Mock<IOptions<TerminalOptions>> _mockOptions;
         private readonly Mock<TerminalRouterContext> _mockTerminalRouterContext;
-        private readonly ITerminalTextHandler _textHandler;
         private readonly TerminalProcessor _terminalProcessor;
         private readonly CancellationTokenSource _terminalTokenSource;
+        private readonly ITerminalTextHandler _textHandler;
         private readonly TerminalStartContext terminalStartContext;
     }
 }
