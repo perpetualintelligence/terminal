@@ -38,14 +38,14 @@ namespace OneImlx.Terminal.Client.Extensions
         }
 
         /// <summary>
-        /// Sends a single terminal command to a server via TCP.
+        /// Sends a single terminal command request to a server via TCP.
         /// </summary>
         /// <param name="tcpClient">The <see cref="TcpClient"/> instance used to send the request.</param>
-        /// <param name="command">The <see cref="TerminalCommand"/> command to send.</param>
+        /// <param name="command">The <see cref="TerminalRequest"/> command to send.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <param name="serializeOptions">Optional serialization options for JSON encoding.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public static async Task SendCommandAsync(this TcpClient tcpClient, TerminalCommand command, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
+        public static async Task SendSingleAsync(this TcpClient tcpClient, TerminalRequest command, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
             if (command == null)
             {

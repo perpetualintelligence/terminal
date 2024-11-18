@@ -39,7 +39,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                         // Assert: Verify the server received the correct message
-                        receivedMessage.Should().Be("{\"batch_id\":\"batch-id\",\"commands\":[{\"id\":\"cmd_id_1\",\"raw\":\"command1\"},{\"id\":\"cmd_id_2\",\"raw\":\"command2\"}]}");
+                        receivedMessage.Should().Be("{\"batch_id\":\"batch-id\",\"requests\":[{\"id\":\"cmd_id_1\",\"raw\":\"command1\"},{\"id\":\"cmd_id_2\",\"raw\":\"command2\"}]}");
                     }
                 });
 
@@ -81,7 +81,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                         // Assert: Verify the server received the correct message
-                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"commands\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}");
+                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}");
                     }
                 });
 
@@ -128,8 +128,8 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    TerminalCommand single = new("single-id-1", "single-command-1");
-                    await tcpClient.SendCommandAsync(single, CancellationToken.None);
+                    TerminalRequest single = new("single-id-1", "single-command-1");
+                    await tcpClient.SendSingleAsync(single, CancellationToken.None);
 
                     // Wait for the server to complete
                     await serverTask;
@@ -144,8 +144,8 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
             using (var tcpClient = new TcpClient())
             {
                 // Act
-                TerminalCommand single = new("single-id", "single-command");
-                Func<Task> act = async () => await tcpClient.SendCommandAsync(single, CancellationToken.None);
+                TerminalRequest single = new("single-id", "single-command");
+                Func<Task> act = async () => await tcpClient.SendSingleAsync(single, CancellationToken.None);
 
                 // Assert: Expect an InvalidOperationException because the client is not connected
                 await act.Should().ThrowAsync<TerminalException>()

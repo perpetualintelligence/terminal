@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Runtime
         /// The returned collection is a snapshot at the time of the query and may not accurately reflect the state of
         /// the queue by the time it is processed by the caller.
         /// </remarks>
-        IReadOnlyCollection<TerminalCommand> UnprocessedRequests { get; }
+        IReadOnlyCollection<TerminalRequest> UnprocessedRequests { get; }
 
         /// <summary>
         /// Asynchronously adds a raw command or batch of commands to the processing queue.
@@ -65,7 +65,7 @@ namespace OneImlx.Terminal.Runtime
         /// Commands in a batch are executed sequentially in the order they appear, and the corresponding responses are
         /// returned in the same order. This ensures consistency between the input commands and their results.
         /// </remarks>
-        Task<TerminalResponse> ProcessRequestAsync(string raw, string? senderId, string? senderEndpoint);
+        Task<TerminalResponse> ProcessBatchAsync(string raw, string? senderId, string? senderEndpoint);
 
         /// <summary>
         /// Serializes the results of a command execution to a UTF8 bytes.

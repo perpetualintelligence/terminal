@@ -51,8 +51,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 string id = cmdIds[idx];
                 string raw = commands[idx];
 
-                TerminalCommand command = new(id, raw);
-                await tcpClient.SendCommandAsync(command, cToken);
+                TerminalRequest command = new(id, raw);
+                await tcpClient.SendSingleAsync(command, cToken);
                 await terminalConsole.WriteLineAsync($"Request: id={id} raw={raw}");
             }
 

@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.AspNetCore
         public async Task RouteCommand_Processes_Command_Successfully()
         {
             // Arrange
-            var request = new TerminalJsonRequest("test-command");
+            var request = new TerminalRequest("test-id", "test-command");
             var context = new DefaultHttpContext();
 
             // Create a MemoryStream to simulate the HTTP request body with the serialized command
@@ -59,13 +59,13 @@ namespace OneImlx.Terminal.AspNetCore
                 {
                     // Create and assign a mock response based on the input parameters
                     addedResponse = new TerminalResponse(1, null, senderId, senderEndpoint);
-                    addedResponse.Commands[0] = new TerminalCommand("id1", raw);
+                    addedResponse.Commands[0] = new TerminalRequest("id1", raw);
                 })
                 .ReturnsAsync(() => addedResponse!);
 
             // Act
             addedResponse.Should().BeNull();
-            await terminalHttpMapService.RouteCommandAsync(context);
+            await terminalHttpMapService.RouteBatchAsync(context);
 
             // Assert
             addedResponse.Should().NotBeNull();
@@ -81,7 +81,7 @@ namespace OneImlx.Terminal.AspNetCore
         public async Task RouteCommand_Throws_When_Command_Is_Missing()
         {
             // Arrange
-            var request = new TerminalJsonRequest("  "); // Empty command string
+            var request = new TerminalRequest("test-id", "  "); // Empty command string
             var context = new DefaultHttpContext();
 
             // Create a MemoryStream to simulate the HTTP request body with the serialized command
@@ -91,7 +91,7 @@ namespace OneImlx.Terminal.AspNetCore
             context.Request.Body = stream;
 
             // Act
-            Func<Task> act = async () => await terminalHttpMapService.RouteCommandAsync(context);
+            Func<Task> act = async () => await terminalHttpMapService.RouteBatchAsync(context);
 
             // Assert
             await act.Should().ThrowAsync<TerminalException>()
@@ -104,7 +104,7 @@ namespace OneImlx.Terminal.AspNetCore
         public async Task RouteCommand_Throws_When_Processor_Is_Not_Processing()
         {
             // Arrange
-            var request = new TerminalJsonRequest("test-command");
+            var request = new TerminalRequest("test-id", "test-command");
             var context = new DefaultHttpContext();
 
             // Create a MemoryStream to simulate the HTTP request body with the serialized command
@@ -118,7 +118,7 @@ namespace OneImlx.Terminal.AspNetCore
             mockProcessor.Setup(x => x.IsProcessing).Returns(false);
 
             // Act
-            Func<Task> act = async () => await terminalHttpMapService.RouteCommandAsync(context);
+            Func<Task> act = async () => await terminalHttpMapService.RouteBatchAsync(context);
 
             // Assert
             await act.Should().ThrowAsync<TerminalException>()
@@ -131,7 +131,7 @@ namespace OneImlx.Terminal.AspNetCore
         public async Task RouteCommand_Throws_When_Router_Is_Not_Running()
         {
             // Arrange
-            var request = new TerminalJsonRequest("test-command");
+            var request = new TerminalRequest("test-id", "test-command");
             var context = new DefaultHttpContext();
 
             // Create a MemoryStream to simulate the HTTP request body with the serialized command
@@ -144,7 +144,7 @@ namespace OneImlx.Terminal.AspNetCore
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(false);
 
             // Act
-            Func<Task> act = async () => await terminalHttpMapService.RouteCommandAsync(context);
+            Func<Task> act = async () => await terminalHttpMapService.RouteBatchAsync(context);
 
             // Assert
             await act.Should().ThrowAsync<TerminalException>()

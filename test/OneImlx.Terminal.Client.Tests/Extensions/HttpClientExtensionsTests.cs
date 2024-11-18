@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Client.Extensions
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // Verify that the HTTP request content was correct
-            TerminalJsonRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonRequest>();
+            TerminalRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalRequest>();
             actualContent.Should().NotBeNull();
             actualContent!.Raw.Should().Be("command1;command2;command3|");
         }
@@ -70,13 +70,13 @@ namespace OneImlx.Terminal.Client.Extensions
             var msgDelimiter = "|";
 
             // Act
-            var response = await _httpClient.SendSingleAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            var response = await _httpClient.SendSingleAsync(command, CancellationToken.None);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // Verify that the HTTP request content was correct
-            TerminalJsonRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonRequest>();
+            TerminalRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalRequest>();
             actualContent.Should().NotBeNull();
             actualContent!.Raw.Should().Be("test-command|");
         }
@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Client.Extensions
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // Verify that the HTTP request content was correct
-            TerminalJsonRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalJsonRequest>();
+            TerminalRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalRequest>();
             actualContent.Should().NotBeNull();
             actualContent!.Raw.Should().Be("test-command");
         }

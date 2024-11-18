@@ -27,14 +27,26 @@ namespace OneImlx.Terminal.AspNetCore.Extensions
         /// </remarks>
         public static IEndpointConventionBuilder MapTerminalHttp(this IEndpointRouteBuilder endpoints)
         {
-            return endpoints.MapPost("/oneimlx/terminal/httprouter", static async context =>
+            // Batch
+            endpoints.MapPost("/oneimlx/terminal/httpbatch", static async context =>
             {
                 // Resolve TerminalHttpMapService from DI and process the command
                 var terminalHttpMapService = context.RequestServices.GetRequiredService<TerminalHttpMapService>();
 
                 // Request the command received from the HTTP request to the terminal server. The command gets added to
                 // the command queue and is processed by the terminal server's command loop.
-                await terminalHttpMapService.RouteCommandAsync(context);
+                await terminalHttpMapService.RouteBatchAsync(context);
+            });
+
+            // Single
+            return endpoints.MapPost("/oneimlx/terminal/httpsingle", static async context =>
+            {
+                // Resolve TerminalHttpMapService from DI and process the command
+                var terminalHttpMapService = context.RequestServices.GetRequiredService<TerminalHttpMapService>();
+
+                // Request the command received from the HTTP request to the terminal server. The command gets added to
+                // the command queue and is processed by the terminal server's command loop.
+                await terminalHttpMapService.RouteBatchAsync(context);
             });
         }
     }

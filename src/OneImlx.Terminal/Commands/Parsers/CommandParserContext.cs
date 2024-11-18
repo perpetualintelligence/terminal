@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// Initialize a new instance.
         /// </summary>
         /// <param name="request">The command request.</param>
-        public CommandParserContext(TerminalCommand request)
+        public CommandParserContext(TerminalRequest request)
         {
             Request = request ?? throw new ArgumentNullException(nameof(request));
         }
@@ -27,6 +27,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <summary>
         /// The command request.
         /// </summary>
-        public TerminalCommand Request { get; set; }
+        public TerminalRequest Request { get; set; }
     }
 }

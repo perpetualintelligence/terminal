@@ -20,6 +20,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// </summary>
         /// <param name="request">The command request to parse.</param>
         /// <returns></returns>
-        Task<ParsedCommand> ParseRequestAsync(TerminalCommand request);
+        Task<ParsedCommand> ParseRequestAsync(TerminalRequest request);
     }
 }

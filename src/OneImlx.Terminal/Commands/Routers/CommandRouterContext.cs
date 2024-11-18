@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Commands.Routers
         /// <param name="request">The request to process.</param>
         /// <param name="context">The terminal routing context.</param>
         /// <param name="properties">The additional router properties.</param>
-        public CommandRouterContext(TerminalCommand request, TerminalRouterContext context, Dictionary<string, object>? properties)
+        public CommandRouterContext(TerminalRequest request, TerminalRouterContext context, Dictionary<string, object>? properties)
         {
             TerminalContext = context ?? throw new ArgumentNullException(nameof(context));
             Properties = properties;
@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Commands.Routers
         /// <summary>
         /// The command request.
         /// </summary>
-        public TerminalCommand Request { get; }
+        public TerminalRequest Request { get; }
 
         /// <summary>
         /// The terminal routing context.

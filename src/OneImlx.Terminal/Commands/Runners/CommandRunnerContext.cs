@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.Commands.Runners
         /// <summary>
         /// The terminal processor request.
         /// </summary>
-        public TerminalCommand Request => HandlerContext.RouterContext.Request;
+        public TerminalRequest Request => HandlerContext.RouterContext.Request;
 
         /// <summary>
         /// The terminal start context.

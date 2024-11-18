@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Apps.TestServer
             throw new System.NotImplementedException();
         }
 
-        public Task AfterCommandRouteAsync(TerminalCommand request, Command? command, CommandRouterResult? result)
+        public Task AfterCommandRouteAsync(TerminalRequest request, Command? command, CommandRouterResult? result)
         {
             throw new System.NotImplementedException();
         }
@@ -37,7 +37,7 @@ namespace OneImlx.Terminal.Apps.TestServer
             throw new System.NotImplementedException();
         }
 
-        public Task BeforeCommandRouteAsync(TerminalCommand request)
+        public Task BeforeCommandRouteAsync(TerminalRequest request)
         {
             throw new System.NotImplementedException();
         }

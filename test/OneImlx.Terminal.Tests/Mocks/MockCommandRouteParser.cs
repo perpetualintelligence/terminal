@@ -14,11 +14,11 @@ namespace OneImlx.Terminal.Mocks
 {
     internal class MockCommandRouteParser : ICommandRequestParser
     {
-        public TerminalCommand PassedCommandRoute { get; private set; } = null!;
+        public TerminalRequest PassedCommandRoute { get; private set; } = null!;
 
         public bool Called { get; private set; }
 
-        public Task<ParsedCommand> ParseRequestAsync(TerminalCommand request)
+        public Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
         {
             PassedCommandRoute = request;
             Called = true;

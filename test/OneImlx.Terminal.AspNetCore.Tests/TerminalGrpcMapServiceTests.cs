@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.AspNetCore
                 {
                     // Create and assign a mock response based on the input parameters
                     addedResponse = new TerminalResponse(1, null, senderId, senderEndpoint);
-                    addedResponse.Commands[0] = new TerminalCommand("id1", raw);
+                    addedResponse.Commands[0] = new TerminalRequest("id1", raw);
                 })
                 .ReturnsAsync(() => addedResponse!);
 

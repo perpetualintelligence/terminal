@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Runtime
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalCommand"/> items that are processed in
+    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalRequest"/> items that are processed in
     /// the background. It routes these commands to the <see cref="ICommandRouter"/> for execution. The processor
     /// supports handling both single commands and batches of commands, as well as partial batches for single-client scenarios.
     /// </para>
@@ -97,7 +97,7 @@ namespace OneImlx.Terminal.Runtime
         /// <remarks>
         /// THIS METHOD IS PART OF INTERNAL INFRASTRUCTURE AND IS NOT INTENDED TO BE USED BY APPLICATION CODE.
         /// </remarks>
-        public IReadOnlyCollection<TerminalCommand> UnprocessedRequests
+        public IReadOnlyCollection<TerminalRequest> UnprocessedRequests
         {
             get
             {
@@ -151,7 +151,7 @@ namespace OneImlx.Terminal.Runtime
             TerminalResponse response = new(commands.Length, batchId, senderId, senderEndpoint);
             for (int idx = 0; idx < commands.Length; ++idx)
             {
-                response.Commands[idx] = new TerminalCommand(NewUniqueId(), commands[idx]);
+                response.Commands[idx] = new TerminalRequest(NewUniqueId(), commands[idx]);
             }
 
             // Enqueue and signal that a request is ready to be processed
@@ -215,7 +215,7 @@ namespace OneImlx.Terminal.Runtime
             TerminalResponse response = new(commands.Length, batchId, senderId, senderEndpoint);
             for (int idx = 0; idx < commands.Length; ++idx)
             {
-                TerminalCommand request = new(NewUniqueId(), commands[idx]);
+                TerminalRequest request = new(NewUniqueId(), commands[idx]);
 
                 CommandRouterResult result = await RouteRequestAsync(request, response, terminalRouterContext);
                 object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
@@ -377,7 +377,7 @@ namespace OneImlx.Terminal.Runtime
             this.handler = handler ?? throw new TerminalException(TerminalErrors.InvalidRequest, "The response handler cannot be null.");
         }
 
-        private async Task<CommandRouterResult> RouteRequestAsync(TerminalCommand request, TerminalResponse terminalResponse, TerminalRouterContext terminalRouterContext)
+        private async Task<CommandRouterResult> RouteRequestAsync(TerminalRequest request, TerminalResponse terminalResponse, TerminalRouterContext terminalRouterContext)
         {
             Dictionary<string, object> properties = new()
             {

@@ -16,7 +16,7 @@ namespace OneImlx.Terminal.Runtime
     /// </summary>
     /// <remarks>The commands in a batch are executed by the router in the order they were added.</remarks>
     [JsonConverter(typeof(TerminalBatchJsonConverter))]
-    public sealed class TerminalBatch : KeyedCollection<string, TerminalCommand>
+    public sealed class TerminalBatch : KeyedCollection<string, TerminalRequest>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalBatch"/> class.
@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="raw">The raw command string.</param>
         public void Add(string id, string raw)
         {
-            Add(new TerminalCommand(id, raw));
+            Add(new TerminalRequest(id, raw));
         }
 
         /// <summary>
@@ -68,10 +68,10 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
-        /// Returns the <see cref="TerminalCommand.Id"/> as an item key.
+        /// Returns the <see cref="TerminalRequest.Id"/> as an item key.
         /// </summary>
         /// <param name="item">The item to query.</param>
-        protected override string GetKeyForItem(TerminalCommand item)
+        protected override string GetKeyForItem(TerminalRequest item)
         {
             return item.Id;
         }

@@ -13,15 +13,15 @@ namespace OneImlx.Terminal.Runtime
     /// <summary>
     /// A <see cref="ITerminalProcessor"/> request that is equatable over its identifier.
     /// </summary>
-    public sealed class TerminalCommand : IEquatable<TerminalCommand?>
+    public sealed class TerminalRequest : IEquatable<TerminalRequest?>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TerminalCommand"/> class.
+        /// Initializes a new instance of the <see cref="TerminalRequest"/> class.
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
         /// <param name="raw">The raw command string to be processed.</param>
         [JsonConstructor]
-        public TerminalCommand(string id, string raw)
+        public TerminalRequest(string id, string raw)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -45,13 +45,13 @@ namespace OneImlx.Terminal.Runtime
         public string Raw { get; }
 
         /// <inheritdoc/>
-        public static bool operator !=(TerminalCommand? left, TerminalCommand? right)
+        public static bool operator !=(TerminalRequest? left, TerminalRequest? right)
         {
             return !(left == right);
         }
 
         /// <inheritdoc/>
-        public static bool operator ==(TerminalCommand? left, TerminalCommand? right)
+        public static bool operator ==(TerminalRequest? left, TerminalRequest? right)
         {
             if (left is null)
             {
@@ -64,11 +64,11 @@ namespace OneImlx.Terminal.Runtime
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            return Equals(obj as TerminalCommand);
+            return Equals(obj as TerminalRequest);
         }
 
         /// <inheritdoc/>
-        public bool Equals(TerminalCommand? other)
+        public bool Equals(TerminalRequest? other)
         {
             return other is not null &&
                    Id == other.Id;

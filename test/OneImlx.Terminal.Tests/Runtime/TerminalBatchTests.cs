@@ -89,11 +89,11 @@ namespace OneImlx.Terminal.Tests.Runtime
         public void Query_Is_In_Order()
         {
             var batch = new TerminalBatch("test_batch");
-            var command1 = new TerminalCommand("cmd1", "raw_command1");
-            var command2 = new TerminalCommand("cmd2", "raw_command2");
-            var command3 = new TerminalCommand("cmd3", "raw_command3");
-            var command4 = new TerminalCommand("cmd4", "raw_command4");
-            var command5 = new TerminalCommand("cmd5", "raw_command5");
+            var command1 = new TerminalRequest("cmd1", "raw_command1");
+            var command2 = new TerminalRequest("cmd2", "raw_command2");
+            var command3 = new TerminalRequest("cmd3", "raw_command3");
+            var command4 = new TerminalRequest("cmd4", "raw_command4");
+            var command5 = new TerminalRequest("cmd5", "raw_command5");
 
             batch.Add(command1);
             batch.Add(command2);

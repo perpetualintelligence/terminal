@@ -60,7 +60,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
                                  .ReturnsAsync(new TerminalResponse(1, null, null, null));
 
             // Act: Post to /oneimlx/terminal/httprouter
-            var response = await client.PostAsJsonAsync("/oneimlx/terminal/httprouter", new TerminalJsonRequest("test-command"));
+            var response = await client.PostAsJsonAsync("/oneimlx/terminal/httprouter", new TerminalRequest("test-id", "test-command"));
 
             // Assert: Ensure TerminalHttpMapService's RouteCommandAsync method is invoked correctly
             response.EnsureSuccessStatusCode();

@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Runtime
             }
 
             string? batchId = null;
-            TerminalCommand[]? commands = null;
+            TerminalRequest[]? requests = null;
 
             while (reader.Read())
             {
@@ -46,14 +46,14 @@ namespace OneImlx.Terminal.Runtime
                             batchId = reader.GetString();
                             break;
 
-                        case "commands":
+                        case "requests":
                             if (reader.TokenType == JsonTokenType.StartArray)
                             {
-                                commands = JsonSerializer.Deserialize<TerminalCommand[]>(ref reader, options);
+                                requests = JsonSerializer.Deserialize<TerminalRequest[]>(ref reader, options);
                             }
                             else
                             {
-                                throw new JsonException("Expected StartArray for 'commands'.");
+                                throw new JsonException("Expected StartArray for 'requests'.");
                             }
                             break;
 
@@ -71,9 +71,9 @@ namespace OneImlx.Terminal.Runtime
             }
 
             var batch = new TerminalBatch(batchId);
-            if (commands != null)
+            if (requests != null)
             {
-                foreach (var command in commands)
+                foreach (var command in requests)
                 {
                     batch.Add(command);
                 }
@@ -93,12 +93,12 @@ namespace OneImlx.Terminal.Runtime
             writer.WriteStartObject();
             writer.WriteString("batch_id", value.BatchId);
 
-            writer.WritePropertyName("commands");
+            writer.WritePropertyName("requests");
             writer.WriteStartArray();
-            foreach (var command in value)
+            foreach (var request in value)
             {
                 // Direct serialization for optimal performance
-                JsonSerializer.Serialize(writer, command, options);
+                JsonSerializer.Serialize(writer, request, options);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
