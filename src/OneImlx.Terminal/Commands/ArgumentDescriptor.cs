@@ -100,7 +100,7 @@ namespace OneImlx.Terminal.Commands
         {
             if (valueCheckers != null)
             {
-                if (valueCheckers.Any(e => e.GetRawType() == typeof(RequiredAttribute)))
+                if (valueCheckers.Any(static e => e.GetRawType() == typeof(RequiredAttribute)))
                 {
                     Flags |= ArgumentFlags.Required;
                 }

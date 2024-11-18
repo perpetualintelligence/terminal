@@ -67,14 +67,14 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             // opt7_a is an alias for opt7 so we cannot use -- prefix we have to use - alias prefix
             var options = "--opt7_a";
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 " + options));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 " + options));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The option prefix is not valid for an alias. option=opt7_a");
         }
 
         [Fact]
         public async Task Argument_With_Single_Delimiter_Value_Works()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"  argument    delimited  value3  \""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 \"  argument    delimited  value3  \""));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().BeNull();
@@ -87,7 +87,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Argument_Without_Closing_Delimiter_Throws()
         {
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 32 \"arg2 value true 35.987 3435345345 2312.123123 12/23/2023 12/23/2022:12:23:22"));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 32 \"arg2 value true 35.987 3435345345 2312.123123 12/23/2023 12/23/2022:12:23:22"));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The argument value is missing the closing delimiter. argument=\"arg2 value true 35.987 3435345345 2312.123123 12/23/2023 12/23/2022:12:23:22");
         }
 
@@ -95,7 +95,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Arguments_And_Options_Are_Processed_Correctly()
         {
             string cmdStr = "root1 grp1 cmd1 \"arg1 value\" 32 true 35.987 3435345345 arg6value 12/23/2023 12/23/2022:12:23:22 \"arg9 value\" -opt7_a --opt3 \"option delimited value3\" --opt4 option value4    with multiple  spaces --opt5 35.987 --opt1 34 -opt6_a 12/23/2023 --opt2 option value2 -opt8_a true";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -178,7 +178,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 \"arg1 value\" 32 true 35.987 3435345345 arg6value 12/23/2023 12/23/2022:12:23:22 \"arg9 value\" -opt7_a --opt3=\"option delimited value3\" --opt4=option value4    with multiple  spaces --opt5=35.987 --opt1=34 -opt6_a 12/23/2023 --opt2=option value2 -opt8_a=true";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -258,7 +258,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Arguments_Are_Processed_In_Order()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"arg1 value\" 32 true 35.987 3435345345 arg6value 12/23/2023 12/23/2022:12:23:22 \"arg9 value\""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 \"arg1 value\" 32 true 35.987 3435345345 arg6value 12/23/2023 12/23/2022:12:23:22 \"arg9 value\""));
 
             result.Command.Id.Should().Be("cmd1");
 
@@ -308,7 +308,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.Separator = sep;
 
             string cmdStr = $"root1{sep}grp1{sep}cmd1{sep}\"arg1{sep}value\"{sep}32{sep}true{sep}35.987{sep}3435345345{sep}arg6value{sep}12/23/2023{sep}12/23/2022:12:23:22{sep}\"arg9{sep}value\"{sep}-opt7_a{sep}--opt3{sep}\"option{sep}delimited{sep}value3\"{sep}--opt4{sep}option{sep}value4{sep}{sep}{sep}{sep}with{sep}multiple{sep}{sep}spaces{sep}--opt5{sep}35.987{sep}--opt1{sep}34{sep}-opt6_a{sep}12/23/2023{sep}--opt2{sep}option{sep}value2{sep}-opt8_a{sep}false";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -386,7 +386,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Arguments_With_Multiple_Separator_Are_Processed_In_Order()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", " root1   grp1  cmd1           \"arg1    value\"   32   true       35.987 3435345345       arg6value      12/23/2023 12/23/2022:12:23:22  \"   arg9   value   \""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", " root1   grp1  cmd1           \"arg1    value\"   32   true       35.987 3435345345       arg6value      12/23/2023 12/23/2022:12:23:22  \"   arg9   value   \""));
 
             result.Command.Id.Should().Be("cmd1");
 
@@ -427,14 +427,14 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Arguments_With_Multiple_Separator_Not_Delimited_Exceed_Argument_Limit_Throws()
         {
             // Here arg9 and value are not delimited so they are considered as two arguments and exceed the limit of 9 arguments
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", " root1   grp1  cmd1           \"arg1    value\"   32   true       35.987 3435345345       arg6value      12/23/2023 12/23/2022:12:23:22     arg9   value   "));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", " root1   grp1  cmd1           \"arg1    value\"   32   true       35.987 3435345345       arg6value      12/23/2023 12/23/2022:12:23:22     arg9   value   "));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support 10 arguments. command=cmd1 arguments=arg1    value,32,true,35.987,3435345345,arg6value,12/23/2023,12/23/2022:12:23:22,arg9,value");
         }
 
         [Fact]
         public async Task Delimited_Argument_Processes_String_As_Is()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"cmd2 'cmd2_arg1' 'cmd2_arg2 value' cmd2_arg3 --opt1 val1 --opt2 val2 -opt3 --opt4 'c:\\\\somedir\\somepath\\somefile.txt'\""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 \"cmd2 'cmd2_arg1' 'cmd2_arg2 value' cmd2_arg3 --opt1 val1 --opt2 val2 -opt3 --opt4 'c:\\\\somedir\\somepath\\somefile.txt'\""));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Arguments.Should().NotBeNull();
@@ -448,7 +448,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Delimited_Stays_As_Is()
         {
             string cmdStr = "root1 grp1 cmd1 \"  -- - -arg1 asd&&&*ASD**ASD&A* value  --\" --opt3 \"--option    -delimited   ^#%^@#&*&* JJKJKASD value3    \"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -472,7 +472,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 --opt3=============\"option delimited value3\"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -489,7 +489,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 --opt3=\"=====       =======option delimited value3===     =====\"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -506,7 +506,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 --opt3=\"============option delimited value3\"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -523,7 +523,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1======grp1=======cmd1 --opt3=\"option delimited value3\"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -541,7 +541,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [InlineData("-optinvalid", "optinvalid")]
         public async Task Invalid_Option_Throws(string invalidOpt, string errOpt)
         {
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 " + invalidOpt));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 " + invalidOpt));
             await act.Should().ThrowAsync<TerminalException>().WithMessage($"The command does not support option or its alias. command=cmd1 option={errOpt}");
         }
 
@@ -551,7 +551,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1=     =====grp1=======      cmd1 --opt3= \"option delimited value3\"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -566,7 +566,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task More_Arguments_Throws()
         {
             // We support 9 arguments but passed 11
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 val1 val2 val3    \"  val4   \" val5 val6 val7 val8 val9 val10 val11 "));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 val1 val2 val3    \"  val4   \" val5 val6 val7 val8 val9 val10 val11 "));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support 11 arguments. command=cmd1 arguments=val1,val2,val3,  val4   ,val5,val6,val7,val8,val9,val10,val11");
         }
 
@@ -575,14 +575,14 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             // We support 9 arguments but passed 11
             string cmdStr = "root1 grp1 cmd1 --opt1 34 --opt2 option value2 --opt3 \"option delimited value3\" --opt4 option value4    with multiple  spaces --opt5 35.987 --opt6 12/23/2023 --opt7 --opt8 false --opt9 -opt10 val10 --opt11 val11 --opt12 -opt13 val13 --opt14 val14 -opt15";
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support 15 options. command=cmd1 options=--opt1,--opt2,--opt3,--opt4,--opt5,--opt6,--opt7,--opt8,--opt9,-opt10,--opt11,--opt12,-opt13,--opt14,-opt15");
         }
 
         [Fact]
         public async Task Multiple_Delimited_Arguments_Are_Processed_In_Order()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"arg1 value\" \"32\" \"true\" \"35.987\" 3435345345 \"arg6value\" 12/23/2023 12/23/2022:12:23:22 \"arg9 value\""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 \"arg1 value\" \"32\" \"true\" \"35.987\" 3435345345 \"arg6value\" 12/23/2023 12/23/2022:12:23:22 \"arg9 value\""));
             result.Command.Id.Should().Be("cmd1");
 
             result.Command.Arguments.Should().NotBeNull();
@@ -621,7 +621,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Multiple_Delimited_Strips_First_Delimited_Pair()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"\"\"arg1 delimited value\"\"\""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 \"\"\"arg1 delimited value\"\"\""));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Arguments.Should().NotBeNull();
@@ -634,7 +634,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Nested_Delimited_Gives_Inconsistent_Result()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"arg1 \"nested delimited value\" value\""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 \"arg1 \"nested delimited value\" value\""));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Arguments.Should().NotBeNull();
@@ -652,14 +652,14 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             // opt7 is an option so we cannot use - alias prefix we have to use -- option prefix
             var options = "-opt7";
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 " + options));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 " + options));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The alias prefix is not valid for an option. option=-opt7");
         }
 
         [Fact]
         public async Task Option_With_Nested_Delimiter_Should_Not_Error()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 --opt1 \"\"\"val1\"\"\""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 --opt1 \"\"\"val1\"\"\""));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -675,7 +675,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Option_With_Single_Boolean_Works_With_Value()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 --opt8 false"));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 --opt8 false"));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -693,7 +693,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Option_With_Single_Boolean_Works_Without_Value()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 --opt8"));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 --opt8"));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -711,7 +711,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Option_With_Single_Delimiter_Multiple_Separator_Value_Works()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 --opt3       \"  option    delimited  value3  \"      "));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 --opt3       \"  option    delimited  value3  \"      "));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -725,7 +725,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Option_With_Single_Delimiter_Value_Works()
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 --opt3 \"  option    delimited  value3  \""));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 --opt3 \"  option    delimited  value3  \""));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -740,7 +740,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Options_Are_Processed_Correctly()
         {
             string cmdStr = "root1 grp1 cmd1 --opt1 34 --opt2 option value2 --opt3 \"option delimited value3\" --opt4 option value4    with multiple  spaces --opt5 35.987 --opt6 12/23/2023 --opt7 --opt8 false";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -791,7 +791,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Options_Are_Processed_Correctly_In_Randomized_Order()
         {
             var options = "--opt7 --opt3 \"option delimited value3\" --opt4 option value4    with multiple  spaces --opt5 35.987 --opt1 34 --opt6 12/23/2023 --opt2 option value2 --opt8 false";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 " + options));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 " + options));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -842,7 +842,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Options_Are_Processed_Correctly_With_Alias()
         {
             var options = "-opt7_a --opt3 \"option delimited value3\" --opt4 option value4    with multiple  spaces --opt5 35.987 --opt1 34 -opt6_a 12/23/2023 --opt2 option value2 -opt8_a false";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 " + options));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 " + options));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -893,7 +893,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Options_Can_Have_Prefix_In_Delimited_Values()
         {
             string cmdStr = "root1 grp1 cmd1 --opt2 \"--option -value2\" --opt3 \"option --delimited value3-\" --opt4 \"------option -value4    with multiple  spaces--------\"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -917,7 +917,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Options_With_Multiple_Separators_Are_Processed_Correctly()
         {
             string cmdStr = "root1 grp1 cmd1   --opt1    34 --opt2  option    value2 --opt3     \"   option    delimited    value3    \"     --opt4    option value4       with multiple  spaces    --opt5  35.987 --opt6 12/23/2023 --opt7                --opt8 false    ";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().NotBeNull();
@@ -972,7 +972,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [InlineData("\"arg1   delimited         value\"", "arg1   delimited         value")]
         public async Task Separators_In_Delimited_Argument_Value_Are_Preserved(string arg, string preserved)
         {
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", $"root1 grp1 cmd1 {arg}"));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", $"root1 grp1 cmd1 {arg}"));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Arguments.Should().NotBeNull();
@@ -993,7 +993,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Strips_Argument_Separator_At_The_End(string sep)
         {
             terminalOptions.Parser.Separator = sep;
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", $"root1{sep}grp1{sep}cmd1{sep}\"arg1{sep}value\"{sep}{sep}{sep}{sep}{sep}"));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", $"root1{sep}grp1{sep}cmd1{sep}\"arg1{sep}value\"{sep}{sep}{sep}{sep}{sep}"));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Options.Should().BeNull();
@@ -1016,7 +1016,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Strips_Option_Separator_At_The_End(string sep)
         {
             terminalOptions.Parser.Separator = sep;
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", $"root1{sep}grp1{sep}cmd1{sep}--opt3{sep}val3{sep}{sep}{sep}{sep}{sep}"));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", $"root1{sep}grp1{sep}cmd1{sep}--opt3{sep}val3{sep}{sep}{sep}{sep}{sep}"));
 
             result.Command.Id.Should().Be("cmd1");
             result.Command.Arguments.Should().BeNull();
@@ -1029,14 +1029,14 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Unsupported_Alias_Throws()
         {
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 -opt8_a_invalid true"));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 -opt8_a_invalid true"));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support option or its alias. command=cmd1 option=opt8_a_invalid");
         }
 
         [Fact]
         public async Task Unsupported_Option_Throws()
         {
-            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 --opt3_invalid \"  option    delimited  value3  \""));
+            Func<Task> act = async () => await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", "root1 grp1 cmd1 --opt3_invalid \"  option    delimited  value3  \""));
             await act.Should().ThrowAsync<TerminalException>().WithMessage("The command does not support option or its alias. command=cmd1 option=opt3_invalid");
         }
 
@@ -1046,7 +1046,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1 grp1 cmd1 --opt3=\"option delimited value3\"======";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -1063,7 +1063,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "=====root1 grp1 cmd1 --opt3=\"option delimited value3\"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");
@@ -1080,7 +1080,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionValueSeparator = "=";
 
             string cmdStr = "root1=grp1=cmd1 --opt3=\"option delimited value3\"";
-            var result = await commandRequestParser.ParseRequestAsync(new TerminalRequest("id1", cmdStr));
+            var result = await commandRequestParser.ParseRequestAsync(new TerminalCommand("id1", cmdStr));
 
             // Command
             result.Command.Id.Should().Be("cmd1");

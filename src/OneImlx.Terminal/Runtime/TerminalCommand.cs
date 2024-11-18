@@ -11,41 +11,79 @@ using System.Text.Json.Serialization;
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// Represents a single terminal command.
+    /// A <see cref="ITerminalProcessor"/> request that is equatable over its identifier.
     /// </summary>
-    public sealed class TerminalCommand
+    public sealed class TerminalCommand : IEquatable<TerminalCommand?>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalCommand"/> class.
         /// </summary>
-        /// <param name="id">The command id.</param>
-        /// <param name="raw">The raw command.</param>
+        /// <param name="id">The unique identifier for the command item.</param>
+        /// <param name="raw">The raw command string to be processed.</param>
         [JsonConstructor]
         public TerminalCommand(string id, string raw)
         {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
             Id = id;
             Raw = raw;
         }
 
         /// <summary>
-        /// The unique command id.
+        /// Gets the unique identifier for the command item.
         /// </summary>
         [JsonPropertyName("id")]
         public string Id { get; }
 
         /// <summary>
-        /// The raw command.
+        /// The raw command or a batch that needs to be processed.
         /// </summary>
         [JsonPropertyName("raw")]
         public string Raw { get; }
 
-        /// <summary>
-        /// Returns a string representation of the terminal command.
-        /// </summary>
-        /// <returns>A string containing the command id and command.</returns>
+        /// <inheritdoc/>
+        public static bool operator !=(TerminalCommand? left, TerminalCommand? right)
+        {
+            return !(left == right);
+        }
+
+        /// <inheritdoc/>
+        public static bool operator ==(TerminalCommand? left, TerminalCommand? right)
+        {
+            if (left is null)
+            {
+                return right is null;
+            }
+
+            return left.Equals(right);
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as TerminalCommand);
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(TerminalCommand? other)
+        {
+            return other is not null &&
+                   Id == other.Id;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        /// <inheritdoc/>
         public override string ToString()
         {
-            return Raw;
+            return $"{Raw}";
         }
     }
 }

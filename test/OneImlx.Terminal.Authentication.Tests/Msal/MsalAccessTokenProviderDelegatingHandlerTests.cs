@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Authentication.Msal
         {
             // Arrange
             var testHandler = new TestHandler();
-            _mockAccessTokenProvider.Setup(x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+            _mockAccessTokenProvider.Setup(static x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
                                     .ReturnsAsync("mock_token");
             var delegatingHandler = new MsalAccessTokenProviderDelegatingHandler(_mockAccessTokenProvider.Object, _mockLogger.Object)
             {
@@ -86,7 +86,7 @@ namespace OneImlx.Terminal.Authentication.Msal
         {
             // Arrange
             var expectedToken = "access_token";
-            _mockAccessTokenProvider.Setup(x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+            _mockAccessTokenProvider.Setup(static x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
                                     .ReturnsAsync(expectedToken);
 
             var invoker = new HttpMessageInvoker(_handler);
@@ -96,7 +96,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             var response = await invoker.SendAsync(request, new CancellationToken());
 
             // Assert
-            _mockAccessTokenProvider.Verify(x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mockAccessTokenProvider.Verify(static x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()), Times.Once);
             request.Headers.Authorization.Should().BeEquivalentTo(new AuthenticationHeaderValue("Bearer", expectedToken));
         }
 
@@ -143,7 +143,7 @@ namespace OneImlx.Terminal.Authentication.Msal
 
             testHandler.PreflightAsyncCalled.Should().BeFalse();
 
-            _mockAccessTokenProvider.Setup(x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+            _mockAccessTokenProvider.Setup(static x => x.GetAuthorizationTokenAsync(It.IsAny<Uri>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
                                     .ReturnsAsync("mock_token");
 
             var invoker = new HttpMessageInvoker(testHandler);

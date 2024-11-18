@@ -68,8 +68,8 @@ namespace OneImlx.Terminal.Authentication.Msal
         {
             // Arrange
             var testHandler = new TestHandler();
-            _mockAuthenticationProvider.Setup(p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
-                                       .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, token) =>
+            _mockAuthenticationProvider.Setup(static p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+                                       .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>(static (reqInfo, dict, token) =>
                                        {
                                            reqInfo.Headers["Authorization"] = ["Bearer mock_token"]; // Add the authorization header
                                        })
@@ -137,8 +137,8 @@ namespace OneImlx.Terminal.Authentication.Msal
         {
             // Arrange
             var mockLogger = new Mock<ILogger<MsalAuthenticationProviderDelegatingHandler>>();
-            _mockAuthenticationProvider.Setup(p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
-                                       .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, token) =>
+            _mockAuthenticationProvider.Setup(static p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+                                       .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>(static (reqInfo, dict, token) =>
                                        {
                                            // Add the authorization header
                                            reqInfo.Headers["Authorization"] = ["Bearer mock_token"];
@@ -211,8 +211,8 @@ namespace OneImlx.Terminal.Authentication.Msal
 
             testHandler.PreflightAsyncCalled.Should().BeFalse();
 
-            _mockAuthenticationProvider.Setup(p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
-                 .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>((reqInfo, dict, cToken) =>
+            _mockAuthenticationProvider.Setup(static p => p.AuthenticateRequestAsync(It.IsAny<RequestInformation>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+                 .Callback<RequestInformation, Dictionary<string, object>, CancellationToken>(static (reqInfo, dict, cToken) =>
                  {
                      reqInfo.Headers["Authorization"] = ["Bearer mock_token"]; // Empty authorization header
                  })

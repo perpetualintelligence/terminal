@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Runtime
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalRequest"/> items that are processed in
+    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalCommand"/> items that are processed in
     /// the background. It routes these commands to the <see cref="ICommandRouter"/> for execution. The processor
     /// supports handling both single commands and batches of commands, as well as partial batches for single-client scenarios.
     /// </para>
@@ -97,12 +97,12 @@ namespace OneImlx.Terminal.Runtime
         /// <remarks>
         /// THIS METHOD IS PART OF INTERNAL INFRASTRUCTURE AND IS NOT INTENDED TO BE USED BY APPLICATION CODE.
         /// </remarks>
-        public IReadOnlyCollection<TerminalRequest> UnprocessedRequests
+        public IReadOnlyCollection<TerminalCommand> UnprocessedRequests
         {
             get
             {
                 // Return all the requests from the unprocessed response queue.
-                return unprocessedRequests.SelectMany(r => r.Requests).ToArray();
+                return unprocessedRequests.SelectMany(static r => r.Commands).ToArray();
             }
         }
 
@@ -151,7 +151,7 @@ namespace OneImlx.Terminal.Runtime
             TerminalResponse response = new(commands.Length, batchId, senderId, senderEndpoint);
             for (int idx = 0; idx < commands.Length; ++idx)
             {
-                response.Requests[idx] = new TerminalRequest(NewUniqueId(), commands[idx]);
+                response.Commands[idx] = new TerminalCommand(NewUniqueId(), commands[idx]);
             }
 
             // Enqueue and signal that a request is ready to be processed
@@ -215,12 +215,12 @@ namespace OneImlx.Terminal.Runtime
             TerminalResponse response = new(commands.Length, batchId, senderId, senderEndpoint);
             for (int idx = 0; idx < commands.Length; ++idx)
             {
-                TerminalRequest request = new(NewUniqueId(), commands[idx]);
+                TerminalCommand request = new(NewUniqueId(), commands[idx]);
 
                 CommandRouterResult result = await RouteRequestAsync(request, response, terminalRouterContext);
                 object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
 
-                response.Requests[idx] = request;
+                response.Commands[idx] = request;
                 response.Results[idx] = value;
             }
 
@@ -296,7 +296,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task StreamRequestAsync(byte[] potential, string senderId, string? senderEndpoint)
         {
             // Get or create a StringBuilder for the sender
-            StringBuilder senderBuffer = streamingRequests.GetOrAdd(senderId, _ => new StringBuilder());
+            StringBuilder senderBuffer = streamingRequests.GetOrAdd(senderId, static _ => new StringBuilder());
 
             // Append the new chunk to the existing buffer
             senderBuffer.Append(textHandler.Encoding.GetString(potential));
@@ -377,7 +377,7 @@ namespace OneImlx.Terminal.Runtime
             this.handler = handler ?? throw new TerminalException(TerminalErrors.InvalidRequest, "The response handler cannot be null.");
         }
 
-        private async Task<CommandRouterResult> RouteRequestAsync(TerminalRequest request, TerminalResponse terminalResponse, TerminalRouterContext terminalRouterContext)
+        private async Task<CommandRouterResult> RouteRequestAsync(TerminalCommand request, TerminalResponse terminalResponse, TerminalRouterContext terminalRouterContext)
         {
             Dictionary<string, object> properties = new()
             {
@@ -427,9 +427,9 @@ namespace OneImlx.Terminal.Runtime
                         unprocessedRequests.TryDequeue(out TerminalResponse? response);
                         if (response != null)
                         {
-                            for (int idx = 0; idx < response.Requests.Length; ++idx)
+                            for (int idx = 0; idx < response.Commands.Length; ++idx)
                             {
-                                var result = await RouteRequestAsync(response.Requests[idx], response, terminalRouterContext);
+                                var result = await RouteRequestAsync(response.Commands[idx], response, terminalRouterContext);
                                 object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
                                 response.Results[idx] = value;
                             }

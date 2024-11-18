@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Runtime
         /// The returned collection is a snapshot at the time of the query and may not accurately reflect the state of
         /// the queue by the time it is processed by the caller.
         /// </remarks>
-        IReadOnlyCollection<TerminalRequest> UnprocessedRequests { get; }
+        IReadOnlyCollection<TerminalCommand> UnprocessedRequests { get; }
 
         /// <summary>
         /// Asynchronously adds a raw command or batch of commands to the processing queue.

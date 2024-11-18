@@ -52,12 +52,12 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddArgumentChecker<MockArgumentMapper, MockArgumentChecker>();
 
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IArgumentChecker)));
+            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(IArgumentChecker)));
             arg.Should().NotBeNull();
             arg.Lifetime.Should().Be(ServiceLifetime.Transient);
             arg.ImplementationType.Should().Be(typeof(MockArgumentChecker));
 
-            var map = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDataTypeMapper<Argument>)));
+            var map = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(IDataTypeMapper<Argument>)));
             map.Should().NotBeNull();
             map.Lifetime.Should().Be(ServiceLifetime.Transient);
             map.ImplementationType.Should().Be(typeof(MockArgumentMapper));
@@ -84,7 +84,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "desc", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>().Add();
 
-            ServiceDescriptor? cmdDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            ServiceDescriptor? cmdDescriptor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             cmdDescriptor.Should().NotBeNull();
             cmdDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             CommandDescriptor? impInstance = (CommandDescriptor?)cmdDescriptor.ImplementationInstance;
@@ -95,10 +95,10 @@ namespace OneImlx.Terminal.Extensions
             impInstance.Checker.Should().Be(typeof(MockCommandChecker));
             impInstance.Type.Should().Be(CommandType.SubCommand);
 
-            var cmdRunner = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(MockCommandRunner)));
+            var cmdRunner = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(MockCommandRunner)));
             cmdRunner.Should().BeNull();
 
-            var cmdChecker = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(MockCommandChecker)));
+            var cmdChecker = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(MockCommandChecker)));
             cmdChecker.Should().BeNull();
         }
 
@@ -143,12 +143,12 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddCommandParser<MockCommandParser, MockCommandRouteParser>();
 
-            var cmd = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandParser)));
+            var cmd = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandParser)));
             cmd.Should().NotBeNull();
             cmd.Lifetime.Should().Be(ServiceLifetime.Transient);
             cmd.ImplementationType.Should().Be(typeof(MockCommandParser));
 
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandRequestParser)));
+            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRequestParser)));
             arg.Should().NotBeNull();
             arg.Lifetime.Should().Be(ServiceLifetime.Transient);
             arg.ImplementationType.Should().Be(typeof(MockCommandRouteParser));
@@ -160,14 +160,14 @@ namespace OneImlx.Terminal.Extensions
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "description1", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             // AddCommand does not add ICommandBuilder to service collection.
-            var servicesCmdBuilder = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));
+            var servicesCmdBuilder = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandBuilder)));
             servicesCmdBuilder.Should().BeNull();
 
             // Command builder creates a new local service collection
             terminalBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
             // Lifetime of command builder service
-            var serviceDescriptor = commandBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            var serviceDescriptor = commandBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             serviceDescriptor.Should().NotBeNull();
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
 
@@ -189,14 +189,14 @@ namespace OneImlx.Terminal.Extensions
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "description1", CommandType.Root, CommandFlags.Authorize).Checker<MockCommandChecker>();
 
             // AddCommand does not add ICommandBuilder to service collection.
-            var servicesCmdBuilder = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandBuilder)));
+            var servicesCmdBuilder = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandBuilder)));
             servicesCmdBuilder.Should().BeNull();
 
             // Command builder creates a new local service collection
             terminalBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
             // Lifetime of command builder service
-            var serviceDescriptor = commandBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            var serviceDescriptor = commandBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             serviceDescriptor.Should().NotBeNull();
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
 
@@ -217,7 +217,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddCommandStore<MockCommandStore>();
 
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalCommandStore)));
+            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalCommandStore)));
             arg.Should().NotBeNull();
             arg.Lifetime.Should().Be(ServiceLifetime.Singleton);
             arg.ImplementationType.Should().Be(typeof(MockCommandStore));
@@ -228,7 +228,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddEventHandler<MockTerminalEventHandler>();
 
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalEventHandler)));
+            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalEventHandler)));
             arg.Should().NotBeNull();
             arg.Lifetime.Should().Be(ServiceLifetime.Singleton);
             arg.ImplementationType.Should().Be(typeof(MockTerminalEventHandler));
@@ -239,7 +239,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddHelpProvider<MockTerminalHelpProvider>();
 
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalHelpProvider)));
+            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalHelpProvider)));
             arg.Should().NotBeNull();
             arg.Lifetime.Should().Be(ServiceLifetime.Singleton);
             arg.ImplementationType.Should().Be(typeof(MockTerminalHelpProvider));
@@ -250,17 +250,17 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddLicensing();
 
-            var debugger = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ILicenseDebugger)));
+            var debugger = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ILicenseDebugger)));
             debugger.Should().NotBeNull();
             debugger!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             debugger.ImplementationType.Should().Be(typeof(LicenseDebugger));
 
-            var extractor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ILicenseExtractor)));
+            var extractor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ILicenseExtractor)));
             extractor.Should().NotBeNull();
             extractor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             extractor.ImplementationType.Should().Be(typeof(LicenseExtractor));
 
-            var checker = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ILicenseChecker)));
+            var checker = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ILicenseChecker)));
             checker.Should().NotBeNull();
             checker!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             checker.ImplementationType.Should().Be(typeof(LicenseChecker));
@@ -271,12 +271,12 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddOptionChecker<MockOptionMapper, MockOptionChecker>();
 
-            var arg = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IOptionChecker)));
+            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(IOptionChecker)));
             arg.Should().NotBeNull();
             arg.Lifetime.Should().Be(ServiceLifetime.Transient);
             arg.ImplementationType.Should().Be(typeof(MockOptionChecker));
 
-            var map = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(IDataTypeMapper<Option>)));
+            var map = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(IDataTypeMapper<Option>)));
             map.Should().NotBeNull();
             map.Lifetime.Should().Be(ServiceLifetime.Transient);
             map.ImplementationType.Should().Be(typeof(MockOptionMapper));
@@ -288,13 +288,13 @@ namespace OneImlx.Terminal.Extensions
             // Arrange
             var serviceCollection = new ServiceCollection();
             var terminalBuilderMock = new Mock<ITerminalBuilder>();
-            terminalBuilderMock.SetupGet(tb => tb.Services).Returns(serviceCollection);
+            terminalBuilderMock.SetupGet(static tb => tb.Services).Returns(serviceCollection);
 
             // Act
             terminalBuilderMock.Object.AddProcessor<TerminalProcessor>();
 
             // Assert
-            var serviceDescriptor = serviceCollection.FirstOrDefault(sd => sd.ServiceType == typeof(ITerminalProcessor));
+            var serviceDescriptor = serviceCollection.FirstOrDefault(static sd => sd.ServiceType == typeof(ITerminalProcessor));
 
             serviceDescriptor.Should().NotBeNull();
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
@@ -305,7 +305,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddExceptionHandler<MockExceptionPublisher>();
 
-            var exe = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalExceptionHandler)));
+            var exe = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalExceptionHandler)));
             exe.Should().NotBeNull();
             exe.Lifetime.Should().Be(ServiceLifetime.Transient);
             exe.ImplementationType.Should().Be(typeof(MockExceptionPublisher));
@@ -316,17 +316,17 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddCommandRouter<MockCommandRouter, MockCommandHandler, MockCommandRuntime>();
 
-            var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandRouter)));
+            var router = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRouter)));
             router.Should().NotBeNull();
             router!.Lifetime.Should().Be(ServiceLifetime.Transient);
             router.ImplementationType.Should().Be(typeof(MockCommandRouter));
 
-            var handler = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandHandler)));
+            var handler = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandHandler)));
             handler.Should().NotBeNull();
             handler!.Lifetime.Should().Be(ServiceLifetime.Transient);
             handler!.ImplementationType.Should().Be(typeof(MockCommandHandler));
 
-            var runtime = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ICommandRuntime)));
+            var runtime = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRuntime)));
             runtime.Should().NotBeNull();
             runtime!.Lifetime.Should().Be(ServiceLifetime.Transient);
             runtime!.ImplementationType.Should().Be(typeof(MockCommandRuntime));
@@ -337,7 +337,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddStartContext(new TerminalStartContext(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None));
 
-            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalStartContext)));
+            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(TerminalStartContext)));
             serviceDescriptor.Should().NotBeNull();
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
         }
@@ -347,7 +347,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddConsole<TerminalSystemConsole>();
 
-            var exe = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalConsole)));
+            var exe = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalConsole)));
             exe.Should().NotBeNull();
             exe.Lifetime.Should().Be(ServiceLifetime.Singleton);
             exe.ImplementationType.Should().Be(typeof(TerminalSystemConsole));
@@ -358,7 +358,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddConfigurationOptions();
 
-            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(TerminalOptions)));
+            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(TerminalOptions)));
             serviceDescriptor.Should().NotBeNull();
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
         }
@@ -368,7 +368,7 @@ namespace OneImlx.Terminal.Extensions
         {
             terminalBuilder.AddTerminalRouter<MockTerminalRouter, MockRoutingContext>();
 
-            var router = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalRouter<MockRoutingContext>)));
+            var router = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalRouter<MockRoutingContext>)));
             router.Should().NotBeNull();
             router!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             router!.ImplementationType.Should().Be(typeof(MockTerminalRouter));
@@ -378,7 +378,7 @@ namespace OneImlx.Terminal.Extensions
         public void AddTextHandlerShouldCorrectlyInitialize()
         {
             // AddTextHandler is called within CreateTerminalBuilder
-            var comparer = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(ITerminalTextHandler)));
+            var comparer = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalTextHandler)));
             comparer.Should().NotBeNull();
             comparer!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             comparer!.ImplementationInstance.Should().NotBeNull();

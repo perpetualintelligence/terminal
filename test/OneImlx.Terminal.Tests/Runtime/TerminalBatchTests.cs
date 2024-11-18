@@ -63,7 +63,7 @@ namespace OneImlx.Terminal.Tests.Runtime
         [Fact]
         public void Constructor_Should_Throw_ArgumentNullException_When_BatchId_Is_Null()
         {
-            Action act = () => new TerminalBatch(null);
+            Action act = static () => new TerminalBatch(null);
             act.Should().Throw<ArgumentNullException>().WithMessage("The batch id cannot be null. (Parameter 'batchId')");
         }
 

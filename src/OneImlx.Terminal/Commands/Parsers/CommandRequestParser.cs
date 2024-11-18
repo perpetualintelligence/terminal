@@ -161,7 +161,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// might allow for further optimizations. But for diverse and comprehensive parsing scenarios, this default
         /// implementation provides a well-rounded and efficient solution.
         /// </remarks>
-        public async Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
+        public async Task<ParsedCommand> ParseRequestAsync(TerminalCommand request)
         {
             logger.LogDebug("Parse request. request={0} raw={1}", request.Id, request.Raw);
 
@@ -397,7 +397,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return parsedOptions;
         }
 
-        private Queue<ParsedSplit> ExtractQueue(TerminalRequest request)
+        private Queue<ParsedSplit> ExtractQueue(TerminalCommand request)
         {
             var queue = new Queue<ParsedSplit>();
 
@@ -482,7 +482,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                 return;
             }
 
-            logger.LogDebug("Hierarchy={0}", parsedDescriptors.Select(e => e.Id).JoinByComma());
+            logger.LogDebug("Hierarchy={0}", parsedDescriptors.Select(static e => e.Id).JoinByComma());
             logger.LogDebug("Command={0}", parsedDescriptors.LastOrDefault()?.Id);
             logger.LogDebug("Arguments={0}", parsedArguments.JoinByComma());
             logger.LogDebug("Options:");
@@ -529,7 +529,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return new Arguments(textHandler, arguments);
         }
 
-        private ParsedCommand ParseCommand(TerminalRequest request, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
+        private ParsedCommand ParseCommand(TerminalCommand request, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
         {
             if (!parsedDescriptors.Any())
             {

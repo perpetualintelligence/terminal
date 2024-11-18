@@ -37,14 +37,14 @@ namespace OneImlx.Terminal.Runtime
         {
             if (context.Exception is TerminalException ee)
             {
-                object[] args = ee.Error.Args != null ? ee.Error.Args.Select(e => e ?? "").ToArray() : [];
+                object[] args = ee.Error.Args != null ? ee.Error.Args.Select(static e => e ?? "").ToArray() : [];
                 terminalConsole.WriteLineColorAsync(ConsoleColor.Red, ee.Error.ErrorDescription, args);
             }
             else if (context.Exception is MultiErrorException me)
             {
                 foreach (Error err in me.Errors)
                 {
-                    object[] args = err.Args != null ? err.Args.Select(e => e ?? "").ToArray() : [];
+                    object[] args = err.Args != null ? err.Args.Select(static e => e ?? "").ToArray() : [];
                     terminalConsole.WriteLineColorAsync(ConsoleColor.Red, err.ErrorDescription, args);
                 }
             }

@@ -214,15 +214,15 @@ namespace OneImlx.Terminal.Authentication.Msal
 
         private void SetupMockTokenAcquisitionForNoAccounts()
         {
-            _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(Enumerable.Empty<IAccount>());
-            _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
+            _msalTokenAcquisitionMock.Setup(static x => x.GetAccountsAsync(null)).ReturnsAsync(Enumerable.Empty<IAccount>());
+            _msalTokenAcquisitionMock.Setup(static x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
                                      .ThrowsAsync(new MsalUiRequiredException("test_error", "test_error_message"));
         }
 
         private void SetupMockTokenAcquisitionForUiRequiredException(MsalUiRequiredException exception)
         {
-            _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(new[] { new Mock<IAccount>().Object });
-            _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
+            _msalTokenAcquisitionMock.Setup(static x => x.GetAccountsAsync(null)).ReturnsAsync(new[] { new Mock<IAccount>().Object });
+            _msalTokenAcquisitionMock.Setup(static x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
                                      .ThrowsAsync(exception);
         }
 
@@ -240,7 +240,7 @@ namespace OneImlx.Terminal.Authentication.Msal
                 scopes: _terminalOptions.Authentication.DefaultScopes!.ToArray(),
                 Guid.NewGuid());
 
-            _msalTokenAcquisitionMock.Setup(x => x.AcquireTokenInteractiveAsync(It.IsAny<IEnumerable<string>>()))
+            _msalTokenAcquisitionMock.Setup(static x => x.AcquireTokenInteractiveAsync(It.IsAny<IEnumerable<string>>()))
                                      .ReturnsAsync(authenticationResult);
         }
 

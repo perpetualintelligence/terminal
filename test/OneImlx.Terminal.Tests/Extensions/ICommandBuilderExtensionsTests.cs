@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Extensions
             // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
-            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(OptionDescriptor)));
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(static e => e.ServiceType.Equals(typeof(OptionDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 
@@ -63,7 +63,7 @@ namespace OneImlx.Terminal.Extensions
             // Option builder, command builder have different service collections.
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
 
-            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(e => e.ServiceType.Equals(typeof(OptionDescriptor)));
+            ServiceDescriptor serviceDescriptor = argumentBuilder.Services.First(static e => e.ServiceType.Equals(typeof(OptionDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
 

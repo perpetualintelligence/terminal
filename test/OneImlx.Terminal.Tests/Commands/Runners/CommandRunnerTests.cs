@@ -33,7 +33,7 @@ namespace OneImlx.Terminal.Commands.Runners
         [Fact]
         public async Task DelegateHelpShouldCallHelpAsync()
         {
-            TerminalRequest request = new("id1", "test1");
+            TerminalCommand request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
             ParsedCommand extractedCommand = new(request, command, Root.Default());
 
@@ -50,7 +50,7 @@ namespace OneImlx.Terminal.Commands.Runners
         [Fact]
         public async Task DelegateRunShouldCallRunAsync()
         {
-            TerminalRequest request = new("id1", "test1");
+            TerminalCommand request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
             ParsedCommand extractedCommand = new(request, command, Root.Default());
 
@@ -65,7 +65,7 @@ namespace OneImlx.Terminal.Commands.Runners
         [Fact]
         public async Task HelpShouldThrowIfIHelpProviderIsNullAsync()
         {
-            TerminalRequest request = new("id1", "test1");
+            TerminalCommand request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
             ParsedCommand extractedCommand = new(request, command, Root.Default());
 

@@ -91,8 +91,8 @@ namespace OneImlx.Terminal.Integration
 
             // Make sure the assembly is not loaded
             var assembliesBeforeLoad = AppDomain.CurrentDomain.GetAssemblies();
-            Assembly? sharedAlreadyLoaded = assembliesBeforeLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Shared"));
-            Assembly? externalNotLoaded = assembliesBeforeLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Terminal.DependentAssembly"));
+            Assembly? sharedAlreadyLoaded = assembliesBeforeLoad.FirstOrDefault(static e => e.GetName().Name!.Equals("OneImlx.Shared"));
+            Assembly? externalNotLoaded = assembliesBeforeLoad.FirstOrDefault(static e => e.GetName().Name!.Equals("OneImlx.Terminal.DependentAssembly"));
             sharedAlreadyLoaded.Should().NotBeNull();
             externalNotLoaded.Should().BeNull();
 
@@ -106,8 +106,8 @@ namespace OneImlx.Terminal.Integration
 
             // Assert both assemblies stay loaded
             var assembliesAfterLoad = AppDomain.CurrentDomain.GetAssemblies();
-            sharedAlreadyLoaded = assembliesAfterLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Shared"));
-            externalNotLoaded = assembliesAfterLoad.FirstOrDefault(e => e.GetName().Name!.Equals("OneImlx.Terminal.DependentAssembly"));
+            sharedAlreadyLoaded = assembliesAfterLoad.FirstOrDefault(static e => e.GetName().Name!.Equals("OneImlx.Shared"));
+            externalNotLoaded = assembliesAfterLoad.FirstOrDefault(static e => e.GetName().Name!.Equals("OneImlx.Terminal.DependentAssembly"));
             sharedAlreadyLoaded.Should().NotBeNull();
             externalNotLoaded.Should().NotBeNull();
         }

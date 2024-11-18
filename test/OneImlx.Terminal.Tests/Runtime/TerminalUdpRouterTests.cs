@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Runtime
             mockListLoggerFactory = new();
             loggerMock = mockListLoggerFactory.CreateLogger<TerminalUdpRouter>();
 
-            textHandlerMock.Setup(txt => txt.Encoding).Returns(Encoding.UTF8);
+            textHandlerMock.Setup(static txt => txt.Encoding).Returns(Encoding.UTF8);
         }
 
         [Fact]

@@ -50,9 +50,9 @@ namespace OneImlx.Terminal.Hosting
             ServiceProvider serviceProvider = commandBuilder.Services.BuildServiceProvider();
             var argDescriptors = serviceProvider.GetServices<ArgumentDescriptor>();
             argDescriptors.Count().Should().Be(3);
-            argDescriptors.Should().Contain(x => x.Id == "arg1");
-            argDescriptors.Should().Contain(x => x.Id == "arg2");
-            argDescriptors.Should().Contain(x => x.Id == "arg3");
+            argDescriptors.Should().Contain(static x => x.Id == "arg1");
+            argDescriptors.Should().Contain(static x => x.Id == "arg2");
+            argDescriptors.Should().Contain(static x => x.Id == "arg3");
         }
 
         [Fact]

@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Tests.Commands.Runners
         [Fact]
         public void Constructor_ShouldThrowArgumentNullException_WhenValueIsNull()
         {
-            Action act = () => new CommandRunnerResult(null);
+            Action act = static () => new CommandRunnerResult(null);
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'value')");
         }
 

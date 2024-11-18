@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.AspNetCore.Extensions
         /// </remarks>
         public static IEndpointConventionBuilder MapTerminalHttp(this IEndpointRouteBuilder endpoints)
         {
-            return endpoints.MapPost("/oneimlx/terminal/httprouter", async context =>
+            return endpoints.MapPost("/oneimlx/terminal/httprouter", static async context =>
             {
                 // Resolve TerminalHttpMapService from DI and process the command
                 var terminalHttpMapService = context.RequestServices.GetRequiredService<TerminalHttpMapService>();

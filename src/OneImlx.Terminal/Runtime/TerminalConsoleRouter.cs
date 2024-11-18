@@ -68,7 +68,7 @@ namespace OneImlx.Terminal.Runtime
                 IsRunning = true;
                 while (true)
                 {
-                    TerminalRequest? request = null;
+                    TerminalCommand? request = null;
 
                     try
                     {

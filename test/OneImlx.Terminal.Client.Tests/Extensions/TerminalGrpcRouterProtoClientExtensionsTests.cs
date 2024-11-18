@@ -106,9 +106,9 @@ namespace OneImlx.Terminal.Client.Extensions
             return new AsyncUnaryCall<TResponse>(
                 responseTask,                       // The task that returns the response.
                 metadataTask,                       // The task that returns the response headers (Metadata).
-                () => Status.DefaultSuccess,        // Function that returns the call status.
-                () => [],                           // Function that returns the trailers (Metadata).
-                () => { }                           // Delegate to handle call dispose.
+                static () => Status.DefaultSuccess,        // Function that returns the call status.
+                static () => [],                           // Function that returns the trailers (Metadata).
+                static () => { }                           // Delegate to handle call dispose.
                                                 );
         }
 

@@ -50,9 +50,9 @@ namespace OneImlx.Terminal.Hosting
             ServiceProvider serviceProvider = commandBuilder.Services.BuildServiceProvider();
             var optDescriptors = serviceProvider.GetServices<OptionDescriptor>();
             optDescriptors.Count().Should().Be(3);
-            optDescriptors.Should().Contain(x => x.Id == "opt1");
-            optDescriptors.Should().Contain(x => x.Id == "opt2");
-            optDescriptors.Should().Contain(x => x.Id == "opt3");
+            optDescriptors.Should().Contain(static x => x.Id == "opt1");
+            optDescriptors.Should().Contain(static x => x.Id == "opt2");
+            optDescriptors.Should().Contain(static x => x.Id == "opt3");
         }
 
         [Fact]

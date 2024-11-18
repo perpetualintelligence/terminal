@@ -46,13 +46,13 @@ namespace OneImlx.Terminal.Runtime.Tests
             options = new TerminalOptions();
 
             // Text encoding setup for mock
-            textHandlerMock.Setup(txt => txt.Encoding).Returns(Encoding.UTF8);
+            textHandlerMock.Setup(static txt => txt.Encoding).Returns(Encoding.UTF8);
 
             // Start context
             startContext = new TerminalStartContext(TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
 
             // Mock the terminal processor id
-            terminalProcessorMock.Setup(x => x.NewUniqueId(It.IsAny<string>())).Returns(() => Guid.NewGuid().ToString());
+            terminalProcessorMock.Setup(static x => x.NewUniqueId(It.IsAny<string>())).Returns(static () => Guid.NewGuid().ToString());
         }
 
         public static int FreeTcpPort()
@@ -105,12 +105,12 @@ namespace OneImlx.Terminal.Runtime.Tests
             var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
 
             // Cancel router task
-            terminalTokenSource.CancelAfter(1500);
+            terminalTokenSource.CancelAfter(2000);
 
             // Act
             var tcpRouter = CreateTcpRouter();
             var routerTask = tcpRouter.RunAsync(context);
-            await Task.Delay(1000); // Let it run for a bit
+            await Task.Delay(1500); // Let it run for a bit
             await routerTask;
 
             // Logs
@@ -120,7 +120,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             mockListLoggerFactory.AllLogMessages[2].Should().Be($"Terminal TCP router stopped. endpoint={context.IPEndPoint}");
 
             // Assert that the exception is passed to the exception handler with correct details
-            exceptionHandlerMock.Verify(x => x.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(ctx =>
+            exceptionHandlerMock.Verify(static x => x.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(static ctx =>
                 ctx.Exception.GetType().Equals(typeof(OperationCanceledException)))),
                 Times.Once);
         }

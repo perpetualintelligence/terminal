@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         // Configure services based on the application settings. Developers can modify or add additional services if needed.
         private static void ConfigureServicesDelegate(IConfiguration configuration, IServiceCollection services)
         {
-            services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
+            services.Configure<ConsoleLifetimeOptions>(static options => options.SuppressStatusMessages = true);
             ConfigureTerminalServices(configuration, services);
         }
 

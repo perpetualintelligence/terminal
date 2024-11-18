@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void CustomEdition_NoCustomClaimsShouldThrow()
         {
-            Action act = () => LicenseLimits.Create(TerminalLicensePlans.Custom);
+            Action act = static () => LicenseLimits.Create(TerminalLicensePlans.Custom);
             act.Should().Throw<TerminalException>().WithMessage("The licensing for the custom plan requires a custom claims. plan=urn:oneimlx:terminal:plan:custom");
         }
 

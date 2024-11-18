@@ -72,7 +72,7 @@ namespace OneImlx.Terminal.Extensions
 
             services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalAsciiTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
                 textHandler,
-                options => { }
+                static options => { }
                                                                                                                                                                                    );
 
             var provider = services.BuildServiceProvider();
@@ -124,7 +124,7 @@ namespace OneImlx.Terminal.Extensions
             services.AddTerminalDefault<TerminalInMemoryCommandStore, TerminalAsciiTextHandler, TerminalLoggerHelpProvider, TerminalLoggerExceptionHandler>
             (
                 textHandler,
-                options => { }
+                static options => { }
             );
 
             var provider = services.BuildServiceProvider();
@@ -148,7 +148,7 @@ namespace OneImlx.Terminal.Extensions
         [Fact]
         public void AddTerminalNoConfigShouldInitializeCorrectly()
         {
-            using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
+            using var host = Host.CreateDefaultBuilder([]).ConfigureServices(static arg =>
             {
                 arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler());
             }).Build();

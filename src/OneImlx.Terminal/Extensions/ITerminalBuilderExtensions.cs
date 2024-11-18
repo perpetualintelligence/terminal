@@ -110,7 +110,7 @@ namespace OneImlx.Terminal.Extensions
         {
             // Add options.
             builder.Services.AddOptions();
-            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TerminalOptions>>().Value);
+            builder.Services.AddSingleton(static resolver => resolver.GetRequiredService<IOptions<TerminalOptions>>().Value);
 
             // Add options checker
             builder.Services.AddSingleton<IConfigurationOptionsChecker, ConfigurationOptionsChecker>();
@@ -161,7 +161,7 @@ namespace OneImlx.Terminal.Extensions
         public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Assembly assembly)
         {
             IEnumerable<Type> declarativeTypes = assembly.GetTypes()
-                .Where(e => typeof(IDeclarativeRunner).IsAssignableFrom(e));
+                .Where(static e => typeof(IDeclarativeRunner).IsAssignableFrom(e));
 
             foreach (Type type in declarativeTypes)
             {
