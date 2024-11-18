@@ -5,8 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Collections.Specialized;
 using System.Text.Json;
 using FluentAssertions;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
 
@@ -14,40 +16,6 @@ namespace OneImlx.Terminal
 {
     public class AssemblyTests
     {
-        [Fact]
-        public void JsonTest()
-        {
-            // Test Json serilzation and deserialization of null value
-            object? oldValue = null;
-            var json = JsonSerializer.SerializeToUtf8Bytes(oldValue);
-            var newValue = JsonSerializer.Deserialize<object>(json);
-            newValue.Should().Be(oldValue);
-
-            oldValue = "   ";
-            json = JsonSerializer.SerializeToUtf8Bytes(oldValue);
-            newValue = JsonSerializer.Deserialize<object>(json);
-
-            oldValue = "";
-            json = JsonSerializer.SerializeToUtf8Bytes(oldValue);
-            newValue = JsonSerializer.Deserialize<object>(json);
-
-            oldValue = "test";
-            json = JsonSerializer.SerializeToUtf8Bytes(oldValue);
-            newValue = JsonSerializer.Deserialize<object>(json);
-
-            oldValue = 1;
-            json = JsonSerializer.SerializeToUtf8Bytes(oldValue);
-            newValue = JsonSerializer.Deserialize<object>(json);
-
-            oldValue = 1.0;
-            json = JsonSerializer.SerializeToUtf8Bytes(oldValue);
-            newValue = JsonSerializer.Deserialize<object>(json);
-
-            oldValue = true;
-            json = JsonSerializer.SerializeToUtf8Bytes(oldValue);
-            newValue = JsonSerializer.Deserialize<object>(json);
-        }
-
         [Fact]
         public void TypesLocationTest()
         {

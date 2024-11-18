@@ -7,7 +7,7 @@
 
 using System;
 using System.Net.Sockets;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using OneImlx.Terminal.Runtime;
@@ -20,71 +20,59 @@ namespace OneImlx.Terminal.Client.Extensions
     public static class TcpClientExtensions
     {
         /// <summary>
-        /// Sends multiple command strings to a terminal server in a single batch TCP message using the specified encoding.
+        /// Sends a batch of terminal commands to a server via TCP.
         /// </summary>
         /// <param name="tcpClient">The <see cref="TcpClient"/> instance used to send the request.</param>
-        /// <param name="commands">An array of command strings to send as a batch.</param>
-        /// <param name="cmdDelimiter">The delimiter used to separate commands.</param>
-        /// <param name="msgDelimiter">The delimiter used to separate parts of the message.</param>
-        /// <param name="encoding">The <see cref="Encoding"/> used to encode the message before sending.</param>
+        /// <param name="batch">The <see cref="TerminalBatch"/> to send.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendBatchAsync(this TcpClient tcpClient, string[] commands, string cmdDelimiter, string msgDelimiter, Encoding encoding, CancellationToken cancellationToken)
+        /// <param name="serializeOptions">Optional serialization options for JSON encoding.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public static async Task SendBatchAsync(this TcpClient tcpClient, TerminalBatch batch, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
-            string batch = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, commands);
-            await SendMessageToTerminalAsync(tcpClient, batch, encoding, cancellationToken);
+            if (batch == null)
+            {
+                throw new ArgumentNullException(nameof(batch), "The batch cannot be null.");
+            }
+
+            await SendRawToTerminalAsync(tcpClient, batch, cancellationToken, serializeOptions);
         }
 
         /// <summary>
-        /// Sends a single command string to a terminal server via a TCP message using the specified encoding and delimiters.
+        /// Sends a single terminal command to a server via TCP.
         /// </summary>
         /// <param name="tcpClient">The <see cref="TcpClient"/> instance used to send the request.</param>
-        /// <param name="raw">The command string to send.</param>
-        /// <param name="cmdDelimiter">The delimiter used to separate commands.</param>
-        /// <param name="msgDelimiter">The delimiter used to separate parts of the message.</param>
-        /// <param name="encoding">The <see cref="Encoding"/> used to encode the message before sending.</param>
+        /// <param name="command">The <see cref="TerminalCommand"/> command to send.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendSingleAsync(this TcpClient tcpClient, string raw, string cmdDelimiter, string msgDelimiter, Encoding encoding, CancellationToken cancellationToken)
+        /// <param name="serializeOptions">Optional serialization options for JSON encoding.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public static async Task SendCommandAsync(this TcpClient tcpClient, TerminalCommand command, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
-            string batchCommand = TerminalServices.CreateBatch(cmdDelimiter, msgDelimiter, [raw]);
-            await SendMessageToTerminalAsync(tcpClient, batchCommand, encoding, cancellationToken);
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command), "The command cannot be null.");
+            }
+
+            await SendRawToTerminalAsync(tcpClient, command, cancellationToken, serializeOptions);
         }
 
-        /// <summary>
-        /// Sends a single command string to a terminal server via a TCP message using the specified encoding, without delimiters.
-        /// </summary>
-        /// <param name="tcpClient">The <see cref="TcpClient"/> instance used to send the request.</param>
-        /// <param name="commandString">The command string to send.</param>
-        /// <param name="encoding">The <see cref="Encoding"/> used to encode the message before sending.</param>
-        /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
-        public static async Task SendSingleAsync(this TcpClient tcpClient, string commandString, Encoding encoding, CancellationToken cancellationToken)
+        private static async Task SendRawToTerminalAsync<TInput>(TcpClient tcpClient, TInput raw, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
-            await SendMessageToTerminalAsync(tcpClient, commandString, encoding, cancellationToken);
-        }
+            if (tcpClient == null)
+            {
+                throw new ArgumentNullException(nameof(tcpClient), "The TCP client cannot be null.");
+            }
 
-        /// <summary>
-        /// Helper method to send a message asynchronously to a terminal server using <see cref="TcpClient"/> with the
-        /// specified encoding.
-        /// </summary>
-        /// <param name="tcpClient">The <see cref="TcpClient"/> instance used to send the request.</param>
-        /// <param name="message">The message to send.</param>
-        /// <param name="encoding">The <see cref="Encoding"/> used to encode the message before sending.</param>
-        /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
-        private static async Task SendMessageToTerminalAsync(TcpClient tcpClient, string message, Encoding encoding, CancellationToken cancellationToken)
-        {
-            // Ensure the TCP client is connected
             if (!tcpClient.Connected)
             {
                 throw new TerminalException(TerminalErrors.ConnectionClosed, "The TCP client is not connected.");
             }
 
-            // Write the message to the NetworkStream
-            byte[] messageBytes = encoding.GetBytes(message);
-            await tcpClient.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length, cancellationToken);
-            await tcpClient.GetStream().FlushAsync();
+            serializeOptions ??= JsonSerializerOptions.Default;
+            byte[] messageBytes = JsonSerializer.SerializeToUtf8Bytes(raw, serializeOptions);
+            var networkStream = tcpClient.GetStream();
+
+            await networkStream.WriteAsync(messageBytes, 0, messageBytes.Length, cancellationToken).ConfigureAwait(false);
+            await networkStream.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

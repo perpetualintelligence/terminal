@@ -1,8 +1,14 @@
-﻿using System;
+﻿/*
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,32 +49,40 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         private async Task SendCommandsAsync(TcpClient tcpClient, CancellationToken cToken)
         {
+            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6"];
             string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"];
 
             await terminalConsole.WriteLineAsync("Sending commands individually...");
-            foreach (string command in commands)
+            for (int idx = 0; idx < commands.Length; ++idx)
             {
-                await tcpClient.SendSingleAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, terminalTextHandler.Encoding, cToken);
-                await terminalConsole.WriteLineAsync($"Request: {command}");
+                string id = cmdIds[idx];
+                string raw = commands[idx];
+
+                TerminalCommand command = new(id, raw);
+                await tcpClient.SendCommandAsync(command, cToken);
+                await terminalConsole.WriteLineAsync($"Request: id={id} raw={raw}");
             }
 
             await terminalConsole.WriteLineAsync("Sending all commands as a batch...");
-            await tcpClient.SendBatchAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, Encoding.Unicode, cToken);
-
-            await Task.Delay(1000);
+            TerminalBatch batch = new(Guid.NewGuid().ToString())
+            {
+                { cmdIds, commands }
+            };
+            await tcpClient.SendBatchAsync(batch, cToken);
 
             // Read responses from the server until no more data is available
-            await terminalConsole.WriteLineAsync("Reading responses...");
+            await terminalConsole.WriteColorAsync(ConsoleColor.Cyan, "Waiting for 1 second to read responses...");
+            await Task.Delay(1000, cToken);
             NetworkStream stream = tcpClient.GetStream();
             try
             {
-                byte[] buffer = new byte[2048];
+                byte[] buffer = new byte[4096];
                 if (stream.DataAvailable)
                 {
                     int bytesRead = await stream.ReadAsync(buffer, cToken);
                     if (bytesRead > 0)
                     {
-                        string? response = JsonSerializer.Deserialize<string>(buffer.Take(bytesRead).ToArray());
+                        TerminalResponse? response = JsonSerializer.Deserialize<TerminalResponse>(buffer.Take(bytesRead).ToArray());
                         await terminalConsole.WriteLineAsync($"Response received: {response}");
                     }
                 }

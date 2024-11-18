@@ -251,30 +251,13 @@ namespace OneImlx.Terminal.Runtime
             string clientId = response.SenderId ?? throw new TerminalException(TerminalErrors.ServerError, "The sender identifier is missing the response.");
             if (!tcpClients.TryGetValue(clientId, out TcpClient? tcpClient))
             {
-                throw new TerminalException(TerminalErrors.ServerError, "The client id is not found in the clients collection. client={0}", clientId);
+                throw new TerminalException(TerminalErrors.ServerError, "The client id is not found in the client collection. client={0}", clientId);
             }
 
             try
             {
-                TerminalRequest? terminalRequest;
-                for (int idx = 0; idx < response.Requests.Length; ++idx)
-                {
-                    // Get the client ID from the response
-                    terminalRequest = response.Requests[idx];
-
-                    // Send the response to the client
-                    if (response.Results[idx] != null)
-                    {
-                        byte[] responseBytes = terminalProcessor.SerializeToJsonBytes(response.Results[idx]);
-                        string message = Encoding.UTF8.GetString(responseBytes);
-                        logger.LogCritical("Sending response to client. client={0} response={1}", clientId, message);
-                        await tcpClient.GetStream().WriteAsync(responseBytes, 0, responseBytes.Length);
-                    }
-                    else
-                    {
-                        logger.LogDebug("Response handled but no result was sent to client. request={0} client={1}", response.Requests[idx].Raw, clientId);
-                    }
-                }
+                byte[] responseBytes = terminalProcessor.SerializeToJsonBytes(response);
+                await tcpClient.GetStream().WriteAsync(responseBytes, 0, responseBytes.Length);
             }
             catch (Exception ex)
             {

@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Net;
@@ -34,11 +35,11 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                     using (var networkStream = serverClient.GetStream())
                     {
                         byte[] buffer = new byte[1024];
-                        int bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                        int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                         // Assert: Verify the server received the correct message
-                        receivedMessage.Should().Be("command1;command2|");
+                        receivedMessage.Should().Be("{\"batch_id\":\"batch-id\",\"commands\":[{\"id\":\"cmd_id_1\",\"raw\":\"command1\"},{\"id\":\"cmd_id_2\",\"raw\":\"command2\"}]}");
                     }
                 });
 
@@ -47,8 +48,13 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 {
                     await tcpClient.ConnectAsync(localHost, port);
 
-                    string[] commands = ["command1", "command2"];
-                    await tcpClient.SendBatchAsync(commands, ";", "|", Encoding.UTF8, CancellationToken.None);
+                    // Send a batch of commands
+                    TerminalBatch batch = new("batch-id")
+                    {
+                        { "cmd_id_1", "command1" },
+                        { "cmd_id_2", "command2" }
+                    };
+                    await tcpClient.SendBatchAsync(batch, CancellationToken.None);
 
                     // Wait for the server to complete
                     await serverTask;
@@ -57,7 +63,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
         }
 
         [Fact]
-        public async Task SendSingleToTerminalAsync_Sends_Single_Command_Successfully()
+        public async Task SendSingle_AsBatch_ToTerminalAsync_Sends_Single_Command_Successfully()
         {
             // Arrange: Start the TcpListener (server)
             using (var tcpListener = new TcpListener(IPAddress.Parse(localHost), port))
@@ -71,11 +77,11 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                     using (var networkStream = serverClient.GetStream())
                     {
                         byte[] buffer = new byte[1024];
-                        int bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                        int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                         // Assert: Verify the server received the correct message
-                        receivedMessage.Should().Be("single-command|");
+                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"commands\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}");
                     }
                 });
 
@@ -83,8 +89,11 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    string command = "single-command";
-                    await tcpClient.SendSingleAsync(command, ";", "|", Encoding.UTF8, CancellationToken.None);
+                    TerminalBatch batch = new("bid")
+                    {
+                        { "single-id", "single-command" }
+                    };
+                    await tcpClient.SendBatchAsync(batch, CancellationToken.None);
 
                     // Wait for the server to complete
                     await serverTask;
@@ -107,11 +116,11 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                     using (var networkStream = serverClient.GetStream())
                     {
                         byte[] buffer = new byte[1024];
-                        int bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                        int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                         // Assert: Verify the server received the correct message
-                        receivedMessage.Should().Be("single-command");
+                        receivedMessage.Should().Be("{\"id\":\"single-id-1\",\"raw\":\"single-command-1\"}");
                     }
                 });
 
@@ -119,8 +128,8 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    string command = "single-command";
-                    await tcpClient.SendSingleAsync(command, Encoding.UTF8, CancellationToken.None);
+                    TerminalCommand single = new("single-id-1", "single-command-1");
+                    await tcpClient.SendCommandAsync(single, CancellationToken.None);
 
                     // Wait for the server to complete
                     await serverTask;
@@ -135,7 +144,8 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
             using (var tcpClient = new TcpClient())
             {
                 // Act
-                Func<Task> act = async () => await tcpClient.SendSingleAsync("test-command", Encoding.UTF8, CancellationToken.None);
+                TerminalCommand single = new("single-id", "single-command");
+                Func<Task> act = async () => await tcpClient.SendCommandAsync(single, CancellationToken.None);
 
                 // Assert: Expect an InvalidOperationException because the client is not connected
                 await act.Should().ThrowAsync<TerminalException>()

@@ -6,6 +6,7 @@
 */
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -19,6 +20,7 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="id">The unique identifier for the command item.</param>
         /// <param name="raw">The raw command string to be processed.</param>
+        [JsonConstructor]
         public TerminalRequest(string id, string raw)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -33,11 +35,13 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Gets the unique identifier for the command item.
         /// </summary>
+        [JsonPropertyName("id")]
         public string Id { get; }
 
         /// <summary>
         /// The raw command or a batch that needs to be processed.
         /// </summary>
+        [JsonPropertyName("raw")]
         public string Raw { get; }
 
         /// <inheritdoc/>

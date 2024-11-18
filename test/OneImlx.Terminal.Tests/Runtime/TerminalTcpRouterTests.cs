@@ -237,7 +237,7 @@ namespace OneImlx.Terminal.Runtime.Tests
                 int localIdx = idx; // Ensure correct variable capture for each iteration
                 Task<byte[]> clientTask = Task.Run(async () =>
                 {
-                    List<string> messages = new();
+                    List<string> messages = [];
                     for (int jdx = 0; jdx < 5; jdx++) // Create 5 messages per client
                     {
                         messages.Add($"test message {localIdx}.{jdx}");

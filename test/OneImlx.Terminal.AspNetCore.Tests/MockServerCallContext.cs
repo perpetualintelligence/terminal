@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.AspNetCore
             this.peer = peer;
         }
 
-        protected override AuthContext AuthContextCore => new AuthContext("TestContext", []);
+        protected override AuthContext AuthContextCore => new("TestContext", []);
 
         protected override CancellationToken CancellationTokenCore => CancellationToken.None;
 

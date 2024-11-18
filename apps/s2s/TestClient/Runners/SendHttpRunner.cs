@@ -79,14 +79,14 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                     // Send individual command to the server.
                     var response = await client.SendSingleAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken);
                     response.EnsureSuccessStatusCode(); // Ensure the request was successful.
-                    Console.WriteLine($"Request: {command}, Response: {await response.Content.ReadAsStringAsync()}");
+                    Console.WriteLine($"Request: {command}, Response: {await response.Content.ReadAsStringAsync(cancellationToken)}");
                 }
 
                 // Send all commands in a single batch request.
                 Console.WriteLine("Sending commands as a batch...");
                 var batchResponse = await client.SendBatchAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken);
                 batchResponse.EnsureSuccessStatusCode();
-                Console.WriteLine($"Batch sent. Response: {await batchResponse.Content.ReadAsStringAsync()}");
+                Console.WriteLine($"Batch sent. Response: {await batchResponse.Content.ReadAsStringAsync(cancellationToken)}");
             }
             catch (HttpRequestException ex)
             {

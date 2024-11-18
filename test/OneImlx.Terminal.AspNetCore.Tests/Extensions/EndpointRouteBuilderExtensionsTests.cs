@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
         public async Task Post_To_TerminalHttpRouter_Should_Invoke_TerminalHttpMapService()
         {
             // Arrange
-            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Loopback, 12345);
+            IPEndPoint iPEndPoint = new(IPAddress.Loopback, 12345);
             var mockTerminalRouter = new Mock<ITerminalRouter<TerminalHttpRouterContext>>();
             var mockTerminalProcessor = new Mock<ITerminalProcessor>();
             var mockLogger = new Mock<ILogger<TerminalHttpMapService>>();

@@ -77,7 +77,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             try
             {
                 using var channel = GrpcChannel.ForAddress(serverAddress);
-                TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client = new TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient(channel);
+                TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client = new(channel);
 
                 await SendGrpcCommandsAsync(client, cancellationToken);
             }
