@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Grpc.Core;
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Runtime;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Grpc.Core;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.AspNetCore
 {
@@ -34,11 +34,17 @@ namespace OneImlx.Terminal.AspNetCore
             this.logger = logger;
         }
 
-        /// commands. Ensure the terminal router is correctly started before invoking this method.
-        ///
-        /// This method is primarily intended to be called by gRPC clients. It should not be invoked directly from
-        /// within the application without proper context, as it depends on gRPC infrastructure and client context
-        /// information. </remarks>
+        /// <summary>
+        /// Routes the <see cref="TerminalGrpcRouterProtoInput"/> to the appropriate command runner.
+        /// </summary>
+        /// <param name="protoInput">The gRPC input containing the <see cref="TerminalInput"/>.</param>
+        /// <param name="context">The gRPC server call context.</param>
+        /// <returns>A task representing the asynchronous operation, including the <see cref="TerminalGrpcRouterProtoOutput"/>.</returns>
+        /// <exception cref="TerminalException">Thrown when the terminal gRPC router is not running.</exception>
+        /// <remarks>
+        /// Application code should not call this method directly. Instead, use the client NuGet package to send the
+        /// command to the gRPC terminal server.
+        /// </remarks>
         public override async Task<TerminalGrpcRouterProtoOutput> RouteCommand(TerminalGrpcRouterProtoInput protoInput, ServerCallContext context)
         {
             if (!terminalRouter.IsRunning)
@@ -52,7 +58,12 @@ namespace OneImlx.Terminal.AspNetCore
             }
 
             // Convert to terminal input.
-            TerminalInput? input = JsonSerializer.Deserialize<TerminalInput>(protoInput.InputJson) ?? throw new TerminalException(TerminalErrors.ServerError, "The terminal JSON input is invalid.");
+            TerminalInput? input = JsonSerializer.Deserialize<TerminalInput>(protoInput.InputJson);
+            if (input == null || input.Count <= 0)
+            {
+                throw new TerminalException(TerminalErrors.MissingCommand, "The input is missing in the gRPC request.");
+            }
+
             TerminalOutput output = await terminalProcessor.ExecuteAsync(input, senderId: null, senderEndpoint: null);
 
             // Return the terminal output to the client.

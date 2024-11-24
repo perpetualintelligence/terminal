@@ -5,6 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace OneImlx.Terminal.Runtime
@@ -43,8 +45,16 @@ namespace OneImlx.Terminal.Runtime
         public TerminalInput Input { get; }
 
         /// <summary>
-        /// The command router results.
+        /// The results mapped for each request in the <see cref="Input"/>. The index of the result corresponds to the
+        /// index of the <see cref="TerminalInput.Requests"/>.
         /// </summary>
+        /// <remarks>
+        /// The <see cref="Results"/> property is an array of objects that correspond to result of each request in the
+        /// input. Since the <see cref="System.Text.Json.JsonSerializer"/> does not directly deserialize elements of
+        /// varying types, the results may initially be represented as <see cref="System.Text.Json.JsonElement"/>. To
+        /// access a specific result after deserialization, use the <see cref="GetDeserializedResult{T}(int)"/> method, which
+        /// converts the result to the desired type.
+        /// </remarks>
         [JsonPropertyName("results")]
         public object?[] Results { get; }
 
@@ -59,5 +69,27 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         [JsonPropertyName("sender_id")]
         public string? SenderId { get; }
+
+        /// <summary>
+        /// Retrieves a result at a given index, converting it to the specified type if necessary.
+        /// </summary>
+        public T GetDeserializedResult<T>(int index)
+        {
+            if (index < 0 || index >= Results.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
+            }
+
+            var result = Results[index];
+
+            // If the result is a JsonElement, deserialize it to the desired type
+            if (result is JsonElement jsonElement)
+            {
+                return jsonElement.Deserialize<T>() ?? throw new JsonException($"Result deserialization failed at index '{index}' for type '{typeof(T).FullName}'.");
+            }
+
+            // Return directly if already of the correct type
+            return (T)result!;
+        }
     }
 }

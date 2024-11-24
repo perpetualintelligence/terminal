@@ -52,19 +52,31 @@ namespace OneImlx.Terminal.AspNetCore.Tests
             var client = server.CreateClient();
 
             // Setup router and processor to return true for IsRunning and IsProcessing
-            bool routeCalled = false;
+            TerminalInput terminalInput = TerminalInput.Single("test-id", "test-command");
+            TerminalOutput terminalOutput = new(terminalInput,new string[] { "any" }, null, null);
+            bool executeCalled = false;
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);
-            mockTerminalProcessor.Setup(x => x.ProcessRequestAsync("test-command", It.IsAny<string>(), It.IsAny<string>()))
-                                 .Callback(() => routeCalled = true)
-                                 .ReturnsAsync(new TerminalOutput(1, null, null, null));
+            mockTerminalProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInput>(), It.IsAny<string>(), It.IsAny<string>()))
+                                 .Callback(() => executeCalled = true)
+                                 .ReturnsAsync(terminalOutput);
 
             // Act: Post to /oneimlx/terminal/httprouter
-            var response = await client.PostAsJsonAsync("/oneimlx/terminal/httprouter", new TerminalRequest("test-id", "test-command"));
+            var response = await client.PostAsJsonAsync("/oneimlx/terminal/httprouter", terminalInput);
 
             // Assert: Ensure TerminalHttpMapService's RouteCommandAsync method is invoked correctly
             response.EnsureSuccessStatusCode();
-            routeCalled.Should().BeTrue();
+            executeCalled.Should().BeTrue();
+            TerminalOutput? outputFromResponse = await response.Content.ReadFromJsonAsync<TerminalOutput>();
+            outputFromResponse.Should().NotBeNull();
+            outputFromResponse.Should().NotBeSameAs(terminalOutput);
+            outputFromResponse!.Input.Should().NotBeSameAs(terminalOutput.Input);
+
+            outputFromResponse!.Input.Requests[0].Id.Should().Be("test-id");
+            outputFromResponse!.Input.Requests[0].Raw.Should().Be("test-command");
+            outputFromResponse.GetDeserializedResult<string>(0).Should().Be("any");
+            outputFromResponse.SenderId.Should().BeNull();
+            outputFromResponse.SenderEndpoint.Should().BeNull();
         }
     }
 }

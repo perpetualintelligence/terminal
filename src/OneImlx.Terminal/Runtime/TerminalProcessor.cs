@@ -138,24 +138,6 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public TObject JsonDeserialize<TObject>(byte[] bytes, JsonSerializerOptions? serializerOptions = null)
-        {
-            TObject? jsonObject = JsonSerializer.Deserialize<TObject>(bytes, serializerOptions);
-            return jsonObject ?? throw new TerminalException(TerminalErrors.ServerError, "The deserialized object is null.");
-        }
-
-        /// <inheritdoc/>
-        public byte[] JsonSerialize<TObject>(TObject @object, JsonSerializerOptions? serializerOptions = null)
-        {
-            if (@object == null)
-            {
-                throw new ArgumentNullException(nameof(@object), "The command runner result is null.");
-            }
-
-            return JsonSerializer.SerializeToUtf8Bytes(@object, serializerOptions);
-        }
-
-        /// <inheritdoc/>
         public void StartProcessing(TerminalRouterContext terminalRouterContext, bool background, Func<TerminalOutput, Task>? responseHandler = null)
         {
             // IMPORTANT: We don't await so both request and response processing happens in the background.
@@ -236,7 +218,11 @@ namespace OneImlx.Terminal.Runtime
             {
                 byte[] rawInput = rawInputs[idx];
 
-                TerminalInput input = JsonDeserialize<TerminalInput>(rawInputs[idx]);
+                TerminalInput? input = JsonSerializer.Deserialize<TerminalInput>(rawInputs[idx]);
+                if (input == null)
+                {
+                    throw new TerminalException(TerminalErrors.InvalidRequest, "The input bytes cannot be deserialized to terminal input.");
+                }
                 await AddAsync(input, senderId, senderEndpoint);
             }
         }

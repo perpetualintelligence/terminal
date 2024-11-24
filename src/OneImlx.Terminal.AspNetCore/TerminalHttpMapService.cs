@@ -56,18 +56,6 @@ namespace OneImlx.Terminal.AspNetCore
         /// </remarks>
         public async Task RouteAsync(HttpContext httpContext)
         {
-            TerminalInput? input;
-            using (var reader = new StreamReader(httpContext.Request.Body))
-            {
-                var requestBody = await reader.ReadToEndAsync();
-                input = JsonSerializer.Deserialize<TerminalInput>(requestBody);
-            }
-
-            if (input == null || input.Count <= 0)
-            {
-                throw new TerminalException(TerminalErrors.MissingCommand, "The commands are missing in the HTTP request.");
-            }
-
             if (!terminalRouter.IsRunning)
             {
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal HTTP router is not running.");
@@ -78,9 +66,15 @@ namespace OneImlx.Terminal.AspNetCore
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
             }
 
+            TerminalInput? input = await httpContext.Request.ReadFromJsonAsync<TerminalInput>();
+            if (input == null || input.Count <= 0)
+            {
+                throw new TerminalException(TerminalErrors.MissingCommand, "The input is missing in the HTTP request.");
+            }
+
             string? clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
-            TerminalOutput response = await terminalProcessor.ExecuteAsync(input, senderId: null, clientIp);
-            await httpContext.Response.WriteAsJsonAsync(response);
+            TerminalOutput output = await terminalProcessor.ExecuteAsync(input, senderId: null, clientIp);
+            await httpContext.Response.WriteAsJsonAsync(output);
         }
 
         // Private fields to hold injected dependencies and state information.

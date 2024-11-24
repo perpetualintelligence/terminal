@@ -64,20 +64,6 @@ public interface ITerminalProcessor : IAsyncDisposable
     Task<TerminalOutput> ExecuteAsync(TerminalInput input, string? senderId, string? senderEndpoint);
 
     /// <summary>
-    /// Deserializes a byte sequence into the specified object using <see cref="JsonSerializer"/>.
-    /// </summary>
-    /// <param name="bytes">The data to deserialize.</param>
-    /// <param name="serializerOptions">Optional serialization options.</param>
-    TObject JsonDeserialize<TObject>(byte[] bytes, JsonSerializerOptions? serializerOptions = null);
-
-    /// <summary>
-    /// Serializes an object into a UTF8 byte array using <see cref="JsonSerializer"/>.
-    /// </summary>
-    /// <param name="object">The object to serialize.</param>
-    /// <param name="serializerOptions">Optional serialization options.</param>
-    byte[] JsonSerialize<TObject>(TObject @object, JsonSerializerOptions? serializerOptions = null);
-
-    /// <summary>
     /// Starts processing terminal inputs with the specified context and configuration.
     /// </summary>
     /// <param name="terminalRouterContext">The context for the terminal router.</param>

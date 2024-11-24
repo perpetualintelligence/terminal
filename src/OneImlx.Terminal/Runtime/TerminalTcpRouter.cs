@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -258,7 +259,7 @@ namespace OneImlx.Terminal.Runtime
                     throw new TerminalException(TerminalErrors.ServerError, "The client id is not found in the client collection. client={0}", clientId);
                 }
 
-                byte[] responseBytes = TerminalServices.DelimitBytes(terminalProcessor.JsonSerialize(response), options.Value.Router.StreamDelimiter);
+                byte[] responseBytes = TerminalServices.DelimitBytes(JsonSerializer.SerializeToUtf8Bytes(response), options.Value.Router.StreamDelimiter);
                 await client.GetStream().WriteAsync(responseBytes, 0, responseBytes.Length);
             }
             catch (Exception ex)
