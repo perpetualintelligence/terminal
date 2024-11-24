@@ -212,7 +212,7 @@ namespace OneImlx.Terminal.Authentication.Msal
 
         private void SetupMockTokenAcquisitionForNoAccounts()
         {
-            _msalTokenAcquisitionMock.Setup(static x => x.GetAccountsAsync(null)).ReturnsAsync(Enumerable.Empty<IAccount>());
+            _msalTokenAcquisitionMock.Setup(static x => x.GetAccountsAsync(null)).ReturnsAsync([]);
             _msalTokenAcquisitionMock.Setup(static x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
                                      .ThrowsAsync(new MsalUiRequiredException("test_error", "test_error_message"));
         }

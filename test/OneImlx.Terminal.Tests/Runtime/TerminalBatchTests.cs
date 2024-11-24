@@ -18,7 +18,11 @@ namespace OneImlx.Terminal.Tests.Runtime
         [Fact]
         public void Add_Should_Add_Multiple_Commands()
         {
-            var batch = new TerminalBatch("test_batch");
+            var batch = new TerminalInput("test_batch_1", "sender_id_1", "sender_ep_1");
+            batch.BatchId.Should().Be("test_batch_1");
+            batch.SenderId.Should().Be("sender_id_1");
+            batch.SenderEndpoint.Should().Be("sender_ep_1");
+
             var ids = new[] { "cmd1", "cmd2" };
             var raws = new[] { "raw_command1", "raw_command2" };
 
@@ -32,19 +36,22 @@ namespace OneImlx.Terminal.Tests.Runtime
         [Fact]
         public void Add_Should_Add_Single_Command()
         {
-            var batch = new TerminalBatch("test_batch")
+            var batch = new TerminalInput("test_batch", null, null)
             {
                 { "cmd1", "raw_command1" }
             };
 
             batch.Count.Should().Be(1);
+            batch.BatchId.Should().Be("test_batch");
+            batch.SenderId.Should().BeNull();
+            batch.SenderEndpoint.Should().BeNull();
             batch["cmd1"].Raw.Should().Be("raw_command1");
         }
 
         [Fact]
         public void Add_Should_Throw_ArgumentException_When_Ids_And_Raws_Length_Do_Not_Match()
         {
-            var batch = new TerminalBatch("test_batch");
+            var batch = new TerminalInput("test_batch", null, null);
             var ids = new[] { "cmd1" };
             var raws = new[] { "raw_command1", "raw_command2" };
 
@@ -56,14 +63,14 @@ namespace OneImlx.Terminal.Tests.Runtime
         public void Constructor_Should_Set_BatchId()
         {
             var batchId = "test_batch";
-            var batch = new TerminalBatch(batchId);
+            var batch = new TerminalInput(batchId, null, null);
             batch.BatchId.Should().Be(batchId);
         }
 
         [Fact]
         public void Constructor_Should_Throw_ArgumentNullException_When_BatchId_Is_Null()
         {
-            Action act = static () => new TerminalBatch(null);
+            Action act = static () => new TerminalInput(null, null, null);
             act.Should().Throw<ArgumentNullException>().WithMessage("The batch id cannot be null. (Parameter 'batchId')");
         }
 
@@ -71,7 +78,7 @@ namespace OneImlx.Terminal.Tests.Runtime
         public void JsonIsCorrect()
         {
             // Verify the JSON serialization and deserialization
-            var batch = new TerminalBatch("test_batch");
+            var batch = new TerminalInput("test_batch_1", "test_sender_1", "test_sender_ep_1");
             batch.Add("cmd1", "raw_command1");
             batch.Add("cmd2", "raw_command2");
             batch.Add("cmd3", "raw_command3");
@@ -80,7 +87,7 @@ namespace OneImlx.Terminal.Tests.Runtime
 
             var json = JsonSerializer.Serialize(batch);
 
-            var newBatch = JsonSerializer.Deserialize<TerminalBatch>(json);
+            var newBatch = JsonSerializer.Deserialize<TerminalInput>(json);
             newBatch.Should().NotBeSameAs(batch);
             newBatch.Should().BeEquivalentTo(batch);
         }
@@ -88,7 +95,7 @@ namespace OneImlx.Terminal.Tests.Runtime
         [Fact]
         public void Query_Is_In_Order()
         {
-            var batch = new TerminalBatch("test_batch");
+            var batch = new TerminalInput("test_batch", null, null);
             var command1 = new TerminalRequest("cmd1", "raw_command1");
             var command2 = new TerminalRequest("cmd2", "raw_command2");
             var command3 = new TerminalRequest("cmd3", "raw_command3");

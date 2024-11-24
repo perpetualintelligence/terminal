@@ -9,7 +9,7 @@ using FluentAssertions;
 using Moq;
 using Moq.Protected;
 using OneImlx.Terminal.Runtime;
-using System.Net;
+using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -33,7 +33,11 @@ namespace OneImlx.Terminal.Client.Extensions
                 {
                     _capturedRequest = req; // Capture the request for verification
                 })
-                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    // Any response we do not validate response here only the request.
+                    Content = JsonContent.Create(new TerminalOutput(TerminalInput.Batch("any_bid", [], []), [], null, null))
+                });
 
             _httpClient = new HttpClient(_httpMessageHandlerMock.Object)
             {
@@ -42,61 +46,56 @@ namespace OneImlx.Terminal.Client.Extensions
         }
 
         [Fact]
-        public async Task PostBatchToTerminalAsync_SendsBatchRequest_WithDelimiters_ReturnsResponse()
+        public async Task SendToTerminal_SendsBatch_Correctly()
         {
             // Arrange
+            var cmdIds = new[] { "cmd1", "cmd2", "cmd3" };
             var commands = new[] { "command1", "command2", "command3" };
-            var cmdDelimiter = ";";
-            var msgDelimiter = "|";
 
             // Act
-            var response = await _httpClient.SendBatchAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            TerminalInput input = TerminalInput.Batch(Guid.NewGuid().ToString(), cmdIds, commands);
+            TerminalOutput? output = await _httpClient.SendToTerminalAsync(input, CancellationToken.None);
 
             // Verify that the HTTP request content was correct
-            TerminalRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalRequest>();
+            _capturedRequest!.RequestUri.Should().Be(new Uri("http://localhost/oneimlx/terminal/httprouter"));
+            TerminalInput? actualContent = await _capturedRequest.Content!.ReadFromJsonAsync<TerminalInput>();
             actualContent.Should().NotBeNull();
-            actualContent!.Raw.Should().Be("command1;command2;command3|");
+            actualContent!.Count.Should().Be(3);
+
+            // By Index (Maintaining the order)
+            actualContent[0].Id.Should().Be("cmd1");
+            actualContent[0].Raw.Should().Be("command1");
+            actualContent[1].Id.Should().Be("cmd2");
+            actualContent[1].Raw.Should().Be("command2");
+            actualContent[2].Id.Should().Be("cmd3");
+            actualContent[2].Raw.Should().Be("command3");
+
+            actualContent.IsBatch.Should().BeTrue();
+
+            _capturedRequest.Method.Should().Be(HttpMethod.Post);
         }
 
         [Fact]
-        public async Task PostSingleToTerminalAsync_WithDelimiters_SendsRequest_ReturnsResponse()
-        {
-            // Arrange
-            var command = "test-command";
-            var cmdDelimiter = ";";
-            var msgDelimiter = "|";
-
-            // Act
-            var response = await _httpClient.SendSingleAsync(command, CancellationToken.None);
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            // Verify that the HTTP request content was correct
-            TerminalRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalRequest>();
-            actualContent.Should().NotBeNull();
-            actualContent!.Raw.Should().Be("test-command|");
-        }
-
-        [Fact]
-        public async Task PostSingleToTerminalAsync_WithoutDelimiters_SendsRequest_ReturnsResponse()
+        public async Task SendToTerminal_SendsRequest_Correctly()
         {
             // Arrange
             var command = "test-command";
 
             // Act
-            var response = await _httpClient.SendSingleAsync(command, CancellationToken.None);
-
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            TerminalInput input = TerminalInput.Single("cmd1", command);
+            TerminalOutput? output = await _httpClient.SendToTerminalAsync(input, CancellationToken.None);
 
             // Verify that the HTTP request content was correct
-            TerminalRequest? actualContent = await _capturedRequest!.Content!.ReadFromJsonAsync<TerminalRequest>();
+            _capturedRequest!.RequestUri.Should().Be(new Uri("http://localhost/oneimlx/terminal/httprouter"));
+            TerminalInput? actualContent = await _capturedRequest.Content!.ReadFromJsonAsync<TerminalInput>();
             actualContent.Should().NotBeNull();
-            actualContent!.Raw.Should().Be("test-command");
+            actualContent!.Count.Should().Be(1);
+            actualContent[0].Id.Should().Be("cmd1");
+            actualContent[0].Raw.Should().Be("test-command");
+
+            actualContent.IsBatch.Should().BeFalse();
+
+            _capturedRequest.Method.Should().Be(HttpMethod.Post);
         }
 
         private readonly HttpClient _httpClient;

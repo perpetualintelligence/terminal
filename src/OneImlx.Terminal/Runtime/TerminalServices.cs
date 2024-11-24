@@ -18,37 +18,31 @@ namespace OneImlx.Terminal.Runtime
     public static class TerminalServices
     {
         /// <summary>
-        /// Constructs a batch of commands by joining each command with the command delimiter and appending the message
-        /// delimiter at the end to signify batch completion.
-        /// </summary>
-        /// <param name="cmdDelimiter">The command delimiter to use between commands.</param>
-        /// <param name="msgDelimiter">The message delimiter to append at the end of the batch.</param>
-        /// <param name="commands">A collection of commands to join into a single batch.</param>
-        /// <returns>A string representing the complete batch of delimited commands, ending with the message delimiter.</returns>
-        public static string CreateBatch(string cmdDelimiter, string msgDelimiter, params string[] commands)
-        {
-            // Use String.Join to join commands efficiently and append the message delimiter at the end
-            return string.Join(cmdDelimiter, commands) + msgDelimiter;
-        }
-
-        /// <summary>
-        /// Constructs a batch of commands by joining each command with the command delimiter and appending the batch
-        /// delimiter defined in terminal options to signify batch completion.
-        /// </summary>
-        /// <param name="terminalOptions">The terminal options that include the command and message delimiter settings.</param>
-        /// <param name="commands">A collection of commands to join into a single batch.</param>
-        /// <returns>A string representing the complete batch of delimited commands, ending with the message delimiter.</returns>
-        public static string CreateBatch(TerminalOptions terminalOptions, params string[] commands)
-        {
-            return CreateBatch(terminalOptions.Router.CommandDelimiter, terminalOptions.Router.BatchDelimiter, commands);
-        }
-
-        /// <summary>
         /// Decodes the license contents to be used by the license extractor.
         /// </summary>
         public static string DecodeLicenseContents(string encodedLicenseContents)
         {
             return Encoding.ASCII.GetString(Convert.FromBase64String(encodedLicenseContents));
+        }
+
+        /// <summary>
+        /// Delimits the byte array with the specified delimiter.
+        /// </summary>
+        /// <param name="bytes">The byte array to delimit.</param>
+        /// <param name="delimiter">The delimiter byte.</param>
+        /// <returns></returns>
+        public static byte[] DelimitBytes(byte[] bytes, byte delimiter)
+        {
+            if (bytes == null || bytes.Length == 0)
+            {
+                throw new ArgumentException("Byte array cannot be null or empty.", nameof(bytes));
+            }
+
+            byte[] delimitedBytes = new byte[bytes.Length + 1];
+            Array.Copy(bytes, delimitedBytes, bytes.Length);
+            delimitedBytes[bytes.Length] = delimiter;
+
+            return delimitedBytes;
         }
 
         /// <summary>

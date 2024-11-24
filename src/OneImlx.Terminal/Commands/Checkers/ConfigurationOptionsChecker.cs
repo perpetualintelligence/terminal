@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -164,27 +164,6 @@ namespace OneImlx.Terminal.Commands.Checkers
                 if (textHandler.TextEquals(options.Parser.OptionValueSeparator, options.Parser.ValueDelimiter))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be same as the option value separator. delimiter={0}", options.Parser.ValueDelimiter);
-                }
-            }
-
-            // Remote Delimiter
-            {
-                // Remote command delimiter cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Router.CommandDelimiter))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The remote command delimiter cannot be null or whitespace.");
-                }
-
-                // Remote message delimiter cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Router.BatchDelimiter))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The remote message delimiter cannot be null or whitespace.");
-                }
-
-                // Remote command delimiter cannot be same as remote message delimiter
-                if (textHandler.TextEquals(options.Router.CommandDelimiter, options.Router.BatchDelimiter))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The remote command delimiter and remote message delimiter cannot be same. delimiter={0}", options.Router.CommandDelimiter);
                 }
             }
 

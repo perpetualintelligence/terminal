@@ -17,7 +17,7 @@ namespace OneImlx.Terminal.Client
         [Fact]
         public void TypesLocationTest()
         {
-            typeof(TerminalGrpcRouterProtoClientExtensions).Assembly.Should().HaveTypesInValidLocations(
+            typeof(ClientExtensions).Assembly.Should().HaveTypesInValidLocations(
                 [
                     typeof(OneimlxTerminalReflection),
                     typeof(TerminalGrpcRouterProtoInput),
@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Client
         [Fact]
         public void TypesNamespaceTest()
         {
-            typeof(TerminalGrpcRouterProtoClientExtensions).Assembly.Should().HaveTypesInRootNamespace("OneImlx.Terminal.Client");
+            typeof(ClientExtensions).Assembly.Should().HaveTypesInRootNamespace("OneImlx.Terminal.Client");
         }
     }
 }

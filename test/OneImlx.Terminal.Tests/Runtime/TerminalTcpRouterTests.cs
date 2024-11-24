@@ -88,8 +88,8 @@ namespace OneImlx.Terminal.Runtime.Tests
             tcpRouter.IsRunning.Should().BeFalse();
 
             // Verify invocations
-            terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalResponse, Task>>()), Times.Once);
-            terminalProcessorMock.Verify(x => x.StreamRequestAsync(
+            terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>()), Times.Once);
+            terminalProcessorMock.Verify(x => x.StreamAsync(
                 sentBytes,
                 It.IsAny<string>(),
                 It.Is<string>(ctx => ctx.StartsWith("127.0.0.1"))), Times.Once);
@@ -135,7 +135,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             var testException = new Exception("Test exception");
 
             // Setup terminal processor to throw an exception during StartProcessing
-            terminalProcessorMock.Setup(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalResponse, Task>>())).Throws(testException);
+            terminalProcessorMock.Setup(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>())).Throws(testException);
 
             var tcpRouter = CreateTcpRouter();
 
@@ -208,7 +208,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Assert: Verify terminal processor received the expected number of messages
             for (int i = 0; i < 5; i++)
             {
-                terminalProcessorMock.Verify(x => x.StreamRequestAsync(
+                terminalProcessorMock.Verify(x => x.StreamAsync(
                     sentBytesArray[i],
                     It.IsAny<string>(),
                     It.Is<string>(ctx => ctx.StartsWith("127.0.0.1"))), Times.Once);
@@ -261,7 +261,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Assert: Verify terminal processor received the expected number of delimited messages
             for (int i = 0; i < 5; i++)
             {
-                terminalProcessorMock.Verify(x => x.StreamRequestAsync(
+                terminalProcessorMock.Verify(x => x.StreamAsync(
                     sentBytesArray[i],
                     It.IsAny<string>(),
                     It.Is<string>(ctx => ctx.StartsWith("127.0.0.1"))), Times.Once);

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -38,13 +38,13 @@ namespace OneImlx.Terminal.Runtime
 
             if (context.Exception is TerminalException ee)
             {
-                logger.LogError(ee.Error.ErrorDescription, ee.Error.Args ?? Array.Empty<object?>());
+                logger.LogError(ee.Error.ErrorDescription, ee.Error.Args ?? []);
             }
             else if (context.Exception is MultiErrorException me)
             {
                 foreach (Error err in me.Errors)
                 {
-                    logger.LogError(err.ErrorDescription, err.Args ?? Array.Empty<object?>());
+                    logger.LogError(err.ErrorDescription, err.Args ?? []);
                 }
             }
             else if (context.Exception is OperationCanceledException oe)

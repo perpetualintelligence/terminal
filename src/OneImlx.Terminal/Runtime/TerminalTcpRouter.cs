@@ -7,10 +7,7 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -195,7 +192,7 @@ namespace OneImlx.Terminal.Runtime
                     await clientSemiphore.WaitAsync(terminalCancellationToken);
 
                     // Start accepting a new client without blocking
-                    string clientId = terminalProcessor.NewUniqueId("client");
+                    string clientId = Guid.NewGuid().ToString();
                     _ = AcceptClientAsync(context, terminalCancellationToken, clientId);
                 }
             }
@@ -215,7 +212,6 @@ namespace OneImlx.Terminal.Runtime
 
         private async Task HandleClientConnectedAsync(TerminalTcpRouterContext tcpContext, TcpClient client, string clientId)
         {
-            byte[] buffer = new byte[2048];
             while (true)
             {
                 if (tcpContext.StartContext.TerminalCancellationToken.IsCancellationRequested)
@@ -232,7 +228,8 @@ namespace OneImlx.Terminal.Runtime
                 }
 
                 // Add to the terminal processor
-                int bytesRead = await client.GetStream().ReadAsync(buffer, 0, 2048);
+                byte[] buffer = new byte[4096];
+                int bytesRead = await client.GetStream().ReadAsync(buffer, 0, buffer.Length);
                 if (bytesRead == 0)
                 {
                     logger.LogDebug("Client is disconnected. client={0}", clientId);
@@ -240,24 +237,29 @@ namespace OneImlx.Terminal.Runtime
                 }
                 else
                 {
-                    await terminalProcessor.StreamRequestAsync(buffer.Take(bytesRead).ToArray(), clientId, client.Client.RemoteEndPoint?.ToString());
+                    // Create a memory stream to pass the buffer to the terminal processor
+                    await terminalProcessor.StreamAsync(buffer, bytesRead, clientId, client.Client.RemoteEndPoint?.ToString());
                 }
             }
         }
 
-        private async Task HandleResponseAsync(TerminalResponse response)
+        private async Task HandleResponseAsync(TerminalOutput response)
         {
-            // Client id is invalid
-            string clientId = response.SenderId ?? throw new TerminalException(TerminalErrors.ServerError, "The sender identifier is missing the response.");
-            if (!tcpClients.TryGetValue(clientId, out TcpClient? tcpClient))
-            {
-                throw new TerminalException(TerminalErrors.ServerError, "The client id is not found in the client collection. client={0}", clientId);
-            }
+            TcpClient? client = null;
+            string? clientId = null;
 
             try
             {
-                byte[] responseBytes = terminalProcessor.SerializeToJsonBytes(response);
-                await tcpClient.GetStream().WriteAsync(responseBytes, 0, responseBytes.Length);
+                // Client id is invalid
+                clientId = response.SenderId ?? throw new TerminalException(TerminalErrors.ServerError, "The sender identifier is missing the response.");
+                tcpClients.TryGetValue(clientId, out client);
+                if (client == null)
+                {
+                    throw new TerminalException(TerminalErrors.ServerError, "The client id is not found in the client collection. client={0}", clientId);
+                }
+
+                byte[] responseBytes = TerminalServices.DelimitBytes(terminalProcessor.JsonSerialize(response), options.Value.Router.StreamDelimiter);
+                await client.GetStream().WriteAsync(responseBytes, 0, responseBytes.Length);
             }
             catch (Exception ex)
             {
@@ -265,13 +267,19 @@ namespace OneImlx.Terminal.Runtime
             }
             finally
             {
-                tcpClientClosure.TryGetValue(clientId, out bool markedForClosure);
-                if (markedForClosure)
+                if (clientId != null)
                 {
-                    tcpClient.Close();
-                    tcpClients.TryRemove(clientId, out _);
-                    tcpClientClosure.TryRemove(clientId, out _);
-                    logger.LogDebug("Response not handled since client is marked for closure. client={0}", clientId);
+                    tcpClientClosure.TryGetValue(clientId, out bool markedForClosure);
+                    if (markedForClosure)
+                    {
+                        if (client != null)
+                        {
+                            client.Close();
+                            tcpClients.TryRemove(clientId, out _);
+                            tcpClientClosure.TryRemove(clientId, out _);
+                            logger.LogDebug("Response not handled since client is marked for closure. client={0}", clientId);
+                        }
+                    }
                 }
             }
         }

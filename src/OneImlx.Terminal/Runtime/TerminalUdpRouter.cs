@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                terminalProcessor.StartProcessing(context, background: true);
+                terminalProcessor.StartProcessing(context, background: true, responseHandler: null);
                 while (true)
                 {
                     // Throw if cancellation is requested.
@@ -107,9 +107,8 @@ namespace OneImlx.Terminal.Runtime
                     // Process received data if the receive task completes.
                     if (receiveTask.Status == TaskStatus.RanToCompletion)
                     {
-                        var receivedResult = receiveTask.Result;
-                        string receivedMessage = textHandler.Encoding.GetString(receivedResult.Buffer);
-                        await terminalProcessor.AddRequestAsync(receivedMessage, senderId: null, senderEndpoint: receivedResult.RemoteEndPoint.ToString());
+                        UdpReceiveResult receivedResult = receiveTask.Result;
+                        await terminalProcessor.StreamAsync(receivedResult.Buffer, receivedResult.Buffer.Length, receivedResult.RemoteEndPoint.ToString(), receivedResult.RemoteEndPoint.ToString());
                     }
                 }
             }

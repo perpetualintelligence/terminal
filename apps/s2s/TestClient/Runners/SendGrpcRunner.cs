@@ -1,13 +1,16 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Grpc.Net.Client;
+using Microsoft.Extensions.Configuration;
 using OneImlx.Terminal.Client;
 using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Runtime;
+using System;
+using System.Linq;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -15,78 +18,94 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
     [CommandDescriptor("grpc", "Send gRPC", "Send gRPC commands to the server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
     public class SendGrpcRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
-        public SendGrpcRunner(IConfiguration configuration)
+        public SendGrpcRunner(IConfiguration configuration, ITerminalConsole terminalConsole)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.terminalConsole = terminalConsole ?? throw new ArgumentNullException(nameof(terminalConsole));
         }
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
-            string ip = configuration.GetValue<string>("testclient:testserver:ip")
-                        ?? throw new InvalidOperationException("The gRPC server IP address is missing.");
-            string port = configuration.GetValue<string>("testclient:testserver:port")
-                          ?? throw new InvalidOperationException("The gRPC server port is missing.");
-            string serverTemplate = "http://{0}:{1}";
-            string serverAddress = string.Format(serverTemplate, ip, port);
-
-            Task[] clientTasks = new Task[4];
-            for (int i = 0; i < clientTasks.Length; i++)
+            string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
+            int port = configuration.GetValue<int>("testclient:testserver:port");
+            if (port == 0)
             {
-                clientTasks[i] = StartGrpcClientAsync(serverAddress, context.StartContext.TerminalCancellationToken);
+                throw new InvalidOperationException("Server port is missing.");
+            }
+            string serverAddress = $"http://{ip}:{port}";
+
+            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "gRPC concurrent and asynchronous demo.");
+
+            var clientTasks = new Task[5];
+            for (int idx = 0; idx < clientTasks.Length; idx++)
+            {
+                clientTasks[idx] = StartClientAsync(serverAddress, idx, context.StartContext.TerminalCancellationToken);
             }
 
             await Task.WhenAll(clientTasks);
-            Console.WriteLine("All gRPC client tasks completed.");
+            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "gRPC client tasks completed successfully.");
             return new CommandRunnerResult();
         }
 
-        private async Task SendGrpcCommandsAsync(TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client, CancellationToken cancellationToken)
+        private async Task SendCommandsAsync(TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client, int clientIndex, CancellationToken cToken)
         {
+            string[] cmdIds = { "cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6" };
+            string[] commands = { "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2" };
+
             try
             {
-                Console.WriteLine("Sending individual gRPC commands...");
-
-                string[] commands =
-                [
-                    "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"
-                ];
-
-                foreach (var command in commands)
+                foreach (var (cmdId, command) in cmdIds.Zip(commands))
                 {
-                    TerminalGrpcRouterProtoOutput response = await client.SendSingleAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken: cancellationToken);
-                    Console.WriteLine($"Request: {command}, Response: {response}");
+                    TerminalInput single = TerminalInput.Single(cmdId, command);
+                    var response = await client.SendToTerminalAsync(single, cToken);
+                    var output = JsonSerializer.Deserialize<TerminalOutput>(response.OutputJson);
+
+                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={output?.Results[0] ?? "No Response"}");
                 }
 
-                // Sending commands as a batch
-                Console.WriteLine("Sending commands as a batch...");
-                TerminalGrpcRouterProtoOutput batchResponse = await client.SendBatchAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken: cancellationToken);
-                Console.WriteLine($"Batch sent. Response: {batchResponse}");
+                string batchId = $"batch{clientIndex}";
+                TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
+                var batchResponse = await client.SendToTerminalAsync(batch, cToken);
+                var batchOutput = JsonSerializer.Deserialize<TerminalOutput>(batchResponse.OutputJson);
+
+                for (int idx = 0; idx < batchOutput!.Input.Requests.Length; ++idx)
+                {
+                    var request = batchOutput.Input.Requests[idx];
+                    var result = batchOutput.Results[idx];
+                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
+                }
             }
             catch (RpcException ex)
             {
-                Console.WriteLine($"gRPC Error: {ex.Status.StatusCode} - {ex.Status.Detail}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] gRPC Error: {ex.Status.StatusCode} {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] Error: {ex.Message}");
             }
         }
 
-        private async Task StartGrpcClientAsync(string serverAddress, CancellationToken cancellationToken)
+        private async Task StartClientAsync(string serverAddress, int clientIndex, CancellationToken cToken)
         {
+            using var channel = GrpcChannel.ForAddress(serverAddress);
+            var client = new TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient(channel);
+
             try
             {
-                using var channel = GrpcChannel.ForAddress(serverAddress);
-                TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client = new(channel);
-
-                await SendGrpcCommandsAsync(client, cancellationToken);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"gRPC client {clientIndex} initialized for {serverAddress}...");
+                await SendCommandsAsync(client, clientIndex, cToken);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during gRPC client operation: {ex.Message}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] {ex.Message}");
+            }
+            finally
+            {
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"gRPC client {clientIndex} disposed.");
             }
         }
 
         private readonly IConfiguration configuration;
+        private readonly ITerminalConsole terminalConsole;
     }
 }

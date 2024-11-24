@@ -9,42 +9,26 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
+
+using OneImlx.Terminal.Extensions;
 
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default queue-based <see cref="ITerminalProcessor"/> responsible for processing command or batches in a
-    /// terminal environment.
+    /// The default implementation of <see cref="ITerminalProcessor"/> for processing inputs in a terminal environment.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalRequest"/> items that are processed in
-    /// the background. It routes these commands to the <see cref="ICommandRouter"/> for execution. The processor
-    /// supports handling both single commands and batches of commands, as well as partial batches for single-client scenarios.
-    /// </para>
-    /// <para>
-    /// Single commands are validated and enqueued individually for processing. For batch processing, the input string
-    /// is split into individual commands using delimiters. Each command in the batch is validated and enqueued, with
-    /// the order of commands within the batch being preserved during processing.
-    /// </para>
-    /// <para>
-    /// In single-client scenarios, partial batches (incomplete commands) are stored internally and combined with
-    /// subsequent input to form complete batches for continuous processing.
-    /// </para>
-    /// <para>
-    /// The <see cref="TerminalProcessor"/> uses a <see cref="SemaphoreSlim"/> to synchronize access to the queue and
-    /// signal the availability of items for processing, ensuring thread-safe command submissions from multiple clients.
-    /// </para>
+    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalInput"/> that are processed
+    /// asynchronously in the background. It routes individual requests to the <see cref="ICommandRouter"/> for
+    /// execution. The processor supports handling both single requests and batches of requests, as well as partial
+    /// streams sent by clients.
     /// </remarks>
     public sealed class TerminalProcessor : ITerminalProcessor
     {
@@ -76,52 +60,31 @@ namespace OneImlx.Terminal.Runtime
             requestSignal = new SemaphoreSlim(0);
             responseSignal = new SemaphoreSlim(0);
 
-            streamingRequests = new ConcurrentDictionary<string, StringBuilder>();
-            batchDelimiter = textHandler.Encoding.GetBytes(terminalOptions.Value.Router.BatchDelimiter);
+            streamingRequests = new ConcurrentDictionary<string, Queue<byte>>();
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="TerminalProcessor"/> queue is running in the background.
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsBackground { get; private set; }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="TerminalProcessor"/> is currently processing requests.
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsProcessing { get; private set; }
 
-        /// <summary>
-        /// Gets the collection of unprocessed requests at the time of query. It is a snapshot of the queue at the time
-        /// of query and may not be accurate by the time the caller processes the collection.
-        /// </summary>
-        /// <remarks>
-        /// THIS METHOD IS PART OF INTERNAL INFRASTRUCTURE AND IS NOT INTENDED TO BE USED BY APPLICATION CODE.
-        /// </remarks>
-        public IReadOnlyCollection<TerminalRequest> UnprocessedRequests
+        /// <inheritdoc/>
+        public IReadOnlyCollection<TerminalInput> UnprocessedInputs
         {
             get
             {
                 // Return all the requests from the unprocessed response queue.
-                return unprocessedRequests.SelectMany(static r => r.Commands).ToArray();
+                return unprocessedRequests.Select(r => r.Input).ToArray();
             }
         }
 
-        /// <summary>
-        /// Asynchronously adds a terminal request for processing from a string.
-        /// </summary>
-        /// <param name="raw">The raw command or a batch to add to the processor.</param>
-        /// <param name="senderId">The optional sender identifier.</param>
-        /// <param name="senderEndpoint">The optional sender endpoint.</param>
-        public Task AddRequestAsync(string raw, string? senderId, string? senderEndpoint)
+        /// <inheritdoc/>
+        public Task AddAsync(TerminalInput input, string? senderId, string? senderEndpoint)
         {
-            if (string.IsNullOrWhiteSpace(raw))
+            if (input == null)
             {
-                throw new TerminalException(TerminalErrors.InvalidRequest, "The raw command or batch cannot be empty.");
-            }
-
-            if (raw.Length > terminalOptions.Value.Router.MaxLength)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The raw command or batch length exceeds configured maximum. max_length={0}", terminalOptions.Value.Router.MaxLength);
+                throw new TerminalException(TerminalErrors.InvalidRequest, "The input cannot be null.");
             }
 
             if (!IsProcessing)
@@ -134,27 +97,8 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.InvalidRequest, "The terminal processor is not running a background queue.");
             }
 
-            string[] commands;
-            bool isBatchEnabled = terminalOptions.Value.Router.EnableBatch.GetValueOrDefault();
-            string? batchId = null;
-            if (isBatchEnabled)
-            {
-                commands = ExtractBatchCommands(raw);
-                batchId = NewUniqueId();
-            }
-            else
-            {
-                commands = [raw];
-            }
-
             // Create a response object that will hold requests and results
-            TerminalResponse response = new(commands.Length, batchId, senderId, senderEndpoint);
-            for (int idx = 0; idx < commands.Length; ++idx)
-            {
-                response.Commands[idx] = new TerminalRequest(NewUniqueId(), commands[idx]);
-            }
-
-            // Enqueue and signal that a request is ready to be processed
+            TerminalOutput response = new(input, new object?[input.Count], senderId, senderEndpoint);
             unprocessedRequests.Enqueue(response);
             requestSignal.Release();
             return Task.CompletedTask;
@@ -169,29 +113,11 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public string NewUniqueId(string? hint = null)
+        public async Task<TerminalOutput> ExecuteAsync(TerminalInput input, string? senderId, string? senderEndpoint)
         {
-            if (hint == "short")
+            if (input == null)
             {
-                return Guid.NewGuid().ToString("N").Substring(0, 12);
-            }
-            else
-            {
-                return Guid.NewGuid().ToString();
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<TerminalResponse> ProcessRequestAsync(string raw, string? senderId, string? senderEndpoint)
-        {
-            if (string.IsNullOrWhiteSpace(raw))
-            {
-                throw new TerminalException(TerminalErrors.InvalidRequest, "The command or batch cannot be empty.");
-            }
-
-            if (raw.Length > terminalOptions.Value.Router.MaxLength)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The batch length exceeds configured maximum. max_length={0}", terminalOptions.Value.Router.MaxLength);
+                throw new TerminalException(TerminalErrors.InvalidRequest, "The input cannot be null.");
             }
 
             if (!IsProcessing || terminalRouterContext == null)
@@ -199,62 +125,38 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not running.");
             }
 
-            string[] commands;
-            bool isBatchEnabled = terminalOptions.Value.Router.EnableBatch.GetValueOrDefault();
-            string? batchId = null;
-            if (isBatchEnabled)
+            TerminalOutput response = new(input, new object?[input.Count], senderId, senderEndpoint);
+            for (int idx = 0; idx < input.Count; ++idx)
             {
-                commands = ExtractBatchCommands(raw);
-                batchId = NewUniqueId();
-            }
-            else
-            {
-                commands = [raw];
-            }
-
-            TerminalResponse response = new(commands.Length, batchId, senderId, senderEndpoint);
-            for (int idx = 0; idx < commands.Length; ++idx)
-            {
-                TerminalRequest request = new(NewUniqueId(), commands[idx]);
-
-                CommandRouterResult result = await RouteRequestAsync(request, response, terminalRouterContext);
+                CommandRouterResult result = await RouteRequestAsync(idx, response, terminalRouterContext);
                 object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
 
-                response.Commands[idx] = request;
                 response.Results[idx] = value;
             }
 
             return response;
         }
 
-        /// <summary>
-        /// Serializes the result of a command execution to a JSON UTF8 byte array.
-        /// </summary>
-        /// <param name="result">The result to serialize.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public byte[] SerializeToJsonBytes(object? result)
+        /// <inheritdoc/>
+        public TObject JsonDeserialize<TObject>(byte[] bytes, JsonSerializerOptions? serializerOptions = null)
         {
-            if (result == null)
-            {
-                throw new ArgumentNullException(nameof(result), "The command runner result is null.");
-            }
-
-            return JsonSerializer.SerializeToUtf8Bytes(result);
-        }
-
-        /// <summary>
-        /// Serializes the results into a JSON string.
-        /// </summary>
-        /// <param name="results">The results to serialize.</param>
-        /// <returns></returns>
-        public string SerializeToJsonString(object?[] results)
-        {
-            return JsonSerializer.Serialize(results);
+            TObject? jsonObject = JsonSerializer.Deserialize<TObject>(bytes, serializerOptions);
+            return jsonObject ?? throw new TerminalException(TerminalErrors.ServerError, "The deserialized object is null.");
         }
 
         /// <inheritdoc/>
-        public void StartProcessing(TerminalRouterContext terminalRouterContext, bool background, Func<TerminalResponse, Task>? responseHandler = null)
+        public byte[] JsonSerialize<TObject>(TObject @object, JsonSerializerOptions? serializerOptions = null)
+        {
+            if (@object == null)
+            {
+                throw new ArgumentNullException(nameof(@object), "The command runner result is null.");
+            }
+
+            return JsonSerializer.SerializeToUtf8Bytes(@object, serializerOptions);
+        }
+
+        /// <inheritdoc/>
+        public void StartProcessing(TerminalRouterContext terminalRouterContext, bool background, Func<TerminalOutput, Task>? responseHandler = null)
         {
             // IMPORTANT: We don't await so both request and response processing happens in the background.
             requestProcessing = StartRequestProcessingAsync(terminalRouterContext, background);
@@ -293,47 +195,53 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public async Task StreamRequestAsync(byte[] potential, string senderId, string? senderEndpoint)
+        public async Task StreamAsync(byte[] bytes, int bytesLength, string senderId, string? senderEndpoint)
         {
-            // Get or create a StringBuilder for the sender
-            StringBuilder senderBuffer = streamingRequests.GetOrAdd(senderId, static _ => new StringBuilder());
-
-            // Append the new chunk to the existing buffer
-            senderBuffer.Append(textHandler.Encoding.GetString(potential));
-            var batchString = senderBuffer.ToString();
-
-            // Check if the batch ends with the delimiter
-            bool isPartial = !batchString.EndsWith(terminalOptions.Value.Router.BatchDelimiter);
-
-            // Split the string by the batch delimiter
-            string[] batches = batchString.Split(new[] { terminalOptions.Value.Router.BatchDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-
-            // Process each batch
-            for (int idx = 0; idx < batches.Length; ++idx)
+            if (string.IsNullOrWhiteSpace(senderId))
             {
-                // Check if it's the last batch and is incomplete
-                if (isPartial && idx == batches.Length - 1)
-                {
-                    // Save the partial batch back to the buffer
-                    senderBuffer.Clear();
-                    senderBuffer.Append(batches[idx]);
-                    break;
-                }
-
-                // Send the complete batch for processing
-                await AddRequestAsync(batches[idx] + terminalOptions.Value.Router.BatchDelimiter, senderId, senderEndpoint);
+                throw new TerminalException(TerminalErrors.InvalidRequest, "The sender ID cannot be null or empty for streaming.");
             }
 
-            // Clear the buffer if all data was processed
-            if (!isPartial)
+            // Ensure a MemoryStream exists for the sender
+            if (!streamingRequests.TryGetValue(senderId, out Queue<byte>? previousStream))
             {
-                senderBuffer.Clear();
+                previousStream = new Queue<byte>();
+                streamingRequests[senderId] = previousStream;
+            }
+
+            // Make sure the previous unprocessed stream is processed first
+            for (int idx = 0; idx < bytesLength; ++idx)
+            {
+                previousStream.Enqueue(bytes[idx]);
+            }
+
+            // Split the input stream into batches using the stream delimiter
+            byte[][] rawInputs = previousStream.ToArray().Split(terminalOptions.Value.Router.StreamDelimiter, ignoreEmpty: true, out bool endsWithDelimiter);
+            previousStream.Clear();
+
+            // Check if the last batch ends with the delimiter
+            int lengthToProcess = rawInputs.Length;
+            if (!endsWithDelimiter)
+            {
+                lengthToProcess--;
+                byte[] last = rawInputs[lengthToProcess];
+                for (int jdx = 0; jdx < last.Length; ++jdx)
+                {
+                    previousStream.Enqueue(last[jdx]);
+                }
+            }
+
+            // We are good to route requests.
+            for (int idx = 0; idx < lengthToProcess; ++idx)
+            {
+                byte[] rawInput = rawInputs[idx];
+
+                TerminalInput input = JsonDeserialize<TerminalInput>(rawInputs[idx]);
+                await AddAsync(input, senderId, senderEndpoint);
             }
         }
 
-        /// <summary>
-        /// Starts a <see cref="Task.Delay(int, CancellationToken)"/> indefinitely until canceled.
-        /// </summary>
+        /// <inheritdoc/>
         public async Task WaitUntilCanceledAsync(CancellationToken cancellationToken)
         {
             try
@@ -346,30 +254,9 @@ namespace OneImlx.Terminal.Runtime
             }
         }
 
-        private string[] ExtractBatchCommands(string raw)
+        private void RegisterResponseHandler(Func<TerminalOutput, Task> handler)
         {
-            // Find the index of the batch delimiter in the raw input
-            int firstIndex = raw.IndexOf(terminalOptions.Value.Router.BatchDelimiter, textHandler.Comparison);
-            int delimiterLength = terminalOptions.Value.Router.BatchDelimiter.Length;
-
-            // Check if the raw input is shorter than the delimiter length
-            if (raw.Length < delimiterLength)
-            {
-                throw new TerminalException("invalid_request", "The raw batch does not end with the batch delimiter.");
-            }
-
-            // Check if the batch delimiter is not found or not at the end of the raw input
-            if (firstIndex == -1 || firstIndex != (raw.Length - delimiterLength))
-            {
-                throw new TerminalException("invalid_request", "The raw batch must have a single delimiter at the end, not missing or placed elsewhere.");
-            }
-
-            return raw.Split(new[] { terminalOptions.Value.Router.CommandDelimiter, terminalOptions.Value.Router.BatchDelimiter }, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        private void RegisterResponseHandler(Func<TerminalResponse, Task> handler)
-        {
-            if (!terminalOptions.Value.Router.EnableResponses.GetValueOrDefault())
+            if (!terminalOptions.Value.Router.EnableResponses)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The response handling is not enabled.");
             }
@@ -377,19 +264,19 @@ namespace OneImlx.Terminal.Runtime
             this.handler = handler ?? throw new TerminalException(TerminalErrors.InvalidRequest, "The response handler cannot be null.");
         }
 
-        private async Task<CommandRouterResult> RouteRequestAsync(TerminalRequest request, TerminalResponse terminalResponse, TerminalRouterContext terminalRouterContext)
+        private async Task<CommandRouterResult> RouteRequestAsync(int index, TerminalOutput terminalOutput, TerminalRouterContext terminalRouterContext)
         {
+            TerminalRequest request = terminalOutput.Input[index];
+
+            string senderEndpoint = terminalOutput.SenderEndpoint ?? "$unknown$";
+            string senderId = terminalOutput.SenderId ?? "$unknown$";
             Dictionary<string, object> properties = new()
             {
-                { TerminalIdentifiers.SenderEndpointToken, terminalResponse.SenderEndpoint ?? "$unknown$" }
+                { TerminalIdentifiers.SenderEndpointToken, senderEndpoint },
+                { TerminalIdentifiers.SenderIdToken, senderId }
             };
 
-            if (terminalResponse.SenderId != null)
-            {
-                properties.Add(TerminalIdentifiers.SenderIdToken, terminalResponse.SenderId);
-            }
-
-            logger.LogDebug("Routing the command. raw={0} sender={1}", request.Raw, terminalResponse.SenderId ?? "$unknown$");
+            logger.LogDebug("Routing the command. raw={0} sender={1}", request.Raw, senderId);
             var context = new CommandRouterContext(request, terminalRouterContext, properties);
             var routeTask = commandRouter.RouteCommandAsync(context);
 
@@ -412,7 +299,7 @@ namespace OneImlx.Terminal.Runtime
                 return;
             }
 
-            bool responseEnabled = terminalOptions.Value.Router.EnableResponses.GetValueOrDefault();
+            bool responseEnabled = terminalOptions.Value.Router.EnableResponses;
 
             while (true)
             {
@@ -424,12 +311,12 @@ namespace OneImlx.Terminal.Runtime
                     if (!unprocessedRequests.IsEmpty)
                     {
                         // Process the request and dequeue the response
-                        unprocessedRequests.TryDequeue(out TerminalResponse? response);
+                        unprocessedRequests.TryDequeue(out TerminalOutput? response);
                         if (response != null)
                         {
-                            for (int idx = 0; idx < response.Commands.Length; ++idx)
+                            for (int idx = 0; idx < response.Input.Count; ++idx)
                             {
-                                var result = await RouteRequestAsync(response.Commands[idx], response, terminalRouterContext);
+                                var result = await RouteRequestAsync(idx, response, terminalRouterContext);
                                 object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
                                 response.Results[idx] = value;
                             }
@@ -458,7 +345,7 @@ namespace OneImlx.Terminal.Runtime
 
         private async Task StartResponseProcessingAsync(TerminalRouterContext terminalRouterContext)
         {
-            if (!terminalOptions.Value.Router.EnableResponses.GetValueOrDefault())
+            if (!terminalOptions.Value.Router.EnableResponses)
             {
                 return;
             }
@@ -494,16 +381,15 @@ namespace OneImlx.Terminal.Runtime
 
         private readonly ICommandRouter commandRouter;
         private readonly ILogger logger;
-        private readonly Stack<TerminalResponse> processedRequests;
+        private readonly Stack<TerminalOutput> processedRequests;
         private readonly SemaphoreSlim requestSignal;
         private readonly SemaphoreSlim responseSignal;
-        private readonly ConcurrentDictionary<string, StringBuilder> streamingRequests;
+        private readonly ConcurrentDictionary<string, Queue<byte>> streamingRequests;
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly IOptions<TerminalOptions> terminalOptions;
         private readonly ITerminalTextHandler textHandler;
-        private readonly ConcurrentQueue<TerminalResponse> unprocessedRequests;
-        private byte[] batchDelimiter;
-        private Func<TerminalResponse, Task>? handler;
+        private readonly ConcurrentQueue<TerminalOutput> unprocessedRequests;
+        private Func<TerminalOutput, Task>? handler;
         private Task requestProcessing;
         private Task responseProcessing;
         private TerminalRouterContext? terminalRouterContext;

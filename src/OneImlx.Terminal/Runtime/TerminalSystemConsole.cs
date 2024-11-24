@@ -6,191 +6,214 @@
 */
 
 using System;
-using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using OneImlx.Shared.Extensions;
 
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalConsole"/> implementation that use system <see cref="Console"/>.
+    /// The default implementation of <see cref="ITerminalConsole"/> that uses the system <see cref="Console"/>.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="TerminalSystemConsole"/> is thread safe and allows multiple tasks to write to the console concurrently.
+    /// </remarks>
     public class TerminalSystemConsole : ITerminalConsole
     {
         /// <summary>
-        /// The background color.
+        /// Initializes a new instance of the <see cref="TerminalSystemConsole"/> class.
+        /// </summary>
+        public TerminalSystemConsole()
+        {
+            onethread = new SemaphoreSlim(1, 1); // Initialize with a single permit
+        }
+
+        /// <summary>
+        /// Gets or sets the background color of the console.
         /// </summary>
         public ConsoleColor BackgroundColor
         {
-            get
-            {
-                return Console.BackgroundColor;
-            }
-
-            set
-            {
-                Console.BackgroundColor = value;
-            }
+            get => Console.BackgroundColor;
+            set => Console.BackgroundColor = value;
         }
 
         /// <summary>
-        /// The foreground color.
+        /// Gets or sets the foreground color of the console.
         /// </summary>
         public ConsoleColor ForegroundColor
         {
-            get
-            {
-                return Console.ForegroundColor;
-            }
-
-            set
-            {
-                Console.ForegroundColor = value;
-            }
+            get => Console.ForegroundColor;
+            set => Console.ForegroundColor = value;
         }
 
         /// <summary>
-        /// Clears the <see cref="Console"/> buffer and the corresponding display information.
+        /// Clears the console buffer and display information asynchronously.
         /// </summary>
-        public Task ClearAsync()
+        public async Task ClearAsync()
         {
-            Console.Clear();
-            return Task.CompletedTask;
+            await onethread.WaitAsync();
+            try
+            {
+                Console.Clear();
+            }
+            finally
+            {
+                onethread.Release();
+            }
         }
 
         /// <summary>
-        /// Return <c>true</c> if the specified string value is ignored by the <see cref="ITerminalConsole"/>, otherwise <c>false</c>.
+        /// Determines whether the specified string value should be ignored by the <see cref="ITerminalConsole"/>.
         /// </summary>
         /// <param name="value">The value to check.</param>
-        public bool Ignore(string? value)
-        {
-            return string.IsNullOrWhiteSpace(value);
-        }
+        /// <returns><c>true</c> if the value is null, empty, or whitespace; otherwise, <c>false</c>.</returns>
+        public bool Ignore(string? value) => string.IsNullOrWhiteSpace(value);
 
         /// <summary>
-        /// Prints the question to the <see cref="ITerminalConsole"/> standard output stream and waits for an answer asynchronously.
+        /// Prints a question to the console and waits for an answer asynchronously.
         /// </summary>
-        /// <param name="question">The question to print. The <c>?</c> will be appended at the end.</param>
+        /// <param name="question">The question to print. A <c>?</c> will be appended at the end.</param>
         /// <param name="answers">
-        /// The allowed answers or <c>null</c> if all answers are allowed. It is recommended to keep the answers short
-        /// for readability. If specified this method will print the answers with question in the format <c>{question} {answer1}/{answer2}/{answer3}?</c>
+        /// The allowed answers, or <c>null</c> if all answers are allowed. If specified, this method prints the answers
+        /// in the format <c>{question} ({answer1}/{answer2}/{answer3})?</c>.
         /// </param>
-        /// <returns>The answer for the question or <c>null</c> if canceled.</returns>
-        public virtual async Task<string?> ReadAnswerAsync(string question, params string[]? answers)
+        /// <returns>The user's answer, or <c>null</c> if canceled.</returns>
+        public async Task<string?> ReadAnswerAsync(string question, params string[]? answers)
         {
-            // Print the question
-            if (answers != null)
+            await onethread.WaitAsync();
+            try
             {
-                Console.Write($"{question} ({string.Join("/", answers)})? ");
-            }
-            else
-            {
-                Console.Write($"{question}? ");
-            }
+                Console.Write(answers != null
+                    ? $"{question} ({string.Join("/", answers)})? "
+                    : $"{question}? ");
 
-            // Check answer
-            string? answer = Console.ReadLine();
-            if (answers != null)
-            {
-                if (answers.Contains(answer))
+                string? answer = Console.ReadLine();
+                if (answers != null && !answers.Contains(answer))
                 {
-                    return answer;
-                }
-                else
-                {
-                    Console.WriteLine($"The answer is not valid. answers={answers.JoinBySpace()}");
+                    Console.WriteLine($"The answer is not valid. Valid answers: {answers.JoinBySpace()}");
                     return await ReadAnswerAsync(question, answers);
                 }
-            }
-            else
-            {
+
                 return answer;
             }
-        }
-
-        /// <summary>
-        /// Reads the next line of characters from the <see cref="Console"/> input stream asynchronously.
-        /// </summary>
-        /// <returns>The next line of characters from the input stream, or <c>null</c> if no more lines are available.</returns>
-        public Task<string?> ReadLineAsync()
-        {
-            return Task.Run(static () => { return (string?)Console.ReadLine(); });
-        }
-
-        /// <summary>
-        /// Writes the specified string value to the <see cref="Console"/> standard output stream.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        /// <param name="args">The format arguments.</param>
-        public Task WriteAsync(string value, params object[] args)
-        {
-            return Task.Run(() => { Console.Write(value, args); });
-        }
-
-        /// <summary>
-        /// Writes the specified string value in the foreground color to the <see cref="Console"/> standard output stream.
-        /// </summary>
-        /// <param name="foregroundColor">The foreground text color.</param>
-        /// <param name="value">The text to write.</param>
-        /// <param name="args">The format arguments.</param>
-        /// <returns></returns>
-        public Task WriteColorAsync(ConsoleColor foregroundColor, string value, params object[] args)
-        {
-            return Task.Run(() =>
+            finally
             {
-                try
-                {
-                    Console.ForegroundColor = foregroundColor;
-                    Console.Write(value, args);
-                }
-                finally
-                {
-                    Console.ResetColor();
-                }
-            });
+                onethread.Release();
+            }
         }
 
         /// <summary>
-        /// Writes the specified string value followed by the current newline terminator to the <see cref="Console"/>
-        /// input stream asynchronously.
+        /// Reads the next line of input from the console asynchronously.
         /// </summary>
-        /// <param name="value">The text to write.</param>
-        /// <param name="args">The format arguments.</param>
-        public Task WriteLineAsync(string value, params object[] args)
+        /// <returns>The next line of input, or <c>null</c> if no more lines are available.</returns>
+        public async Task<string?> ReadLineAsync()
         {
-            return Task.Run(() => { Console.WriteLine(value, args); });
-        }
-
-        /// <summary>
-        /// Writes the current newline terminator to the <see cref="Console"/> input stream asynchronously.
-        /// </summary>
-        public Task WriteLineAsync()
-        {
-            return Task.Run(Console.WriteLine);
-        }
-
-        /// <summary>
-        /// Writes the specified string value followed by the current newline terminator to the <see cref="Console"/>
-        /// input stream asynchronously.
-        /// </summary>
-        /// <param name="foregroundColor">The foreground text color.</param>
-        /// <param name="value">The text to write.</param>
-        /// <param name="args">The format arguments.</param>
-        public Task WriteLineColorAsync(ConsoleColor foregroundColor, string value, params object[] args)
-        {
-            return Task.Run(() =>
+            await onethread.WaitAsync();
+            try
             {
-                try
-                {
-                    Console.ForegroundColor = foregroundColor;
-                    Console.WriteLine(value, args);
-                }
-                finally
-                {
-                    Console.ResetColor();
-                }
-            });
+                return Console.ReadLine();
+            }
+            finally
+            {
+                onethread.Release();
+            }
         }
+
+        /// <summary>
+        /// Writes a formatted string to the console asynchronously.
+        /// </summary>
+        /// <param name="value">The string to write.</param>
+        /// <param name="args">The format arguments.</param>
+        public async Task WriteAsync(string value, params object[] args)
+        {
+            await onethread.WaitAsync();
+            try
+            {
+                Console.Write(value, args);
+            }
+            finally
+            {
+                onethread.Release();
+            }
+        }
+
+        /// <summary>
+        /// Writes a formatted string to the console in the specified foreground color asynchronously.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color.</param>
+        /// <param name="value">The string to write.</param>
+        /// <param name="args">The format arguments.</param>
+        public async Task WriteColorAsync(ConsoleColor foregroundColor, string value, params object[] args)
+        {
+            await onethread.WaitAsync();
+            try
+            {
+                Console.ForegroundColor = foregroundColor;
+                Console.Write(value, args);
+            }
+            finally
+            {
+                Console.ResetColor();
+                onethread.Release();
+            }
+        }
+
+        /// <summary>
+        /// Writes a formatted string followed by a newline to the console asynchronously.
+        /// </summary>
+        /// <param name="value">The string to write.</param>
+        /// <param name="args">The format arguments.</param>
+        public async Task WriteLineAsync(string value, params object[] args)
+        {
+            await onethread.WaitAsync();
+            try
+            {
+                Console.WriteLine(value, args);
+            }
+            finally
+            {
+                onethread.Release();
+            }
+        }
+
+        /// <summary>
+        /// Writes a newline to the console asynchronously.
+        /// </summary>
+        public async Task WriteLineAsync()
+        {
+            await onethread.WaitAsync();
+            try
+            {
+                Console.WriteLine();
+            }
+            finally
+            {
+                onethread.Release();
+            }
+        }
+
+        /// <summary>
+        /// Writes a formatted string followed by a newline in the specified foreground color to the console asynchronously.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color.</param>
+        /// <param name="value">The string to write.</param>
+        /// <param name="args">The format arguments.</param>
+        public async Task WriteLineColorAsync(ConsoleColor foregroundColor, string value, params object[] args)
+        {
+            await onethread.WaitAsync();
+            try
+            {
+                Console.ForegroundColor = foregroundColor;
+                Console.WriteLine(value, args);
+            }
+            finally
+            {
+                Console.ResetColor();
+                onethread.Release();
+            }
+        }
+
+        private readonly SemaphoreSlim onethread;
     }
 }

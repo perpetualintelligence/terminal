@@ -43,16 +43,6 @@ namespace OneImlx.Terminal
         public const string OnPremiseDeployment = "onpremise";
 
         /// <summary>
-        /// The remote batch delimiter.
-        /// </summary>
-        public const string RemoteBatchDelimiter = "$b$";
-
-        /// <summary>
-        /// The remote command delimiter.
-        /// </summary>
-        public const string RemoteCommandDelimiter = "$c$";
-
-        /// <summary>
         /// The <c>sender_endpoint</c> token.
         /// </summary>
         public const string SenderEndpointToken = "sender_endpoint";
@@ -61,6 +51,11 @@ namespace OneImlx.Terminal
         /// The <c>sender_id</c> token.
         /// </summary>
         public const string SenderIdToken = "sender_id";
+
+        /// <summary>
+        /// The data stream delimiter byte. Defaults to <c>0x1F</c> or Unit Separator.
+        /// </summary>
+        public const byte StreamDelimiter = 0x1F;
 
         /// <summary>
         /// The test application identifier for internal testing.

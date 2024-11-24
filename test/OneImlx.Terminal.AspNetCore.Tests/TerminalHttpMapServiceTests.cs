@@ -53,13 +53,13 @@ namespace OneImlx.Terminal.AspNetCore
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 
-            TerminalResponse? addedResponse = null;
+            TerminalOutput? addedResponse = null;
             mockProcessor.Setup(x => x.ProcessRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<string, string?, string?>((raw, senderId, senderEndpoint) =>
                 {
                     // Create and assign a mock response based on the input parameters
                     addedResponse = new TerminalResponse(1, null, senderId, senderEndpoint);
-                    addedResponse.Commands[0] = new TerminalRequest("id1", raw);
+                    addedResponse.Requests[0] = new TerminalRequest("id1", raw);
                 })
                 .ReturnsAsync(() => addedResponse!);
 
@@ -69,10 +69,10 @@ namespace OneImlx.Terminal.AspNetCore
 
             // Assert
             addedResponse.Should().NotBeNull();
-            addedResponse!.Commands.Should().HaveCount(1);
+            addedResponse!.Requests.Should().HaveCount(1);
 
-            addedResponse.Commands[0].Id.Should().Be("id1");
-            addedResponse.Commands[0].Raw.Should().Be("test-command");
+            addedResponse.Requests[0].Id.Should().Be("id1");
+            addedResponse.Requests[0].Raw.Should().Be("test-command");
             addedResponse.BatchId.Should().BeNull();
         }
 

@@ -57,7 +57,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);
             mockTerminalProcessor.Setup(x => x.ProcessRequestAsync("test-command", It.IsAny<string>(), It.IsAny<string>()))
                                  .Callback(() => routeCalled = true)
-                                 .ReturnsAsync(new TerminalResponse(1, null, null, null));
+                                 .ReturnsAsync(new TerminalOutput(1, null, null, null));
 
             // Act: Post to /oneimlx/terminal/httprouter
             var response = await client.PostAsJsonAsync("/oneimlx/terminal/httprouter", new TerminalRequest("test-id", "test-command"));

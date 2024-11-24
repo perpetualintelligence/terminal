@@ -37,7 +37,7 @@ namespace OneImlx.Terminal.AspNetCore
         }
 
         /// <summary>
-        /// Routes the <see cref="TerminalBatch"/> via HTTP.
+        /// Routes the <see cref="TerminalInput"/> via HTTP.
         /// </summary>
         /// <param name="httpContext">The HTTP context containing the request.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
@@ -54,17 +54,16 @@ namespace OneImlx.Terminal.AspNetCore
         /// This method is primarily intended to be called by HTTP clients. It should not be invoked directly from
         /// within the application without proper context, as it depends on HTTP infrastructure and client context information.
         /// </remarks>
-        public async Task RouteBatchAsync(HttpContext httpContext)
+        public async Task RouteAsync(HttpContext httpContext)
         {
-            // Read the JSON body from the HTTP request and deserialize it into the TerminalHttpRequest object.
-            TerminalBatch? batch;
+            TerminalInput? input;
             using (var reader = new StreamReader(httpContext.Request.Body))
             {
                 var requestBody = await reader.ReadToEndAsync();
-                batch = JsonSerializer.Deserialize<TerminalBatch>(requestBody);
+                input = JsonSerializer.Deserialize<TerminalInput>(requestBody);
             }
 
-            if (batch == null || batch.Count <=0)
+            if (input == null || input.Count <= 0)
             {
                 throw new TerminalException(TerminalErrors.MissingCommand, "The commands are missing in the HTTP request.");
             }
@@ -79,56 +78,9 @@ namespace OneImlx.Terminal.AspNetCore
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
             }
 
-            TerminalResponse response = await terminalProcessor.ProcessRequestAsync(request.Raw, terminalProcessor.NewUniqueId(), httpContext.Connection.RemoteIpAddress?.ToString() ?? "$unknown$");
-            await httpContext.Response.WriteAsJsonAsync(response.Results);
-        }
-
-
-        /// <summary>
-        /// Routes the <see cref="TerminalRequest"/> via HTTP.
-        /// </summary>
-        /// <param name="httpContext">The HTTP context containing the request.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        /// <exception cref="TerminalException">Thrown when the terminal HTTP router is not running.</exception>
-        /// <remarks>
-        /// This method is designed to enqueue commands for processing by the terminal router's command queue. It
-        /// expects a valid HTTP request containing a JSON body with the command string. The method extracts the command
-        /// from the request body and adds it to the queue, associating it with the client information from the HTTP context.
-        ///
-        /// The method assumes that the terminal router is running and its command queue is initialized. If the queue is
-        /// not active, a <see cref="TerminalException"/> is thrown to indicate that the router is not ready to process
-        /// commands. Ensure the terminal router is correctly started before invoking this method.
-        ///
-        /// This method is primarily intended to be called by HTTP clients. It should not be invoked directly from
-        /// within the application without proper context, as it depends on HTTP infrastructure and client context information.
-        /// </remarks>
-        public async Task RouteSingleAsync(HttpContext httpContext)
-        {
-            // Read the JSON body from the HTTP request and deserialize it into the TerminalHttpRequest object.
-            TerminalRequest? request;
-            using (var reader = new StreamReader(httpContext.Request.Body))
-            {
-                var requestBody = await reader.ReadToEndAsync();
-                request = JsonSerializer.Deserialize<TerminalRequest>(requestBody);
-            }
-
-            if (request == null || string.IsNullOrWhiteSpace(request.Raw))
-            {
-                throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the HTTP request.");
-            }
-
-            if (!terminalRouter.IsRunning)
-            {
-                throw new TerminalException(TerminalErrors.ServerError, "The terminal HTTP router is not running.");
-            }
-
-            if (!terminalProcessor.IsProcessing)
-            {
-                throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
-            }
-
-            TerminalResponse response = await terminalProcessor.ProcessRequestAsync(request.Raw, terminalProcessor.NewUniqueId(), httpContext.Connection.RemoteIpAddress?.ToString() ?? "$unknown$");
-            await httpContext.Response.WriteAsJsonAsync(response.Results);
+            string? clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
+            TerminalOutput response = await terminalProcessor.ExecuteAsync(input, senderId: null, clientIp);
+            await httpContext.Response.WriteAsJsonAsync(response);
         }
 
         // Private fields to hold injected dependencies and state information.

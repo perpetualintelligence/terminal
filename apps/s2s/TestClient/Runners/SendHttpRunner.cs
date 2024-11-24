@@ -1,128 +1,103 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Runtime;
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
-    /// <summary>
-    /// Represents the runner for sending HTTP commands to the terminal server. This runner is part of the
-    /// OneImlx.Terminal framework and demonstrates how to send commands via HTTP using the terminal framework.
-    /// </summary>
     [CommandOwners("send")]
     [CommandDescriptor("http", "Send HTTP", "Send HTTP commands to the server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
     public class SendHttpRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SendHttpRunner"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration object to retrieve server information.</param>
-        public SendHttpRunner(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public SendHttpRunner(IConfiguration configuration, ITerminalConsole terminalConsole, IHttpClientFactory httpClientFactory)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.terminalConsole = terminalConsole ?? throw new ArgumentNullException(nameof(terminalConsole));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        /// <summary>
-        /// Executes the HTTP command runner. This method sends multiple HTTP POST requests to the terminal server.
-        /// </summary>
-        /// <param name="context">The context for the command runner execution.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
-            // Retrieve the server IP and port from the configuration.
-            string ip = configuration.GetValue<string>("testclient:testserver:ip")
-                        ?? throw new InvalidOperationException("The server IP address is missing.");
-            string port = configuration.GetValue<string>("testclient:testserver:port")
-                          ?? throw new InvalidOperationException("The server port is missing.");
-            string serverTemplate = "http://{0}:{1}";
-            string serverAddress = string.Format(serverTemplate, ip, port);
+            string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
+            string port = configuration.GetValue<string>("testclient:testserver:port") ?? throw new InvalidOperationException("Server port is missing.");
+            string serverAddress = $"http://{ip}:{port}";
 
-            // Create multiple tasks to send HTTP commands in parallel.
-            Task[] clientTasks = new Task[4];
-            for (int i = 0; i < clientTasks.Length; i++)
+            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "HTTP concurrent and asynchronous demo");
+
+            var clientTasks = new Task[5];
+            for (int idx = 0; idx < clientTasks.Length; idx++)
             {
-                clientTasks[i] = StartHttpClientAsync(serverAddress, context.StartContext.TerminalCancellationToken);
+                clientTasks[idx] = StartHttpClientAsync(serverAddress, idx, context.StartContext.TerminalCancellationToken);
             }
 
-            // Wait for all client tasks to complete.
             await Task.WhenAll(clientTasks);
-            Console.WriteLine("All HTTP client tasks completed successfully.");
+            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "HTTP client tasks completed successfully.");
             return new CommandRunnerResult();
         }
 
-        /// <summary>
-        /// Sends a batch of HTTP commands to the server. The commands are serialized and sent as a JSON request body.
-        /// </summary>
-        /// <param name="client">The <see cref="HttpClient"/> instance for making the HTTP request.</param>
-        /// <param name="serverAddress">The address of the server to send commands to.</param>
-        /// <param name="cancellationToken">The cancellation token to handle task cancellation.</param>
-        private async Task SendHttpCommandsAsync(HttpClient client, string serverAddress, CancellationToken cancellationToken)
+        private async Task SendHttpCommandsAsync(HttpClient client, int clientIndex, CancellationToken cToken)
         {
+            string[] cmdIds = { "cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6" };
+            string[] commands = { "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2" };
+
             try
             {
-                Console.WriteLine("Sending individual HTTP commands...");
-
-                // Array of commands to be sent to the server.
-                string[] commands =
-                [
-                    "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"
-                ];
-
-                // Iterate through each command and send it via HTTP POST.
-                foreach (var command in commands)
+                foreach (var (cmdId, command) in cmdIds.Zip(commands))
                 {
-                    // Send individual command to the server.
-                    var response = await client.SendSingleAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken);
-                    response.EnsureSuccessStatusCode(); // Ensure the request was successful.
-                    Console.WriteLine($"Request: {command}, Response: {await response.Content.ReadAsStringAsync(cancellationToken)}");
+                    TerminalInput single = TerminalInput.Single(cmdId, command);
+                    var output = await client.SendToTerminalAsync(single, cToken);
+
+                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={output?.Results[0] ?? "No Response"}");
                 }
 
-                // Send all commands in a single batch request.
-                Console.WriteLine("Sending commands as a batch...");
-                var batchResponse = await client.SendBatchAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteBatchDelimiter, cancellationToken);
-                batchResponse.EnsureSuccessStatusCode();
-                Console.WriteLine($"Batch sent. Response: {await batchResponse.Content.ReadAsStringAsync(cancellationToken)}");
+                string batchId = $"batch{clientIndex}";
+                TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
+                var batchOutput = await client.SendToTerminalAsync(batch, cToken);
+                for (int idx = 0; idx < batchOutput!.Input.Requests.Length; ++idx)
+                {
+                    var request = batchOutput.Input.Requests[idx];
+                    var result = batchOutput.Results[idx];
+                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
+                }
             }
             catch (HttpRequestException ex)
             {
-                // Log and handle HTTP-specific exceptions.
-                Console.WriteLine($"HTTP Error: {ex.Message}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] HTTP Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                // Catch and log general exceptions.
-                Console.WriteLine($"Error: {ex.Message}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] Error: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Starts an HTTP client and sends multiple HTTP requests asynchronously.
-        /// </summary>
-        /// <param name="serverAddress">The address of the server to send requests to.</param>
-        /// <param name="cancellationToken">The cancellation token to handle task cancellation.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task StartHttpClientAsync(string serverAddress, CancellationToken cancellationToken)
+        private async Task StartHttpClientAsync(string serverAddress, int clientIndex, CancellationToken cToken)
         {
+            using var client = httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(serverAddress);
+
             try
             {
-                HttpClient client = httpClientFactory.CreateClient();
-                client.BaseAddress = new Uri(serverAddress);
-                await SendHttpCommandsAsync(client, serverAddress, cancellationToken); // Send the HTTP commands.
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"HTTP client {clientIndex} initialized for {serverAddress}...");
+                await SendHttpCommandsAsync(client, clientIndex, cToken);
             }
             catch (Exception ex)
             {
-                // Log any exceptions that occur during the HTTP client operation.
-                Console.WriteLine($"Error during HTTP client operation: {ex.Message}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] {ex.Message}");
+            }
+            finally
+            {
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"HTTP client {clientIndex} disposed.");
             }
         }
 
-        // Private field to hold the configuration for retrieving server IP and port.
         private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly ITerminalConsole terminalConsole;
     }
 }

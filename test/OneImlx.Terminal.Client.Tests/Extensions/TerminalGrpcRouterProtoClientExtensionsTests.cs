@@ -5,12 +5,13 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Grpc.Core;
-using Moq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Grpc.Core;
+using Moq;
+using OneImlx.Terminal.Runtime;
 using Xunit;
 
 namespace OneImlx.Terminal.Client.Extensions
@@ -32,67 +33,40 @@ namespace OneImlx.Terminal.Client.Extensions
         }
 
         [Fact]
-        public async Task PostBatchToTerminalAsync_SendsBatchRequest_WithDelimiters_ReturnsResponse_AndCallsRouteCommandAsyncOnce()
+        public async Task SendToTerminalAsync_Sends_Input_As_Batch_Correctly()
         {
             // Arrange
+            var cmdIds = new[] { "id1", "id2", "id3" };
             var commands = new[] { "command1", "command2", "command3" };
-            var cmdDelimiter = ";";
-            var msgDelimiter = "|";
-            var expectedCommandString = "command1;command2;command3|";
 
             // Act
-            var response = await grpcClientMock.Object.SendBatchAsync(commands, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            TerminalInput input = TerminalInput.Batch("batch1", cmdIds, commands);
+            var response = await grpcClientMock.Object.SendToTerminalAsync(input, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
 
             // Validate the captured request with FluentAssertions
             capturedRequest.Should().NotBeNull();
-            capturedRequest!.Request.Should().Be(expectedCommandString); // Using FluentAssertions for validation
+            capturedRequest!.InputJson.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"command1\"},{\"id\":\"id2\",\"raw\":\"command2\"},{\"id\":\"id3\",\"raw\":\"command3\"}]}");
 
             // Ensure that RouteCommandAsync was called exactly once
             routeCommandCallCount.Should().Be(1); // Using FluentAssertions to verify the call count
         }
 
         [Fact]
-        public async Task PostSingleToTerminalAsync_WithDelimiters_SendsRequest_ReturnsResponse_AndCallsRouteCommandAsyncOnce()
+        public async Task SendToTerminalAsync_Sends_Input_As_Single_Correctly()
         {
-            // Arrange
-            var command = "test-command";
-            var cmdDelimiter = ";";
-            var msgDelimiter = "|";
-            var expectedCommandString = "test-command|";
-
             // Act
-            var response = await grpcClientMock.Object.SendSingleAsync(command, cmdDelimiter, msgDelimiter, CancellationToken.None);
+            TerminalInput input = TerminalInput.Single("id1", raw: "test-command");
+            var response = await grpcClientMock.Object.SendToTerminalAsync(input, CancellationToken.None);
 
             // Assert
             response.Should().NotBeNull();
 
             // Validate the captured request with FluentAssertions
             capturedRequest.Should().NotBeNull();
-            capturedRequest!.Request.Should().Be(expectedCommandString); // Using FluentAssertions for validation
-
-            // Ensure that RouteCommandAsync was called exactly once
-            routeCommandCallCount.Should().Be(1); // Using FluentAssertions to verify the call count
-        }
-
-        [Fact]
-        public async Task PostSingleToTerminalAsync_WithoutDelimiters_SendsRequest_ReturnsResponse_AndCallsRouteCommandAsyncOnce()
-        {
-            // Arrange
-            var command = "test-command";
-            var expectedCommandString = "test-command";
-
-            // Act
-            var response = await grpcClientMock.Object.SendSingleAsync(command, CancellationToken.None);
-
-            // Assert
-            response.Should().NotBeNull();
-
-            // Validate the captured request with FluentAssertions
-            capturedRequest.Should().NotBeNull();
-            capturedRequest!.Request.Should().Be(expectedCommandString); // Using FluentAssertions for validation
+            capturedRequest!.InputJson.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"raw\":\"test-command\"}]}");
 
             // Ensure that RouteCommandAsync was called exactly once
             routeCommandCallCount.Should().Be(1); // Using FluentAssertions to verify the call count

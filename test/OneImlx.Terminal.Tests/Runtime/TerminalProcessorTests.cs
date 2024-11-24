@@ -60,7 +60,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task Add_Without_Processing_And_Background_Throws()
         {
             // Add with sender endpoint and sender id
-            Func<Task> act = async () => await _terminalProcessor.AddRequestAsync("command1|", "sender_1", "sender_endpoint_1");
+            Func<Task> act = async () => await _terminalProcessor.AddAsync("command1|", "sender_1", "sender_endpoint_1");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The terminal processor is not running.");
@@ -89,7 +89,7 @@ namespace OneImlx.Terminal.Runtime
             {
                 ++idx;
                 string batch = TerminalServices.CreateBatch(_mockOptions.Object.Value, [$"command_{idx}_0", $"command_{idx}_1", $"command_{idx}_2"]);
-                return _terminalProcessor.AddRequestAsync(batch, "sender", "endpoint");
+                return _terminalProcessor.AddAsync(batch, "sender", "endpoint");
             });
             await Task.WhenAll(tasks);
 
@@ -106,7 +106,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            await _terminalProcessor.AddRequestAsync("command1|", "sender", "endpoint");
+            await _terminalProcessor.AddAsync("command1|", "sender", "endpoint");
             await Task.Delay(500);
 
             // Assert exception handler was called
@@ -125,7 +125,7 @@ namespace OneImlx.Terminal.Runtime
                 .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
 
             // Act
-            await _terminalProcessor.AddRequestAsync("command1", "sender", "endpoint");
+            await _terminalProcessor.AddAsync("command1", "sender", "endpoint");
             await Task.Delay(500);
 
             // Assert only a single command was processed
@@ -171,16 +171,16 @@ namespace OneImlx.Terminal.Runtime
             var batch10 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands10.ToArray());
 
             // Add all batches asynchronously
-            Task addBatch1 = _terminalProcessor.AddRequestAsync(batch1, "sender1", "endpoint1");
-            Task addBatch2 = _terminalProcessor.AddRequestAsync(batch2, "sender2", "endpoint2");
-            Task addBatch3 = _terminalProcessor.AddRequestAsync(batch3, "sender3", "endpoint3");
-            Task addBatch4 = _terminalProcessor.AddRequestAsync(batch4, "sender4", "endpoint4");
-            Task addBatch5 = _terminalProcessor.AddRequestAsync(batch5, "sender5", "endpoint5");
-            Task addBatch6 = _terminalProcessor.AddRequestAsync(batch6, "sender6", "endpoint6");
-            Task addBatch7 = _terminalProcessor.AddRequestAsync(batch7, "sender7", "endpoint7");
-            Task addBatch8 = _terminalProcessor.AddRequestAsync(batch8, "sender8", "endpoint8");
-            Task addBatch9 = _terminalProcessor.AddRequestAsync(batch9, "sender9", "endpoint9");
-            Task addBatch10 = _terminalProcessor.AddRequestAsync(batch10, "sender10", "endpoint10");
+            Task addBatch1 = _terminalProcessor.AddAsync(batch1, "sender1", "endpoint1");
+            Task addBatch2 = _terminalProcessor.AddAsync(batch2, "sender2", "endpoint2");
+            Task addBatch3 = _terminalProcessor.AddAsync(batch3, "sender3", "endpoint3");
+            Task addBatch4 = _terminalProcessor.AddAsync(batch4, "sender4", "endpoint4");
+            Task addBatch5 = _terminalProcessor.AddAsync(batch5, "sender5", "endpoint5");
+            Task addBatch6 = _terminalProcessor.AddAsync(batch6, "sender6", "endpoint6");
+            Task addBatch7 = _terminalProcessor.AddAsync(batch7, "sender7", "endpoint7");
+            Task addBatch8 = _terminalProcessor.AddAsync(batch8, "sender8", "endpoint8");
+            Task addBatch9 = _terminalProcessor.AddAsync(batch9, "sender9", "endpoint9");
+            Task addBatch10 = _terminalProcessor.AddAsync(batch10, "sender10", "endpoint10");
 
             // Wait for all batches to be processed
             await Task.WhenAll(addBatch1, addBatch2, addBatch3, addBatch4, addBatch5, addBatch6, addBatch7, addBatch8, addBatch9, addBatch10);
@@ -224,7 +224,7 @@ namespace OneImlx.Terminal.Runtime
                 .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
                 .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
 
-            await _terminalProcessor.AddRequestAsync(message, "sender", "endpoint");
+            await _terminalProcessor.AddAsync(message, "sender", "endpoint");
 
             await _terminalProcessor.StopProcessingAsync(5000);
             routedCommands.Should().HaveCount(6);
@@ -254,7 +254,7 @@ namespace OneImlx.Terminal.Runtime
             // Send batch of 100000 commands by using TerminalServices
             HashSet<string> allCommands = new(Enumerable.Range(0, 100000).Select(i => $"command{i}"));
             var longBatch = TerminalServices.CreateBatch(_mockOptions.Object.Value, allCommands.ToArray());
-            await _terminalProcessor.AddRequestAsync(longBatch, "sender", "endpoint");
+            await _terminalProcessor.AddAsync(longBatch, "sender", "endpoint");
 
             await _terminalProcessor.StopProcessingAsync(5000);
 
@@ -292,7 +292,7 @@ namespace OneImlx.Terminal.Runtime
             int idx = 1;
             var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
             {
-                return _terminalProcessor.AddRequestAsync($"command{idx++}", "sender", "endpoint");
+                return _terminalProcessor.AddAsync($"command{idx++}", "sender", "endpoint");
             });
             await Task.WhenAll(tasks);
 
@@ -309,13 +309,13 @@ namespace OneImlx.Terminal.Runtime
         public async Task AddAsync_Throws_On_EmptyBatch(string? batch)
         {
             _mockOptions.Object.Value.Router.EnableBatch = false;
-            Func<Task> act = () => _terminalProcessor.AddRequestAsync(batch!, "sender", "endpoint");
+            Func<Task> act = () => _terminalProcessor.AddAsync(batch!, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The raw command or batch cannot be empty.");
 
             _mockOptions.Object.Value.Router.EnableBatch = true;
-            act = () => _terminalProcessor.AddRequestAsync(batch!, "sender", "endpoint");
+            act = () => _terminalProcessor.AddAsync(batch!, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The raw command or batch cannot be empty.");
@@ -331,7 +331,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            Func<Task> act = () => _terminalProcessor.AddRequestAsync("c", "sender", "endpoint");
+            Func<Task> act = () => _terminalProcessor.AddAsync("c", "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The raw batch does not end with the batch delimiter.");
@@ -358,7 +358,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            Func<Task> act = () => _terminalProcessor.AddRequestAsync(batch, "sender", "endpoint");
+            Func<Task> act = () => _terminalProcessor.AddAsync(batch, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The raw batch must have a single delimiter at the end, not missing or placed elsewhere.");
@@ -373,7 +373,7 @@ namespace OneImlx.Terminal.Runtime
             _mockOptions.Object.Value.Router.MaxLength = 1000;
 
             var longBatch = new string('A', 1001);
-            Func<Task> act = () => _terminalProcessor.AddRequestAsync(longBatch, "sender", "endpoint");
+            Func<Task> act = () => _terminalProcessor.AddAsync(longBatch, "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_configuration")
                 .WithErrorDescription("The raw command or batch length exceeds configured maximum. max_length=1000");
@@ -464,7 +464,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            var response = await _terminalProcessor.ProcessRequestAsync("command1,command2,command3|", "sender_1", "sender_endpoint_1");
+            var response = await _terminalProcessor.ProcessAsync("command1,command2,command3|", "sender_1", "sender_endpoint_1");
 
             // Assert route context and response
             routeContext.Should().NotBeNull();
@@ -637,7 +637,7 @@ namespace OneImlx.Terminal.Runtime
             _mockExceptionHandler.Setup(e => e.HandleExceptionAsync(It.IsAny<TerminalExceptionHandlerContext>())).Callback<TerminalExceptionHandlerContext>(c => handeledException = c.Exception);
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            await _terminalProcessor.AddRequestAsync("command1|", "sender", "endpoint");
+            await _terminalProcessor.AddAsync("command1|", "sender", "endpoint");
             await Task.Delay(500);
 
             handeledException.Should().NotBeNull();
@@ -653,7 +653,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Add with sender endpoint and sender id
-            await _terminalProcessor.AddRequestAsync("command1|", "sender_1", "sender_endpoint_1");
+            await _terminalProcessor.AddAsync("command1|", "sender_1", "sender_endpoint_1");
             await Task.Delay(500);
 
             routeContext.Should().NotBeNull();
@@ -668,7 +668,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Add without sender endpoint and sender id
             routeContext = null;
-            await _terminalProcessor.AddRequestAsync("command2|", null, null);
+            await _terminalProcessor.AddAsync("command2|", null, null);
             await Task.Delay(500);
 
             routeContext.Should().NotBeNull();
@@ -781,7 +781,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act: Stream data in chunks to the processor
             byte[] bytes = _textHandler.Encoding.GetBytes("command1");
-            await _terminalProcessor.StreamRequestAsync(bytes, senderId, senderEndpoint);
+            await _terminalProcessor.StreamAsync(bytes, senderId, senderEndpoint);
 
             // Allow time for processing to complete
             await Task.Delay(100);
@@ -823,7 +823,7 @@ namespace OneImlx.Terminal.Runtime
             // Act: Stream data in chunks to the processor
             foreach (var chunk in chunks)
             {
-                await _terminalProcessor.StreamRequestAsync(chunk, senderId, senderEndpoint);
+                await _terminalProcessor.StreamAsync(chunk, senderId, senderEndpoint);
             }
 
             // Allow time for processing to complete
@@ -856,7 +856,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act: Stream data in chunks to the processor
             byte[] bytes = _textHandler.Encoding.GetBytes("command1|command2|command3");
-            await _terminalProcessor.StreamRequestAsync(bytes, senderId, senderEndpoint);
+            await _terminalProcessor.StreamAsync(bytes, senderId, senderEndpoint);
 
             // Allow time for processing to complete
             await Task.Delay(100);
@@ -890,7 +890,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act: Stream data in chunks to the processor
             byte[] bytes = _textHandler.Encoding.GetBytes("command1,command2,command3|command4,command5,command6|command7");
-            await _terminalProcessor.StreamRequestAsync(bytes, senderId, senderEndpoint);
+            await _terminalProcessor.StreamAsync(bytes, senderId, senderEndpoint);
 
             // Allow time for processing to complete
             await Task.Delay(100);
@@ -923,7 +923,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act: Stream data in chunks to the processor
             byte[] bytes = _textHandler.Encoding.GetBytes("command1|");
-            await _terminalProcessor.StreamRequestAsync(bytes, senderId, senderEndpoint);
+            await _terminalProcessor.StreamAsync(bytes, senderId, senderEndpoint);
 
             // Allow time for processing to complete
             await Task.Delay(100);

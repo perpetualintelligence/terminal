@@ -17,11 +17,12 @@ service TerminalGrpcRouterProto {
 
 // The terminal router command request.
 message TerminalGrpcRouterProtoInput {
-    // The raw command or a batch of commands.
-    string Request = 1;
+    // The terminal input.
+    string InputJson = 1;
 }
 
 // The terminal router command request.
 message TerminalGrpcRouterProtoOutput {
-    string Response = 1;
+    // The terminal output.
+    string OutputJson = 1;
 }
