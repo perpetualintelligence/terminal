@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Apps.TestServer
         // Configure services based on the application settings. Developers can modify or add additional services if needed.
         private static void ConfigureServicesDelegate(IConfiguration configuration, IServiceCollection services)
         {
-            services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
+            services.Configure<ConsoleLifetimeOptions>(static options => options.SuppressStatusMessages = true);
             ConfigureTerminalServices(configuration, services);
         }
 
@@ -63,8 +63,8 @@ namespace OneImlx.Terminal.Apps.TestServer
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json"; // License file path.
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo; // License plan to use (Demo in this case).
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment; // Set deployment type.
-                    options.Router.RemoteMessageMaxLength = 64000; // Set max length for remote messages.
-                    options.Router.EnableRemoteDelimiters = true; // Enable remote delimiters for message processing.
+                    options.Router.MaxLength = 64000; // Set max length for remote messages.
+                    options.Router.EnableResponses = true;
                     options.Router.Caret = "> "; // Caret for the terminal.
                 });
 

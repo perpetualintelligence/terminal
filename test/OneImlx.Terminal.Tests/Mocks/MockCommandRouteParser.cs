@@ -7,21 +7,22 @@
 
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
-    internal class MockCommandRouteParser : ICommandRouteParser
+    internal class MockCommandRouteParser : ICommandRequestParser
     {
-        public CommandRoute PassedCommandRoute { get; private set; } = null!;
+        public TerminalRequest PassedCommandRoute { get; private set; } = null!;
 
         public bool Called { get; private set; }
 
-        public Task<ParsedCommand> ParseRouteAsync(CommandRoute commandRoute)
+        public Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
         {
-            PassedCommandRoute = commandRoute;
+            PassedCommandRoute = request;
             Called = true;
-            return Task.FromResult(new ParsedCommand(commandRoute, new Command(new CommandDescriptor("id", "name", "description", CommandType.SubCommand, CommandFlags.None)), Root.Default()));
+            return Task.FromResult(new ParsedCommand(request, new Command(new CommandDescriptor("id", "name", "description", CommandType.SubCommand, CommandFlags.None)), Root.Default()));
         }
     }
 }

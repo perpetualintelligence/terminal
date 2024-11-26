@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void CustomEdition_NoClaimsShouldError()
         {
-            Action act = () => LicensePrice.Create(TerminalLicensePlans.Custom);
+            Action act = static () => LicensePrice.Create(TerminalLicensePlans.Custom);
             act.Should().Throw<TerminalException>("The pricing for the custom SaaS plan requires a custom claims. saas_plan=urn:oneimlx:lic:plan:custom");
         }
 

@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using OneImlx.Terminal.Configuration.Options;
 
@@ -23,55 +22,27 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         public static string DecodeLicenseContents(string encodedLicenseContents)
         {
-            // The license contents are always ASCII.
             return Encoding.ASCII.GetString(Convert.FromBase64String(encodedLicenseContents));
         }
 
         /// <summary>
-        /// Constructs a delimited message from specified raw command strings using the settings defined in terminal options.
+        /// Delimits the byte array with the specified delimiter.
         /// </summary>
-        /// <param name="commands">The raw command strings to process with the message delimiter.</param>
-        /// <param name="terminalOptions">The terminal options that include the delimiter settings.</param>
-        /// <returns>A message string with added delimiters.</returns>
-        /// <remarks>
-        /// This method verifies that each command string ends with the
-        /// <see cref="RouterOptions.RemoteCommandDelimiter"/>. It appends the delimiter if absent and combines the
-        /// strings into a single message using the <see cref="RouterOptions.RemoteMessageDelimiter"/>.
-        /// </remarks>
-        /// <seealso cref="DelimitedMessage(string, string, string[])"/>
-        public static string DelimitedMessage(TerminalOptions terminalOptions, params string[] commands)
+        /// <param name="bytes">The byte array to delimit.</param>
+        /// <param name="delimiter">The delimiter byte.</param>
+        /// <returns></returns>
+        public static byte[] DelimitBytes(byte[] bytes, byte delimiter)
         {
-            return DelimitedMessage(terminalOptions.Router.RemoteCommandDelimiter, terminalOptions.Router.RemoteMessageDelimiter, commands);
-        }
-
-        /// <summary>
-        /// Constructs a delimited message from specified raw strings using provided command and message delimiters.
-        /// </summary>
-        /// <param name="commands">The raw strings to append with a command delimiter.</param>
-        /// <param name="cmdDelimiter">The command delimiter to use.</param>
-        /// <param name="msgDelimiter">The message delimiter to use.</param>
-        /// <returns>A delimited message ready for transmission or processing.</returns>
-        /// <remarks>
-        /// This method checks each command string for the presence of the command delimiter and appends it if missing.
-        /// It then combines these strings into a single message.
-        /// </remarks>
-        /// <seealso cref="DelimitedMessage(TerminalOptions, string[])"/>
-        public static string DelimitedMessage(string cmdDelimiter, string msgDelimiter, params string[] commands)
-        {
-            StringBuilder delimitedMessage = new();
-            foreach (string command in commands)
+            if (bytes == null || bytes.Length == 0)
             {
-                if (!command.EndsWith(cmdDelimiter))
-                {
-                    delimitedMessage.Append(command).Append(cmdDelimiter);
-                }
-                else
-                {
-                    delimitedMessage.Append(command);
-                }
+                throw new ArgumentException("Byte array cannot be null or empty.", nameof(bytes));
             }
 
-            return delimitedMessage.Append(msgDelimiter).ToString();
+            byte[] delimitedBytes = new byte[bytes.Length + 1];
+            Array.Copy(bytes, delimitedBytes, bytes.Length);
+            delimitedBytes[bytes.Length] = delimiter;
+
+            return delimitedBytes;
         }
 
         /// <summary>

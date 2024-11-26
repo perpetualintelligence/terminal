@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -19,11 +19,9 @@ namespace OneImlx.Terminal.Configuration.Options
 
             options.Caret.Should().Be(">");
             options.Timeout.Should().Be(25000);
-            options.RemoteMessageMaxLength.Should().Be(1024);
-            options.MaxRemoteClients.Should().Be(5);
-            options.EnableRemoteDelimiters.Should().BeNull();
-            options.RemoteMessageDelimiter.Should().Be("$m$");
-            options.RemoteCommandDelimiter.Should().Be("$c$");
+            options.MaxLength.Should().Be(1024);
+            options.MaxClients.Should().Be(5);
+            options.EnableResponses.Should().BeFalse();
         }
     }
 }

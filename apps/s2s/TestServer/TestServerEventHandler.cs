@@ -10,6 +10,7 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Events;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestServer
@@ -21,7 +22,7 @@ namespace OneImlx.Terminal.Apps.TestServer
             throw new System.NotImplementedException();
         }
 
-        public Task AfterCommandRouteAsync(CommandRoute commandRoute, Command? command, CommandRouterResult? result)
+        public Task AfterCommandRouteAsync(TerminalRequest request, Command? command, CommandRouterResult? result)
         {
             throw new System.NotImplementedException();
         }
@@ -36,7 +37,7 @@ namespace OneImlx.Terminal.Apps.TestServer
             throw new System.NotImplementedException();
         }
 
-        public Task BeforeCommandRouteAsync(CommandRoute commandRoute)
+        public Task BeforeCommandRouteAsync(TerminalRequest request)
         {
             throw new System.NotImplementedException();
         }

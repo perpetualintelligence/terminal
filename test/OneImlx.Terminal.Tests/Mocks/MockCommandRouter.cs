@@ -53,8 +53,8 @@ namespace OneImlx.Terminal.Mocks
             {
                 // Your critical section code here
                 RouteCalled = true;
-                RawCommandString = context.Route.Raw;
-                MultipleRawString.Add(context.Route.Raw);
+                RawCommandString = context.Request.Raw;
+                MultipleRawString.Add(context.Request.Raw);
                 RouteCounter += 1;
 
                 if (routeDelay != null)
@@ -74,7 +74,7 @@ namespace OneImlx.Terminal.Mocks
                     throw new TerminalException(explicitError);
                 }
 
-                ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), context.Route);
+                ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), context.Request);
 
                 return ReturnedRouterResult;
             }

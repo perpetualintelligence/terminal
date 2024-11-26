@@ -1,12 +1,11 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using System;
-using OneImlx.Terminal.Commands;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -19,11 +18,11 @@ namespace OneImlx.Terminal.Runtime
         /// Initialize a new instance.
         /// </summary>
         /// <param name="exception">The exception.</param>
-        /// <param name="commandRoute">The command route.</param>
-        public TerminalExceptionHandlerContext(Exception exception, CommandRoute? commandRoute = null)
+        /// <param name="request">The command request.</param>
+        public TerminalExceptionHandlerContext(Exception exception, TerminalRequest? request = null)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
-            Route = commandRoute;
+            Request = request;
         }
 
         /// <summary>
@@ -32,8 +31,8 @@ namespace OneImlx.Terminal.Runtime
         public Exception Exception { get; }
 
         /// <summary>
-        /// The command route.
+        /// The command request.
         /// </summary>
-        public CommandRoute? Route { get; }
+        public TerminalRequest? Request { get; }
     }
 }

@@ -12,9 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace OneImlx.Terminal.AspNetCore.Extensions
 {
     /// <summary>
-    /// Extension methods for mapping terminal HTTP commands in ASP.NET Core applications.
+    /// The <see cref="IEndpointRouteBuilder"/> extension methods.
     /// </summary>
-    public static class TerminalHttpAppExtensions
+    public static class EndpointRouteBuilderExtensions
     {
         /// <summary>
         /// Maps the terminal HTTP commands endpoint to handle incoming HTTP requests for the terminal server.
@@ -27,14 +27,15 @@ namespace OneImlx.Terminal.AspNetCore.Extensions
         /// </remarks>
         public static IEndpointConventionBuilder MapTerminalHttp(this IEndpointRouteBuilder endpoints)
         {
-            return endpoints.MapPost("/oneimlx/terminal/httprouter", async context =>
+            // Batch
+            return endpoints.MapPost("/oneimlx/terminal/httprouter", static async context =>
             {
                 // Resolve TerminalHttpMapService from DI and process the command
                 var terminalHttpMapService = context.RequestServices.GetRequiredService<TerminalHttpMapService>();
 
-                // Route the command received from the HTTP request to the terminal server. The command gets added to
+                // Request the command received from the HTTP request to the terminal server. The command gets added to
                 // the command queue and is processed by the terminal server's command loop.
-                await terminalHttpMapService.RouteCommandAsync(context);
+                await terminalHttpMapService.RouteAsync(context);
             });
         }
     }

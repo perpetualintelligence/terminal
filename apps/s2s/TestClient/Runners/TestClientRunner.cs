@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
         public override Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
         {
             terminalConsole.WriteLineAsync("Test client");
-            return Task.FromResult(CommandRunnerResult.NoProcessing);
+            return Task.FromResult(new CommandRunnerResult());
         }
 
         private readonly ILogger<TestClientRunner> logger;

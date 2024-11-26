@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.Hosting
             IEnumerable<ValidationAttribute> attributes = lsp.GetServices<ValidationAttribute>();
             if (attributes.Any())
             {
-                optionDescriptor.ValueCheckers = attributes.Select(e => new DataValidationValueChecker<Option>(e));
+                optionDescriptor.ValueCheckers = attributes.Select(static e => new DataValidationValueChecker<Option>(e));
             }
 
             commandBuilder.Services.AddSingleton(optionDescriptor);

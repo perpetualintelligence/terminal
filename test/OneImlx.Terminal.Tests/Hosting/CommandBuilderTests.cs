@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Hosting
         {
             // Begin with no command
             TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ServiceDescriptor? serviceDescriptor = terminalBuilder.Services.FirstOrDefault(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            ServiceDescriptor? serviceDescriptor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             serviceDescriptor.Should().BeNull();
 
             // Add command to local
@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Hosting
             terminalBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
 
             // Build adds to global
-            serviceDescriptor = terminalBuilder.Services.First(e => e.ServiceType.Equals(typeof(CommandDescriptor)));
+            serviceDescriptor = terminalBuilder.Services.First(static e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             serviceDescriptor.ImplementationType.Should().BeNull();
             CommandDescriptor instance = (CommandDescriptor)serviceDescriptor.ImplementationInstance!;

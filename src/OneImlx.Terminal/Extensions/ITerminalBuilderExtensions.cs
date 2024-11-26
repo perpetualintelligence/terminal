@@ -1,5 +1,5 @@
 /*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -55,15 +55,15 @@ namespace OneImlx.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command parser type.</typeparam>
-        /// <typeparam name="TParser">The command route parser type.</typeparam>
+        /// <typeparam name="TParser">The command request parser type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandParser<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandParser where TParser : class, ICommandRouteParser
+        public static ITerminalBuilder AddCommandParser<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandParser where TParser : class, ICommandRequestParser
         {
             // Add command parser
             builder.Services.AddTransient<ICommandParser, TCommand>();
 
             // Add option parser
-            builder.Services.AddTransient<ICommandRouteParser, TParser>();
+            builder.Services.AddTransient<ICommandRequestParser, TParser>();
 
             return builder;
         }
@@ -110,7 +110,7 @@ namespace OneImlx.Terminal.Extensions
         {
             // Add options.
             builder.Services.AddOptions();
-            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TerminalOptions>>().Value);
+            builder.Services.AddSingleton(static resolver => resolver.GetRequiredService<IOptions<TerminalOptions>>().Value);
 
             // Add options checker
             builder.Services.AddSingleton<IConfigurationOptionsChecker, ConfigurationOptionsChecker>();
@@ -161,7 +161,7 @@ namespace OneImlx.Terminal.Extensions
         public static ITerminalBuilder AddDeclarativeAssembly(this ITerminalBuilder builder, Assembly assembly)
         {
             IEnumerable<Type> declarativeTypes = assembly.GetTypes()
-                .Where(e => typeof(IDeclarativeRunner).IsAssignableFrom(e));
+                .Where(static e => typeof(IDeclarativeRunner).IsAssignableFrom(e));
 
             foreach (Type type in declarativeTypes)
             {
@@ -295,6 +295,19 @@ namespace OneImlx.Terminal.Extensions
         {
             builder.Services.AddTransient<IDataTypeMapper<Option>, TMapper>();
             builder.Services.AddTransient<IOptionChecker, TChecker>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="ITerminalProcessor"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <typeparam name="TTerminalProcessor">The terminal processor type.</typeparam>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddProcessor<TTerminalProcessor>(this ITerminalBuilder builder)
+            where TTerminalProcessor : class, ITerminalProcessor
+        {
+            builder.Services.AddSingleton<ITerminalProcessor, TTerminalProcessor>();
             return builder;
         }
 

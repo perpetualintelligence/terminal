@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void CustomClaims_ShouldBeDecoratedWith_JsonConverterAttribute()
         {
-            typeof(LicenseClaims).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
+            typeof(LicenseClaims).GetProperty("Custom").Should().BeDecoratedWith<JsonConverterAttribute>(static a => a.ConverterType == typeof(DictionaryStringObjectPrimitiveJsonConverter));
         }
 
         [Fact]

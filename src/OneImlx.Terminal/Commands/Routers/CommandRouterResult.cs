@@ -12,6 +12,7 @@
 */
 
 using OneImlx.Terminal.Commands.Handlers;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Routers
 {
@@ -26,19 +27,19 @@ namespace OneImlx.Terminal.Commands.Routers
         public CommandHandlerResult HandlerResult { get; }
 
         /// <summary>
-        /// The command route.
+        /// The command request.
         /// </summary>
-        public CommandRoute Route { get; }
+        public TerminalRequest Request { get; }
 
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="handlerResult">The handler result.</param>
-        /// <param name="route">The command route.</param>
-        public CommandRouterResult(CommandHandlerResult handlerResult, CommandRoute route)
+        /// <param name="request">The command request.</param>
+        public CommandRouterResult(CommandHandlerResult handlerResult, TerminalRequest request)
         {
             HandlerResult = handlerResult;
-            Route = route;
+            Request = request;
         }
     }
 }

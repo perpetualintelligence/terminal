@@ -1,62 +1,71 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
 using System;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace OneImlx.Terminal.Commands.Runners
 {
     /// <summary>
-    /// The command runner result.
+    /// Represents the result of a command runner.
     /// </summary>
-    public class CommandRunnerResult : IAsyncDisposable
+    public class CommandRunnerResult
     {
         /// <summary>
-        /// Determines whether the result is disposed.
+        /// Initializes a new instance of the <see cref="CommandRunnerResult"/> class.
         /// </summary>
-        public bool IsDisposed { get; protected set; }
-
-        /// <summary>
-        /// Determines whether the result is processed.
-        /// </summary>
-        public bool IsProcessed { get; protected set; }
-
-        /// <summary>
-        /// Creates a default runner result that does not perform any additional processing.
-        /// </summary>
-        public static CommandRunnerResult NoProcessing => new();
-
-        /// <summary>
-        /// Disposes the managed resources.
-        /// </summary>
-        /// <remarks>
-        /// Derived implementation should call base class implementation to mark the result as disposed, see <see cref="IsDisposed"/>.
-        /// </remarks>
-        public virtual ValueTask DisposeAsync()
+        public CommandRunnerResult()
         {
-            IsDisposed = true;
-            return new ValueTask();
         }
 
         /// <summary>
-        /// Processes the runner result asynchronously.
+        /// Initializes a new instance of the <see cref="CommandRunnerResult"/> class with a specified value.
         /// </summary>
-        /// <param name="context">The runner context.</param>
-        /// <param name="logger">The logger.</param>
-        /// <remarks>
-        /// Derived implementation should call base class implementation to mark the result as processed, see <see cref="IsProcessed"/>.
-        /// </remarks>
-        public virtual Task ProcessAsync(CommandRunnerContext context, ILogger? logger = null)
+        /// <param name="value">The result value of the command.</param>
+        public CommandRunnerResult(object value)
         {
-            logger?.LogDebug("Process runner result. command={0}", context.Command.Id);
-            
-            IsProcessed = true;
-            return Task.CompletedTask;
+            this.value = value ?? throw new ArgumentNullException(nameof(value), "Value cannot be null.");
         }
+
+        /// <summary>
+        /// Indicates whether the result has a value.
+        /// </summary>
+        public bool HasValue => value != null;
+
+        /// <summary>
+        /// Gets the value of the result.
+        /// </summary>
+        public object Value
+        {
+            get
+            {
+                if (value is null)
+                {
+                    throw new InvalidOperationException("The value is not set.");
+                }
+                return value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the value as the specified type.
+        /// </summary>
+        /// <typeparam name="TValue">The type to cast the value to.</typeparam>
+        /// <returns>The value cast to the specified type.</returns>
+        /// <exception cref="InvalidCastException">Thrown if the value cannot be cast to the specified type.</exception>
+        public TValue As<TValue>()
+        {
+            if (value is null)
+            {
+                throw new InvalidOperationException("The value is not set.");
+            }
+            return (TValue)value;
+        }
+
+        private readonly object? value;
     }
 }

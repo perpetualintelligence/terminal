@@ -1,14 +1,14 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
-using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Runtime;
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -16,8 +16,10 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
     [CommandDescriptor("udp", "Send UDP", "Send UDP commands to the server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
     public class SendUdpRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
-        public SendUdpRunner(IConfiguration configuration)
+        public SendUdpRunner(ITerminalTextHandler terminalTextHandler, ITerminalConsole terminalConsole, IConfiguration configuration)
         {
+            this.terminalTextHandler = terminalTextHandler;
+            this.terminalConsole = terminalConsole;
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
@@ -28,67 +30,66 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             int port = configuration.GetValue<int?>("testclient:testserver:port")
                            ?? throw new InvalidOperationException("Server port is missing or invalid.");
 
-            Task[] clientTasks =
-            [
-                StartClientAsync(server, port, context.StartContext.TerminalCancellationToken),
-                StartClientAsync(server, port, context.StartContext.TerminalCancellationToken),
-                StartClientAsync(server, port, context.StartContext.TerminalCancellationToken),
-                StartClientAsync(server, port, context.StartContext.TerminalCancellationToken)
-            ];
+            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "UDP concurrent and asynchronous demo");
+
+            var clientTasks = new Task[5];
+            for (int idx = 0; idx < clientTasks.Length; idx++)
+            {
+                clientTasks[idx] = StartClientAsync(server, port, idx, context.StartContext.TerminalCancellationToken);
+            }
 
             await Task.WhenAll(clientTasks);
-            Console.WriteLine("All UDP client tasks completed.");
-            return CommandRunnerResult.NoProcessing;
+            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "UDP client tasks completed successfully.");
+            return new CommandRunnerResult();
         }
 
-        private async Task SendCommandsAsync(UdpClient udpClient, IPEndPoint remoteEndPoint, CancellationToken cToken)
+        private async Task SendCommandsAsync(UdpClient udpClient, IPEndPoint remoteEndPoint, int clientIndex, CancellationToken cToken)
         {
+            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6"];
+            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"];
+
             try
             {
-                string[] commands =
-                [
-                    "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"
-                ];
-
-                Console.WriteLine("Sending commands individually...");
-                foreach (string command in commands)
+                foreach (var (cmdId, command) in cmdIds.Zip(commands))
                 {
-                    await udpClient.SendSingleToTerminalAsync(command, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, Encoding.Unicode, remoteEndPoint, cToken);
-                    Console.WriteLine($"Command sent: {command}");
+                    TerminalInput single = TerminalInput.Single(cmdId, command);
+                    await udpClient.SendToTerminalAsync(single, TerminalIdentifiers.StreamDelimiter, remoteEndPoint, cToken);
+                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Sent");
                 }
 
-                // Send all commands as a batch
-                Console.WriteLine("Sending all commands as a batch...");
-                await udpClient.SendBatchToTerminalAsync(commands, TerminalIdentifiers.RemoteCommandDelimiter, TerminalIdentifiers.RemoteMessageDelimiter, Encoding.Unicode, remoteEndPoint, cToken);
-                Console.WriteLine("Batch of commands sent successfully.");
+                string batchId = $"batch{clientIndex}";
+                TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
+                await udpClient.SendToTerminalAsync(batch, TerminalIdentifiers.StreamDelimiter, remoteEndPoint, cToken);
+                await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" => Batch Sent");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during UDP send: {ex.Message}");
-            }
-            finally
-            {
-                udpClient.Dispose();
-                Console.WriteLine("UDP connection closed.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] Error: {ex.Message}");
             }
         }
 
-        private async Task StartClientAsync(string server, int port, CancellationToken cToken)
+        private async Task StartClientAsync(string server, int port, int clientIndex, CancellationToken cToken)
         {
             using var udpClient = new UdpClient();
             IPEndPoint remoteEndPoint = new(IPAddress.Parse(server), port);
 
             try
             {
-                Console.WriteLine("UDP client ready to send data.");
-                await SendCommandsAsync(udpClient, remoteEndPoint, cToken);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"UDP client {clientIndex} initialized for {server}:{port}...");
+                await SendCommandsAsync(udpClient, remoteEndPoint, clientIndex, cToken);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Client error: {ex.Message}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] Error: {ex.Message}");
+            }
+            finally
+            {
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"[Client {clientIndex}] Connection closed.");
             }
         }
 
         private readonly IConfiguration configuration;
+        private readonly ITerminalConsole terminalConsole;
+        private readonly ITerminalTextHandler terminalTextHandler;
     }
 }

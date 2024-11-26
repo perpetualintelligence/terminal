@@ -6,19 +6,20 @@
 */
 
 using System.Threading.Tasks;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// An abstraction to parse a command route.
+    /// An abstraction to parse a command request.
     /// </summary>
-    public interface ICommandRouteParser
+    public interface ICommandRequestParser
     {
         /// <summary>
-        /// Parses the command route asynchronously.
+        /// Parses the command request asynchronously.
         /// </summary>
-        /// <param name="commandRoute">The command route to parse.</param>
+        /// <param name="request">The command request to parse.</param>
         /// <returns></returns>
-        Task<ParsedCommand> ParseRouteAsync(CommandRoute commandRoute);
+        Task<ParsedCommand> ParseRequestAsync(TerminalRequest request);
     }
 }

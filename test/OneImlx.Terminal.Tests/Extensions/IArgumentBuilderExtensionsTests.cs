@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Extensions
         {
             var serviceCollection = new ServiceCollection();
             var mockBuilder = new Mock<IArgumentBuilder>();
-            mockBuilder.Setup(x => x.Services).Returns(serviceCollection);
+            mockBuilder.Setup(static x => x.Services).Returns(serviceCollection);
 
             // Ensure builder is returned
             var result = mockBuilder.Object.ValidationAttribute<MockValidationAttribute>();
@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Extensions
         {
             var serviceCollection = new ServiceCollection();
             var mockBuilder = new Mock<IArgumentBuilder>();
-            mockBuilder.Setup(x => x.Services).Returns(serviceCollection);
+            mockBuilder.Setup(static x => x.Services).Returns(serviceCollection);
 
             // Ensure builder is returned
             var result = mockBuilder.Object.ValidationAttribute<MockValidationAttribute>("test1", 123);

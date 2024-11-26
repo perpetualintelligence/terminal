@@ -6,6 +6,7 @@
 */
 
 using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Routers.Mocks
@@ -41,13 +42,13 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
                 {
                     // No error but no command descriptor
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                    return Task.FromResult(new CommandParserResult(new ParsedCommand(new CommandRoute("id1", "test1"), new Command(null), Root.Default())));
+                    return Task.FromResult(new CommandParserResult(new ParsedCommand(new TerminalRequest("id1", "test1"), new Command(null), Root.Default())));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 else
                 {
                     // all ok
-                    return Task.FromResult(new CommandParserResult(new ParsedCommand(new CommandRoute("id1", "test1"), new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), Root.Default())));
+                    return Task.FromResult(new CommandParserResult(new ParsedCommand(new TerminalRequest("id1", "test1"), new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), Root.Default())));
                 }
             }
         }

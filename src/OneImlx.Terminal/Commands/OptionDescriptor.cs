@@ -6,6 +6,7 @@
 */
 
 using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Runtime;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,7 +19,7 @@ namespace OneImlx.Terminal.Commands
     /// behavior. We also refer to options as command options or command flags.
     /// </summary>
     /// <seealso cref="Option"/>
-    /// <seealso cref="CommandRoute"/>
+    /// <seealso cref="TerminalRequest"/>
     /// <seealso cref="CommandDescriptor"/>
     public sealed class OptionDescriptor
     {
@@ -101,7 +102,7 @@ namespace OneImlx.Terminal.Commands
         {
             if (valueCheckers != null)
             {
-                if (valueCheckers.Any(e => e.GetRawType() == typeof(RequiredAttribute)))
+                if (valueCheckers.Any(static e => e.GetRawType() == typeof(RequiredAttribute)))
                 {
                     Flags |= OptionFlags.Required;
                 }

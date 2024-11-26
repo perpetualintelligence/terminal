@@ -7,6 +7,7 @@
 
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
@@ -21,7 +22,7 @@ namespace OneImlx.Terminal.Mocks
 
             var cIdt = new Commands.CommandDescriptor("testid", "testname", "desc", CommandType.SubCommand, CommandFlags.None);
             Command command = new(cIdt);
-            ParsedCommand extractedCommand = new(new CommandRoute("id1", "test"), command, Root.Default());
+            ParsedCommand extractedCommand = new(new TerminalRequest("id1", "test"), command, Root.Default());
             return Task.FromResult(new CommandParserResult(extractedCommand));
         }
     }

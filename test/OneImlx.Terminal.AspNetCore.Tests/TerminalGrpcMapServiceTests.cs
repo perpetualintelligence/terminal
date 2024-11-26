@@ -5,19 +5,19 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using FluentAssertions;
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
 using Moq;
-using OneImlx.Terminal.AspNetCore;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.AspNetCore
@@ -29,81 +29,85 @@ namespace OneImlx.Terminal.AspNetCore
             // Initialize the mocks for the TerminalRouter and Logger
             mockTerminalRouter = new Mock<ITerminalRouter<TerminalGrpcRouterContext>>();
             mockLogger = new Mock<ILogger<TerminalGrpcMapService>>();
+            mockProcessor = new Mock<ITerminalProcessor>();
+            terminalTokenSource = new CancellationTokenSource();
+            commandTokenSource = new CancellationTokenSource();
 
             // Create an instance of TerminalGrpcMapService with the mocked dependencies
-            terminalGrpcMapService = new TerminalGrpcMapService(mockTerminalRouter.Object, mockLogger.Object);
+            terminalGrpcMapService = new TerminalGrpcMapService(mockTerminalRouter.Object, mockProcessor.Object, mockLogger.Object);
 
             // Create a TestServerCallContext to simulate gRPC context with a "test_peer"
             testServerCallContext = new MockServerCallContext("test_peer");
         }
 
-        // Test case to validate that the command is processed successfully and enqueued in the queue
         [Fact]
-        public async Task RouteCommand_Should_Enqueue_Command_Successfully()
+        public async Task RouteCommand_Processes_Command_Successfully()
         {
-            // Arrange
-            var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
-
-            // Real command queue used for testing the behavior of enqueuing items
-            var mockCommandQueue = new TerminalRemoteMessageQueue(
+            // Real command queue used for testing the behavior of queuing items
+            var mockCommandQueue = new TerminalProcessor(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
-                new TerminalOptions(),
-                new TerminalGrpcRouterContext(new TerminalStartContext(TerminalStartMode.Grpc, default, default)),
-                Mock.Of<ILogger>());
+                Options.Create(new TerminalOptions()),
+                new TerminalAsciiTextHandler(),
+                Mock.Of<ILogger<TerminalProcessor>>());
 
-            // Setup the terminal router mock to return the real queue
-            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns(mockCommandQueue);
+            // Ensure the terminal router is running
+            mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
+            mockProcessor.Setup(x => x.IsProcessing).Returns(true);
+
+            TerminalInput terminalInput = TerminalInput.Single("id1", "test-command");
+            TerminalOutput? addedOutput = null;
+            mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInput>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<TerminalInput, string?, string?>((input, senderId, senderEndpoint) =>
+                {
+                    // Create and assign a mock response based on the input parameters
+                    addedOutput = new TerminalOutput(terminalInput, ["any"], senderId, senderEndpoint);
+                })
+                .ReturnsAsync(() => addedOutput!);
 
             // Act
-            mockCommandQueue.Count.Should().Be(0); // Ensure the queue is initially empty
+            addedOutput.Should().BeNull();
+            var input = new TerminalGrpcRouterProtoInput { InputJson = JsonSerializer.Serialize(terminalInput) };
             var response = await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
+            response.OutputJson.Should().Be("{\"input\":{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"raw\":\"test-command\"}]},\"results\":[\"any\"],\"sender_endpoint\":null,\"sender_id\":null}");
 
             // Assert
-            mockCommandQueue.Count.Should().Be(1); // Queue should have exactly one item
-            TerminalRemoteMessageItem[]? items = JsonSerializer.Deserialize<TerminalRemoteMessageItem[]>(response.MessageItemsJson);
-            items!.Should().HaveCount(1); // Ensure the response contains one item
+            addedOutput.Should().NotBeNull();
+            addedOutput!.Input.Requests.Should().HaveCount(1);
 
-            // Validate the properties of the enqueued item
-            TerminalRemoteMessageItem item = items.First();
-            item.CommandString.Should().Be("test-command");
-            item.SenderEndpoint.Should().Be("test_peer");
-            item.SenderId.Should().NotBeEmpty(); // SenderId should be generated
+            addedOutput.Input.Requests[0].Id.Should().Be("id1");
+            addedOutput.Input.Requests[0].Raw.Should().Be("test-command");
+            addedOutput.Input.BatchId.Should().BeNull();
+
+            addedOutput.Results.Should().HaveCount(1);
+            addedOutput.Results[0].Should().Be("any");
         }
 
-        // Test case to validate that a missing command string results in an exception
+        // Test case to validate that if the CommandQueue is null, the system throws an exception
         [Fact]
-        public async Task RouteCommand_Throws_When_Command_Is_Missing()
+        public async Task RouteCommand_Throws_When_Processor_Is_Not_Running()
         {
             // Arrange
-            var input = new TerminalGrpcRouterProtoInput { CommandString = "  " }; // Empty command string
-
-            // Setup the real command queue
-            var mockCommandQueue = new TerminalRemoteMessageQueue(
-                Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
-                new TerminalOptions(),
-                new TerminalGrpcRouterContext(new TerminalStartContext(TerminalStartMode.Http, default, default)),
-                Mock.Of<ILogger>());
-
-            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns(mockCommandQueue);
+            var input = new TerminalGrpcRouterProtoInput { InputJson = "test-command" };
+            mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
+            mockProcessor.Setup(x => x.IsProcessing).Returns(false);
 
             // Act
             Func<Task> act = async () => await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
 
             // Assert
             await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("missing_command")
-                .WithErrorDescription("The command is missing in the gRPC request.");
+                .WithErrorCode("server_error")
+                .WithErrorDescription("The terminal processor is not processing.");
         }
 
         // Test case to validate that if the CommandQueue is null, the system throws an exception
         [Fact]
-        public async Task RouteCommand_Throws_When_CommandQueue_Is_Null()
+        public async Task RouteCommand_Throws_When_Router_Is_Not_Running()
         {
             // Arrange
-            var input = new TerminalGrpcRouterProtoInput { CommandString = "test-command" };
-
-            // Simulate terminal router not running by returning null for CommandQueue
-            mockTerminalRouter.SetupGet(r => r.CommandQueue).Returns((TerminalRemoteMessageQueue?)null);
+            var input = new TerminalGrpcRouterProtoInput { InputJson = "test-command" };
+            mockTerminalRouter.Setup(x => x.IsRunning).Returns(false);
+            mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 
             // Act
             Func<Task> act = async () => await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
@@ -114,10 +118,12 @@ namespace OneImlx.Terminal.AspNetCore
                 .WithErrorDescription("The terminal gRPC router is not running.");
         }
 
-        // Mock objects used in the test
+        private readonly CancellationTokenSource commandTokenSource;
         private readonly Mock<ILogger<TerminalGrpcMapService>> mockLogger;
+        private readonly Mock<ITerminalProcessor> mockProcessor;
         private readonly Mock<ITerminalRouter<TerminalGrpcRouterContext>> mockTerminalRouter;
         private readonly TerminalGrpcMapService terminalGrpcMapService;
-        private readonly ServerCallContext testServerCallContext; // Using TestServerCallContext for simulating gRPC context
+        private readonly CancellationTokenSource terminalTokenSource;
+        private readonly ServerCallContext testServerCallContext;
     }
 }

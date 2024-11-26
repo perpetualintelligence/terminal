@@ -9,7 +9,7 @@ syntax = "proto3";
 
 option csharp_namespace = "OneImlx.Terminal.Client";
 
-// The OneImlx terminal router command service to route the command.
+// The OneImlx terminal router command service to request the command.
 service TerminalGrpcRouterProto {
     // Routes a command asynchronously.
     rpc RouteCommand (TerminalGrpcRouterProtoInput) returns (TerminalGrpcRouterProtoOutput);
@@ -17,12 +17,12 @@ service TerminalGrpcRouterProto {
 
 // The terminal router command request.
 message TerminalGrpcRouterProtoInput {
-    // The command string to be routed.
-    string CommandString = 1;
+    // The terminal input.
+    string InputJson = 1;
 }
 
 // The terminal router command request.
 message TerminalGrpcRouterProtoOutput {
-    // The routing response. This is not the result of the actual command execution.
-    string MessageItemsJson = 1;
+    // The terminal output.
+    string OutputJson = 1;
 }

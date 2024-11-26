@@ -106,16 +106,16 @@ namespace OneImlx.Terminal.Commands.Parsers
     /// This exception is designed to capture a myriad of parsing issues such as unrecognized commands, unexpected
     /// number of arguments, or misidentified options.
     /// </exception>
-    public class CommandRouteParser : ICommandRouteParser
+    public class CommandRequestParser : ICommandRequestParser
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandRouteParser"/> class.
+        /// Initializes a new instance of the <see cref="CommandRequestParser"/> class.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="commandStore">The command store handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRouteParser(ITerminalTextHandler textHandler, ITerminalCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRouteParser> logger)
+        public CommandRequestParser(ITerminalTextHandler textHandler, ITerminalCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRequestParser> logger)
         {
             this.textHandler = textHandler;
             this.commandStore = commandStore;
@@ -161,12 +161,12 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// might allow for further optimizations. But for diverse and comprehensive parsing scenarios, this default
         /// implementation provides a well-rounded and efficient solution.
         /// </remarks>
-        public async Task<ParsedCommand> ParseRouteAsync(CommandRoute commandRoute)
+        public async Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
         {
-            logger.LogDebug("Parse route. route={0} raw={1}", commandRoute.Id, commandRoute.Raw);
+            logger.LogDebug("Parse request. request={0} raw={1}", request.Id, request.Raw);
 
             // Parse the queue of segments from the raw command based of `separator` and `optionValueSeparator`
-            Queue<ParsedSplit> segmentsQueue = ExtractQueue(commandRoute);
+            Queue<ParsedSplit> segmentsQueue = ExtractQueue(request);
 
             // Handle the processing of commands and arguments
             (List<CommandDescriptor> parsedCommands, List<string> parsedArguments) = await ExtractCommandsAndArgumentsAsync(segmentsQueue);
@@ -178,7 +178,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             LogIfDebugLevelEnabled(parsedCommands, parsedArguments, parsedOptions);
 
             // Compile and return the parsed command details
-            return ParseCommand(commandRoute, parsedCommands, parsedArguments, parsedOptions);
+            return ParseCommand(request, parsedCommands, parsedArguments, parsedOptions);
         }
 
         private bool EndsWith(string value, string suffix)
@@ -242,7 +242,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                         }
                         else if (potentialLastCommandId == null && currentDescriptor.OwnerIds != null && currentDescriptor.OwnerIds.Any())
                         {
-                            throw new TerminalException(TerminalErrors.MissingCommand, "The command owner is missing in the command route. owners={0} command={1}.", currentDescriptor.OwnerIds.JoinBySpace(), currentDescriptor.Id);
+                            throw new TerminalException(TerminalErrors.MissingCommand, "The command owner is missing in the command request. owners={0} command={1}.", currentDescriptor.OwnerIds.JoinBySpace(), currentDescriptor.Id);
                         }
 
                         potentialLastCommandId = segment;
@@ -298,7 +298,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
                 // It's essential to skip over segments that are purely separators. Reasons for this are twofold:
                 // 1. Ensures that our parsing logic does not mistakenly recognize separators as valid segments for
-                // option values unless they are part of delimters.
+                // option values unless they are part of delimiters.
                 // 2. Allows us to efficiently peek at the actual next segment of interest without being misled by
                 // consecutive separators.
                 string? nextSegment = null;
@@ -397,7 +397,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return parsedOptions;
         }
 
-        private Queue<ParsedSplit> ExtractQueue(CommandRoute commandRoute)
+        private Queue<ParsedSplit> ExtractQueue(TerminalRequest request)
         {
             var queue = new Queue<ParsedSplit>();
 
@@ -418,7 +418,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             // continue processing. The result is a list of segments split by the nearest occurring token, capturing the
             // context of each split.
             int currentIndex = 0;
-            string raw = commandRoute.Raw;
+            string raw = request.Raw;
             while (currentIndex < raw.Length)
             {
                 int nearestTokenIndex = raw.Length;
@@ -482,7 +482,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                 return;
             }
 
-            logger.LogDebug("Hierarchy={0}", parsedDescriptors.Select(e => e.Id).JoinByComma());
+            logger.LogDebug("Hierarchy={0}", parsedDescriptors.Select(static e => e.Id).JoinByComma());
             logger.LogDebug("Command={0}", parsedDescriptors.LastOrDefault()?.Id);
             logger.LogDebug("Arguments={0}", parsedArguments.JoinByComma());
             logger.LogDebug("Options:");
@@ -529,14 +529,14 @@ namespace OneImlx.Terminal.Commands.Parsers
             return new Arguments(textHandler, arguments);
         }
 
-        private ParsedCommand ParseCommand(CommandRoute commandRoute, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
+        private ParsedCommand ParseCommand(TerminalRequest request, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
         {
             if (!parsedDescriptors.Any())
             {
-                throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the command route.");
+                throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the command request.");
             }
 
-            // The last command in the route is the one that will be executed
+            // The last command in the request is the one that will be executed
             CommandDescriptor executingCommandDescriptor = parsedDescriptors[parsedDescriptors.Count - 1];
             Command executingCommand = new(
                 executingCommandDescriptor,
@@ -545,7 +545,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             );
 
             // Build the hierarchy and return the parsed command
-            return new ParsedCommand(commandRoute, executingCommand, ParseHierarchy(parsedDescriptors, executingCommand));
+            return new ParsedCommand(request, executingCommand, ParseHierarchy(parsedDescriptors, executingCommand));
         }
 
         /// <summary>
@@ -581,7 +581,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                         {
                             if (hierarchy != null)
                             {
-                                throw new TerminalException(TerminalErrors.InvalidCommand, "The command route contains multiple roots. root={0}", currentDescriptor.Id);
+                                throw new TerminalException(TerminalErrors.InvalidCommand, "The command request contains multiple roots. root={0}", currentDescriptor.Id);
                             }
 
                             hierarchy = new Root(currentCommand);
@@ -742,7 +742,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private readonly ITerminalCommandStore commandStore;
-        private readonly ILogger<CommandRouteParser> logger;
+        private readonly ILogger<CommandRequestParser> logger;
         private readonly TerminalOptions terminalOptions;
         private readonly ITerminalTextHandler textHandler;
     }

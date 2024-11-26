@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// An abstraction to extract a <see cref="Command"/>.
+    /// An abstraction to parse the command string and extract <see cref="Command"/>.
     /// </summary>
     public interface ICommandParser
     {

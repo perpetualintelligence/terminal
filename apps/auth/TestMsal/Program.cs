@@ -86,7 +86,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
         private static void ConfigureServicesDelegate(HostBuilderContext context, IServiceCollection services)
         {
             // Disable hosting status message
-            services.Configure<ConsoleLifetimeOptions>(options =>
+            services.Configure<ConsoleLifetimeOptions>(static options =>
             {
                 options.SuppressStatusMessages = true;
             });

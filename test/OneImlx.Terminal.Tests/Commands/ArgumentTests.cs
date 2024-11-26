@@ -41,8 +41,8 @@ namespace OneImlx.Terminal.Commands
         [Fact]
         public void JSONPropertyNamesShouldBeCorrect()
         {
-            typeof(Option).GetProperty(nameof(Option.Value)).Should().BeDecoratedWith<JsonPropertyNameAttribute>(attr => attr.Name == "value");
-            typeof(Option).GetProperty(nameof(Option.Descriptor)).Should().BeDecoratedWith<JsonPropertyNameAttribute>(attr => attr.Name == "descriptor");
+            typeof(Option).GetProperty(nameof(Option.Value)).Should().BeDecoratedWith<JsonPropertyNameAttribute>(static attr => attr.Name == "value");
+            typeof(Option).GetProperty(nameof(Option.Descriptor)).Should().BeDecoratedWith<JsonPropertyNameAttribute>(static attr => attr.Name == "descriptor");
 
             typeof(Option).GetProperty(nameof(Option.Alias)).Should().BeDecoratedWith<JsonIgnoreAttribute>();
             typeof(Option).GetProperty(nameof(Option.DataType)).Should().BeDecoratedWith<JsonIgnoreAttribute>();

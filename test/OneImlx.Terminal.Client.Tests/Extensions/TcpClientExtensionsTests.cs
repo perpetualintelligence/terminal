@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Net;
@@ -20,131 +21,112 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
     public class TcpClientExtensionsTests
     {
         [Fact]
-        public async Task SendBatchToTerminalAsync_Sends_Batch_Commands_Successfully()
+        public async Task SendBatch_SendsBatchSuccessfully()
         {
-            // Arrange: Start the TcpListener (server) to accept connections
             using (var tcpListener = new TcpListener(IPAddress.Parse(localHost), port))
             {
                 tcpListener.Start();
 
-                // Simulate server-side listener in a task
                 var serverTask = Task.Run(async () =>
                 {
                     using (var serverClient = await tcpListener.AcceptTcpClientAsync())
                     using (var networkStream = serverClient.GetStream())
                     {
                         byte[] buffer = new byte[1024];
-                        int bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                        int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                        // Assert: Verify the server received the correct message
-                        receivedMessage.Should().Be("command1;command2;|");
+                        receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"cmd1\"},{\"id\":\"id2\",\"raw\":\"cmd2\"}]}\u001f");
                     }
                 });
 
-                // Act: Create a TcpClient (client) to connect to the server
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
 
-                    string[] commands = { "command1", "command2" };
-                    await tcpClient.SendBatchToTerminalAsync(commands, ";", "|", Encoding.UTF8, CancellationToken.None);
+                    TerminalInput batch = TerminalInput.Batch("batch1", ["id1", "id2"], ["cmd1", "cmd2"]);
+                    await tcpClient.SendToTerminalAsync(batch, streamDelimiter,  CancellationToken.None);
 
-                    // Wait for the server to complete
                     await serverTask;
                 }
             }
         }
 
         [Fact]
-        public async Task SendSingleToTerminalAsync_Sends_Single_Command_Successfully()
+        public async Task SendSingle_AsBatch_SendsSingleSuccessfully()
         {
-            // Arrange: Start the TcpListener (server)
             using (var tcpListener = new TcpListener(IPAddress.Parse(localHost), port))
             {
                 tcpListener.Start();
 
-                // Simulate server-side listener in a task
                 var serverTask = Task.Run(async () =>
                 {
                     using (var serverClient = await tcpListener.AcceptTcpClientAsync())
                     using (var networkStream = serverClient.GetStream())
                     {
                         byte[] buffer = new byte[1024];
-                        int bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                        int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                        // Assert: Verify the server received the correct message
-                        receivedMessage.Should().Be("single-command;|");
+                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}\u001f");
                     }
                 });
 
-                // Act: Create a TcpClient (client)
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    string command = "single-command";
-                    await tcpClient.SendSingleToTerminalAsync(command, ";", "|", Encoding.UTF8, CancellationToken.None);
+                    TerminalInput batch = TerminalInput.Batch("bid", ["single-id"], ["single-command"]);
+                    await tcpClient.SendToTerminalAsync(batch, streamDelimiter, CancellationToken.None);
 
-                    // Wait for the server to complete
                     await serverTask;
                 }
             }
         }
 
         [Fact]
-        public async Task SendSingleToTerminalAsync_Sends_Single_No_Delimiter_Command_Successfully()
+        public async Task SendSingle_SendsSuccessfully()
         {
-            // Arrange: Start the TcpListener (server)
             using (var tcpListener = new TcpListener(IPAddress.Parse(localHost), port))
             {
                 tcpListener.Start();
 
-                // Simulate server-side listener in a task
                 var serverTask = Task.Run(async () =>
                 {
                     using (var serverClient = await tcpListener.AcceptTcpClientAsync())
                     using (var networkStream = serverClient.GetStream())
                     {
                         byte[] buffer = new byte[1024];
-                        int bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                        int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                        // Assert: Verify the server received the correct message
-                        receivedMessage.Should().Be("single-command");
+                        receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"raw\":\"single-command-1\"}]}\u001f");
                     }
                 });
 
-                // Act: Create a TcpClient (client)
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    string command = "single-command";
-                    await tcpClient.SendSingleToTerminalAsync(command, Encoding.UTF8, CancellationToken.None);
+                    TerminalInput single = TerminalInput.Single("single-id-1", "single-command-1");
+                    await tcpClient.SendToTerminalAsync(single, streamDelimiter, CancellationToken.None);
 
-                    // Wait for the server to complete
                     await serverTask;
                 }
             }
         }
 
         [Fact]
-        public async Task SendSingleToTerminalAsync_Throws_When_TcpClient_Not_Connected()
+        public async Task SendSingle_ThrowsWhenNotConnected()
         {
-            // Arrange: Create a TcpClient without connecting
             using (var tcpClient = new TcpClient())
             {
-                // Act
-                Func<Task> act = async () => await tcpClient.SendSingleToTerminalAsync("test-command", Encoding.UTF8, CancellationToken.None);
+                TerminalInput single = TerminalInput.Single("single-id", "single-command");
+                Func<Task> act = async () => await tcpClient.SendToTerminalAsync(single, streamDelimiter, CancellationToken.None);
 
-                // Assert: Expect an InvalidOperationException because the client is not connected
                 await act.Should().ThrowAsync<TerminalException>()
-                    .WithErrorCode("connection_closed")
-                    .WithErrorDescription("The TCP client is not connected.");
+                    .WithMessage("The TCP client is not connected.")
+                    .WithErrorCode("connection_closed");
             }
         }
 
         private const string localHost = "127.0.0.1";
         private const int port = 9000;
+        private byte streamDelimiter = TerminalIdentifiers.StreamDelimiter;
     }
 }

@@ -110,7 +110,7 @@ namespace OneImlx.Terminal.Extensions
         /// <returns>The configured <see cref="ICommandBuilder"/>.</returns>
         public static ICommandBuilder Checker<TChecker>(this ICommandBuilder builder) where TChecker : ICommandChecker
         {
-            var service = builder.Services.FirstOrDefault(e => e.ServiceType == typeof(CommandDescriptor));
+            var service = builder.Services.FirstOrDefault(static e => e.ServiceType == typeof(CommandDescriptor));
             if (service != null)
             {
                 CommandDescriptor? commandDescriptor = (CommandDescriptor?)service.ImplementationInstance;

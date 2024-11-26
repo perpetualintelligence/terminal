@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using OneImlx.Terminal.Runtime;
 using System;
 using Xunit;
 
@@ -18,7 +19,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = () => new CommandParserResult(new ParsedCommand(new CommandRoute("test_route", "test cmd"), new Command(null), null));
+            Action act = static () => new CommandParserResult(new ParsedCommand(new TerminalRequest("test_route", "test cmd"), new Command(null), null));
             act.Should().Throw<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
@@ -29,7 +30,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = () => new CommandParserResult(new ParsedCommand(null, new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), null));
+            Action act = static () => new CommandParserResult(new ParsedCommand(null, new Command(new CommandDescriptor("test_id", "test_name", "desc", CommandType.SubCommand, CommandFlags.None)), null));
             act.Should().Throw<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
@@ -40,7 +41,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = () => new CommandParserResult(null);
+            Action act = static () => new CommandParserResult(null);
             act.Should().Throw<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results

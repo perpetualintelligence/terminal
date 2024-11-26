@@ -115,7 +115,9 @@ namespace OneImlx.Terminal.Extensions
             return services.CreateTerminalBuilder(textHandler)
                            .AddConfigurationOptions()
                            .AddCommandStore<TStore>()
+                           .AddProcessor<TerminalProcessor>()
                            .AddLicensing();
+
         }
 
         /// <summary>
@@ -195,7 +197,7 @@ namespace OneImlx.Terminal.Extensions
 
             return services.AddTerminal<TStore, TText>(textHandler, setupAction)
                    .AddCommandRouter<CommandRouter, CommandHandler, CommandRuntime>()
-                   .AddCommandParser<CommandParser, CommandRouteParser>()
+                   .AddCommandParser<CommandParser, CommandRequestParser>()
                    .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
                    .AddArgumentChecker<DataTypeMapper<Argument>, ArgumentChecker>()
                    .AddExceptionHandler<TException>()

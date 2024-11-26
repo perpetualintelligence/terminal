@@ -10,6 +10,7 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Events
@@ -20,23 +21,23 @@ namespace OneImlx.Terminal.Events
     public interface ITerminalEventHandler
     {
         /// <summary>
-        /// Override this method if you will perform an asynchronous operation before <see cref="ICommandRouter"/> starts a command route.
+        /// Override this method if you will perform an asynchronous operation before <see cref="ICommandRouter"/> starts a command request.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
-        public Task BeforeCommandRouteAsync(CommandRoute commandRoute);
+        /// <param name="request">The command request.</param>
+        public Task BeforeCommandRouteAsync(TerminalRequest request);
 
         /// <summary>
-        /// Override this method if you will perform an asynchronous operation after <see cref="ICommandRouter"/> ends a command route and process the command result.
+        /// Override this method if you will perform an asynchronous operation after <see cref="ICommandRouter"/> ends a command request and process the command result.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
+        /// <param name="request">The command request.</param>
         /// <param name="command">The command object. May be <c>null</c>.</param>
         /// <param name="result">The command router result. May be <c>null</c>.</param>
         /// <remarks>
-        /// The framework will call <see cref="AfterCommandRouteAsync(CommandRoute, Command?, CommandRouterResult?)"/> even if there is an error during command routing.
+        /// The framework will call <see cref="AfterCommandRouteAsync(TerminalRequest, Command?, CommandRouterResult?)"/> even if there is an error during command routing.
         /// The <c>command</c> and <c>result</c> parameters may be <c>null</c>. The router constructs a <c>command</c> object if the parser, handler, and checker pass
         /// and routes a command to run.
         /// </remarks>
-        public Task AfterCommandRouteAsync(CommandRoute commandRoute, Command? command, CommandRouterResult? result);
+        public Task AfterCommandRouteAsync(TerminalRequest request, Command? command, CommandRouterResult? result);
 
         /// <summary>
         /// Override this method if you will perform an asynchronous operation before <see cref="ICommandHandler"/> starts a command run.

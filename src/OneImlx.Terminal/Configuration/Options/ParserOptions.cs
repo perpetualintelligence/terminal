@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// Determines whether to parse the command hierarchy. Defaults to <c>null</c>.
         /// </summary>
         /// <remarks>
-        /// A command hierarchy is a structure of commands in the specified command route starting with a root, followed by nested groups and an executing command.
+        /// A command hierarchy is a structure of commands in the specified command request starting with a root, followed by nested groups and an executing command.
         /// Typically, for production use cases, the command hierarchy is not required.
         /// </remarks>
         public bool? ParseHierarchy { get; set; }

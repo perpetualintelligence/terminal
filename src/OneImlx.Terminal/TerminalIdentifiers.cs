@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -43,16 +43,6 @@ namespace OneImlx.Terminal
         public const string OnPremiseDeployment = "onpremise";
 
         /// <summary>
-        /// The remote command delimiter.
-        /// </summary>
-        public const string RemoteCommandDelimiter = "$c$";
-
-        /// <summary>
-        /// The remote command delimiter.
-        /// </summary>
-        public const string RemoteMessageDelimiter = "$m$";
-
-        /// <summary>
         /// The <c>sender_endpoint</c> token.
         /// </summary>
         public const string SenderEndpointToken = "sender_endpoint";
@@ -61,6 +51,11 @@ namespace OneImlx.Terminal
         /// The <c>sender_id</c> token.
         /// </summary>
         public const string SenderIdToken = "sender_id";
+
+        /// <summary>
+        /// The data stream delimiter byte. Defaults to <c>0x1F</c> or Unit Separator.
+        /// </summary>
+        public const byte StreamDelimiter = 0x1F;
 
         /// <summary>
         /// The test application identifier for internal testing.

@@ -1,9 +1,9 @@
-# 5.13.1
-> Feature Change
+# 6.0.0
+> Feature Change | Breaking Change
 - Introduce gRPC terminal routing
 - Introduce HTTP terminal routing
-- Introduce OneImlx.Terminal.AspNetCore for hosting terminal servers in ASP.NET Core
-- Introduce OneImlx.Terminal.Client for client application communicating with terminal servers  
+- Introduce `OneImlx.Terminal.AspNetCore` for hosting terminal servers in ASP.NET Core
+- Introduce `OneImlx.Terminal.Client` for client application communicating with terminal servers  
 
 # 5.12.3
 > Breaking Change
@@ -11,7 +11,7 @@
 - Add `TerminalConsoleExceptioneHandler` that logs the error message to ITerminalConsole
 - Rename `TerminalHelpLoggerProvider` to `TerminalLoggerHelpProvider`
 - Rename `TerminalHelpConsoleProvider` to `TerminalConsoleHelpProvider`
-- Add custom properties for each command route 
+- Add custom properties for each command request 
 
 # 5.11.1
 - Production release.
@@ -113,3 +113,12 @@
 # v4.3.2-rc*
 - Add TCP IP routing service
 - Port old code base and migrate to .NET Standard2.0, ,NET Standard2.1 and xUnit Tests for .NET7
+
+# v3.0.0
+- Initial release of the terminal Nuget packages
+
+# v2.0.0
+- Internal release for general framework
+
+# v1.0.0
+- Initial release for internal CLI routing

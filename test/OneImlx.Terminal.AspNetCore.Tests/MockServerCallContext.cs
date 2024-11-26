@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.AspNetCore
             this.peer = peer;
         }
 
-        protected override AuthContext AuthContextCore => new AuthContext("TestContext", []);
+        protected override AuthContext AuthContextCore => new("TestContext", []);
 
         protected override CancellationToken CancellationTokenCore => CancellationToken.None;
 
@@ -32,9 +32,9 @@ namespace OneImlx.Terminal.AspNetCore
 
         protected override string PeerCore => peer;
 
-        protected override Metadata RequestHeadersCore => new Metadata();
+        protected override Metadata RequestHeadersCore => [];
 
-        protected override Metadata ResponseTrailersCore => new Metadata();
+        protected override Metadata ResponseTrailersCore => [];
 
         protected override Status StatusCore { get; set; }
 

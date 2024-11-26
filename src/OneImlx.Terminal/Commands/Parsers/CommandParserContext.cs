@@ -6,6 +6,7 @@
 */
 
 using System;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
@@ -17,15 +18,15 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandRoute">The command route.</param>
-        public CommandParserContext(CommandRoute commandRoute)
+        /// <param name="request">The command request.</param>
+        public CommandParserContext(TerminalRequest request)
         {
-            Route = commandRoute ?? throw new ArgumentNullException(nameof(commandRoute));
+            Request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
         /// <summary>
-        /// The command route.
+        /// The command request.
         /// </summary>
-        public CommandRoute Route { get; set; }
+        public TerminalRequest Request { get; set; }
     }
 }

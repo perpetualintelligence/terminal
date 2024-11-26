@@ -5,14 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Grpc.Core;
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.AspNetCore;
-using OneImlx.Terminal.Runtime;
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Grpc.Core;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.AspNetCore
 {
@@ -25,58 +22,61 @@ namespace OneImlx.Terminal.AspNetCore
         /// Initializes a new instance of the <see cref="TerminalGrpcMapService"/> class.
         /// </summary>
         /// <param name="terminalRouter">The terminal router instance for routing commands.</param>
+        /// <param name="terminalProcessor">The terminal processor.</param>
         /// <param name="logger">The logger instance for logging router events and errors.</param>
         public TerminalGrpcMapService(
             ITerminalRouter<TerminalGrpcRouterContext> terminalRouter,
+            ITerminalProcessor terminalProcessor,
             ILogger<TerminalGrpcMapService> logger)
         {
             this.terminalRouter = terminalRouter;
+            this.terminalProcessor = terminalProcessor;
             this.logger = logger;
         }
 
         /// <summary>
-        /// Routes the command string to be routed to an appropriate runner.
+        /// Routes the <see cref="TerminalGrpcRouterProtoInput"/> to the appropriate command runner.
         /// </summary>
-        /// <param name="request">The gRPC request containing the command string.</param>
+        /// <param name="protoInput">The gRPC input containing the <see cref="TerminalInput"/>.</param>
         /// <param name="context">The gRPC server call context.</param>
-        /// <returns>A task representing the asynchronous operation. Returns a response with the queued message items.</returns>
+        /// <returns>A task representing the asynchronous operation, including the <see cref="TerminalGrpcRouterProtoOutput"/>.</returns>
         /// <exception cref="TerminalException">Thrown when the terminal gRPC router is not running.</exception>
         /// <remarks>
-        /// This method is designed to enqueue commands for processing by the terminal router's command queue. It
-        /// expects a valid gRPC request containing a JSON body with the command string. The method extracts the command
-        /// from the request body and adds it to the queue, associating it with the client information from the HTTP context.
-        ///
-        /// The method assumes that the terminal router is running and its command queue is initialized. If the queue is
-        /// not active, a <see cref="TerminalException"/> is thrown to indicate that the router is not ready to process
-        /// commands. Ensure the terminal router is correctly started before invoking this method.
-        ///
-        /// This method is primarily intended to be called by gRPC clients. It should not be invoked directly from
-        /// within the application without proper context, as it depends on gRPC infrastructure and client context information.
+        /// Application code should not call this method directly. Instead, use the client NuGet package to send the
+        /// command to the gRPC terminal server.
         /// </remarks>
-        public override Task<TerminalGrpcRouterProtoOutput> RouteCommand(TerminalGrpcRouterProtoInput request, ServerCallContext context)
+        public override async Task<TerminalGrpcRouterProtoOutput> RouteCommand(TerminalGrpcRouterProtoInput protoInput, ServerCallContext context)
         {
-            if (terminalRouter.CommandQueue == null)
+            if (!terminalRouter.IsRunning)
             {
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal gRPC router is not running.");
             }
 
-            if (string.IsNullOrWhiteSpace(request.CommandString))
+            if (!terminalProcessor.IsProcessing)
             {
-                throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the gRPC request.");
+                throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
             }
 
-            // Enqueue the command string. The command is queued along with the peer information from the context.
-            IEnumerable<TerminalRemoteMessageItem> queuedItems = terminalRouter.CommandQueue.Enqueue(request.CommandString, context.Peer, Guid.NewGuid().ToString());
-
-            // Return the serialized byte array as part of the gRPC response.
-            return Task.FromResult(new TerminalGrpcRouterProtoOutput()
+            // Convert to terminal input.
+            TerminalInput? input = JsonSerializer.Deserialize<TerminalInput>(protoInput.InputJson);
+            if (input == null || input.Count <= 0)
             {
-                MessageItemsJson = JsonSerializer.Serialize(queuedItems)
-            });
+                throw new TerminalException(TerminalErrors.MissingCommand, "The input is missing in the gRPC request.");
+            }
+
+            TerminalOutput output = await terminalProcessor.ExecuteAsync(input, senderId: null, senderEndpoint: null);
+
+            // Return the terminal output to the client.
+            var protoOutput = new TerminalGrpcRouterProtoOutput
+            {
+                OutputJson = JsonSerializer.Serialize(output)
+            };
+            return protoOutput;
         }
 
         // Private fields to hold injected dependencies and state information.
         private readonly ILogger<TerminalGrpcMapService> logger;
+        private readonly ITerminalProcessor terminalProcessor;
         private readonly ITerminalRouter<TerminalGrpcRouterContext> terminalRouter;
     }
 }

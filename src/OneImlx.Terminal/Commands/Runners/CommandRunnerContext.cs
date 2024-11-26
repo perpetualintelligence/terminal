@@ -1,14 +1,14 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Runtime;
-using System;
 
 namespace OneImlx.Terminal.Commands.Runners
 {
@@ -28,23 +28,28 @@ namespace OneImlx.Terminal.Commands.Runners
         }
 
         /// <summary>
-        /// The command hander context.
-        /// </summary>
-        public CommandHandlerContext HandlerContext { get; }
-
-        /// <summary>
         /// The command to run.
         /// </summary>
         public Command Command => HandlerContext.ParsedCommand.Command;
 
         /// <summary>
-        /// The terminal start context.
+        /// The command hander context.
         /// </summary>
-        public TerminalStartContext StartContext => HandlerContext.RouterContext.RoutingContext.StartContext;
+        public CommandHandlerContext HandlerContext { get; }
 
         /// <summary>
         /// The hierarchy of the command to run.
         /// </summary>
         public Root? Hierarchy => HandlerContext.ParsedCommand.Hierarchy;
+
+        /// <summary>
+        /// The terminal processor request.
+        /// </summary>
+        public TerminalRequest Request => HandlerContext.RouterContext.Request;
+
+        /// <summary>
+        /// The terminal start context.
+        /// </summary>
+        public TerminalStartContext StartContext => HandlerContext.RouterContext.TerminalContext.StartContext;
     }
 }

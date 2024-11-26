@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.Authentication.Extensions
             services.AddSingleton(new TerminalOptions());
 
             var builder = new Mock<ITerminalBuilder>();
-            builder.Setup(b => b.Services).Returns(services);
+            builder.Setup(static b => b.Services).Returns(services);
             var publicClientApplication = Mock.Of<IPublicClientApplication>();
 
             ITerminalBuilderExtensions.AddMsalAuthentication<MsalKiotaAuthProvider, MsalKiotaAuthProvider, TestHandler>(builder.Object, publicClientApplication);
@@ -40,15 +40,15 @@ namespace OneImlx.Terminal.Authentication.Extensions
             serviceProvider.GetService<IAccessTokenProvider>().Should().BeOfType<MsalKiotaAuthProvider>();
             serviceProvider.GetService<TestHandler>().Should().NotBeNull();
 
-            services.Should().Contain(descriptor =>
+            services.Should().Contain(static descriptor =>
                 descriptor.ServiceType == typeof(IPublicClientApplication) && descriptor.Lifetime == ServiceLifetime.Singleton)
-                .And.Contain(descriptor =>
+                .And.Contain(static descriptor =>
                 descriptor.ServiceType == typeof(IMsalTokenAcquisition) && descriptor.Lifetime == ServiceLifetime.Scoped)
-                .And.Contain(descriptor =>
+                .And.Contain(static descriptor =>
                 descriptor.ServiceType == typeof(IAuthenticationProvider) && descriptor.Lifetime == ServiceLifetime.Scoped)
-                .And.Contain(descriptor =>
+                .And.Contain(static descriptor =>
                 descriptor.ServiceType == typeof(IAccessTokenProvider) && descriptor.Lifetime == ServiceLifetime.Scoped)
-                .And.Contain(descriptor =>
+                .And.Contain(static descriptor =>
                 descriptor.ServiceType == typeof(TestHandler) && descriptor.Lifetime == ServiceLifetime.Scoped);
         }
     }
