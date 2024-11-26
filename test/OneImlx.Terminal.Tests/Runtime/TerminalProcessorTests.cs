@@ -5,20 +5,23 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -41,9 +44,6 @@ namespace OneImlx.Terminal.Runtime
                 Router = new RouterOptions
                 {
                     MaxLength = 1000,
-                    EnableBatch = true,
-                    BatchDelimiter = "|",
-                    CommandDelimiter = ",",
                     Timeout = 1000
                 }
             });
@@ -60,7 +60,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task Add_Without_Processing_And_Background_Throws()
         {
             // Add with sender endpoint and sender id
-            Func<Task> act = async () => await _terminalProcessor.AddAsync("command1|", "sender_1", "sender_endpoint_1");
+            Func<Task> act = async () => await _terminalProcessor.AddAsync(TerminalInput.Single("id1", "command1"), "sender_1", "sender_endpoint_1");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The terminal processor is not running.");
@@ -75,8 +75,6 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task AddAsync_Batch_Commands_HandlesConcurrentCalls()
         {
-            _mockOptions.Object.Value.Router.EnableBatch = true;
-
             // Mock the setup for the command router
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
@@ -88,7 +86,9 @@ namespace OneImlx.Terminal.Runtime
             var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
             {
                 ++idx;
-                string batch = TerminalServices.CreateBatch(_mockOptions.Object.Value, [$"command_{idx}_0", $"command_{idx}_1", $"command_{idx}_2"]);
+                string[] cmdIds = [$"id_{idx}_0", $"id_{idx}_1", $"id_{idx}_2"];
+                string[] cmds = [$"command_{idx}_0", $"command_{idx}_1", $"command_{idx}_2"];
+                TerminalInput batch = TerminalInput.Batch("batch1", cmdIds, cmds);
                 return _terminalProcessor.AddAsync(batch, "sender", "endpoint");
             });
             await Task.WhenAll(tasks);
@@ -106,7 +106,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            await _terminalProcessor.AddAsync("command1|", "sender", "endpoint");
+            await _terminalProcessor.AddAsync(TerminalInput.Single("id1", "command1"), "sender", "endpoint");
             await Task.Delay(500);
 
             // Assert exception handler was called
@@ -116,7 +116,6 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task AddAsync_Does_Add_When_BatchDelimiter_Missing_In_Non_BatchMode()
         {
-            _mockOptions.Object.Value.Router.EnableBatch = false;
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Setup that the mock command router was invoked
@@ -125,7 +124,7 @@ namespace OneImlx.Terminal.Runtime
                 .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
 
             // Act
-            await _terminalProcessor.AddAsync("command1", "sender", "endpoint");
+            await _terminalProcessor.AddAsync(TerminalInput.Single("id1", "command1"), "sender", "endpoint");
             await Task.Delay(500);
 
             // Assert only a single command was processed
@@ -134,9 +133,30 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task AddAsync_Processes_BatchCommand_In_Order_WhenBatchModeEnabled()
+        public async Task AddAsync_Handles_ConcurrentCalls()
         {
-            _mockOptions.Object.Value.Router.EnableBatch = true;
+            // Mock the setup for the command router
+            List<string> routedCommands = [];
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
+
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
+            int idx = 1;
+            var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
+            {
+                return _terminalProcessor.AddAsync(TerminalInput.Single($"id{idx++}", $"command{idx++}"), "sender", "endpoint");
+            });
+            await Task.WhenAll(tasks);
+
+            await Task.Delay(500);
+
+            // Assert all were processed without error
+            routedCommands.Distinct().Should().HaveCount(500);
+        }
+
+        [Fact]
+        public async Task AddAsync_Processes_BatchCommand_In_Order()
+        {
             _mockOptions.Object.Value.Router.MaxLength = 1500000;
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
@@ -146,29 +166,77 @@ namespace OneImlx.Terminal.Runtime
                 .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
                 .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
 
-            // Create sets of commands to simulate batch processing
-            List<string> commands1 = new(Enumerable.Range(0, 1000).Select(i => $"command_1_{i}"));
-            List<string> commands2 = new(Enumerable.Range(0, 1000).Select(i => $"command_2_{i}"));
-            List<string> commands3 = new(Enumerable.Range(0, 1000).Select(i => $"command_3_{i}"));
-            List<string> commands4 = new(Enumerable.Range(0, 1000).Select(i => $"command_4_{i}"));
-            List<string> commands5 = new(Enumerable.Range(0, 1000).Select(i => $"command_5_{i}"));
-            List<string> commands6 = new(Enumerable.Range(0, 1000).Select(i => $"command_6_{i}"));
-            List<string> commands7 = new(Enumerable.Range(0, 1000).Select(i => $"command_7_{i}"));
-            List<string> commands8 = new(Enumerable.Range(0, 1000).Select(i => $"command_8_{i}"));
-            List<string> commands9 = new(Enumerable.Range(0, 1000).Select(i => $"command_9_{i}"));
-            List<string> commands10 = new(Enumerable.Range(0, 1000).Select(i => $"command_10_{i}"));
+            OrderedDictionary commands1 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands1.Add($"id_1_{i}", $"command_1_{i}");
+            }
+
+            OrderedDictionary commands2 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands2.Add($"id_2_{i}", $"command_2_{i}");
+            }
+
+            OrderedDictionary commands3 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands3.Add($"id_3_{i}", $"command_3_{i}");
+            }
+
+            OrderedDictionary commands4 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands4.Add($"id_4_{i}", $"command_4_{i}");
+            }
+
+            OrderedDictionary commands5 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands5.Add($"id_5_{i}", $"command_5_{i}");
+            }
+
+            OrderedDictionary commands6 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands6.Add($"id_6_{i}", $"command_6_{i}");
+            }
+
+            OrderedDictionary commands7 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands7.Add($"id_7_{i}", $"command_7_{i}");
+            }
+
+            OrderedDictionary commands8 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands8.Add($"id_8_{i}", $"command_8_{i}");
+            }
+
+            OrderedDictionary commands9 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands9.Add($"id_9_{i}", $"command_9_{i}");
+            }
+
+            OrderedDictionary commands10 = [];
+            for (int i = 0; i < 1000; i++)
+            {
+                commands10.Add($"id_10_{i}", $"command_10_{i}");
+            }
 
             // Create batches for each command collection
-            var batch1 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands1.ToArray());
-            var batch2 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands2.ToArray());
-            var batch3 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands3.ToArray());
-            var batch4 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands4.ToArray());
-            var batch5 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands5.ToArray());
-            var batch6 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands6.ToArray());
-            var batch7 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands7.ToArray());
-            var batch8 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands8.ToArray());
-            var batch9 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands9.ToArray());
-            var batch10 = TerminalServices.CreateBatch(_mockOptions.Object.Value, commands10.ToArray());
+            var batch1 = TerminalInput.Batch("batch1", commands1.Keys.Cast<string>().ToArray(), commands1.Values.Cast<string>().ToArray());
+            var batch2 = TerminalInput.Batch("batch2", commands2.Keys.Cast<string>().ToArray(), commands2.Values.Cast<string>().ToArray());
+            var batch3 = TerminalInput.Batch("batch3", commands3.Keys.Cast<string>().ToArray(), commands3.Values.Cast<string>().ToArray());
+            var batch4 = TerminalInput.Batch("batch4", commands4.Keys.Cast<string>().ToArray(), commands4.Values.Cast<string>().ToArray());
+            var batch5 = TerminalInput.Batch("batch5", commands5.Keys.Cast<string>().ToArray(), commands5.Values.Cast<string>().ToArray());
+            var batch6 = TerminalInput.Batch("batch6", commands6.Keys.Cast<string>().ToArray(), commands6.Values.Cast<string>().ToArray());
+            var batch7 = TerminalInput.Batch("batch7", commands7.Keys.Cast<string>().ToArray(), commands7.Values.Cast<string>().ToArray());
+            var batch8 = TerminalInput.Batch("batch8", commands8.Keys.Cast<string>().ToArray(), commands8.Values.Cast<string>().ToArray());
+            var batch9 = TerminalInput.Batch("batch9", commands9.Keys.Cast<string>().ToArray(), commands9.Values.Cast<string>().ToArray());
+            var batch10 = TerminalInput.Batch("batch10", commands10.Keys.Cast<string>().ToArray(), commands10.Values.Cast<string>().ToArray());
 
             // Add all batches asynchronously
             Task addBatch1 = _terminalProcessor.AddAsync(batch1, "sender1", "endpoint1");
@@ -190,70 +258,44 @@ namespace OneImlx.Terminal.Runtime
 
             // Verify all commands are processed
             routedCommands.Should().HaveCount(10000);
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
+            _terminalProcessor.UnprocessedInputs.Should().HaveCount(0);
 
             // Collect the processed commands into groups by their prefixes (e.g., "command_1_", "command_2_", etc.)
-            var groupedCommands = routedCommands.GroupBy(r => r.Split('_')[1])
+            Dictionary<string, List<string>> groupedCommands = routedCommands.GroupBy(r => r.Split('_')[1])
                 .ToDictionary(g => g.Key, g => g.Select(r => r).ToList());
 
-            // Verify that each group of commands is in the expected order
-            groupedCommands["1"].Should().BeEquivalentTo(commands1, options => options.WithStrictOrdering());
-            groupedCommands["2"].Should().BeEquivalentTo(commands2, options => options.WithStrictOrdering());
-            groupedCommands["3"].Should().BeEquivalentTo(commands3, options => options.WithStrictOrdering());
-            groupedCommands["4"].Should().BeEquivalentTo(commands4, options => options.WithStrictOrdering());
-            groupedCommands["5"].Should().BeEquivalentTo(commands5, options => options.WithStrictOrdering());
-            groupedCommands["6"].Should().BeEquivalentTo(commands6, options => options.WithStrictOrdering());
-            groupedCommands["7"].Should().BeEquivalentTo(commands7, options => options.WithStrictOrdering());
-            groupedCommands["8"].Should().BeEquivalentTo(commands8, options => options.WithStrictOrdering());
-            groupedCommands["9"].Should().BeEquivalentTo(commands9, options => options.WithStrictOrdering());
-            groupedCommands["10"].Should().BeEquivalentTo(commands10, options => options.WithStrictOrdering());
-        }
-
-        [Theory]
-        [InlineData("command1,command2,command3,command4,command5,command6|")]
-        [InlineData("command1,command2,command3,command4,command5,command6,|")]
-        [InlineData("command1,,,command2,command3,command4,command5,command6|")]
-        public async Task AddAsync_Processes_BatchCommands_By_Ignoring_Empty_Commands(string message)
-        {
-            _mockOptions.Object.Value.Router.EnableBatch = true;
-            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-
-            // Setup that the mock command router was invoked
-            List<string> routedCommands = [];
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
-                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
-
-            await _terminalProcessor.AddAsync(message, "sender", "endpoint");
-
-            await _terminalProcessor.StopProcessingAsync(5000);
-            routedCommands.Should().HaveCount(6);
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
-
-            routedCommands[0].Should().Be("command1");
-            routedCommands[1].Should().Be("command2");
-            routedCommands[2].Should().Be("command3");
-            routedCommands[3].Should().Be("command4");
-            routedCommands[4].Should().Be("command5");
-            routedCommands[5].Should().Be("command6");
+            // Verify grouped commands
+            groupedCommands["1"].Should().BeEquivalentTo(commands1.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["2"].Should().BeEquivalentTo(commands2.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["3"].Should().BeEquivalentTo(commands3.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["4"].Should().BeEquivalentTo(commands4.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["5"].Should().BeEquivalentTo(commands5.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["6"].Should().BeEquivalentTo(commands6.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["7"].Should().BeEquivalentTo(commands7.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["8"].Should().BeEquivalentTo(commands8.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["9"].Should().BeEquivalentTo(commands9.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
+            groupedCommands["10"].Should().BeEquivalentTo(commands10.Values.Cast<string>().ToList(), options => options.WithStrictOrdering());
         }
 
         [Fact]
-        public async Task AddAsync_Processes_VeryLarge_BatchCommand_WhenBatchModeEnabled()
+        public async Task AddAsync_Processes_Large_Batch()
         {
-            _mockOptions.Object.Value.Router.EnableBatch = true;
             _mockOptions.Object.Value.Router.MaxLength = 1500000;
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Setup that the mock command router was invoked
-            List<string> routedCommands = [];
+            Dictionary<string, string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
+                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Id, c.Request.Raw))
                 .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
 
             // Send batch of 100000 commands by using TerminalServices
-            HashSet<string> allCommands = new(Enumerable.Range(0, 100000).Select(i => $"command{i}"));
-            var longBatch = TerminalServices.CreateBatch(_mockOptions.Object.Value, allCommands.ToArray());
+            Dictionary<string, string> allCommands = [];
+            foreach (var i in Enumerable.Range(0, 100000))
+            {
+                allCommands.Add($"id{i}", $"command{i}");
+            }
+            var longBatch = TerminalInput.Batch("batch_id", allCommands.Keys.ToArray(), allCommands.Values.ToArray());
             await _terminalProcessor.AddAsync(longBatch, "sender", "endpoint");
 
             await _terminalProcessor.StopProcessingAsync(5000);
@@ -262,121 +304,19 @@ namespace OneImlx.Terminal.Runtime
             // code is not too slow. We are also checking that all commands are present in the batch at the same time
             // reducing the batch size so that the test does not take too long to run.
             routedCommands.Should().HaveCount(100000);
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0)
-            ;
+            _terminalProcessor.UnprocessedInputs.Should().HaveCount(0);
             foreach (var request in routedCommands)
             {
-                if (allCommands.Contains(request))
+                if (allCommands.ContainsValue(request.Value))
                 {
-                    allCommands.Remove(request);
+                    allCommands.Remove(request.Key);
                 }
                 else
                 {
                     throw new InvalidOperationException($"An unexpected command was added to the unprocessed requests. command={request}");
                 }
             }
-            allCommands.Should().BeEmpty("All commands are accounted for.");
-        }
-
-        [Fact]
-        public async Task AddAsync_Single_Commands_HandlesConcurrentCalls()
-        {
-            _mockOptions.Object.Value.Router.EnableBatch = false;
-
-            // Mock the setup for the command router
-            List<string> routedCommands = [];
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
-
-            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            int idx = 1;
-            var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
-            {
-                return _terminalProcessor.AddAsync($"command{idx++}", "sender", "endpoint");
-            });
-            await Task.WhenAll(tasks);
-
-            await Task.Delay(500);
-
-            // Assert all were processed without error
-            routedCommands.Distinct().Should().HaveCount(500);
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData(null)]
-        public async Task AddAsync_Throws_On_EmptyBatch(string? batch)
-        {
-            _mockOptions.Object.Value.Router.EnableBatch = false;
-            Func<Task> act = () => _terminalProcessor.AddAsync(batch!, "sender", "endpoint");
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_request")
-                .WithErrorDescription("The raw command or batch cannot be empty.");
-
-            _mockOptions.Object.Value.Router.EnableBatch = true;
-            act = () => _terminalProcessor.AddAsync(batch!, "sender", "endpoint");
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_request")
-                .WithErrorDescription("The raw command or batch cannot be empty.");
-        }
-
-        [Fact]
-        public async Task AddAsync_Throws_When_BatchDelimiter_Is_Larger_Than_Batch_In_BatchMode()
-        {
-            // Make sure delimter is enabled and greater than 1 character
-            _mockOptions.Object.Value.Router.EnableBatch = true;
-            _mockOptions.Object.Value.Router.BatchDelimiter = "$m$";
-
-            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-
-            // Act
-            Func<Task> act = () => _terminalProcessor.AddAsync("c", "sender", "endpoint");
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_request")
-                .WithErrorDescription("The raw batch does not end with the batch delimiter.");
-
-            // Assert only a single command was processed
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
-        }
-
-        [Theory]
-        [InlineData("command1")]
-        [InlineData("|command1")]
-        [InlineData("command1||")]
-        [InlineData("com|mand1")]
-        [InlineData("|com|mand1")]
-        [InlineData("|command1|")]
-        [InlineData("command1|command2|")]
-        [InlineData("|command1|command2|")]
-        [InlineData("|command1|command2")]
-        public async Task AddAsync_Throws_When_BatchDelimiter_Is_Misplaced_In_BatchMode(string batch)
-        {
-            // Make sure delimter is enabled and greater than 1 character
-            _mockOptions.Object.Value.Router.EnableBatch = true;
-
-            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-
-            // Act
-            Func<Task> act = () => _terminalProcessor.AddAsync(batch, "sender", "endpoint");
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_request")
-                .WithErrorDescription("The raw batch must have a single delimiter at the end, not missing or placed elsewhere.");
-
-            // Assert only a single command was processed
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
-        }
-
-        [Fact]
-        public async Task AddAsync_ThrowsException_WhenBatchTooLong()
-        {
-            _mockOptions.Object.Value.Router.MaxLength = 1000;
-
-            var longBatch = new string('A', 1001);
-            Func<Task> act = () => _terminalProcessor.AddAsync(longBatch, "sender", "endpoint");
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_configuration")
-                .WithErrorDescription("The raw command or batch length exceeds configured maximum. max_length=1000");
+            allCommands.Keys.Count.Should().Be(0, "All commands are accounted for.");
         }
 
         [Fact]
@@ -387,43 +327,21 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public void NewUniqueId_Generates_Unique_Id()
+        public async Task Execute_ThrowsException_WhenBatchTooLong()
         {
-            // Test default case
-            string testId = _terminalProcessor.NewUniqueId();
-            Guid.TryParse(testId, out _).Should().BeTrue();
+            _mockOptions.Object.Value.Router.MaxLength = 1000;
 
-            // Test case with null hint
-            testId = _terminalProcessor.NewUniqueId(null);
-            Guid.TryParse(testId, out _).Should().BeTrue();
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
-            // Test case with whitespace hint
-            testId = _terminalProcessor.NewUniqueId("   ");
-            Guid.TryParse(testId, out _).Should().BeTrue();
-
-            // Test case with an unrelated string as a hint
-            testId = _terminalProcessor.NewUniqueId("blah");
-            Guid.TryParse(testId, out _).Should().BeTrue();
-
-            // Test case with the "short" hint
-            for (int idx = 0; idx < 100; ++idx)
-            {
-                testId = _terminalProcessor.NewUniqueId("short");
-                testId.Length.Should().Be(12);
-                testId.Should().MatchRegex("^[a-fA-F0-9]{12}$", "Short ID should be 12 hexadecimal characters");
-            }
-
-            // Ensure uniqueness for short IDs
-            HashSet<string> shortIds = [];
-            for (int idx = 0; idx < 1000; ++idx)
-            {
-                testId = _terminalProcessor.NewUniqueId("short");
-                shortIds.Add(testId).Should().BeTrue($"Short ID '{testId}' should be unique");
-            }
+            var longRaw = new string('A', 1001);
+            Func<Task> act = () => _terminalProcessor.ExecuteAsync(TerminalInput.Single("id1", longRaw), "sender", "endpoint");
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode("invalid_request")
+                .WithErrorDescription("The command length exceeds the maximum allowed. max=1000");
         }
 
         [Fact]
-        public async Task ProcessAsync_Routes_Batched_Commands_And_Processes_In_Order()
+        public async Task ExecuteAsync_Routes_Batched_Commands_And_Processes_In_Order()
         {
             TerminalRequest testRequest = new("id1", "command1,command2,command3|");
 
@@ -464,7 +382,9 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            var response = await _terminalProcessor.ProcessAsync("command1,command2,command3|", "sender_1", "sender_endpoint_1");
+            TerminalInput batch = TerminalInput.Batch("id1", new[] { "id1", "id2", "id3" }, new[] { "command1", "command2", "command3" });
+
+            var response = await _terminalProcessor.ExecuteAsync(batch, "sender_1", "sender_endpoint_1");
 
             // Assert route context and response
             routeContext.Should().NotBeNull();
@@ -474,23 +394,23 @@ namespace OneImlx.Terminal.Runtime
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
             response.Should().NotBeNull();
-            response.Commands.Should().HaveCount(3);
+            response.Results.Should().HaveCount(3);
 
             // Assert first request and result
-            response.Commands[0].Raw.Should().Be("command1");
+            response.Input.Requests[0].Raw.Should().Be("command1");
             response.Results[0].Should().Be("sender_result1");
 
             // Assert second request and result
-            response.Commands[1].Raw.Should().Be("command2");
+            response.Input.Requests[1].Raw.Should().Be("command2");
             response.Results[1].Should().Be("sender_result2");
 
             // Assert third request and result
-            response.Commands[2].Raw.Should().Be("command3");
+            response.Input.Requests[2].Raw.Should().Be("command3");
             response.Results[2].Should().Be("sender_result3");
         }
 
         [Fact]
-        public async Task ProcessAsync_Routes_Batched_Commands_With_Null_Value_Result()
+        public async Task ExecuteAsync_Routes_Batched_Commands_With_Null_Value_Result()
         {
             TerminalRequest testRequest = new("id1", "command1,command2,command3,command4,command5|");
 
@@ -545,7 +465,8 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            var response = await _terminalProcessor.ProcessRequestAsync("command1,command2,command3,command4,command5|", "sender_1", "sender_endpoint_1");
+            TerminalInput input = TerminalInput.Batch("id1", new[] { "id1", "id2", "id3", "id4", "id5" }, new[] { "command1", "command2", "command3", "command4", "command5" });
+            var response = await _terminalProcessor.ExecuteAsync(input, "sender_1", "sender_endpoint_1");
 
             // Assert route context and response
             routeContext.Should().NotBeNull();
@@ -555,27 +476,27 @@ namespace OneImlx.Terminal.Runtime
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
             response.Should().NotBeNull();
-            response.Commands.Should().HaveCount(5);
+            response.Results.Should().HaveCount(5);
 
             // Assert requests and results
-            response.Commands[0].Raw.Should().Be("command1");
+            response.Input.Requests[0].Raw.Should().Be("command1");
             response.Results[0].Should().Be("sender_result1");
 
-            response.Commands[1].Raw.Should().Be("command2");
+            response.Input.Requests[1].Raw.Should().Be("command2");
             response.Results[1].Should().Be("sender_result2");
 
-            response.Commands[2].Raw.Should().Be("command3");
+            response.Input.Requests[2].Raw.Should().Be("command3");
             response.Results[2].Should().Be("sender_result3");
 
-            response.Commands[3].Raw.Should().Be("command4");
+            response.Input.Requests[3].Raw.Should().Be("command4");
             response.Results[3].Should().BeNull(); // Command4 returns null
 
-            response.Commands[4].Raw.Should().Be("command5");
+            response.Input.Requests[4].Raw.Should().Be("command5");
             response.Results[4].Should().Be("sender_result5");
         }
 
         [Fact]
-        public async Task ProcessAsync_Routes_Command_And_Returns_Result()
+        public async Task ExecuteAsync_Routes_Command_And_Returns_Result()
         {
             TerminalRequest testRequest = new("id1", "command1|");
 
@@ -595,7 +516,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            var response = await _terminalProcessor.ProcessRequestAsync("command1|", "sender_1", "sender_endpoint_1");
+            var response = await _terminalProcessor.ExecuteAsync(TerminalInput.Single("id1", "command1"), "sender_1", "sender_endpoint_1");
 
             // Make sure context is correctly populated
             routeContext.Should().NotBeNull();
@@ -611,19 +532,19 @@ namespace OneImlx.Terminal.Runtime
             response.SenderId.Should().Be("sender_1");
             response.SenderEndpoint.Should().Be("sender_endpoint_1");
 
-            response.Commands.Should().HaveCount(1);
-            response.Commands[0].Id.Should().NotBeNullOrWhiteSpace();
-            response.Commands[0].Raw.Should().Be("command1");
+            response.Input.Requests.Should().HaveCount(1);
+            response.Input.Requests[0].Id.Should().NotBeNullOrWhiteSpace();
+            response.Input.Requests[0].Raw.Should().Be("command1");
 
             response.Results.Should().HaveCount(1);
             response.Results[0].Should().Be("sender_result");
         }
 
         [Fact]
-        public async Task ProcessAsync_Without_Processing_Throws()
+        public async Task ExecuteAsync_Without_Processing_Throws()
         {
             // Act
-            Func<Task> act = async () => await _terminalProcessor.ProcessRequestAsync("command1", "sender", "endpoint");
+            Func<Task> act = async () => await _terminalProcessor.ExecuteAsync(TerminalInput.Single("id", "command1"), "sender", "endpoint");
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("server_error")
                 .WithErrorDescription("The terminal processor is not running.");
@@ -637,7 +558,7 @@ namespace OneImlx.Terminal.Runtime
             _mockExceptionHandler.Setup(e => e.HandleExceptionAsync(It.IsAny<TerminalExceptionHandlerContext>())).Callback<TerminalExceptionHandlerContext>(c => handeledException = c.Exception);
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            await _terminalProcessor.AddAsync("command1|", "sender", "endpoint");
+            await _terminalProcessor.AddAsync(TerminalInput.Single("id", "command1"), "sender", "endpoint");
             await Task.Delay(500);
 
             handeledException.Should().NotBeNull();
@@ -645,7 +566,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task StartProcessing_With_Add_Routes_Command_To_Router()
+        public async Task StartProcessing_Populates_Router_Context()
         {
             CommandRouterContext? routeContext = null;
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).Callback<CommandRouterContext>(c => routeContext = c);
@@ -653,7 +574,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Add with sender endpoint and sender id
-            await _terminalProcessor.AddAsync("command1|", "sender_1", "sender_endpoint_1");
+            await _terminalProcessor.AddAsync(TerminalInput.Single("id", "command1"), "sender_1", "sender_endpoint_1");
             await Task.Delay(500);
 
             routeContext.Should().NotBeNull();
@@ -668,17 +589,20 @@ namespace OneImlx.Terminal.Runtime
 
             // Add without sender endpoint and sender id
             routeContext = null;
-            await _terminalProcessor.AddAsync("command2|", null, null);
+            await _terminalProcessor.AddAsync(TerminalInput.Single("id", "command2"), null, null);
             await Task.Delay(500);
 
             routeContext.Should().NotBeNull();
-            routeContext!.Properties.Should().HaveCount(1);
+            routeContext!.Properties.Should().HaveCount(2);
+            routeContext.Properties!["sender_id"].Should().Be("$unknown$");
             routeContext.Properties!["sender_endpoint"].Should().Be("$unknown$");
 
             routeContext.Request.Id.Should().NotBeNullOrWhiteSpace();
             routeContext.Request.Raw.Should().Be("command2");
 
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
+
+            await _terminalProcessor.StopProcessingAsync(2000);
         }
 
         [Fact]
@@ -762,115 +686,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task StreamRequestAsync_Processes_Incomplete_Batch_correctly()
-        {
-            // Arrange
-            var senderId = "large_data_sender";
-            var senderEndpoint = "large_data_endpoint";
-            string? processedCommand = null;
-            var lockObj = new object();
-
-            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(ctx =>
-                {
-                    processedCommand = ctx.Request.Raw;
-                });
-
-            // Start the processor
-            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-
-            // Act: Stream data in chunks to the processor
-            byte[] bytes = _textHandler.Encoding.GetBytes("command1");
-            await _terminalProcessor.StreamAsync(bytes, senderId, senderEndpoint);
-
-            // Allow time for processing to complete
-            await Task.Delay(100);
-
-            // Assert: Verify command was not processed since the batch is incomplete
-            processedCommand.Should().BeNull();
-
-            // Ensure there are not unprocessed requests since the batch is incomplete
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
-        }
-
-        [Fact]
-        public async Task StreamRequestAsync_Processes_Large_Data_Received_In_Chunks_Maintaining_Order()
-        {
-            // Arrange
-            var senderId = "large_data_sender";
-            var senderEndpoint = "large_data_endpoint";
-            var processedCommands = new ConcurrentQueue<string>();
-            var lockObj = new object();
-
-            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(ctx =>
-                {
-                    processedCommands.Enqueue(ctx.Request.Raw);
-                });
-
-            // Create a large batch of commands to simulate streaming
-            var commands = Enumerable.Range(1, 1500).Select(i => $"command{i}").ToArray();
-            var completeBatch = string.Join("|", commands) + "|"; // Ensure the batch ends with the delimiter
-            var completeBatchBytes = Encoding.UTF8.GetBytes(completeBatch);
-
-            // Split the data into sizable chunks to simulate streaming
-            int chunkSize = 30;
-            var chunks = completeBatchBytes.Chunk(chunkSize).ToArray();
-
-            // Start the processor
-            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-
-            // Act: Stream data in chunks to the processor
-            foreach (var chunk in chunks)
-            {
-                await _terminalProcessor.StreamAsync(chunk, senderId, senderEndpoint);
-            }
-
-            // Allow time for processing to complete
-            await Task.Delay(3000);
-
-            // Assert: Verify all commands were processed in the correct order
-            processedCommands.ToArray().Should().BeEquivalentTo(commands);
-
-            // Ensure no unprocessed requests are left
-            _terminalProcessor.UnprocessedRequests.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task StreamRequestAsync_Processes_Partial_Batch_correctly()
-        {
-            // Arrange
-            var senderId = "large_data_sender";
-            var senderEndpoint = "large_data_endpoint";
-            List<string> processedCommands = [];
-            var lockObj = new object();
-
-            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(ctx =>
-                {
-                    processedCommands.Add(ctx.Request.Raw);
-                });
-
-            // Start the processor
-            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-
-            // Act: Stream data in chunks to the processor
-            byte[] bytes = _textHandler.Encoding.GetBytes("command1|command2|command3");
-            await _terminalProcessor.StreamAsync(bytes, senderId, senderEndpoint);
-
-            // Allow time for processing to complete
-            await Task.Delay(100);
-
-            // Assert: Verify command was are processed since the batch is partial
-            processedCommands.Should().HaveCount(2);
-            processedCommands.Should().BeEquivalentTo(["command1", "command2"]);
-
-            // Ensure there are not unprocessed requests since the batch is partial
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
-        }
-
-        [Fact]
-        public async Task StreamRequestAsync_Processes_Partial_Batch_With_Command_Delimiter_Correctly()
+        public async Task Stream_Does_No_Processes_Partial_Batch()
         {
             // Arrange
             var senderId = "large_data_sender";
@@ -889,22 +705,113 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act: Stream data in chunks to the processor
-            byte[] bytes = _textHandler.Encoding.GetBytes("command1,command2,command3|command4,command5,command6|command7");
-            await _terminalProcessor.StreamAsync(bytes, senderId, senderEndpoint);
+            TerminalInput input1 = TerminalInput.Single("id1", "command1");
+            TerminalInput input2 = TerminalInput.Single("id2", "command2");
+            TerminalInput input3 = TerminalInput.Single("id3", "command3");
+
+            // Ensure batch ends with delimiter
+            var bytes1 = TerminalServices.DelimitBytes(JsonSerializer.SerializeToUtf8Bytes(input1), _mockOptions.Object.Value.Router.StreamDelimiter);
+            var bytes2 = TerminalServices.DelimitBytes(JsonSerializer.SerializeToUtf8Bytes(input2), _mockOptions.Object.Value.Router.StreamDelimiter);
+            var bytes3NonDelimited = JsonSerializer.SerializeToUtf8Bytes(input2);
+
+            // The last batch is not delimited.
+            byte[] bytes = bytes1.Concat(bytes2).Concat(bytes3NonDelimited).ToArray();
+            await _terminalProcessor.StreamAsync(bytes, bytes.Length, senderId, senderEndpoint);
 
             // Allow time for processing to complete
             await Task.Delay(100);
 
             // Assert: Verify command was are processed since the batch is partial
-            processedCommands.Should().HaveCount(6);
-            processedCommands.Should().BeEquivalentTo(["command1", "command2", "command3", "command4", "command5", "command6"]);
+            processedCommands.Should().HaveCount(2);
+            processedCommands.Should().BeEquivalentTo(["command1", "command2"]);
 
             // Ensure there are not unprocessed requests since the batch is partial
-            _terminalProcessor.UnprocessedRequests.Should().HaveCount(0);
+            _terminalProcessor.UnprocessedInputs.Should().HaveCount(0);
         }
 
         [Fact]
-        public async Task StreamRequestAsync_Processes_Single_Batch_correctly()
+        public async Task Stream_Does_Not_Process_Non_Delimited_Input()
+        {
+            // Arrange
+            var senderId = "large_data_sender";
+            var senderEndpoint = "large_data_endpoint";
+            string? processedCommand = null;
+            var lockObj = new object();
+
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(ctx =>
+                {
+                    processedCommand = ctx.Request.Raw;
+                });
+
+            // Start the processor
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
+
+            // Act: Stream data in chunks to the processor
+            TerminalInput terminalInput = TerminalInput.Single("id1", "command1");
+            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(terminalInput);
+            await _terminalProcessor.StreamAsync(bytes, bytes.Length, senderId, senderEndpoint);
+
+            // Allow time for processing to complete
+            await Task.Delay(100);
+
+            // Assert: Verify command was not processed since the batch is incomplete
+            processedCommand.Should().BeNull();
+
+            // Ensure there are not unprocessed requests since the batch is incomplete
+            _terminalProcessor.UnprocessedInputs.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public async Task Stream_Processes_Chunks_In_Order()
+        {
+            // Arrange
+            var senderId = "large_data_sender";
+            var senderEndpoint = "large_data_endpoint";
+            var processedCommands = new ConcurrentQueue<string>();
+            var lockObj = new object();
+
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
+                .Callback<CommandRouterContext>(ctx =>
+                {
+                    processedCommands.Enqueue(ctx.Request.Raw);
+                })
+                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
+
+            // Create a large batch of commands to simulate streaming
+            var ids = Enumerable.Range(1, 1500).Select(i => $"id{i}").ToArray();
+            var commands = Enumerable.Range(1, 1500).Select(i => $"command{i}").ToArray();
+            TerminalInput batch = TerminalInput.Batch("batch1", ids, commands);
+
+            // Ensure batch ends with delimiter
+            var completeBatchBytes = JsonSerializer.SerializeToUtf8Bytes(batch);
+            var delimitedCompleteBatchBytes = TerminalServices.DelimitBytes(completeBatchBytes, _mockOptions.Object.Value.Router.StreamDelimiter);
+
+            // Split the data into sizable chunks to simulate streaming
+            int chunkSize = 30;
+            var chunks = delimitedCompleteBatchBytes.Chunk(chunkSize).ToArray();
+
+            // Start the processor
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
+
+            // Act: Stream data in chunks to the processor
+            foreach (var chunk in chunks)
+            {
+                await _terminalProcessor.StreamAsync(chunk, chunk.Length, senderId, senderEndpoint);
+            }
+
+            // Allow time for processing to complete
+            await Task.Delay(3000);
+
+            // Assert: Verify all commands were processed in the correct order
+            processedCommands.ToArray().Should().BeEquivalentTo(commands);
+
+            // Ensure no unprocessed requests are left
+            _terminalProcessor.UnprocessedInputs.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task StreamRequestAsync_Processes_Delimited_Input()
         {
             // Arrange
             var senderId = "large_data_sender";
@@ -921,9 +828,11 @@ namespace OneImlx.Terminal.Runtime
             // Start the processor
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
-            // Act: Stream data in chunks to the processor
-            byte[] bytes = _textHandler.Encoding.GetBytes("command1|");
-            await _terminalProcessor.StreamAsync(bytes, senderId, senderEndpoint);
+            // Delimit the input
+            TerminalInput terminalInput = TerminalInput.Single("id1", "command1");
+            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(terminalInput);
+            byte[] delimitedBytes = TerminalServices.DelimitBytes(bytes, _mockOptions.Object.Value.Router.StreamDelimiter);
+            await _terminalProcessor.StreamAsync(delimitedBytes, delimitedBytes.Length, senderId, senderEndpoint);
 
             // Allow time for processing to complete
             await Task.Delay(100);
@@ -932,7 +841,7 @@ namespace OneImlx.Terminal.Runtime
             processedCommand.Should().Be("command1");
 
             // Ensure no unprocessed requests are left
-            _terminalProcessor.UnprocessedRequests.Should().BeEmpty();
+            _terminalProcessor.UnprocessedInputs.Should().BeEmpty();
         }
 
         [Fact]

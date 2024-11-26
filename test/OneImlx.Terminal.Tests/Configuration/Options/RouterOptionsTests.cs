@@ -21,10 +21,7 @@ namespace OneImlx.Terminal.Configuration.Options
             options.Timeout.Should().Be(25000);
             options.MaxLength.Should().Be(1024);
             options.MaxClients.Should().Be(5);
-            options.EnableBatch.Should().BeNull();
-            options.EnableResponses.Should().BeNull();
-            options.BatchDelimiter.Should().Be("$b$");
-            options.CommandDelimiter.Should().Be("$c$");
+            options.EnableResponses.Should().BeFalse();
         }
     }
 }

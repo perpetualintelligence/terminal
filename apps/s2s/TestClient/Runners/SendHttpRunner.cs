@@ -43,8 +43,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         private async Task SendHttpCommandsAsync(HttpClient client, int clientIndex, CancellationToken cToken)
         {
-            string[] cmdIds = { "cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6" };
-            string[] commands = { "ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2" };
+            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6"];
+            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"];
 
             try
             {

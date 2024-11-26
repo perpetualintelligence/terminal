@@ -16,6 +16,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -92,7 +93,8 @@ namespace OneImlx.Terminal.Runtime
 
             // Act
             var routerTask = udpRouter.RunAsync(context);
-            await SendUdpMessageAsync("test message", context.IPEndPoint);
+            TerminalInput input = TerminalInput.Single("id1", "test message");
+            await SendUdpMessageAsync(input, context.IPEndPoint);
             await Task.Delay(100);
             terminalCancellationSource.Cancel();
             await routerTask;
@@ -113,7 +115,8 @@ namespace OneImlx.Terminal.Runtime
             var routerTask = udpRouter.RunAsync(context);
             udpRouter.IsRunning.Should().BeTrue();
 
-            await SendUdpMessageAsync("test message", context.IPEndPoint); // Send a real UDP message
+            TerminalInput input = TerminalInput.Single("id1", "test message");
+            byte[] bytesSend = await SendUdpMessageAsync(input, context.IPEndPoint); // Send a real UDP message
             await Task.Delay(100);
             terminalCancellationSource.Cancel();
             await routerTask;
@@ -121,7 +124,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Assert
             terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>()), Times.Once);
-            terminalProcessorMock.Verify(x => x.AddAsync("test message", It.IsAny<string>(), It.Is<string>(ctx => ctx.Contains("127.0.0.1"))), Times.Once);
+            terminalProcessorMock.Verify(x => x.StreamAsync(bytesSend, bytesSend.Length, It.IsAny<string>(), It.Is<string>(ctx => ctx.Contains("127.0.0.1"))), Times.Once);
             terminalProcessorMock.Verify(x => x.StopProcessingAsync(options.Router.Timeout), Times.Once);
         }
 
@@ -159,12 +162,13 @@ namespace OneImlx.Terminal.Runtime
         }
 
         // Helper method to send a real UDP message
-        private async Task SendUdpMessageAsync(string message, IPEndPoint endpoint)
+        private async Task<byte[]> SendUdpMessageAsync(TerminalInput input, IPEndPoint endpoint)
         {
             using (var client = new UdpClient())
             {
-                var messageBytes = Encoding.UTF8.GetBytes(message);
+                var messageBytes = JsonSerializer.SerializeToUtf8Bytes(input);
                 await client.SendAsync(messageBytes, messageBytes.Length, endpoint);
+                return messageBytes;
             }
         }
 

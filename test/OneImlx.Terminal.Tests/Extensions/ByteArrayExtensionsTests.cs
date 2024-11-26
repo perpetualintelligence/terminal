@@ -1,95 +1,197 @@
-using System;
-using System.Collections.Generic;
-using Xunit;
-using OneImlx.Terminal.Extensions;
+﻿/*
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
-namespace OneImlx.Terminal.Tests.Extensions
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+
+using System;
+using FluentAssertions;
+using Xunit;
+
+namespace OneImlx.Terminal.Extensions
 {
     public class ByteArrayExtensionsTests
     {
         [Fact]
-        public void Split_ShouldThrowArgumentException_WhenDelimiterIsNull()
+        public void Split_HandlesConsecutiveDelimiters()
         {
-            byte[] source = new byte[] { 1, 2, 3, 4, 5 };
-            byte[] delimiter = null;
+            // Arrange
+            byte[] source = [1, 0x1F, 0x1F, 2, 3];
+            byte delimiter = 0x1F;
 
-            Assert.Throws<ArgumentException>(() => source.Split(delimiter));
+            // Act
+            var result = source.Split(delimiter, false, out var endsWithDelimiter);
+
+            // Assert
+            result.Should().HaveCount(3);
+            result[0].Should().BeEquivalentTo(new byte[] { 1 });
+            result[1].Should().BeEmpty();
+            result[2].Should().BeEquivalentTo(new byte[] { 2, 3 });
+            endsWithDelimiter.Should().BeFalse();
         }
 
         [Fact]
-        public void Split_ShouldThrowArgumentException_WhenDelimiterIsEmpty()
+        public void Split_HandlesConsecutiveDelimiters_IgnoreEmpty()
         {
-            byte[] source = new byte[] { 1, 2, 3, 4, 5 };
-            byte[] delimiter = new byte[] { };
+            // Arrange
+            byte[] source = [1, 0x1F, 0x1F, 2, 3];
+            byte delimiter = 0x1F;
 
-            Assert.Throws<ArgumentException>(() => source.Split(delimiter));
+            // Act
+            var result = source.Split(delimiter, true, out var endsWithDelimiter);
+
+            // Assert
+            result.Should().HaveCount(2);
+            result[0].Should().BeEquivalentTo(new byte[] { 1 });
+            result[1].Should().BeEquivalentTo(new byte[] { 2, 3 });
+            endsWithDelimiter.Should().BeFalse();
         }
 
         [Fact]
-        public void Split_ShouldReturnSingleSegment_WhenDelimiterNotFound()
+        public void Split_HandlesDelimiterAtStartAndEnd()
         {
-            byte[] source = new byte[] { 1, 2, 3, 4, 5 };
-            byte[] delimiter = new byte[] { 6 };
+            // Arrange
+            byte[] source = [0x1F, 1, 2, 3, 0x1F];
+            byte delimiter = 0x1F;
 
-            var result = source.Split(delimiter);
+            // Act
+            var result = source.Split(delimiter, false, out var endsWithDelimiter);
 
-            Assert.Single(result);
-            Assert.Equal(source, result[0]);
+            // Assert
+            result.Should().HaveCount(3);
+            result[0].Should().BeEmpty();
+            result[1].Should().BeEquivalentTo(new byte[] { 1, 2, 3 });
+            result[2].Should().BeEmpty();
+            endsWithDelimiter.Should().BeTrue();
         }
 
         [Fact]
-        public void Split_ShouldReturnMultipleSegments_WhenDelimiterFound()
+        public void Split_HandlesDelimiterAtStartAndEnd_IgnoreEmpty()
         {
-            byte[] source = new byte[] { 1, 2, 3, 4, 5, 2, 3, 6 };
-            byte[] delimiter = new byte[] { 2, 3 };
+            // Arrange
+            byte[] source = [0x1F, 1, 2, 3, 0x1F];
+            byte delimiter = 0x1F;
 
-            var result = source.Split(delimiter);
+            // Act
+            var result = source.Split(delimiter, true, out var endsWithDelimiter);
 
-            Assert.Equal(3, result.Count);
-            Assert.Equal(new byte[] { 1 }, result[0]);
-            Assert.Equal(new byte[] { 4, 5 }, result[1]);
-            Assert.Equal(new byte[] { 6 }, result[2]);
+            // Assert
+            result.Should().HaveCount(1);
+            result[0].Should().BeEquivalentTo(new byte[] { 1, 2, 3 });
+            endsWithDelimiter.Should().BeTrue();
         }
 
         [Fact]
-        public void Split_ShouldHandleDelimiterAtStart()
+        public void Split_ReturnsEmptyLastSegment_WhenSourceEndsWithDelimiter()
         {
-            byte[] source = new byte[] { 2, 3, 1, 2, 3, 4, 5 };
-            byte[] delimiter = new byte[] { 2, 3 };
+            // Arrange
+            byte[] source = [1, 2, 3, 4, 5, 0x1F];
+            byte delimiter = 0x1F;
 
-            var result = source.Split(delimiter);
+            // Act
+            var result = source.Split(delimiter, false, out var endsWithDelimiter);
 
-            Assert.Equal(3, result.Count);
-            Assert.Empty(result[0]);
-            Assert.Equal(new byte[] { 1 }, result[1]);
-            Assert.Equal(new byte[] { 4, 5 }, result[2]);
+            // Assert
+            result.Should().HaveCount(2);
+            result[0].Should().BeEquivalentTo(new byte[] { 1, 2, 3, 4, 5 });
+            result[1].Should().BeEmpty();
+            endsWithDelimiter.Should().BeTrue();
         }
 
         [Fact]
-        public void Split_ShouldHandleDelimiterAtEnd()
+        public void Split_ReturnsEmptyLastSegment_WhenSourceEndsWithDelimiter_IgnoreEmpty()
         {
-            byte[] source = new byte[] { 1, 2, 3, 4, 5, 2, 3 };
-            byte[] delimiter = new byte[] { 2, 3 };
+            // Arrange
+            byte[] source = [1, 2, 3, 4, 5, 0x1F];
+            byte delimiter = 0x1F;
 
-            var result = source.Split(delimiter);
+            // Act
+            var result = source.Split(delimiter, true, out var endsWithDelimiter);
 
-            Assert.Equal(2, result.Count);
-            Assert.Equal(new byte[] { 1 }, result[0]);
-            Assert.Equal(new byte[] { 4, 5 }, result[1]);
+            // Assert
+            result.Should().HaveCount(1);
+            result[0].Should().BeEquivalentTo(new byte[] { 1, 2, 3, 4, 5 });
+            endsWithDelimiter.Should().BeTrue();
         }
 
         [Fact]
-        public void Split_ShouldHandleConsecutiveDelimiters()
+        public void Split_ReturnsNoSegments_WhenOnlyDelimiterExists_IgnoreEmpty()
         {
-            byte[] source = new byte[] { 1, 2, 3, 2, 3, 4, 5 };
-            byte[] delimiter = new byte[] { 2, 3 };
+            // Arrange
+            byte[] source = [0x1F];
+            byte delimiter = 0x1F;
 
-            var result = source.Split(delimiter);
+            // Act
+            var result = source.Split(delimiter, true, out var endsWithDelimiter);
 
-            Assert.Equal(3, result.Count);
-            Assert.Equal(new byte[] { 1 }, result[0]);
-            Assert.Empty(result[1]);
-            Assert.Equal(new byte[] { 4, 5 }, result[2]);
+            // Assert
+            result.Should().BeEmpty();
+            endsWithDelimiter.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Split_ReturnsSingleEmptySegment_WhenOnlyDelimiterExists()
+        {
+            // Arrange
+            byte[] source = [0x1F];
+            byte delimiter = 0x1F;
+
+            // Act
+            var result = source.Split(delimiter, false, out var endsWithDelimiter);
+
+            // Assert
+            result.Should().HaveCount(1);
+            result[0].Should().BeEmpty();
+            endsWithDelimiter.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Split_ReturnsSingleSegment_WhenDelimiterIsAbsent(bool ignoreEmpty)
+        {
+            // Arrange
+            byte[] source = [1, 2, 3, 4, 5];
+            byte delimiter = 0x1F;
+
+            // Act
+            var result = source.Split(delimiter, ignoreEmpty, out var endsWithDelimiter);
+
+            // Assert
+            result.Should().HaveCount(1);
+            result[0].Should().BeEquivalentTo(source);
+            endsWithDelimiter.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Split_ThrowsArgumentException_WhenSourceIsEmpty()
+        {
+            // Arrange
+            byte[] source = [];
+            byte delimiter = 0x1F;
+
+            // Act
+            Action act = () => source.Split(delimiter, false, out _);
+
+            // Assert
+            act.Should().Throw<ArgumentException>()
+               .WithMessage("Source array cannot be null or empty.*");
+        }
+
+        [Fact]
+        public void Split_ThrowsArgumentException_WhenSourceIsNull()
+        {
+            // Arrange
+            byte[] source = null!;
+            byte delimiter = 0x1F;
+
+            // Act
+            Action act = () => source.Split(delimiter, false, out _);
+
+            // Assert
+            act.Should().Throw<ArgumentException>()
+               .WithMessage("Source array cannot be null or empty.*");
         }
     }
 }

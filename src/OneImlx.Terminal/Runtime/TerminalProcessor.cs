@@ -126,14 +126,7 @@ namespace OneImlx.Terminal.Runtime
             }
 
             TerminalOutput response = new(input, new object?[input.Count], senderId, senderEndpoint);
-            for (int idx = 0; idx < input.Count; ++idx)
-            {
-                CommandRouterResult result = await RouteRequestAsync(idx, response, terminalRouterContext);
-                object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
-
-                response.Results[idx] = value;
-            }
-
+            await RouteRequestsAsync(response, terminalRouterContext);
             return response;
         }
 
@@ -250,29 +243,39 @@ namespace OneImlx.Terminal.Runtime
             this.handler = handler ?? throw new TerminalException(TerminalErrors.InvalidRequest, "The response handler cannot be null.");
         }
 
-        private async Task<CommandRouterResult> RouteRequestAsync(int index, TerminalOutput terminalOutput, TerminalRouterContext terminalRouterContext)
+        private async Task RouteRequestsAsync(TerminalOutput terminalOutput, TerminalRouterContext terminalRouterContext)
         {
-            TerminalRequest request = terminalOutput.Input[index];
+            for (int idx = 0; idx < terminalOutput.Input.Count; ++idx)
+            {
+                TerminalRequest request = terminalOutput.Input[idx];
 
-            string senderEndpoint = terminalOutput.SenderEndpoint ?? "$unknown$";
-            string senderId = terminalOutput.SenderId ?? "$unknown$";
-            Dictionary<string, object> properties = new()
+                string senderEndpoint = terminalOutput.SenderEndpoint ?? "$unknown$";
+                string senderId = terminalOutput.SenderId ?? "$unknown$";
+                Dictionary<string, object> properties = new()
             {
                 { TerminalIdentifiers.SenderEndpointToken, senderEndpoint },
                 { TerminalIdentifiers.SenderIdToken, senderId }
             };
 
-            logger.LogDebug("Routing the command. raw={0} sender={1}", request.Raw, senderId);
-            var context = new CommandRouterContext(request, terminalRouterContext, properties);
-            var routeTask = commandRouter.RouteCommandAsync(context);
+                if (request.Raw.Length > terminalOptions.Value.Router.MaxLength)
+                {
+                    throw new TerminalException(TerminalErrors.InvalidRequest, "The command length exceeds the maximum allowed. max={0}", terminalOptions.Value.Router.MaxLength);
+                }
 
-            if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.StartContext.TerminalCancellationToken)) == routeTask)
-            {
-                return await routeTask;
-            }
-            else
-            {
-                throw new TimeoutException($"The command router timed out in {terminalOptions.Value.Router.Timeout} milliseconds.");
+                logger.LogDebug("Routing the command. raw={0} sender={1}", request.Raw, senderId);
+                var context = new CommandRouterContext(request, terminalRouterContext, properties);
+                var routeTask = commandRouter.RouteCommandAsync(context);
+
+                if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.StartContext.TerminalCancellationToken)) == routeTask)
+                {
+                    var result = await routeTask;
+                    object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
+                    terminalOutput.Results[idx] = value;
+                }
+                else
+                {
+                    throw new TimeoutException($"The command router timed out in {terminalOptions.Value.Router.Timeout} milliseconds.");
+                }
             }
         }
 
@@ -300,14 +303,8 @@ namespace OneImlx.Terminal.Runtime
                         unprocessedRequests.TryDequeue(out TerminalOutput? response);
                         if (response != null)
                         {
-                            for (int idx = 0; idx < response.Input.Count; ++idx)
-                            {
-                                var result = await RouteRequestAsync(idx, response, terminalRouterContext);
-                                object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
-                                response.Results[idx] = value;
-                            }
-
                             // Request is processed and results are populated in the response, not push it to processed requests.
+                            await RouteRequestsAsync(response, terminalRouterContext);
                             processedRequests.Push(response);
                             responseSignal.Release();
                         }

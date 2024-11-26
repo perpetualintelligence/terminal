@@ -19,45 +19,10 @@ namespace OneImlx.Terminal.Runtime.Tests
             {
                 Router = new RouterOptions
                 {
-                    CommandDelimiter = ";", // Delimiter to separate commands within a batch
-                    BatchDelimiter = "|"   // Delimiter to mark the end of a complete batch
                 }
             };
         }
 
-        [Fact]
-        public void CreateBatch_WithCustomDelimiters_ShouldJoinCommandsAndEndWithMessageDelimiter()
-        {
-            var commands = new[] { "cmd1", "cmd2", "cmd3" };
-            var result = TerminalServices.CreateBatch(";", "|", commands);
-            result.Should().Be("cmd1;cmd2;cmd3|");
-        }
-
-        [Fact]
-        public void CreateBatch_WithEmptyCommands_ShouldReturnOnlyMessageDelimiter()
-        {
-            var commands = System.Array.Empty<string>();
-            var result = TerminalServices.CreateBatch(";", "|", commands);
-            result.Should().Be("|");
-        }
-
-        [Fact]
-        public void CreateBatch_WithOptions_ShouldJoinCommandsAndEndWithMessageDelimiter()
-        {
-            var commands = new[] { "cmd1", "cmd2", "cmd3" };
-            var result = TerminalServices.CreateBatch(_terminalOptions, commands);
-            result.Should().Be("cmd1;cmd2;cmd3|");
-        }
-
-        [Fact]
-        public void CreateBatch_WithSingleCommand_ShouldAppendMessageDelimiter()
-        {
-            var commands = new[] { "cmd1" };
-            var result = TerminalServices.CreateBatch(";", "|", commands);
-            result.Should().Be("cmd1|");
-        }
-
-        // Tests for Encode and Decode License Contents
 
         [Theory]
         [InlineData("dGVzdCBsaWNlbnNlY29uZGVudHM=")]
