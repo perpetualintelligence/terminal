@@ -301,7 +301,7 @@ namespace OneImlx.Terminal.Licensing
         public async Task ExtractFromJsonAsync_WithNoLicenseKey_ShouldErrorAsync()
         {
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = null;
+            terminalOptions.Licensing.LicenseFile = null!;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured.");

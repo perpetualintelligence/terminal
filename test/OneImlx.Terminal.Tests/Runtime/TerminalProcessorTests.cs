@@ -382,7 +382,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            TerminalInput batch = TerminalInput.Batch("id1", new[] { "id1", "id2", "id3" }, new[] { "command1", "command2", "command3" });
+            TerminalInput batch = TerminalInput.Batch("id1", ["id1", "id2", "id3"], ["command1", "command2", "command3"]);
 
             var response = await _terminalProcessor.ExecuteAsync(batch, "sender_1", "sender_endpoint_1");
 
@@ -465,7 +465,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            TerminalInput input = TerminalInput.Batch("id1", new[] { "id1", "id2", "id3", "id4", "id5" }, new[] { "command1", "command2", "command3", "command4", "command5" });
+            TerminalInput input = TerminalInput.Batch("id1", ["id1", "id2", "id3", "id4", "id5"], ["command1", "command2", "command3", "command4", "command5"]);
             var response = await _terminalProcessor.ExecuteAsync(input, "sender_1", "sender_endpoint_1");
 
             // Assert route context and response

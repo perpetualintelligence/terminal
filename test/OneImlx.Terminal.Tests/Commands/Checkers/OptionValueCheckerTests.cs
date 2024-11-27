@@ -93,7 +93,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             options.Checker.StrictValueType = false;
 
-            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(value);
@@ -106,7 +106,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             options.Checker.StrictValueType = false;
 
-            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new CreditCardAttribute()) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new CreditCardAttribute())] };
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(value);
@@ -119,7 +119,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             options.Checker.StrictValueType = true;
 
-            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
             Option value = new(identity, "test3");
 
             OptionCheckerContext context = new(value);
@@ -132,7 +132,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             options.Checker.StrictValueType = true;
 
-            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new CreditCardAttribute()) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new CreditCardAttribute())] };
             Option value = new(identity, "invalid_4242424242424242");
 
             OptionCheckerContext context = new(value);
@@ -143,7 +143,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task SupportedValueShouldNotErrorAsync()
         {
-            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2")) } };
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
             Option value = new(identity, "test2");
 
             OptionCheckerContext context = new(value);

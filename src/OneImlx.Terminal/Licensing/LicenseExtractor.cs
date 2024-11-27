@@ -55,10 +55,7 @@ namespace OneImlx.Terminal.Licensing
             logger.LogDebug("Extract license.");
 
             // For singleton DI service we don't extract license keys once extracted.
-            if (licenseExtractorResult == null)
-            {
-                licenseExtractorResult = await ExtractFromJsonAsync();
-            }
+            licenseExtractorResult ??= await ExtractFromJsonAsync();
 
             return licenseExtractorResult;
         }
@@ -70,7 +67,7 @@ namespace OneImlx.Terminal.Licensing
             return Task.FromResult(licenseExtractorResult?.License);
         }
 
-        private async Task<LicenseClaims> CheckOfflineLicenseAsync(LicenseCheck checkModel)
+        private static async Task<LicenseClaims> CheckOfflineLicenseAsync(LicenseCheck checkModel)
         {
             // Make sure validation key is not null
             if (checkModel.ValidationKey == null)
@@ -93,7 +90,7 @@ namespace OneImlx.Terminal.Licensing
 
                 RequireSignedTokens = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKeys = new[] { validationKey },
+                IssuerSigningKeys = [validationKey],
 
                 RequireExpirationTime = true,
                 ValidateLifetime = true,
@@ -135,7 +132,7 @@ namespace OneImlx.Terminal.Licensing
             return httpResponseMessage;
         }
 
-        private void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
+        private static void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
         {
             result.Claims.TryGetValue(claim, out object? jwtValue);
 
@@ -396,7 +393,7 @@ namespace OneImlx.Terminal.Licensing
             return licenseExtractorResult;
         }
 
-        private bool IsOnPremiseDeployment(string? deployment)
+        private static bool IsOnPremiseDeployment(string? deployment)
         {
             return deployment == TerminalIdentifiers.OnPremiseDeployment;
         }

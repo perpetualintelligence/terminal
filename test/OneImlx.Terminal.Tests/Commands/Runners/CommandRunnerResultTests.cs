@@ -58,7 +58,9 @@ namespace OneImlx.Terminal.Tests.Commands.Runners
         [Fact]
         public void Constructor_ShouldThrowArgumentNullException_WhenValueIsNull()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Action act = static () => new CommandRunnerResult(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             act.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'value')");
         }
 

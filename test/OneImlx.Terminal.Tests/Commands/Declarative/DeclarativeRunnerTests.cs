@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Commands.Declarative
             DataValidationValueChecker<Option> val2Checker2 = (DataValidationValueChecker<Option>)opt2.ValueCheckers!.Last();
             val2Checker2.ValidationAttribute.Should().BeOfType<OneOfAttribute>();
             OneOfAttribute val2OneOf = (OneOfAttribute)val2Checker2.ValidationAttribute;
-            val2OneOf.AllowedValues.Should().BeEquivalentTo(new string[] { "test1", "test2", "test3" });
+            val2OneOf.AllowedValues.Should().BeEquivalentTo(["test1", "test2", "test3"]);
 
             OptionDescriptor opt3 = cmd.OptionDescriptors["opt3"];
             opt3.ValueCheckers.Should().NotBeNull();
@@ -95,7 +95,7 @@ namespace OneImlx.Terminal.Commands.Declarative
             DataValidationValueChecker<Argument> val2Checker2 = (DataValidationValueChecker<Argument>)arg2.ValueCheckers!.Last();
             val2Checker2.ValidationAttribute.Should().BeOfType<OneOfAttribute>();
             OneOfAttribute val2OneOf = (OneOfAttribute)val2Checker2.ValidationAttribute;
-            val2OneOf.AllowedValues.Should().BeEquivalentTo(new string[] { "test1", "test2", "test3" });
+            val2OneOf.AllowedValues.Should().BeEquivalentTo(["test1", "test2", "test3"]);
 
             ArgumentDescriptor arg3 = cmd.ArgumentDescriptors["arg3"];
             arg3.ValueCheckers.Should().NotBeNull();
@@ -291,7 +291,7 @@ namespace OneImlx.Terminal.Commands.Declarative
 
             cmdDescs.First().CustomProperties.Should().NotBeNull();
             cmdDescs.First().CustomProperties!.Keys.Should().Equal(["key1", "key2", "key3"]);
-            cmdDescs.First().CustomProperties!.Values.Should().Equal(new string[] { "value1", "value2", "value3" });
+            cmdDescs.First().CustomProperties!.Values.Should().Equal(["value1", "value2", "value3"]);
         }
 
         [Fact]
