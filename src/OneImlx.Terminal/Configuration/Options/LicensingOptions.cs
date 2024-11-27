@@ -7,7 +7,6 @@
 
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Licensing;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Configuration.Options
 {

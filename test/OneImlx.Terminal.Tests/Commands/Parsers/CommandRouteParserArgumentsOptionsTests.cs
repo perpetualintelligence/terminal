@@ -57,9 +57,9 @@ namespace OneImlx.Terminal.Commands.Parsers
                 new("cmd_nr2", "cmd_nr2_name", "cmd_nr2_desc", CommandType.SubCommand, CommandFlags.None,  argumentDescriptors: argumentDescriptors, optionDescriptors: optionDescriptors)
             ]);
             commandStore = new TerminalInMemoryCommandStore(textHandler, commandDescriptors.Values);
-            logger = new NullLogger<CommandRequestParser>();
+            logger = new NullLogger<CommandRequestQueueParser>();
 
-            commandRequestParser = new CommandRequestParser(textHandler, commandStore, terminalOptions, logger);
+            commandRequestParser = new CommandRequestQueueParser(textHandler, commandStore, terminalOptions, logger);
         }
 
         [Fact]
@@ -1095,7 +1095,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         private readonly CommandDescriptors commandDescriptors;
         private readonly ICommandRequestParser commandRequestParser;
         private readonly ITerminalCommandStore commandStore;
-        private readonly ILogger<CommandRequestParser> logger;
+        private readonly ILogger<CommandRequestQueueParser> logger;
         private readonly OptionDescriptors optionDescriptors;
         private readonly TerminalOptions terminalOptions;
         private readonly ITerminalTextHandler textHandler;

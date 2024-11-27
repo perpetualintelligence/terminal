@@ -1,5 +1,5 @@
 /*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -117,7 +117,6 @@ namespace OneImlx.Terminal.Extensions
                            .AddCommandStore<TStore>()
                            .AddProcessor<TerminalProcessor>()
                            .AddLicensing();
-
         }
 
         /// <summary>
@@ -197,7 +196,7 @@ namespace OneImlx.Terminal.Extensions
 
             return services.AddTerminal<TStore, TText>(textHandler, setupAction)
                    .AddCommandRouter<CommandRouter, CommandHandler, CommandRuntime>()
-                   .AddCommandParser<CommandParser, CommandRequestParser>()
+                   .AddCommandParser<CommandParser, CommandRequestQueueParser>()
                    .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
                    .AddArgumentChecker<DataTypeMapper<Argument>, ArgumentChecker>()
                    .AddExceptionHandler<TException>()

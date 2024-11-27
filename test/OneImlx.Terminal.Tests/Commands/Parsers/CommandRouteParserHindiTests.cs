@@ -23,7 +23,7 @@ namespace OneImlx.Terminal.Commands.Parsers
     {
         public CommandRouteParserHindiTests()
         {
-            _logger = new LoggerFactory().CreateLogger<CommandRequestParser>();
+            _logger = new LoggerFactory().CreateLogger<CommandRequestQueueParser>();
             _textHandler = new TerminalUnicodeTextHandler();
 
             var options = new OptionDescriptors(new TerminalUnicodeTextHandler(),
@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             _commandStore = new TerminalInMemoryCommandStore(_textHandler, _commandDescriptors.Values);
             _terminalOptions = MockTerminalOptions.NewAliasOptions();
-            _commandRouteParser = new CommandRequestParser(_textHandler, _commandStore, _terminalOptions, _logger);
+            _commandRouteParser = new CommandRequestQueueParser(_textHandler, _commandStore, _terminalOptions, _logger);
         }
 
         [Fact]
@@ -490,7 +490,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         private readonly CommandDescriptors _commandDescriptors;
         private readonly ICommandRequestParser _commandRouteParser;
         private readonly ITerminalCommandStore _commandStore;
-        private readonly ILogger<CommandRequestParser> _logger;
+        private readonly ILogger<CommandRequestQueueParser> _logger;
         private readonly TerminalOptions _terminalOptions;
         private readonly ITerminalTextHandler _textHandler;
     }

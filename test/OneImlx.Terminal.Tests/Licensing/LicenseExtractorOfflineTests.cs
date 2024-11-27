@@ -17,7 +17,6 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Licensing
 {

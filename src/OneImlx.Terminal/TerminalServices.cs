@@ -6,11 +6,9 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Text;
-using OneImlx.Terminal.Configuration.Options;
 
-namespace OneImlx.Terminal.Runtime
+namespace OneImlx.Terminal
 {
     /// <summary>
     /// Provides common terminal services.

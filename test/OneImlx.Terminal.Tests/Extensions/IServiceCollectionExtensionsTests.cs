@@ -91,7 +91,7 @@ namespace OneImlx.Terminal.Extensions
 
             // Command Parser
             provider.GetService<ICommandParser>().Should().BeOfType<CommandParser>();
-            provider.GetService<ICommandRequestParser>().Should().BeOfType<CommandRequestParser>();
+            provider.GetService<ICommandRequestParser>().Should().BeOfType<CommandRequestQueueParser>();
 
             // Option and Argument Checkers
             provider.GetService<IOptionChecker>().Should().BeOfType<OptionChecker>();

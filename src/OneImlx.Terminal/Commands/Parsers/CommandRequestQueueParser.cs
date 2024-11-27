@@ -5,21 +5,21 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
-using OneImlx.Shared.Extensions;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Runtime;
-using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OneImlx.Shared.Extensions;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Stores;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// Represents a default command-line parser for processing terminal commands based on defined descriptors.
+    /// Represents a default queue based command-line parser for processing terminal commands based on defined descriptors.
     /// </summary>
     /// <remarks>
     /// <para>The default command-line parser is designed for extensive command line parsing. Key features include:</para>
@@ -106,16 +106,16 @@ namespace OneImlx.Terminal.Commands.Parsers
     /// This exception is designed to capture a myriad of parsing issues such as unrecognized commands, unexpected
     /// number of arguments, or misidentified options.
     /// </exception>
-    public class CommandRequestParser : ICommandRequestParser
+    public class CommandRequestQueueParser : ICommandRequestParser
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandRequestParser"/> class.
+        /// Initializes a new instance of the <see cref="CommandRequestQueueParser"/> class.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="commandStore">The command store handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRequestParser(ITerminalTextHandler textHandler, ITerminalCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRequestParser> logger)
+        public CommandRequestQueueParser(ITerminalTextHandler textHandler, ITerminalCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRequestQueueParser> logger)
         {
             this.textHandler = textHandler;
             this.commandStore = commandStore;
@@ -542,7 +542,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                 executingCommandDescriptor,
                 ParseArguments(executingCommandDescriptor, parsedArguments),
                 ParseOptions(executingCommandDescriptor, parsedOptions)
-            );
+                                          );
 
             // Build the hierarchy and return the parsed command
             return new ParsedCommand(request, executingCommand, ParseHierarchy(parsedDescriptors, executingCommand));
@@ -742,7 +742,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private readonly ITerminalCommandStore commandStore;
-        private readonly ILogger<CommandRequestParser> logger;
+        private readonly ILogger<CommandRequestQueueParser> logger;
         private readonly TerminalOptions terminalOptions;
         private readonly ITerminalTextHandler textHandler;
     }
