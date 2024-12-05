@@ -218,7 +218,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Hierarchy is all expect the current command.
             Command command = new(commandDescriptor, arguments, parsedOptions);
-            return new ParsedCommand(request, command, hierarchy: commandDescriptors.Take(commandDescriptors.Count - 1));
+            return new ParsedCommand(request, command, commandDescriptors.Count > 1 ?  commandDescriptors.Take(commandDescriptors.Count - 1) : null);
         }
 
         private string RemovePrefix(string value, string prefix)

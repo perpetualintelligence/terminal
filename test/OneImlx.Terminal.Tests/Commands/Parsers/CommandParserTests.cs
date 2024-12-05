@@ -17,6 +17,7 @@ using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
+using System.Linq;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
@@ -87,6 +88,11 @@ namespace OneImlx.Terminal.Commands.Parsers
             var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 arg1 arg2 --opt1 val1 --opt2 23 --opt3 --opt4 36.69")));
             result.ParsedCommand.Should().NotBeNull();
             result.ParsedCommand.Command.Id.Should().Be("cmd2");
+
+            result.ParsedCommand.Hierarchy.Should().NotBeNull();
+            result.ParsedCommand.Hierarchy.Should().HaveCount(2);
+            result.ParsedCommand.Hierarchy!.ElementAt(0).Id.Should().Be("root2");
+            result.ParsedCommand.Hierarchy!.ElementAt(1).Id.Should().Be("grp2");
 
             result.ParsedCommand.Command.Arguments.Should().HaveCount(2);
             result.ParsedCommand.Command.Arguments![0].Id.Should().Be("arg1");
@@ -174,6 +180,76 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             result.ParsedCommand.Command.Options["o3"].Value.Should().Be("True");
             result.ParsedCommand.Command.Options["o4"].Value.Should().Be("36.69");
+        }
+
+        [Fact]
+        public async Task Root_Processed_Correctly()
+        {
+            // Setup mocks
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
+                      .ReturnsAsync((TerminalRequest request) =>
+                      {
+                          return new TerminalParsedRequest(["root2"], []);
+                      });
+
+            var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2")));
+            result.ParsedCommand.Should().NotBeNull();
+            result.ParsedCommand.Command.Id.Should().Be("root2");
+            result.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Root);
+
+            result.ParsedCommand.Hierarchy.Should().BeNull();
+            result.ParsedCommand.Command.Arguments.Should().BeNull();
+            result.ParsedCommand.Command.Options.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Single_Non_Root_Processed_Correctly()
+        {
+            // Setup mocks
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
+                      .ReturnsAsync((TerminalRequest request) =>
+                      {
+                          return new TerminalParsedRequest(["cmd_nr1"], []);
+                      });
+
+            var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "cmd_nr1")));
+            result.ParsedCommand.Should().NotBeNull();
+            result.ParsedCommand.Command.Id.Should().Be("cmd_nr1");
+            result.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
+
+            result.ParsedCommand.Hierarchy.Should().BeNull();
+            result.ParsedCommand.Command.Arguments.Should().BeNull();
+            result.ParsedCommand.Command.Options.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Throws_If_Alias_Prefix_Is_Invalid_For_Option()
+        {
+            TerminalOptions terminalOptions = new();
+            terminalOptions.Parser.OptionPrefix = "--";
+            terminalOptions.Parser.OptionValueSeparator = " ";
+            terminalOptions.Parser.OptionAliasPrefix = "-";
+
+            Dictionary<string, string> options = new()
+            {
+                ["--opt1"] = "val1",
+                ["--opt2"] = 23.ToString(),
+                ["--o3"] = true.ToString(),
+                ["--opt4"] = 36.69.ToString()
+            };
+
+            // Setup mocks
+            terminalOptionsMock.Setup(x => x.Value).Returns(terminalOptions);
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
+                      .ReturnsAsync((TerminalRequest request) =>
+                      {
+                          return new TerminalParsedRequest(["root2", "grp2", "cmd2"], options);
+                      });
+
+            Func<Task> act = async () => await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --invalid_opt1 23 --opt3 --opt4 36.69")));
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode("invalid_option")
+                .WithErrorDescription("The option prefix is not valid for an alias. option=o3");
         }
 
         [Fact]
@@ -293,7 +369,6 @@ namespace OneImlx.Terminal.Commands.Parsers
                 .WithErrorDescription("The command does not support option or its alias. command=cmd2 option=invalid_opt1");
         }
 
-
         [Fact]
         public async Task Throws_If_Option_Prefix_Is_Invalid_For_Alias()
         {
@@ -322,36 +397,6 @@ namespace OneImlx.Terminal.Commands.Parsers
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_option")
                 .WithErrorDescription("The alias prefix is not valid for an option. option=-opt3");
-        }
-
-        [Fact]
-        public async Task Throws_If_Alias_Prefix_Is_Invalid_For_Option()
-        {
-            TerminalOptions terminalOptions = new();
-            terminalOptions.Parser.OptionPrefix = "--";
-            terminalOptions.Parser.OptionValueSeparator = " ";
-            terminalOptions.Parser.OptionAliasPrefix = "-";
-
-            Dictionary<string, string> options = new()
-            {
-                ["--opt1"] = "val1",
-                ["--opt2"] = 23.ToString(),
-                ["--o3"] = true.ToString(),
-                ["--opt4"] = 36.69.ToString()
-            };
-
-            // Setup mocks
-            terminalOptionsMock.Setup(x => x.Value).Returns(terminalOptions);
-            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
-                      .ReturnsAsync((TerminalRequest request) =>
-                      {
-                          return new TerminalParsedRequest(["root2", "grp2", "cmd2"], options);
-                      });
-
-            Func<Task> act = async () => await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --invalid_opt1 23 --opt3 --opt4 36.69")));
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_option")
-                .WithErrorDescription("The option prefix is not valid for an alias. option=o3");
         }
 
         [Fact]
