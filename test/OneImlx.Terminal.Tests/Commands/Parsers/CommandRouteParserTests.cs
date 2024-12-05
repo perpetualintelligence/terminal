@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             commandStore = new TerminalInMemoryCommandStore(textHandler, commandDescriptors.Values);
             logger = new NullLogger<CommandRequestQueueParser>();
 
-            commandRequestParser = new CommandRequestQueueParser(textHandler, commandStore, terminalOptions, logger);
+            commandRequestParser = new CommandRequestQueueParser(textHandler, terminalOptions, logger);
         }
 
         [Theory]

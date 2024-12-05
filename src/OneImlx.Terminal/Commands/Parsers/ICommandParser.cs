@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// An abstraction to parse the command string and extract <see cref="Command"/>.
+    /// An abstraction to parse the raw command string and extract <see cref="Command"/>.
     /// </summary>
     public interface ICommandParser
     {

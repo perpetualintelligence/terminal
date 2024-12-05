@@ -8,13 +8,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -59,7 +57,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             commandStore = new TerminalInMemoryCommandStore(textHandler, commandDescriptors.Values);
             logger = new NullLogger<CommandRequestQueueParser>();
 
-            commandRequestParser = new CommandRequestQueueParser(textHandler, commandStore, terminalOptions, logger);
+            commandRequestParser = new CommandRequestQueueParser(textHandler, terminalOptions, logger);
         }
 
         [Fact]

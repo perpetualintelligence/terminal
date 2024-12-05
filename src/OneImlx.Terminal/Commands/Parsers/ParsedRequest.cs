@@ -1,0 +1,39 @@
+﻿/*
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+
+using System.Collections.Generic;
+using OneImlx.Terminal.Runtime;
+
+namespace OneImlx.Terminal.Commands.Parsers
+{
+    /// <summary>
+    /// The raw representation of a parsed <see cref="TerminalRequest"/>.
+    /// </summary>
+    public sealed class ParsedRequest
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParsedRequest"/> class.
+        /// </summary>
+        /// <param name="tokens">The parsed tokens that represent a root, groups, command, and arguments.</param>
+        /// <param name="options">The parsed options.</param>
+        public ParsedRequest(IEnumerable<string> tokens, Dictionary<string, string> options)
+        {
+            Options = options;
+            Tokens = tokens;
+        }
+
+        /// <summary>
+        /// Gets the parsed options.
+        /// </summary>
+        public Dictionary<string, string>? Options { get; }
+
+        /// <summary>
+        /// Gets the parsed tokens that represent an ordered collection of root, groups, command, and arguments.
+        /// </summary>
+        public IEnumerable<string> Tokens { get; }
+    }
+}

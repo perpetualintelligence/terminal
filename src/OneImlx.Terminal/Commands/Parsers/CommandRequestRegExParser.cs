@@ -30,49 +30,20 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public Task<ParsedRequest> ParseOutputAsync(TerminalRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         /// <exception cref="TerminalException"></exception>
         public Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
         {
-            logger.LogDebug("Parsing request with Regex. Raw input: {0}", request.Raw);
-
-            string input = request.Raw;
-
-            // Use virtual methods to get the regex patterns
-            var commandRegex = GetCommandRegex();
-            var argumentRegex = GetArgumentRegex();
-            var optionRegex = GetOptionRegex();
-
-            // Extract command
-            var commandMatch = commandRegex.Match(input);
-            if (!commandMatch.Success)
-            {
-                throw new TerminalException(TerminalErrors.MissingCommand, "No command found in input.");
-            }
-
-            string command = commandMatch.Groups[1].Value;
-            logger.LogDebug("Command identified: {0}", command);
-
-            // Extract options
-            var options = new Dictionary<string, string>();
-            foreach (Match match in optionRegex.Matches(input))
-            {
-                options[match.Groups[1].Value] = match.Groups[3].Value;
-            }
-            logger.LogDebug("Options parsed: {0}", string.Join(", ", options.Select(kvp => $"{kvp.Key}={kvp.Value}")));
-
-            // Extract arguments
-            var arguments = new List<string>();
-            foreach (Match match in argumentRegex.Matches(input))
-            {
-                if (!options.ContainsKey(match.Groups[1].Value)) // Avoid treating options as arguments
-                {
-                    arguments.Add(match.Groups[1].Value);
-                }
-            }
-            logger.LogDebug("Arguments parsed: {0}", string.Join(", ", arguments));
-
-            // Build parsed command (mock method here for demonstration)
-            return Task.FromResult(BuildParsedCommand(request, arguments, options));
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -100,12 +71,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         protected virtual Regex GetOptionRegex()
         {
             return new Regex(@"-(\w+)=([""']?)(.+?)\2(?:\s|$)", RegexOptions.Compiled);
-        }
-
-        private ParsedCommand BuildParsedCommand(TerminalRequest request, List<string> arguments, Dictionary<string, string> options)
-        {
-            // Replace with actual logic to integrate parsed results into the framework.
-            throw new NotImplementedException();
         }
 
         private readonly ILogger<CommandRequestRegExParser> logger;

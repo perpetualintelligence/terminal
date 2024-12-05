@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -112,168 +111,46 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// Initializes a new instance of the <see cref="CommandRequestQueueParser"/> class.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
-        /// <param name="commandStore">The command store handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRequestQueueParser(ITerminalTextHandler textHandler, ITerminalCommandStore commandStore, TerminalOptions terminalOptions, ILogger<CommandRequestQueueParser> logger)
+        public CommandRequestQueueParser(
+            ITerminalTextHandler textHandler,
+            TerminalOptions terminalOptions,
+            ILogger<CommandRequestQueueParser> logger)
         {
             this.textHandler = textHandler;
-            this.commandStore = commandStore;
             this.terminalOptions = terminalOptions;
             this.logger = logger;
         }
 
         /// <summary>
-        /// Asynchronously parses a given input into structured command data.
+        /// Not supported.
         /// </summary>
-        /// <remarks>
-        /// This method provides a comprehensive solution for parsing terminal commands, offering developers the ability
-        /// to extract relevant descriptors, options, and arguments from the provided input in an efficient manner.
-        /// <para>Complexity Analysis:</para>
-        /// The parsing process employs several phases, each with its own complexity:
-        /// <list type="bullet">
-        /// <item>
-        /// <description>
-        /// <c>Initial String Split and Queue Construction:</c> The input string undergoes a preliminary split into
-        /// segments. This operation's complexity is O(s), where s represents the length of the input string. Post
-        /// splitting, segments are enqueued for orderly processing. The use of the Queue data structure ensures that
-        /// segments are processed in a first-in-first-out manner, optimizing the parsing flow and ensuring order preservation.
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <description>
-        /// <c>Command, Argument, and Option Extraction:</c> After the queue is populated, each segment is dequeued and
-        /// evaluated sequentially to determine if it represents a command, option, or argument. The complexity of
-        /// processing each segment is linear, O(n), where n is the number of segments.
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <description>
-        /// <c>Hierarchy Parsing (Optional):</c> If hierarchy extraction is enabled, a command hierarchy is established.
-        /// Its complexity, in the worst case, is linear with respect to the number of parsed command descriptors, O(m).
-        /// </description>
-        /// </item>
-        /// </list>
-        /// When taking into account all phases, the effective complexity of the algorithm is O(s + n), where the
-        /// emphasis is on the fact that each segment is processed only once post splitting. This showcases the
-        /// algorithm's efficiency, making it a robust choice for parsing terminal commands. However, developers should
-        /// consider their specific parsing requirements. If you have simpler parsing needs, a custom implementation
-        /// might allow for further optimizations. But for diverse and comprehensive parsing scenarios, this default
-        /// implementation provides a well-rounded and efficient solution.
-        /// </remarks>
-        public async Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public Task<ParsedRequest> ParseOutputAsync(TerminalRequest request)
         {
-            logger.LogDebug("Parse request. request={0} raw={1}", request.Id, request.Raw);
+            return Task.Run(() =>
+            {
+                // Parse the queue of segments from the raw command based of `separator` and `optionValueSeparator`
+                Queue<ParsedSplit> segmentsQueue = ExtractQueue(request);
 
-            // Parse the queue of segments from the raw command based of `separator` and `optionValueSeparator`
-            Queue<ParsedSplit> segmentsQueue = ExtractQueue(request);
+                // Extract tokens and options from the segments queue
+                IEnumerable<string> tokens = ExtractTokens(segmentsQueue);
+                Dictionary<string, string> parsedOptions = ExtractOptions(segmentsQueue);
+                return new ParsedRequest(tokens, parsedOptions);
+            });
+        }
 
-            // Handle the processing of commands and arguments
-            (List<CommandDescriptor> parsedCommands, List<string> parsedArguments) = await ExtractCommandsAndArgumentsAsync(segmentsQueue);
-
-            // Parse and process command options
-            Dictionary<string, string> parsedOptions = ExtractOptions(segmentsQueue);
-
-            // Log parsed details if debug level logging is enabled
-            LogIfDebugLevelEnabled(parsedCommands, parsedArguments, parsedOptions);
-
-            // Compile and return the parsed command details
-            return ParseCommand(request, parsedCommands, parsedArguments, parsedOptions);
+        public Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
+        {
+            throw new NotImplementedException();
         }
 
         private bool EndsWith(string value, string suffix)
         {
             return value.EndsWith(suffix, textHandler.Comparison);
-        }
-
-        /// <summary>
-        /// Extracts commands and arguments from a given queue of segments.
-        /// </summary>
-        /// <param name="segmentsQueue">A queue containing segments to be parsed.</param>
-        /// <returns>A tuple containing a list of parsed command descriptors and a list of parsed arguments.</returns>
-        /// <remarks>
-        /// This method takes in a queue of string segments and progressively identifies if each segment is a command or
-        /// an argument. The differentiation is crucial because commands and arguments are handled differently
-        /// downstream. An argument, as recognized by this method, is a segment that doesn't correlate with any known
-        /// command and follows an identified command.
-        /// </remarks>
-        private async Task<(List<CommandDescriptor> ParsedDescriptors, List<string> ParsedArguments)> ExtractCommandsAndArgumentsAsync(Queue<ParsedSplit> segmentsQueue)
-        {
-            List<CommandDescriptor> parsedDescriptors = [];
-            List<string> parsedArguments = [];
-            string? potentialLastCommandId = null;
-            string valueDelimiter = terminalOptions.Parser.ValueDelimiter;
-            string separator = terminalOptions.Parser.Separator;
-
-            while (segmentsQueue.Count > 0)
-            {
-                // Break loop if segment represents an option.
-                ParsedSplit splitSegment = segmentsQueue.Peek();
-                if (IsOption(splitSegment.Split))
-                {
-                    break;
-                }
-                segmentsQueue.Dequeue();
-
-                // If we are not within a delimiter then we cannot have a separator.
-                string segment = splitSegment.Split;
-                if (segment.IsNullOrEmpty() || textHandler.TextEquals(segment, separator))
-                {
-                    continue;
-                }
-
-                if (await commandStore.TryFindByIdAsync(segment, out CommandDescriptor? currentDescriptor))
-                {
-                    if (currentDescriptor == null)
-                    {
-                        throw new TerminalException(TerminalErrors.ServerError, "Command found in the store but returned null descriptor.");
-                    }
-
-                    if (parsedArguments.Any())
-                    {
-                        potentialLastCommandId = parsedArguments.Last();
-                    }
-
-                    if (currentDescriptor != null)
-                    {
-                        if (potentialLastCommandId != null && (currentDescriptor.OwnerIds == null || !currentDescriptor.OwnerIds.Contains(potentialLastCommandId)))
-                        {
-                            throw new TerminalException(TerminalErrors.InvalidCommand, "The command owner is not valid. owner={0} command={1}.", potentialLastCommandId, currentDescriptor.Id);
-                        }
-                        else if (potentialLastCommandId == null && currentDescriptor.OwnerIds != null && currentDescriptor.OwnerIds.Any())
-                        {
-                            throw new TerminalException(TerminalErrors.MissingCommand, "The command owner is missing in the command request. owners={0} command={1}.", currentDescriptor.OwnerIds.JoinBySpace(), currentDescriptor.Id);
-                        }
-
-                        potentialLastCommandId = segment;
-                        parsedDescriptors.Add(currentDescriptor);
-                    }
-                }
-                else
-                {
-                    StringBuilder argumentValueBuilder = new(segment, segment.Length + 10);
-
-                    if (StartsWith(segment, valueDelimiter))
-                    {
-                        while (segmentsQueue.Count > 0 && (!EndsWith(segment, valueDelimiter) || argumentValueBuilder.Length == 1))
-                        {
-                            argumentValueBuilder.Append(separator);
-                            splitSegment = segmentsQueue.Dequeue();
-                            segment = splitSegment.Split;
-                            argumentValueBuilder.Append(segment);
-                        }
-
-                        if (!EndsWith(segment, valueDelimiter))
-                        {
-                            throw new TerminalException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
-                        }
-                    }
-
-                    parsedArguments.Add(TrimValueDelimiter(argumentValueBuilder.ToString()));
-                }
-            }
-
-            return (parsedDescriptors, parsedArguments);
         }
 
         private Dictionary<string, string> ExtractOptions(Queue<ParsedSplit> segmentsQueue)
@@ -360,7 +237,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                     // Now, we use the flag to check if the closing delimiter was found.
                     if (!foundClosingDelimiter)
                     {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "Option value does not have a closing delimiter. option={0}", option);
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The option value is missing the closing delimiter. option={0}", option);
                     }
 
                     // Strip the delimiters if present.
@@ -448,6 +325,53 @@ namespace OneImlx.Terminal.Commands.Parsers
             return queue;
         }
 
+        private IEnumerable<string> ExtractTokens(Queue<ParsedSplit> segmentsQueue)
+        {
+            List<string> tokens = [];
+
+            string valueDelimiter = terminalOptions.Parser.ValueDelimiter;
+            string separator = terminalOptions.Parser.Separator;
+
+            while (segmentsQueue.Count > 0)
+            {
+                // Break loop if segment represents an option.
+                ParsedSplit splitSegment = segmentsQueue.Peek();
+                if (IsOption(splitSegment.Split))
+                {
+                    break;
+                }
+                segmentsQueue.Dequeue();
+
+                // If we are not within a delimiter then we cannot have a separator.
+                string segment = splitSegment.Split;
+                if (segment.IsNullOrEmpty() || textHandler.TextEquals(segment, separator))
+                {
+                    continue;
+                }
+
+                StringBuilder argumentValueBuilder = new(segment, segment.Length + 10);
+                if (StartsWith(segment, valueDelimiter))
+                {
+                    while (segmentsQueue.Count > 0 && (!EndsWith(segment, valueDelimiter) || argumentValueBuilder.Length == 1))
+                    {
+                        argumentValueBuilder.Append(separator);
+                        splitSegment = segmentsQueue.Dequeue();
+                        segment = splitSegment.Split;
+                        argumentValueBuilder.Append(segment);
+                    }
+
+                    if (!EndsWith(segment, valueDelimiter))
+                    {
+                        throw new TerminalException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
+                    }
+                }
+
+                tokens.Add(segment);
+            }
+
+            return tokens;
+        }
+
         private bool IsAliasPrefix(string value)
         {
             return StartsWith(value, terminalOptions.Parser.OptionAliasPrefix);
@@ -474,242 +398,6 @@ namespace OneImlx.Terminal.Commands.Parsers
             return StartsWith(value, terminalOptions.Parser.OptionPrefix);
         }
 
-        private void LogIfDebugLevelEnabled(List<CommandDescriptor> parsedDescriptors, IEnumerable<string> parsedArguments, Dictionary<string, string> parsedOptions)
-        {
-            // Early return to optimize performance.
-            if (!logger.IsEnabled(LogLevel.Debug))
-            {
-                return;
-            }
-
-            logger.LogDebug("Hierarchy={0}", parsedDescriptors.Select(static e => e.Id).JoinByComma());
-            logger.LogDebug("Command={0}", parsedDescriptors.LastOrDefault()?.Id);
-            logger.LogDebug("Arguments={0}", parsedArguments.JoinByComma());
-            logger.LogDebug("Options:");
-            foreach (var opt in parsedOptions)
-            {
-                logger.LogDebug($"{opt.Key}=" + "{0}", opt.Value);
-            }
-        }
-
-        /// <summary>
-        /// Parses arguments provided in the command line arguments.
-        /// </summary>
-        /// <param name="commandDescriptor">The descriptor of the command being executed.</param>
-        /// <param name="parsedArguments">A list of parsed arguments.</param>
-        /// <returns>A list of parsed arguments or null if no arguments were provided.</returns>
-        /// <remarks>
-        /// Parsing arguments involves matching each parsed segment with an expected argument from the command
-        /// descriptor. This ensures that each command receives the arguments it expects, and no more. If the parsed
-        /// segments contain more arguments than expected, or if they don't match the expected format, this method will
-        /// throw an exception. This rigid structure ensures argument integrity for each command execution.
-        /// </remarks>
-        private Arguments? ParseArguments(CommandDescriptor commandDescriptor, List<string>? parsedArguments)
-        {
-            if (parsedArguments == null || parsedArguments.Count == 0)
-            {
-                return null;
-            }
-
-            if (commandDescriptor.ArgumentDescriptors == null || commandDescriptor.ArgumentDescriptors.Count == 0)
-            {
-                throw new TerminalException(TerminalErrors.UnsupportedArgument, "The command does not support any arguments. command={0}", commandDescriptor.Id);
-            }
-
-            if (commandDescriptor.ArgumentDescriptors.Count < parsedArguments.Count)
-            {
-                throw new TerminalException(TerminalErrors.UnsupportedArgument, "The command does not support {0} arguments. command={1} arguments={2}", parsedArguments.Count, commandDescriptor.Id, parsedArguments.JoinByComma());
-            }
-
-            List<Argument> arguments = new(parsedArguments.Count);
-            for (int idx = 0; idx < parsedArguments.Count; ++idx)
-            {
-                arguments.Add(new(commandDescriptor.ArgumentDescriptors[idx], parsedArguments[idx]));
-            }
-            return new Arguments(textHandler, arguments);
-        }
-
-        private ParsedCommand ParseCommand(TerminalRequest request, List<CommandDescriptor> parsedDescriptors, List<string>? parsedArguments, Dictionary<string, string>? parsedOptions)
-        {
-            if (!parsedDescriptors.Any())
-            {
-                throw new TerminalException(TerminalErrors.MissingCommand, "The command is missing in the command request.");
-            }
-
-            // The last command in the request is the one that will be executed
-            CommandDescriptor executingCommandDescriptor = parsedDescriptors[parsedDescriptors.Count - 1];
-            Command executingCommand = new(
-                executingCommandDescriptor,
-                ParseArguments(executingCommandDescriptor, parsedArguments),
-                ParseOptions(executingCommandDescriptor, parsedOptions)
-                                          );
-
-            // Build the hierarchy and return the parsed command
-            return new ParsedCommand(request, executingCommand, ParseHierarchy(parsedDescriptors, executingCommand));
-        }
-
-        /// <summary>
-        /// Parses a hierarchy of commands and sub-commands based on a list of command descriptors.
-        /// </summary>
-        /// <param name="parsedDescriptors">A list of parsed command descriptors.</param>
-        /// <param name="executingCommand">The command that is currently executing.</param>
-        /// <returns>The root of the command hierarchy.</returns>
-        /// <remarks>
-        /// The method stitches together a command hierarchy. Starting with a root command, it systematically checks if
-        /// a group or subcommand follows. It ensures the integrity of the hierarchy by validating there's only a single
-        /// root, and that group and subcommands are in their correct positions. Misplacement or repetition results in
-        /// exceptions, ensuring command structure correctness.
-        /// </remarks>
-        private Root? ParseHierarchy(List<CommandDescriptor> parsedDescriptors, Command executingCommand)
-        {
-            if (!terminalOptions.Parser.ParseHierarchy.GetValueOrDefault())
-            {
-                return null;
-            }
-
-            Root? hierarchy = null;
-            Group? lastGroup = null;
-            foreach (CommandDescriptor currentDescriptor in parsedDescriptors)
-            {
-                Command currentCommand = textHandler.TextEquals(currentDescriptor.Id, executingCommand.Id)
-                                         ? executingCommand
-                                         : new Command(currentDescriptor);
-
-                switch (currentDescriptor.Type)
-                {
-                    case CommandType.Root:
-                        {
-                            if (hierarchy != null)
-                            {
-                                throw new TerminalException(TerminalErrors.InvalidCommand, "The command request contains multiple roots. root={0}", currentDescriptor.Id);
-                            }
-
-                            hierarchy = new Root(currentCommand);
-                            break;
-                        }
-
-                    case CommandType.Group:
-                        {
-                            Group group = new(currentCommand);
-                            if (lastGroup == null)
-                            {
-                                if (hierarchy == null)
-                                {
-                                    throw new TerminalException(TerminalErrors.MissingCommand, "The command group is missing a root command. group={0}", currentCommand.Id);
-                                }
-                                hierarchy.ChildGroup = group;
-                            }
-                            else
-                            {
-                                lastGroup.ChildGroup = group;
-                            }
-
-                            lastGroup = group;
-                            break;
-                        }
-
-                    case CommandType.SubCommand:
-                        {
-                            SubCommand subCommand = new(currentCommand);
-                            if (lastGroup != null)
-                            {
-                                lastGroup.ChildSubCommand = subCommand;
-                            }
-                            else if (hierarchy != null)
-                            {
-                                hierarchy.ChildSubCommand = subCommand;
-                            }
-                            else
-                            {
-                                hierarchy = Root.Default(subCommand);
-                            }
-                            break;
-                        }
-
-                    default:
-                        {
-                            throw new TerminalException(TerminalErrors.InvalidRequest, "The command descriptor type is not valid. type={0}", currentDescriptor.Type);
-                        }
-                }
-            }
-            return hierarchy;
-        }
-
-        /// <summary>
-        /// Parses options provided in the command line arguments.
-        /// </summary>
-        /// <param name="commandDescriptor">The descriptor of the command being executed.</param>
-        /// <param name="parsedOptions">A dictionary of parsed options.</param>
-        /// <returns>A list of parsed options or null if no options were provided.</returns>
-        /// <remarks>
-        /// Options in a command line can be recognized either by their direct ID or an alias. This method takes in
-        /// parsed options and tries to match them with the command descriptor's expected options. It ensures options
-        /// are provided in a recognized format, whether by their full ID or their alias. Mismatches or unrecognized
-        /// formats are caught and result in exceptions.
-        /// </remarks>
-        private Options? ParseOptions(CommandDescriptor commandDescriptor, Dictionary<string, string>? parsedOptions)
-        {
-            if (parsedOptions == null || parsedOptions.Count == 0)
-            {
-                return null;
-            }
-
-            if (commandDescriptor.OptionDescriptors == null || commandDescriptor.OptionDescriptors.Count == 0)
-            {
-                throw new TerminalException(TerminalErrors.UnsupportedArgument, "The command does not support any options. command={0}", commandDescriptor.Id);
-            }
-
-            if (commandDescriptor.OptionDescriptors.Count < parsedOptions.Count)
-            {
-                throw new TerminalException(TerminalErrors.UnsupportedArgument, "The command does not support {0} options. command={1} options={2}", parsedOptions.Count, commandDescriptor.Id, parsedOptions.Keys.JoinByComma());
-            }
-
-            // 1. An input can be either an option or an alias, but not both.
-            // 2. If a segment is identified as an option, it must match the option ID.
-            // 3. If identified as an alias, it must match the alias.
-            List<Option> options = new(parsedOptions.Count);
-            foreach (var optKvp in parsedOptions)
-            {
-                string optionOrAliasKey;
-                bool isOption = IsOptionPrefix(optKvp.Key);
-
-                if (isOption)
-                {
-                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Parser.OptionPrefix);
-                }
-                else
-                {
-                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Parser.OptionAliasPrefix);
-                }
-
-                if (!commandDescriptor.OptionDescriptors.TryGetValue(optionOrAliasKey, out var optionDescriptor))
-                {
-                    throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support option or its alias. command={0} option={1}", commandDescriptor.Id, optionOrAliasKey);
-                }
-
-                if (isOption)
-                {
-                    // Validate if option matches expected id
-                    if (!textHandler.TextEquals(optionDescriptor.Id, optionOrAliasKey))
-                    {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "The option prefix is not valid for an alias. option={0}", optionOrAliasKey);
-                    }
-                }
-                else
-                {
-                    // Validate if option matches expected alias
-                    if (!textHandler.TextEquals(optionDescriptor.Alias, optionOrAliasKey))
-                    {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "The alias prefix is not valid for an option. option={0}", optKvp.Key);
-                    }
-                }
-
-                options.Add(new Option(optionDescriptor, optKvp.Value));
-            }
-
-            return new Options(textHandler, options);
-        }
-
         private string RemovePrefix(string value, string prefix)
         {
             return value.Substring(prefix.Length);
@@ -725,23 +413,6 @@ namespace OneImlx.Terminal.Commands.Parsers
             return value.StartsWith(prefix, textHandler.Comparison);
         }
 
-        private string TrimValueDelimiter(string value)
-        {
-            string trimmedValue = value;
-            if (StartsWith(trimmedValue, terminalOptions.Parser.ValueDelimiter))
-            {
-                trimmedValue = RemovePrefix(trimmedValue, terminalOptions.Parser.ValueDelimiter);
-            }
-
-            if (EndsWith(trimmedValue, terminalOptions.Parser.ValueDelimiter))
-            {
-                trimmedValue = RemoveSuffix(trimmedValue, terminalOptions.Parser.ValueDelimiter);
-            }
-
-            return trimmedValue;
-        }
-
-        private readonly ITerminalCommandStore commandStore;
         private readonly ILogger<CommandRequestQueueParser> logger;
         private readonly TerminalOptions terminalOptions;
         private readonly ITerminalTextHandler textHandler;

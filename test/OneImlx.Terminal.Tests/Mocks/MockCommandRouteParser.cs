@@ -1,22 +1,27 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Threading.Tasks;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Runtime;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
     internal class MockCommandRouteParser : ICommandRequestParser
     {
+        public bool Called { get; private set; }
+
         public TerminalRequest PassedCommandRoute { get; private set; } = null!;
 
-        public bool Called { get; private set; }
+        public Task<ParsedRequest> ParseOutputAsync(TerminalRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
 
         public Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
         {

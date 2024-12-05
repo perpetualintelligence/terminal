@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             _commandStore = new TerminalInMemoryCommandStore(_textHandler, _commandDescriptors.Values);
             _terminalOptions = MockTerminalOptions.NewAliasOptions();
-            _commandRouteParser = new CommandRequestQueueParser(_textHandler, _commandStore, _terminalOptions, _logger);
+            _commandRouteParser = new CommandRequestQueueParser(_textHandler, _terminalOptions, _logger);
         }
 
         [Fact]

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,6 +15,13 @@ namespace OneImlx.Terminal.Commands.Parsers
     /// </summary>
     public interface ICommandRequestParser
     {
+        /// <summary>
+        /// Parses the command request asynchronously.
+        /// </summary>
+        /// <param name="request">The command request to parse.</param>
+        /// <returns></returns>
+        Task<ParsedRequest> ParseOutputAsync(TerminalRequest request);
+
         /// <summary>
         /// Parses the command request asynchronously.
         /// </summary>
