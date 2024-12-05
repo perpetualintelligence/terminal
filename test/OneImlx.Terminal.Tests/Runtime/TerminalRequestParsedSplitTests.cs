@@ -8,9 +8,9 @@
 using FluentAssertions;
 using Xunit;
 
-namespace OneImlx.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Runtime
 {
-    public class ParsedSplitTests
+    public class TerminalRequestParsedSplitTests
     {
         [Fact]
         public void ParsedSplit_Sets_Properties_As_Expected()
@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             // Arrange
             var split = "test";
             var token = "token";
-            var parsedSplit = new ParsedSplit(split, token);
+            var parsedSplit = new TerminalRequestParsedSplit(split, token);
             parsedSplit.Split.Should().Be(split);
             parsedSplit.Token.Should().Be(token);
         }
@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             // Arrange
             var split = "test";
             var token = "token";
-            var parsedSplit = new ParsedSplit(split, token);
+            var parsedSplit = new TerminalRequestParsedSplit(split, token);
 
             // Act
             var result = parsedSplit.ToString();
@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             // Arrange
             var split = "test";
-            var parsedSplit = new ParsedSplit(split, null);
+            var parsedSplit = new TerminalRequestParsedSplit(split, null);
 
             // Act
             var result = parsedSplit.ToString();

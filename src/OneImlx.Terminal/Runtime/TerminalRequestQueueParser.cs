@@ -134,7 +134,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return Task.Run(() =>
             {
                 // Parse the queue of segments from the raw command based of `separator` and `optionValueSeparator`
-                Queue<ParsedSplit> segmentsQueue = ExtractQueue(request);
+                Queue<TerminalRequestParsedSplit> segmentsQueue = ExtractQueue(request);
 
                 // Extract tokens and options from the segments queue
                 IEnumerable<string> tokens = ExtractTokens(segmentsQueue);
@@ -148,7 +148,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return value.EndsWith(suffix, textHandler.Comparison);
         }
 
-        private Dictionary<string, string> ExtractOptions(Queue<ParsedSplit> segmentsQueue)
+        private Dictionary<string, string> ExtractOptions(Queue<TerminalRequestParsedSplit> segmentsQueue)
         {
             // This dictionary will hold the parsed options.
             Dictionary<string, string> parsedOptions = [];
@@ -158,7 +158,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             while (segmentsQueue.Count > 0)
             {
                 // Always dequeue a segment because we're expecting it to be an option.
-                ParsedSplit optionSplit = segmentsQueue.Dequeue();
+                TerminalRequestParsedSplit optionSplit = segmentsQueue.Dequeue();
                 StringBuilder optionValueBuilder = new();
 
                 // If we are not within a delimiter then we cannot have a separator.
@@ -211,7 +211,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                     bool foundClosingDelimiter = false;
                     while (segmentsQueue.Count > 0 && !foundClosingDelimiter)
                     {
-                        ParsedSplit currentSegment = segmentsQueue.Dequeue();
+                        TerminalRequestParsedSplit currentSegment = segmentsQueue.Dequeue();
                         optionValueBuilder.Append(currentSegment.Split);
 
                         // If the currentSegment contains just the delimiter both start and end will match and we will
@@ -269,9 +269,9 @@ namespace OneImlx.Terminal.Commands.Parsers
             return parsedOptions;
         }
 
-        private Queue<ParsedSplit> ExtractQueue(TerminalRequest request)
+        private Queue<TerminalRequestParsedSplit> ExtractQueue(TerminalRequest request)
         {
-            var queue = new Queue<ParsedSplit>();
+            var queue = new Queue<TerminalRequestParsedSplit>();
 
             // This algorithm is designed to split a given string based on two token delimiters: a primary separator and
             // a value separator. The goal is to determine which of the two tokens appears next in the string, allowing
@@ -307,20 +307,20 @@ namespace OneImlx.Terminal.Commands.Parsers
 
                 if (foundToken == null)
                 {
-                    queue.Enqueue(new ParsedSplit(raw.Substring(currentIndex), null));
+                    queue.Enqueue(new TerminalRequestParsedSplit(raw.Substring(currentIndex), null));
                     currentIndex = raw.Length;
                     continue;
                 }
 
                 string substring = raw.Substring(currentIndex, nearestTokenIndex - currentIndex);
-                queue.Enqueue(new ParsedSplit(substring, foundToken));
+                queue.Enqueue(new TerminalRequestParsedSplit(substring, foundToken));
                 currentIndex = nearestTokenIndex + foundToken.Length;
             }
 
             return queue;
         }
 
-        private IEnumerable<string> ExtractTokens(Queue<ParsedSplit> segmentsQueue)
+        private IEnumerable<string> ExtractTokens(Queue<TerminalRequestParsedSplit> segmentsQueue)
         {
             List<string> tokens = [];
 
@@ -330,7 +330,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             while (segmentsQueue.Count > 0)
             {
                 // Break loop if segment represents an option.
-                ParsedSplit splitSegment = segmentsQueue.Peek();
+                TerminalRequestParsedSplit splitSegment = segmentsQueue.Peek();
                 if (IsOption(splitSegment.Split))
                 {
                     break;
