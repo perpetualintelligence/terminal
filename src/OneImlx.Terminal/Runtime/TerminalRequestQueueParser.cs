@@ -105,18 +105,18 @@ namespace OneImlx.Terminal.Commands.Parsers
     /// This exception is designed to capture a myriad of parsing issues such as unrecognized commands, unexpected
     /// number of arguments, or misidentified options.
     /// </exception>
-    public class CommandRequestQueueParser : ICommandRequestParser
+    public class TerminalRequestQueueParser : ITerminalRequestParser
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandRequestQueueParser"/> class.
+        /// Initializes a new instance of the <see cref="TerminalRequestQueueParser"/> class.
         /// </summary>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="terminalOptions">The terminal configuration options.</param>
         /// <param name="logger">The logger.</param>
-        public CommandRequestQueueParser(
+        public TerminalRequestQueueParser(
             ITerminalTextHandler textHandler,
             TerminalOptions terminalOptions,
-            ILogger<CommandRequestQueueParser> logger)
+            ILogger<TerminalRequestQueueParser> logger)
         {
             this.textHandler = textHandler;
             this.terminalOptions = terminalOptions;
@@ -141,11 +141,6 @@ namespace OneImlx.Terminal.Commands.Parsers
                 Dictionary<string, string> parsedOptions = ExtractOptions(segmentsQueue);
                 return new ParsedRequest(tokens, parsedOptions);
             });
-        }
-
-        public Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
-        {
-            throw new NotImplementedException();
         }
 
         private bool EndsWith(string value, string suffix)
@@ -413,7 +408,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return value.StartsWith(prefix, textHandler.Comparison);
         }
 
-        private readonly ILogger<CommandRequestQueueParser> logger;
+        private readonly ILogger<TerminalRequestQueueParser> logger;
         private readonly TerminalOptions terminalOptions;
         private readonly ITerminalTextHandler textHandler;
     }

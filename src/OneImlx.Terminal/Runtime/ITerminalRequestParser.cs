@@ -11,9 +11,9 @@ using OneImlx.Terminal.Runtime;
 namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// An abstraction to parse a command request.
+    /// An abstraction to parse a <see cref="TerminalRequest"/>.
     /// </summary>
-    public interface ICommandRequestParser
+    public interface ITerminalRequestParser
     {
         /// <summary>
         /// Parses the command request asynchronously.
@@ -21,12 +21,5 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <param name="request">The command request to parse.</param>
         /// <returns></returns>
         Task<ParsedRequest> ParseOutputAsync(TerminalRequest request);
-
-        /// <summary>
-        /// Parses the command request asynchronously.
-        /// </summary>
-        /// <param name="request">The command request to parse.</param>
-        /// <returns></returns>
-        Task<ParsedCommand> ParseRequestAsync(TerminalRequest request);
     }
 }

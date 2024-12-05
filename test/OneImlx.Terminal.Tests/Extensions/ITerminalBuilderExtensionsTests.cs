@@ -148,7 +148,7 @@ namespace OneImlx.Terminal.Extensions
             cmd!.Lifetime.Should().Be(ServiceLifetime.Transient);
             cmd.ImplementationType.Should().Be(typeof(MockCommandParser));
 
-            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRequestParser)));
+            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalRequestParser)));
             arg.Should().NotBeNull();
             arg!.Lifetime.Should().Be(ServiceLifetime.Transient);
             arg.ImplementationType.Should().Be(typeof(MockCommandRouteParser));

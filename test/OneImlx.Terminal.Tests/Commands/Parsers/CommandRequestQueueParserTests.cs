@@ -24,10 +24,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             terminalTextHandler = new TerminalAsciiTextHandler();
             mockCommandStore = new Mock<ITerminalCommandStore>();
-            mockLogger = new Mock<ILogger<CommandRequestQueueParser>>();
+            mockLogger = new Mock<ILogger<TerminalRequestQueueParser>>();
             terminalOptions = new TerminalOptions();
 
-            parser = new CommandRequestQueueParser(terminalTextHandler, terminalOptions, mockLogger.Object);
+            parser = new TerminalRequestQueueParser(terminalTextHandler, terminalOptions, mockLogger.Object);
         }
 
         [Fact]
@@ -169,8 +169,8 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private Mock<ITerminalCommandStore> mockCommandStore;
-        private Mock<ILogger<CommandRequestQueueParser>> mockLogger;
-        private CommandRequestQueueParser parser;
+        private Mock<ILogger<TerminalRequestQueueParser>> mockLogger;
+        private TerminalRequestQueueParser parser;
         private TerminalOptions terminalOptions;
         private ITerminalTextHandler terminalTextHandler;
     }

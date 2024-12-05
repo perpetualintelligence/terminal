@@ -29,19 +29,19 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <summary>
         /// Initialize a new instance.
         /// </summary>
-        /// <param name="commandRequestParser">The command request parser.</param>
+        /// <param name="terminalRequestParser">The terminal request parser.</param>
         /// <param name="textHandler"></param>
         /// <param name="commandStore"></param>
         /// <param name="terminalOptions"></param>
         /// <param name="logger">The logger.</param>
         public CommandParser(
-            ICommandRequestParser commandRequestParser,
+            ITerminalRequestParser terminalRequestParser,
             ITerminalTextHandler textHandler,
             ITerminalCommandStore commandStore,
             IOptions<TerminalOptions> terminalOptions,
             ILogger<CommandParser> logger)
         {
-            this.commandRequestParser = commandRequestParser;
+            this.terminalRequestParser = terminalRequestParser;
             this.textHandler = textHandler;
             this.commandStore = commandStore;
             this.terminalOptions = terminalOptions;
@@ -52,7 +52,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task<CommandParserResult> ParseCommandAsync(CommandParserContext context)
         {
             logger.LogDebug("Parse request. request={0} raw={1}", context.Request.Id, context.Request.Raw);
-            ParsedRequest parsedOutput = await commandRequestParser.ParseOutputAsync(context.Request);
+            ParsedRequest parsedOutput = await terminalRequestParser.ParseOutputAsync(context.Request);
             ParsedCommand parsedCommand = await MapParsedRequestAsync(context.Request, parsedOutput);
             return new CommandParserResult(parsedCommand);
         }
@@ -227,7 +227,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return value.Substring(prefix.Length);
         }
 
-        private readonly ICommandRequestParser commandRequestParser;
+        private readonly ITerminalRequestParser terminalRequestParser;
         private readonly ITerminalCommandStore commandStore;
         private readonly ILogger<CommandParser> logger;
         private readonly IOptions<TerminalOptions> terminalOptions;

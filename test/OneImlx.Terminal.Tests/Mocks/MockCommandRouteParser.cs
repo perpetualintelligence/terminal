@@ -12,7 +12,7 @@ using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Mocks
 {
-    internal class MockCommandRouteParser : ICommandRequestParser
+    internal class MockCommandRouteParser : ITerminalRequestParser
     {
         public bool Called { get; private set; }
 

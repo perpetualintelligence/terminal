@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Commands.Parsers
     {
         public CommandParserTests()
         {
-            parserMock = new Mock<ICommandRequestParser>();
+            parserMock = new Mock<ITerminalRequestParser>();
             textHandler = new TerminalAsciiTextHandler();
 
             ArgumentDescriptors arguments = new(textHandler,
@@ -403,7 +403,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         private readonly ILogger<CommandParser> logger;
-        private readonly Mock<ICommandRequestParser> parserMock;
+        private readonly Mock<ITerminalRequestParser> parserMock;
         private readonly Mock<IOptions<TerminalOptions>> terminalOptionsMock;
         private readonly ITerminalTextHandler textHandler;
         private CommandDescriptors commandDescriptors;

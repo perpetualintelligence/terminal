@@ -17,11 +17,11 @@ namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
     /// </summary>
-    public class CommandRequestRegExParser : ICommandRequestParser
+    public class TerminalRequestRegExParser : ITerminalRequestParser
     {
         /// <summary>
         /// </summary>
-        public CommandRequestRegExParser(ILogger<CommandRequestRegExParser> logger)
+        public TerminalRequestRegExParser(ILogger<TerminalRequestRegExParser> logger)
         {
             this.logger = logger;
         }
@@ -32,16 +32,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public Task<ParsedRequest> ParseOutputAsync(TerminalRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        /// <exception cref="TerminalException"></exception>
-        public Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
         {
             throw new NotImplementedException();
         }
@@ -73,6 +63,6 @@ namespace OneImlx.Terminal.Commands.Parsers
             return new Regex(@"-(\w+)=([""']?)(.+?)\2(?:\s|$)", RegexOptions.Compiled);
         }
 
-        private readonly ILogger<CommandRequestRegExParser> logger;
+        private readonly ILogger<TerminalRequestRegExParser> logger;
     }
 }
