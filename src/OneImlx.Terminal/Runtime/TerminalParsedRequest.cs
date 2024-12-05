@@ -6,21 +6,20 @@
 */
 
 using System.Collections.Generic;
-using OneImlx.Terminal.Runtime;
 
-namespace OneImlx.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// The raw representation of a parsed <see cref="TerminalRequest"/>.
     /// </summary>
-    public sealed class ParsedRequest
+    public sealed class TerminalParsedRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParsedRequest"/> class.
+        /// Initializes a new instance of the <see cref="TerminalParsedRequest"/> class.
         /// </summary>
         /// <param name="tokens">The parsed tokens that represent a root, groups, command, and arguments.</param>
         /// <param name="options">The parsed options.</param>
-        public ParsedRequest(IEnumerable<string> tokens, Dictionary<string, string> options)
+        public TerminalParsedRequest(IEnumerable<string> tokens, Dictionary<string, string> options)
         {
             Options = options;
             Tokens = tokens;

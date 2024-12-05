@@ -16,10 +16,10 @@ namespace OneImlx.Terminal.Commands.Parsers
     public interface ITerminalRequestParser
     {
         /// <summary>
-        /// Parses the command request asynchronously.
+        /// Parses the terminal request asynchronously.
         /// </summary>
-        /// <param name="request">The command request to parse.</param>
+        /// <param name="request">The terminal request to parse.</param>
         /// <returns></returns>
-        Task<ParsedRequest> ParseOutputAsync(TerminalRequest request);
+        Task<TerminalParsedRequest> ParseRequestAsync(TerminalRequest request);
     }
 }

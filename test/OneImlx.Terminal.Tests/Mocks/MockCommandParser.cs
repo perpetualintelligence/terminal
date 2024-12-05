@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Mocks
 
             var cIdt = new Commands.CommandDescriptor("testid", "testname", "desc", CommandType.SubCommand, CommandFlags.None);
             Command command = new(cIdt);
-            ParsedCommand extractedCommand = new(new TerminalRequest("id1", "test"), command, Root.Default());
+            ParsedCommand extractedCommand = new(new TerminalRequest("id1", "test"), command, null);
             return Task.FromResult(new CommandParserResult(extractedCommand));
         }
     }

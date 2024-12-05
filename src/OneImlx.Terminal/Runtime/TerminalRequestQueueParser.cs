@@ -129,7 +129,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <param name="request"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<ParsedRequest> ParseOutputAsync(TerminalRequest request)
+        public Task<TerminalParsedRequest> ParseRequestAsync(TerminalRequest request)
         {
             return Task.Run(() =>
             {
@@ -139,7 +139,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                 // Extract tokens and options from the segments queue
                 IEnumerable<string> tokens = ExtractTokens(segmentsQueue);
                 Dictionary<string, string> parsedOptions = ExtractOptions(segmentsQueue);
-                return new ParsedRequest(tokens, parsedOptions);
+                return new TerminalParsedRequest(tokens, parsedOptions);
             });
         }
 

@@ -33,7 +33,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Delimited_Argument_Non_Ending_Throws()
         {
-            Func<Task> act = async () => { await parser.ParseOutputAsync(new TerminalRequest("id", "root1 grp1 grp2 cmd1 arg1 \"arg value not delimited")); };
+            Func<Task> act = async () => { await parser.ParseRequestAsync(new TerminalRequest("id", "root1 grp1 grp2 cmd1 arg1 \"arg value not delimited")); };
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_command")
                 .WithErrorDescription("The argument value is missing the closing delimiter. argument=\"arg value not delimited");
@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Delimited_Option_Non_Ending_Throws()
         {
-            Func<Task> act = async () => { await parser.ParseOutputAsync(new TerminalRequest("id", "root1 grp1 grp2 cmd1 arg1 -opt1 \"opt value not delimited")); };
+            Func<Task> act = async () => { await parser.ParseRequestAsync(new TerminalRequest("id", "root1 grp1 grp2 cmd1 arg1 -opt1 \"opt value not delimited")); };
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_option")
                 .WithErrorDescription("The option value is missing the closing delimiter. option=-opt1");
@@ -51,11 +51,11 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Empty_Raw_Does_Not_Throws()
         {
-            ParsedRequest parsed = await parser.ParseOutputAsync(new TerminalRequest("id1", ""));
+            TerminalParsedRequest parsed = await parser.ParseRequestAsync(new TerminalRequest("id1", ""));
             parsed.Tokens.Should().BeEmpty();
             parsed.Options.Should().BeEmpty();
 
-            parsed = await parser.ParseOutputAsync(new TerminalRequest("id1", "    "));
+            parsed = await parser.ParseRequestAsync(new TerminalRequest("id1", "    "));
             parsed.Tokens.Should().BeEmpty();
             parsed.Options.Should().BeEmpty();
         }
@@ -63,27 +63,27 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Null_or_Empty_Id_Throws()
         {
-            Func<Task> act = async () => { await parser.ParseOutputAsync(new TerminalRequest("", "root1 grp1 cmd1 arg1 arg2")); };
+            Func<Task> act = async () => { await parser.ParseRequestAsync(new TerminalRequest("", "root1 grp1 cmd1 arg1 arg2")); };
             await act.Should().ThrowAsync<ArgumentNullException>().WithParameterName("id");
 
-            act = async () => { await parser.ParseOutputAsync(new TerminalRequest(null!, "root1 grp1 cmd1 arg1 arg2")); };
+            act = async () => { await parser.ParseRequestAsync(new TerminalRequest(null!, "root1 grp1 cmd1 arg1 arg2")); };
             await act.Should().ThrowAsync<ArgumentNullException>().WithParameterName("id");
 
-            act = async () => { await parser.ParseOutputAsync(new TerminalRequest("   ", "root1 grp1 cmd1 arg1 arg2")); };
+            act = async () => { await parser.ParseRequestAsync(new TerminalRequest("   ", "root1 grp1 cmd1 arg1 arg2")); };
             await act.Should().ThrowAsync<ArgumentNullException>().WithParameterName("id");
         }
 
         [Fact]
         public async Task Null_Raw_Throws()
         {
-            Func<Task> act = async () => { await parser.ParseOutputAsync(new TerminalRequest("id1", null!)); };
+            Func<Task> act = async () => { await parser.ParseRequestAsync(new TerminalRequest("id1", null!)); };
             await act.Should().ThrowAsync<ArgumentNullException>().WithParameterName("raw");
         }
 
         [Fact]
         public async Task Only_Options_Does_Not_Error()
         {
-            ParsedRequest parsedOutput = await parser.ParseOutputAsync(new TerminalRequest("id1", "-opt1 val1 --opt2 val2 -opt3"));
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "-opt1 val1 --opt2 val2 -opt3"));
             parsedOutput.Tokens.Should().BeEmpty();
             parsedOutput.Options.Should().HaveCount(3);
             parsedOutput.Options!["-opt1"].Should().Be("val1");
@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Parses_All_Delimited_Options_Values()
         {
-            ParsedRequest parsedOutput = await parser.ParseOutputAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 -opt1 \"val1\" --opt2 \"val2\" --opt3 \"delimited val3\" -opt4 \"delimited val4\""));
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 -opt1 \"val1\" --opt2 \"val2\" --opt3 \"delimited val3\" -opt4 \"delimited val4\""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2"]);
             parsedOutput.Options.Should().HaveCount(4);
             parsedOutput.Options!["-opt1"].Should().Be("val1");
@@ -106,14 +106,14 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Parses_Delimited_Arguments()
         {
-            ParsedRequest parsedOutput = await parser.ParseOutputAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"arg1\" \"arg2\" arg3"));
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"arg1\" \"arg2\" arg3"));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "\"arg1\"", "\"arg2\"", "arg3"]);
         }
 
         [Fact]
         public async Task Parses_Ending_With_No_Value_Option()
         {
-            ParsedRequest parsedOutput = await parser.ParseOutputAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\" -opt6"));
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\" -opt6"));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
             parsedOutput.Options.Should().HaveCount(6);
             parsedOutput.Options!["-opt1"].Should().Be("val1");
@@ -127,7 +127,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Parses_Full_Correctly()
         {
-            ParsedRequest parsedOutput = await parser.ParseOutputAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\""));
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
             parsedOutput.Options.Should().HaveCount(5);
             parsedOutput.Options!["-opt1"].Should().Be("val1");
@@ -163,7 +163,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [InlineData("root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10" })]
         public async Task Parses_Tokens_Correctly(string raw, string[] tokens)
         {
-            ParsedRequest parsedOutput = await parser.ParseOutputAsync(new TerminalRequest("id1", raw));
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", raw));
             parsedOutput.Tokens.Should().BeEquivalentTo(tokens);
             parsedOutput.Options.Should().BeEmpty();
         }

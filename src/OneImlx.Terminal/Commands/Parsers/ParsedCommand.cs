@@ -23,13 +23,11 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <param name="request">The command request.</param>
         /// <param name="command">The command.</param>
         /// <param name="hierarchy">The command hierarchy.</param>
-        /// <param name="hierarchy1"></param>
-        public ParsedCommand(TerminalRequest request, Command command, Root? hierarchy = null, IEnumerable<CommandDescriptor>? hierarchy1 = null)
+        public ParsedCommand(TerminalRequest request, Command command, IEnumerable<CommandDescriptor>? hierarchy = null)
         {
-            CommandRoute = request ?? throw new System.ArgumentNullException(nameof(request));
+            Request = request ?? throw new System.ArgumentNullException(nameof(request));
             Command = command ?? throw new System.ArgumentNullException(nameof(command));
             Hierarchy = hierarchy;
-            Hierarchy1 = hierarchy1;
         }
 
         /// <summary>
@@ -38,19 +36,13 @@ namespace OneImlx.Terminal.Commands.Parsers
         public Command Command { get; }
 
         /// <summary>
-        /// The command request.
+        /// The terminal request.
         /// </summary>
-        public TerminalRequest CommandRoute { get; }
+        public TerminalRequest Request { get; }
 
         /// <summary>
         /// The parsed <see cref="Command"/> hierarchy.
         /// </summary>
-        /// <seealso cref="ParserOptions.ParseHierarchy"/>
-        public Root? Hierarchy { get; }
-
-        /// <summary>
-        /// The parsed <see cref="Command"/> hierarchy.
-        /// </summary>
-        public IEnumerable<CommandDescriptor>? Hierarchy1 { get; }
+        public IEnumerable<CommandDescriptor>? Hierarchy { get; }
     }
 }

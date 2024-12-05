@@ -8,13 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Integration;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 
@@ -52,7 +50,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task<CommandParserResult> ParseCommandAsync(CommandParserContext context)
         {
             logger.LogDebug("Parse request. request={0} raw={1}", context.Request.Id, context.Request.Raw);
-            ParsedRequest parsedOutput = await terminalRequestParser.ParseOutputAsync(context.Request);
+            TerminalParsedRequest parsedOutput = await terminalRequestParser.ParseRequestAsync(context.Request);
             ParsedCommand parsedCommand = await MapParsedRequestAsync(context.Request, parsedOutput);
             return new CommandParserResult(parsedCommand);
         }
@@ -62,7 +60,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return value.StartsWith(terminalOptions.Value.Parser.OptionPrefix, textHandler.Comparison);
         }
 
-        private async Task<(List<CommandDescriptor> parsedCommands, List<Argument> parsedArguments)> MapCommandAndArguments(ParsedRequest parsedOutput)
+        private async Task<(List<CommandDescriptor> parsedCommands, List<Argument> parsedArguments)> MapCommandAndArguments(TerminalParsedRequest parsedOutput)
         {
             List<CommandDescriptor> parsedCommands = [];
             List<Argument> parsedArguments = [];
@@ -202,7 +200,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return new Options(textHandler, options);
         }
 
-        private async Task<ParsedCommand> MapParsedRequestAsync(TerminalRequest request, ParsedRequest parsedOutput)
+        private async Task<ParsedCommand> MapParsedRequestAsync(TerminalRequest request, TerminalParsedRequest parsedOutput)
         {
             // Map to command and arguments
             var (commandDescriptors, parsedArguments) = await MapCommandAndArguments(parsedOutput);
@@ -218,8 +216,9 @@ namespace OneImlx.Terminal.Commands.Parsers
                 arguments = new Arguments(textHandler, parsedArguments);
             }
 
+            // Hierarchy is all expect the current command.
             Command command = new(commandDescriptor, arguments, parsedOptions);
-            return new ParsedCommand(request, command, null, hierarchy1: commandDescriptors.Take(commandDescriptors.Count - 1));
+            return new ParsedCommand(request, command, hierarchy: commandDescriptors.Take(commandDescriptors.Count - 1));
         }
 
         private string RemovePrefix(string value, string prefix)

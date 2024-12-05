@@ -78,10 +78,10 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Setup mocks
             terminalOptionsMock.Setup(x => x.Value).Returns(terminalOptions);
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root2", "grp2", "cmd2", "arg1", "arg2"], options);
+                          return new TerminalParsedRequest(["root2", "grp2", "cmd2", "arg1", "arg2"], options);
                       });
 
             var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 arg1 arg2 --opt1 val1 --opt2 23 --opt3 --opt4 36.69")));
@@ -106,26 +106,26 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Calls_Parser_Correctly()
         {
             bool parserCalled = false;
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
                           parserCalled = true;
-                          return new ParsedRequest(["root1", "grp1", "cmd1"], []);
+                          return new TerminalParsedRequest(["root1", "grp1", "cmd1"], []);
                       });
 
             var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 cmd1"));
             await parser.ParseCommandAsync(context);
-            parserMock.Verify(rp => rp.ParseOutputAsync(It.Is<TerminalRequest>(req => req.Raw == "root1 grp1 cmd1")), Times.Once);
+            parserMock.Verify(rp => rp.ParseRequestAsync(It.Is<TerminalRequest>(req => req.Raw == "root1 grp1 cmd1")), Times.Once);
             parserCalled.Should().BeTrue();
         }
 
         [Fact]
         public async Task No_Options_Processes_Correctly()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root1", "grp1", "arg1", "arg2"], []);
+                          return new TerminalParsedRequest(["root1", "grp1", "arg1", "arg2"], []);
                       });
 
             var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root1 grp1 arg1 arg2")));
@@ -155,10 +155,10 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Setup mocks
             terminalOptionsMock.Setup(x => x.Value).Returns(terminalOptions);
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root2", "grp2", "cmd2"], options);
+                          return new TerminalParsedRequest(["root2", "grp2", "cmd2"], options);
                       });
 
             var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --opt2 23 --opt3 --opt4 36.69")));
@@ -179,10 +179,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Arguments_Found_Without_Command()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["arg1", "arg2", "agr3"], []);
+                          return new TerminalParsedRequest(["arg1", "arg2", "agr3"], []);
                       });
 
             var context = new CommandParserContext(new TerminalRequest("id1", "arg1 arg2 arg3"));
@@ -195,10 +195,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Command_Does_Not_Define_An_Owner()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root1", "root2", "grp2"], []);
+                          return new TerminalParsedRequest(["root1", "root2", "grp2"], []);
                       });
 
             var context = new CommandParserContext(new TerminalRequest("id1", "root1 root2 grp2"));
@@ -211,10 +211,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Command_Found_But_Returns_Null_Descriptor()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root1", "grp1", "cmd1"], []);
+                          return new TerminalParsedRequest(["root1", "grp1", "cmd1"], []);
                       });
 
             Mock<ITerminalCommandStore> storeMock = new();
@@ -234,10 +234,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Command_Is_Present_In_Arguments()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root1", "grp1", "arg1", "arg2", "cmd1"], []);
+                          return new TerminalParsedRequest(["root1", "grp1", "arg1", "arg2", "cmd1"], []);
                       });
 
             var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 arg1 cmd1"));
@@ -250,10 +250,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_More_Than_Supported_Arguments()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root1", "grp1", "arg1", "arg2", "arg3", "arg4"], []);
+                          return new TerminalParsedRequest(["root1", "grp1", "arg1", "arg2", "arg3", "arg4"], []);
                       });
 
             var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 arg1 arg2 arg3"));
@@ -281,10 +281,10 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Setup mocks
             terminalOptionsMock.Setup(x => x.Value).Returns(terminalOptions);
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root2", "grp2", "cmd2"], options);
+                          return new TerminalParsedRequest(["root2", "grp2", "cmd2"], options);
                       });
 
             Func<Task> act = async () => await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --invalid_opt1 23 --opt3 --opt4 36.69")));
@@ -312,10 +312,10 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Setup mocks
             terminalOptionsMock.Setup(x => x.Value).Returns(terminalOptions);
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root2", "grp2", "cmd2"], options);
+                          return new TerminalParsedRequest(["root2", "grp2", "cmd2"], options);
                       });
 
             Func<Task> act = async () => await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --invalid_opt1 23 --opt3 --opt4 36.69")));
@@ -342,10 +342,10 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Setup mocks
             terminalOptionsMock.Setup(x => x.Value).Returns(terminalOptions);
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root2", "grp2", "cmd2"], options);
+                          return new TerminalParsedRequest(["root2", "grp2", "cmd2"], options);
                       });
 
             Func<Task> act = async () => await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --invalid_opt1 23 --opt3 --opt4 36.69")));
@@ -357,10 +357,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Owner_Is_Invalid()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root2", "grp1", "cmd1"], []);
+                          return new TerminalParsedRequest(["root2", "grp1", "cmd1"], []);
                       });
 
             var context = new CommandParserContext(new TerminalRequest("id1", "root2 grp1 cmd1"));
@@ -373,10 +373,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Owner_Is_Missing()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["grp1", "cmd1"], []);
+                          return new TerminalParsedRequest(["grp1", "cmd1"], []);
                       });
 
             var context = new CommandParserContext(new TerminalRequest("id1", "grp1 cmd1"));
@@ -389,10 +389,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Unsupported_Arguments()
         {
-            parserMock.Setup(x => x.ParseOutputAsync(It.IsAny<TerminalRequest>()))
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
                       .ReturnsAsync((TerminalRequest request) =>
                       {
-                          return new ParsedRequest(["root1", "grp1", "cmd1", "arg1", "arg2"], []);
+                          return new TerminalParsedRequest(["root1", "grp1", "cmd1", "arg1", "arg2"], []);
                       });
 
             var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2"));

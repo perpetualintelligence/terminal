@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <param name="request"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<ParsedRequest> ParseOutputAsync(TerminalRequest request)
+        public Task<TerminalParsedRequest> ParseRequestAsync(TerminalRequest request)
         {
             throw new NotImplementedException();
         }

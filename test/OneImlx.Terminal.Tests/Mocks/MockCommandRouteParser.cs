@@ -16,18 +16,13 @@ namespace OneImlx.Terminal.Mocks
     {
         public bool Called { get; private set; }
 
-        public TerminalRequest PassedCommandRoute { get; private set; } = null!;
+        public TerminalRequest PassedRequest { get; private set; } = null!;
 
-        public Task<ParsedRequest> ParseOutputAsync(TerminalRequest request)
+        public Task<TerminalParsedRequest> ParseRequestAsync(TerminalRequest request)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<ParsedCommand> ParseRequestAsync(TerminalRequest request)
-        {
-            PassedCommandRoute = request;
+            PassedRequest = request;
             Called = true;
-            return Task.FromResult(new ParsedCommand(request, new Command(new CommandDescriptor("id", "name", "description", CommandType.SubCommand, CommandFlags.None)), Root.Default()));
+            return Task.FromResult(new TerminalParsedRequest([], []));
         }
     }
 }
