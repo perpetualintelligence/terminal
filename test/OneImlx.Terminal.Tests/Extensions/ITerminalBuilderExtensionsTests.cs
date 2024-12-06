@@ -314,7 +314,7 @@ namespace OneImlx.Terminal.Extensions
         [Fact]
         public void AddRouterShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddCommandRouter<MockCommandRouter, MockCommandHandler, MockCommandRuntime>();
+            terminalBuilder.AddCommandRouter<MockCommandRouter, MockCommandHandler, MockCommandResolver>();
 
             var router = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRouter)));
             router.Should().NotBeNull();
@@ -326,10 +326,10 @@ namespace OneImlx.Terminal.Extensions
             handler!.Lifetime.Should().Be(ServiceLifetime.Transient);
             handler!.ImplementationType.Should().Be(typeof(MockCommandHandler));
 
-            var runtime = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRuntime)));
+            var runtime = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandResolver)));
             runtime.Should().NotBeNull();
             runtime!.Lifetime.Should().Be(ServiceLifetime.Transient);
-            runtime!.ImplementationType.Should().Be(typeof(MockCommandRuntime));
+            runtime!.ImplementationType.Should().Be(typeof(MockCommandResolver));
         }
 
         [Fact]

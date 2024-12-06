@@ -13,7 +13,7 @@ using OneImlx.Terminal.Commands.Runners;
 
 namespace OneImlx.Terminal.Mocks
 {
-    internal class MockCommandRuntime : ICommandRuntime
+    internal class MockCommandResolver : ICommandResolver
     {
         public bool ResolveAuthenticatorCalled { get; private set; }
 

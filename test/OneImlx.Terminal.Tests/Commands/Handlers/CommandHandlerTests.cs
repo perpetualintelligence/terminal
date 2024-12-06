@@ -346,7 +346,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             command = MockCommands.NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None);
             routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
             routerContext = new CommandRouterContext(new(Guid.NewGuid().ToString(), "test"), routingContext, null);
-            commandRuntime = new MockCommandRuntime();
+            commandRuntime = new MockCommandResolver();
             terminalHelpProvider = new MockTerminalHelpProvider();
             terminalEventHandler = new MockTerminalEventHandler();
 
@@ -494,7 +494,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;
-        private MockCommandRuntime commandRuntime = null!;
+        private MockCommandResolver commandRuntime = null!;
         private CancellationTokenSource commandTokenSource = null!;
         private CommandHandler handler = null!;
         private Tuple<CommandDescriptor, Command> helpAliasCommand = null!;

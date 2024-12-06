@@ -73,7 +73,7 @@ namespace OneImlx.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandRouter<TRouter, THandler, TRuntime>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler where TRuntime : class, ICommandRuntime
+        public static ITerminalBuilder AddCommandRouter<TRouter, THandler, TResolver>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler where TResolver : class, ICommandResolver
         {
             // Add command router
             builder.Services.AddTransient<ICommandRouter, TRouter>();
@@ -82,7 +82,7 @@ namespace OneImlx.Terminal.Extensions
             builder.Services.AddTransient<ICommandHandler, THandler>();
 
             // Add command runtime
-            builder.Services.AddTransient<ICommandRuntime, TRuntime>();
+            builder.Services.AddTransient<ICommandResolver, TResolver>();
 
             return builder;
         }

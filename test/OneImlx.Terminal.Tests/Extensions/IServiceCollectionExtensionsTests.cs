@@ -87,7 +87,7 @@ namespace OneImlx.Terminal.Extensions
             // Command Router
             provider.GetService<ICommandRouter>().Should().BeOfType<CommandRouter>();
             provider.GetService<ICommandHandler>().Should().BeOfType<CommandHandler>();
-            provider.GetService<ICommandRuntime>().Should().BeOfType<CommandRuntime>();
+            provider.GetService<ICommandResolver>().Should().BeOfType<CommandResolver>();
 
             // Command Parser
             provider.GetService<ICommandParser>().Should().BeOfType<CommandParser>();
@@ -141,7 +141,7 @@ namespace OneImlx.Terminal.Extensions
 
             provider.GetService<ICommandRouter>().Should().NotBeNull();
             provider.GetService<ICommandHandler>().Should().NotBeNull();
-            provider.GetService<ICommandRuntime>().Should().NotBeNull();
+            provider.GetService<ICommandResolver>().Should().NotBeNull();
             provider.GetService<ILicenseChecker>().Should().NotBeNull();
         }
 
@@ -228,7 +228,7 @@ namespace OneImlx.Terminal.Extensions
             ICommandHandler? commandHandler = host.Services.GetService<ICommandHandler>();
             commandHandler.Should().BeNull();
 
-            ICommandRuntime? commandRuntime = host.Services.GetService<ICommandRuntime>();
+            ICommandResolver? commandRuntime = host.Services.GetService<ICommandResolver>();
             commandRuntime.Should().BeNull();
 
             ILicenseChecker? licenseChecker = host.Services.GetService<ILicenseChecker>();
@@ -249,7 +249,7 @@ namespace OneImlx.Terminal.Extensions
             ICommandHandler? commandHandler = host.Services.GetService<ICommandHandler>();
             commandHandler.Should().BeNull();
 
-            ICommandRuntime? commandRuntime = host.Services.GetService<ICommandRuntime>();
+            ICommandResolver? commandRuntime = host.Services.GetService<ICommandResolver>();
             commandRuntime.Should().BeNull();
 
             ILicenseChecker? licenseChecker = host.Services.GetService<ILicenseChecker>();

@@ -195,7 +195,7 @@ namespace OneImlx.Terminal.Extensions
             }
 
             return services.AddTerminal<TStore, TText>(textHandler, setupAction)
-                   .AddCommandRouter<CommandRouter, CommandHandler, CommandRuntime>()
+                   .AddCommandRouter<CommandRouter, CommandHandler, CommandResolver>()
                    .AddCommandParser<CommandParser, TerminalRequestQueueParser>()
                    .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
                    .AddArgumentChecker<DataTypeMapper<Argument>, ArgumentChecker>()

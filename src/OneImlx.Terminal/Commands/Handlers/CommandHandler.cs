@@ -28,14 +28,14 @@ namespace OneImlx.Terminal.Commands.Handlers
         /// Initialize a news instance.
         /// </summary>
         public CommandHandler(
-            ICommandRuntime commandRuntime,
+            ICommandResolver commandResolver,
             ILicenseChecker licenseChecker,
             IOptions<TerminalOptions> options,
             ITerminalHelpProvider terminalHelpProvider,
             ILogger<CommandHandler> logger,
             ITerminalEventHandler? terminalEventHandler = null)
         {
-            this.commandRuntime = commandRuntime ?? throw new ArgumentNullException(nameof(commandRuntime));
+            this.commandRuntime = commandResolver ?? throw new ArgumentNullException(nameof(commandResolver));
             this.licenseChecker = licenseChecker ?? throw new ArgumentNullException(nameof(licenseChecker));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.terminalHelpProvider = terminalHelpProvider ?? throw new ArgumentNullException(nameof(terminalHelpProvider));
@@ -138,7 +138,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             return runnerResult;
         }
 
-        private readonly ICommandRuntime commandRuntime;
+        private readonly ICommandResolver commandRuntime;
         private readonly ILicenseChecker licenseChecker;
         private readonly ILogger<CommandHandler> logger;
         private readonly IOptions<TerminalOptions> options;

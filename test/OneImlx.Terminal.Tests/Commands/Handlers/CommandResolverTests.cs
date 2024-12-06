@@ -18,21 +18,21 @@ using Xunit;
 
 namespace OneImlx.Terminal.Commands.Handlers
 {
-    public class CommandRuntimeTests
+    public class CommandResolverTests
     {
         private readonly ServiceProvider _serviceProvider;
-        private readonly ILogger<CommandRuntime> _logger;
-        private readonly CommandRuntime _commandRuntime;
+        private readonly ILogger<CommandResolver> _logger;
+        private readonly CommandResolver _commandRuntime;
 
-        public CommandRuntimeTests()
+        public CommandResolverTests()
         {
             var services = new ServiceCollection();
             services.AddTransient<ICommandChecker, MockCommandCheckerInner>();
             services.AddTransient<IDelegateCommandRunner, MockCommandRunnerInner>();
 
             _serviceProvider = services.BuildServiceProvider();
-            _logger = new NullLogger<CommandRuntime>();
-            _commandRuntime = new CommandRuntime(_serviceProvider, _logger);
+            _logger = new NullLogger<CommandResolver>();
+            _commandRuntime = new CommandResolver(_serviceProvider, _logger);
         }
 
         [Fact]

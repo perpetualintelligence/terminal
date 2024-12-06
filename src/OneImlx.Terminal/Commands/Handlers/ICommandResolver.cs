@@ -14,8 +14,8 @@ namespace OneImlx.Terminal.Commands.Handlers
     /// An abstraction for resolving command runtime. It is responsible for resolving the appropriate command checker
     /// and runner for a given command descriptor.
     /// </summary>
-    /// <seealso cref="CommandRuntime"/>
-    public interface ICommandRuntime
+    /// <seealso cref="CommandResolver"/>
+    public interface ICommandResolver
     {
         /// <summary>
         /// Resolves the command checker associated with the specified command descriptor.
