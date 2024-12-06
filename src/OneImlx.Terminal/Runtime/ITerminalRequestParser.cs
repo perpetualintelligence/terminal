@@ -6,9 +6,8 @@
 */
 
 using System.Threading.Tasks;
-using OneImlx.Terminal.Runtime;
 
-namespace OneImlx.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// An abstraction to parse a <see cref="TerminalRequest"/>.

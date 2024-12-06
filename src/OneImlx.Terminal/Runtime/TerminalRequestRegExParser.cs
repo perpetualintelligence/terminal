@@ -11,9 +11,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Runtime;
 
-namespace OneImlx.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// </summary>

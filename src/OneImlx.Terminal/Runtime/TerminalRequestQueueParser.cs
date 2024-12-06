@@ -12,10 +12,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 
-namespace OneImlx.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
     /// Represents a default queue based command-line parser for processing terminal commands based on defined descriptors.
