@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Runtime
         public StringComparison Comparison => StringComparison.InvariantCultureIgnoreCase;
 
         /// <summary>
-        /// The ASCII text encoding.
+        /// The <see cref="Encoding.UTF8"/> text encoding.
         /// </summary>
         public Encoding Encoding => Encoding.UTF8;
 

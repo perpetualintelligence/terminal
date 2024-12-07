@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,7 +18,6 @@ using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
-using System.Linq;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
@@ -180,6 +180,14 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             result.ParsedCommand.Command.Options["o3"].Value.Should().Be("True");
             result.ParsedCommand.Command.Options["o4"].Value.Should().Be("36.69");
+        }
+
+        [Fact]
+        public async Task Request_Is_Set_In_Result()
+        {
+            TerminalRequest request = new(Guid.NewGuid().ToString(), "root1");
+            var result = await parser.ParseCommandAsync(new(request));
+            result.Should().NotBeNull();
         }
 
         [Fact]

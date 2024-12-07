@@ -9,18 +9,17 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace OneImlx.Terminal.Commands.Parsers
+namespace OneImlx.Terminal.Runtime
 {
-    public class CommandRequestQueueParserTests
+    public class TerminalRequestQueueAsciiParserTests
     {
-        public CommandRequestQueueParserTests()
+        public TerminalRequestQueueAsciiParserTests()
         {
             terminalTextHandler = new TerminalAsciiTextHandler();
             mockCommandStore = new Mock<ITerminalCommandStore>();
@@ -29,6 +28,8 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             parser = new TerminalRequestQueueParser(terminalTextHandler, terminalOptions, mockLogger.Object);
         }
+
+       
 
         [Fact]
         public async Task Delimited_Argument_Non_Ending_Throws()

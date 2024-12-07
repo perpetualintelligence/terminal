@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Runtime
         public StringComparison Comparison => StringComparison.InvariantCultureIgnoreCase;
 
         /// <summary>
-        /// The ASCII text encoding.
+        /// The <see cref="Encoding.ASCII"/> text encoding.
         /// </summary>
         public Encoding Encoding => Encoding.ASCII;
 
