@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -11,6 +11,22 @@ namespace OneImlx.Terminal.Mocks
 {
     public class MockTerminalOptions
     {
+        public static TerminalOptions NewAliasOptions()
+        {
+            return new TerminalOptions()
+            {
+                Id = "test_id_2",
+                Parser = new ParserOptions()
+                {
+                    ValueDelimiter = '"',
+                    OptionPrefix = "--",
+                    OptionAliasPrefix = "-",
+                    OptionValueSeparator = ' ',
+                    Separator = TerminalIdentifiers.SpaceSeparator,
+                },
+            };
+        }
+
         public static TerminalOptions NewLegacyOptions()
         {
             return new TerminalOptions()
@@ -20,24 +36,8 @@ namespace OneImlx.Terminal.Mocks
                 {
                     OptionPrefix = "-",
                     OptionAliasPrefix = "-",
-                    OptionValueSeparator = "=",
-                    Separator = " ",
-                },
-            };
-        }
-
-        public static TerminalOptions NewAliasOptions()
-        {
-            return new TerminalOptions()
-            {
-                Id = "test_id_2",
-                Parser = new ParserOptions()
-                {
-                    ValueDelimiter = "\"",
-                    OptionPrefix = "--",
-                    OptionAliasPrefix = "-",
-                    OptionValueSeparator = " ",
-                    Separator = " ",
+                    OptionValueSeparator = '=',
+                    Separator = TerminalIdentifiers.SpaceSeparator,
                 },
             };
         }

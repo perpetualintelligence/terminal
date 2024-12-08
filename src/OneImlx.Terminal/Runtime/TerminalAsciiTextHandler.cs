@@ -26,12 +26,34 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         public Encoding Encoding => Encoding.ASCII;
 
+        /// <inheritdoc/>
+        public bool CharEquals(char? ch1, char? ch2)
+        {
+            return char.Equals(ch1, ch2);
+        }
+
         /// <summary>
         /// Returns the <see cref="StringComparer.InvariantCultureIgnoreCase"/> equality comparer.
         /// </summary>
         public IEqualityComparer<string> EqualityComparer()
         {
             return StringComparer.OrdinalIgnoreCase;
+        }
+
+        /// <inheritdoc/>
+        public bool SingleEquals(char? ch1, string? s2)
+        {
+            if (ch1 == null || s2 == null)
+            {
+                return false;
+            }
+
+            if (s2.Length != 1)
+            {
+                return false;
+            }
+
+            return TextEquals(ch1.ToString(), s2);
         }
 
         /// <summary>

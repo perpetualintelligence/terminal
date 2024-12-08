@@ -8,7 +8,7 @@
 namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The command parser options.
+    /// The terminal parser options.
     /// </summary>
     public sealed class ParserOptions
     {
@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// The option value separator. Defaults to <c></c>.
         /// </summary>
         /// <remarks>The option value separator must be a single Unicode character, and it can be a single whitespace.</remarks>
-        public string OptionValueSeparator { get; set; } = " ";
+        public char OptionValueSeparator { get; set; } = TerminalIdentifiers.SpaceSeparator;
 
         /// <summary>
         /// The command string separator. Defaults to a single whitespace.
@@ -36,11 +36,11 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <remarks>
         /// The command string separator must be a single Unicode character, and it can be a whitespace character.
         /// </remarks>
-        public string Separator { get; set; } = " ";
+        public char Separator { get; set; } = TerminalIdentifiers.SpaceSeparator;
 
         /// <summary>
         /// An argument or option value delimiter. It is used to extract a value within the configured delimiter.
         /// </summary>
-        public string ValueDelimiter { get; set; } = "\"";
+        public char ValueDelimiter { get; set; } = '"';
     }
 }

@@ -151,8 +151,8 @@ namespace OneImlx.Terminal.Runtime
         {
             // This dictionary will hold the parsed options.
             Dictionary<string, string> parsedOptions = [];
-            string valueDelimiter = terminalOptions.Parser.ValueDelimiter;
-            string separator = terminalOptions.Parser.Separator;
+            char valueDelimiter = terminalOptions.Parser.ValueDelimiter;
+            char separator = terminalOptions.Parser.Separator;
 
             while (segmentsQueue.Count > 0)
             {
@@ -162,7 +162,7 @@ namespace OneImlx.Terminal.Runtime
 
                 // If we are not within a delimiter then we cannot have a separator.
                 string option = optionSplit.Split;
-                if (option.IsNullOrEmpty() || textHandler.TextEquals(option, separator))
+                if (option.IsNullOrEmpty() || textHandler.SingleEquals(separator, option))
                 {
                     continue;
                 }
@@ -183,7 +183,7 @@ namespace OneImlx.Terminal.Runtime
                     nextSegment = segmentsQueue.Peek().Split;
 
                     // If nextSegment is purely the separator or empty, discard it and continue to the next iteration.
-                    if (textHandler.TextEquals(nextSegment, separator) || string.IsNullOrEmpty(nextSegment))
+                    if (string.IsNullOrEmpty(nextSegment) || textHandler.SingleEquals(separator, nextSegment))
                     {
                         segmentsQueue.Dequeue();
                         continue;
@@ -202,7 +202,7 @@ namespace OneImlx.Terminal.Runtime
 
                 // Peek at the next segment without removing it. This allows us to make a decision on how to proceed
                 // without advancing the queue. E.g. whether the option value is delimited or not.
-                if (StartsWith(nextSegment, valueDelimiter))
+                if (StartsWith(nextSegment, valueDelimiter.ToString()))
                 {
                     // If the next segment starts with a delimiter, then this segment represents a value that is
                     // enclosed within delimiters. We should process until we find the closing delimiter, capturing
@@ -215,7 +215,7 @@ namespace OneImlx.Terminal.Runtime
 
                         // If the currentSegment contains just the delimiter both start and end will match and we will
                         // break out of the loop. This will happen when the option value for e.g. \" value "\
-                        if (EndsWith(currentSegment.Split, valueDelimiter) && optionValueBuilder.Length > 1)
+                        if (EndsWith(currentSegment.Split, valueDelimiter.ToString()) && optionValueBuilder.Length > 1)
                         {
                             foundClosingDelimiter = true;
                         }
@@ -235,14 +235,14 @@ namespace OneImlx.Terminal.Runtime
                     }
 
                     // Strip the delimiters if present.
-                    string optionValueTemp = optionValueBuilder.ToString().TrimEnd(separator, textHandler.Comparison);
-                    if (StartsWith(optionValueTemp, valueDelimiter))
+                    string optionValueTemp = optionValueBuilder.ToString().TrimEnd(separator);
+                    if (StartsWith(optionValueTemp, valueDelimiter.ToString()))
                     {
-                        optionValueTemp = RemovePrefix(optionValueTemp, valueDelimiter);
+                        optionValueTemp = RemovePrefix(optionValueTemp, valueDelimiter.ToString());
                     }
-                    if (EndsWith(optionValueTemp, valueDelimiter))
+                    if (EndsWith(optionValueTemp, valueDelimiter.ToString()))
                     {
-                        optionValueTemp = RemoveSuffix(optionValueTemp, valueDelimiter);
+                        optionValueTemp = RemoveSuffix(optionValueTemp, valueDelimiter.ToString());
                     }
                     parsedOptions[option] = optionValueTemp;
                 }
@@ -261,7 +261,7 @@ namespace OneImlx.Terminal.Runtime
                         optionValueBuilder.Append(segmentsQueue.Dequeue().Split);
                     }
 
-                    parsedOptions[option] = optionValueBuilder.ToString().TrimEnd(separator, textHandler.Comparison);
+                    parsedOptions[option] = optionValueBuilder.ToString().TrimEnd(separator);
                 }
             }
 
@@ -270,51 +270,69 @@ namespace OneImlx.Terminal.Runtime
 
         private Queue<TerminalRequestParsedSplit> ExtractQueue(TerminalRequest request)
         {
+            StringBuilder normalizedRaw = new();
+            bool withInDelimiter = false;
+            for (int idx = 0; idx < request.Raw.Length; ++idx)
+            {
+                char currentChar = request.Raw[idx];
+                if (textHandler.CharEquals(currentChar, terminalOptions.Parser.ValueDelimiter))
+                {
+                    withInDelimiter = !withInDelimiter;
+                }
+
+                char ch = 'あ';
+            }
+
             var queue = new Queue<TerminalRequestParsedSplit>();
 
-            // This algorithm is designed to split a given string based on two token delimiters: a primary separator and
-            // a value separator. The goal is to determine which of the two tokens appears next in the string, allowing
-            // us to correctly split the string into its logical segments.
-            // 1. Start by initializing a `currentIndex` to zero, which indicates our current position within the string.
-            // 2. Using a while loop, iterate through the string until the entire length is processed.
-            // 3. For each position denoted by `currentIndex`: a. Set the `nearestTokenIndex` to the end of the string.
-            // This value tracks the nearest occurrence of any token. b. Initialize `foundToken` to null. This holds the
-            // token (separator or valueSeparator) that is closest to the `currentIndex`.
-            // 4. Loop through both tokens using a foreach loop: a. Find the first occurrence of each token from the
-            // current index. b. If a token occurrence is found and its position is closer than any previously found
-            // token's position, update `nearestTokenIndex` and `foundToken`.
-            // 5. After the foreach loop: a. If `foundToken` is null (no more occurrences of either token), add the
-            // remainder of the string to the result and exit the loop. b. If a token is found, split the string at
-            // `nearestTokenIndex`, add the segment and its associated token to the result. Update `currentIndex` to
-            // continue processing. The result is a list of segments split by the nearest occurring token, capturing the
-            // context of each split.
-            int currentIndex = 0;
-            string raw = request.Raw;
-            while (currentIndex < raw.Length)
+            string[] tokens = [];
+            foreach (string token in tokens)
             {
-                int nearestTokenIndex = raw.Length;
-                string? foundToken = null;
-                foreach (var token in new[] { terminalOptions.Parser.Separator, terminalOptions.Parser.OptionValueSeparator })
+                bool optionsStarted = false;
+                if (!optionsStarted)
                 {
-                    int index = raw.IndexOf(token, currentIndex);
-                    if (index != -1 && index < nearestTokenIndex)
-                    {
-                        nearestTokenIndex = index;
-                        foundToken = token;
-                    }
                 }
-
-                if (foundToken == null)
-                {
-                    queue.Enqueue(new TerminalRequestParsedSplit(raw.Substring(currentIndex), null));
-                    currentIndex = raw.Length;
-                    continue;
-                }
-
-                string substring = raw.Substring(currentIndex, nearestTokenIndex - currentIndex);
-                queue.Enqueue(new TerminalRequestParsedSplit(substring, foundToken));
-                currentIndex = nearestTokenIndex + foundToken.Length;
             }
+
+            //// This algorithm is designed to split a given string based on two token delimiters: a primary separator and
+            //// a value separator. The goal is to determine which of the two tokens appears next in the string, allowing
+            //// us to correctly split the string into its logical segments.
+            //// 1. Start by initializing a `currentIndex` to zero, which indicates our current position within the string.
+            //// 2. Using a while loop, iterate through the string until the entire length is processed.
+            //// 3. For each position denoted by `currentIndex`: a. Set the `nearestTokenIndex` to the end of the string.
+            //// This value tracks the nearest occurrence of any token. b. Initialize `foundToken` to null. This holds the
+            //// token (separator or valueSeparator) that is closest to the `currentIndex`.
+            //// 4. Loop through both tokens using a foreach loop: a. Find the first occurrence of each token from the
+            //// current index. b. If a token occurrence is found and its position is closer than any previously found
+            //// token's position, update `nearestTokenIndex` and `foundToken`.
+            //// 5. After the foreach loop: a. If `foundToken` is null (no more occurrences of either token), add the
+            //// remainder of the string to the result and exit the loop. b. If a token is found, split the string at
+            //// `nearestTokenIndex`, add the segment and its associated token to the result. Update `currentIndex` to
+            //// continue processing. The result is a list of segments split by the nearest occurring token, capturing the
+            //// context of each split.
+            //int currentIndex = 0;
+            //string raw = request.Raw;
+            //while (currentIndex < raw.Length)
+            //{
+            //    int nearestTokenIndex = raw.Length;
+            //    string? foundToken = null;
+            //    foreach (var token in new[] { terminalOptions.Parser.Separator, terminalOptions.Parser.OptionValueSeparator })
+            //    {
+            //        int index = raw.IndexOf(token, currentIndex);
+            //        if (index != -1 && index < nearestTokenIndex)
+            //        {
+            //            nearestTokenIndex = index;
+            //            foundToken = token;
+            //        }
+            //    }
+
+            // if (foundToken == null) { queue.Enqueue(new TerminalRequestParsedSplit(raw.Substring(currentIndex),
+            // null)); currentIndex = raw.Length; continue; }
+
+            //    string substring = raw.Substring(currentIndex, nearestTokenIndex - currentIndex);
+            //    queue.Enqueue(new TerminalRequestParsedSplit(substring, foundToken));
+            //    currentIndex = nearestTokenIndex + foundToken.Length;
+            //}
 
             return queue;
         }
@@ -323,8 +341,8 @@ namespace OneImlx.Terminal.Runtime
         {
             List<string> tokens = [];
 
-            string valueDelimiter = terminalOptions.Parser.ValueDelimiter;
-            string separator = terminalOptions.Parser.Separator;
+            char valueDelimiter = terminalOptions.Parser.ValueDelimiter;
+            char separator = terminalOptions.Parser.Separator;
 
             while (segmentsQueue.Count > 0)
             {
@@ -338,15 +356,15 @@ namespace OneImlx.Terminal.Runtime
 
                 // If we are not within a delimiter then we cannot have a separator.
                 string segment = splitSegment.Split;
-                if (segment.IsNullOrEmpty() || textHandler.TextEquals(segment, separator))
+                if (segment.IsNullOrEmpty() || textHandler.SingleEquals(separator, segment))
                 {
                     continue;
                 }
 
                 StringBuilder argumentValueBuilder = new(segment, segment.Length + 10);
-                if (StartsWith(segment, valueDelimiter))
+                if (StartsWith(segment, valueDelimiter.ToString()))
                 {
-                    while (segmentsQueue.Count > 0 && (!EndsWith(segment, valueDelimiter) || argumentValueBuilder.Length == 1))
+                    while (segmentsQueue.Count > 0 && (!EndsWith(segment, valueDelimiter.ToString()) || argumentValueBuilder.Length == 1))
                     {
                         argumentValueBuilder.Append(separator);
                         splitSegment = segmentsQueue.Dequeue();
@@ -354,7 +372,7 @@ namespace OneImlx.Terminal.Runtime
                         argumentValueBuilder.Append(segment);
                     }
 
-                    if (!EndsWith(segment, valueDelimiter))
+                    if (!EndsWith(segment, valueDelimiter.ToString()))
                     {
                         throw new TerminalException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
                     }

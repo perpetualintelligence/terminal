@@ -53,9 +53,14 @@ namespace OneImlx.Terminal
         public const string SenderIdToken = "sender_id";
 
         /// <summary>
-        /// The data stream delimiter byte. Defaults to <c>0x1F</c> or Unit Separator.
+        /// The space character used as a separator.
         /// </summary>
-        public const byte StreamDelimiter = 0x1F;
+        public const char SpaceSeparator = ' ';
+
+        /// <summary>
+        /// The data stream delimiter byte. Defaults to <c>0x1E</c> or Record Separator.
+        /// </summary>
+        public const byte StreamDelimiter = 0x1E;
 
         /// <summary>
         /// The test application identifier for internal testing.

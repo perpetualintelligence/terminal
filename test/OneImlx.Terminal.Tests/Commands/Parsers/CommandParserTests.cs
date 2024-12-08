@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             TerminalOptions terminalOptions = new();
             terminalOptions.Parser.OptionPrefix = "--";
-            terminalOptions.Parser.OptionValueSeparator = " ";
+            terminalOptions.Parser.OptionValueSeparator = ' ';
             terminalOptions.Parser.OptionAliasPrefix = "-";
 
             Dictionary<string, string> options = new()
@@ -148,7 +148,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             TerminalOptions terminalOptions = new();
             terminalOptions.Parser.OptionPrefix = "--";
-            terminalOptions.Parser.OptionValueSeparator = " ";
+            terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
             terminalOptions.Parser.OptionAliasPrefix = "-";
 
             Dictionary<string, string> options = new()
@@ -185,9 +185,21 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Request_Is_Set_In_Result()
         {
+            // Setup mocks
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
+                      .ReturnsAsync((TerminalRequest request) =>
+                      {
+                          return new TerminalParsedRequest(["root1"], []);
+                      });
+
             TerminalRequest request = new(Guid.NewGuid().ToString(), "root1");
             var result = await parser.ParseCommandAsync(new(request));
             result.Should().NotBeNull();
+
+            result.ParsedCommand.Should().NotBeNull();
+            result.ParsedCommand.Command.Id.Should().Be("root1");
+            result.ParsedCommand.Hierarchy.Should().BeNull();
+            result.ParsedCommand.Request.Should().BeSameAs(request);
         }
 
         [Fact]
@@ -235,7 +247,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             TerminalOptions terminalOptions = new();
             terminalOptions.Parser.OptionPrefix = "--";
-            terminalOptions.Parser.OptionValueSeparator = " ";
+            terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
             terminalOptions.Parser.OptionAliasPrefix = "-";
 
             Dictionary<string, string> options = new()
@@ -332,6 +344,22 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         [Fact]
+        public async Task Throws_If_Commands_Are_Duplicated()
+        {
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
+                      .ReturnsAsync((TerminalRequest request) =>
+                      {
+                          return new TerminalParsedRequest(["root1", "grp1", "cmd1", "cmd1"], []);
+                      });
+
+            var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 cmd1 cmd1"));
+            Func<Task> act = async () => await parser.ParseCommandAsync(context);
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode("invalid_command")
+                .WithErrorDescription("The command owner is not valid. owner=cmd1 command=cmd1");
+        }
+
+        [Fact]
         public async Task Throws_If_More_Than_Supported_Arguments()
         {
             parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
@@ -348,11 +376,27 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         [Fact]
+        public async Task Throws_If_No_Root_Is_Not_Specified()
+        {
+            parserMock.Setup(x => x.ParseRequestAsync(It.IsAny<TerminalRequest>()))
+                      .ReturnsAsync((TerminalRequest request) =>
+                      {
+                          return new TerminalParsedRequest(["grp1", "cmd1", "cmd1"], []);
+                      });
+
+            var context = new CommandParserContext(new TerminalRequest("id1", "grp1 cmd1 cmd1"));
+            Func<Task> act = async () => await parser.ParseCommandAsync(context);
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode("missing_command")
+                .WithErrorDescription("The command owner is missing. command=grp1");
+        }
+
+        [Fact]
         public async Task Throws_If_Option_Is_Unsupported()
         {
             TerminalOptions terminalOptions = new();
             terminalOptions.Parser.OptionPrefix = "--";
-            terminalOptions.Parser.OptionValueSeparator = " ";
+            terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
             terminalOptions.Parser.OptionAliasPrefix = "-";
 
             Dictionary<string, string> options = new()
@@ -382,7 +426,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         {
             TerminalOptions terminalOptions = new();
             terminalOptions.Parser.OptionPrefix = "--";
-            terminalOptions.Parser.OptionValueSeparator = " ";
+            terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
             terminalOptions.Parser.OptionAliasPrefix = "-";
 
             Dictionary<string, string> options = new()

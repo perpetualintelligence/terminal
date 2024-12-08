@@ -29,8 +29,6 @@ namespace OneImlx.Terminal.Runtime
             parser = new TerminalRequestQueueParser(terminalTextHandler, terminalOptions, mockLogger.Object);
         }
 
-       
-
         [Fact]
         public async Task Delimited_Argument_Non_Ending_Throws()
         {
@@ -59,6 +57,19 @@ namespace OneImlx.Terminal.Runtime
             parsed = await parser.ParseRequestAsync(new TerminalRequest("id1", "    "));
             parsed.Tokens.Should().BeEmpty();
             parsed.Options.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task Multiple_Separators_Are_Ignored()
+        {
+            TerminalRequest request = new("id1", "    root1    grp1   grp2  grp3      cmd1    arg1  arg2    --opt1     val1  --opt2 val2      -opt3        ");
+            var parsedCommand = await parser.ParseRequestAsync(request);
+
+            parsedCommand.Tokens.Should().BeEquivalentTo(["root1", "grp1", "grp2", "grp3", "cmd1", "arg1", "arg2"]);
+            parsedCommand.Options.Should().HaveCount(3);
+            parsedCommand.Options!["--opt1"].Should().Be("val1");
+            parsedCommand.Options["--opt2"].Should().Be("val2");
+            parsedCommand.Options["-opt3"].Should().Be(true.ToString());
         }
 
         [Fact]
