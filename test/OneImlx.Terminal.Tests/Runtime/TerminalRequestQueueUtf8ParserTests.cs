@@ -167,6 +167,36 @@ namespace OneImlx.Terminal.Runtime
             parsedOutput.Options.Should().BeEmpty();
         }
 
+        [Fact]
+        public async Task Parses_With_Unicode_Separators_Text_Correctly()
+        {
+            // Arrange
+            char separator = 'あ';
+            char valueSeparator = 'う';
+
+            terminalOptions.Parser.Separator = separator;
+            terminalOptions.Parser.OptionValueSeparator = valueSeparator;
+
+            var request = new TerminalRequest
+            (
+                "पहचान1",
+                $"मूल1{separator}समूह1{separator}आदेश1{separator}तर्क1{separator}तर्क2{separator}तर्क3{separator}तर्क4{separator}तर्क5{separator}तर्क6{separator}तर्क7{separator}तर्क8{separator}तर्क9{separator}तर्क10{separator}" +
+                $"-विकल्प1{valueSeparator}मान1{separator}--विकल्प2{valueSeparator}मान2{separator}-विकल्प3{separator}-विकल्प4{valueSeparator}36.69{separator}--विकल्प5{valueSeparator}\"सीमांकित मान\""
+            );
+
+            // Act
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(request);
+
+            // Assert
+            parsedOutput.Tokens.Should().BeEquivalentTo(["मूल1", "समूह1", "आदेश1", "तर्क1", "तर्क2", "तर्क3", "तर्क4", "तर्क5", "तर्क6", "तर्क7", "तर्क8", "तर्क9", "तर्क10"]);
+            parsedOutput.Options.Should().HaveCount(5);
+            parsedOutput.Options!["-विकल्प1"].Should().Be("मान1");
+            parsedOutput.Options["--विकल्प2"].Should().Be("मान2");
+            parsedOutput.Options["-विकल्प3"].Should().Be(true.ToString());
+            parsedOutput.Options["-विकल्प4"].Should().Be("36.69");
+            parsedOutput.Options["--विकल्प5"].Should().Be("सीमांकित मान");
+        }
+
         private Mock<ITerminalCommandStore> mockCommandStore;
         private Mock<ILogger<TerminalRequestQueueParser>> mockLogger;
         private TerminalRequestQueueParser parser;

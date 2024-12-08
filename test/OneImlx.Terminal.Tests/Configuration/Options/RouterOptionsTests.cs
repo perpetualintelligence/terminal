@@ -22,6 +22,7 @@ namespace OneImlx.Terminal.Configuration.Options
             options.MaxLength.Should().Be(1024);
             options.MaxClients.Should().Be(5);
             options.EnableResponses.Should().BeFalse();
+            options.StreamDelimiter.Should().Be(TerminalIdentifiers.StreamDelimiter);
         }
     }
 }

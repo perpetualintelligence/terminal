@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"cmd1\"},{\"id\":\"id2\",\"raw\":\"cmd2\"}]}" + TerminalIdentifiers.StreamDelimiter);
+                        receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"cmd1\"},{\"id\":\"id2\",\"raw\":\"cmd2\"}]}\u001e");
                     }
                 });
 
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}" + TerminalIdentifiers.StreamDelimiter);
+                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}\u001e");
                     }
                 });
 
@@ -96,7 +96,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"raw\":\"single-command-1\"}]}" + TerminalIdentifiers.StreamDelimiter);
+                        receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"raw\":\"single-command-1\"}]}\u001e");
                     }
                 });
 

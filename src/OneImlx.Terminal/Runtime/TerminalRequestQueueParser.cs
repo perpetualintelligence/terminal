@@ -270,69 +270,41 @@ namespace OneImlx.Terminal.Runtime
 
         private Queue<TerminalRequestParsedSplit> ExtractQueue(TerminalRequest request)
         {
-            StringBuilder normalizedRaw = new();
-            bool withInDelimiter = false;
-            for (int idx = 0; idx < request.Raw.Length; ++idx)
+            Queue<TerminalRequestParsedSplit> queue = new();
+
+            // Parse the raw and replace all occurrences of separator that are not within delimiters with a UNIT
+            // SEPARATOR character.
+            string raw = request.Raw;
+            char valueDelimiter = terminalOptions.Parser.ValueDelimiter;
+            char separator = terminalOptions.Parser.Separator;
+            char valueSeparator = terminalOptions.Parser.OptionValueSeparator;
+            char us = '\u001F'; // Unit Separator in Unicode
+
+            StringBuilder rawBuilder = new(raw, raw.Length + 10);
+            bool withinDelimiter = false;
+            for (int i = 0; i < raw.Length; i++)
             {
-                char currentChar = request.Raw[idx];
-                if (textHandler.CharEquals(currentChar, terminalOptions.Parser.ValueDelimiter))
+                char currentChar = raw[i];
+                if (currentChar == valueDelimiter)
                 {
-                    withInDelimiter = !withInDelimiter;
+                    withinDelimiter = !withinDelimiter;
+                    continue;
                 }
 
-                char ch = 'あ';
-            }
-
-            var queue = new Queue<TerminalRequestParsedSplit>();
-
-            string[] tokens = [];
-            foreach (string token in tokens)
-            {
-                bool optionsStarted = false;
-                if (!optionsStarted)
+                if ((currentChar == separator || currentChar == valueSeparator) && !withinDelimiter)
                 {
+                    rawBuilder[i] = us;
                 }
             }
 
-            //// This algorithm is designed to split a given string based on two token delimiters: a primary separator and
-            //// a value separator. The goal is to determine which of the two tokens appears next in the string, allowing
-            //// us to correctly split the string into its logical segments.
-            //// 1. Start by initializing a `currentIndex` to zero, which indicates our current position within the string.
-            //// 2. Using a while loop, iterate through the string until the entire length is processed.
-            //// 3. For each position denoted by `currentIndex`: a. Set the `nearestTokenIndex` to the end of the string.
-            //// This value tracks the nearest occurrence of any token. b. Initialize `foundToken` to null. This holds the
-            //// token (separator or valueSeparator) that is closest to the `currentIndex`.
-            //// 4. Loop through both tokens using a foreach loop: a. Find the first occurrence of each token from the
-            //// current index. b. If a token occurrence is found and its position is closer than any previously found
-            //// token's position, update `nearestTokenIndex` and `foundToken`.
-            //// 5. After the foreach loop: a. If `foundToken` is null (no more occurrences of either token), add the
-            //// remainder of the string to the result and exit the loop. b. If a token is found, split the string at
-            //// `nearestTokenIndex`, add the segment and its associated token to the result. Update `currentIndex` to
-            //// continue processing. The result is a list of segments split by the nearest occurring token, capturing the
-            //// context of each split.
-            //int currentIndex = 0;
-            //string raw = request.Raw;
-            //while (currentIndex < raw.Length)
-            //{
-            //    int nearestTokenIndex = raw.Length;
-            //    string? foundToken = null;
-            //    foreach (var token in new[] { terminalOptions.Parser.Separator, terminalOptions.Parser.OptionValueSeparator })
-            //    {
-            //        int index = raw.IndexOf(token, currentIndex);
-            //        if (index != -1 && index < nearestTokenIndex)
-            //        {
-            //            nearestTokenIndex = index;
-            //            foundToken = token;
-            //        }
-            //    }
+            // Split the raw command based on the UNIT SEPARATOR character.
+            string[] segments = rawBuilder.ToString().Split([us], StringSplitOptions.RemoveEmptyEntries);
 
-            // if (foundToken == null) { queue.Enqueue(new TerminalRequestParsedSplit(raw.Substring(currentIndex),
-            // null)); currentIndex = raw.Length; continue; }
-
-            //    string substring = raw.Substring(currentIndex, nearestTokenIndex - currentIndex);
-            //    queue.Enqueue(new TerminalRequestParsedSplit(substring, foundToken));
-            //    currentIndex = nearestTokenIndex + foundToken.Length;
-            //}
+            // Populate queue with the split segments.
+            foreach (string segment in segments)
+            {
+                queue.Enqueue(new TerminalRequestParsedSplit(segment, null));
+            }
 
             return queue;
         }

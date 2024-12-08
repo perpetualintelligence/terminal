@@ -5,14 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -137,7 +137,22 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task Parses_Full_Correctly()
+        public async Task Parses_Full_With_Distinct_Separator_Correctly()
+        {
+            terminalOptions.Parser.OptionValueSeparator = '=';
+
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1=val1 --opt2=val2 -opt3 -opt4=36.69 --opt5=\"delimited val\""));
+            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
+            parsedOutput.Options.Should().HaveCount(5);
+            parsedOutput.Options!["-opt1"].Should().Be("val1");
+            parsedOutput.Options["--opt2"].Should().Be("val2");
+            parsedOutput.Options["-opt3"].Should().Be(true.ToString());
+            parsedOutput.Options["-opt4"].Should().Be("36.69");
+            parsedOutput.Options["--opt5"].Should().Be("delimited val");
+        }
+
+        [Fact]
+        public async Task Parses_Full_With_Same_Separator_Correctly()
         {
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
