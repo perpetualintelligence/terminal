@@ -84,7 +84,7 @@ namespace OneImlx.Terminal.Apps.TestApp
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
-                    options.Licensing.LicenseFile = "C:\\Users\\PerpetualAdmin\\source\\repos\\perpetualintelligence\\tools\\lic\\oneimlx-terminal-demo-test.json";
+                    options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                     options.Router.Caret = "> ";

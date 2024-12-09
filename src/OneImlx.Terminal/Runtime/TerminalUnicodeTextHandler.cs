@@ -1,16 +1,14 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -29,14 +27,10 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         public Encoding Encoding => Encoding.Unicode;
 
-        /// <summary>
-        /// Returns the default extraction regex pattern for Unicode command string.
-        /// </summary>
-        /// <param name="terminalOptions">The terminal configuration options.</param>
-        public string ExtractionRegex(TerminalOptions terminalOptions)
+        /// <inheritdoc/>
+        public bool CharEquals(char? ch1, char? ch2)
         {
-            string pattern = $@"(\w+)|((?:{Regex.Escape(terminalOptions.Parser.OptionPrefix)}|{Regex.Escape(terminalOptions.Parser.OptionAliasPrefix)})\w+(?:\s+{terminalOptions.Parser.ValueDelimiter}[^{terminalOptions.Parser.ValueDelimiter}]*{terminalOptions.Parser.ValueDelimiter})*)";
-            return pattern;
+            return char.Equals(ch1, ch2);
         }
 
         /// <summary>
@@ -45,6 +39,22 @@ namespace OneImlx.Terminal.Runtime
         public IEqualityComparer<string> EqualityComparer()
         {
             return StringComparer.OrdinalIgnoreCase;
+        }
+
+        /// <inheritdoc/>
+        public bool SingleEquals(char? ch1, string? s2)
+        {
+            if (ch1 == null || s2 == null)
+            {
+                return false;
+            }
+
+            if (s2.Length != 1)
+            {
+                return false;
+            }
+
+            return TextEquals(ch1.ToString(), s2);
         }
 
         /// <summary>

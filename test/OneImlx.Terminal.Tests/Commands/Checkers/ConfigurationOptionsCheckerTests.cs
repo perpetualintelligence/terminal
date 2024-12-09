@@ -5,17 +5,15 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
-using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers
@@ -38,17 +36,17 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         [Theory]
-        [InlineData(" ")]
-        [InlineData("~")]
-        [InlineData("#")]
-        [InlineData("sp")]
-        [InlineData("öö")]
-        [InlineData("माणूस")]
-        [InlineData("女性")]
-        public async Task CommandSeparatorAndOptionPrefixCannotBeSameAsync(string separator)
+        [InlineData(' ')]
+        [InlineData('~')]
+        [InlineData('#')]
+        [InlineData('s')]
+        [InlineData('ö')]
+        [InlineData('म')]
+        [InlineData('女')]
+        public async Task CommandSeparatorAndOptionPrefixCannotBeSameAsync(char separator)
         {
             options.Parser.Separator = separator;
-            options.Parser.OptionPrefix = separator;
+            options.Parser.OptionPrefix = separator.ToString();
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The command separator and option prefix cannot be same. separator={separator}");
@@ -59,12 +57,10 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
 
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Parser.Separator = null;
+            options.Parser.Separator = default;
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The command separator cannot be null or empty.");
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            options.Parser.Separator = "";
+            options.Parser.Separator = '\0';
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The command separator cannot be null or empty.");
         }
 
@@ -191,35 +187,35 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         [Theory]
-        [InlineData("@")]
-        [InlineData("~")]
-        [InlineData("#")]
-        [InlineData("sp")]
-        [InlineData("öö")]
-        [InlineData("माणूस")]
-        [InlineData("女性")]
-        public async Task OptionSeparatorAndOptionAliasPrefixCannotBeSameAsync(string separator)
+        [InlineData('@')]
+        [InlineData('~')]
+        [InlineData('#')]
+        [InlineData('s')]
+        [InlineData('ö')]
+        [InlineData('म')]
+        [InlineData('女')]
+        public async Task OptionSeparatorAndOptionAliasPrefixCannotBeSameAsync(char separator)
         {
             options.Parser.OptionValueSeparator = separator;
             options.Parser.OptionPrefix = ":";
-            options.Parser.OptionAliasPrefix = separator;
+            options.Parser.OptionAliasPrefix = separator.ToString();
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The option separator and option alias prefix cannot be same. separator={separator}");
         }
 
         [Theory]
-        [InlineData("@")]
-        [InlineData("~")]
-        [InlineData("#")]
-        [InlineData("sp")]
-        [InlineData("öö")]
-        [InlineData("माणूस")]
-        [InlineData("女性")]
-        public async Task OptionSeparatorAndOptionPrefixCannotBeSameAsync(string separator)
+        [InlineData('@')]
+        [InlineData('~')]
+        [InlineData('#')]
+        [InlineData('s')]
+        [InlineData('ö')]
+        [InlineData('म')]
+        [InlineData('女')]
+        public async Task OptionSeparatorAndOptionPrefixCannotBeSameAsync(char separator)
         {
             options.Parser.OptionValueSeparator = separator;
-            options.Parser.OptionPrefix = separator;
+            options.Parser.OptionPrefix = separator.ToString();
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The option separator and option prefix cannot be same. separator={separator}");
@@ -230,12 +226,10 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
 
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Parser.OptionValueSeparator = null;
+            options.Parser.OptionValueSeparator = default;
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The option separator cannot be null or empty.");
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            options.Parser.OptionValueSeparator = "";
+            options.Parser.OptionValueSeparator = '\0';
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The option separator cannot be null or empty.");
         }
 
@@ -265,13 +259,11 @@ namespace OneImlx.Terminal.Commands.Checkers
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
 
             // Make sure command separator is different so we can fail for option separator below.
-            options.Parser.ValueDelimiter = "   ";
+            options.Parser.ValueDelimiter = ' ';
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be null or whitespace.");
 
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.Parser.ValueDelimiter = null;
+            options.Parser.ValueDelimiter = default;
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be null or whitespace.");
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Fact]
@@ -279,7 +271,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Parser.OptionPrefix = "#";
-            options.Parser.ValueDelimiter = "^";
+            options.Parser.ValueDelimiter = '^';
             options.Parser.OptionAliasPrefix = "^";
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
@@ -291,7 +283,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         {
             // Make sure command separator is different so we can fail for option separator below.
             options.Parser.OptionPrefix = "^";
-            options.Parser.ValueDelimiter = "^";
+            options.Parser.ValueDelimiter = '^';
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be same as the option prefix. delimiter=^");
@@ -301,8 +293,8 @@ namespace OneImlx.Terminal.Commands.Checkers
         public async Task ValueDelimiterStringCannotBeSameAsOptionValueSeparator()
         {
             // Make sure command separator is different so we can fail for option separator below.
-            options.Parser.OptionValueSeparator = "^";
-            options.Parser.ValueDelimiter = "^";
+            options.Parser.OptionValueSeparator = '^';
+            options.Parser.ValueDelimiter = '^';
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be same as the option value separator. delimiter=^");
@@ -312,8 +304,8 @@ namespace OneImlx.Terminal.Commands.Checkers
         public async Task ValueDelimiterStringCannotBeSameAsSeparator()
         {
             // Make sure command separator is different so we can fail for option separator below.
-            options.Parser.Separator = "^";
-            options.Parser.ValueDelimiter = "^";
+            options.Parser.Separator = '^';
+            options.Parser.ValueDelimiter = '^';
 
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription($"The value delimiter cannot be same as the separator. delimiter=^");

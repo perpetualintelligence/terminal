@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -21,11 +21,6 @@ namespace OneImlx.Terminal
         /// The option is not already added to the command.
         /// </summary>
         public const string DuplicateOption = "duplicate_option";
-
-        /// <summary>
-        /// The option is not valid.
-        /// </summary>
-        public const string InvalidOption = "invalid_option";
 
         /// <summary>
         /// The argument is not valid.
@@ -53,14 +48,14 @@ namespace OneImlx.Terminal
         public const string InvalidLicense = "invalid_license";
 
         /// <summary>
+        /// The option is not valid.
+        /// </summary>
+        public const string InvalidOption = "invalid_option";
+
+        /// <summary>
         /// The request is not valid.
         /// </summary>
         public const string InvalidRequest = "invalid_request";
-
-        /// <summary>
-        /// The option is missing.
-        /// </summary>
-        public const string MissingOption = "missing_option";
 
         /// <summary>
         /// The argument is missing.
@@ -68,19 +63,24 @@ namespace OneImlx.Terminal
         public const string MissingArgument = "missing_argument";
 
         /// <summary>
-        /// The argument is missing.
-        /// </summary>
-        public const string MissingCommand = "missing_command";
-
-        /// <summary>
         /// The claim is missing.
         /// </summary>
         public const string MissingClaim = "missing_claim";
 
         /// <summary>
+        /// The argument is missing.
+        /// </summary>
+        public const string MissingCommand = "missing_command";
+
+        /// <summary>
         /// The identity or an account is missing.
         /// </summary>
         public const string MissingIdentity = "missing_identity";
+
+        /// <summary>
+        /// The option is missing.
+        /// </summary>
+        public const string MissingOption = "missing_option";
 
         /// <summary>
         /// The request is canceled.
@@ -98,11 +98,6 @@ namespace OneImlx.Terminal
         public const string UnauthorizedAccess = "unauthorized_access";
 
         /// <summary>
-        /// The option is not supported.
-        /// </summary>
-        public const string UnsupportedOption = "unsupported_option";
-
-        /// <summary>
         /// The argument is not supported.
         /// </summary>
         public const string UnsupportedArgument = "unsupported_argument";
@@ -111,5 +106,10 @@ namespace OneImlx.Terminal
         /// The command is not supported.
         /// </summary>
         public const string UnsupportedCommand = "unsupported_command";
+
+        /// <summary>
+        /// The option is not supported.
+        /// </summary>
+        public const string UnsupportedOption = "unsupported_option";
     }
 }

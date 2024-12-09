@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Runtime
             }
 
             Id = id;
-            Raw = raw;
+            Raw = raw ?? throw new ArgumentNullException(nameof(raw));
         }
 
         /// <summary>

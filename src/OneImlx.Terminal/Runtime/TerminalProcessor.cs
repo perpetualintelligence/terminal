@@ -177,7 +177,6 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.InvalidRequest, "The sender ID cannot be null or empty for streaming.");
             }
 
-            // Ensure a MemoryStream exists for the sender
             if (!streamingRequests.TryGetValue(senderId, out Queue<byte>? previousStream))
             {
                 previousStream = new Queue<byte>();

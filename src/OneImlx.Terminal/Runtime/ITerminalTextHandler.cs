@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -27,9 +27,25 @@ namespace OneImlx.Terminal.Runtime
         public Encoding Encoding { get; }
 
         /// <summary>
+        /// Determines whether the two characters are equal using <see cref="Comparison"/>.
+        /// </summary>
+        /// <param name="ch1">The first char to compare.</param>
+        /// <param name="ch2">The second char to compare.</param>
+        /// <returns><c>true</c> if the characters are equal, <c>false</c> otherwise.</returns>
+        public bool CharEquals(char? ch1, char? ch2);
+
+        /// <summary>
         /// Returns the equality comparer.
         /// </summary>
         public IEqualityComparer<string> EqualityComparer();
+
+        /// <summary>
+        /// Determines whether a characters and text are equal using <see cref="Comparison"/>.
+        /// </summary>
+        /// <param name="ch1">The first char to compare.</param>
+        /// <param name="s2">The second text to compare.</param>
+        /// <returns><c>true</c> if the texts are equal, <c>false</c> otherwise.</returns>
+        public bool SingleEquals(char? ch1, string? s2);
 
         /// <summary>
         /// Determines whether the two texts are equal using <see cref="Comparison"/>.

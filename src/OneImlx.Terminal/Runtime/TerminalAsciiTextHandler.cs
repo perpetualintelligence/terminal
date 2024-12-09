@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -22,9 +22,15 @@ namespace OneImlx.Terminal.Runtime
         public StringComparison Comparison => StringComparison.InvariantCultureIgnoreCase;
 
         /// <summary>
-        /// The ASCII text encoding.
+        /// The <see cref="Encoding.ASCII"/> text encoding.
         /// </summary>
         public Encoding Encoding => Encoding.ASCII;
+
+        /// <inheritdoc/>
+        public bool CharEquals(char? ch1, char? ch2)
+        {
+            return char.Equals(ch1, ch2);
+        }
 
         /// <summary>
         /// Returns the <see cref="StringComparer.InvariantCultureIgnoreCase"/> equality comparer.
@@ -32,6 +38,22 @@ namespace OneImlx.Terminal.Runtime
         public IEqualityComparer<string> EqualityComparer()
         {
             return StringComparer.OrdinalIgnoreCase;
+        }
+
+        /// <inheritdoc/>
+        public bool SingleEquals(char? ch1, string? s2)
+        {
+            if (ch1 == null || s2 == null)
+            {
+                return false;
+            }
+
+            if (s2.Length != 1)
+            {
+                return false;
+            }
+
+            return TextEquals(ch1.ToString(), s2);
         }
 
         /// <summary>

@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"cmd1\"},{\"id\":\"id2\",\"raw\":\"cmd2\"}]}\u001f");
+                        receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"cmd1\"},{\"id\":\"id2\",\"raw\":\"cmd2\"}]}\u001e");
                     }
                 });
 
@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                     await tcpClient.ConnectAsync(localHost, port);
 
                     TerminalInput batch = TerminalInput.Batch("batch1", ["id1", "id2"], ["cmd1", "cmd2"]);
-                    await tcpClient.SendToTerminalAsync(batch, streamDelimiter,  CancellationToken.None);
+                    await tcpClient.SendToTerminalAsync(batch, streamDelimiter, CancellationToken.None);
 
                     await serverTask;
                 }
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}\u001f");
+                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}\u001e");
                     }
                 });
 
@@ -96,7 +96,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"raw\":\"single-command-1\"}]}\u001f");
+                        receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"raw\":\"single-command-1\"}]}\u001e");
                     }
                 });
 

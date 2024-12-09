@@ -38,11 +38,6 @@ namespace OneImlx.Terminal.Commands.Runners
         public CommandHandlerContext HandlerContext { get; }
 
         /// <summary>
-        /// The hierarchy of the command to run.
-        /// </summary>
-        public Root? Hierarchy => HandlerContext.ParsedCommand.Hierarchy;
-
-        /// <summary>
         /// The terminal processor request.
         /// </summary>
         public TerminalRequest Request => HandlerContext.RouterContext.Request;

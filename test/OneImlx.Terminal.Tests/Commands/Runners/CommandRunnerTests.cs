@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Commands.Runners
         {
             TerminalRequest request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
-            ParsedCommand extractedCommand = new(request, command, Root.Default());
+            ParsedCommand extractedCommand = new(request, command, null);
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockTerminalHelpProvider helpProvider = new();
@@ -52,7 +52,7 @@ namespace OneImlx.Terminal.Commands.Runners
         {
             TerminalRequest request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
-            ParsedCommand extractedCommand = new(request, command, Root.Default());
+            ParsedCommand extractedCommand = new(request, command, null);
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockDefaultCommandRunner mockCommandRunner = new();
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Commands.Runners
         {
             TerminalRequest request = new("id1", "test1");
             Command command = new(new CommandDescriptor("id", "name", "desc", CommandType.SubCommand, CommandFlags.None));
-            ParsedCommand extractedCommand = new(request, command, Root.Default());
+            ParsedCommand extractedCommand = new(request, command, null);
 
             CommandHandlerContext handlerContext = new(routerContext, extractedCommand, MockLicenses.TestLicense);
             MockDefaultCommandRunner mockCommandRunner = new();

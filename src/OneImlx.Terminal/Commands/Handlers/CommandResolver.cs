@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -14,18 +14,18 @@ using OneImlx.Terminal.Commands.Runners;
 namespace OneImlx.Terminal.Commands.Handlers
 {
     /// <summary>
-    /// The default <see cref="ICommandRuntime"/> using
-    /// <see cref="ActivatorUtilities.CreateInstance(IServiceProvider, Type, object[])"/>, managing the resolution of of
+    /// The default <see cref="ICommandResolver"/> using
+    /// <see cref="ActivatorUtilities.CreateInstance(IServiceProvider, Type, object[])"/>, managing the resolution of
     /// command checkers and runners.
     /// </summary>
-    public sealed class CommandRuntime : ICommandRuntime
+    public sealed class CommandResolver : ICommandResolver
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandRuntime"/> class.
+        /// Initializes a new instance of the <see cref="CommandResolver"/> class.
         /// </summary>
         /// <param name="serviceDescriptors">The service provider for resolving service instances.</param>
         /// <param name="logger">The logger for logging diagnostic messages.</param>
-        public CommandRuntime(IServiceProvider serviceDescriptors, ILogger<CommandRuntime> logger)
+        public CommandResolver(IServiceProvider serviceDescriptors, ILogger<CommandResolver> logger)
         {
             this.serviceDescriptors = serviceDescriptors;
             this.logger = logger;
@@ -79,7 +79,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             return runnerDelegate;
         }
 
-        private readonly ILogger<CommandRuntime> logger;
+        private readonly ILogger<CommandResolver> logger;
         private readonly IServiceProvider serviceDescriptors;
     }
 }
