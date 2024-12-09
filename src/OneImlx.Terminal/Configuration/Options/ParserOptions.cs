@@ -31,6 +31,12 @@ namespace OneImlx.Terminal.Configuration.Options
         public char OptionValueSeparator { get; set; } = TerminalIdentifiers.SpaceSeparator;
 
         /// <summary>
+        /// The temporary runtime separator that is used to optimize the parsing algorithm. Defaults to <c>0x1F</c> or
+        /// Unit Separator.
+        /// </summary>
+        public char RuntimeSeparator { get; set; } = '\u001F';
+
+        /// <summary>
         /// The command string separator. Defaults to a single whitespace.
         /// </summary>
         /// <remarks>
@@ -39,7 +45,7 @@ namespace OneImlx.Terminal.Configuration.Options
         public char Separator { get; set; } = TerminalIdentifiers.SpaceSeparator;
 
         /// <summary>
-        /// An argument or option value delimiter. It is used to extract a value within the configured delimiter.
+        /// The value delimiter used to extract a value within the configured delimiter. Defaults to <c>"</c>.
         /// </summary>
         public char ValueDelimiter { get; set; } = '"';
     }

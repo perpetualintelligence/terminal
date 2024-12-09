@@ -7,9 +7,10 @@
 
 using FluentAssertions;
 using OneImlx.Terminal.Configuration.Options;
+using System;
 using Xunit;
 
-namespace OneImlx.Terminal.Runtime.Tests
+namespace OneImlx.Terminal
 {
     public class TerminalServicesTests
     {
@@ -23,6 +24,26 @@ namespace OneImlx.Terminal.Runtime.Tests
             };
         }
 
+        [Fact]
+        public void DelimitBytes_NullOrEmptyByteArray_ThrowsArgumentException()
+        {
+            byte[]? bytes = null;
+            byte delimiter = 255;
+            Assert.Throws<ArgumentException>(() => TerminalServices.DelimitBytes(bytes!, delimiter));
+
+            bytes = [];
+            Assert.Throws<ArgumentException>(() => TerminalServices.DelimitBytes(bytes, delimiter));
+        }
+
+        [Fact]
+        public void DelimitBytes_ValidByteArray_ReturnsDelimitedByteArray()
+        {
+            byte[] bytes = [1, 2, 3];
+            byte delimiter = 255;
+
+            byte[] result = TerminalServices.DelimitBytes(bytes, delimiter);
+            Assert.Equal(new byte[] { 1, 2, 3, 255 }, result);
+        }
 
         [Theory]
         [InlineData("dGVzdCBsaWNlbnNlY29uZGVudHM=")]

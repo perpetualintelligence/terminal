@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -18,12 +18,13 @@ namespace OneImlx.Terminal.Configuration.Options
         public bool? Disabled { get; set; }
 
         /// <summary>
-        /// The help option identifier.
+        /// The help option alias.
         /// </summary>
         /// <remarks>
-        /// Unless <see cref="Disabled"/>, the help option identifier is automatically added to the command options. The <see cref="OptionId"/> must be unique across all option identifiers for all commands.
+        /// Unless <see cref="Disabled"/>, the help option alias is automatically added to the command options. The
+        /// <see cref="OptionAlias"/> must be unique across all option aliases for all commands.
         /// </remarks>
-        public string OptionId { get; set; } = "help";
+        public string OptionAlias { get; set; } = "h";
 
         /// <summary>
         /// The help description.
@@ -31,11 +32,12 @@ namespace OneImlx.Terminal.Configuration.Options
         public string OptionDescription { get; set; } = "The command help.";
 
         /// <summary>
-        /// The help option alias.
+        /// The help option identifier.
         /// </summary>
         /// <remarks>
-        /// Unless <see cref="Disabled"/>, the help option alias is automatically added to the command options. The <see cref="OptionAlias"/> must be unique across all option aliases for all commands.
+        /// Unless <see cref="Disabled"/>, the help option identifier is automatically added to the command options. The
+        /// <see cref="OptionId"/> must be unique across all option identifiers for all commands.
         /// </remarks>
-        public string OptionAlias { get; set; } = "h";
+        public string OptionId { get; set; } = "help";
     }
 }

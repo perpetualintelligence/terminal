@@ -114,7 +114,7 @@ namespace OneImlx.Terminal.Runtime
             char valueDelimiter = terminalOptions.Parser.ValueDelimiter;
             char separator = terminalOptions.Parser.Separator;
             char valueSeparator = terminalOptions.Parser.OptionValueSeparator;
-            char us = '\u001F'; // Unit Separator in Unicode
+            char us = terminalOptions.Parser.RuntimeSeparator;
 
             StringBuilder rawBuilder = new(raw, raw.Length);
             bool withinDelimiter = false;
