@@ -5,18 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Parsers
@@ -499,12 +499,12 @@ namespace OneImlx.Terminal.Commands.Parsers
                 .WithErrorDescription("The command does not support arguments. command=cmd1");
         }
 
+        private readonly CommandDescriptors commandDescriptors;
+        private readonly ITerminalCommandStore commandStore;
         private readonly ILogger<CommandParser> logger;
         private readonly Mock<ITerminalRequestParser> parserMock;
         private readonly Mock<IOptions<TerminalOptions>> terminalOptionsMock;
         private readonly ITerminalTextHandler textHandler;
-        private readonly CommandDescriptors commandDescriptors;
-        private readonly ITerminalCommandStore commandStore;
         private CommandParser parser;
     }
 }

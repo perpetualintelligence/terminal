@@ -1,4 +1,4 @@
-# Acknowledgments  
+# Acknowledgments   
 
 This project uses the following open-source tools, libraries, and frameworks:
 
@@ -19,6 +19,7 @@ We sincerely thank the developers and maintainers of these tools and libraries f
 - [xUnit](https://xunit.net/)
 - [xUnit.runner.visualstudio](https://www.nuget.org/packages/xunit.runner.visualstudio)
 - [Fluent Assertions](https://www.nuget.org/packages/FluentAssertions)
+- [ReportGenerator](https://www.nuget.org/packages/ReportGenerator)
 
 ## gRPC and Protocol Buffers
 - [Google.Protobuf](https://www.nuget.org/packages/Google.Protobuf)
@@ -33,6 +34,9 @@ We sincerely thank the developers and maintainers of these tools and libraries f
 - [Microsoft.FluentUI.AspNetCore.Components](https://www.nuget.org/packages/Microsoft.FluentUI.AspNetCore.Components)
 - [Microsoft.FluentUI.AspNetCore.Components.Icons](https://www.nuget.org/packages/Microsoft.FluentUI.AspNetCore.Components.Icons)
 - [FAST](https://fast.design/) 
+
+## Documentation
+- [DocFx](https://dotnet.github.io/docfx/)
 
 ## CI/CD and Automation
 - [GitHub Actions](https://github.com/features/actions)
