@@ -202,7 +202,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
 
         private Task<string> GetLicenseContentAsync()
         {
-            var licFile = webHostEnvironment.WebRootFileProvider.GetFileInfo("oneimlx-license.json");
+            var licFile = webHostEnvironment.WebRootFileProvider.GetFileInfo("oneimlx-demo-license.json");
             if (!licFile.Exists)
             {
                 throw new InvalidOperationException("The license file does not exist.");

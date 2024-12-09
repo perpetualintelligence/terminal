@@ -178,7 +178,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
             var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TestBlazorAutoConsole>(new TerminalUnicodeTextHandler(), options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
-                options.Licensing.LicenseFile = "oneimlx-license.json";
+                options.Licensing.LicenseFile = "oneimlx-demo-license.json";
                 options.Licensing.LicenseContents = TerminalServices.EncodeLicenseContents(licenseContents.NotNull());
                 options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
                 options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
