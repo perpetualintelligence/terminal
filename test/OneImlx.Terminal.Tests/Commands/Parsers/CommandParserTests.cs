@@ -503,8 +503,8 @@ namespace OneImlx.Terminal.Commands.Parsers
         private readonly Mock<ITerminalRequestParser> parserMock;
         private readonly Mock<IOptions<TerminalOptions>> terminalOptionsMock;
         private readonly ITerminalTextHandler textHandler;
-        private CommandDescriptors commandDescriptors;
-        private ITerminalCommandStore commandStore;
+        private readonly CommandDescriptors commandDescriptors;
+        private readonly ITerminalCommandStore commandStore;
         private CommandParser parser;
     }
 }

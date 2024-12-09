@@ -8,6 +8,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
@@ -24,7 +25,7 @@ namespace OneImlx.Terminal.Runtime
             terminalTextHandler = new TerminalAsciiTextHandler();
             mockCommandStore = new Mock<ITerminalCommandStore>();
             mockLogger = new Mock<ILogger<TerminalRequestQueueParser>>();
-            terminalOptions = new TerminalOptions();
+            terminalOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(new TerminalOptions());
 
             parser = new TerminalRequestQueueParser(terminalTextHandler, terminalOptions, mockLogger.Object);
         }
@@ -34,7 +35,7 @@ namespace OneImlx.Terminal.Runtime
         {
             Func<Task> act = async () => { await parser.ParseRequestAsync(new TerminalRequest("id", "root1 grp1 grp2 cmd1 arg1 \"arg value not delimited")); };
             await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_command")
+                .WithErrorCode("invalid_argument")
                 .WithErrorDescription("The argument value is missing the closing delimiter. argument=\"arg value not delimited");
         }
 
@@ -106,20 +107,27 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task Parses_All_Delimited_Options_Values()
         {
-            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 -opt1 \"val1\" --opt2 \"val2\" --opt3 \"delimited val3\" -opt4 \"delimited val4\""));
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 -opt1 \"val1\" --opt2 \"val2\" --opt3 \"delimited val3\" -opt4 \"    delimited val4     \""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2"]);
             parsedOutput.Options.Should().HaveCount(4);
             parsedOutput.Options!["-opt1"].Should().Be("val1");
             parsedOutput.Options["--opt2"].Should().Be("val2");
             parsedOutput.Options["--opt3"].Should().Be("delimited val3");
-            parsedOutput.Options["-opt4"].Should().Be("delimited val4");
+            parsedOutput.Options["-opt4"].Should().Be("    delimited val4     ");
         }
 
         [Fact]
         public async Task Parses_Delimited_Arguments()
         {
-            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"arg1\" \"arg2\" arg3"));
-            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "\"arg1\"", "\"arg2\"", "arg3"]);
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 \"arg1\" \"  arg2    \" arg3"));
+            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "  arg2    ", "arg3"]);
+        }
+
+        [Fact]
+        public async Task Parses_Delimited_Commands()
+        {
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "\"root1\" \"grp1\" \"cmd1\" \"arg1\" \"  arg2    \" arg3"));
+            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "  arg2    ", "arg3"]);
         }
 
         [Fact]
@@ -139,7 +147,7 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task Parses_Full_With_Distinct_Separator_Correctly()
         {
-            terminalOptions.Parser.OptionValueSeparator = '=';
+            terminalOptions.Value.Parser.OptionValueSeparator = '=';
 
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1=val1 --opt2=val2 -opt3 -opt4=36.69 --opt5=\"delimited val\""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
@@ -195,10 +203,10 @@ namespace OneImlx.Terminal.Runtime
             parsedOutput.Options.Should().BeEmpty();
         }
 
-        private Mock<ITerminalCommandStore> mockCommandStore;
-        private Mock<ILogger<TerminalRequestQueueParser>> mockLogger;
-        private TerminalRequestQueueParser parser;
-        private TerminalOptions terminalOptions;
-        private ITerminalTextHandler terminalTextHandler;
+        private readonly Mock<ITerminalCommandStore> mockCommandStore;
+        private readonly Mock<ILogger<TerminalRequestQueueParser>> mockLogger;
+        private readonly TerminalRequestQueueParser parser;
+        private readonly IOptions<TerminalOptions> terminalOptions;
+        private readonly ITerminalTextHandler terminalTextHandler;
     }
 }

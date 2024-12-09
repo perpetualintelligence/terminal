@@ -7,6 +7,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Stores;
@@ -24,7 +25,7 @@ namespace OneImlx.Terminal.Runtime
             terminalTextHandler = new TerminalUtf8TextHandler();
             mockCommandStore = new Mock<ITerminalCommandStore>();
             mockLogger = new Mock<ILogger<TerminalRequestQueueParser>>();
-            terminalOptions = new TerminalOptions();
+            terminalOptions = Options.Create<TerminalOptions>(new TerminalOptions());
 
             parser = new TerminalRequestQueueParser(terminalTextHandler, terminalOptions, mockLogger.Object);
         }
@@ -34,7 +35,7 @@ namespace OneImlx.Terminal.Runtime
         {
             Func<Task> act = async () => { await parser.ParseRequestAsync(new TerminalRequest("पहचान", "मूल1 समूह1 समूह2 आदेश1 तर्क1 \"तर्क मान समापन नहीं")); };
             await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_command")
+                .WithErrorCode("invalid_argument")
                 .WithErrorDescription("The argument value is missing the closing delimiter. argument=\"तर्क मान समापन नहीं");
         }
 
@@ -106,7 +107,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task Parses_Delimited_Arguments()
         {
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("पहचान1", "मूल1 समूह1 आदेश1 \"तर्क1\" \"तर्क2\" तर्क3"));
-            parsedOutput.Tokens.Should().BeEquivalentTo(["मूल1", "समूह1", "आदेश1", "\"तर्क1\"", "\"तर्क2\"", "तर्क3"]);
+            parsedOutput.Tokens.Should().BeEquivalentTo(["मूल1", "समूह1", "आदेश1", "तर्क1", "तर्क2", "तर्क3"]);
         }
 
         [Fact]
@@ -174,8 +175,8 @@ namespace OneImlx.Terminal.Runtime
             char separator = 'あ';
             char valueSeparator = 'う';
 
-            terminalOptions.Parser.Separator = separator;
-            terminalOptions.Parser.OptionValueSeparator = valueSeparator;
+            terminalOptions.Value.Parser.Separator = separator;
+            terminalOptions.Value.Parser.OptionValueSeparator = valueSeparator;
 
             var request = new TerminalRequest
             (
@@ -197,10 +198,10 @@ namespace OneImlx.Terminal.Runtime
             parsedOutput.Options["--विकल्प5"].Should().Be("सीमांकित मान");
         }
 
-        private Mock<ITerminalCommandStore> mockCommandStore;
-        private Mock<ILogger<TerminalRequestQueueParser>> mockLogger;
-        private TerminalRequestQueueParser parser;
-        private TerminalOptions terminalOptions;
-        private ITerminalTextHandler terminalTextHandler;
+        private readonly Mock<ITerminalCommandStore> mockCommandStore;
+        private readonly Mock<ILogger<TerminalRequestQueueParser>> mockLogger;
+        private readonly TerminalRequestQueueParser parser;
+        private readonly IOptions<TerminalOptions> terminalOptions;
+        private readonly ITerminalTextHandler terminalTextHandler;
     }
 }

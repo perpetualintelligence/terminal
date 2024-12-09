@@ -7,9 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Stores;
@@ -17,93 +19,8 @@ using OneImlx.Terminal.Stores;
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// Represents a default queue based command-line parser for processing terminal commands based on defined descriptors.
+    /// The default <see cref="ITerminalRequestParser"/> that uses a queue to parse the terminal request.
     /// </summary>
-    /// <remarks>
-    /// <para>The default command-line parser is designed for extensive command line parsing. Key features include:</para>
-    /// <para>
-    /// <strong>Configurable Elements</strong>: Adapts to various command structures with configurable separators,
-    /// delimiters, and option prefixes.
-    /// </para>
-    /// <para>
-    /// <strong>Segmentation and Queue</strong>: Segregates the command input string to separate commands/arguments from
-    /// options. Segments are efficiently processed using a queue.
-    /// </para>
-    /// <para>
-    /// <strong>Command Parsing</strong>: Commands provide context for subsequent segments and must always precede
-    /// arguments and options. The parser recognizes root commands, command groups, and subcommands.
-    /// </para>
-    /// <para>
-    /// <strong>Hierarchical Parsing (Optional)</strong>: Allows a hierarchical command structure with root, group, and
-    /// subcommands. Note: Hierarchical parsing may affect the overall complexity of the parsing process.
-    /// </para>
-    /// <para>
-    /// <strong>Argument Parsing</strong>: Command arguments are processed before options. Any segment after the
-    /// identified command, and that isn't recognized as an option or its alias, is treated as an argument. It's
-    /// imperative that the provided arguments for a command don't exceed what its descriptor anticipates.
-    /// </para>
-    /// <para>
-    /// <strong>Option Parsing</strong>: Options follow arguments. The parser initially seeks the starting point of
-    /// options in the input string. Once identified, each option, recognized by its prefix or alias prefix, is
-    /// segmented using the option value separator. For an option to be valid, it must be defined in the command's descriptor.
-    /// </para>
-    /// <para>
-    /// <strong>Efficiency and Complexity</strong>: The parser's efficiency is derived from a combination of string
-    /// operations and the sequential processing of segments. The initial identification of the starting point of
-    /// options using `IndexOf` and subsequent `Substring` operations have a time complexity of O(n), where n is the
-    /// length of the input string. The `Split` operations, both for commands/arguments and options, add another O(n).
-    /// Processing segments through queue operations like Enqueue, Peek, and Dequeue have constant time complexities
-    /// (O(1)) for each operation, but the cumulative time complexity across all segments remains O(n). Thus,
-    /// considering all these operations, the overall complexity for the parsing process can be approximated as O(n).
-    /// While the parser is designed to be comprehensive and handle a variety of command line structures efficiently,
-    /// the actual performance can vary based on the intricacies of specific command structures and their length. It is
-    /// always recommended to measure the parser's performance against real-world scenarios to assess its suitability
-    /// for specific applications.
-    /// </para>
-    /// <para><strong>Potential Errors</strong>:
-    /// <list type="bullet">
-    /// <item>
-    /// <description><c>invalid_command</c>: Occurs when multiple roots are detected in the command hierarchy.</description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// <c>missing_command</c>: Raised when a command group is detected without a preceding root command.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// <c>invalid_request</c>: Triggered by nested subcommands or an unrecognized command descriptor type.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// <c>unsupported_argument</c>: Emitted when the command does not recognize the provided arguments or when the
-    /// provided arguments surpass the number described in the command's descriptor.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// <c>unsupported_option</c>: Resulted when an option or its alias isn't validated by the command's descriptor.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// <c>invalid_option</c>: Happens when an option's ID is prefixed in the manner of an alias or the reverse.
-    /// </description>
-    /// </item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// <strong>Developer Note</strong>: While the default parser is optimized for a diverse set of command-line
-    /// scenarios, if you possess a highly specialized or simplified parsing requirement, it might be beneficial to
-    /// implement a custom parser. Nonetheless, it's advisable to thoroughly understand the capabilities and efficiency
-    /// of this parser before transitioning to a custom implementation.
-    /// </para>
-    /// </remarks>
-    /// <exception cref="TerminalException">
-    /// This exception is designed to capture a myriad of parsing issues such as unrecognized commands, unexpected
-    /// number of arguments, or misidentified options.
-    /// </exception>
     public class TerminalRequestQueueParser : ITerminalRequestParser
     {
         /// <summary>
@@ -114,7 +31,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="logger">The logger.</param>
         public TerminalRequestQueueParser(
             ITerminalTextHandler textHandler,
-            TerminalOptions terminalOptions,
+            IOptions<TerminalOptions> terminalOptions,
             ILogger<TerminalRequestQueueParser> logger)
         {
             this.textHandler = textHandler;
@@ -123,17 +40,18 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <summary>
-        /// Not supported.
+        /// Parses the terminal request asynchronously.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <param name="request">The terminal request to parse.</param>
+        /// <returns>
+        /// A task that represents the asynchronous parse operation. The task result contains the parsed request.
+        /// </returns>
         public Task<TerminalParsedRequest> ParseRequestAsync(TerminalRequest request)
         {
             return Task.Run(() =>
             {
-                // Parse the queue of segments from the raw command based of `separator` and `optionValueSeparator`
-                Queue<TerminalRequestParsedSplit> segmentsQueue = ExtractQueue(request);
+                // Parse the queue of segments from the raw command based on `separator` and `optionValueSeparator`
+                Queue<string> segmentsQueue = ExtractQueue(request);
 
                 // Extract tokens and options from the segments queue
                 IEnumerable<string> tokens = ExtractTokens(segmentsQueue);
@@ -142,135 +60,53 @@ namespace OneImlx.Terminal.Runtime
             });
         }
 
-        private bool EndsWith(string value, string suffix)
-        {
-            return value.EndsWith(suffix, textHandler.Comparison);
-        }
-
-        private Dictionary<string, string> ExtractOptions(Queue<TerminalRequestParsedSplit> segmentsQueue)
+        private Dictionary<string, string> ExtractOptions(Queue<string> segmentsQueue)
         {
             // This dictionary will hold the parsed options.
+            TerminalOptions terminalOptions = this.terminalOptions.Value;
             Dictionary<string, string> parsedOptions = [];
-            char valueDelimiter = terminalOptions.Parser.ValueDelimiter;
-            char separator = terminalOptions.Parser.Separator;
-
             while (segmentsQueue.Count > 0)
             {
                 // Always dequeue a segment because we're expecting it to be an option.
-                TerminalRequestParsedSplit optionSplit = segmentsQueue.Dequeue();
-                StringBuilder optionValueBuilder = new();
+                string option = segmentsQueue.Dequeue();
 
-                // If we are not within a delimiter then we cannot have a separator.
-                string option = optionSplit.Split;
-                if (option.IsNullOrEmpty() || textHandler.SingleEquals(separator, option))
+                // Check whether we have an option value and if the option value is an option itself then the previous
+                // option is a unary boolean option.
+                if (segmentsQueue.Count > 0)
                 {
-                    continue;
-                }
-
-                // It's essential to skip over segments that are purely separators. Reasons for this are twofold:
-                // 1. Ensures that our parsing logic does not mistakenly recognize separators as valid segments for
-                // option values unless they are part of delimiters.
-                // 2. Allows us to efficiently peek at the actual next segment of interest without being misled by
-                // consecutive separators.
-                string? nextSegment = null;
-                while (true)
-                {
-                    if (segmentsQueue.Count == 0)
+                    string? optionValue = segmentsQueue.Peek();
+                    if (!IsOption(optionValue, terminalOptions))
                     {
-                        break; // Exit the loop if there are no more segments.
-                    }
+                        // Ensure token ends with a delimiter
+                        if (optionValue.First() == terminalOptions.Parser.ValueDelimiter)
+                        {
+                            if (optionValue.Last() != terminalOptions.Parser.ValueDelimiter)
+                            {
+                                throw new TerminalException(TerminalErrors.InvalidOption, "The option value is missing the closing delimiter. option={0}", option);
+                            }
 
-                    nextSegment = segmentsQueue.Peek().Split;
+                            // Remove the delimiter and return the raw value.
+                            optionValue = optionValue.Trim(terminalOptions.Parser.ValueDelimiter);
+                        }
 
-                    // If nextSegment is purely the separator or empty, discard it and continue to the next iteration.
-                    if (string.IsNullOrEmpty(nextSegment) || textHandler.SingleEquals(separator, nextSegment))
-                    {
+                        // The option value is processed to remove it from the queue, so we can process the next option.
                         segmentsQueue.Dequeue();
+                        parsedOptions.Add(option, optionValue);
                         continue;
                     }
-
-                    // Break when a segment that is neither null, empty, nor the separator is found.
-                    break;
                 }
 
-                // If no more segments or the next is an option, current option's value is a default.
-                if (nextSegment == null || IsOption(nextSegment))
-                {
-                    parsedOptions[option] = true.ToString();
-                    continue;
-                }
-
-                // Peek at the next segment without removing it. This allows us to make a decision on how to proceed
-                // without advancing the queue. E.g. whether the option value is delimited or not.
-                if (StartsWith(nextSegment, valueDelimiter.ToString()))
-                {
-                    // If the next segment starts with a delimiter, then this segment represents a value that is
-                    // enclosed within delimiters. We should process until we find the closing delimiter, capturing
-                    // everything in-between.
-                    bool foundClosingDelimiter = false;
-                    while (segmentsQueue.Count > 0 && !foundClosingDelimiter)
-                    {
-                        TerminalRequestParsedSplit currentSegment = segmentsQueue.Dequeue();
-                        optionValueBuilder.Append(currentSegment.Split);
-
-                        // If the currentSegment contains just the delimiter both start and end will match and we will
-                        // break out of the loop. This will happen when the option value for e.g. \" value "\
-                        if (EndsWith(currentSegment.Split, valueDelimiter.ToString()) && optionValueBuilder.Length > 1)
-                        {
-                            foundClosingDelimiter = true;
-                        }
-
-                        // Separator is not required if we found the closing delimiter.
-                        bool requiresSeparator = segmentsQueue.Count > 0 && !foundClosingDelimiter;
-                        if (requiresSeparator)
-                        {
-                            optionValueBuilder.Append(currentSegment.Token);
-                        }
-                    }
-
-                    // Now, we use the flag to check if the closing delimiter was found.
-                    if (!foundClosingDelimiter)
-                    {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "The option value is missing the closing delimiter. option={0}", option);
-                    }
-
-                    // Strip the delimiters if present.
-                    string optionValueTemp = optionValueBuilder.ToString().TrimEnd(separator);
-                    if (StartsWith(optionValueTemp, valueDelimiter.ToString()))
-                    {
-                        optionValueTemp = RemovePrefix(optionValueTemp, valueDelimiter.ToString());
-                    }
-                    if (EndsWith(optionValueTemp, valueDelimiter.ToString()))
-                    {
-                        optionValueTemp = RemoveSuffix(optionValueTemp, valueDelimiter.ToString());
-                    }
-                    parsedOptions[option] = optionValueTemp;
-                }
-                else
-                {
-                    // If the next segment is neither an option nor starts with a delimiter, then it should be treated
-                    // as a non-delimited value for the current option. We process segments until we encounter the next
-                    // option or until we exhaust all segments.
-                    while (segmentsQueue.Count > 0 && !IsOption(segmentsQueue.Peek().Split))
-                    {
-                        if (optionValueBuilder.Length > 0)
-                        {
-                            optionValueBuilder.Append(separator); // Using space as a separator
-                        }
-
-                        optionValueBuilder.Append(segmentsQueue.Dequeue().Split);
-                    }
-
-                    parsedOptions[option] = optionValueBuilder.ToString().TrimEnd(separator);
-                }
+                // If we are here that means the option is a unary boolean option.
+                parsedOptions.Add(option, true.ToString());
             }
 
             return parsedOptions;
         }
 
-        private Queue<TerminalRequestParsedSplit> ExtractQueue(TerminalRequest request)
+        private Queue<string> ExtractQueue(TerminalRequest request)
         {
-            Queue<TerminalRequestParsedSplit> queue = new();
+            TerminalOptions terminalOptions = this.terminalOptions.Value;
+            Queue<string> segmentQueue = new();
 
             // Parse the raw and replace all occurrences of separator that are not within delimiters with a UNIT
             // SEPARATOR character.
@@ -280,11 +116,11 @@ namespace OneImlx.Terminal.Runtime
             char valueSeparator = terminalOptions.Parser.OptionValueSeparator;
             char us = '\u001F'; // Unit Separator in Unicode
 
-            StringBuilder rawBuilder = new(raw, raw.Length + 10);
+            StringBuilder rawBuilder = new(raw, raw.Length);
             bool withinDelimiter = false;
-            for (int i = 0; i < raw.Length; i++)
+            for (int idx = 0; idx < raw.Length; ++idx)
             {
-                char currentChar = raw[i];
+                char currentChar = raw[idx];
                 if (currentChar == valueDelimiter)
                 {
                     withinDelimiter = !withinDelimiter;
@@ -293,7 +129,7 @@ namespace OneImlx.Terminal.Runtime
 
                 if ((currentChar == separator || currentChar == valueSeparator) && !withinDelimiter)
                 {
-                    rawBuilder[i] = us;
+                    rawBuilder[idx] = us;
                 }
             }
 
@@ -303,93 +139,47 @@ namespace OneImlx.Terminal.Runtime
             // Populate queue with the split segments.
             foreach (string segment in segments)
             {
-                queue.Enqueue(new TerminalRequestParsedSplit(segment, null));
+                segmentQueue.Enqueue(segment);
             }
 
-            return queue;
+            return segmentQueue;
         }
 
-        private IEnumerable<string> ExtractTokens(Queue<TerminalRequestParsedSplit> segmentsQueue)
+        private IEnumerable<string> ExtractTokens(Queue<string> segmentQueue)
         {
+            TerminalOptions terminalOptions = this.terminalOptions.Value;
             List<string> tokens = [];
-
-            char valueDelimiter = terminalOptions.Parser.ValueDelimiter;
-            char separator = terminalOptions.Parser.Separator;
-
-            while (segmentsQueue.Count > 0)
+            while (segmentQueue.Count > 0)
             {
                 // Break loop if segment represents an option.
-                TerminalRequestParsedSplit splitSegment = segmentsQueue.Peek();
-                if (IsOption(splitSegment.Split))
+                string token = segmentQueue.Peek();
+                if (IsOption(token, terminalOptions))
                 {
                     break;
                 }
-                segmentsQueue.Dequeue();
 
-                // If we are not within a delimiter then we cannot have a separator.
-                string segment = splitSegment.Split;
-                if (segment.IsNullOrEmpty() || textHandler.SingleEquals(separator, segment))
+                // Ensure token ends with a delimiter
+                if (token.First() == terminalOptions.Parser.ValueDelimiter)
                 {
-                    continue;
-                }
-
-                StringBuilder argumentValueBuilder = new(segment, segment.Length + 10);
-                if (StartsWith(segment, valueDelimiter.ToString()))
-                {
-                    while (segmentsQueue.Count > 0 && (!EndsWith(segment, valueDelimiter.ToString()) || argumentValueBuilder.Length == 1))
+                    if (token.Last() != terminalOptions.Parser.ValueDelimiter)
                     {
-                        argumentValueBuilder.Append(separator);
-                        splitSegment = segmentsQueue.Dequeue();
-                        segment = splitSegment.Split;
-                        argumentValueBuilder.Append(segment);
+                        throw new TerminalException(TerminalErrors.InvalidArgument, "The argument value is missing the closing delimiter. argument={0}", token);
                     }
 
-                    if (!EndsWith(segment, valueDelimiter.ToString()))
-                    {
-                        throw new TerminalException(TerminalErrors.InvalidCommand, "The argument value is missing the closing delimiter. argument={0}", argumentValueBuilder.ToString());
-                    }
+                    token = token.Trim(terminalOptions.Parser.ValueDelimiter);
                 }
 
-                tokens.Add(segment);
+                // Not an option so now dequeue and process the token.
+                segmentQueue.Dequeue();
+                tokens.Add(token);
             }
-
             return tokens;
         }
 
-        private bool IsAliasPrefix(string value)
+        private bool IsOption(string token, TerminalOptions terminalOptions)
         {
-            return StartsWith(value, terminalOptions.Parser.OptionAliasPrefix);
-        }
-
-        /// <summary>
-        /// Checks if a given value represents an option.
-        /// </summary>
-        /// <param name="value">The value to check.</param>
-        /// <returns>True if the value represents an option; otherwise, false.</returns>
-        /// <remarks>
-        /// An option is recognized by specific prefixes that differentiate it from commands or arguments. This utility
-        /// function checks for these prefixes (e.g., "--" or "-") and decides if the segment is an option or an alias
-        /// for an option.
-        /// </remarks>
-        private bool IsOption(string value)
-        {
-            // Check if the match value starts with a prefix like "-" or "--"
-            return IsOptionPrefix(value) || IsAliasPrefix(value);
-        }
-
-        private bool IsOptionPrefix(string value)
-        {
-            return StartsWith(value, terminalOptions.Parser.OptionPrefix);
-        }
-
-        private string RemovePrefix(string value, string prefix)
-        {
-            return value.Substring(prefix.Length);
-        }
-
-        private string RemoveSuffix(string value, string suffix)
-        {
-            return value.Substring(0, value.Length - suffix.Length);
+            return StartsWith(token, terminalOptions.Parser.OptionPrefix) ||
+                   StartsWith(token, terminalOptions.Parser.OptionAliasPrefix);
         }
 
         private bool StartsWith(string value, string prefix)
@@ -398,7 +188,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         private readonly ILogger<TerminalRequestQueueParser> logger;
-        private readonly TerminalOptions terminalOptions;
+        private readonly IOptions<TerminalOptions> terminalOptions;
         private readonly ITerminalTextHandler textHandler;
     }
 }
