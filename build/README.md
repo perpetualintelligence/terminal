@@ -1,10 +1,10 @@
 # Build
 
 ## Local Machine
-Follow the steps to set up the `pi-cli` repository on your local development machine.
+Follow the steps to set up the `oneimlx.terminal` repository on your local development machine.
 
 1. Download and install [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
-2. Clone the [pi-cli](https://github.com/perpetualintelligence/cli) GitHub repo
+2. Clone the [oneimlx.terminal](https://github.com/perpetualintelligence/terminal) GitHub repo
 3. Set PI_CI_REFERENCE environment variable to `cross`
 4. Set PI_CLI_TEST_LIC environment variable to your development license file location
 

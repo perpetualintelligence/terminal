@@ -20,11 +20,11 @@ $ONEIMLX_HTML_REPORT_INDEX = "$ONEIMLX_HTML_REPORT_DIRECTORY/index.html"
 $ONEIMLX_COBERTURA_PATTERN = "$ONEIMLX_COVERAGE_DIRECTORY/**/*.cobertura.xml"
 
 # Clean up any existing coverage reports
-Write-Host "[INFO] OneImlx.Terminal code coverage reports..." -ForegroundColor $ONEIMLX_COLOR_MAGENTA
+Write-Host "[INFO] Running OneImlx.Terminal code coverage reports..." -ForegroundColor $ONEIMLX_COLOR_MAGENTA
 Remove-Item -Recurse -Force $ONEIMLX_COVERAGE_DIRECTORY -ErrorAction SilentlyContinue
 
 # Execute tests and collect coverage data
-Write-Host "[INFO] Build and test $ONEIMLX_SOLUTION_PATH..."
+Write-Host "[INFO] Build and test $ONEIMLX_SOLUTION_PATH..." -ForegroundColor $ONEIMLX_COLOR_MAGENTA
 dotnet test $ONEIMLX_SOLUTION_PATH `
     --collect:"XPlat Code Coverage" `
     --results-directory $ONEIMLX_COVERAGE_DIRECTORY `
@@ -42,7 +42,11 @@ if (-Not $ONEIMLX_COBERTURA_FILES) {
 # Generate a merged HTML report using reportgenerator
 if (Get-Command reportgenerator -ErrorAction SilentlyContinue) {
     Write-Host "[INFO] Merging coverage data and creating an interactive HTML report..." -ForegroundColor $ONEIMLX_COLOR_MAGENTA
-    reportgenerator -reports:$ONEIMLX_COBERTURA_PATTERN -targetdir:$ONEIMLX_HTML_REPORT_DIRECTORY -reporttypes:Html
+    reportgenerator `
+        -reports:$ONEIMLX_COBERTURA_PATTERN `
+        -targetdir:$ONEIMLX_HTML_REPORT_DIRECTORY `
+        -reporttypes:Html `
+        -title:"OneImlx.Terminal Coverage Report"
 
     # Verify and open the HTML report
     if (Test-Path $ONEIMLX_HTML_REPORT_INDEX) {
@@ -60,4 +64,3 @@ if (Get-Command reportgenerator -ErrorAction SilentlyContinue) {
 
 Write-Host "[INFO] Reports are available in the $ONEIMLX_COVERAGE_DIRECTORY directory." -ForegroundColor $ONEIMLX_COLOR_MAGENTA
 Write-Host "[INFO] OneImlx.Terminal framework coverage successfully completed." -ForegroundColor $ONEIMLX_COLOR_GREEN
-
