@@ -17,8 +17,7 @@ namespace OneImlx.Terminal.Configuration.Options
         {
             ParserOptions options = new();
 
-            options.OptionAliasPrefix.Should().Be("-");
-            options.OptionPrefix.Should().Be("--");
+            options.OptionPrefix.Should().Be('-');
             options.OptionValueSeparator.Should().Be(TerminalIdentifiers.SpaceSeparator);
             options.ValueDelimiter.Should().Be('"');
             options.Separator.Should().Be(TerminalIdentifiers.SpaceSeparator);

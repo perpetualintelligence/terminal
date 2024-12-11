@@ -51,7 +51,7 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             // Driver
             {
-                if (options.Driver.Enabled.GetValueOrDefault())
+                if (options.Driver.Enabled)
                 {
                     // If linked to root command then name is required.
                     if (options.Driver.Name.IsNullOrWhiteSpace())
@@ -70,15 +70,9 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // Command separator and option prefix cannot be same
-                if (textHandler.SingleEquals(options.Parser.Separator, options.Parser.OptionPrefix))
+                if (textHandler.CharEquals(options.Parser.Separator, options.Parser.OptionPrefix))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The command separator and option prefix cannot be same. separator={0}", options.Parser.Separator);
-                }
-
-                // Command separator and option alias prefix cannot be same
-                if (textHandler.SingleEquals(options.Parser.Separator, options.Parser.OptionAliasPrefix))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The command separator and option alias prefix cannot be same. separator={0}", options.Parser.Separator);
                 }
             }
 
@@ -90,47 +84,16 @@ namespace OneImlx.Terminal.Commands.Checkers
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option separator cannot be null or empty.", options.Parser.Separator);
                 }
 
-                // Option prefix cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Parser.OptionPrefix))
+                // Option prefix cannot be default
+                if (options.Parser.OptionPrefix == default)
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option prefix cannot be null or whitespace.");
-                }
-
-                // Option prefix cannot be more than 3 Unicode characters
-                if (textHandler.TextLength(options.Parser.OptionPrefix) > 3)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option prefix cannot be more than 3 Unicode characters. option_prefix={0}", options.Parser.OptionPrefix);
-                }
-
-                // Option alias prefix cannot be null, empty or whitespace
-                if (string.IsNullOrWhiteSpace(options.Parser.OptionAliasPrefix))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option alias prefix cannot be null or whitespace.");
-                }
-
-                // Option prefix cannot be more than 3 Unicode characters
-                if (textHandler.TextLength(options.Parser.OptionAliasPrefix) > 3)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option alias prefix cannot be more than 3 Unicode characters. option_alias_prefix={0}", options.Parser.OptionAliasPrefix);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option prefix cannot be default.");
                 }
 
                 // Option separator and option prefix cannot be same
-                if (textHandler.SingleEquals(options.Parser.OptionValueSeparator, options.Parser.OptionPrefix))
+                if (textHandler.CharEquals(options.Parser.OptionValueSeparator, options.Parser.OptionPrefix))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option separator and option prefix cannot be same. separator={0}", options.Parser.OptionValueSeparator);
-                }
-
-                // Option separator and option prefix cannot be same
-                if (textHandler.SingleEquals(options.Parser.OptionValueSeparator, options.Parser.OptionAliasPrefix))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option separator and option alias prefix cannot be same. separator={0}", options.Parser.OptionValueSeparator);
-                }
-
-                // Option alias prefix can be same as option prefix but it cannot start with option prefix. e.g
-                // --configuration -c is valid but --configuration and --c is not
-                if (!textHandler.TextEquals(options.Parser.OptionAliasPrefix, options.Parser.OptionPrefix) && options.Parser.OptionAliasPrefix.StartsWith(options.Parser.OptionPrefix, textHandler.Comparison))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The option alias prefix cannot start with option prefix. prefix={0}", options.Parser.OptionPrefix);
                 }
             }
 
@@ -149,15 +112,9 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // with_in cannot be same as OptionPrefix
-                if (textHandler.SingleEquals(options.Parser.ValueDelimiter, options.Parser.OptionPrefix))
+                if (textHandler.CharEquals(options.Parser.ValueDelimiter, options.Parser.OptionPrefix))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be same as the option prefix. delimiter={0}", options.Parser.ValueDelimiter);
-                }
-
-                // with_in cannot be same as OptionAliasPrefix
-                if (textHandler.SingleEquals(options.Parser.ValueDelimiter, options.Parser.OptionAliasPrefix))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The value delimiter cannot be same as the option alias prefix. delimiter={0}", options.Parser.ValueDelimiter);
                 }
 
                 // with_in cannot be same as OptionSeparator

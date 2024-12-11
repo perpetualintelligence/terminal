@@ -13,16 +13,10 @@ namespace OneImlx.Terminal.Configuration.Options
     public sealed class ParserOptions
     {
         /// <summary>
-        /// The option alias prefix. Defaults to <c>-</c>.
-        /// </summary>
-        /// <remarks>The option alias prefix cannot be <c>null</c> or whitespace.</remarks>
-        public string OptionAliasPrefix { get; set; } = "-";
-
-        /// <summary>
-        /// The option prefix. Defaults to <c>--</c>.
+        /// The option prefix. Defaults to <c>-</c>.
         /// </summary>
         /// <remarks>The option prefix cannot be <c>null</c> or whitespace.</remarks>
-        public string OptionPrefix { get; set; } = "--";
+        public char OptionPrefix { get; set; } = '-';
 
         /// <summary>
         /// The option value separator. Defaults to <c></c>.

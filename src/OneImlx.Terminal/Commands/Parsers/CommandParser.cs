@@ -55,11 +55,6 @@ namespace OneImlx.Terminal.Commands.Parsers
             return new CommandParserResult(parsedCommand);
         }
 
-        private bool IsOptionPrefix(string value)
-        {
-            return value.StartsWith(terminalOptions.Value.Parser.OptionPrefix, textHandler.Comparison);
-        }
-
         private async Task<(List<CommandDescriptor> parsedCommands, List<Argument> parsedArguments)> MapCommandAndArguments(TerminalParsedRequest parsedOutput)
         {
             List<CommandDescriptor> parsedCommands = [];
@@ -137,7 +132,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             return (parsedCommands, parsedArguments);
         }
 
-        private Options? MapOptions(CommandDescriptor commandDescriptor, Dictionary<string, string>? parsedOptions)
+        private Options? MapOptions(CommandDescriptor commandDescriptor, Dictionary<string, ValueTuple<string, bool>>? parsedOptions)
         {
             if (parsedOptions == null || parsedOptions.Count == 0)
             {
@@ -160,41 +155,32 @@ namespace OneImlx.Terminal.Commands.Parsers
             List<Option> options = new(parsedOptions.Count);
             foreach (var optKvp in parsedOptions)
             {
-                string optionOrAliasKey;
-                bool isOption = IsOptionPrefix(optKvp.Key);
-
-                if (isOption)
-                {
-                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Value.Parser.OptionPrefix);
-                }
-                else
-                {
-                    optionOrAliasKey = RemovePrefix(optKvp.Key, terminalOptions.Value.Parser.OptionAliasPrefix);
-                }
-
+                string optionOrAliasKey = optKvp.Key;
                 if (!commandDescriptor.OptionDescriptors.TryGetValue(optionOrAliasKey, out var optionDescriptor))
                 {
                     throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support option or its alias. command={0} option={1}", commandDescriptor.Id, optionOrAliasKey);
                 }
 
-                if (isOption)
-                {
-                    // Validate if option matches expected id
-                    if (!textHandler.TextEquals(optionDescriptor.Id, optionOrAliasKey))
-                    {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "The option prefix is not valid for an alias. option={0}", optionOrAliasKey);
-                    }
-                }
-                else
+                string optionValue = optKvp.Value.Item1;
+                bool isAlias = optKvp.Value.Item2;
+                if (isAlias)
                 {
                     // Validate if option matches expected alias
                     if (!textHandler.TextEquals(optionDescriptor.Alias, optionOrAliasKey))
                     {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "The alias prefix is not valid for an option. option={0}", optKvp.Key);
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The alias prefix is not valid for an option. alias={0} option={1}", optionDescriptor.Alias,  optKvp.Key);
+                    }
+                }
+                else
+                {
+                    // Validate if option matches expected id
+                    if (!textHandler.TextEquals(optionDescriptor.Id, optionOrAliasKey))
+                    {
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The option prefix is not valid for an alias. option={0} alias={1}", optionDescriptor.Id, optionOrAliasKey);
                     }
                 }
 
-                options.Add(new Option(optionDescriptor, optKvp.Value));
+                options.Add(new Option(optionDescriptor, optionValue, isAlias));
             }
 
             return new Options(textHandler, options);
@@ -218,18 +204,13 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Hierarchy is all expect the current command.
             Command command = new(commandDescriptor, arguments, parsedOptions);
-            return new ParsedCommand(request, command, commandDescriptors.Count > 1 ?  commandDescriptors.Take(commandDescriptors.Count - 1) : null);
+            return new ParsedCommand(request, command, commandDescriptors.Count > 1 ? commandDescriptors.Take(commandDescriptors.Count - 1) : null);
         }
 
-        private string RemovePrefix(string value, string prefix)
-        {
-            return value.Substring(prefix.Length);
-        }
-
-        private readonly ITerminalRequestParser terminalRequestParser;
         private readonly ITerminalCommandStore commandStore;
         private readonly ILogger<CommandParser> logger;
         private readonly IOptions<TerminalOptions> terminalOptions;
+        private readonly ITerminalRequestParser terminalRequestParser;
         private readonly ITerminalTextHandler textHandler;
     }
 }

@@ -29,10 +29,12 @@ namespace OneImlx.Terminal
         {
             byte[]? bytes = null;
             byte delimiter = 255;
-            Assert.Throws<ArgumentException>(() => TerminalServices.DelimitBytes(bytes!, delimiter));
+            Action act = () => TerminalServices.DelimitBytes(bytes!, delimiter);
+            act.Should().Throw<ArgumentException>();
 
             bytes = [];
-            Assert.Throws<ArgumentException>(() => TerminalServices.DelimitBytes(bytes, delimiter));
+            act = () => TerminalServices.DelimitBytes(bytes, delimiter);
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]
@@ -42,7 +44,7 @@ namespace OneImlx.Terminal
             byte delimiter = 255;
 
             byte[] result = TerminalServices.DelimitBytes(bytes, delimiter);
-            Assert.Equal(new byte[] { 1, 2, 3, 255 }, result);
+            result.Should().Equal([1, 2, 3, 255]);
         }
 
         [Theory]
@@ -57,6 +59,60 @@ namespace OneImlx.Terminal
             // Decode
             string decodedContents = TerminalServices.DecodeLicenseContents(result);
             decodedContents.Should().Be(licenseContents);
+        }
+
+        [Fact]
+        public void IsOption_ShouldReturnFalse_WhenTokenIsNotOption()
+        {
+            // Arrange
+            var terminalOptions = new TerminalOptions
+            {
+                Parser = new ParserOptions { OptionPrefix = '-' }
+            };
+            string token = "notAnOption";
+
+            // Act
+            bool result = TerminalServices.IsOption(token, terminalOptions, out bool isAlias);
+
+            // Assert
+            result.Should().BeFalse();
+            isAlias.Should().BeFalse();
+        }
+
+        [Fact]
+        public void IsOption_ShouldReturnTrue_WhenTokenIsOption()
+        {
+            // Arrange
+            var terminalOptions = new TerminalOptions
+            {
+                Parser = new ParserOptions { OptionPrefix = '-' }
+            };
+            string token = "--option";
+
+            // Act
+            bool result = TerminalServices.IsOption(token, terminalOptions, out bool isAlias);
+
+            // Assert
+            result.Should().BeTrue();
+            isAlias.Should().BeFalse();
+        }
+
+        [Fact]
+        public void IsOption_ShouldReturnTrueAndSetIsAlias_WhenTokenIsAlias()
+        {
+            // Arrange
+            var terminalOptions = new TerminalOptions
+            {
+                Parser = new ParserOptions { OptionPrefix = '-' }
+            };
+            string token = "-alias";
+
+            // Act
+            bool result = TerminalServices.IsOption(token, terminalOptions, out bool isAlias);
+
+            // Assert
+            result.Should().BeTrue();
+            isAlias.Should().BeTrue();
         }
 
         private readonly TerminalOptions _terminalOptions;

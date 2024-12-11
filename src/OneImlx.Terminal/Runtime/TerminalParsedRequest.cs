@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
 using System.Collections.Generic;
 
 namespace OneImlx.Terminal.Runtime
@@ -19,7 +20,7 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="tokens">The parsed tokens that represent a root, groups, command, and arguments.</param>
         /// <param name="options">The parsed options.</param>
-        public TerminalParsedRequest(IEnumerable<string> tokens, Dictionary<string, string> options)
+        public TerminalParsedRequest(IEnumerable<string> tokens, Dictionary<string, ValueTuple<string, bool>> options)
         {
             Options = options;
             Tokens = tokens;
@@ -28,7 +29,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Gets the parsed options.
         /// </summary>
-        public Dictionary<string, string>? Options { get; }
+        public Dictionary<string, ValueTuple<string, bool>>? Options { get; }
 
         /// <summary>
         /// Gets the parsed tokens that represent an ordered collection of root, groups, command, and arguments.

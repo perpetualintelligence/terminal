@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// If enabled, the terminal's root command is also a native command prompt driver program. You can execute your
         /// commands from a native command prompt by specifying the root and command options.
         /// </remarks>
-        public bool? Enabled { get; set; }
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// The terminal driver program name.

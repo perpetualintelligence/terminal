@@ -19,9 +19,8 @@ namespace OneImlx.Terminal.Mocks
                 Parser = new ParserOptions()
                 {
                     ValueDelimiter = '"',
-                    OptionPrefix = "--",
-                    OptionAliasPrefix = "-",
-                    OptionValueSeparator = ' ',
+                    OptionPrefix = '-',
+                    OptionValueSeparator = TerminalIdentifiers.SpaceSeparator,
                     Separator = TerminalIdentifiers.SpaceSeparator,
                 },
             };
@@ -34,8 +33,7 @@ namespace OneImlx.Terminal.Mocks
                 Id = "test_id_1",
                 Parser = new ParserOptions()
                 {
-                    OptionPrefix = "-",
-                    OptionAliasPrefix = "-",
+                    OptionPrefix = '-',
                     OptionValueSeparator = '=',
                     Separator = TerminalIdentifiers.SpaceSeparator,
                 },

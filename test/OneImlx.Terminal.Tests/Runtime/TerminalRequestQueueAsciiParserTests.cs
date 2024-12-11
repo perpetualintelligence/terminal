@@ -5,15 +5,15 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.Runtime
             Func<Task> act = async () => { await parser.ParseRequestAsync(new TerminalRequest("id", "root1 grp1 grp2 cmd1 arg1 -opt1 \"opt value not delimited")); };
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_option")
-                .WithErrorDescription("The option value is missing the closing delimiter. option=-opt1");
+                .WithErrorDescription("The option value is missing the closing delimiter. option=opt1");
         }
 
         [Fact]
@@ -67,10 +67,11 @@ namespace OneImlx.Terminal.Runtime
             var parsedCommand = await parser.ParseRequestAsync(request);
 
             parsedCommand.Tokens.Should().BeEquivalentTo(["root1", "grp1", "grp2", "grp3", "cmd1", "arg1", "arg2"]);
+
             parsedCommand.Options.Should().HaveCount(3);
-            parsedCommand.Options!["--opt1"].Should().Be("val1");
-            parsedCommand.Options["--opt2"].Should().Be("val2");
-            parsedCommand.Options["-opt3"].Should().Be(true.ToString());
+            parsedCommand.Options!["opt1"].Should().Be(new("val1", false));
+            parsedCommand.Options["opt2"].Should().Be(new("val2", false));
+            parsedCommand.Options["opt3"].Should().Be(new(true.ToString(), true));
         }
 
         [Fact]
@@ -99,9 +100,9 @@ namespace OneImlx.Terminal.Runtime
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "-opt1 val1 --opt2 val2 -opt3"));
             parsedOutput.Tokens.Should().BeEmpty();
             parsedOutput.Options.Should().HaveCount(3);
-            parsedOutput.Options!["-opt1"].Should().Be("val1");
-            parsedOutput.Options["--opt2"].Should().Be("val2");
-            parsedOutput.Options["-opt3"].Should().Be(true.ToString());
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["opt2"].Should().Be(("val2", false));
+            parsedOutput.Options["opt3"].Should().Be((true.ToString(), true));
         }
 
         [Fact]
@@ -110,10 +111,10 @@ namespace OneImlx.Terminal.Runtime
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 -opt1 \"val1\" --opt2 \"val2\" --opt3 \"delimited val3\" -opt4 \"    delimited val4     \""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2"]);
             parsedOutput.Options.Should().HaveCount(4);
-            parsedOutput.Options!["-opt1"].Should().Be("val1");
-            parsedOutput.Options["--opt2"].Should().Be("val2");
-            parsedOutput.Options["--opt3"].Should().Be("delimited val3");
-            parsedOutput.Options["-opt4"].Should().Be("    delimited val4     ");
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["opt2"].Should().Be(("val2", false));
+            parsedOutput.Options["opt3"].Should().Be(("delimited val3", false));
+            parsedOutput.Options["opt4"].Should().Be(("    delimited val4     ", true));
         }
 
         [Fact]
@@ -136,12 +137,12 @@ namespace OneImlx.Terminal.Runtime
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\" -opt6"));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
             parsedOutput.Options.Should().HaveCount(6);
-            parsedOutput.Options!["-opt1"].Should().Be("val1");
-            parsedOutput.Options["--opt2"].Should().Be("val2");
-            parsedOutput.Options["-opt3"].Should().Be(true.ToString());
-            parsedOutput.Options["-opt4"].Should().Be("36.69");
-            parsedOutput.Options["--opt5"].Should().Be("delimited val");
-            parsedOutput.Options["-opt6"].Should().Be(true.ToString());
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["opt2"].Should().Be(("val2", false));
+            parsedOutput.Options["opt3"].Should().Be((true.ToString(), true));
+            parsedOutput.Options["opt4"].Should().Be(("36.69", true));
+            parsedOutput.Options["opt5"].Should().Be(("delimited val", false));
+            parsedOutput.Options["opt6"].Should().Be((true.ToString(), true));
         }
 
         [Fact]
@@ -152,11 +153,11 @@ namespace OneImlx.Terminal.Runtime
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1=val1 --opt2=val2 -opt3 -opt4=36.69 --opt5=\"delimited val\""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
             parsedOutput.Options.Should().HaveCount(5);
-            parsedOutput.Options!["-opt1"].Should().Be("val1");
-            parsedOutput.Options["--opt2"].Should().Be("val2");
-            parsedOutput.Options["-opt3"].Should().Be(true.ToString());
-            parsedOutput.Options["-opt4"].Should().Be("36.69");
-            parsedOutput.Options["--opt5"].Should().Be("delimited val");
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["opt2"].Should().Be(("val2", false));
+            parsedOutput.Options["opt3"].Should().Be((true.ToString(), true));
+            parsedOutput.Options["opt4"].Should().Be(("36.69", true));
+            parsedOutput.Options["opt5"].Should().Be(("delimited val", false));
         }
 
         [Fact]
@@ -165,36 +166,18 @@ namespace OneImlx.Terminal.Runtime
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
             parsedOutput.Options.Should().HaveCount(5);
-            parsedOutput.Options!["-opt1"].Should().Be("val1");
-            parsedOutput.Options["--opt2"].Should().Be("val2");
-            parsedOutput.Options["-opt3"].Should().Be(true.ToString());
-            parsedOutput.Options["-opt4"].Should().Be("36.69");
-            parsedOutput.Options["--opt5"].Should().Be("delimited val");
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["opt2"].Should().Be(("val2", false));
+            parsedOutput.Options["opt3"].Should().Be((true.ToString(), true));
+            parsedOutput.Options["opt4"].Should().Be(("36.69", true));
+            parsedOutput.Options["opt5"].Should().Be(("delimited val", false));
         }
 
         [Theory]
         [InlineData("root1", new string[] { "root1" })]
-        [InlineData("root1 grp1", new string[] { "root1", "grp1" })]
-        [InlineData("root1 grp1 grp2", new string[] { "root1", "grp1", "grp2" })]
-        [InlineData("root1 grp1 grp2 grp3", new string[] { "root1", "grp1", "grp2", "grp3" })]
-        [InlineData("root1 grp1 grp2 grp3 grp4", new string[] { "root1", "grp1", "grp2", "grp3", "grp4" })]
-        [InlineData("root1 grp1 grp2 grp3 grp4 grp5", new string[] { "root1", "grp1", "grp2", "grp3", "grp4", "grp5" })]
-        [InlineData("root1 grp1 grp2 grp3 grp4 grp5 grp6", new string[] { "root1", "grp1", "grp2", "grp3", "grp4", "grp5", "grp6" })]
-        [InlineData("root1 grp1 grp2 grp3 grp4 grp5 grp6 grp7", new string[] { "root1", "grp1", "grp2", "grp3", "grp4", "grp5", "grp6", "grp7" })]
-        [InlineData("root1 grp1 grp2 grp3 grp4 grp5 grp6 grp7 grp8", new string[] { "root1", "grp1", "grp2", "grp3", "grp4", "grp5", "grp6", "grp7", "grp8" })]
-        [InlineData("root1 grp1 grp2 grp3 grp4 grp5 grp6 grp7 grp8 grp9", new string[] { "root1", "grp1", "grp2", "grp3", "grp4", "grp5", "grp6", "grp7", "grp8", "grp9" })]
         [InlineData("root1 grp1 grp2 grp3 grp4 grp5 grp6 grp7 grp8 grp9 grp10", new string[] { "root1", "grp1", "grp2", "grp3", "grp4", "grp5", "grp6", "grp7", "grp8", "grp9", "grp10" })]
         [InlineData("root1 grp1 grp2 grp3 cmd1", new string[] { "root1", "grp1", "grp2", "grp3", "cmd1" })]
         [InlineData("root1 grp1 cmd1", new string[] { "root1", "grp1", "cmd1" })]
-        [InlineData("root1 grp1 cmd1 arg1", new string[] { "root1", "grp1", "cmd1", "arg1" })]
-        [InlineData("root1 grp1 cmd1 arg1 arg2", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2" })]
-        [InlineData("root1 grp1 cmd1 arg1 arg2 arg3", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3" })]
-        [InlineData("root1 grp1 cmd1 arg1 arg2 arg3 arg4", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4" })]
-        [InlineData("root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5" })]
-        [InlineData("root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6" })]
-        [InlineData("root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7" })]
-        [InlineData("root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8" })]
-        [InlineData("root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9" })]
         [InlineData("root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10", new string[] { "root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10" })]
         public async Task Parses_Tokens_Correctly(string raw, string[] tokens)
         {

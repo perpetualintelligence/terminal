@@ -55,27 +55,31 @@ namespace OneImlx.Terminal.Runtime
 
                 // Extract tokens and options from the segments queue
                 IEnumerable<string> tokens = ExtractTokens(segmentsQueue);
-                Dictionary<string, string> parsedOptions = ExtractOptions(segmentsQueue);
+                Dictionary<string, ValueTuple<string, bool>> parsedOptions = ExtractOptions(segmentsQueue);
                 return new TerminalParsedRequest(tokens, parsedOptions);
             });
         }
 
-        private Dictionary<string, string> ExtractOptions(Queue<string> segmentsQueue)
+        private Dictionary<string, ValueTuple<string, bool>> ExtractOptions(Queue<string> segmentsQueue)
         {
             // This dictionary will hold the parsed options.
             TerminalOptions terminalOptions = this.terminalOptions.Value;
-            Dictionary<string, string> parsedOptions = [];
+            Dictionary<string, ValueTuple<string, bool>> parsedOptions = [];
             while (segmentsQueue.Count > 0)
             {
                 // Always dequeue a segment because we're expecting it to be an option.
                 string option = segmentsQueue.Dequeue();
+                bool isOption = TerminalServices.IsOption(option, terminalOptions, out bool isAlias);
+
+                // Remove the first character if it is an alias prefix otherwise remove 2 characters if it is an option prefix.
+                option = isAlias ? option.Substring(1) : option.Substring(2);
 
                 // Check whether we have an option value and if the option value is an option itself then the previous
                 // option is a unary boolean option.
                 if (segmentsQueue.Count > 0)
                 {
-                    string? optionValue = segmentsQueue.Peek();
-                    if (!IsOption(optionValue, terminalOptions))
+                    string optionValue = segmentsQueue.Peek();
+                    if (!TerminalServices.IsOption(optionValue, terminalOptions, out _))
                     {
                         // Ensure token ends with a delimiter
                         if (optionValue.First() == terminalOptions.Parser.ValueDelimiter)
@@ -91,13 +95,13 @@ namespace OneImlx.Terminal.Runtime
 
                         // The option value is processed to remove it from the queue, so we can process the next option.
                         segmentsQueue.Dequeue();
-                        parsedOptions.Add(option, optionValue);
+                        parsedOptions.Add(option, new(optionValue, isAlias));
                         continue;
                     }
                 }
 
                 // If we are here that means the option is a unary boolean option.
-                parsedOptions.Add(option, true.ToString());
+                parsedOptions.Add(option, new(true.ToString(), isAlias));
             }
 
             return parsedOptions;
@@ -114,27 +118,33 @@ namespace OneImlx.Terminal.Runtime
             char valueDelimiter = terminalOptions.Parser.ValueDelimiter;
             char separator = terminalOptions.Parser.Separator;
             char valueSeparator = terminalOptions.Parser.OptionValueSeparator;
-            char us = terminalOptions.Parser.RuntimeSeparator;
+            char runtimeSeparator = terminalOptions.Parser.RuntimeSeparator;
 
             StringBuilder rawBuilder = new(raw, raw.Length);
             bool withinDelimiter = false;
             for (int idx = 0; idx < raw.Length; ++idx)
             {
                 char currentChar = raw[idx];
+                char previousChar = idx > 0 ? raw[idx - 1] : default;
+                char nextChar = idx < raw.Length - 1 ? raw[idx + 1] : default;
+
+                // If we are within a value delimiter then no parsing logic is applied. The value delimiter are for
+                // arguments and options values. So a value delimiter will always have a preceding separator.
                 if (currentChar == valueDelimiter)
                 {
                     withinDelimiter = !withinDelimiter;
                     continue;
                 }
 
+                // Replace the separator with the runtime separator if it is not within a delimiter.
                 if ((currentChar == separator || currentChar == valueSeparator) && !withinDelimiter)
                 {
-                    rawBuilder[idx] = us;
+                    rawBuilder[idx] = runtimeSeparator;
                 }
             }
 
-            // Split the raw command based on the UNIT SEPARATOR character.
-            string[] segments = rawBuilder.ToString().Split([us], StringSplitOptions.RemoveEmptyEntries);
+            // Split the raw command based on the runtime separator character.
+            string[] segments = rawBuilder.ToString().Split([runtimeSeparator], StringSplitOptions.RemoveEmptyEntries);
 
             // Populate queue with the split segments.
             foreach (string segment in segments)
@@ -153,7 +163,7 @@ namespace OneImlx.Terminal.Runtime
             {
                 // Break loop if segment represents an option.
                 string token = segmentQueue.Peek();
-                if (IsOption(token, terminalOptions))
+                if (TerminalServices.IsOption(token, terminalOptions, out _))
                 {
                     break;
                 }
@@ -174,17 +184,6 @@ namespace OneImlx.Terminal.Runtime
                 tokens.Add(token);
             }
             return tokens;
-        }
-
-        private bool IsOption(string token, TerminalOptions terminalOptions)
-        {
-            return StartsWith(token, terminalOptions.Parser.OptionPrefix) ||
-                   StartsWith(token, terminalOptions.Parser.OptionAliasPrefix);
-        }
-
-        private bool StartsWith(string value, string prefix)
-        {
-            return value.StartsWith(prefix, textHandler.Comparison);
         }
 
         private readonly ILogger<TerminalRequestQueueParser> logger;
