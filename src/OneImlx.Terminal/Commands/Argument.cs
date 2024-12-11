@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -42,15 +42,24 @@ namespace OneImlx.Terminal.Commands
         }
 
         /// <summary>
+        /// The option data type.
+        /// </summary>
+        public string DataType => Descriptor.DataType;
+
+        /// <summary>
         /// The argument descriptor.
         /// </summary>
-        [JsonPropertyName("descriptor")]
         public ArgumentDescriptor Descriptor { get; }
+
+        /// <summary>
+        /// The argument id.
+        /// </summary>
+        /// <remarks>The argument id is unique with in a command.</remarks>
+        public string Id => Descriptor.Id;
 
         /// <summary>
         /// The argument value.
         /// </summary>
-        [JsonPropertyName("value")]
         public object Value { get; set; }
 
         /// <summary>
@@ -65,19 +74,6 @@ namespace OneImlx.Terminal.Commands
         }
 
         /// <summary>
-        /// The argument id.
-        /// </summary>
-        /// <remarks>The argument id is unique with in a command.</remarks>
-        [JsonIgnore]
-        public string Id => Descriptor.Id;
-
-        /// <summary>
-        /// The option data type.
-        /// </summary>
-        [JsonIgnore]
-        public string DataType => Descriptor.DataType;
-
-        /// <summary>
         /// Indicates whether the current argument is equal to another argument.
         /// </summary>
         /// <param name="left">The left argument.</param>
@@ -86,6 +82,15 @@ namespace OneImlx.Terminal.Commands
         public static bool operator ==(Argument? left, Argument? right)
         {
             return EqualityComparer<Argument?>.Default.Equals(left, right);
+        }
+
+        /// <summary>
+        /// Changes the argument value to the specified type.
+        /// </summary>
+        /// <param name="type">The new type to use.</param>
+        public void ChangeValueType(Type type)
+        {
+            Value = Convert.ChangeType(Value, type);
         }
 
         /// <summary>
@@ -116,15 +121,6 @@ namespace OneImlx.Terminal.Commands
         public override int GetHashCode()
         {
             return Id.GetHashCode();
-        }
-
-        /// <summary>
-        /// Changes the argument value to the specified type.
-        /// </summary>
-        /// <param name="type">The new type to use.</param>
-        public void ChangeValueType(Type type)
-        {
-            Value = Convert.ChangeType(Value, type);
         }
     }
 }

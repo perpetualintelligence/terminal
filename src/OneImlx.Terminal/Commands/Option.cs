@@ -36,7 +36,6 @@ namespace OneImlx.Terminal.Commands
         /// <param name="optionDescriptor">The option descriptor.</param>
         /// <param name="value">The option value.</param>
         /// <param name="byAlias">Determines whether the option is identifier by its alias.</param>
-        [JsonConstructor]
         public Option(OptionDescriptor optionDescriptor, object value, bool byAlias = false)
         {
             Value = value;
@@ -59,32 +58,27 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// The option description.
         /// </summary>
-        [JsonIgnore]
         public string? Description => Descriptor.Description;
 
         /// <summary>
         /// The option descriptor.
         /// </summary>
-        [JsonPropertyName("descriptor")]
         public OptionDescriptor Descriptor { get; }
 
         /// <summary>
         /// The option id.
         /// </summary>
         /// <remarks>The option id is unique with in a command.</remarks>
-        [JsonIgnore]
         public string Id => Descriptor.Id;
 
         /// <summary>
         /// The option value.
         /// </summary>
-        [JsonPropertyName("value")]
         public object Value { get; set; }
 
         /// <summary>
         /// Determines whether the option is identifier by its alias.
         /// </summary>
-        [JsonPropertyName("by_alias")]
         public bool ByAlias { get; }
 
         /// <summary>
