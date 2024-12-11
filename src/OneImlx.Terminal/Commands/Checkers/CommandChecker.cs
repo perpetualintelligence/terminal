@@ -8,7 +8,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Commands.Checkers

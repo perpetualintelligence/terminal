@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands.Handlers.Mocks;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;

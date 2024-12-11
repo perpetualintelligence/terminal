@@ -19,7 +19,6 @@ using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;

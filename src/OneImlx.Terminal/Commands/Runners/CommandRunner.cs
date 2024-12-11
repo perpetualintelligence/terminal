@@ -7,7 +7,6 @@
 
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Runners

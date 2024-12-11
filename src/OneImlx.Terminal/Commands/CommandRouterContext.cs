@@ -11,7 +11,7 @@ using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 
-namespace OneImlx.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// The generic command router context.

@@ -8,7 +8,7 @@
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Runners;
 
-namespace OneImlx.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// Represents the result of a command router.

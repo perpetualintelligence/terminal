@@ -5,8 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Routers;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks

@@ -9,7 +9,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Runtime

@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Shared.Extensions;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;

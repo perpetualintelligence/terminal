@@ -6,7 +6,6 @@
 */
 
 using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Routers;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks

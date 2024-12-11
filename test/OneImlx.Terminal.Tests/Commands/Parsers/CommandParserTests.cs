@@ -8,7 +8,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;

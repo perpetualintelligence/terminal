@@ -14,11 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using Xunit;
+using OneImlx.Terminal.Commands;
 
 namespace OneImlx.Terminal.Extensions
 {

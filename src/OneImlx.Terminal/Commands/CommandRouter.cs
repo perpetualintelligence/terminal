@@ -14,7 +14,7 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
 using OneImlx.Terminal.Licensing;
 
-namespace OneImlx.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// The default <see cref="ICommandRouter"/>.
@@ -57,7 +57,7 @@ namespace OneImlx.Terminal.Commands.Routers
             ParsedCommand? parsedCommand = null;
             try
             {
-                logger.LogDebug("Start command router. type={0} request={1}", this.GetType().Name, context.Request.Id);
+                logger.LogDebug("Start command router. type={0} request={1}", GetType().Name, context.Request.Id);
 
                 // Issue a before request event if configured
                 if (asyncEventHandler != null)

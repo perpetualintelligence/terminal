@@ -14,11 +14,11 @@ using Microsoft.Extensions.Options;
 using FluentAssertions;
 using Grpc.Core;
 using Moq;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
+using OneImlx.Terminal.Commands;
 
 namespace OneImlx.Terminal.AspNetCore
 {
@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.AspNetCore
             // Real command queue used for testing the behavior of queuing items
             var mockCommandQueue = new TerminalProcessor(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
-                Options.Create(new TerminalOptions()),
+                Microsoft.Extensions.Options.Options.Create(new TerminalOptions()),
                 new TerminalAsciiTextHandler(),
                 Mock.Of<ILogger<TerminalProcessor>>());
 

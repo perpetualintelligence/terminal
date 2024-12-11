@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OneImlx.Terminal.Client.Extensions;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System;

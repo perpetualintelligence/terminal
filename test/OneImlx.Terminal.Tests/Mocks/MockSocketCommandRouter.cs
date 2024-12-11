@@ -6,8 +6,7 @@
 */
 
 using OneImlx.Shared.Infrastructure;
-using OneImlx.Terminal.Commands.Handlers;
-using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands;
 using System;
 using System.Collections.Generic;
 using System.Threading;

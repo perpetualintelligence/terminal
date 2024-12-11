@@ -7,7 +7,6 @@
 
 using System;
 using System.Threading.Tasks;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 

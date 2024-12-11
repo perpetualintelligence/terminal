@@ -6,7 +6,6 @@
 */
 
 using System.Threading.Tasks;
-using OneImlx.Terminal.Commands.Routers;
 
 namespace OneImlx.Terminal.Commands.Handlers
 {
