@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.Licensing
         {
             if (string.IsNullOrEmpty(plan))
             {
-                throw new System.ArgumentException($"'{nameof(plan)}' cannot be null or empty.", nameof(plan));
+                throw new ArgumentException($"'{nameof(plan)}' cannot be null or empty.", nameof(plan));
             }
 
             switch (plan)

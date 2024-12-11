@@ -7,7 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using OneImlx.Shared.Extensions;
+using OneImlx.Terminal.Commands.Parsers;
+using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Routers
@@ -23,7 +24,10 @@ namespace OneImlx.Terminal.Commands.Routers
         /// <param name="request">The request to process.</param>
         /// <param name="context">The terminal routing context.</param>
         /// <param name="properties">The additional router properties.</param>
-        public CommandRouterContext(TerminalRequest request, TerminalRouterContext context, Dictionary<string, object>? properties)
+        public CommandRouterContext(
+            TerminalRequest request,
+            TerminalRouterContext context,
+            Dictionary<string, object>? properties)
         {
             TerminalContext = context ?? throw new ArgumentNullException(nameof(context));
             Properties = properties;
@@ -31,18 +35,78 @@ namespace OneImlx.Terminal.Commands.Routers
         }
 
         /// <summary>
+        /// The extracted license.
+        /// </summary>
+        public License? License { get; internal set; }
+
+        /// <summary>
+        /// The parsed command.
+        /// </summary>
+        public ParsedCommand? ParsedCommand { get; internal set; }
+
+        /// <summary>
         /// The additional router properties.
         /// </summary>
         public Dictionary<string, object>? Properties { get; }
 
         /// <summary>
-        /// The command request.
+        /// The terminal request.
         /// </summary>
         public TerminalRequest Request { get; }
+
+        /// <summary>
+        /// The result of the command execution.
+        /// </summary>
+        public CommandRouterResult? Result { get; internal set; }
 
         /// <summary>
         /// The terminal routing context.
         /// </summary>
         public TerminalRouterContext TerminalContext { get; }
+
+        /// <summary>
+        /// Ensures the license is available.
+        /// </summary>
+        /// <returns>The available license.</returns>
+        /// <exception cref="TerminalException">Thrown when the license is not available.</exception>
+        public License EnsureLicense()
+        {
+            if (License is null)
+            {
+                throw new TerminalException(TerminalErrors.ServerError, "The license is not available.");
+            }
+
+            return License;
+        }
+
+        /// <summary>
+        /// Ensures the parsed command is available.
+        /// </summary>
+        /// <returns>The available parsed command.</returns>
+        /// <exception cref="TerminalException">Thrown when the parsed command is not available.</exception>
+        public ParsedCommand EnsureParsedCommand()
+        {
+            if (ParsedCommand is null)
+            {
+                throw new TerminalException(TerminalErrors.ServerError, "The parsed command is not available.");
+            }
+
+            return ParsedCommand;
+        }
+
+        /// <summary>
+        /// Ensures the result is available.
+        /// </summary>
+        /// <returns>The available result.</returns>
+        /// <exception cref="TerminalException">Thrown when the result is not available.</exception>
+        public CommandRouterResult EnsureResult()
+        {
+            if (Result is null)
+            {
+                throw new TerminalException(TerminalErrors.ServerError, "The result is not available.");
+            }
+
+            return Result;
+        }
     }
 }

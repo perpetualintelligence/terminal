@@ -303,7 +303,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         private TerminalTcpRouter CreateTcpRouter()
         {
             return new TerminalTcpRouter(
-                Options.Create<TerminalOptions>(options),
+                Options.Create(options),
                 exceptionHandlerMock.Object,
                 terminalProcessorMock.Object,
                 textHandlerMock.Object,

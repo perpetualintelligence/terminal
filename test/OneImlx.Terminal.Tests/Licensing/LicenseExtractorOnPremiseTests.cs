@@ -5,17 +5,16 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.IO;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -223,7 +222,7 @@ namespace OneImlx.Terminal.Licensing
 
             // Check on-prem-deployment license
             licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
-            LicenseCheckerResult licResult = await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(result.License));
+            LicenseCheckerResult licResult = await licenseChecker.CheckLicenseAsync(result.License);
             licResult.Should().NotBeNull();
             licResult.CommandGroupCount.Should().Be(3);
             licResult.License.Should().BeSameAs(result.License);

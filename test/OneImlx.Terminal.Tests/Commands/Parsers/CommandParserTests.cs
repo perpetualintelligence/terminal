@@ -8,14 +8,15 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -56,11 +57,14 @@ namespace OneImlx.Terminal.Commands.Parsers
             commandStore = new TerminalInMemoryCommandStore(textHandler, commandDescriptors.Values);
 
             terminalOptions = MockTerminalOptions.NewAliasOptions();
-            var terminalIOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(terminalOptions);
+            var terminalIOptions = Microsoft.Extensions.Options.Options.Create(terminalOptions);
 
             logger = new LoggerFactory().CreateLogger<CommandParser>();
             requestParser = new TerminalRequestQueueParser(textHandler, terminalIOptions, new LoggerFactory().CreateLogger<TerminalRequestQueueParser>());
             parser = new CommandParser(requestParser, textHandler, commandStore, terminalIOptions, logger);
+
+            startContext = new TerminalStartContext(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None, null, null);
+            terminalContext = new Mock<TerminalCustomRouterContext>(startContext).Object;
         }
 
         [Fact]
@@ -69,49 +73,69 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionPrefix = '-';
             terminalOptions.Parser.OptionValueSeparator = ' ';
 
-            var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 arg1 arg2 --opt1 val1 --opt2 23 -o3 -o4 36.69")));
-            result.ParsedCommand.Should().NotBeNull();
-            result.ParsedCommand.Command.Id.Should().Be("cmd2");
+            TerminalRequest request = new("id1", "root2 grp2 cmd2 arg1 arg2 --opt1 val1 --opt2 23 -o3 -o4 36.69");
+            CommandRouterContext context = new(request, terminalContext, null);
+            await parser.ParseCommandAsync(context);
+            context.ParsedCommand.Should().NotBeNull();
+            context.ParsedCommand!.Command.Id.Should().Be("cmd2");
 
-            result.ParsedCommand.Hierarchy.Should().NotBeNull();
-            result.ParsedCommand.Hierarchy.Should().HaveCount(2);
-            result.ParsedCommand.Hierarchy!.ElementAt(0).Id.Should().Be("root2");
-            result.ParsedCommand.Hierarchy!.ElementAt(1).Id.Should().Be("grp2");
+            context.ParsedCommand.Hierarchy.Should().NotBeNull();
+            context.ParsedCommand.Hierarchy.Should().HaveCount(2);
+            context.ParsedCommand.Hierarchy!.ElementAt(0).Id.Should().Be("root2");
+            context.ParsedCommand.Hierarchy!.ElementAt(1).Id.Should().Be("grp2");
 
-            result.ParsedCommand.Command.Arguments.Should().HaveCount(2);
-            result.ParsedCommand.Command.Arguments![0].Id.Should().Be("arg1");
-            result.ParsedCommand.Command.Arguments[1].Id.Should().Be("arg2");
+            context.ParsedCommand.Command.Arguments.Should().HaveCount(2);
+            context.ParsedCommand.Command.Arguments![0].Id.Should().Be("arg1");
+            context.ParsedCommand.Command.Arguments[1].Id.Should().Be("arg2");
 
-            result.ParsedCommand.Command.Options.Should().HaveCount(6);
-            result.ParsedCommand.Command.Options!["opt1"].Value.Should().Be("val1");
-            result.ParsedCommand.Command.Options["opt1"].ByAlias.Should().BeFalse();
+            context.ParsedCommand.Command.Options.Should().HaveCount(6);
+            context.ParsedCommand.Command.Options!["opt1"].Value.Should().Be("val1");
+            context.ParsedCommand.Command.Options["opt1"].ByAlias.Should().BeFalse();
 
-            result.ParsedCommand.Command.Options["opt2"].Value.Should().Be("23");
-            result.ParsedCommand.Command.Options["opt2"].ByAlias.Should().BeFalse();
+            context.ParsedCommand.Command.Options["opt2"].Value.Should().Be("23");
+            context.ParsedCommand.Command.Options["opt2"].ByAlias.Should().BeFalse();
 
-            result.ParsedCommand.Command.Options["opt3"].Value.Should().Be("True");
-            result.ParsedCommand.Command.Options["opt3"].ByAlias.Should().BeTrue();
+            context.ParsedCommand.Command.Options["opt3"].Value.Should().Be("True");
+            context.ParsedCommand.Command.Options["opt3"].ByAlias.Should().BeTrue();
 
-            result.ParsedCommand.Command.Options["opt4"].Value.Should().Be("36.69");
-            result.ParsedCommand.Command.Options["opt4"].ByAlias.Should().BeTrue();
+            context.ParsedCommand.Command.Options["opt4"].Value.Should().Be("36.69");
+            context.ParsedCommand.Command.Options["opt4"].ByAlias.Should().BeTrue();
 
-            result.ParsedCommand.Command.Options["o3"].Value.Should().Be("True");
-            result.ParsedCommand.Command.Options["o3"].ByAlias.Should().BeTrue();
+            context.ParsedCommand.Command.Options["o3"].Value.Should().Be("True");
+            context.ParsedCommand.Command.Options["o3"].ByAlias.Should().BeTrue();
 
-            result.ParsedCommand.Command.Options["o4"].Value.Should().Be("36.69");
-            result.ParsedCommand.Command.Options["o4"].ByAlias.Should().BeTrue();
+            context.ParsedCommand.Command.Options["o4"].Value.Should().Be("36.69");
+            context.ParsedCommand.Command.Options["o4"].ByAlias.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Hiearchy_Null_For_Root()
+        {
+            TerminalRequest request = new(Guid.NewGuid().ToString(), "root1");
+            CommandRouterContext context = new(request, terminalContext, null);
+            await parser.ParseCommandAsync(context);
+            context.Should().NotBeNull();
+
+            context.ParsedCommand.Should().NotBeNull();
+            context.ParsedCommand!.Command.Id.Should().Be("root1");
+            context.ParsedCommand.Hierarchy.Should().BeNull();
         }
 
         [Fact]
         public async Task No_Options_Processes_Correctly()
         {
-            var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root1 grp1 arg1 arg2")));
-            result.ParsedCommand.Should().NotBeNull();
-            result.ParsedCommand.Command.Id.Should().Be("grp1");
-            result.ParsedCommand.Command.Arguments.Should().HaveCount(2);
-            result.ParsedCommand.Command.Arguments![0].Id.Should().Be("arg1");
-            result.ParsedCommand.Command.Arguments[1].Id.Should().Be("arg2");
-            result.ParsedCommand.Command.Options.Should().BeNull();
+            terminalOptions.Parser.OptionPrefix = '-';
+            terminalOptions.Parser.OptionValueSeparator = ' ';
+
+            TerminalRequest request = new("id1", "root1 grp1 arg1 arg2");
+            CommandRouterContext context = new(request, terminalContext, null);
+            await parser.ParseCommandAsync(context);
+            context.ParsedCommand.Should().NotBeNull();
+            context.ParsedCommand!.Command.Id.Should().Be("grp1");
+            context.ParsedCommand.Command.Arguments.Should().HaveCount(2);
+            context.ParsedCommand.Command.Arguments![0].Id.Should().Be("arg1");
+            context.ParsedCommand.Command.Arguments[1].Id.Should().Be("arg2");
+            context.ParsedCommand.Command.Options.Should().BeNull();
         }
 
         [Fact]
@@ -120,66 +144,48 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionPrefix = '-';
             terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
 
-            Dictionary<string, ValueTuple<string, bool>> options = new()
-            {
-                ["opt1"] = new("val1", false),
-                ["opt2"] = new(23.ToString(), false),
-                ["opt3"] = new(true.ToString(), false),
-                ["opt4"] = new(36.69.ToString(), false)
-            };
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --opt2 23 --opt3 --opt4 36.69"), terminalContext, null);
+            await parser.ParseCommandAsync(context);
+            context.ParsedCommand.Should().NotBeNull();
+            context.ParsedCommand!.Command.Id.Should().Be("cmd2");
+            context.ParsedCommand.Command.Arguments.Should().BeNull();
 
-            var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --opt2 23 --opt3 --opt4 36.69")));
-            result.ParsedCommand.Should().NotBeNull();
-            result.ParsedCommand.Command.Id.Should().Be("cmd2");
-            result.ParsedCommand.Command.Arguments.Should().BeNull();
+            context.ParsedCommand.Command.Options.Should().HaveCount(6);
+            context.ParsedCommand.Command.Options!["opt1"].Value.Should().Be("val1");
+            context.ParsedCommand.Command.Options["opt2"].Value.Should().Be("23");
+            context.ParsedCommand.Command.Options["opt3"].Value.Should().Be("True");
+            context.ParsedCommand.Command.Options["opt4"].Value.Should().Be("36.69");
 
-            result.ParsedCommand.Command.Options.Should().HaveCount(6);
-            result.ParsedCommand.Command.Options!["opt1"].Value.Should().Be("val1");
-            result.ParsedCommand.Command.Options["opt2"].Value.Should().Be("23");
-            result.ParsedCommand.Command.Options["opt3"].Value.Should().Be("True");
-            result.ParsedCommand.Command.Options["opt4"].Value.Should().Be("36.69");
-
-            result.ParsedCommand.Command.Options["o3"].Value.Should().Be("True");
-            result.ParsedCommand.Command.Options["o4"].Value.Should().Be("36.69");
-        }
-
-        [Fact]
-        public async Task Request_Is_Set_In_Result()
-        {
-            TerminalRequest request = new(Guid.NewGuid().ToString(), "root1");
-            var result = await parser.ParseCommandAsync(new(request));
-            result.Should().NotBeNull();
-
-            result.ParsedCommand.Should().NotBeNull();
-            result.ParsedCommand.Command.Id.Should().Be("root1");
-            result.ParsedCommand.Hierarchy.Should().BeNull();
-            result.ParsedCommand.Request.Should().BeSameAs(request);
+            context.ParsedCommand.Command.Options["o3"].Value.Should().Be("True");
+            context.ParsedCommand.Command.Options["o4"].Value.Should().Be("36.69");
         }
 
         [Fact]
         public async Task Root_Processed_Correctly()
         {
-            var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2")));
-            result.ParsedCommand.Should().NotBeNull();
-            result.ParsedCommand.Command.Id.Should().Be("root2");
-            result.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Root);
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root2"), terminalContext, null);
+            await parser.ParseCommandAsync(context);
+            context.ParsedCommand.Should().NotBeNull();
+            context.ParsedCommand!.Command.Id.Should().Be("root2");
+            context.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Root);
 
-            result.ParsedCommand.Hierarchy.Should().BeNull();
-            result.ParsedCommand.Command.Arguments.Should().BeNull();
-            result.ParsedCommand.Command.Options.Should().BeNull();
+            context.ParsedCommand.Hierarchy.Should().BeNull();
+            context.ParsedCommand.Command.Arguments.Should().BeNull();
+            context.ParsedCommand.Command.Options.Should().BeNull();
         }
 
         [Fact]
         public async Task Single_Non_Root_Processed_Correctly()
         {
-            var result = await parser.ParseCommandAsync(new(new TerminalRequest("id1", "cmd_nr1")));
-            result.ParsedCommand.Should().NotBeNull();
-            result.ParsedCommand.Command.Id.Should().Be("cmd_nr1");
-            result.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
+            var context = new CommandRouterContext(new TerminalRequest("id1", "cmd_nr1"), terminalContext, null);
+            await parser.ParseCommandAsync(context);
+            context.ParsedCommand.Should().NotBeNull();
+            context.ParsedCommand!.Command.Id.Should().Be("cmd_nr1");
+            context.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.SubCommand);
 
-            result.ParsedCommand.Hierarchy.Should().BeNull();
-            result.ParsedCommand.Command.Arguments.Should().BeNull();
-            result.ParsedCommand.Command.Options.Should().BeNull();
+            context.ParsedCommand.Hierarchy.Should().BeNull();
+            context.ParsedCommand.Command.Arguments.Should().BeNull();
+            context.ParsedCommand.Command.Options.Should().BeNull();
         }
 
         [Fact]
@@ -188,7 +194,8 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionPrefix = '-';
             terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
 
-            Func<Task> act = async () => await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --opt2 23 -opt3 --opt4 36.69")));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --opt2 23 -opt3 --opt4 36.69"), terminalContext, null);
+            Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_option")
                 .WithErrorDescription("The alias prefix is not valid for an option. alias=o3 option=opt3");
@@ -197,7 +204,10 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Arguments_Found_Without_Command()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "arg1 arg2 arg3"));
+            terminalOptions.Parser.OptionPrefix = '-';
+            terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
+
+            var context = new CommandRouterContext(new TerminalRequest("id1", "arg1 arg2 arg3"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("missing_command")
@@ -207,7 +217,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Command_Does_Not_Define_An_Owner()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "root1 root2 grp2"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root1 root2 grp2"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_command")
@@ -229,10 +239,10 @@ namespace OneImlx.Terminal.Commands.Parsers
             storeMock.Setup(x => x.TryFindByIdAsync(It.IsAny<string>(), out commandDescriptor))
                      .ReturnsAsync(true);
 
-            var iOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(terminalOptions);
+            var iOptions = Microsoft.Extensions.Options.Options.Create(terminalOptions);
             parser = new CommandParser(parserMock.Object, textHandler, storeMock.Object, iOptions, logger);
 
-            var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 cmd1"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root1 grp1 cmd1"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_command")
@@ -242,7 +252,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Command_Is_Present_In_Arguments()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 arg1 cmd1"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root1 grp1 arg1 cmd1"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_argument")
@@ -252,7 +262,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Commands_Are_Duplicated()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 cmd1 cmd1"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root1 grp1 cmd1 cmd1"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_command")
@@ -262,7 +272,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_More_Than_Supported_Arguments()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 arg1 arg2 arg3"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root1 grp1 arg1 arg2 arg3"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("unsupported_argument")
@@ -272,7 +282,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_No_Root_Is_Not_Specified()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "grp1 cmd1 cmd1"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "grp1 cmd1 cmd1"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("missing_command")
@@ -285,7 +295,8 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionPrefix = '-';
             terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
 
-            Func<Task> act = async () => await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --invalid_opt1 23 --opt3 --opt4 36.69")));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --invalid_opt1 23 --opt3 --opt4 36.69"), terminalContext, null);
+            Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("unsupported_option")
                 .WithErrorDescription("The command does not support option or its alias. command=cmd2 option=invalid_opt1");
@@ -297,7 +308,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             terminalOptions.Parser.OptionPrefix = '-';
             terminalOptions.Parser.OptionValueSeparator = TerminalIdentifiers.SpaceSeparator;
 
-            Func<Task> act = async () => await parser.ParseCommandAsync(new(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --opt2 23 --o3 --opt4 36.69")));
+            Func<Task> act = async () => await parser.ParseCommandAsync(new CommandRouterContext(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 val1 --opt2 23 --o3 --opt4 36.69"), terminalContext, null));
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_option")
                 .WithErrorDescription("The option prefix is not valid for an alias. option=opt3 alias=o3");
@@ -306,7 +317,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Owner_Is_Invalid()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "root2 grp1 cmd1"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root2 grp1 cmd1"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_command")
@@ -316,7 +327,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Owner_Is_Missing()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "grp1 cmd1"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "grp1 cmd1"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("missing_command")
@@ -326,13 +337,15 @@ namespace OneImlx.Terminal.Commands.Parsers
         [Fact]
         public async Task Throws_If_Unsupported_Arguments()
         {
-            var context = new CommandParserContext(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2"));
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2"), terminalContext, null);
             Func<Task> act = async () => await parser.ParseCommandAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("unsupported_argument")
                 .WithErrorDescription("The command does not support arguments. command=cmd1");
         }
 
+        public readonly TerminalStartContext startContext;
+        public readonly TerminalRouterContext terminalContext;
         private readonly CommandDescriptors commandDescriptors;
         private readonly ITerminalCommandStore commandStore;
         private readonly ILogger<CommandParser> logger;

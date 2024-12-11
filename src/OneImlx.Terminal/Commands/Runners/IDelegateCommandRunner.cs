@@ -6,6 +6,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
@@ -21,21 +22,21 @@ namespace OneImlx.Terminal.Commands.Runners
     public interface IDelegateCommandRunner
     {
         /// <summary>
-        /// Delegates to <see cref="ICommandRunner{TResult}.RunCommandAsync(CommandRunnerContext)"/> asynchronously.
+        /// Delegates to <see cref="ICommandRunner{TResult}.RunCommandAsync(CommandRouterContext)"/> asynchronously.
         /// </summary>
         /// <param name="context">The runner context.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>The runner result.</returns>
 
-        Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context, ILogger? logger = null);
+        Task<CommandRunnerResult> DelegateRunAsync(CommandRouterContext context, ILogger? logger = null);
 
         /// <summary>
-        /// Delegates to <see cref="ICommandRunner{TResult}.RunHelpAsync(CommandRunnerContext)"/> asynchronously.
+        /// Delegates to <see cref="ICommandRunner{TResult}.RunHelpAsync(CommandRouterContext)"/> asynchronously.
         /// </summary>
         /// <param name="context">The runner context.</param>
         /// <param name="helpProvider">The help provider.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>The runner result.</returns>
-        Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null);
+        Task<CommandRunnerResult> DelegateHelpAsync(CommandRouterContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null);
     }
 }

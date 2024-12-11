@@ -1,12 +1,13 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Runners;
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands.Runners;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
@@ -16,7 +17,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
 
         public bool ThrowException { get; set; }
 
-        public override Task<MockGenericCommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override Task<MockGenericCommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
             Called = true;
 

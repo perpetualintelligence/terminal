@@ -74,7 +74,7 @@ namespace OneImlx.Terminal.Mocks
                     throw new TerminalException(explicitError);
                 }
 
-                ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), context.Request);
+                ReturnedRouterResult = new CommandRouterResult();
 
                 return ReturnedRouterResult;
             }

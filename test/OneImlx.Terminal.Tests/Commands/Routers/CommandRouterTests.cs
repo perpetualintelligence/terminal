@@ -5,16 +5,16 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Terminal.Commands.Routers.Mocks;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Routers
@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Commands.Routers
         [Fact]
         public async Task ExtractorErrorShouldNotRouteFurtherAsync()
         {
-            commandParser.IsExplicitError = true;
+            commandParser.SetExplicitError = true;
 
             CommandRouterContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
             Func<Task> func = async () => await commandRouter.RouteCommandAsync(routerContext);
@@ -43,20 +43,7 @@ namespace OneImlx.Terminal.Commands.Routers
         [Fact]
         public async Task ExtractorNoExtractedCommandDescriptorShouldNotRouteFurtherAsync()
         {
-            commandParser.IsExplicitNoCommandDescriptor = true;
-
-            CommandRouterContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
-
-            Func<Task> act = async () => await commandRouter.RouteCommandAsync(routerContext);
-            await act.Should().ThrowAsync<ArgumentException>();
-            commandParser.Called.Should().BeTrue();
-            commandHandler.Called.Should().BeFalse();
-        }
-
-        [Fact]
-        public async Task ExtractorNoExtractedCommandShouldNotRouteFurtherAsync()
-        {
-            commandParser.IsExplicitNoExtractedCommand = true;
+            commandParser.DoNotSetCommandDescriptor = true;
 
             CommandRouterContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
 
@@ -97,21 +84,53 @@ namespace OneImlx.Terminal.Commands.Routers
         }
 
         [Fact]
-        public async Task RouterShouldCallExtractorAsync()
+        public async Task ParserFails_But_Invokes_Handler()
         {
+            commandParser.DoNotSetParsedCommand = true;
+
+            commandParser.Called.Should().BeFalse();
+            commandHandler.Called.Should().BeFalse();
+
             CommandRouterContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
-            await commandRouter.RouteCommandAsync(routerContext);
+
+            routerContext.ParsedCommand.Should().BeNull();
+            var result = await commandRouter.RouteCommandAsync(routerContext);
+            routerContext.ParsedCommand.Should().BeNull();
+
             commandParser.Called.Should().BeTrue();
+            commandHandler.Called.Should().BeTrue();
         }
 
         [Fact]
-        public async Task RouterShouldCallHandlerAfterExtractorAsync()
+        public async Task Router_Calls_Parser_And_Handler()
         {
+            commandParser.Called.Should().BeFalse();
+            commandHandler.Called.Should().BeFalse();
+
             CommandRouterContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
             await commandRouter.RouteCommandAsync(routerContext); ;
 
             commandParser.Called.Should().BeTrue();
+            commandParser.PassedContext.Should().BeSameAs(routerContext);
+
             commandHandler.Called.Should().BeTrue();
+            commandHandler.PassedContext.Should().BeSameAs(routerContext);
+        }
+
+        [Fact]
+        public async Task Router_Passes_Updated_Context_From_Parser_To_Handler()
+        {
+            commandHandler.PassedContext.Should().BeNull();
+
+            CommandRouterContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
+            routerContext.ParsedCommand.Should().BeNull();
+            await commandRouter.RouteCommandAsync(routerContext);
+
+            // These values coming from mock
+            commandHandler.PassedContext.Should().NotBeNull();
+            commandHandler.PassedContext!.ParsedCommand.Should().NotBeNull();
+            commandHandler.PassedContext.ParsedCommand!.Command.Descriptor.Id.Should().Be("test_id");
+            commandHandler.PassedContext.ParsedCommand.Command.Descriptor.Name.Should().Be("test_name");
         }
 
         [Fact]
@@ -128,26 +147,21 @@ namespace OneImlx.Terminal.Commands.Routers
         }
 
         [Fact]
-        public async Task RouterShouldPassExtractorCommandToHandlerAsync()
-        {
-            CommandRouterContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
-            await commandRouter.RouteCommandAsync(routerContext);
-
-            commandHandler.ContextCalled.Should().NotBeNull();
-            commandHandler.ContextCalled!.ParsedCommand.Command.Descriptor.Id.Should().Be("test_id");
-            commandHandler.ContextCalled.ParsedCommand.Command.Descriptor.Name.Should().Be("test_name");
-        }
-
-        [Fact]
-        public async Task RouterShouldPassLicenseToHandler()
+        public async Task Router_Passed_License_To_Handler()
         {
             licenseExtractor.NoLicense = false;
 
             CommandRouterContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
-            await commandRouter.RouteCommandAsync(routerContext);
 
-            commandHandler.ContextCalled.Should().NotBeNull();
-            licenseExtractor.TestLicense.Should().BeSameAs(commandHandler.ContextCalled!.License);
+            routerContext.License.Should().BeNull();
+            await commandRouter.RouteCommandAsync(routerContext);
+            routerContext.License.Should().NotBeNull();
+
+            licenseExtractor.TestLicense.Should().BeSameAs(commandHandler.PassedContext!.License);
+
+            commandHandler.PassedContext.Should().NotBeNull();
+            commandHandler.PassedContext.Should().BeSameAs(routerContext);
+
             commandParser.Called.Should().BeTrue();
             commandHandler.Called.Should().BeTrue();
         }
@@ -197,7 +211,7 @@ namespace OneImlx.Terminal.Commands.Routers
             eventHandler.BeforeRouteCalled.Should().BeFalse();
             eventHandler.AfterRouteCalled.Should().BeFalse();
 
-            commandParser.IsExplicitError = true;
+            commandParser.SetExplicitError = true;
 
             try
             {

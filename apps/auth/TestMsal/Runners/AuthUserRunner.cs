@@ -52,7 +52,7 @@ namespace OneImlx.Terminal.Apps.TestAuth.Runners
                 Microsoft.Graph.Models.User? user = await graphServiceClient.Me.GetAsync();
                 if (user == null)
                 {
-                    throw new System.Exception("User not found.");
+                    throw new Exception("User not found.");
                 }
 
                 await _terminalConsole.WriteLineAsync($"User information:");

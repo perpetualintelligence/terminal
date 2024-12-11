@@ -1,17 +1,17 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Stores;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Stores;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -35,26 +35,21 @@ namespace OneImlx.Terminal.Licensing
         /// </summary>
         public bool Initialized { get => initialized; }
 
-        /// <summary>
-        /// Checks the licensing context.
-        /// </summary>
-        /// <param name="context">The licensing context.</param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public async Task<LicenseCheckerResult> CheckLicenseAsync(LicenseCheckerContext context)
+        /// <inheritdoc/>
+        public async Task<LicenseCheckerResult> CheckLicenseAsync(License license)
         {
-            logger.LogDebug("Check license. plan={0} usage={1} subject={2} tenant={3}", context.License.Plan, context.License.Usage, context.License.Claims.Subject, context.License.Claims.TenantId);
+            logger.LogDebug("Check license. plan={0} usage={1} subject={2} tenant={3}", license.Plan, license.Usage, license.Claims.Subject, license.Claims.TenantId);
 
             // Initialize if needed
-            await InitializeLockAsync(context.License);
+            await InitializeLockAsync(license);
 
             // Check Limits
-            await CheckLimitsAsync(context);
+            await CheckLimitsAsync(license);
 
             // Check Options
-            await CheckOptionsAsync(context);
+            await CheckOptionsAsync(license);
 
-            return new LicenseCheckerResult(context.License)
+            return new LicenseCheckerResult(license)
             {
                 TerminalCount = terminalCount,
                 RootCommandCount = rootCommandCount,
@@ -64,50 +59,50 @@ namespace OneImlx.Terminal.Licensing
             };
         }
 
-        private Task<License> CheckLimitsAsync(LicenseCheckerContext context)
+        private Task<License> CheckLimitsAsync(License license)
         {
             // Terminal limit
-            if (terminalCount > context.License.Limits.TerminalLimit)
+            if (terminalCount > license.Limits.TerminalLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit={0} current={1}", context.License.Limits.TerminalLimit, terminalCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit={0} current={1}", license.Limits.TerminalLimit, terminalCount);
             }
 
             // Redistribution limit TODO, how do we check redistribution in a native bounded context
 
             // Root command limit
-            if (rootCommandCount > context.License.Limits.RootCommandLimit)
+            if (rootCommandCount > license.Limits.RootCommandLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The root command limit exceeded. max_limit={0} current={1}", context.License.Limits.RootCommandLimit, rootCommandCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The root command limit exceeded. max_limit={0} current={1}", license.Limits.RootCommandLimit, rootCommandCount);
             }
 
             // grouped command limit
-            if (commandGroupCount > context.License.Limits.GroupedCommandLimit)
+            if (commandGroupCount > license.Limits.GroupedCommandLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The grouped command limit exceeded. max_limit={0} current={1}", context.License.Limits.GroupedCommandLimit, commandGroupCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The grouped command limit exceeded. max_limit={0} current={1}", license.Limits.GroupedCommandLimit, commandGroupCount);
             }
 
             // grouped command limit
-            if (subCommandCount > context.License.Limits.SubCommandLimit)
+            if (subCommandCount > license.Limits.SubCommandLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit={0} current={1}", context.License.Limits.SubCommandLimit, subCommandCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit={0} current={1}", license.Limits.SubCommandLimit, subCommandCount);
             }
 
             // Option limit
-            if (optionCount > context.License.Limits.OptionLimit)
+            if (optionCount > license.Limits.OptionLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", context.License.Limits.OptionLimit, optionCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", license.Limits.OptionLimit, optionCount);
             }
 
             // We have found a valid license within limit so reset the previous failed and return.
-            return Task.FromResult(context.License);
+            return Task.FromResult(license);
         }
 
-        private Task CheckOptionsAsync(LicenseCheckerContext context)
+        private Task CheckOptionsAsync(License license)
         {
             // Follow the pricing http://localhost:8080/articles/pi-cli/pricing.html We drive all customization through
             // options and the License sets the allowed options. So here we don't need to check the license plan, just
             // check the options value with license value.
-            LicenseLimits limits = context.License.Limits;
+            LicenseLimits limits = license.Limits;
 
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictValueType))
@@ -120,7 +115,6 @@ namespace OneImlx.Terminal.Licensing
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The configured terminal authentication is not allowed for your license plan.");
             }
-
 
             return Task.CompletedTask;
         }
@@ -212,13 +206,13 @@ namespace OneImlx.Terminal.Licensing
             return true;
         }
 
-        private readonly TerminalOptions terminalOptions;
         private readonly ITerminalCommandStore commandStore;
         private readonly ILogger<LicenseChecker> logger;
-        private long optionCount;
+        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+        private readonly TerminalOptions terminalOptions;
         private long commandGroupCount;
         private bool initialized;
-        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+        private long optionCount;
         private long rootCommandCount;
         private long subCommandCount;
         private int terminalCount;

@@ -22,10 +22,10 @@ namespace OneImlx.Terminal.Hosting.Mocks
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<LicenseCheckerResult> CheckLicenseAsync(LicenseCheckerContext context)
+        public Task<LicenseCheckerResult> CheckLicenseAsync(License license)
         {
             CheckLicenseCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
-            return Task.FromResult(new LicenseCheckerResult(MockLicenses.TestLicense));
+            return Task.FromResult(new LicenseCheckerResult(license));
         }
     }
 }

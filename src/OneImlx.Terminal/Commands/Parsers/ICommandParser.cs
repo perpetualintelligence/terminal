@@ -6,6 +6,7 @@
 */
 
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands.Routers;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
@@ -18,7 +19,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// Extracts <see cref="Command"/> asynchronously.
         /// </summary>
         /// <param name="context">The option extraction context.</param>
-        /// <returns>The <see cref="CommandParserResult"/> instance.</returns>
-        public Task<CommandParserResult> ParseCommandAsync(CommandParserContext context);
+        public Task ParseCommandAsync(CommandRouterContext context);
     }
 }

@@ -6,6 +6,7 @@
 */
 
 using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Routers;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks
@@ -16,7 +17,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
 
         public bool Called { get; private set; }
 
-        public Task<CommandCheckerResult> CheckCommandAsync(CommandCheckerContext context)
+        public Task<CommandCheckerResult> CheckCommandAsync(CommandRouterContext context)
         {
             Called = true;
 

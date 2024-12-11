@@ -7,6 +7,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Runners
@@ -19,29 +20,29 @@ namespace OneImlx.Terminal.Commands.Runners
     public abstract class CommandRunner<TResult> : IDelegateCommandRunner, ICommandRunner<TResult> where TResult : CommandRunnerResult
     {
         /// <inheritdoc/>
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRouterContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
             this.helpProvider = helpProvider;
 
             this.logger = logger;
-            logger?.LogDebug("Run help. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
+            logger?.LogDebug("Run help. command={0}", context.EnsureParsedCommand().Command.Id);
 
             await RunHelpAsync(context);
             return new CommandRunnerResult();
         }
 
         /// <inheritdoc/>
-        public async Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateRunAsync(CommandRouterContext context, ILogger? logger = null)
         {
             this.logger = logger;
-            logger?.LogDebug("Run command. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
+            logger?.LogDebug("Run command. command={0}", context.EnsureParsedCommand().Command.Id);
 
             var result = await RunCommandAsync(context);
             return (CommandRunnerResult)(object)result;
         }
 
         /// <inheritdoc/>
-        public abstract Task<TResult> RunCommandAsync(CommandRunnerContext context);
+        public abstract Task<TResult> RunCommandAsync(CommandRouterContext context);
 
         /// <summary>
         /// Runs the command help asynchronously.
@@ -49,14 +50,14 @@ namespace OneImlx.Terminal.Commands.Runners
         /// <param name="context">The command context.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task RunHelpAsync(CommandRunnerContext context)
+        public virtual Task RunHelpAsync(CommandRouterContext context)
         {
             if (helpProvider == null)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The help provider is missing in the configured services.");
             }
 
-            return helpProvider.ProvideHelpAsync(new TerminalHelpProviderContext(context.HandlerContext.ParsedCommand.Command));
+            return helpProvider.ProvideHelpAsync(new TerminalHelpProviderContext(context.EnsureParsedCommand().Command));
         }
 
         private ITerminalHelpProvider? helpProvider;

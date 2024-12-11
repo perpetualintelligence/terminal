@@ -36,10 +36,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             terminalEventHandler.AfterCheckCalled.Should().Be(false);
 
             TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             terminalEventHandler.BeforeCheckCalled.Should().Be(true);
             terminalEventHandler.AfterCheckCalled.Should().Be(true);
@@ -55,10 +56,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             terminalEventHandler.AfterRunCalled.Should().Be(false);
 
             TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             terminalEventHandler.BeforeRunCalled.Should().Be(true);
             terminalEventHandler.AfterRunCalled.Should().Be(true);
@@ -71,10 +73,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             commandRuntime.ReturnThisChecker = new MockErrorCommandCheckerInner();
 
             TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            Func<Task> func = () => handler.HandleCommandAsync(routerContext);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_checker_error").WithErrorDescription("test_checker_error_desc");
         }
 
@@ -97,10 +100,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             try
             {
                 TerminalRequest request = new("test_id", "test_raw");
-                ParsedCommand extractedCommand = new(request, command.Item2, null);
+                ParsedCommand extractedCommand = new(command.Item2, null);
+                routerContext.License = license;
+                routerContext.ParsedCommand = extractedCommand;
 
-                CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-                var result = await handler.HandleCommandAsync(commandContext);
+                await handler.HandleCommandAsync(routerContext);
             }
             catch (TerminalException eex)
             {
@@ -129,10 +133,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             try
             {
                 TerminalRequest request = new("test_id", "test_raw");
-                ParsedCommand extractedCommand = new(request, command.Item2, null);
+                ParsedCommand extractedCommand = new(command.Item2, null);
+                routerContext.License = license;
+                routerContext.ParsedCommand = extractedCommand;
 
-                CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-                var result = await handler.HandleCommandAsync(commandContext);
+                await handler.HandleCommandAsync(routerContext);
             }
             catch (TerminalException eex)
             {
@@ -154,13 +159,14 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
-            result.CheckerResult.Should().BeOfType<MockCommandCheckerInnerResult>();
-            result.RunnerResult.Should().BeOfType<MockCommandRunnerInnerResult>();
+            routerContext.EnsureResult().EnsureCheckerResult().Should().BeOfType<MockCommandCheckerInnerResult>();
+            routerContext.EnsureResult().EnsureRunnerResult().Should().BeOfType<MockCommandRunnerInnerResult>();
         }
 
         [Fact]
@@ -172,14 +178,14 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
-            result.CheckerResult.Should().BeOfType<MockCommandCheckerInnerResult>();
-            result.RunnerResult.Should().BeOfType<MockCommandRunnerInnerResult>();
+            routerContext.EnsureResult().EnsureCheckerResult().Should().BeOfType<MockCommandCheckerInnerResult>();
+            routerContext.EnsureResult().EnsureRunnerResult().Should().BeOfType<MockCommandRunnerInnerResult>();
         }
 
         [Fact]
@@ -188,15 +194,17 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
+            routerContext.Result.Should().BeNull();
+            await handler.HandleCommandAsync(routerContext);
+
+            CommandRouterResult? result = routerContext.Result;
             result.Should().NotBeNull();
-            result.Should().BeOfType<CommandHandlerResult>();
 
-            result.CheckerResult.Should().NotBeNull();
+            result!.CheckerResult.Should().NotBeNull();
             result.CheckerResult.Should().BeOfType<MockCommandCheckerInnerResult>();
 
             result.RunnerResult.Should().NotBeNull();
@@ -209,17 +217,19 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockGenericCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
             commandRuntime.ReturnThisRunner = new MockGenericCommandRunnerInner();
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
-            result.Should().NotBeNull();
-            result.Should().BeOfType<CommandHandlerResult>();
+            routerContext.Result.Should().BeNull();
+            await handler.HandleCommandAsync(routerContext);
 
-            result.RunnerResult.Should().NotBeNull();
+            CommandRouterResult? result = routerContext.Result;
+            result.Should().NotBeNull();
+
+            result!.RunnerResult.Should().NotBeNull();
             result.RunnerResult.Should().BeOfType<MockGenericCommandRunnerResult>();
         }
 
@@ -229,15 +239,17 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
+            routerContext.Result.Should().BeNull();
+            await handler.HandleCommandAsync(routerContext);
+
+            CommandRouterResult? result = routerContext.Result;
             result.Should().NotBeNull();
-            result.Should().BeOfType<CommandHandlerResult>();
 
-            result.RunnerResult.Should().NotBeNull();
+            result!.RunnerResult.Should().NotBeNull();
             result.RunnerResult.Should().BeOfType<MockCommandRunnerInnerResult>();
         }
 
@@ -250,11 +262,11 @@ namespace OneImlx.Terminal.Commands.Handlers
 
             commandRuntime.ReturnThisRunner = new MockErrorCommandRunnerInner();
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, helpIdCommand.Item2, null);
+            ParsedCommand extractedCommand = new(helpIdCommand.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            Func<Task> func = () => handler.HandleCommandAsync(routerContext);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_runner_help_error").WithErrorDescription("test_runner_help_error_desc");
         }
 
@@ -264,13 +276,14 @@ namespace OneImlx.Terminal.Commands.Handlers
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpIdCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, helpIdCommand.Item2, null);
+            ParsedCommand extractedCommand = new(helpIdCommand.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            var result = await handler.HandleCommandAsync(commandContext);
+            routerContext.Result.Should().BeNull();
+            await handler.HandleCommandAsync(routerContext);
 
-            result.RunnerResult.Should().NotBeNull();
+            routerContext.EnsureResult().RunnerResult.Should().NotBeNull();
         }
 
         [Fact]
@@ -279,14 +292,14 @@ namespace OneImlx.Terminal.Commands.Handlers
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpIdCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, helpIdCommand.Item2, null);
+            ParsedCommand extractedCommand = new(helpIdCommand.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
             MockCommandRunnerInner runner = new();
             commandRuntime.ReturnThisRunner = runner;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             // Resolve checker not called for Help
             commandRuntime.ResolveCheckerCalled.Should().BeFalse();
@@ -312,11 +325,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpIdCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, helpIdCommand.Item2, null);
+            ParsedCommand extractedCommand = new(helpIdCommand.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             terminalHelpProvider.HelpCalled.Should().BeFalse();
         }
@@ -327,11 +340,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             terminalHelpProvider.HelpCalled.Should().BeFalse();
         }
@@ -377,14 +390,14 @@ namespace OneImlx.Terminal.Commands.Handlers
             helpAliasCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpAliasCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, helpAliasCommand.Item2, null);
+            ParsedCommand extractedCommand = new(helpAliasCommand.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
             MockCommandCheckerInner checker = new();
             commandRuntime.ReturnThisChecker = checker;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             terminalHelpProvider.HelpCalled.Should().BeTrue();
             checker.Called.Should().BeFalse();
@@ -396,14 +409,14 @@ namespace OneImlx.Terminal.Commands.Handlers
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpIdCommand.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, helpIdCommand.Item2, null);
+            ParsedCommand extractedCommand = new(helpIdCommand.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
             MockCommandCheckerInner checker = new();
             commandRuntime.ReturnThisChecker = checker;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             terminalHelpProvider.HelpCalled.Should().BeTrue();
             checker.Called.Should().BeFalse();
@@ -416,13 +429,13 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockErrorCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
             commandRuntime.ReturnThisRunner = new MockErrorCommandRunnerInner();
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            Func<Task> func = () => handler.HandleCommandAsync(commandContext);
+            Func<Task> func = () => handler.HandleCommandAsync(routerContext);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_runner_error").WithErrorDescription("test_runner_error_desc");
         }
 
@@ -432,11 +445,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             commandRuntime.ResolveCheckerCalled.Should().BeTrue();
             commandRuntime.ResolveRunnerCalled.Should().BeTrue();
@@ -458,11 +471,11 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             commandRuntime.ResolveCheckerCalled.Should().BeTrue();
             commandRuntime.ResolveRunnerCalled.Should().BeTrue();
@@ -482,15 +495,15 @@ namespace OneImlx.Terminal.Commands.Handlers
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
-            TerminalRequest request = new("test_id", "test_raw");
-            ParsedCommand extractedCommand = new(request, command.Item2, null);
+            ParsedCommand extractedCommand = new(command.Item2, null);
+            routerContext.License = license;
+            routerContext.ParsedCommand = extractedCommand;
 
-            CommandHandlerContext commandContext = new(routerContext, extractedCommand, license);
-            await handler.HandleCommandAsync(commandContext);
+            await handler.HandleCommandAsync(routerContext);
 
             licenseChecker.Called.Should().BeTrue();
-            licenseChecker.ContextCalled.Should().NotBeNull();
-            licenseChecker.ContextCalled!.License.Should().BeSameAs(license);
+            licenseChecker.PassedLicense.Should().NotBeNull();
+            licenseChecker.PassedLicense!.Should().BeSameAs(license);
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;

@@ -1,12 +1,12 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Handlers;
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands.Handlers;
 
 namespace OneImlx.Terminal.Commands.Routers.Mocks
 {
@@ -18,24 +18,23 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
 
         public bool Called { get; set; }
 
-        public CommandHandlerContext? ContextCalled { get; internal set; }
+        public CommandRouterContext? PassedContext { get; internal set; }
 
         public bool IsExplicitError { get; internal set; }
 
-        public Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context)
+        public Task HandleCommandAsync(CommandRouterContext context)
         {
             Called = true;
 
-            ContextCalled = context;
+            PassedContext = context;
 
             if (IsExplicitError)
             {
                 throw new TerminalException("test_handler_error", "test_handler_error_desc");
             }
-            else
-            {
-                return Task.FromResult(new CommandHandlerResult(new Checkers.CommandCheckerResult(), new Runners.CommandRunnerResult()));
-            }
+
+            context.Result = new CommandRouterResult();
+            return Task.CompletedTask;
         }
     }
 }

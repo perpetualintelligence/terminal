@@ -267,8 +267,12 @@ namespace OneImlx.Terminal.Runtime
 
                 if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.StartContext.TerminalCancellationToken)) == routeTask)
                 {
-                    var result = await routeTask;
-                    object? value = result.HandlerResult.RunnerResult.HasValue ? result.HandlerResult.RunnerResult.Value : null;
+                    CommandRouterResult result = await routeTask;
+                    object? value = null;
+                    if (result.RunnerResult != null)
+                    {
+                        value = result.RunnerResult.HasValue ? result.RunnerResult.Value : null;
+                    }
                     terminalOutput.Results[idx] = value;
                 }
                 else

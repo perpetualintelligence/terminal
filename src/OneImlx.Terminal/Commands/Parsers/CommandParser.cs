@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Shared.Extensions;
+using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
@@ -47,12 +48,11 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         /// <inheritdoc/>
-        public async Task<CommandParserResult> ParseCommandAsync(CommandParserContext context)
+        public async Task ParseCommandAsync(CommandRouterContext context)
         {
             logger.LogDebug("Parse request. request={0} raw={1}", context.Request.Id, context.Request.Raw);
             TerminalParsedRequest parsedOutput = await terminalRequestParser.ParseRequestAsync(context.Request);
-            ParsedCommand parsedCommand = await MapParsedRequestAsync(context.Request, parsedOutput);
-            return new CommandParserResult(parsedCommand);
+            context.ParsedCommand = await MapParsedRequestAsync(context.Request, parsedOutput);
         }
 
         private async Task<(List<CommandDescriptor> parsedCommands, List<Argument> parsedArguments)> MapCommandAndArguments(TerminalParsedRequest parsedOutput)
@@ -168,7 +168,7 @@ namespace OneImlx.Terminal.Commands.Parsers
                     // Validate if option matches expected alias
                     if (!textHandler.TextEquals(optionDescriptor.Alias, optionOrAliasKey))
                     {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "The alias prefix is not valid for an option. alias={0} option={1}", optionDescriptor.Alias,  optKvp.Key);
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The alias prefix is not valid for an option. alias={0} option={1}", optionDescriptor.Alias, optKvp.Key);
                     }
                 }
                 else
@@ -204,7 +204,7 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             // Hierarchy is all expect the current command.
             Command command = new(commandDescriptor, arguments, parsedOptions);
-            return new ParsedCommand(request, command, commandDescriptors.Count > 1 ? commandDescriptors.Take(commandDescriptors.Count - 1) : null);
+            return new ParsedCommand(command, commandDescriptors.Count > 1 ? commandDescriptors.Take(commandDescriptors.Count - 1) : null);
         }
 
         private readonly ITerminalCommandStore commandStore;

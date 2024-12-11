@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Declarative;
+using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System;
@@ -23,12 +24,12 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
             this.logger = logger;
         }
 
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
             await terminalConsole.WriteLineAsync("Test server root command called.");
 
             // Get the version option value
-            if (context.Command.TryGetOptionValue("version", out string? version))
+            if (context.EnsureParsedCommand().Command.TryGetOptionValue("version", out string? version))
             {
                 await terminalConsole.WriteLineAsync("Version option passed.");
             }

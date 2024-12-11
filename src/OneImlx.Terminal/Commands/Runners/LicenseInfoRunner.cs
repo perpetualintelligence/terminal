@@ -1,15 +1,15 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Shared.Extensions;
-using OneImlx.Terminal.Licensing;
-using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Runners
 {
@@ -28,13 +28,13 @@ namespace OneImlx.Terminal.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
             // Recheck the license to get the current consumption.
             // TODO: This should be tolerant of over-consumption since it is printing the usage. At present CheckLicenseAsync
             // throw exception on over-consumption.
-            License license = context.HandlerContext.License;
-            LicenseCheckerResult checkResult = await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(license));
+            License license = context.EnsureLicense();
+            LicenseCheckerResult checkResult = await licenseChecker.CheckLicenseAsync(license);
 
             {
                 // Print Details
@@ -65,7 +65,7 @@ namespace OneImlx.Terminal.Commands.Runners
                 {
                     foreach (var kvp in license.Claims.Custom)
                     {
-                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString());
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString() ?? "<null>");
                     }
                 }
             }
@@ -80,13 +80,13 @@ namespace OneImlx.Terminal.Commands.Runners
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option_limit={0}", PrintNumber(license.Limits.OptionLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "authentication={0}", license.Limits.Authentication.ToString());
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "authentication={0}", license.Limits.Authentication.ToString() ?? "<null>");
 
                 if (license.Claims.Custom != null)
                 {
                     foreach (var kvp in license.Claims.Custom)
                     {
-                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString());
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "{0}={1}", kvp.Key, kvp.Value.ToString() ?? "<null>");
                     }
                 }
             }
@@ -111,7 +111,7 @@ namespace OneImlx.Terminal.Commands.Runners
             }
             else
             {
-                return nullableNumber.ToString();
+                return nullableNumber.ToString()!;
             }
         }
 
