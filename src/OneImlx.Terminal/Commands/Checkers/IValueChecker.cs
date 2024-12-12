@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
-    /// An abstraction to check a <see cref="IValue"/>.
+    /// An abstraction to check a <see cref="ICommandValue"/>.
     /// </summary>
-    public interface IValueChecker<T> where T : IValue
+    public interface IValueChecker<T> where T : ICommandValue
     {
         /// <summary>
         /// Checks the option value.

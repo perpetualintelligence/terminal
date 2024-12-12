@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Commands
     /// </para>
     /// </remarks>
     /// <seealso cref="Command"/>
-    public sealed class Option : IEquatable<Option?>, IValue
+    public sealed class Option : IEquatable<Option?>, ICommandValue
     {
         /// <summary>
         /// Initialize a new instance..

@@ -15,7 +15,7 @@ namespace OneImlx.Terminal.Commands.Mappers
     /// <summary>
     /// The default option data type mapper.
     /// </summary>
-    public sealed class DataTypeMapper<TValue> : IDataTypeMapper<TValue> where TValue : IValue
+    public sealed class DataTypeMapper<TValue> : IDataTypeMapper<TValue> where TValue : ICommandValue
     {
         /// <summary>
         /// Initialize a new instance.

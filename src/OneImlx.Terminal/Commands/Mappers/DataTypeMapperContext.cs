@@ -10,9 +10,9 @@ using System;
 namespace OneImlx.Terminal.Commands.Mappers
 {
     /// <summary>
-    /// The <see cref="IValue"/> data-type mapper context.
+    /// The <see cref="ICommandValue"/> data-type mapper context.
     /// </summary>
-    public sealed class DataTypeMapperContext<TValue> where TValue : IValue
+    public sealed class DataTypeMapperContext<TValue> where TValue : ICommandValue
     {
         /// <summary>
         /// Initialize a new instance.

@@ -14,7 +14,7 @@ namespace OneImlx.Terminal.Commands.Checkers
     /// <summary>
     /// The default <see cref="IValueChecker{T}"/> that uses <see cref="System.ComponentModel.DataAnnotations.ValidationAttribute"/> to check an option value.
     /// </summary>
-    public sealed class DataValidationValueChecker<TValue> : IValueChecker<TValue> where TValue : IValue
+    public sealed class DataValidationValueChecker<TValue> : IValueChecker<TValue> where TValue : ICommandValue
     {
         /// <summary>
         /// Initializes a new instance.

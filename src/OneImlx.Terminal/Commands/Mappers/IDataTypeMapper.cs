@@ -12,7 +12,7 @@ namespace OneImlx.Terminal.Commands.Mappers
     /// <summary>
     /// An abstraction to map an <see cref="Option.DataType"/> to <see cref="System.Type"/>.
     /// </summary>
-    public interface IDataTypeMapper<TValue> where TValue : IValue
+    public interface IDataTypeMapper<TValue> where TValue : ICommandValue
     {
         /// <summary>
         /// Maps a data type to <see cref="System.Type"/> asynchronously.
