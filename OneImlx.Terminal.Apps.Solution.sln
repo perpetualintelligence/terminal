@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E3A2F609-5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{1A8779C7-3B84-405C-86D7-F000E5EA9AD8}"
 	ProjectSection(SolutionItems) = preProject
+		ACKNOWLEDGMENTS.md = ACKNOWLEDGMENTS.md
 		CHANGE_LOG.md = CHANGE_LOG.md
 		global.json = global.json
 		build\props\Package.props = build\props\Package.props
