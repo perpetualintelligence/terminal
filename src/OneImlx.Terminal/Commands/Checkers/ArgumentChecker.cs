@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             }
 
             // Check argument data type and value type
-            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(new DataTypeMapperContext<Argument>(argument));
+            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(argument);
 
             // Check whether we need to check type
             if (options.Checker.StrictValueType.GetValueOrDefault())

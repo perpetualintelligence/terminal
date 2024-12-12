@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Option value = new(identity, "non int value");
 
             Func<Task> func = () => checker.CheckOptionAsync(value);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnsupportedOption).WithErrorDescription("The option data type is not supported. option=opt1 data_type=invalid_dt");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidRequest).WithErrorDescription("The value data type is not supported. value=opt1 data_type=invalid_dt");
         }
 
         [Fact]

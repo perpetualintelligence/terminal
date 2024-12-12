@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             }
 
             // Check option data type and value type
-            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(option));
+            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(option);
 
             // Check whether we need to check type
             if (options.Checker.StrictValueType.GetValueOrDefault())
