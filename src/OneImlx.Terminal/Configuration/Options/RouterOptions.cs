@@ -21,11 +21,6 @@ namespace OneImlx.Terminal.Configuration.Options
         public string Caret { get; set; } = ">";
 
         /// <summary>
-        /// Indicates whether to enable responses for the router. The default value is <c>false</c>.
-        /// </summary>
-        public bool EnableResponses { get; set; } = false;
-
-        /// <summary>
         /// The maximum number of active remote client connections the router can accept. The default value is <c>5</c>.
         /// </summary>
         public int MaxClients { get; set; } = 5;

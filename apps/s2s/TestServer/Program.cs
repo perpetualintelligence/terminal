@@ -1,11 +1,4 @@
-﻿/*
-    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-
-using System;
+﻿using System;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -72,7 +65,6 @@ namespace OneImlx.Terminal.Apps.TestServer
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo; // License plan to use (Demo in this case).
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment; // Set deployment type.
                     options.Router.MaxLength = 64000; // Set max length for remote messages.
-                    options.Router.EnableResponses = true;
                     options.Router.Caret = "> "; // Caret for the terminal.
                 });
 
