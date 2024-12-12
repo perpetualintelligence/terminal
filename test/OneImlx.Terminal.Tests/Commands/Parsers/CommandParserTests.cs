@@ -8,6 +8,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
@@ -15,6 +16,7 @@ using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,7 +27,7 @@ namespace OneImlx.Terminal.Commands.Parsers
     {
         public CommandParserTests()
         {
-            textHandler = new TerminalAsciiTextHandler();
+            textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
 
             ArgumentDescriptors arguments = new(textHandler,
             [

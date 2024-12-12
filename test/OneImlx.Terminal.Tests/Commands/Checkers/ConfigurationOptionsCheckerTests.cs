@@ -13,6 +13,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         public ConfigurationOptionsCheckerTests()
         {
             options = MockTerminalOptions.NewLegacyOptions();
-            textHandler = new TerminalUnicodeTextHandler();
+            textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
 
             hostBuilder = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {

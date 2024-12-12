@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -21,6 +21,7 @@ using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 namespace OneImlx.Terminal.Extensions
@@ -43,7 +44,7 @@ namespace OneImlx.Terminal.Extensions
 
             using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
             {
-                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), configuration);
+                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalTextHandler>(new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode), configuration);
             }).Build();
 
             // Check Options are added
@@ -67,12 +68,12 @@ namespace OneImlx.Terminal.Extensions
             var services = new ServiceCollection();
             services.AddLogging();
 
-            var textHandler = new TerminalAsciiTextHandler();
+            var textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
 
-            services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalAsciiTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
+            services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
                 textHandler,
                 static options => { }
-                                                                                                                                                                                   );
+                                                                                                                                                                               );
 
             var provider = services.BuildServiceProvider();
 
@@ -80,7 +81,7 @@ namespace OneImlx.Terminal.Extensions
             provider.GetService<ITerminalConsole>().Should().BeOfType<TerminalSystemConsole>();
             provider.GetService<ITerminalHelpProvider>().Should().BeOfType<TerminalConsoleHelpProvider>();
             provider.GetService<ITerminalCommandStore>().Should().BeOfType<TerminalInMemoryCommandStore>();
-            provider.GetService<ITerminalTextHandler>().Should().BeOfType<TerminalAsciiTextHandler>();
+            provider.GetService<ITerminalTextHandler>().Should().BeOfType<TerminalTextHandler>();
             provider.GetService<ITerminalExceptionHandler>().Should().BeOfType<TerminalConsoleExceptionHandler>();
 
             // Command Router
@@ -118,9 +119,9 @@ namespace OneImlx.Terminal.Extensions
             var services = new ServiceCollection();
             services.AddLogging();
 
-            var textHandler = new TerminalAsciiTextHandler();
+            var textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
 
-            services.AddTerminalDefault<TerminalInMemoryCommandStore, TerminalAsciiTextHandler, TerminalLoggerHelpProvider, TerminalLoggerExceptionHandler>
+            services.AddTerminalDefault<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalLoggerHelpProvider, TerminalLoggerExceptionHandler>
             (
                 textHandler,
                 static options => { }
@@ -130,7 +131,7 @@ namespace OneImlx.Terminal.Extensions
             provider.GetService<ITerminalConsole>().Should().BeNull();
             provider.GetService<ITerminalHelpProvider>().Should().BeOfType<TerminalLoggerHelpProvider>();
             provider.GetService<ITerminalCommandStore>().Should().BeOfType<TerminalInMemoryCommandStore>();
-            provider.GetService<ITerminalTextHandler>().Should().BeOfType<TerminalAsciiTextHandler>();
+            provider.GetService<ITerminalTextHandler>().Should().BeOfType<TerminalTextHandler>();
             provider.GetService<ITerminalExceptionHandler>().Should().BeOfType<TerminalLoggerExceptionHandler>();
 
             provider.GetService<ITerminalCommandStore>().Should().NotBeNull();
@@ -149,7 +150,7 @@ namespace OneImlx.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder([]).ConfigureServices(static arg =>
             {
-                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler());
+                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalTextHandler>(new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode));
             }).Build();
 
             // Check Options are added
@@ -172,7 +173,7 @@ namespace OneImlx.Terminal.Extensions
         {
             using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
             {
-                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler(), SetupAction);
+                arg.AddTerminal<TerminalInMemoryCommandStore, TerminalTextHandler>(new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode), SetupAction);
             }).Build();
 
             // Check Options are added
@@ -195,7 +196,7 @@ namespace OneImlx.Terminal.Extensions
         {
             IServiceCollection? serviceDescriptors = null;
             ITerminalBuilder? terminalBuilder = null;
-            TerminalAsciiTextHandler textHandler = new();
+            TerminalTextHandler textHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
 
             using var host = Host.CreateDefaultBuilder([]).ConfigureServices(arg =>
             {

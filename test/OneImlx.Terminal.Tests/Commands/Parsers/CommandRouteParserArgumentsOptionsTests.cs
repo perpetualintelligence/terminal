@@ -15,6 +15,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Xunit;
+using OneImlx.Terminal.Commands;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {

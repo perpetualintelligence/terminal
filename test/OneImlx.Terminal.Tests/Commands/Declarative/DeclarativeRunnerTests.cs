@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -18,6 +18,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,48 +30,7 @@ namespace OneImlx.Terminal.Commands.Declarative
         {
             var hostBuilder = Host.CreateDefaultBuilder([]).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
-            terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-        }
-
-        [Fact]
-        public void No_CommandOwner_Throws()
-        {
-            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandOwnerRunner>();
-            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command owner.");
-        }
-
-        [Fact]
-        public void Build_Should_Read_OptionValidation_Correctly()
-        {
-            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
-            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
-            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
-            cmdDescs.Should().HaveCount(1);
-
-            CommandDescriptor cmd = cmdDescs.First();
-            cmd.OptionDescriptors.Should().NotBeNull();
-
-            OptionDescriptor opt1 = cmd.OptionDescriptors!["opt1"];
-            opt1.ValueCheckers.Should().BeNull();
-
-            OptionDescriptor opt2 = cmd.OptionDescriptors["opt2"];
-            opt2.ValueCheckers.Should().NotBeNull();
-            opt2.ValueCheckers!.Count().Should().Be(2);
-            DataValidationValueChecker<Option> val2Checker1 = (DataValidationValueChecker<Option>)opt2.ValueCheckers!.First();
-            val2Checker1.ValidationAttribute.Should().BeOfType<RequiredAttribute>();
-            DataValidationValueChecker<Option> val2Checker2 = (DataValidationValueChecker<Option>)opt2.ValueCheckers!.Last();
-            val2Checker2.ValidationAttribute.Should().BeOfType<OneOfAttribute>();
-            OneOfAttribute val2OneOf = (OneOfAttribute)val2Checker2.ValidationAttribute;
-            val2OneOf.AllowedValues.Should().BeEquivalentTo(["test1", "test2", "test3"]);
-
-            OptionDescriptor opt3 = cmd.OptionDescriptors["opt3"];
-            opt3.ValueCheckers.Should().NotBeNull();
-            opt3.ValueCheckers!.Count().Should().Be(1);
-            DataValidationValueChecker<Option> val1Checker3 = (DataValidationValueChecker<Option>)opt3.ValueCheckers!.First();
-            val1Checker3.ValidationAttribute.Should().BeOfType<RangeAttribute>();
-            RangeAttribute val1Range = (RangeAttribute)val1Checker3.ValidationAttribute;
-            val1Range.Minimum.Should().Be(25.34);
-            val1Range.Maximum.Should().Be(40.56);
+            terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
         }
 
         [Fact]
@@ -108,16 +68,15 @@ namespace OneImlx.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void Build_Should_Read_NoValueDescriptor_Correctly()
+        public void Build_Should_Read_CommandTags_Correctly()
         {
-            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner5>();
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner4>();
             ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
 
             CommandDescriptor cmd = cmdDescs.First();
-            cmd.OptionDescriptors.Should().BeNull();
-            cmd.ArgumentDescriptors.Should().BeNull();
+            cmd.TagIds.Should().BeEquivalentTo(["tag1", "tag2", "tag3"]);
         }
 
         [Fact]
@@ -130,18 +89,6 @@ namespace OneImlx.Terminal.Commands.Declarative
 
             CommandDescriptor cmd = cmdDescs.First();
             cmd.TagIds.Should().BeNull();
-        }
-
-        [Fact]
-        public void Build_Should_Read_CommandTags_Correctly()
-        {
-            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner4>();
-            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
-            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
-            cmdDescs.Should().HaveCount(1);
-
-            CommandDescriptor cmd = cmdDescs.First();
-            cmd.TagIds.Should().BeEquivalentTo(["tag1", "tag2", "tag3"]);
         }
 
         [Fact]
@@ -177,6 +124,53 @@ namespace OneImlx.Terminal.Commands.Declarative
 
             OptionDescriptor opt3 = cmd.OptionDescriptors["opt3"];
             opt3.ValueCheckers.Should().BeNull();
+        }
+
+        [Fact]
+        public void Build_Should_Read_NoValueDescriptor_Correctly()
+        {
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner5>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.OptionDescriptors.Should().BeNull();
+            cmd.ArgumentDescriptors.Should().BeNull();
+        }
+
+        [Fact]
+        public void Build_Should_Read_OptionValidation_Correctly()
+        {
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            CommandDescriptor cmd = cmdDescs.First();
+            cmd.OptionDescriptors.Should().NotBeNull();
+
+            OptionDescriptor opt1 = cmd.OptionDescriptors!["opt1"];
+            opt1.ValueCheckers.Should().BeNull();
+
+            OptionDescriptor opt2 = cmd.OptionDescriptors["opt2"];
+            opt2.ValueCheckers.Should().NotBeNull();
+            opt2.ValueCheckers!.Count().Should().Be(2);
+            DataValidationValueChecker<Option> val2Checker1 = (DataValidationValueChecker<Option>)opt2.ValueCheckers!.First();
+            val2Checker1.ValidationAttribute.Should().BeOfType<RequiredAttribute>();
+            DataValidationValueChecker<Option> val2Checker2 = (DataValidationValueChecker<Option>)opt2.ValueCheckers!.Last();
+            val2Checker2.ValidationAttribute.Should().BeOfType<OneOfAttribute>();
+            OneOfAttribute val2OneOf = (OneOfAttribute)val2Checker2.ValidationAttribute;
+            val2OneOf.AllowedValues.Should().BeEquivalentTo(["test1", "test2", "test3"]);
+
+            OptionDescriptor opt3 = cmd.OptionDescriptors["opt3"];
+            opt3.ValueCheckers.Should().NotBeNull();
+            opt3.ValueCheckers!.Count().Should().Be(1);
+            DataValidationValueChecker<Option> val1Checker3 = (DataValidationValueChecker<Option>)opt3.ValueCheckers!.First();
+            val1Checker3.ValidationAttribute.Should().BeOfType<RangeAttribute>();
+            RangeAttribute val1Range = (RangeAttribute)val1Checker3.ValidationAttribute;
+            val1Range.Minimum.Should().Be(25.34);
+            val1Range.Maximum.Should().Be(40.56);
         }
 
         [Fact]
@@ -261,6 +255,17 @@ namespace OneImlx.Terminal.Commands.Declarative
         }
 
         [Fact]
+        public void Builder_Should_Read_NoCustomCommandProps_Correctly()
+        {
+            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner2>();
+            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
+            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
+            cmdDescs.Should().HaveCount(1);
+
+            cmdDescs.First().CustomProperties.Should().BeNull();
+        }
+
+        [Fact]
         public void Builder_ShouldAdd_Descriptors_To_ServiceCollection()
         {
             terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner1>();
@@ -295,17 +300,6 @@ namespace OneImlx.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void Builder_Should_Read_NoCustomCommandProps_Correctly()
-        {
-            terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner2>();
-            ServiceProvider serviceProvider = terminalBuilder.Services.BuildServiceProvider();
-            var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
-            cmdDescs.Should().HaveCount(1);
-
-            cmdDescs.First().CustomProperties.Should().BeNull();
-        }
-
-        [Fact]
         public void Builder_ShouldRead_NoTags_Correctly()
         {
             terminalBuilder.AddDeclarativeRunner<MockDeclarativeRunner2>();
@@ -327,6 +321,19 @@ namespace OneImlx.Terminal.Commands.Declarative
             cmdDescs.First().TagIds.Should().Equal(["tag1", "tag2", "tag3"]);
         }
 
+        public ValueTask DisposeAsync()
+        {
+            host.Dispose();
+            return new ValueTask(Task.CompletedTask);
+        }
+
+        [Fact]
+        public void No_CommandOwner_Throws()
+        {
+            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandOwnerRunner>();
+            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command owner.");
+        }
+
         [Fact]
         public void Target_Defaults_To_CommandChecker_If_NotDefined()
         {
@@ -335,13 +342,6 @@ namespace OneImlx.Terminal.Commands.Declarative
             var cmdDescs = serviceProvider.GetServices<CommandDescriptor>();
             cmdDescs.Should().HaveCount(1);
             cmdDescs.First().Checker.Should().Be(typeof(CommandChecker));
-        }
-
-        [Fact]
-        public void TargetMustDefine_CommandDescriptor()
-        {
-            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandDescriptorRunner>();
-            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command descriptor.");
         }
 
         [Fact]
@@ -382,19 +382,20 @@ namespace OneImlx.Terminal.Commands.Declarative
             act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command descriptor.");
         }
 
+        [Fact]
+        public void TargetMustDefine_CommandDescriptor()
+        {
+            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandDescriptorRunner>();
+            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command descriptor.");
+        }
+
         private void ConfigureServicesDelegate(IServiceCollection opt2)
         {
             serviceCollection = opt2;
         }
 
-        public ValueTask DisposeAsync()
-        {
-            host.Dispose();
-            return new ValueTask(Task.CompletedTask);
-        }
-
-        private readonly TerminalBuilder terminalBuilder;
         private readonly IHost host = null!;
+        private readonly TerminalBuilder terminalBuilder;
         private IServiceCollection serviceCollection = null!;
     }
 }

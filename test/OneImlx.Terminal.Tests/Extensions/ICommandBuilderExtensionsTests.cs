@@ -1,19 +1,20 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Linq;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FluentAssertions;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace OneImlx.Terminal.Extensions
@@ -30,7 +31,7 @@ namespace OneImlx.Terminal.Extensions
             }).Build();
 
             serviceDescriptors.Should().NotBeNull();
-            terminalBuilder = serviceDescriptors!.CreateTerminalBuilder(new TerminalAsciiTextHandler());
+            terminalBuilder = serviceDescriptors!.CreateTerminalBuilder(new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "description1", CommandType.SubCommand, CommandFlags.None)
                                             .Checker<MockCommandChecker>();
         }
@@ -75,7 +76,7 @@ namespace OneImlx.Terminal.Extensions
             option.Flags.Should().Be(OptionFlags.Required | OptionFlags.Obsolete);
         }
 
-        private readonly ITerminalBuilder terminalBuilder = null!;
         private readonly ICommandBuilder commandBuilder = null!;
+        private readonly ITerminalBuilder terminalBuilder = null!;
     }
 }

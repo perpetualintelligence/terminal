@@ -11,8 +11,8 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace OneImlx.Terminal.Mocks
 {
@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Mocks
         /// </summary>
         static MockCommands()
         {
-            TerminalUnicodeTextHandler unicodeTextHandler = new();
+            TerminalTextHandler unicodeTextHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
 
             TestOptionDescriptors = new(unicodeTextHandler,
             [
@@ -82,7 +82,7 @@ namespace OneImlx.Terminal.Mocks
                 NewCommandDefinition("id4", "name4", "desc4", CommandType.SubCommand, CommandFlags.None).Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id5", "name5", "desc5", CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new TerminalUnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id5", "name5", "desc5", CommandType.SubCommand, CommandFlags.None, new OptionDescriptors(new TerminalTextHandler( StringComparison.OrdinalIgnoreCase, Encoding.Unicode )), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
             ]);
 
             GroupedCommands = new(unicodeTextHandler,
@@ -163,7 +163,7 @@ namespace OneImlx.Terminal.Mocks
                 NewCommandDefinition("id4", "name4", "desc4", CommandType.SubCommand, CommandFlags.None).Item1,
 
                 // Command with no default arg
-                NewCommandDefinition("id5", "name5", "desc5",CommandType.SubCommand, CommandFlags.None, new OptionDescriptors( new TerminalUnicodeTextHandler()), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("id5", "name5", "desc5",CommandType.SubCommand, CommandFlags.None, new OptionDescriptors( new TerminalTextHandler( StringComparison.OrdinalIgnoreCase, Encoding.Unicode )), typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
             ]);
 
             UnicodeCommands = new(unicodeTextHandler,

@@ -5,14 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
-using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Mocks;
-using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -23,6 +15,14 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using FluentAssertions;
+using Moq;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime.Tests
@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             exceptionHandlerMock = new Mock<ITerminalExceptionHandler>();
             terminalProcessorMock = new Mock<ITerminalProcessor>();
             textHandlerMock = new Mock<ITerminalTextHandler>();
-            textHandler = new TerminalAsciiTextHandler();
+            textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
 
             // Set up Cancellation Tokens
             terminalTokenSource = new CancellationTokenSource();
@@ -313,8 +313,8 @@ namespace OneImlx.Terminal.Runtime.Tests
         // Helper to send TCP message
         private async Task<(byte[], int)> SendTcpMessageAsync(TerminalInput input, IPEndPoint endpoint)
         {
-            // fix this test should not be relying on hardcoaded 4096 buffer size
-            // the tcp router passes buffer and length to the terminal processor
+            // fix this test should not be relying on hardcoaded 4096 buffer size the tcp router passes buffer and
+            // length to the terminal processor
             byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(input);
             byte[] buffer = new byte[4096];
             bytes.CopyTo(buffer, 0);
@@ -337,7 +337,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         private readonly TerminalOptions options;
         private readonly Mock<ITerminalProcessor> terminalProcessorMock;
         private readonly CancellationTokenSource terminalTokenSource;
-        private readonly TerminalAsciiTextHandler textHandler;
+        private readonly TerminalTextHandler textHandler;
         private readonly Mock<ITerminalTextHandler> textHandlerMock;
         private TerminalStartContext startContext;
     }

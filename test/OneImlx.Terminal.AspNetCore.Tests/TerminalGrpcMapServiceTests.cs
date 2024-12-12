@@ -5,20 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using FluentAssertions;
 using Grpc.Core;
+using Microsoft.Extensions.Logging;
 using Moq;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
-using OneImlx.Terminal.Commands;
 
 namespace OneImlx.Terminal.AspNetCore
 {
@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.AspNetCore
             var mockCommandQueue = new TerminalProcessor(
                 Mock.Of<ICommandRouter>(), Mock.Of<ITerminalExceptionHandler>(),
                 Microsoft.Extensions.Options.Options.Create(new TerminalOptions()),
-                new TerminalAsciiTextHandler(),
+                new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII),
                 Mock.Of<ILogger<TerminalProcessor>>());
 
             // Ensure the terminal router is running

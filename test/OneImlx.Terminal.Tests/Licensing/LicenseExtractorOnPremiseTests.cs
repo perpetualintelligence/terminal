@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();
 
             // The license is not for on-prem and extraction was done offline
@@ -85,7 +85,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();
 
             // The license is for on-prem and no extraction was done via online
@@ -120,7 +120,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
                 .WithErrorDescription($"The license plan is not authorized for on-premise deployment. plan={licPlan}");
@@ -147,7 +147,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            LicenseExtractorResult? result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            LicenseExtractorResult? result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();
 
             // The license is for on-prem but the extraction was done via online
@@ -170,7 +170,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
-            var result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            var result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();
 
             // ensure passed and extraction handler
@@ -246,7 +246,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            await licenseExtractor.ExtractLicenseAsync();
         }
 
         [Theory]
@@ -263,7 +263,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOnlineLicPath;
 
-            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
                 .WithErrorDescription("The on-premise deployment is not supported for online license.");
@@ -282,7 +282,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicensePlan = null!;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
                 .WithErrorDescription("The license plan is not valid. plan=");
@@ -301,7 +301,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-            await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            await licenseExtractor.ExtractLicenseAsync();
         }
 
         private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)

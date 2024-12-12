@@ -1,5 +1,13 @@
-﻿using System;
+﻿/*
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
+
+    For license, terms, and data policies, go to:
+    https://terms.perpetualintelligence.com/articles/intro.html
+*/
+
+using System;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -55,8 +63,8 @@ namespace OneImlx.Terminal.Apps.TestServer
             services.AddHostedService<TestServerHostedService>();
 
             // Terminal builder helps in setting up terminal-related services and configurations for different protocols.
-            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
-                new TerminalUnicodeTextHandler(),
+            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
+                new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId; // Set the application ID.

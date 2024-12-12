@@ -236,7 +236,7 @@ namespace OneImlx.Terminal.Hosting
         private async Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
             ILicenseExtractor licenseExtractor = ServiceProvider.GetRequiredService<ILicenseExtractor>();
-            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
+            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
             return result;
         }
 

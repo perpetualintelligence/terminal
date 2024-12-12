@@ -19,6 +19,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace OneImlx.Terminal.Runtime
             _mockLogger = new Mock<ILogger<TerminalProcessor>>();
             _mockOptions = new Mock<IOptions<TerminalOptions>>();
             _mockTerminalRouterContext = new Mock<TerminalRouterContext>(terminalStartContext);
-            _textHandler = new TerminalAsciiTextHandler();
+            _textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
 
             _mockOptions.Setup(static o => o.Value).Returns(new TerminalOptions
             {

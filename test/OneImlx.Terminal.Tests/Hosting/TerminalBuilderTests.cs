@@ -1,15 +1,16 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FluentAssertions;
 using OneImlx.Terminal.Runtime;
-using System;
 using Xunit;
 
 namespace OneImlx.Terminal.Hosting
@@ -25,7 +26,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void TerminalBuilder_ShouldReturn_Same_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             terminalBuilder.Services.Should().BeSameAs(serviceCollection);
         }
 
