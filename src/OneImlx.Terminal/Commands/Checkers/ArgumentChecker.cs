@@ -1,15 +1,15 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Mappers;
-using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {
@@ -33,36 +33,36 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public async Task<ArgumentCheckerResult> CheckArgumentAsync(ArgumentCheckerContext context)
+        public async Task<ArgumentCheckerResult> CheckArgumentAsync(Argument argument)
         {
             // Check for null argument value
-            if (context.Argument.Value == null)
+            if (argument.Value == null)
             {
-                throw new TerminalException(TerminalErrors.InvalidOption, "The argument value cannot be null. argument={0}", context.Argument.Id);
+                throw new TerminalException(TerminalErrors.InvalidOption, "The argument value cannot be null. argument={0}", argument.Id);
             }
 
             // Check argument data type and value type
-            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(new DataTypeMapperContext<Argument>(context.Argument));
+            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(new DataTypeMapperContext<Argument>(argument));
 
             // Check whether we need to check type
             if (options.Checker.StrictValueType.GetValueOrDefault())
             {
                 // Check value compatibility
-                await StrictTypeCheckingAsync(context, mapperResult);
+                await StrictTypeCheckingAsync(argument, mapperResult);
             }
 
             // Check value
-            if (context.Argument.Descriptor.ValueCheckers != null)
+            if (argument.Descriptor.ValueCheckers != null)
             {
-                foreach (IValueChecker<Argument> valueChecker in context.Argument.Descriptor.ValueCheckers)
+                foreach (IValueChecker<Argument> valueChecker in argument.Descriptor.ValueCheckers)
                 {
                     try
                     {
-                        await valueChecker.CheckValueAsync(context.Argument);
+                        await valueChecker.CheckValueAsync(argument);
                     }
                     catch (Exception ex)
                     {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "The argument value is not valid. argument={0} value={1} info={2}", context.Argument.Id, context.Argument.Value, ex.Message);
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The argument value is not valid. argument={0} value={1} info={2}", argument.Id, argument.Value, ex.Message);
                     }
                 }
             }
@@ -73,20 +73,20 @@ namespace OneImlx.Terminal.Commands.Checkers
         /// <summary>
         /// Checks the argument value compatibility.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="argument"></param>
         /// <param name="mapperResult"></param>
         /// <returns></returns>
-        protected Task<OptionCheckerResult> StrictTypeCheckingAsync(ArgumentCheckerContext context, DataTypeMapperResult mapperResult)
+        protected Task<OptionCheckerResult> StrictTypeCheckingAsync(Argument argument, DataTypeMapperResult mapperResult)
         {
             // Ensure strict value compatibility
             try
             {
-                context.Argument.ChangeValueType(mapperResult.MappedType);
+                argument.ChangeValueType(mapperResult.MappedType);
             }
             catch
             {
                 // Meaningful error instead of format exception
-                throw new TerminalException(TerminalErrors.InvalidArgument, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", context.Argument.Id, mapperResult.MappedType, context.Argument.DataType, context.Argument.Value.GetType().Name, context.Argument.Value);
+                throw new TerminalException(TerminalErrors.InvalidArgument, "The argument value does not match the mapped type. argument={0} type={1} data_type={2} value_type={3} value={4}", argument.Id, mapperResult.MappedType, argument.DataType, argument.Value.GetType().Name, argument.Value);
             }
 
             return Task.FromResult(new OptionCheckerResult(mapperResult.MappedType));

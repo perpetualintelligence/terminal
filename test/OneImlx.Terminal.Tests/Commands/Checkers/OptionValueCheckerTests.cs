@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -35,9 +35,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor identity = new("opt1", "invalid_dt", "desc1", OptionFlags.None);
             Option value = new(identity, "non int value");
 
-            OptionCheckerContext context = new(value);
-
-            Func<Task> func = () => checker.CheckOptionAsync(context);
+            Func<Task> func = () => checker.CheckOptionAsync(value);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnsupportedOption).WithErrorDescription("The option data type is not supported. option=opt1 data_type=invalid_dt");
         }
 
@@ -49,8 +47,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             Option value = new(identity, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            OptionCheckerContext context = new(value);
-            Func<Task> func = () => checker.CheckOptionAsync(context);
+            Func<Task> func = () => checker.CheckOptionAsync(value);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value cannot be null. option=opt1");
         }
 
@@ -63,12 +60,23 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, 23.69);
 
-            OptionCheckerContext context = new(value);
-            await checker.CheckOptionAsync(context);
+            await checker.CheckOptionAsync(value);
 
             // Check converted
             value.Value.Should().Be("23.69");
             value.Value.Should().BeOfType<string>();
+        }
+
+        [Fact]
+        public async Task StrictTypeChecking_NotSupportedValue_ShouldErrorAsync()
+        {
+            options.Checker.StrictValueType = true;
+
+            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
+            Option value = new(identity, "test3");
+
+            Func<Task> func = async () => await checker.CheckOptionAsync(value);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [Fact]
@@ -80,8 +88,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, 23.69);
 
-            OptionCheckerContext context = new(value);
-            await checker.CheckOptionAsync(context);
+            await checker.CheckOptionAsync(value);
 
             // Check not converted
             value.Value.Should().Be(23.69);
@@ -96,8 +103,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
             Option value = new(identity, "test3");
 
-            OptionCheckerContext context = new(value);
-            Func<Task> func = async () => await checker.CheckOptionAsync(context);
+            Func<Task> func = async () => await checker.CheckOptionAsync(value);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
@@ -109,22 +115,8 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new CreditCardAttribute())] };
             Option value = new(identity, "invalid_4242424242424242");
 
-            OptionCheckerContext context = new(value);
-            Func<Task> func = async () => await checker.CheckOptionAsync(context);
+            Func<Task> func = async () => await checker.CheckOptionAsync(value);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
-        }
-
-        [Fact]
-        public async Task StrictTypeChecking_NotSupportedValue_ShouldErrorAsync()
-        {
-            options.Checker.StrictValueType = true;
-
-            OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
-            Option value = new(identity, "test3");
-
-            OptionCheckerContext context = new(value);
-            Func<Task> func = async () => await checker.CheckOptionAsync(context);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=test3 info=The field value must be one of the valid values.");
         }
 
         [Fact]
@@ -135,8 +127,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new CreditCardAttribute())] };
             Option value = new(identity, "invalid_4242424242424242");
 
-            OptionCheckerContext context = new(value);
-            Func<Task> func = async () => await checker.CheckOptionAsync(context);
+            Func<Task> func = async () => await checker.CheckOptionAsync(value);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option value is not valid. option=opt1 value=invalid_4242424242424242 info=The Option field is not a valid credit card number.");
         }
 
@@ -146,8 +137,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
             Option value = new(identity, "test2");
 
-            OptionCheckerContext context = new(value);
-            await checker.CheckOptionAsync(context);
+            await checker.CheckOptionAsync(value);
         }
 
         [Fact]
@@ -156,8 +146,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
             Option value = new(identity, "4242424242424242");
 
-            OptionCheckerContext context = new(value);
-            var result = await checker.CheckOptionAsync(context);
+            var result = await checker.CheckOptionAsync(value);
             result.MappedType.Should().Be(typeof(string));
         }
 

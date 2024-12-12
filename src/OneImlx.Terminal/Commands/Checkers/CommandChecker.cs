@@ -87,7 +87,7 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // Check arg value
-                await argumentChecker.CheckArgumentAsync(new ArgumentCheckerContext(argument!));
+                await argumentChecker.CheckArgumentAsync(argument!);
             }
         }
 
@@ -134,7 +134,7 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // Check arg value
-                await optionChecker.CheckOptionAsync(new OptionCheckerContext(opt!));
+                await optionChecker.CheckOptionAsync(opt!);
             }
         }
 
