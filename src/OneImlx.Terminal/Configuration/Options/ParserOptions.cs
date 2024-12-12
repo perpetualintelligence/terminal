@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -8,32 +8,27 @@
 namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The command parser options.
+    /// The terminal parser options.
     /// </summary>
     public sealed class ParserOptions
     {
         /// <summary>
-        /// The option alias prefix. Defaults to <c>-</c>.
-        /// </summary>
-        /// <remarks>The option alias prefix cannot be <c>null</c> or whitespace.</remarks>
-        public string OptionAliasPrefix { get; set; } = "-";
-
-        /// <summary>
-        /// The option prefix. Defaults to <c>--</c>.
+        /// The option prefix. Defaults to <c>-</c>.
         /// </summary>
         /// <remarks>The option prefix cannot be <c>null</c> or whitespace.</remarks>
-        public string OptionPrefix { get; set; } = "--";
+        public char OptionPrefix { get; set; } = '-';
 
         /// <summary>
-        /// The option value separator. Defaults to <c> </c>.
+        /// The option value separator. Defaults to <c></c>.
         /// </summary>
         /// <remarks>The option value separator must be a single Unicode character, and it can be a single whitespace.</remarks>
-        public string OptionValueSeparator { get; set; } = " ";
+        public char OptionValueSeparator { get; set; } = TerminalIdentifiers.SpaceSeparator;
 
         /// <summary>
-        /// An argument or option value delimiter. It is used to extract a value within the configured delimiter.
+        /// The temporary runtime separator that is used to optimize the parsing algorithm. Defaults to <c>0x1F</c> or
+        /// Unit Separator.
         /// </summary>
-        public string ValueDelimiter { get; set; } = "\"";
+        public char RuntimeSeparator { get; set; } = '\u001F';
 
         /// <summary>
         /// The command string separator. Defaults to a single whitespace.
@@ -41,15 +36,11 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <remarks>
         /// The command string separator must be a single Unicode character, and it can be a whitespace character.
         /// </remarks>
-        public string Separator { get; set; } = " ";
+        public char Separator { get; set; } = TerminalIdentifiers.SpaceSeparator;
 
         /// <summary>
-        /// Determines whether to parse the command hierarchy. Defaults to <c>null</c>.
+        /// The value delimiter used to extract a value within the configured delimiter. Defaults to <c>"</c>.
         /// </summary>
-        /// <remarks>
-        /// A command hierarchy is a structure of commands in the specified command request starting with a root, followed by nested groups and an executing command.
-        /// Typically, for production use cases, the command hierarchy is not required.
-        /// </remarks>
-        public bool? ParseHierarchy { get; set; }
+        public char ValueDelimiter { get; set; } = '"';
     }
 }

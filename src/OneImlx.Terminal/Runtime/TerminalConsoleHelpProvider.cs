@@ -1,14 +1,14 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Configuration.Options;
 using System.Linq;
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -17,9 +17,6 @@ namespace OneImlx.Terminal.Runtime
     /// </summary>
     public sealed class TerminalConsoleHelpProvider : ITerminalHelpProvider
     {
-        private readonly TerminalOptions terminalOptions;
-        private readonly ITerminalConsole terminalConsole;
-
         /// <summary>
         /// Initializes new instance.
         /// </summary>
@@ -56,7 +53,7 @@ namespace OneImlx.Terminal.Runtime
                 {
                     if (option.Alias != null)
                     {
-                        await terminalConsole.WriteLineAsync(string.Format("{0}{1}{2}, {3}{4} <{5}>", new string(' ', indent), terminalOptions.Parser.OptionPrefix, option.Id, terminalOptions.Parser.OptionAliasPrefix, option.Alias, option.DataType));
+                        await terminalConsole.WriteLineAsync(string.Format("{0}{1}{1}{2}, {3}{4} <{5}>", new string(' ', indent), terminalOptions.Parser.OptionPrefix, option.Id, option.Alias, terminalOptions.Parser.OptionPrefix, option.DataType));
                     }
                     else
                     {
@@ -67,5 +64,8 @@ namespace OneImlx.Terminal.Runtime
                 }
             }
         }
+
+        private readonly ITerminalConsole terminalConsole;
+        private readonly TerminalOptions terminalOptions;
     }
 }

@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestServer.Runners
 {
@@ -15,19 +16,19 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
     [CommandChecker(typeof(CommandChecker))]
     public class Cmd1Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
-        private readonly ITerminalConsole terminalConsole;
-        private readonly ILogger<Cmd1Runner> logger;
-
         public Cmd1Runner(ITerminalConsole terminalConsole, ILogger<Cmd1Runner> logger)
         {
             this.terminalConsole = terminalConsole;
             this.logger = logger;
         }
 
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
             await terminalConsole.WriteLineAsync("Command1 of Group1 called.");
             return new CommandRunnerResult("Response from cmd1");
         }
+
+        private readonly ILogger<Cmd1Runner> logger;
+        private readonly ITerminalConsole terminalConsole;
     }
 }

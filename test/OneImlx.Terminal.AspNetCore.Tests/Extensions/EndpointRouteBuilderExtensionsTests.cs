@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
 
             // Setup router and processor to return true for IsRunning and IsProcessing
             TerminalInput terminalInput = TerminalInput.Single("test-id", "test-command");
-            TerminalOutput terminalOutput = new(terminalInput,new string[] { "any" }, null, null);
+            TerminalOutput terminalOutput = new(terminalInput,["any"], null, null);
             bool executeCalled = false;
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);

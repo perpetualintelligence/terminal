@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Client.Extensions;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
@@ -33,7 +34,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             this.terminalExceptionHandler = terminalExceptionHandler;
         }
 
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
             string server = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
             int port = configuration.GetValue<int>("testclient:testserver:port");
@@ -43,7 +44,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             var clientTasks = new Task[5];
             for (int idx = 0; idx < clientTasks.Length; idx++)
             {
-                clientTasks[idx] = StartClientAsync(server, port, idx, context.StartContext.TerminalCancellationToken);
+                clientTasks[idx] = StartClientAsync(server, port, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
             }
 
             await Task.WhenAll(clientTasks);

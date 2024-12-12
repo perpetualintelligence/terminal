@@ -17,14 +17,20 @@ namespace OneImlx.Terminal.Runtime
     public sealed class TerminalUtf8TextHandler : ITerminalTextHandler
     {
         /// <summary>
-        /// The <see cref="StringComparison.InvariantCultureIgnoreCase"/> string comparison.
+        /// The <see cref="StringComparison.OrdinalIgnoreCase"/> string comparison.
         /// </summary>
-        public StringComparison Comparison => StringComparison.InvariantCultureIgnoreCase;
+        public StringComparison Comparison => StringComparison.OrdinalIgnoreCase;
 
         /// <summary>
-        /// The ASCII text encoding.
+        /// The <see cref="Encoding.UTF8"/> text encoding.
         /// </summary>
         public Encoding Encoding => Encoding.UTF8;
+
+        /// <inheritdoc/>
+        public bool CharEquals(char? ch1, char? ch2)
+        {
+            return char.Equals(ch1, ch2);
+        }
 
         /// <summary>
         /// Returns the <see cref="StringComparer.InvariantCultureIgnoreCase"/> equality comparer.
@@ -32,6 +38,22 @@ namespace OneImlx.Terminal.Runtime
         public IEqualityComparer<string> EqualityComparer()
         {
             return StringComparer.OrdinalIgnoreCase;
+        }
+
+        /// <inheritdoc/>
+        public bool SingleEquals(char? ch1, string? s2)
+        {
+            if (ch1 == null || s2 == null)
+            {
+                return false;
+            }
+
+            if (s2.Length != 1)
+            {
+                return false;
+            }
+
+            return TextEquals(ch1.ToString(), s2);
         }
 
         /// <summary>

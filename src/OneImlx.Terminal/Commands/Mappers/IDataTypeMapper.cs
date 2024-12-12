@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -12,13 +12,13 @@ namespace OneImlx.Terminal.Commands.Mappers
     /// <summary>
     /// An abstraction to map an <see cref="Option.DataType"/> to <see cref="System.Type"/>.
     /// </summary>
-    public interface IDataTypeMapper<TValue> where TValue : IValue
+    public interface IDataTypeMapper<TValue> where TValue : ICommandValue
     {
         /// <summary>
         /// Maps a data type to <see cref="System.Type"/> asynchronously.
         /// </summary>
-        /// <param name="context">The map context.</param>
-        /// <returns>The </returns>
-        public Task<DataTypeMapperResult> MapToTypeAsync(DataTypeMapperContext<TValue> context);
+        /// <param name="value">The value to map.</param>
+        /// <returns>The</returns>
+        public Task<DataTypeMapperResult> MapToTypeAsync(TValue value);
     }
 }

@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Client.Extensions
 
             _httpClient = new HttpClient(_httpMessageHandlerMock.Object)
             {
-                BaseAddress = new System.Uri("http://localhost")
+                BaseAddress = new Uri("http://localhost")
             };
         }
 

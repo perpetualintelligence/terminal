@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace OneImlx.Terminal.Mocks
     {
         public bool Called { get; set; }
 
-        public Task<CommandCheckerResult> CheckCommandAsync(CommandCheckerContext context)
+        public Task<CommandCheckerResult> CheckCommandAsync(CommandRouterContext context)
         {
             Called = true;
             return Task.FromResult(new CommandCheckerResult());

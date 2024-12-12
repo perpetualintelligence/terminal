@@ -26,7 +26,7 @@ namespace OneImlx.Terminal
         [Fact]
         public void TerminalIdentifiers_Defines_Identifiers()
         {
-            typeof(TerminalIdentifiers).Should().HaveConstantCount(9);
+            typeof(TerminalIdentifiers).Should().HaveConstantCount(10);
 
             TerminalIdentifiers.OnlineLicenseMode.Should().Be("online");
             TerminalIdentifiers.OfflineLicenseMode.Should().Be("offline");
@@ -34,9 +34,10 @@ namespace OneImlx.Terminal
             TerminalIdentifiers.CustomHandler.Should().Be("custom");
             TerminalIdentifiers.DefaultHandler.Should().Be("default");
             TerminalIdentifiers.TestApplicationId.Should().Be("08c6925f-a734-4e24-8d84-e06737420766");
-            TerminalIdentifiers.StreamDelimiter.Should().Be(0x1F);
+            TerminalIdentifiers.StreamDelimiter.Should().Be(0x1E);
             TerminalIdentifiers.SenderIdToken.Should().Be("sender_id");
             TerminalIdentifiers.SenderEndpointToken.Should().Be("sender_endpoint");
+            TerminalIdentifiers.SpaceSeparator.Should().Be(' ');
         }
     }
 }

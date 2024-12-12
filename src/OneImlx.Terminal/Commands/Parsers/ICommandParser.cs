@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Commands.Parsers
 {
     /// <summary>
-    /// An abstraction to parse the command string and extract <see cref="Command"/>.
+    /// An abstraction to parse the raw command string and extract <see cref="Command"/>.
     /// </summary>
     public interface ICommandParser
     {
@@ -18,7 +18,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// Extracts <see cref="Command"/> asynchronously.
         /// </summary>
         /// <param name="context">The option extraction context.</param>
-        /// <returns>The <see cref="CommandParserResult"/> instance.</returns>
-        public Task<CommandParserResult> ParseCommandAsync(CommandParserContext context);
+        public Task ParseCommandAsync(CommandRouterContext context);
     }
 }

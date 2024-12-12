@@ -1,30 +1,31 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Runners;
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Runners;
 
 namespace OneImlx.Terminal.Mocks
 {
     public class MockCommandRunner : ICommandRunner<CommandRunnerResult>
     {
-        public bool RunCalled { get; set; }
-
         public bool HelpCalled { get; set; }
 
-        public Task RunHelpAsync(CommandRunnerContext context)
+        public bool RunCalled { get; set; }
+
+        public Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
-            HelpCalled = true;
+            RunCalled = true;
             return Task.FromResult(new CommandRunnerResult());
         }
 
-        public Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public Task RunHelpAsync(CommandRouterContext context)
         {
-            RunCalled = true;
+            HelpCalled = true;
             return Task.FromResult(new CommandRunnerResult());
         }
     }

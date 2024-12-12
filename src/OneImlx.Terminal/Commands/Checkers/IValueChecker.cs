@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
-    /// An abstraction to check a <see cref="IValue"/>.
+    /// An abstraction to check a <see cref="ICommandValue"/>.
     /// </summary>
-    public interface IValueChecker<T> where T : IValue
+    public interface IValueChecker<T> where T : ICommandValue
     {
         /// <summary>
         /// Checks the option value.

@@ -1,14 +1,14 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Configuration.Options;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {
@@ -33,9 +33,9 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public async Task<CommandCheckerResult> CheckCommandAsync(CommandCheckerContext context)
+        public async Task<CommandCheckerResult> CheckCommandAsync(CommandRouterContext context)
         {
-            logger.LogDebug("Check command. command={0}", context.HandlerContext.ParsedCommand.Command.Id);
+            logger.LogDebug("Check command. command={0}", context.EnsureParsedCommand().Command.Id);
 
             await CheckArgumentsAsync(context);
 
@@ -44,10 +44,10 @@ namespace OneImlx.Terminal.Commands.Checkers
             return new CommandCheckerResult();
         }
 
-        private async Task CheckArgumentsAsync(CommandCheckerContext context)
+        private async Task CheckArgumentsAsync(CommandRouterContext context)
         {
             // Cache commonly accessed properties
-            var command = context.HandlerContext.ParsedCommand.Command;
+            var command = context.EnsureParsedCommand().Command;
             ArgumentDescriptors? argumentDescriptors = command.Descriptor.ArgumentDescriptors;
 
             // If the command itself does not support any arguments then there's nothing to check. Parser will reject
@@ -87,14 +87,14 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // Check arg value
-                await argumentChecker.CheckArgumentAsync(new ArgumentCheckerContext(argument!));
+                await argumentChecker.CheckArgumentAsync(argument!);
             }
         }
 
-        private async Task CheckOptionsAsync(CommandCheckerContext context)
+        private async Task CheckOptionsAsync(CommandRouterContext context)
         {
             // Cache commonly accessed properties
-            var command = context.HandlerContext.ParsedCommand.Command;
+            var command = context.EnsureParsedCommand().Command;
             OptionDescriptors? optionDescriptors = command.Descriptor.OptionDescriptors;
 
             // If the command itself does not support any options then there's nothing to check. Parser will reject any
@@ -134,7 +134,7 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // Check arg value
-                await optionChecker.CheckOptionAsync(new OptionCheckerContext(opt!));
+                await optionChecker.CheckOptionAsync(opt!);
             }
         }
 

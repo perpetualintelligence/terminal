@@ -9,7 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using System;
@@ -147,7 +147,7 @@ namespace OneImlx.Terminal.Runtime
             return new TerminalUdpRouter(
                 commandRouterMock.Object,
                 exceptionHandlerMock.Object,
-                Options.Create(options),
+                Microsoft.Extensions.Options.Options.Create(options),
                 textHandlerMock.Object,
                 terminalProcessorMock.Object,
                 loggerMock);

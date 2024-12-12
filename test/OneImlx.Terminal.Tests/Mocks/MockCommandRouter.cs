@@ -5,13 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Shared.Infrastructure;
+using OneImlx.Terminal.Commands;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using OneImlx.Shared.Infrastructure;
-using OneImlx.Terminal.Commands.Handlers;
-using OneImlx.Terminal.Commands.Routers;
 
 namespace OneImlx.Terminal.Mocks
 {
@@ -74,7 +73,7 @@ namespace OneImlx.Terminal.Mocks
                     throw new TerminalException(explicitError);
                 }
 
-                ReturnedRouterResult = new CommandRouterResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), context.Request);
+                ReturnedRouterResult = new CommandRouterResult();
 
                 return ReturnedRouterResult;
             }

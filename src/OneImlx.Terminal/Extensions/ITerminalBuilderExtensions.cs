@@ -19,7 +19,6 @@ using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
@@ -55,15 +54,15 @@ namespace OneImlx.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <typeparam name="TCommand">The command parser type.</typeparam>
-        /// <typeparam name="TParser">The command request parser type.</typeparam>
+        /// <typeparam name="TRequest">The terminal request parser type.</typeparam>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandParser<TCommand, TParser>(this ITerminalBuilder builder) where TCommand : class, ICommandParser where TParser : class, ICommandRequestParser
+        public static ITerminalBuilder AddCommandParser<TCommand, TRequest>(this ITerminalBuilder builder) where TCommand : class, ICommandParser where TRequest : class, ITerminalRequestParser
         {
             // Add command parser
             builder.Services.AddTransient<ICommandParser, TCommand>();
 
             // Add option parser
-            builder.Services.AddTransient<ICommandRequestParser, TParser>();
+            builder.Services.AddTransient<ITerminalRequestParser, TRequest>();
 
             return builder;
         }
@@ -73,7 +72,7 @@ namespace OneImlx.Terminal.Extensions
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddCommandRouter<TRouter, THandler, TRuntime>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler where TRuntime : class, ICommandRuntime
+        public static ITerminalBuilder AddCommandRouter<TRouter, THandler, TResolver>(this ITerminalBuilder builder) where TRouter : class, ICommandRouter where THandler : class, ICommandHandler where TResolver : class, ICommandResolver
         {
             // Add command router
             builder.Services.AddTransient<ICommandRouter, TRouter>();
@@ -82,7 +81,7 @@ namespace OneImlx.Terminal.Extensions
             builder.Services.AddTransient<ICommandHandler, THandler>();
 
             // Add command runtime
-            builder.Services.AddTransient<ICommandRuntime, TRuntime>();
+            builder.Services.AddTransient<ICommandResolver, TResolver>();
 
             return builder;
         }

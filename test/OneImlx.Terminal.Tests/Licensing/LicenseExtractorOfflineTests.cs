@@ -17,7 +17,6 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -162,7 +161,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
         {
-            terminalOptions.Id = null;
+            terminalOptions.Id = null!;
             terminalOptions.Licensing.LicenseFile = testLicPath;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
@@ -339,7 +338,7 @@ namespace OneImlx.Terminal.Licensing
         public async Task ExtractFromJsonAsync_WithNoLicenseKey_ShouldErrorAsync()
         {
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = null;
+            terminalOptions.Licensing.LicenseFile = null!;
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync(new LicenseExtractorContext());
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured.");

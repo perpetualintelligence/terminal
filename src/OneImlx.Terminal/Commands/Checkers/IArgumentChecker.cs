@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -17,8 +17,8 @@ namespace OneImlx.Terminal.Commands.Checkers
         /// <summary>
         /// Checks <see cref="Argument"/> asynchronously.
         /// </summary>
-        /// <param name="context">The argument check context.</param>
+        /// <param name="argument">The argument to check.</param>
         /// <returns>The <see cref="ArgumentCheckerResult"/> instance.</returns>
-        public Task<ArgumentCheckerResult> CheckArgumentAsync(ArgumentCheckerContext context);
+        public Task<ArgumentCheckerResult> CheckArgumentAsync(Argument argument);
     }
 }

@@ -230,7 +230,7 @@ namespace OneImlx.Terminal.Hosting
         private async Task CheckLicenseAsync(LicenseExtractorResult result)
         {
             ILicenseChecker licenseChecker = ServiceProvider.GetRequiredService<ILicenseChecker>();
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(result.License));
+            await licenseChecker.CheckLicenseAsync(result.License);
         }
 
         private async Task<LicenseExtractorResult> ExtractLicenseAsync()

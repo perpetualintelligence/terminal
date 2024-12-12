@@ -1,20 +1,20 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
 using OneImlx.Terminal.Licensing;
-using System;
-using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Commands.Routers
+namespace OneImlx.Terminal.Commands
 {
     /// <summary>
     /// The default <see cref="ICommandRouter"/>.
@@ -54,10 +54,10 @@ namespace OneImlx.Terminal.Commands.Routers
         public async Task<CommandRouterResult> RouteCommandAsync(CommandRouterContext context)
         {
             CommandRouterResult? result = null;
-            ParsedCommand? extractedCommand = null;
+            ParsedCommand? parsedCommand = null;
             try
             {
-                logger.LogDebug("Start command router. type={0} request={1}", this.GetType().Name, context.Request.Id);
+                logger.LogDebug("Start command router. type={0} request={1}", GetType().Name, context.Request.Id);
 
                 // Issue a before request event if configured
                 if (asyncEventHandler != null)
@@ -67,16 +67,18 @@ namespace OneImlx.Terminal.Commands.Routers
                 }
 
                 // Ensure we have the license extracted before routing
-                License? license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the hosted service correctly.");
+                License license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the hosted service correctly.");
+                context.License = license;
 
                 // Parse the command
-                CommandParserResult parserResult = await commandParser.ParseCommandAsync(new CommandParserContext(context.Request));
-                extractedCommand = parserResult.ParsedCommand;
+                await commandParser.ParseCommandAsync(context);
+                parsedCommand = context.ParsedCommand;
 
-                // Delegate to handler
-                CommandHandlerContext handlerContext = new(context, parserResult.ParsedCommand, license);
-                var handlerResult = await commandHandler.HandleCommandAsync(handlerContext);
-                result = new CommandRouterResult(handlerResult, context.Request);
+                // Handle the command
+                await commandHandler.HandleCommandAsync(context);
+
+                // Ensure we have result.
+                result = context.EnsureResult();
             }
             finally
             {
@@ -84,7 +86,7 @@ namespace OneImlx.Terminal.Commands.Routers
                 if (asyncEventHandler != null)
                 {
                     logger.LogDebug("Fire event. event={0} request={1}", nameof(asyncEventHandler.AfterCommandRouteAsync), context.Request.Id);
-                    await asyncEventHandler.AfterCommandRouteAsync(context.Request, extractedCommand?.Command, result);
+                    await asyncEventHandler.AfterCommandRouteAsync(context.Request, parsedCommand?.Command, result);
                 }
 
                 logger.LogDebug("End command router. request={0}", context.Request.Id);
@@ -93,11 +95,11 @@ namespace OneImlx.Terminal.Commands.Routers
             return result;
         }
 
-        private readonly ICommandParser commandParser;
-        private readonly ICommandHandler commandHandler;
-        private readonly ILogger<CommandRouter> logger;
         private readonly ITerminalEventHandler? asyncEventHandler;
-        private readonly TerminalOptions terminalOptions;
+        private readonly ICommandHandler commandHandler;
+        private readonly ICommandParser commandParser;
         private readonly ILicenseExtractor licenseExtractor;
+        private readonly ILogger<CommandRouter> logger;
+        private readonly TerminalOptions terminalOptions;
     }
 }

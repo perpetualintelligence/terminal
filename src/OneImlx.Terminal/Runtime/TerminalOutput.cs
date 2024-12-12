@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Runtime
         [JsonConstructor]
         public TerminalOutput(TerminalInput input, object?[] results, string? senderId, string? senderEndpoint)
         {
-            Input = input ?? throw new System.ArgumentNullException(nameof(input));
+            Input = input ?? throw new ArgumentNullException(nameof(input));
 
             if (input.Count != results.Length)
             {
@@ -50,8 +50,8 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <remarks>
         /// The <see cref="Results"/> property is an array of objects that correspond to result of each request in the
-        /// input. Since the <see cref="System.Text.Json.JsonSerializer"/> does not directly deserialize elements of
-        /// varying types, the results may initially be represented as <see cref="System.Text.Json.JsonElement"/>. To
+        /// input. Since the <see cref="JsonSerializer"/> does not directly deserialize elements of
+        /// varying types, the results may initially be represented as <see cref="JsonElement"/>. To
         /// access a specific result after deserialization, use the <see cref="GetDeserializedResult{T}(int)"/> method, which
         /// converts the result to the desired type.
         /// </remarks>

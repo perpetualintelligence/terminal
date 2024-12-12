@@ -9,7 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
@@ -303,7 +303,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         private TerminalTcpRouter CreateTcpRouter()
         {
             return new TerminalTcpRouter(
-                Options.Create<TerminalOptions>(options),
+                Microsoft.Extensions.Options.Options.Create(options),
                 exceptionHandlerMock.Object,
                 terminalProcessorMock.Object,
                 textHandlerMock.Object,

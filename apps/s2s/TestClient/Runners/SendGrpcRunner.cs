@@ -3,6 +3,7 @@ using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using OneImlx.Terminal.Client;
 using OneImlx.Terminal.Client.Extensions;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
@@ -24,7 +25,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             this.terminalConsole = terminalConsole ?? throw new ArgumentNullException(nameof(terminalConsole));
         }
 
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
             string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
             int port = configuration.GetValue<int>("testclient:testserver:port");
@@ -39,7 +40,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             var clientTasks = new Task[5];
             for (int idx = 0; idx < clientTasks.Length; idx++)
             {
-                clientTasks[idx] = StartClientAsync(serverAddress, idx, context.StartContext.TerminalCancellationToken);
+                clientTasks[idx] = StartClientAsync(serverAddress, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
             }
 
             await Task.WhenAll(clientTasks);

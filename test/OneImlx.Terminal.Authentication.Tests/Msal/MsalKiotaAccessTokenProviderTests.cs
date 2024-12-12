@@ -192,7 +192,7 @@ namespace OneImlx.Terminal.Authentication.Msal
         private void SetupMockTokenAcquisition(string token)
         {
             var account = new Mock<IAccount>().Object;
-            _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync(new[] { account });
+            _msalTokenAcquisitionMock.Setup(x => x.GetAccountsAsync(null)).ReturnsAsync([account]);
 
             var authenticationResult = new AuthenticationResult(
                 accessToken: token,
@@ -219,7 +219,7 @@ namespace OneImlx.Terminal.Authentication.Msal
 
         private void SetupMockTokenAcquisitionForUiRequiredException(MsalUiRequiredException exception)
         {
-            _msalTokenAcquisitionMock.Setup(static x => x.GetAccountsAsync(null)).ReturnsAsync(new[] { new Mock<IAccount>().Object });
+            _msalTokenAcquisitionMock.Setup(static x => x.GetAccountsAsync(null)).ReturnsAsync([new Mock<IAccount>().Object]);
             _msalTokenAcquisitionMock.Setup(static x => x.AcquireTokenSilentAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IAccount>()))
                                      .ThrowsAsync(exception);
         }

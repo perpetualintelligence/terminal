@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,7 +7,6 @@
 
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Licensing;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Configuration.Options
 {

@@ -1,12 +1,11 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Runtime;
+using System.Collections.Generic;
 
 namespace OneImlx.Terminal.Commands.Parsers
 {
@@ -18,20 +17,13 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="request">The command request.</param>
         /// <param name="command">The command.</param>
         /// <param name="hierarchy">The command hierarchy.</param>
-        public ParsedCommand(TerminalRequest request, Command command, Root? hierarchy = null)
+        public ParsedCommand(Command command, IEnumerable<CommandDescriptor>? hierarchy = null)
         {
-            CommandRoute = request ?? throw new System.ArgumentNullException(nameof(request));
             Command = command ?? throw new System.ArgumentNullException(nameof(command));
             Hierarchy = hierarchy;
         }
-
-        /// <summary>
-        /// The command request.
-        /// </summary>
-        public TerminalRequest CommandRoute { get; }
 
         /// <summary>
         /// The parsed raw command.
@@ -41,7 +33,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// <summary>
         /// The parsed <see cref="Command"/> hierarchy.
         /// </summary>
-        /// <seealso cref="ParserOptions.ParseHierarchy"/>
-        public Root? Hierarchy { get; }
+        public IEnumerable<CommandDescriptor>? Hierarchy { get; }
     }
 }

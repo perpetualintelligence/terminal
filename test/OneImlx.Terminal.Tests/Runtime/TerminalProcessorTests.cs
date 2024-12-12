@@ -5,23 +5,23 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Test.FluentAssertions;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using FluentAssertions;
-using Moq;
-using OneImlx.Terminal.Commands.Routers;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -79,11 +79,11 @@ namespace OneImlx.Terminal.Runtime
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
                 .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
-                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
+                .ReturnsAsync(new CommandRouterResult());
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
             int idx = 0;
-            var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
+            var tasks = Enumerable.Range(0, 500).Select(e =>
             {
                 ++idx;
                 string[] cmdIds = [$"id_{idx}_0", $"id_{idx}_1", $"id_{idx}_2"];
@@ -142,7 +142,7 @@ namespace OneImlx.Terminal.Runtime
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
             int idx = 1;
-            var tasks = Enumerable.Range(0, 500).Select<int, Task>(e =>
+            var tasks = Enumerable.Range(0, 500).Select(e =>
             {
                 return _terminalProcessor.AddAsync(TerminalInput.Single($"id{idx++}", $"command{idx++}"), "sender", "endpoint");
             });
@@ -164,7 +164,7 @@ namespace OneImlx.Terminal.Runtime
             List<string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
                 .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
-                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
+                .ReturnsAsync(new CommandRouterResult());
 
             OrderedDictionary commands1 = [];
             for (int i = 0; i < 1000; i++)
@@ -287,7 +287,7 @@ namespace OneImlx.Terminal.Runtime
             Dictionary<string, string> routedCommands = [];
             _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
                 .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Id, c.Request.Raw))
-                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
+                .ReturnsAsync(new CommandRouterResult());
 
             // Send batch of 100000 commands by using TerminalServices
             Dictionary<string, string> allCommands = [];
@@ -346,23 +346,9 @@ namespace OneImlx.Terminal.Runtime
             TerminalRequest testRequest = new("id1", "command1,command2,command3|");
 
             // Create mock command router results for each command
-            CommandRouterResult routerResult1 = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                new Commands.Runners.CommandRunnerResult("sender_result1")),
-                new TerminalRequest("id1", "command1|")
-                                                   );
-
-            CommandRouterResult routerResult2 = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                new Commands.Runners.CommandRunnerResult("sender_result2")),
-                new TerminalRequest("id2", "command2|")
-                                                   );
-
-            CommandRouterResult routerResult3 = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                new Commands.Runners.CommandRunnerResult("sender_result3")),
-                new TerminalRequest("id3", "command3|")
-                                                   );
+            CommandRouterResult routerResult1 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result1"));
+            CommandRouterResult routerResult2 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result2"));
+            CommandRouterResult routerResult3 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result3"));
 
             // Arrange
             CommandRouterContext? routeContext = null;
@@ -382,7 +368,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            TerminalInput batch = TerminalInput.Batch("id1", new[] { "id1", "id2", "id3" }, new[] { "command1", "command2", "command3" });
+            TerminalInput batch = TerminalInput.Batch("id1", ["id1", "id2", "id3"], ["command1", "command2", "command3"]);
 
             var response = await _terminalProcessor.ExecuteAsync(batch, "sender_1", "sender_endpoint_1");
 
@@ -415,35 +401,11 @@ namespace OneImlx.Terminal.Runtime
             TerminalRequest testRequest = new("id1", "command1,command2,command3,command4,command5|");
 
             // Create mock command router results: 4 valid and 1 null
-            CommandRouterResult routerResult1 = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                new Commands.Runners.CommandRunnerResult("sender_result1")),
-                new TerminalRequest("id1", "command1|")
-                                                   );
-
-            CommandRouterResult routerResult2 = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                new Commands.Runners.CommandRunnerResult("sender_result2")),
-                new TerminalRequest("id2", "command2|")
-                                                   );
-
-            CommandRouterResult routerResult3 = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                new Commands.Runners.CommandRunnerResult("sender_result3")),
-                new TerminalRequest("id3", "command3|")
-                                                   );
-
-            CommandRouterResult routerResult4 = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                new Commands.Runners.CommandRunnerResult()), // Null Value
-                new TerminalRequest("id4", "command4|")
-                                                   );
-
-            CommandRouterResult routerResult5 = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                new Commands.Runners.CommandRunnerResult("sender_result5")),
-                new TerminalRequest("id5", "command5|")
-                                                   );
+            CommandRouterResult routerResult1 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result1"));
+            CommandRouterResult routerResult2 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result2"));
+            CommandRouterResult routerResult3 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result3"));
+            CommandRouterResult routerResult4 = new(new CommandCheckerResult(), new CommandRunnerResult()); // Null Value
+            CommandRouterResult routerResult5 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result5"));
 
             // Arrange
             CommandRouterContext? routeContext = null;
@@ -501,11 +463,7 @@ namespace OneImlx.Terminal.Runtime
             TerminalRequest testRequest = new("id1", "command1|");
 
             // Create a mock command router result with
-            CommandRouterResult routerResult = new(new Commands.Handlers.CommandHandlerResult(
-                new Commands.Checkers.CommandCheckerResult(),
-                    new Commands.Runners.CommandRunnerResult("sender_result")),
-                testRequest
-                                                  );
+            CommandRouterResult routerResult = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result"));
 
             // Arrange
             CommandRouterContext? routeContext = null;
@@ -699,7 +657,7 @@ namespace OneImlx.Terminal.Runtime
                 {
                     processedCommands.Add(ctx.Request.Raw);
                 })
-                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
+                .ReturnsAsync(new CommandRouterResult());
 
             // Start the processor
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
@@ -776,7 +734,7 @@ namespace OneImlx.Terminal.Runtime
                 {
                     processedCommands.Enqueue(ctx.Request.Raw);
                 })
-                .ReturnsAsync(new CommandRouterResult(new Commands.Handlers.CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), new TerminalRequest("mock_id", "mock_command")));
+                .ReturnsAsync(new CommandRouterResult());
 
             // Create a large batch of commands to simulate streaming
             var ids = Enumerable.Range(1, 1500).Select(i => $"id{i}").ToArray();

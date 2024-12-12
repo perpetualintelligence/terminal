@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
@@ -24,7 +25,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
             this.logger = logger;
         }
 
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
             await terminalConsole.WriteLineAsync("Group2 command called.");
             return new CommandRunnerResult("Response from grp2");

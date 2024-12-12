@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -21,7 +21,6 @@ using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -55,10 +54,7 @@ namespace OneImlx.Terminal.Licensing
             logger.LogDebug("Extract license.");
 
             // For singleton DI service we don't extract license keys once extracted.
-            if (licenseExtractorResult == null)
-            {
-                licenseExtractorResult = await ExtractFromJsonAsync();
-            }
+            licenseExtractorResult ??= await ExtractFromJsonAsync();
 
             return licenseExtractorResult;
         }
@@ -70,7 +66,7 @@ namespace OneImlx.Terminal.Licensing
             return Task.FromResult(licenseExtractorResult?.License);
         }
 
-        private async Task<LicenseClaims> CheckOfflineLicenseAsync(LicenseCheck checkModel)
+        private static async Task<LicenseClaims> CheckOfflineLicenseAsync(LicenseCheck checkModel)
         {
             // Make sure validation key is not null
             if (checkModel.ValidationKey == null)
@@ -93,7 +89,7 @@ namespace OneImlx.Terminal.Licensing
 
                 RequireSignedTokens = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKeys = new[] { validationKey },
+                IssuerSigningKeys = [validationKey],
 
                 RequireExpirationTime = true,
                 ValidateLifetime = true,
@@ -112,6 +108,28 @@ namespace OneImlx.Terminal.Licensing
             EnsureClaim(result, "apps", checkModel.Application, new Error(TerminalErrors.UnauthorizedAccess, "The application is not authorized. app={0}", checkModel.Application));
 
             return LicenseClaims.Create(result.Claims);
+        }
+
+        private static void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
+        {
+            result.Claims.TryGetValue(claim, out object? jwtValue);
+
+            // Both JSON claim and expected claim do not exist. E.g. oid claim is optional, so the JWT token may not
+            // have it and if check still passes that then it is an error.
+            if (jwtValue == null && expectedValue == null)
+            {
+                return;
+            }
+
+            if (jwtValue == null || !jwtValue.Equals(expectedValue))
+            {
+                throw new TerminalException(error);
+            }
+        }
+
+        private static bool IsOnPremiseDeployment(string? deployment)
+        {
+            return deployment == TerminalIdentifiers.OnPremiseDeployment;
         }
 
         private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseCheck checkModel)
@@ -133,23 +151,6 @@ namespace OneImlx.Terminal.Licensing
                 httpResponseMessage = await httpClient.PostAsync(fallbackCheckLicUrl, checkContent);
             }
             return httpResponseMessage;
-        }
-
-        private void EnsureClaim(TokenValidationResult result, string claim, object? expectedValue, Error error)
-        {
-            result.Claims.TryGetValue(claim, out object? jwtValue);
-
-            // Both JSON claim and expected claim do not exist. E.g. oid claim is optional, so the JWT token may not
-            // have it and if check still passes that then it is an error.
-            if (jwtValue == null && expectedValue == null)
-            {
-                return;
-            }
-
-            if (jwtValue == null || !jwtValue.Equals(expectedValue))
-            {
-                throw new TerminalException(error);
-            }
         }
 
         /// <summary>
@@ -396,11 +397,6 @@ namespace OneImlx.Terminal.Licensing
             return licenseExtractorResult;
         }
 
-        private bool IsOnPremiseDeployment(string? deployment)
-        {
-            return deployment == TerminalIdentifiers.OnPremiseDeployment;
-        }
-
         /// <summary>
         /// Creates a license for on-premise production deployment.
         /// </summary>
@@ -421,8 +417,8 @@ namespace OneImlx.Terminal.Licensing
         private readonly IHttpClientFactory? httpClientFactory;
         private readonly ILicenseDebugger licenseDebugger;
         private readonly ILogger<LicenseExtractor> logger;
+        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
         private readonly TerminalOptions terminalOptions;
         private LicenseExtractorResult? licenseExtractorResult;
-        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
     }
 }

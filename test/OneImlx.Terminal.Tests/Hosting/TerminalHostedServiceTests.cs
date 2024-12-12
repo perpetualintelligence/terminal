@@ -68,7 +68,7 @@ namespace OneImlx.Terminal.Hosting
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
-            printLic.Invoke(defaultCliHostedService, new[] { MockLicenses.TestLicense });
+            printLic.Invoke(defaultCliHostedService, [MockLicenses.TestLicense]);
 
             logger.Messages.Should().BeEmpty();
 
@@ -92,7 +92,7 @@ namespace OneImlx.Terminal.Hosting
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
-            printLic.Invoke(defaultCliHostedService, new[] { community });
+            printLic.Invoke(defaultCliHostedService, [community]);
 
             logger.Messages.Should().BeEmpty();
         }
@@ -105,7 +105,7 @@ namespace OneImlx.Terminal.Hosting
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
-            printLic.Invoke(defaultCliHostedService, new[] { community });
+            printLic.Invoke(defaultCliHostedService, [community]);
 
             logger.Messages.Should().BeEmpty();
 
@@ -121,7 +121,7 @@ namespace OneImlx.Terminal.Hosting
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(printLic);
-            printLic.Invoke(defaultCliHostedService, new[] { community });
+            printLic.Invoke(defaultCliHostedService, [community]);
 
             logger.Messages.Should().BeEmpty();
 

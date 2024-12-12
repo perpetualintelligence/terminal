@@ -1,28 +1,28 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
     internal class MockCommandRunnerInner : IDelegateCommandRunner, ICommandRunner<CommandRunnerResult>
     {
+        public bool DelegateHelpCalled { get; private set; }
+
         public bool DelegateRunCalled { get; set; }
 
         public bool HelpCalled { get; set; }
+
         public bool RunCalled { get; private set; }
-        public bool DelegateHelpCalled { get; private set; }
 
-        private ITerminalHelpProvider helpProvider = null!;
-
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRunnerContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRouterContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
             this.helpProvider = helpProvider;
             DelegateHelpCalled = true;
@@ -30,22 +30,24 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
             return new CommandRunnerResult();
         }
 
-        public Task<CommandRunnerResult> DelegateRunAsync(CommandRunnerContext context, ILogger? logger = null)
+        public Task<CommandRunnerResult> DelegateRunAsync(CommandRouterContext context, ILogger? logger = null)
         {
             DelegateRunCalled = true;
             return RunCommandAsync(context);
         }
 
-        public async Task RunHelpAsync(CommandRunnerContext context)
-        {
-            await helpProvider.ProvideHelpAsync(new TerminalHelpProviderContext(context.HandlerContext.ParsedCommand.Command));
-            HelpCalled = true;
-        }
-
-        public Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
         {
             RunCalled = true;
             return Task.FromResult<CommandRunnerResult>(new MockCommandRunnerInnerResult());
         }
+
+        public async Task RunHelpAsync(CommandRouterContext context)
+        {
+            await helpProvider.ProvideHelpAsync(new TerminalHelpProviderContext(context.EnsureParsedCommand().Command));
+            HelpCalled = true;
+        }
+
+        private ITerminalHelpProvider helpProvider = null!;
     }
 }

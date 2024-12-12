@@ -1,11 +1,10 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Routers;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Handlers
@@ -20,6 +19,6 @@ namespace OneImlx.Terminal.Commands.Handlers
         /// </summary>
         /// <param name="context">The handler context.</param>
         /// <returns>The handler result.</returns>
-        Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context);
+        Task HandleCommandAsync(CommandRouterContext context);
     }
 }

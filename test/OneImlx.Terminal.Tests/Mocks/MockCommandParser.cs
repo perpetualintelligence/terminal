@@ -1,29 +1,30 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Threading.Tasks;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Runtime;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks
 {
     public class MockCommandParser : ICommandParser
     {
-        public bool Called { get; set; }
-
-        public Task<CommandParserResult> ParseCommandAsync(CommandParserContext context)
+        public Task ParseCommandAsync(CommandRouterContext context)
         {
             Called = true;
 
-            var cIdt = new Commands.CommandDescriptor("testid", "testname", "desc", CommandType.SubCommand, CommandFlags.None);
+            var cIdt = new CommandDescriptor("testid", "testname", "desc", CommandType.SubCommand, CommandFlags.None);
             Command command = new(cIdt);
-            ParsedCommand extractedCommand = new(new TerminalRequest("id1", "test"), command, Root.Default());
-            return Task.FromResult(new CommandParserResult(extractedCommand));
+            ParsedCommand extractedCommand = new(command, null);
+            context.ParsedCommand = extractedCommand;
+            return Task.CompletedTask;
         }
+
+        public bool Called { get; set; }
     }
 }

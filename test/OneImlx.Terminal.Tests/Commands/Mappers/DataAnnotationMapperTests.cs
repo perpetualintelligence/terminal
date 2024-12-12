@@ -1,17 +1,17 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Mappers
@@ -22,17 +22,6 @@ namespace OneImlx.Terminal.Commands.Mappers
         {
             options = MockTerminalOptions.NewLegacyOptions();
             mapper = new DataTypeMapper<Option>(options, new LoggerFactory().CreateLogger<DataTypeMapper<Option>>());
-        }
-
-        [Theory]
-        [InlineData("invalid")]
-        [InlineData("@[]asdas")]
-        [InlineData("12343")]
-        public async Task MapperShouldThrowForInvalidDataType(string dataType)
-        {
-            Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
-            Func<Task> result = async () => await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(option));
-            await result.Should().ThrowAsync<TerminalException>().WithMessage($"The option data type is not supported. option=opt1 data_type={dataType}");
         }
 
         [Theory]
@@ -50,25 +39,36 @@ namespace OneImlx.Terminal.Commands.Mappers
         public async Task MapperShouldReturnCorrectMappingAsync(string dataType, Type systemType)
         {
             Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
-            var result = await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(option));
+            var result = await mapper.MapToTypeAsync(option);
             result.MappedType.Should().Be(systemType);
+        }
+
+        [Theory]
+        [InlineData("invalid")]
+        [InlineData("@[]asdas")]
+        [InlineData("12343")]
+        public async Task MapperShouldThrowForInvalidDataType(string dataType)
+        {
+            Option option = new(new OptionDescriptor("opt1", dataType, "desc", OptionFlags.None), "val1");
+            Func<Task> result = async () => await mapper.MapToTypeAsync(option);
+            await result.Should().ThrowAsync<TerminalException>().WithMessage($"The value data type is not supported. value=opt1 data_type={dataType}");
         }
 
         [Fact]
         public async Task NullOrWhitespaceDataTypeShouldErrorAsync()
         {
             Option test = new(new OptionDescriptor("opt1", "   ", "desc", OptionFlags.None), "val1");
-            Func<Task> func = async () => await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option data type cannot be null or whitespace. option=opt1");
+            Func<Task> func = async () => await mapper.MapToTypeAsync(test);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidRequest).WithErrorDescription("The value data type cannot be null or whitespace. value=opt1");
 
             test = new(new OptionDescriptor("opt1", "", "desc", OptionFlags.None), "val1");
-            func = async () => await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option data type cannot be null or whitespace. option=opt1");
+            func = async () => await mapper.MapToTypeAsync(test);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidRequest).WithErrorDescription("The value data type cannot be null or whitespace. value=opt1");
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             test = new(new OptionDescriptor("opt1", null, "desc", OptionFlags.None), "val1");
-            func = async () => await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(test));
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option data type cannot be null or whitespace. option=opt1");
+            func = async () => await mapper.MapToTypeAsync(test);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidRequest).WithErrorDescription("The value data type cannot be null or whitespace. value=opt1");
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -13,7 +13,6 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
@@ -117,7 +116,6 @@ namespace OneImlx.Terminal.Extensions
                            .AddCommandStore<TStore>()
                            .AddProcessor<TerminalProcessor>()
                            .AddLicensing();
-
         }
 
         /// <summary>
@@ -196,8 +194,8 @@ namespace OneImlx.Terminal.Extensions
             }
 
             return services.AddTerminal<TStore, TText>(textHandler, setupAction)
-                   .AddCommandRouter<CommandRouter, CommandHandler, CommandRuntime>()
-                   .AddCommandParser<CommandParser, CommandRequestParser>()
+                   .AddCommandRouter<CommandRouter, CommandHandler, CommandResolver>()
+                   .AddCommandParser<CommandParser, TerminalRequestQueueParser>()
                    .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()
                    .AddArgumentChecker<DataTypeMapper<Argument>, ArgumentChecker>()
                    .AddExceptionHandler<TException>()

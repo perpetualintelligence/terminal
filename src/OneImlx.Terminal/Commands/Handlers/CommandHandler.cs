@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
@@ -28,14 +27,14 @@ namespace OneImlx.Terminal.Commands.Handlers
         /// Initialize a news instance.
         /// </summary>
         public CommandHandler(
-            ICommandRuntime commandRuntime,
+            ICommandResolver commandResolver,
             ILicenseChecker licenseChecker,
             IOptions<TerminalOptions> options,
             ITerminalHelpProvider terminalHelpProvider,
             ILogger<CommandHandler> logger,
             ITerminalEventHandler? terminalEventHandler = null)
         {
-            this.commandRuntime = commandRuntime ?? throw new ArgumentNullException(nameof(commandRuntime));
+            this.commandRuntime = commandResolver ?? throw new ArgumentNullException(nameof(commandResolver));
             this.licenseChecker = licenseChecker ?? throw new ArgumentNullException(nameof(licenseChecker));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.terminalHelpProvider = terminalHelpProvider ?? throw new ArgumentNullException(nameof(terminalHelpProvider));
@@ -46,26 +45,28 @@ namespace OneImlx.Terminal.Commands.Handlers
         }
 
         /// <inheritdoc/>
-        public async Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context)
+        public async Task HandleCommandAsync(CommandRouterContext context)
         {
-            logger.LogDebug("Handle request. request={0}", context.RouterContext.Request.Id);
+            logger.LogDebug("Handle request. request={0}", context.Request.Id);
 
             // Check the license
-            await licenseChecker.CheckLicenseAsync(new LicenseCheckerContext(context.License));
+            await licenseChecker.CheckLicenseAsync(context.EnsureLicense());
 
             // Check and run the command
             Tuple<CommandCheckerResult, CommandRunnerResult> result = await CheckAndRunCommandInnerAsync(context);
 
             // Return the processed result
-            return new CommandHandlerResult(result.Item1, result.Item2);
+            context.Result = new CommandRouterResult(result.Item1, result.Item2);
         }
 
-        private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandHandlerContext context)
+        private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandRouterContext context)
         {
+            Command command = context.EnsureParsedCommand().Command;
+
             // If we are executing a help command then we need to bypass all the checks.
             if (!options.Value.Help.Disabled.GetValueOrDefault() &&
-                (context.ParsedCommand.Command.TryGetOption(options.Value.Help.OptionId, out Option? helpOption) ||
-                 context.ParsedCommand.Command.TryGetOption(options.Value.Help.OptionAlias, out helpOption)
+                (command.TryGetOption(options.Value.Help.OptionId, out Option? helpOption) ||
+                 command.TryGetOption(options.Value.Help.OptionAlias, out helpOption)
                 ))
             {
                 logger.LogDebug("Found help option. option={0}", helpOption != null ? helpOption.Id : "?");
@@ -80,65 +81,68 @@ namespace OneImlx.Terminal.Commands.Handlers
             }
         }
 
-        private async Task<CommandCheckerResult> CheckCommandInnerAsync(CommandHandlerContext context)
+        private async Task<CommandCheckerResult> CheckCommandInnerAsync(CommandRouterContext context)
         {
+            Command command = context.EnsureParsedCommand().Command;
+
             // Issue a before check event if configured
             if (terminalEventHandler != null)
             {
-                logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.BeforeCommandCheckAsync), context.ParsedCommand.Command.Id);
-                await terminalEventHandler.BeforeCommandCheckAsync(context.ParsedCommand.Command);
+                logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.BeforeCommandCheckAsync), command.Id);
+                await terminalEventHandler.BeforeCommandCheckAsync(command);
             }
 
             // Find the checker and check the command
-            ICommandChecker commandChecker = commandRuntime.ResolveCommandChecker(context.ParsedCommand.Command.Descriptor);
-            var result = await commandChecker.CheckCommandAsync(new CommandCheckerContext(context));
+            ICommandChecker commandChecker = commandRuntime.ResolveCommandChecker(command.Descriptor);
+            var result = await commandChecker.CheckCommandAsync(context);
 
             // Issue a after check event if configured
             if (terminalEventHandler != null)
             {
-                logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.AfterCommandCheckAsync), context.ParsedCommand.Command.Id);
-                await terminalEventHandler.AfterCommandCheckAsync(context.ParsedCommand.Command, result);
+                logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.AfterCommandCheckAsync), command.Id);
+                await terminalEventHandler.AfterCommandCheckAsync(command, result);
             }
 
             return result;
         }
 
-        private async Task<CommandRunnerResult> RunCommandInnerAsync(CommandHandlerContext context, bool runHelp)
+        private async Task<CommandRunnerResult> RunCommandInnerAsync(CommandRouterContext context, bool runHelp)
         {
+            Command command = context.EnsureParsedCommand().Command;
+
             // Issue a before run event if configured
             if (terminalEventHandler != null)
             {
-                logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.BeforeCommandRunAsync), context.ParsedCommand.Command.Id);
-                await terminalEventHandler.BeforeCommandRunAsync(context.ParsedCommand.Command);
+                logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.BeforeCommandRunAsync), command.Id);
+                await terminalEventHandler.BeforeCommandRunAsync(command);
             }
 
             // Find the runner to run the command
-            IDelegateCommandRunner commandRunner = commandRuntime.ResolveCommandRunner(context.ParsedCommand.Command.Descriptor);
-            CommandRunnerContext runnerContext = new(context);
+            IDelegateCommandRunner commandRunner = commandRuntime.ResolveCommandRunner(command.Descriptor);
             CommandRunnerResult runnerResult;
 
             // Run or Help
             if (runHelp)
             {
                 logger.LogDebug("Skip runner. Delegate to help provider. type={0}", terminalHelpProvider.GetType().Name);
-                runnerResult = await commandRunner.DelegateHelpAsync(runnerContext, terminalHelpProvider, logger);
+                runnerResult = await commandRunner.DelegateHelpAsync(context, terminalHelpProvider, logger);
             }
             else
             {
-                runnerResult = await commandRunner.DelegateRunAsync(runnerContext, logger);
+                runnerResult = await commandRunner.DelegateRunAsync(context, logger);
             }
 
             // Issue a after run event if configured
             if (terminalEventHandler != null)
             {
-                logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.AfterCommandRunAsync), context.ParsedCommand.Command.Id);
-                await terminalEventHandler.AfterCommandRunAsync(context.ParsedCommand.Command, runnerResult);
+                logger.LogDebug("Fire event. event={0} command={1}", nameof(terminalEventHandler.AfterCommandRunAsync), command.Id);
+                await terminalEventHandler.AfterCommandRunAsync(command, runnerResult);
             }
 
             return runnerResult;
         }
 
-        private readonly ICommandRuntime commandRuntime;
+        private readonly ICommandResolver commandRuntime;
         private readonly ILicenseChecker licenseChecker;
         private readonly ILogger<CommandHandler> logger;
         private readonly IOptions<TerminalOptions> options;

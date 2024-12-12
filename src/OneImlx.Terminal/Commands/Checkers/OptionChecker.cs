@@ -1,24 +1,22 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Commands.Mappers;
-using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using OneImlx.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The default option checker.
     /// </summary>
-    /// <remarks>
-    /// The <see cref="OptionChecker"/> uses the <see cref="ValidationAttribute"/> to check an option value.
-    /// </remarks>
+    /// <remarks>The <see cref="OptionChecker"/> uses the <see cref="ValidationAttribute"/> to check an option value.</remarks>
     public class OptionChecker : IOptionChecker
     {
         /// <summary>
@@ -33,36 +31,36 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public async Task<OptionCheckerResult> CheckOptionAsync(OptionCheckerContext context)
+        public async Task<OptionCheckerResult> CheckOptionAsync(Option option)
         {
             // Check for null option value
-            if (context.Option.Value == null)
+            if (option.Value == null)
             {
-                throw new TerminalException(TerminalErrors.InvalidOption, "The option value cannot be null. option={0}", context.Option.Id);
+                throw new TerminalException(TerminalErrors.InvalidOption, "The option value cannot be null. option={0}", option.Id);
             }
 
             // Check option data type and value type
-            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(new DataTypeMapperContext<Option>(context.Option));
+            DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(option);
 
             // Check whether we need to check type
             if (options.Checker.StrictValueType.GetValueOrDefault())
             {
                 // Check value compatibility
-                await StrictTypeCheckingAsync(context, mapperResult);
+                await StrictTypeCheckingAsync(option, mapperResult);
             }
 
             // Check value
-            if (context.Option.Descriptor.ValueCheckers != null)
+            if (option.Descriptor.ValueCheckers != null)
             {
-                foreach (IValueChecker<Option> valueChecker in context.Option.Descriptor.ValueCheckers)
+                foreach (IValueChecker<Option> valueChecker in option.Descriptor.ValueCheckers)
                 {
                     try
                     {
-                        await valueChecker.CheckValueAsync(context.Option);
+                        await valueChecker.CheckValueAsync(option);
                     }
                     catch (Exception ex)
                     {
-                        throw new TerminalException(TerminalErrors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", context.Option.Id, context.Option.Value, ex.Message);
+                        throw new TerminalException(TerminalErrors.InvalidOption, "The option value is not valid. option={0} value={1} info={2}", option.Id, option.Value, ex.Message);
                     }
                 }
             }
@@ -73,20 +71,20 @@ namespace OneImlx.Terminal.Commands.Checkers
         /// <summary>
         /// Checks the option value compatibility.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="option"></param>
         /// <param name="mapperResult"></param>
         /// <returns></returns>
-        protected Task<OptionCheckerResult> StrictTypeCheckingAsync(OptionCheckerContext context, DataTypeMapperResult mapperResult)
+        protected Task<OptionCheckerResult> StrictTypeCheckingAsync(Option option, DataTypeMapperResult mapperResult)
         {
             // Ensure strict value compatibility
             try
             {
-                context.Option.ChangeValueType(mapperResult.MappedType);
+                option.ChangeValueType(mapperResult.MappedType);
             }
             catch
             {
                 // Meaningful error instead of format exception
-                throw new TerminalException(TerminalErrors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", context.Option.Id, mapperResult.MappedType, context.Option.DataType, context.Option.Value.GetType().Name, context.Option.Value);
+                throw new TerminalException(TerminalErrors.InvalidOption, "The option value does not match the mapped type. option={0} type={1} data_type={2} value_type={3} value={4}", option.Id, mapperResult.MappedType, option.DataType, option.Value.GetType().Name, option.Value);
             }
 
             return Task.FromResult(new OptionCheckerResult(mapperResult.MappedType));

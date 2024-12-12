@@ -51,9 +51,9 @@ namespace OneImlx.Terminal.Configuration.Options
 
         /// <summary>
         /// Represents the delimiter used to identify individual <see cref="TerminalInput"/> within a continuous stream
-        /// of bytes. The delimiter is set to <c>0x1F</c> (ASCII "Unit Separator"), a non-printable control character
+        /// of bytes. The delimiter is set to <c>0x1E</c> (ASCII "Record Separator"), a non-printable control character
         /// commonly used to separate data and unlikely to appear in standard text.
         /// </summary>
-        public byte StreamDelimiter = 0x1F;
+        public byte StreamDelimiter = TerminalIdentifiers.StreamDelimiter;
     }
 }

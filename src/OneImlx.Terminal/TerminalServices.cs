@@ -6,11 +6,11 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using OneImlx.Terminal.Configuration.Options;
 
-namespace OneImlx.Terminal.Runtime
+namespace OneImlx.Terminal
 {
     /// <summary>
     /// Provides common terminal services.
@@ -51,6 +51,32 @@ namespace OneImlx.Terminal.Runtime
         public static string EncodeLicenseContents(string licenseContents)
         {
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(licenseContents));
+        }
+
+        /// <summary>
+        /// Determines if the given token is an option based on specified <see cref="TerminalOptions"/>.
+        /// </summary>
+        /// <param name="token">The token to check.</param>
+        /// <param name="terminalOptions">The terminal options to use for checking.</param>
+        /// <param name="isAlias">Outputs whether the option is an alias.</param>
+        /// <returns>True if the token is an option; otherwise, false.</returns>
+        public static bool IsOption(string token, TerminalOptions terminalOptions, out bool isAlias)
+        {
+            isAlias = false;
+            char firstChar = token.First();
+            char secondChar = token.Length > 1 ? token[1] : default;
+
+            if (firstChar == terminalOptions.Parser.OptionPrefix)
+            {
+                if (firstChar != secondChar)
+                {
+                    isAlias = true;
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

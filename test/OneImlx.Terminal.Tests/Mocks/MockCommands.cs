@@ -36,9 +36,9 @@ namespace OneImlx.Terminal.Mocks
                 new("key4", nameof(String), "Key4 value email", OptionFlags.None),
                 new("key5", nameof(String), "Key5 value url", OptionFlags.None),
                 new("key6", nameof(Boolean), "Key6 no value", OptionFlags.None),
-                new("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationValueChecker<Option>(new OneOfAttribute("INR", "USD", "EUR")) } },
+                new("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("INR", "USD", "EUR"))] },
                 new("key8", nameof(Int32), "Key8 value custom int", OptionFlags.None),
-                new("key9", nameof(Double), "Key9 value custom double", OptionFlags.Required) {ValueCheckers = new []{ new DataValidationValueChecker<Option>(new RequiredAttribute()), new DataValidationValueChecker<Option>(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new("key9", nameof(Double), "Key9 value custom double", OptionFlags.Required) {ValueCheckers = [new DataValidationValueChecker<Option>(new RequiredAttribute()), new DataValidationValueChecker<Option>(new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5))] },
                 new("key10", nameof(String), "Key10 value custom string", OptionFlags.Required)
             ]);
 
@@ -50,9 +50,9 @@ namespace OneImlx.Terminal.Mocks
                 new("key4", nameof(String), "Key4 value email", OptionFlags.None),
                 new("key5", nameof(String), "Key5 value url", OptionFlags.None),
                 new("key6-a-s-xx-s", nameof(Boolean), "Key6 no value", OptionFlags.None),
-                new("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = new[] { new DataValidationValueChecker<Option>( new OneOfAttribute("INR", "USD", "EUR") )} },
+                new("key7", nameof(Int64), "Key7 value currency", OptionFlags.Required) { ValueCheckers = [new DataValidationValueChecker<Option>( new OneOfAttribute("INR", "USD", "EUR") )] },
                 new("key8", nameof(Int32), "Key8 value int", OptionFlags.None),
-                new("key9", nameof(Double), "Key9 invalid default value", OptionFlags.Required) {ValueCheckers = new[] { new DataValidationValueChecker<Option>( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5)) } },
+                new("key9", nameof(Double), "Key9 invalid default value", OptionFlags.Required) {ValueCheckers = [new DataValidationValueChecker<Option>( new OneOfAttribute(2.36, 25.36, 3669566.36, 26.36, -36985.25, 0, -5))] },
                 new("key10", nameof(String), "Key10 value custom string", OptionFlags.Required, "k10"),
                 new("key11", nameof(Boolean), "Key11 value boolean", OptionFlags.Required, "k11"),
                 new("key12", nameof(Boolean), "Key12 value default boolean", OptionFlags.Required, "k12")
@@ -89,22 +89,22 @@ namespace OneImlx.Terminal.Mocks
             [
 
                 // Different name and prefix
-                NewCommandDefinition("orgid", "pi", "the top org grouped command", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("pi", "pi", "the top org grouped command", CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid", "auth", "the auth grouped command", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("auth", "pi:auth", "the auth grouped command", CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:loginid", "login", "the login command within the auth group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("login", "pi:auth:login", "the login command within the auth group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid", "slogin", "the silent login command within the auth group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("slogin", "pi:auth:slogin", "the silent login command within the auth group", CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oidc", "oidc", "the slient oidc login command within the slogin group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("oidc", "pi:auth:slogin:oidc", "the slient oidc login command within the slogin group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("orgid:authid:sloginid:oauth", "oauth", "the slient oauth login command within the slogin group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("outh", "pi:auth:slogin:oauth", "the slient oauth login command within the slogin group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
             ]);
 
             GroupedOptionsCommands = new(unicodeTextHandler,

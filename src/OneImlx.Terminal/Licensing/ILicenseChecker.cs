@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -17,8 +17,8 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// Checks <see cref="License"/> asynchronously.
         /// </summary>
-        /// <param name="context">The license check context.</param>
+        /// <param name="license">The license to check.</param>
         /// <returns>The <see cref="LicenseCheckerResult"/> instance.</returns>
-        public Task<LicenseCheckerResult> CheckLicenseAsync(LicenseCheckerContext context);
+        public Task<LicenseCheckerResult> CheckLicenseAsync(License license);
     }
 }

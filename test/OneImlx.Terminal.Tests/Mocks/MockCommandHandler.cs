@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Handlers;
 using System.Threading.Tasks;
 
@@ -14,10 +15,10 @@ namespace OneImlx.Terminal.Mocks
     {
         public bool Called { get; set; }
 
-        public Task<CommandHandlerResult> HandleCommandAsync(CommandHandlerContext context)
+        public Task HandleCommandAsync(CommandRouterContext context)
         {
             Called = true;
-            return Task.FromResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()));
+            return Task.CompletedTask;
         }
     }
 }

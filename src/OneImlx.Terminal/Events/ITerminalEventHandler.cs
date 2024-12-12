@@ -8,7 +8,6 @@
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -12,15 +12,15 @@ using System.Text.Json.Serialization;
 namespace OneImlx.Terminal.Commands
 {
     /// <summary>
-    /// The <see cref="Option"/> class is a runtime validated representation of an actual command option and its
-    /// value passed by a user or an application.
+    /// The <see cref="Option"/> class is a runtime validated representation of an actual command option and its value
+    /// passed by a user or an application.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// An option id is always unique within a command. By design <see cref="Option"/> implements the default
-    /// equality <see cref="IEquatable{T}"/> and <see cref="GetHashCode()"/> using <see cref="Id"/> property. Thus, two
-    /// options with the same id are equal irrespective of other property values. This is done to improve performance
-    /// during lookup and avoid multiple options with same identifiers.
+    /// An option id is always unique within a command. By design <see cref="Option"/> implements the default equality
+    /// <see cref="IEquatable{T}"/> and <see cref="GetHashCode()"/> using <see cref="Id"/> property. Thus, two options
+    /// with the same id are equal irrespective of other property values. This is done to improve performance during
+    /// lookup and avoid multiple options with same identifiers.
     /// </para>
     /// <para>
     /// The options can have same ids across multiple commands. Each <see cref="Command"/> has
@@ -28,25 +28,20 @@ namespace OneImlx.Terminal.Commands
     /// </para>
     /// </remarks>
     /// <seealso cref="Command"/>
-    public sealed class Option : IEquatable<Option?>, IValue
+    public sealed class Option : IEquatable<Option?>, ICommandValue
     {
         /// <summary>
         /// Initialize a new instance..
         /// </summary>
         /// <param name="optionDescriptor">The option descriptor.</param>
         /// <param name="value">The option value.</param>
-        [JsonConstructor]
-        public Option(OptionDescriptor optionDescriptor, object value)
+        /// <param name="byAlias">Determines whether the option is identifier by its alias.</param>
+        public Option(OptionDescriptor optionDescriptor, object value, bool byAlias = false)
         {
             Value = value;
+            ByAlias = byAlias;
             Descriptor = optionDescriptor;
         }
-
-        /// <summary>
-        /// The option descriptor.
-        /// </summary>
-        [JsonPropertyName("descriptor")]
-        public OptionDescriptor Descriptor { get; }
 
         /// <summary>
         /// The option alias.
@@ -63,21 +58,28 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// The option description.
         /// </summary>
-        [JsonIgnore]
         public string? Description => Descriptor.Description;
+
+        /// <summary>
+        /// The option descriptor.
+        /// </summary>
+        public OptionDescriptor Descriptor { get; }
 
         /// <summary>
         /// The option id.
         /// </summary>
         /// <remarks>The option id is unique with in a command.</remarks>
-        [JsonIgnore]
         public string Id => Descriptor.Id;
 
         /// <summary>
         /// The option value.
         /// </summary>
-        [JsonPropertyName("value")]
         public object Value { get; set; }
+
+        /// <summary>
+        /// Determines whether the option is identifier by its alias.
+        /// </summary>
+        public bool ByAlias { get; }
 
         /// <summary>
         /// Indicates whether the current option is not equal to another option.
@@ -99,6 +101,15 @@ namespace OneImlx.Terminal.Commands
         public static bool operator ==(Option? left, Option? right)
         {
             return EqualityComparer<Option?>.Default.Equals(left, right);
+        }
+
+        /// <summary>
+        /// Changes the option value to the specified type.
+        /// </summary>
+        /// <param name="type">The new type to use.</param>
+        public void ChangeValueType(Type type)
+        {
+            Value = Convert.ChangeType(Value, type);
         }
 
         /// <summary>
@@ -129,15 +140,6 @@ namespace OneImlx.Terminal.Commands
         public override int GetHashCode()
         {
             return Id.GetHashCode();
-        }
-
-        /// <summary>
-        /// Changes the option value to the specified type.
-        /// </summary>
-        /// <param name="type">The new type to use.</param>
-        public void ChangeValueType(Type type)
-        {
-            Value = Convert.ChangeType(Value, type);
         }
     }
 }

@@ -17,7 +17,6 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
 using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Commands.Routers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
 using OneImlx.Terminal.Hosting;
@@ -54,12 +53,12 @@ namespace OneImlx.Terminal.Extensions
 
             var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(IArgumentChecker)));
             arg.Should().NotBeNull();
-            arg.Lifetime.Should().Be(ServiceLifetime.Transient);
+            arg!.Lifetime.Should().Be(ServiceLifetime.Transient);
             arg.ImplementationType.Should().Be(typeof(MockArgumentChecker));
 
             var map = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(IDataTypeMapper<Argument>)));
             map.Should().NotBeNull();
-            map.Lifetime.Should().Be(ServiceLifetime.Transient);
+            map!.Lifetime.Should().Be(ServiceLifetime.Transient);
             map.ImplementationType.Should().Be(typeof(MockArgumentMapper));
         }
 
@@ -145,12 +144,12 @@ namespace OneImlx.Terminal.Extensions
 
             var cmd = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandParser)));
             cmd.Should().NotBeNull();
-            cmd.Lifetime.Should().Be(ServiceLifetime.Transient);
+            cmd!.Lifetime.Should().Be(ServiceLifetime.Transient);
             cmd.ImplementationType.Should().Be(typeof(MockCommandParser));
 
-            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRequestParser)));
+            var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalRequestParser)));
             arg.Should().NotBeNull();
-            arg.Lifetime.Should().Be(ServiceLifetime.Transient);
+            arg!.Lifetime.Should().Be(ServiceLifetime.Transient);
             arg.ImplementationType.Should().Be(typeof(MockCommandRouteParser));
         }
 
@@ -219,7 +218,7 @@ namespace OneImlx.Terminal.Extensions
 
             var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalCommandStore)));
             arg.Should().NotBeNull();
-            arg.Lifetime.Should().Be(ServiceLifetime.Singleton);
+            arg!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             arg.ImplementationType.Should().Be(typeof(MockCommandStore));
         }
 
@@ -230,7 +229,7 @@ namespace OneImlx.Terminal.Extensions
 
             var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalEventHandler)));
             arg.Should().NotBeNull();
-            arg.Lifetime.Should().Be(ServiceLifetime.Singleton);
+            arg!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             arg.ImplementationType.Should().Be(typeof(MockTerminalEventHandler));
         }
 
@@ -241,7 +240,7 @@ namespace OneImlx.Terminal.Extensions
 
             var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalHelpProvider)));
             arg.Should().NotBeNull();
-            arg.Lifetime.Should().Be(ServiceLifetime.Singleton);
+            arg!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             arg.ImplementationType.Should().Be(typeof(MockTerminalHelpProvider));
         }
 
@@ -273,12 +272,12 @@ namespace OneImlx.Terminal.Extensions
 
             var arg = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(IOptionChecker)));
             arg.Should().NotBeNull();
-            arg.Lifetime.Should().Be(ServiceLifetime.Transient);
+            arg!.Lifetime.Should().Be(ServiceLifetime.Transient);
             arg.ImplementationType.Should().Be(typeof(MockOptionChecker));
 
             var map = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(IDataTypeMapper<Option>)));
             map.Should().NotBeNull();
-            map.Lifetime.Should().Be(ServiceLifetime.Transient);
+            map!.Lifetime.Should().Be(ServiceLifetime.Transient);
             map.ImplementationType.Should().Be(typeof(MockOptionMapper));
         }
 
@@ -307,14 +306,14 @@ namespace OneImlx.Terminal.Extensions
 
             var exe = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalExceptionHandler)));
             exe.Should().NotBeNull();
-            exe.Lifetime.Should().Be(ServiceLifetime.Transient);
+            exe!.Lifetime.Should().Be(ServiceLifetime.Transient);
             exe.ImplementationType.Should().Be(typeof(MockExceptionPublisher));
         }
 
         [Fact]
         public void AddRouterShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddCommandRouter<MockCommandRouter, MockCommandHandler, MockCommandRuntime>();
+            terminalBuilder.AddCommandRouter<MockCommandRouter, MockCommandHandler, MockCommandResolver>();
 
             var router = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRouter)));
             router.Should().NotBeNull();
@@ -326,10 +325,10 @@ namespace OneImlx.Terminal.Extensions
             handler!.Lifetime.Should().Be(ServiceLifetime.Transient);
             handler!.ImplementationType.Should().Be(typeof(MockCommandHandler));
 
-            var runtime = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandRuntime)));
+            var runtime = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ICommandResolver)));
             runtime.Should().NotBeNull();
             runtime!.Lifetime.Should().Be(ServiceLifetime.Transient);
-            runtime!.ImplementationType.Should().Be(typeof(MockCommandRuntime));
+            runtime!.ImplementationType.Should().Be(typeof(MockCommandResolver));
         }
 
         [Fact]
@@ -349,7 +348,7 @@ namespace OneImlx.Terminal.Extensions
 
             var exe = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(ITerminalConsole)));
             exe.Should().NotBeNull();
-            exe.Lifetime.Should().Be(ServiceLifetime.Singleton);
+            exe!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             exe.ImplementationType.Should().Be(typeof(TerminalSystemConsole));
         }
 

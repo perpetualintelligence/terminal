@@ -1,21 +1,21 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Configuration.Options;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Commands.Mappers
 {
     /// <summary>
     /// The default option data type mapper.
     /// </summary>
-    public sealed class DataTypeMapper<TValue> : IDataTypeMapper<TValue> where TValue : IValue
+    public sealed class DataTypeMapper<TValue> : IDataTypeMapper<TValue> where TValue : ICommandValue
     {
         /// <summary>
         /// Initialize a new instance.
@@ -29,17 +29,17 @@ namespace OneImlx.Terminal.Commands.Mappers
         }
 
         /// <inheritdoc/>
-        public Task<DataTypeMapperResult> MapToTypeAsync(DataTypeMapperContext<TValue> context)
+        public Task<DataTypeMapperResult> MapToTypeAsync(TValue value)
         {
-            if (string.IsNullOrWhiteSpace(context.Value.DataType))
+            if (string.IsNullOrWhiteSpace(value.DataType))
             {
-                throw new TerminalException(TerminalErrors.InvalidOption, "The option data type cannot be null or whitespace. option={0}", context.Value.Id);
+                throw new TerminalException(TerminalErrors.InvalidRequest, "The value data type cannot be null or whitespace. value={0}", value.Id);
             }
 
-            switch (context.Value.DataType)
+            switch (value.DataType)
             {
-                // The system defined custom data type don't need any type validation as they are validated
-                // explicitly by the checker.
+                // The system defined custom data type don't need any type validation as they are validated explicitly
+                // by the checker.
                 case nameof(Boolean): return MapperResultAsync(typeof(bool));
                 case nameof(String): return MapperResultAsync(typeof(string));
                 case nameof(Int16): return MapperResultAsync(typeof(short));
@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Commands.Mappers
                 case nameof(DateTime): return MapperResultAsync(typeof(DateTime));
                 default:
                     {
-                        throw new TerminalException(TerminalErrors.UnsupportedOption, "The option data type is not supported. option={0} data_type={1}", context.Value.Id, context.Value.DataType);
+                        throw new TerminalException(TerminalErrors.InvalidRequest, "The value data type is not supported. value={0} data_type={1}", value.Id, value.DataType);
                     }
             }
         }

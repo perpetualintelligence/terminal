@@ -6,8 +6,7 @@
 */
 
 using OneImlx.Shared.Infrastructure;
-using OneImlx.Terminal.Commands.Handlers;
-using OneImlx.Terminal.Commands.Routers;
+using OneImlx.Terminal.Commands;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -67,7 +66,7 @@ namespace OneImlx.Terminal.Mocks
                 throw new TerminalException(explicitError);
             }
 
-            return new CommandRouterResult(new CommandHandlerResult(new Commands.Checkers.CommandCheckerResult(), new Commands.Runners.CommandRunnerResult()), context.Request);
+            return new CommandRouterResult();
         }
 
         private readonly CancellationTokenSource? cancelOnRouteCalled;

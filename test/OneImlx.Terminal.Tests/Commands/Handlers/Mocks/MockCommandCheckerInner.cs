@@ -16,7 +16,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
 
         public bool Called { get; private set; }
 
-        public Task<CommandCheckerResult> CheckCommandAsync(CommandCheckerContext context)
+        public Task<CommandCheckerResult> CheckCommandAsync(CommandRouterContext context)
         {
             Called = true;
 
