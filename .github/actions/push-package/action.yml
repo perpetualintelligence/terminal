@@ -22,8 +22,8 @@ inputs:
     description: 'The Nuget Api Key for package feed'
     required: true
   registry:
-    description: 'The package registry (github or nuget)'
-    default: github
+    description: 'The package registry (oneimlx or nuget)'
+    default: oneimlx
     required: true
 runs:
   using: "composite"
@@ -49,15 +49,15 @@ runs:
 
     # GITHUB
     - name: Github Push
-      if: ${{ inputs.registry == 'github' }}
-      run: dotnet nuget push _packages/${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.ghapikey }} --source github
+      if: ${{ inputs.registry == 'oneimlx' }}
+      run: dotnet nuget push _packages/${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.ghapikey }} --source oneimlx
       shell: bash    
 
     # NUGET - 1
     # First push to github (for package cadence, Nuget requires package verification)
     - name: Github Push
       if: ${{ inputs.registry == 'nuget' }}
-      run: dotnet nuget push _packages/${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.ghapikey }} --source github
+      run: dotnet nuget push _packages/${{ inputs.project }}.${{ inputs.version }}.nupkg --skip-duplicate --no-symbols --api-key ${{ inputs.ghapikey }} --source oneimlx
       shell: bash      
       
     # NUGET - 2

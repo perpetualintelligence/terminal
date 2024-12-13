@@ -6,21 +6,19 @@
 */
 
 using System;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using FluentAssertions;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Stores;
+using OneImlx.Terminals.Integration.Mocks;
+using Xunit;
 
 namespace OneImlx.Terminal.Integration
 {
-    using System.Text;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-using FluentAssertions;
-    using OneImlx.Terminal.Commands;
-    using OneImlx.Terminal.Commands.Handlers;
-    using OneImlx.Terminal.Mocks;
-    using OneImlx.Terminal.Runtime;
-    using OneImlx.Terminal.Stores;
-    using OneImlx.Terminals.Integration.Mocks;
-    using Xunit;
-
     public class PublishedCommandSourceTests
     {
         public PublishedCommandSourceTests()

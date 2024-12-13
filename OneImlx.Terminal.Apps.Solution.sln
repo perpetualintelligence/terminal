@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{1A8779C7
 	ProjectSection(SolutionItems) = preProject
 		ACKNOWLEDGMENTS.md = ACKNOWLEDGMENTS.md
 		CHANGE_LOG.md = CHANGE_LOG.md
+		build\scripts\coverage.ps1 = build\scripts\coverage.ps1
 		global.json = global.json
 		build\props\Package.props = build\props\Package.props
 		.github\package_version.env = .github\package_version.env
