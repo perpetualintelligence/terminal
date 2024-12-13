@@ -5,16 +5,15 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Test.FluentAssertions;
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using FluentAssertions;
-using Moq;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Stores;
-using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -24,10 +23,8 @@ namespace OneImlx.Terminal.Runtime
         public TerminalRequestQueueParserTests()
         {
             terminalTextHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
-            mockCommandStore = new Mock<ITerminalCommandStore>();
             mockLogger = new Mock<ILogger<TerminalRequestQueueParser>>();
             terminalOptions = Microsoft.Extensions.Options.Options.Create(new TerminalOptions());
-
             parser = new TerminalRequestQueueParser(terminalTextHandler, terminalOptions, mockLogger.Object);
         }
 
@@ -219,16 +216,33 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task Parses_Full_With_Short_Option_Prefix_Correctly()
+        public async Task Parses_Short_Option_As_Alias_If_Alias_Is_Enabled()
         {
-            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 -opt2 val2 -o3 -opt4 36.69 -o5 \"delimited val\""));
+            terminalOptions.Value.Parser.DisableOptionAlias = false;
+
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -o1 val1 -o2 val2 -o3 -o4 36.69 -o5 \"delimited val\""));
             parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
             parsedOutput.Options.Should().HaveCount(5);
-            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
-            parsedOutput.Options["opt2"].Should().Be(("val2", true));
+            parsedOutput.Options!["o1"].Should().Be(("val1", true));
+            parsedOutput.Options["o2"].Should().Be(("val2", true));
             parsedOutput.Options["o3"].Should().Be((true.ToString(), true));
-            parsedOutput.Options["opt4"].Should().Be(("36.69", true));
+            parsedOutput.Options["o4"].Should().Be(("36.69", true));
             parsedOutput.Options["o5"].Should().Be(("delimited val", true));
+        }
+
+        [Fact]
+        public async Task Parses_Short_Option_As_Options_If_Alias_Is_Disabled()
+        {
+            terminalOptions.Value.Parser.DisableOptionAlias = true;
+
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -o1 val1 -o2 val2 -o3 -o4 36.69 -o5 \"delimited val\""));
+            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
+            parsedOutput.Options.Should().HaveCount(5);
+            parsedOutput.Options!["o1"].Should().Be(("val1", false));
+            parsedOutput.Options["o2"].Should().Be(("val2", false));
+            parsedOutput.Options["o3"].Should().Be((true.ToString(), false));
+            parsedOutput.Options["o4"].Should().Be(("36.69", false));
+            parsedOutput.Options["o5"].Should().Be(("delimited val", false));
         }
 
         [Theory]
@@ -244,7 +258,6 @@ namespace OneImlx.Terminal.Runtime
             parsedOutput.Options.Should().BeEmpty();
         }
 
-        private readonly Mock<ITerminalCommandStore> mockCommandStore;
         private readonly Mock<ILogger<TerminalRequestQueueParser>> mockLogger;
         private readonly TerminalRequestQueueParser parser;
         private readonly IOptions<TerminalOptions> terminalOptions;

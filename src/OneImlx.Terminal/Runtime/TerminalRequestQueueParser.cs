@@ -12,9 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Stores;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -69,10 +67,23 @@ namespace OneImlx.Terminal.Runtime
             {
                 // Always dequeue a segment because we're expecting it to be an option.
                 string option = segmentsQueue.Dequeue();
-                bool isOption = TerminalServices.IsOption(option, terminalOptions, out bool isAlias);
+                _ = TerminalServices.IsOption(option, terminalOptions, out bool isAlias);
 
-                // Remove the first character if it is an alias prefix otherwise remove 2 characters if it is an option prefix.
-                option = isAlias ? option.Substring(1) : option.Substring(2);
+                // If the option alias is disabled then we do not support short, long and hybrid options.
+                // - With alias: -a, --all, --long-option,
+                // - Without alias: -a, -all, -longoption
+                if (terminalOptions.Parser.DisableOptionAlias)
+                {
+                    // Override the alias flag if the option alias is disabled.
+                    isAlias = false;
+                    option = option.Substring(1);
+                }
+                else
+                {
+                    // Remove the first character if it is an alias prefix otherwise remove 2 characters if it is an
+                    // option prefix.
+                    option = isAlias ? option.Substring(1) : option.Substring(2);
+                }
 
                 // Check whether we have an option value and if the option value is an option itself then the previous
                 // option is a unary boolean option.
@@ -125,8 +136,6 @@ namespace OneImlx.Terminal.Runtime
             for (int idx = 0; idx < raw.Length; ++idx)
             {
                 char currentChar = raw[idx];
-                char previousChar = idx > 0 ? raw[idx - 1] : default;
-                char nextChar = idx < raw.Length - 1 ? raw[idx + 1] : default;
 
                 // If we are within a value delimiter then no parsing logic is applied. The value delimiter are for
                 // arguments and options values. So a value delimiter will always have a preceding separator.
