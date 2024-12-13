@@ -50,7 +50,7 @@
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="OneImlx.Test" Version="5.13.1" />
+                <PackageReference Include="OneImlx.Test" Version="6.0.0" />
             </ItemGroup>
         </Otherwise>
     </Choose>

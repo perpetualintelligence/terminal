@@ -10,7 +10,6 @@
 ![coverage-line: 66%](https://img.shields.io/badge/coverage--line-66%25-yellow)
 ![coverage-branch: 60%](https://img.shields.io/badge/coverage--branch-60%25-orange)
 
-
 `OneImlx.Terminal` is the cross-platform adaptable framework designed for crafting modern CLI and terminal applications. We cut through the terminal infrastructure complexity, letting you concentrate on building enterprise grade terminal applications with Unicode support, and extensive command hierarchies.
 
 Quickly dive in with our [test apps](https://github.com/perpetualintelligence/terminal/tree/main/apps).
