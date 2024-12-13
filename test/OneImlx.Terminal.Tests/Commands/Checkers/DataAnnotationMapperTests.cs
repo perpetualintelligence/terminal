@@ -5,16 +5,16 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace OneImlx.Terminal.Commands.Mappers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     public class DataAnnotationMapperTests
     {

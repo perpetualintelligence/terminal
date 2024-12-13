@@ -234,11 +234,6 @@ namespace OneImlx.Terminal.Runtime
 
         private void RegisterResponseHandler(Func<TerminalOutput, Task> handler)
         {
-            if (!terminalOptions.Value.Router.EnableResponses)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The response handling is not enabled.");
-            }
-
             this.handler = handler ?? throw new TerminalException(TerminalErrors.InvalidRequest, "The response handler cannot be null.");
         }
 
@@ -291,8 +286,6 @@ namespace OneImlx.Terminal.Runtime
                 return;
             }
 
-            bool responseEnabled = terminalOptions.Value.Router.EnableResponses;
-
             while (true)
             {
                 try
@@ -331,11 +324,6 @@ namespace OneImlx.Terminal.Runtime
 
         private async Task StartResponseProcessingAsync(TerminalRouterContext terminalRouterContext)
         {
-            if (!terminalOptions.Value.Router.EnableResponses)
-            {
-                return;
-            }
-
             // The infinite while(true) enable a continuous processing of the command queue until canceled.
             while (true)
             {

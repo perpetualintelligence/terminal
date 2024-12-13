@@ -14,22 +14,22 @@ namespace OneImlx.Terminal.Commands.Checkers
     public class CheckerResultTests
     {
         [Fact]
-        public void OptionCheckerResultNullMappedTypeShouldThrow()
+        public void ArgumentCheckerResultNullMappedTypeShouldThrow()
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = static () => new OptionCheckerResult(null);
+            Action act = static () => new ArgumentCheckerResult(null);
             act.Should().Throw<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results
         }
 
         [Fact]
-        public void ArgumentCheckerResultNullMappedTypeShouldThrow()
+        public void OptionCheckerResultNullMappedTypeShouldThrow()
         {
 #pragma warning disable CA1806 // Do not ignore method results
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action act = static () => new ArgumentCheckerResult(null);
+            Action act = static () => new OptionCheckerResult(null);
             act.Should().Throw<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning restore CA1806 // Do not ignore method results

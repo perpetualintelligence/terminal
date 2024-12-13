@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -14,6 +14,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using System;
 using System.Linq;
+using System.Text;
 using Xunit;
 
 namespace OneImlx.Terminal.Hosting
@@ -27,20 +28,9 @@ namespace OneImlx.Terminal.Hosting
         }
 
         [Fact]
-        public void No_Argument_Descriptor_Throws()
-        {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
-
-            ArgumentBuilder argumentBuilder = new(commandBuilder);
-            Action act = () => argumentBuilder.Add();
-            act.Should().Throw<TerminalException>().WithMessage("The argument builder is missing an argument descriptor.");
-        }
-
-        [Fact]
         public void Build_Adds_ArgumentDescriptor_To_CommandDescriptor()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             commandBuilder.DefineArgument(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None).Add()
@@ -58,7 +48,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_CommandBuilder()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             IArgumentBuilder argumentBuilder = commandBuilder.DefineArgument(1, "arg1", nameof(String), "test arg desc1", ArgumentFlags.None);
@@ -74,13 +64,24 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             CommandBuilder commandBuilder = new(terminalBuilder);
             ArgumentBuilder argumentBuilder = new(commandBuilder);
 
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
             argumentBuilder.Services.Should().NotBeSameAs(serviceCollection);
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
+        }
+
+        [Fact]
+        public void No_Argument_Descriptor_Throws()
+        {
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
+
+            ArgumentBuilder argumentBuilder = new(commandBuilder);
+            Action act = () => argumentBuilder.Add();
+            act.Should().Throw<TerminalException>().WithMessage("The argument builder is missing an argument descriptor.");
         }
 
         private void ConfigureServicesDelegate(IServiceCollection services)

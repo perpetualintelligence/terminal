@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -14,6 +14,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using System;
 using System.Linq;
+using System.Text;
 using Xunit;
 
 namespace OneImlx.Terminal.Hosting
@@ -30,7 +31,7 @@ namespace OneImlx.Terminal.Hosting
         public void Build_Adds_Command_To_Global_ServiceCollection()
         {
             // Begin with no command
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             ServiceDescriptor? serviceDescriptor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(CommandDescriptor)));
             serviceDescriptor.Should().BeNull();
 
@@ -54,7 +55,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_TerminalBuilder()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
             ITerminalBuilder cliBuilderFromCommandBuilder = commandBuilder.Add();
             terminalBuilder.Should().BeSameAs(cliBuilderFromCommandBuilder);
@@ -63,7 +64,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             CommandBuilder commandBuilder = new(terminalBuilder);
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
         }

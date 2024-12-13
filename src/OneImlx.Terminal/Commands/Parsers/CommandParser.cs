@@ -131,21 +131,16 @@ namespace OneImlx.Terminal.Commands.Parsers
             return (parsedCommands, parsedArguments);
         }
 
-        private Options? MapOptions(CommandDescriptor commandDescriptor, Dictionary<string, ValueTuple<string, bool>>? parsedOptions)
+        private Options? MapOptions(CommandDescriptor commandDescriptor, Dictionary<string, ValueTuple<string, bool>> parsedOptions)
         {
-            if (parsedOptions == null || parsedOptions.Count == 0)
+            if (parsedOptions.Count == 0)
             {
                 return null;
             }
 
-            if (commandDescriptor.OptionDescriptors == null || commandDescriptor.OptionDescriptors.Count == 0)
+            if (commandDescriptor.OptionDescriptors == null)
             {
-                throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support any options. command={0}", commandDescriptor.Id);
-            }
-
-            if (commandDescriptor.OptionDescriptors.Count < parsedOptions.Count)
-            {
-                throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support {0} options. command={1} options={2}", parsedOptions.Count, commandDescriptor.Id, parsedOptions.Keys.JoinByComma());
+                throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support options. command={0}", commandDescriptor.Id);
             }
 
             // 1. An input can be either an option or an alias, but not both.

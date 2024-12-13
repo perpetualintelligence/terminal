@@ -20,10 +20,6 @@
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0">
           <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Commands\Routers\" />
     </ItemGroup>   
 
     <!--

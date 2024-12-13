@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// Determines whether the checker checks an option value type. If this option is enabled, the checker will try
         /// to map an option value to its corresponding .NET value type. If the mapping fails, the command will not run.
         /// </summary>
-        /// <see cref="Commands.Mappers.IDataTypeMapper{TValue}"/>
+        /// <see cref="Commands.Checkers.IDataTypeMapper{TValue}"/>
         public bool? StrictValueType { get; set; }
     }
 }

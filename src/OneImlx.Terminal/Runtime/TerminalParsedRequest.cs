@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Gets the parsed options.
         /// </summary>
-        public Dictionary<string, ValueTuple<string, bool>>? Options { get; }
+        public Dictionary<string, ValueTuple<string, bool>> Options { get; }
 
         /// <summary>
         /// Gets the parsed tokens that represent an ordered collection of root, groups, command, and arguments.

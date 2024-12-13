@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Licensing
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context);
+        public Task<LicenseExtractorResult> ExtractLicenseAsync();
 
         /// <summary>
         /// Gets the extracted license asynchronously.

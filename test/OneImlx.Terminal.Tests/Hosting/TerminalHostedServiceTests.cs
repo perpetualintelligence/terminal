@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -21,6 +21,7 @@ using OneImlx.Terminal.Stores;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -52,7 +53,7 @@ namespace OneImlx.Terminal.Hosting
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
                 services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
-                services.AddSingleton<ITerminalTextHandler, TerminalUnicodeTextHandler>();
+                services.AddSingleton<ITerminalTextHandler, TerminalTextHandler>();
             });
             host = hostBuilder.Start();
 
@@ -60,6 +61,16 @@ namespace OneImlx.Terminal.Hosting
             defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, terminalConsole, logger);
             mockCustomCliHostedService = new MockTerminalCustomHostedService(host.Services, terminalOptions, terminalConsole, logger);
             mockCliEventsHostedService = new MockTerminalEventsHostedService(host.Services, terminalOptions, terminalConsole, logger);
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         [Fact]
@@ -252,6 +263,52 @@ namespace OneImlx.Terminal.Hosting
         }
 
         [Fact]
+        public async Task StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
+        {
+            TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
+            terminalOptions.Help.Disabled = true;
+
+            hostBuilder = Host.CreateDefaultBuilder()
+            .ConfigureServices(services =>
+            {
+                services.AddTerminal<TerminalInMemoryCommandStore, TerminalTextHandler>(new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode))
+                    .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
+                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
+                    .Checker<MockCommandChecker>()
+                    .Add()
+                    .DefineCommand<MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
+                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
+                        .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
+                        .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
+                    .Checker<MockCommandChecker>()
+                    .Add()
+                    .DefineCommand<MockCommandRunner>("cmd3", "cmd3", "test1", CommandType.SubCommand, CommandFlags.None)
+                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
+                    .Checker<MockCommandChecker>()
+                    .Add();
+
+                // Replace with Mock DIs
+                services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
+                services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
+                services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
+                services.AddSingleton<ITerminalTextHandler, TerminalTextHandler>();
+            });
+            host = await hostBuilder.StartAsync();
+
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, terminalConsole, logger);
+            await defaultCliHostedService.StartAsync(CancellationToken.None);
+
+            var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
+            commandDescriptors.Should().NotBeEmpty();
+            foreach (var commandDescriptor in commandDescriptors)
+            {
+                bool foundHelp = commandDescriptor.OptionDescriptors!.TryGetValue(terminalOptions.Help.OptionId, out OptionDescriptor? helpAttr);
+                foundHelp.Should().BeFalse();
+                helpAttr.Should().BeNull();
+            }
+        }
+
+        [Fact]
         public async Task StartAsync_ShouldRegister_Application_EventsAsync()
         {
             IHostApplicationLifetime hostApplicationLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
@@ -281,29 +338,30 @@ namespace OneImlx.Terminal.Hosting
         public async Task StartAsync_ShouldRegister_HelpArgument_ByDefault()
         {
             TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
+            TerminalTextHandler textHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler())
-                   .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
+                services.AddTerminal<TerminalInMemoryCommandStore, TerminalTextHandler>(textHandler)
+                    .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
                         .Checker<MockCommandChecker>()
                         .Add()
-                   .DefineCommand<MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
-                       .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
-                       .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
-                       .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
+                    .DefineCommand<MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
+                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
+                        .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
+                        .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
                     .Checker<MockCommandChecker>()
-                   .Add()
-                   .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
-                   .Checker<MockCommandChecker>()
-                   .Add();
+                    .Add()
+                    .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
+                    .Checker<MockCommandChecker>()
+                    .Add();
 
                 // Replace with Mock DIs
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
                 services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
-                services.AddSingleton<ITerminalTextHandler, TerminalUnicodeTextHandler>();
+                services.AddSingleton<ITerminalTextHandler>(textHandler);
             });
             host = await hostBuilder.StartAsync();
 
@@ -322,50 +380,9 @@ namespace OneImlx.Terminal.Hosting
             }
         }
 
-        [Fact]
-        public async Task StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
+        private TerminalHostedService DefaultHostedService(IServiceProvider arg)
         {
-            TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
-            terminalOptions.Help.Disabled = true;
-
-            hostBuilder = Host.CreateDefaultBuilder()
-            .ConfigureServices(services =>
-            {
-                services.AddTerminal<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler>(new TerminalUnicodeTextHandler())
-                   .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
-                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
-                    .Checker<MockCommandChecker>()
-                    .Add()
-                   .DefineCommand<MockCommandRunner>("cmd2", "cmd2", "test2", CommandType.SubCommand, CommandFlags.None)
-                       .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
-                       .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
-                       .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
-                    .Checker<MockCommandChecker>()
-                   .Add()
-                   .DefineCommand<MockCommandRunner>("cmd3", "cmd3", "test1", CommandType.SubCommand, CommandFlags.None)
-                        .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
-                    .Checker<MockCommandChecker>()
-                    .Add();
-
-                // Replace with Mock DIs
-                services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
-                services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
-                services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
-                services.AddSingleton<ITerminalTextHandler, TerminalUnicodeTextHandler>();
-            });
-            host = await hostBuilder.StartAsync();
-
-            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, terminalConsole, logger);
-            await defaultCliHostedService.StartAsync(CancellationToken.None);
-
-            var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
-            commandDescriptors.Should().NotBeEmpty();
-            foreach (var commandDescriptor in commandDescriptors)
-            {
-                bool foundHelp = commandDescriptor.OptionDescriptors!.TryGetValue(terminalOptions.Help.OptionId, out OptionDescriptor? helpAttr);
-                foundHelp.Should().BeFalse();
-                helpAttr.Should().BeNull();
-            }
+            return defaultCliHostedService;
         }
 
         private MockTerminalEventsHostedService EventsHostedService(IServiceProvider arg)
@@ -373,32 +390,17 @@ namespace OneImlx.Terminal.Hosting
             return mockCliEventsHostedService;
         }
 
-        private TerminalHostedService DefaultHostedService(IServiceProvider arg)
-        {
-            return defaultCliHostedService;
-        }
-
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task DisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
         private readonly CancellationToken cancellationToken;
         private readonly CancellationTokenSource cancellationTokenSource;
-        private TerminalHostedService defaultCliHostedService;
-        private IHost host;
-        private IHostBuilder hostBuilder;
+        private readonly MockTerminalHostedServiceLogger logger = null!;
         private readonly MockTerminalEventsHostedService mockCliEventsHostedService;
         private readonly MockTerminalCustomHostedService mockCustomCliHostedService;
         private readonly MockLicenseChecker mockLicenseChecker;
         private readonly MockLicenseExtractor mockLicenseExtractor;
         private readonly MockOptionsChecker mockOptionsChecker;
-        private readonly MockTerminalHostedServiceLogger logger = null!;
         private readonly MockTerminalConsole terminalConsole;
+        private TerminalHostedService defaultCliHostedService;
+        private IHost host;
+        private IHostBuilder hostBuilder;
     }
 }

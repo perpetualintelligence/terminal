@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -9,29 +9,23 @@ using System;
 
 namespace OneImlx.Terminal.Integration
 {
-    using FluentAssertions;
+    using System.Text;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+using FluentAssertions;
     using OneImlx.Terminal.Commands;
     using OneImlx.Terminal.Commands.Handlers;
     using OneImlx.Terminal.Mocks;
     using OneImlx.Terminal.Runtime;
     using OneImlx.Terminal.Stores;
     using OneImlx.Terminals.Integration.Mocks;
-    using System.Threading.Tasks;
     using Xunit;
 
     public class PublishedCommandSourceTests
     {
-        private readonly MockPublishedCommandSourceChecker terminalCommandSourceChecker;
-        private readonly ITerminalCommandStore mutableCommandStore;
-        private readonly ILogger<PublishedCommandSource> logger;
-        private readonly ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> assemblyLoader;
-        private readonly PublishedCommandSource publishedCommandSource;
-        private readonly ITerminalTextHandler textHandler;
-
         public PublishedCommandSourceTests()
         {
-            textHandler = new TerminalAsciiTextHandler();
+            textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
             assemblyLoader = new MockPublishedAssemblyLoader();
             terminalCommandSourceChecker = new MockPublishedCommandSourceChecker();
             mutableCommandStore = new TerminalInMemoryCommandStore(textHandler, Array.Empty<CommandDescriptor>());
@@ -51,6 +45,17 @@ namespace OneImlx.Terminal.Integration
 
             terminalCommandSourceChecker.Called.Should().BeTrue();
             terminalCommandSourceChecker.PassedContext.Should().BeSameAs(commandSourceContext);
+        }
+
+        [Fact]
+        public async Task LoadCommandSourceAsync_EmptyContext_DoesNotLoadCommands()
+        {
+            var context = new PublishedCommandSourceContext();
+
+            await publishedCommandSource.LoadCommandSourceAsync(context);
+
+            var result = await mutableCommandStore.AllAsync();
+            result.Count.Should().Be(0);
         }
 
         [Fact]
@@ -83,15 +88,11 @@ namespace OneImlx.Terminal.Integration
             result.Keys.Should().Contain("MockAssembly3MockClass3");
         }
 
-        [Fact]
-        public async Task LoadCommandSourceAsync_EmptyContext_DoesNotLoadCommands()
-        {
-            var context = new PublishedCommandSourceContext();
-
-            await publishedCommandSource.LoadCommandSourceAsync(context);
-
-            var result = await mutableCommandStore.AllAsync();
-            result.Count.Should().Be(0);
-        }
+        private readonly ITerminalCommandSourceAssemblyLoader<PublishedCommandSourceContext> assemblyLoader;
+        private readonly ILogger<PublishedCommandSource> logger;
+        private readonly ITerminalCommandStore mutableCommandStore;
+        private readonly PublishedCommandSource publishedCommandSource;
+        private readonly MockPublishedCommandSourceChecker terminalCommandSourceChecker;
+        private readonly ITerminalTextHandler textHandler;
     }
 }

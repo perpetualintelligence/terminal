@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -35,8 +36,8 @@ namespace OneImlx.Terminal.Apps.TestClient
             services.AddHostedService<TestClientHostedService>();
 
             // Initialize the terminal as a console application
-            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
-                new TerminalUnicodeTextHandler(),
+            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
+                new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII),
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;

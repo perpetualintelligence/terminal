@@ -1,19 +1,20 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Linq;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FluentAssertions;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace OneImlx.Terminal.Hosting
@@ -27,20 +28,9 @@ namespace OneImlx.Terminal.Hosting
         }
 
         [Fact]
-        public void Nos_OptionDescriptor_Throws()
-        {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
-            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
-
-            OptionBuilder optionBuilder = new(commandBuilder);
-            Action act = () => optionBuilder.Add();
-            act.Should().Throw<TerminalException>().WithMessage("The option builder is missing an option descriptor.");
-        }
-
-        [Fact]
         public void Build_Adds_OptionDescriptor_To_CommandDescriptor()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None).Add()
@@ -58,7 +48,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void Build_Returns_Same_CommandBuilder()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
 
             IOptionBuilder optionBuilder = commandBuilder.DefineOption("opt1", nameof(String), "test opt desc1", OptionFlags.None);
@@ -74,13 +64,24 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void NewBuilder_Returns_New_IServiceCollection()
         {
-            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalAsciiTextHandler());
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
             CommandBuilder commandBuilder = new(terminalBuilder);
             OptionBuilder argumentBuilder = new(commandBuilder);
 
             commandBuilder.Services.Should().NotBeSameAs(serviceCollection);
             argumentBuilder.Services.Should().NotBeSameAs(serviceCollection);
             argumentBuilder.Services.Should().NotBeSameAs(commandBuilder.Services);
+        }
+
+        [Fact]
+        public void Nos_OptionDescriptor_Throws()
+        {
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "name1", "Command description", CommandType.SubCommand, CommandFlags.None).Checker<MockCommandChecker>();
+
+            OptionBuilder optionBuilder = new(commandBuilder);
+            Action act = () => optionBuilder.Add();
+            act.Should().Throw<TerminalException>().WithMessage("The option builder is missing an option descriptor.");
         }
 
         private void ConfigureServicesDelegate(IServiceCollection opt2)

@@ -11,11 +11,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
-using OneImlx.Terminal.Commands.Routers.Mocks;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Commands.Routers.Mocks;
 
 namespace OneImlx.Terminal.Commands.Routers
 {
@@ -78,7 +80,7 @@ namespace OneImlx.Terminal.Commands.Routers
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandParser, commandHandler, logger, eventHandler);
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRouterContext(new Runtime.TerminalStartContext(Runtime.TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
+            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
 
             return Task.CompletedTask;
         }

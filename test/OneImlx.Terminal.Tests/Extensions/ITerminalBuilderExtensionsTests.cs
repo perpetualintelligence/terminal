@@ -15,7 +15,6 @@ using Moq;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
-using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
@@ -25,6 +24,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Xunit;
+using System.Text;
 
 namespace OneImlx.Terminal.Extensions
 {
@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Extensions
                 throw new InvalidOperationException("Service descriptors not initialized.");
             }
 
-            terminalBuilder = serviceDescriptors.CreateTerminalBuilder(new TerminalUnicodeTextHandler());
+            terminalBuilder = serviceDescriptors.CreateTerminalBuilder(new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode));
         }
 
         [Fact]
@@ -382,7 +382,7 @@ namespace OneImlx.Terminal.Extensions
             comparer!.Lifetime.Should().Be(ServiceLifetime.Singleton);
             comparer!.ImplementationInstance.Should().NotBeNull();
             comparer.ImplementationType.Should().BeNull();
-            comparer.ImplementationInstance!.GetType().Should().Be(typeof(TerminalUnicodeTextHandler));
+            comparer.ImplementationInstance!.GetType().Should().Be(typeof(TerminalTextHandler));
         }
 
         [Fact]

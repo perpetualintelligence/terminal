@@ -8,7 +8,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Commands.Checkers

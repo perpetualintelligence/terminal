@@ -12,19 +12,30 @@ using System.Text;
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// The default <see cref="ITerminalTextHandler"/> for <see cref="Encoding.UTF8"/> and <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// The default <see cref="ITerminalTextHandler"/>.
     /// </summary>
-    public sealed class TerminalUtf8TextHandler : ITerminalTextHandler
+    public sealed class TerminalTextHandler : ITerminalTextHandler
     {
         /// <summary>
-        /// The <see cref="StringComparison.OrdinalIgnoreCase"/> string comparison.
+        /// Initializes a new instance of the <see cref="TerminalTextHandler"/> class with specified comparison and encoding.
         /// </summary>
-        public StringComparison Comparison => StringComparison.OrdinalIgnoreCase;
+        /// <param name="comparison">The string comparison to use.</param>
+        /// <param name="encoding">The text encoding to use.</param>
+        public TerminalTextHandler(StringComparison comparison, Encoding encoding)
+        {
+            Comparison = comparison;
+            Encoding = encoding;
+        }
 
         /// <summary>
-        /// The <see cref="Encoding.UTF8"/> text encoding.
+        /// The string comparison.
         /// </summary>
-        public Encoding Encoding => Encoding.UTF8;
+        public StringComparison Comparison { get; }
+
+        /// <summary>
+        /// The text encoding.
+        /// </summary>
+        public Encoding Encoding { get; }
 
         /// <inheritdoc/>
         public bool CharEquals(char? ch1, char? ch2)

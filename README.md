@@ -6,7 +6,10 @@
 
 [![build-test-cross](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-cross.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-cross.yml)
 [![build-test-push](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-push.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/build-test-push.yml)
-[![delete-packages](https://github.com/perpetualintelligence/terminal/actions/workflows/delete-packages.yml/badge.svg)](https://github.com/perpetualintelligence/terminal/actions/workflows/delete-packages.yml)
+
+![coverage-line: 66%](https://img.shields.io/badge/coverage--line-66%25-yellow)
+![coverage-branch: 60%](https://img.shields.io/badge/coverage--branch-60%25-orange)
+
 
 `OneImlx.Terminal` is the cross-platform adaptable framework designed for crafting modern CLI and terminal applications. We cut through the terminal infrastructure complexity, letting you concentrate on building enterprise grade terminal applications with Unicode support, and extensive command hierarchies.
 

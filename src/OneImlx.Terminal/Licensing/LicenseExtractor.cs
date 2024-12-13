@@ -47,9 +47,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// Extracts the <see cref="License"/> from the license keys.
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public async Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context)
+        public async Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
             logger.LogDebug("Extract license.");
 

@@ -13,6 +13,7 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,7 +23,7 @@ namespace OneImlx.Terminal.Runtime
     {
         public TerminalRequestQueueUtf8ParserTests()
         {
-            terminalTextHandler = new TerminalUtf8TextHandler();
+            terminalTextHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.UTF8);
             mockCommandStore = new Mock<ITerminalCommandStore>();
             mockLogger = new Mock<ILogger<TerminalRequestQueueParser>>();
             terminalOptions = Options.Create(new TerminalOptions());

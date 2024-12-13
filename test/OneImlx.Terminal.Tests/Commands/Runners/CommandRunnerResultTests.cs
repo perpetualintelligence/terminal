@@ -7,10 +7,9 @@
 
 using System;
 using FluentAssertions;
-using OneImlx.Terminal.Commands.Runners;
 using Xunit;
 
-namespace OneImlx.Terminal.Tests.Commands.Runners
+namespace OneImlx.Terminal.Commands.Runners
 {
     public class CommandRunnerResultTests
     {

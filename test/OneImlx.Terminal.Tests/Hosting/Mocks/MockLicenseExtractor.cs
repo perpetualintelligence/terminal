@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
 
         public bool ThrowError { get; set; }
 
-        public Task<LicenseExtractorResult> ExtractLicenseAsync(LicenseExtractorContext context)
+        public Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
             ExtractLicenseCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
 
