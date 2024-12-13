@@ -12,7 +12,8 @@
 
     <ItemGroup>                
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />        
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+        <PackageReference Include="OneImlx.Shared" Version="6.0.0" />        
         <PackageReference Include="System.Net.Http.Json" Version="8.0.1">
           <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
@@ -20,24 +21,6 @@
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0">
           <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
-    </ItemGroup>   
-
-    <!--
-        CI CONFIG:
-    -->
-    <Choose>
-        <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
-            <ItemGroup>
-                <ProjectReference Include="..\..\..\shared\src\OneImlx.Shared\OneImlx.Shared.csproj">
-                  <TreatAsUsed>true</TreatAsUsed>
-                </ProjectReference>
-            </ItemGroup>
-        </When>
-        <Otherwise>
-            <ItemGroup>
-                <PackageReference Include="OneImlx.Shared" Version="6.0.0" />
-            </ItemGroup>
-        </Otherwise>
-    </Choose>
+    </ItemGroup>
 
 </Project>
