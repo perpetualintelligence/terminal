@@ -5,7 +5,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <Description>
-            The cross-platform client library for the `OneImlx.Terminal` hosting framework.
+            The cross-platform client library for the `OneImlx.Terminal` framework.
         </Description>
         <PackageTags>terminal cli options flags commands oneimlx unicode tcp utp http grpc</PackageTags>
     </PropertyGroup>
