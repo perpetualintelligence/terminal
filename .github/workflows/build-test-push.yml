@@ -29,9 +29,9 @@ on:
         description: 'The package registry'
         required: true
         options:
-        - github
+        - oneimlx
         - nuget        
-        default: github
+        default: oneimlx
         
 jobs:
   setup:    
@@ -44,7 +44,7 @@ jobs:
       PI_GITHUB_USERNAME_ENV: ${{ secrets.PI_GITHUB_USERNAME }}
       PI_GITHUB_PAT_ENV: ${{ secrets.PI_GITHUB_PAT }}
       PI_NUGET_PAT_ENV: ${{ secrets.PI_NUGET_API_KEY }}
-      PI_PUBLISH_REGISTRY: github
+      PI_PUBLISH_REGISTRY: oneimlx
       PI_CI_REFERENCE: package
       PI_TERMINAL_TEST_ONLINE_LIC: ${{ secrets.PI_TERMINAL_TEST_ONLINE_LIC }}
       PI_TERMINAL_TEST_OFFLINE_LIC: ${{ secrets.PI_TERMINAL_TEST_OFFLINE_LIC }}
