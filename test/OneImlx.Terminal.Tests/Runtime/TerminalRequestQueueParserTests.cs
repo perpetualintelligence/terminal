@@ -5,23 +5,23 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
 {
-    public class TerminalRequestQueueAsciiParserTests
+    public class TerminalRequestQueueParserTests
     {
-        public TerminalRequestQueueAsciiParserTests()
+        public TerminalRequestQueueParserTests()
         {
             terminalTextHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
             mockCommandStore = new Mock<ITerminalCommandStore>();
@@ -147,6 +147,19 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
+        public async Task Parses_Full_With__Correctly()
+        {
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\""));
+            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
+            parsedOutput.Options.Should().HaveCount(5);
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["opt2"].Should().Be(("val2", false));
+            parsedOutput.Options["opt3"].Should().Be((true.ToString(), true));
+            parsedOutput.Options["opt4"].Should().Be(("36.69", true));
+            parsedOutput.Options["opt5"].Should().Be(("delimited val", false));
+        }
+
+        [Fact]
         public async Task Parses_Full_With_Distinct_Separator_Correctly()
         {
             terminalOptions.Value.Parser.OptionValueSeparator = '=';
@@ -162,6 +175,37 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
+        public async Task Parses_Full_With_Hybrid_Prefix_Distinct_Separator_Correctly()
+        {
+            terminalOptions.Value.Parser.OptionValueSeparator = '=';
+
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1=val1 --long-opt-2=val2 -opt3 -opt4=36.69 --very-long-opt-5=\"delimited val\""));
+            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
+            parsedOutput.Options.Should().HaveCount(5);
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["long-opt-2"].Should().Be(("val2", false));
+            parsedOutput.Options["opt3"].Should().Be((true.ToString(), true));
+            parsedOutput.Options["opt4"].Should().Be(("36.69", true));
+            parsedOutput.Options["very-long-opt-5"].Should().Be(("delimited val", false));
+        }
+
+        [Fact]
+        public async Task Parses_Full_With_Hybrid_Prefix_Same_Separator_Correctly()
+        {
+            terminalOptions.Value.Parser.Separator = ' ';
+            terminalOptions.Value.Parser.OptionValueSeparator = ' ';
+
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --long-opt-2 val2 -opt3 -opt4 36.69 --very-long-opt-5 \"delimited val\""));
+            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
+            parsedOutput.Options.Should().HaveCount(5);
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["long-opt-2"].Should().Be(("val2", false));
+            parsedOutput.Options["opt3"].Should().Be((true.ToString(), true));
+            parsedOutput.Options["opt4"].Should().Be(("36.69", true));
+            parsedOutput.Options["very-long-opt-5"].Should().Be(("delimited val", false));
+        }
+
+        [Fact]
         public async Task Parses_Full_With_Same_Separator_Correctly()
         {
             TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 --opt2 val2 -opt3 -opt4 36.69 --opt5 \"delimited val\""));
@@ -172,6 +216,19 @@ namespace OneImlx.Terminal.Runtime
             parsedOutput.Options["opt3"].Should().Be((true.ToString(), true));
             parsedOutput.Options["opt4"].Should().Be(("36.69", true));
             parsedOutput.Options["opt5"].Should().Be(("delimited val", false));
+        }
+
+        [Fact]
+        public async Task Parses_Full_With_Short_Option_Prefix_Correctly()
+        {
+            TerminalParsedRequest parsedOutput = await parser.ParseRequestAsync(new TerminalRequest("id1", "root1 grp1 cmd1 arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 -opt1 val1 -opt2 val2 -o3 -opt4 36.69 -o5 \"delimited val\""));
+            parsedOutput.Tokens.Should().BeEquivalentTo(["root1", "grp1", "cmd1", "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7", "arg8", "arg9", "arg10"]);
+            parsedOutput.Options.Should().HaveCount(5);
+            parsedOutput.Options!["opt1"].Should().Be(("val1", true));
+            parsedOutput.Options["opt2"].Should().Be(("val2", true));
+            parsedOutput.Options["o3"].Should().Be((true.ToString(), true));
+            parsedOutput.Options["opt4"].Should().Be(("36.69", true));
+            parsedOutput.Options["o5"].Should().Be(("delimited val", true));
         }
 
         [Theory]
