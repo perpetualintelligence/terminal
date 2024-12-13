@@ -8,7 +8,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
@@ -281,6 +280,16 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         [Fact]
+        public async Task Throws_If_ALias_Is_Unsupported()
+        {
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 Val1 -invalid_alias 25 --opt3 --opt4 \"val2\" --opt5"), terminalContext, null);
+            Func<Task> act = async () => await parser.ParseCommandAsync(context);
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode("unsupported_option")
+                .WithErrorDescription("The command does not support option or its alias. command=cmd2 option=invalid_alias");
+        }
+
+        [Fact]
         public async Task Throws_If_No_Root_Is_Not_Specified()
         {
             var context = new CommandRouterContext(new TerminalRequest("id1", "grp1 cmd1 cmd1"), terminalContext, null);
@@ -343,6 +352,16 @@ namespace OneImlx.Terminal.Commands.Parsers
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("unsupported_argument")
                 .WithErrorDescription("The command does not support arguments. command=cmd1");
+        }
+
+        [Fact]
+        public async Task Throws_If_Unsupported_Options()
+        {
+            var context = new CommandRouterContext(new TerminalRequest("id1", "root1 grp1 cmd1 --opt1 val1 --opt2 23"), terminalContext, null);
+            Func<Task> act = async () => await parser.ParseCommandAsync(context);
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode("unsupported_option")
+                .WithErrorDescription("The command does not support options. command=cmd1");
         }
 
         public readonly TerminalStartContext startContext;

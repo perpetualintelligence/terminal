@@ -5,9 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
 using FluentAssertions;
-using OneImlx.Terminal.Commands.Mappers;
+using System;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers

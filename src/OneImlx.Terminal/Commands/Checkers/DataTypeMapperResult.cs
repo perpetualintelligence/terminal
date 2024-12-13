@@ -7,7 +7,7 @@
 
 using System;
 
-namespace OneImlx.Terminal.Commands.Mappers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The option data-type mapper result.

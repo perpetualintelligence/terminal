@@ -15,7 +15,6 @@ using Moq;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Handlers;
-using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;

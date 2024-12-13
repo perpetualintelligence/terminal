@@ -6,7 +6,7 @@
 */
 
 using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Mappers;
+using OneImlx.Terminal.Commands.Checkers;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Mocks

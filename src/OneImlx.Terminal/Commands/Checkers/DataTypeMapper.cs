@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
 
-namespace OneImlx.Terminal.Commands.Mappers
+namespace OneImlx.Terminal.Commands.Checkers
 {
     /// <summary>
     /// The default option data type mapper.

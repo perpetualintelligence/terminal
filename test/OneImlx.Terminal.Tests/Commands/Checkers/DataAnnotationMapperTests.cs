@@ -7,7 +7,6 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Mappers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
