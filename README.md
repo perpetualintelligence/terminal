@@ -17,6 +17,8 @@ Quickly dive in with our [test apps](https://github.com/perpetualintelligence/te
 ## Packages
 [![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal?label=OneImlx.Terminal)](https://www.nuget.org/packages/OneImlx.Terminal)
 [![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Authentication?label=OneImlx.Terminal.Authentication)](https://www.nuget.org/packages/OneImlx.Terminal.Authentication)
+[![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.AspNetCore?label=OneImlx.Terminal.AspNetCore)](https://www.nuget.org/packages/OneImlx.Terminal.AspNetCore)
+[![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Client?label=OneImlx.Terminal.Client)](https://www.nuget.org/packages/OneImlx.Terminal.Client)
 
 ## **Key Features**:
 - Utilize microservices architecture, Dependency Injection (DI), and options pattern to design and configure your terminal apps.
