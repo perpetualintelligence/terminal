@@ -35,6 +35,11 @@ namespace OneImlx.Terminal.Configuration.Options
         public int MaxLength { get; set; } = 1024;
 
         /// <summary>
+        /// Define the route delay in milliseconds. The default value is <c>50</c> milliseconds.
+        /// </summary>
+        public int RouteDelay { get; set; } = 50;
+
+        /// <summary>
         /// The command router timeout in milliseconds. The default value is <c>25</c> seconds. Use
         /// <see cref="Timeout.Infinite"/> for infinite timeout.
         /// </summary>
