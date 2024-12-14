@@ -6,7 +6,6 @@
 */
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Runtime
@@ -33,7 +32,6 @@ namespace OneImlx.Terminal.Runtime
         /// <inheritdoc/>
         public bool Ignore(string? value)
         {
-            // Assume all values are ignored in this no-op implementation
             return true;
         }
 

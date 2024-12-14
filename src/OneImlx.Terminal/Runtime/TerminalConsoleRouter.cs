@@ -73,7 +73,7 @@ namespace OneImlx.Terminal.Runtime
                     try
                     {
                         // Wait for a bit to avoid CPU hogging and give time for cancellation token to be set.
-                        await Task.Delay(100);
+                        await Task.Delay(options.Router.RouteDelay);
 
                         // Honor the cancellation request.
                         if (context.StartContext.TerminalCancellationToken.IsCancellationRequested)
@@ -93,28 +93,26 @@ namespace OneImlx.Terminal.Runtime
                             await terminalConsole.WriteAsync(options.Router.Caret);
                         }
 
-                        // Read the user input
+                        // Read the user input and ignore empty commands
                         string? raw = await terminalConsole.ReadLineAsync();
-
-                        // Ignore empty commands
-                        if (raw == null || terminalConsole.Ignore(raw))
+                        if (terminalConsole.Ignore(raw))
                         {
                             // Wait for next command.
                             logger.LogDebug("The raw string is null or ignored by the terminal console.");
                             continue;
                         }
 
-                        // Request the request.
-                        request = new(Guid.NewGuid().ToString(), raw);
+                        // Execute the command asynchronously
+                        request = new(Guid.NewGuid().ToString(), raw!);
                         CommandRouterContext routerContext = new(request, context, properties: null);
-                        request = routerContext.Request;
-                        Task<CommandRouterResult> routeTask = commandRouter.RouteCommandAsync(routerContext);
-
-                        bool success = routeTask.Wait(options.Router.Timeout, context.StartContext.TerminalCancellationToken);
-                        if (!success)
+                        var routeTask = commandRouter.RouteCommandAsync(routerContext);
+                        if (await Task.WhenAny(routeTask, Task.Delay(options.Router.Timeout)) != routeTask)
                         {
                             throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
                         }
+
+                        // Process the result
+                        var result = await routeTask;
                     }
                     catch (OperationCanceledException oex)
                     {
