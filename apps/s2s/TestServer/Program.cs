@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Apps.TestServer
             services.AddHostedService<TestServerHostedService>();
 
             // Terminal builder helps in setting up terminal-related services and configurations for different protocols.
-            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
+            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
                 new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode),
                 options =>
                 {

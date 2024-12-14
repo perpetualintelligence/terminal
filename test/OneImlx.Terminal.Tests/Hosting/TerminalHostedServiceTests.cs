@@ -271,7 +271,7 @@ namespace OneImlx.Terminal.Hosting
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal<TerminalInMemoryCommandStore, TerminalTextHandler>(new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode))
+                services.AddTerminal<TerminalInMemoryCommandStore>(new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.Unicode))
                     .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
                         .DefineOption("id1", nameof(Int32), "test opt1", OptionFlags.None, "alias_id1").Add()
                     .Checker<MockCommandChecker>()
@@ -343,7 +343,7 @@ namespace OneImlx.Terminal.Hosting
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTerminal<TerminalInMemoryCommandStore, TerminalTextHandler>(textHandler)
+                services.AddTerminal<TerminalInMemoryCommandStore>(textHandler)
                     .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
                         .Checker<MockCommandChecker>()
                         .Add()

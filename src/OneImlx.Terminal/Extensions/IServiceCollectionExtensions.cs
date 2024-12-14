@@ -33,9 +33,8 @@ namespace OneImlx.Terminal.Extensions
         /// <param name="textHandler">The text handler.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, TText textHandler, Action<TerminalOptions> setupAction)
+        public static ITerminalBuilder AddTerminal<TStore>(this IServiceCollection services, ITerminalTextHandler textHandler, Action<TerminalOptions> setupAction)
             where TStore : class, ITerminalCommandStore
-            where TText : class, ITerminalTextHandler
         {
             if (services == null)
             {
@@ -53,21 +52,19 @@ namespace OneImlx.Terminal.Extensions
             }
 
             services.Configure(setupAction);
-            return services.AddTerminal<TStore, TText>(textHandler);
+            return services.AddTerminal<TStore>(textHandler);
         }
 
         /// <summary>
         /// Adds the <c>OneImlx.Terminal</c> services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
-        /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="configuration">The configuration to bind to <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, TText textHandler, IConfiguration configuration)
+        public static ITerminalBuilder AddTerminal<TStore>(this IServiceCollection services, ITerminalTextHandler textHandler, IConfiguration configuration)
             where TStore : class, ITerminalCommandStore
-            where TText : class, ITerminalTextHandler
         {
             if (services == null)
             {
@@ -85,20 +82,18 @@ namespace OneImlx.Terminal.Extensions
             }
 
             services.Configure<TerminalOptions>(configuration);
-            return services.AddTerminal<TStore, TText>(textHandler);
+            return services.AddTerminal<TStore>(textHandler);
         }
 
         /// <summary>
         /// Adds the <c>OneImlx.Terminal</c> services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
-        /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminal<TStore, TText>(this IServiceCollection services, TText textHandler)
+        public static ITerminalBuilder AddTerminal<TStore>(this IServiceCollection services, ITerminalTextHandler textHandler)
             where TStore : class, ITerminalCommandStore
-            where TText : class, ITerminalTextHandler
         {
             if (services == null)
             {
@@ -121,7 +116,6 @@ namespace OneImlx.Terminal.Extensions
         /// Adds the default <c>OneImlx.Terminal</c> services for console based terminal applications.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
-        /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
         /// <typeparam name="THelp">The type implementing <see cref="ITerminalHelpProvider"/>.</typeparam>
         /// <typeparam name="TException">The type implementing <see cref="ITerminalExceptionHandler"/>.</typeparam>
         /// <typeparam name="TConsole">The type implementing <see cref="ITerminalConsole"/>.</typeparam>
@@ -133,9 +127,8 @@ namespace OneImlx.Terminal.Extensions
         /// The console refers to an abstraction of the system console. The console can be a system console, a web
         /// console, or a custom console.
         /// </remarks>
-        public static ITerminalBuilder AddTerminalConsole<TStore, TText, THelp, TException, TConsole>(this IServiceCollection services, TText textHandler, Action<TerminalOptions> setupAction)
+        public static ITerminalBuilder AddTerminalConsole<TStore, THelp, TException, TConsole>(this IServiceCollection services, ITerminalTextHandler textHandler, Action<TerminalOptions> setupAction)
             where TStore : class, ITerminalCommandStore
-            where TText : class, ITerminalTextHandler
             where THelp : class, ITerminalHelpProvider
             where TException : class, ITerminalExceptionHandler
             where TConsole : class, ITerminalConsole
@@ -155,7 +148,7 @@ namespace OneImlx.Terminal.Extensions
                 throw new ArgumentNullException(nameof(setupAction));
             }
 
-            return services.AddTerminalDefault<TStore, TText, THelp, TException>(textHandler, setupAction)
+            return services.AddTerminalDefault<TStore, THelp, TException>(textHandler, setupAction)
                            .AddTerminalRouter<TerminalConsoleRouter, TerminalConsoleRouterContext>()
                            .AddConsole<TConsole>();
         }
@@ -164,16 +157,14 @@ namespace OneImlx.Terminal.Extensions
         /// Adds the default <c>OneImlx.Terminal</c> services to build custom terminal interfaces.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
-        /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
         /// <typeparam name="THelp">The type implementing <see cref="ITerminalHelpProvider"/>.</typeparam>
         /// <typeparam name="TException">The type implementing <see cref="ITerminalExceptionHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>
         /// <returns>A <see cref="ITerminalBuilder"/> that can be used to further configure the terminal services.</returns>
-        public static ITerminalBuilder AddTerminalDefault<TStore, TText, THelp, TException>(this IServiceCollection services, TText textHandler, Action<TerminalOptions> setupAction)
+        public static ITerminalBuilder AddTerminalDefault<TStore, THelp, TException>(this IServiceCollection services, ITerminalTextHandler textHandler, Action<TerminalOptions> setupAction)
             where TStore : class, ITerminalCommandStore
-            where TText : class, ITerminalTextHandler
             where THelp : class, ITerminalHelpProvider
             where TException : class, ITerminalExceptionHandler
         {
@@ -192,7 +183,7 @@ namespace OneImlx.Terminal.Extensions
                 throw new ArgumentNullException(nameof(setupAction));
             }
 
-            return services.AddTerminal<TStore, TText>(textHandler, setupAction)
+            return services.AddTerminal<TStore>(textHandler, setupAction)
                    .AddCommandRouter<CommandRouter, CommandHandler, CommandResolver>()
                    .AddCommandParser<CommandParser, TerminalRequestQueueParser>()
                    .AddOptionChecker<DataTypeMapper<Option>, OptionChecker>()

@@ -59,7 +59,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
 
             // NOTE: Specify your demo or commercial license file. Specify your application id.
             TerminalTextHandler textHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(textHandler,
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(textHandler,
                 options =>
                 {
                     options.Authentication.Enabled = true;

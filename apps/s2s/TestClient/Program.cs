@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Apps.TestClient
             services.AddHostedService<TestClientHostedService>();
 
             // Initialize the terminal as a console application
-            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
+            ITerminalBuilder terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(
                 new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII),
                 options =>
                 {
