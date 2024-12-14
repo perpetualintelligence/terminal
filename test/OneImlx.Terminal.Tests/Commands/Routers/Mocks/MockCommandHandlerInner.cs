@@ -19,11 +19,11 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
 
         public bool Called { get; set; }
 
-        public CommandRouterContext? PassedContext { get; internal set; }
+        public CommandContext? PassedContext { get; internal set; }
 
         public bool IsExplicitError { get; internal set; }
 
-        public Task HandleCommandAsync(CommandRouterContext context)
+        public Task HandleCommandAsync(CommandContext context)
         {
             Called = true;
 
@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
                 throw new TerminalException("test_handler_error", "test_handler_error_desc");
             }
 
-            context.Result = new CommandRouterResult();
+            context.Result = new CommandResult();
             return Task.CompletedTask;
         }
     }

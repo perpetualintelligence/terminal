@@ -82,7 +82,7 @@ public class TerminalConsoleRouterTests
 
         tcs.CancelAfter(200);
         await router.RunAsync(new(startContext));
-        commandRouterMock.Verify(c => c.RouteCommandAsync(It.IsAny<CommandRouterContext>()), Times.Never);
+        commandRouterMock.Verify(c => c.RouteCommandAsync(It.IsAny<CommandContext>()), Times.Never);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class TerminalConsoleRouterTests
         await router.RunAsync(new(startContext));
 
         // Verify command is routed. This may be invoked multiple times due to the cancellation token.
-        commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandRouterContext>(ctx => ctx.Request.Raw == "test_command")), Times.AtLeastOnce);
+        commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandContext>(ctx => ctx.Request.Raw == "test_command")), Times.AtLeastOnce);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class TerminalConsoleRouterTests
 
         // Verify command is routed. This may be invoked multiple times due to the cancellation token. We are verifying
         // at least 5 times to ensure the router is running for a while.
-        commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandRouterContext>(ctx => ctx.Request.Raw == "test_command")), Times.AtLeast(5));
+        commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandContext>(ctx => ctx.Request.Raw == "test_command")), Times.AtLeast(5));
 
         // Verify Canceled exception is handled
         exceptionHandlerMock.Verify(e => e.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(context =>
@@ -159,11 +159,11 @@ public class TerminalConsoleRouterTests
         terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("test_command");
 
         // Mock command router with a simulated delay of 600ms (longer than timeout)
-        commandRouterMock.Setup(c => c.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                         .Returns(async (CommandRouterContext context) =>
+        commandRouterMock.Setup(c => c.RouteCommandAsync(It.IsAny<CommandContext>()))
+                         .Returns(async (CommandContext context) =>
                          {
                              await Task.Delay(600); // Delay longer than the timeout
-                             return new CommandRouterResult();
+                             return new CommandResult();
                          });
 
         await router.RunAsync(new(startContext));

@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Commands.Runners
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
-            routerContext = new CommandRouterContext(new(Guid.NewGuid().ToString(), "test"), routingContext, null);
+            routerContext = new CommandContext(new(Guid.NewGuid().ToString(), "test"), routingContext, null);
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace OneImlx.Terminal.Commands.Runners
         }
 
         private readonly CancellationTokenSource commandTokenSource = null!;
-        private readonly CommandRouterContext routerContext = null!;
+        private readonly CommandContext routerContext = null!;
         private readonly TerminalRouterContext routingContext = null!;
         private readonly CancellationTokenSource terminalTokenSource = null!;
     }

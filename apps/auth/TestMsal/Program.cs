@@ -14,6 +14,7 @@ using OneImlx.Terminal.Stores;
 using Serilog;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace OneImlx.Terminal.Apps.TestAuth
@@ -57,8 +58,8 @@ namespace OneImlx.Terminal.Apps.TestAuth
                 .Build();
 
             // NOTE: Specify your demo or commercial license file. Specify your application id.
-            TerminalUnicodeTextHandler terminalUnicodeTextHandler = new();
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(terminalUnicodeTextHandler,
+            TerminalTextHandler textHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(textHandler,
                 options =>
                 {
                     options.Authentication.Enabled = true;

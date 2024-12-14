@@ -32,11 +32,11 @@ namespace OneImlx.Terminal.Events
         /// <param name="command">The command object. May be <c>null</c>.</param>
         /// <param name="result">The command router result. May be <c>null</c>.</param>
         /// <remarks>
-        /// The framework will call <see cref="AfterCommandRouteAsync(TerminalRequest, Command?, CommandRouterResult?)"/> even if there is an error during command routing.
+        /// The framework will call <see cref="AfterCommandRouteAsync(TerminalRequest, Command?, CommandResult?)"/> even if there is an error during command routing.
         /// The <c>command</c> and <c>result</c> parameters may be <c>null</c>. The router constructs a <c>command</c> object if the parser, handler, and checker pass
         /// and routes a command to run.
         /// </remarks>
-        public Task AfterCommandRouteAsync(TerminalRequest request, Command? command, CommandRouterResult? result);
+        public Task AfterCommandRouteAsync(TerminalRequest request, Command? command, CommandResult? result);
 
         /// <summary>
         /// Override this method if you will perform an asynchronous operation before <see cref="ICommandHandler"/> starts a command run.

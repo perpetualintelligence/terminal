@@ -19,6 +19,6 @@ namespace OneImlx.Terminal.Commands.Checkers
         /// </summary>
         /// <param name="context">The command check context.</param>
         /// <returns>The <see cref="CommandCheckerResult"/> instance.</returns>
-        public Task<CommandCheckerResult> CheckCommandAsync(CommandRouterContext context);
+        public Task<CommandCheckerResult> CheckCommandAsync(CommandContext context);
     }
 }

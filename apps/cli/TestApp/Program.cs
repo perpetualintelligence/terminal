@@ -11,6 +11,7 @@ using OneImlx.Terminal.Stores;
 using Serilog;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace OneImlx.Terminal.Apps.TestApp
@@ -80,7 +81,8 @@ namespace OneImlx.Terminal.Apps.TestApp
             // NOTE:
             // Specify your demo or commercial license file.
             // Specify your application id.
-            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(new TerminalUnicodeTextHandler(),
+            TerminalTextHandler textHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
+            ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(textHandler,
                 options =>
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;

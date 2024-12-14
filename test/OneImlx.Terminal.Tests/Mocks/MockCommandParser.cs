@@ -14,7 +14,7 @@ namespace OneImlx.Terminal.Mocks
 {
     public class MockCommandParser : ICommandParser
     {
-        public Task ParseCommandAsync(CommandRouterContext context)
+        public Task ParseCommandAsync(CommandContext context)
         {
             Called = true;
 

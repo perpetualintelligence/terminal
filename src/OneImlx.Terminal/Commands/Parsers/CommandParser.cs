@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         }
 
         /// <inheritdoc/>
-        public async Task ParseCommandAsync(CommandRouterContext context)
+        public async Task ParseCommandAsync(CommandContext context)
         {
             logger.LogDebug("Parse request. request={0} raw={1}", context.Request.Id, context.Request.Raw);
             TerminalParsedRequest parsedOutput = await terminalRequestParser.ParseRequestAsync(context.Request);

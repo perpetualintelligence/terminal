@@ -13,7 +13,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {
     internal class MockErrorCommandCheckerInner : ICommandChecker
     {
-        public Task<CommandCheckerResult> CheckCommandAsync(CommandRouterContext context)
+        public Task<CommandCheckerResult> CheckCommandAsync(CommandContext context)
         {
             throw new TerminalException("test_checker_error", "test_checker_error_desc");
         }

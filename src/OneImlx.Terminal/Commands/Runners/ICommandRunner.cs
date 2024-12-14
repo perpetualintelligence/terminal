@@ -19,13 +19,13 @@ namespace OneImlx.Terminal.Commands.Runners
         /// </summary>
         /// <param name="context">The runner context.</param>
         /// <returns>The runner result.</returns>
-        Task<TResult> RunCommandAsync(CommandRouterContext context);
+        Task<TResult> RunCommandAsync(CommandContext context);
 
         /// <summary>
         /// Runs a command help asynchronously.
         /// </summary>
         /// <param name="context">The runner context.</param>
         /// <returns>The runner result.</returns>
-        Task RunHelpAsync(CommandRouterContext context);
+        Task RunHelpAsync(CommandContext context);
     }
 }

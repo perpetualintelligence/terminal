@@ -202,7 +202,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             routerContext.Result.Should().BeNull();
             await handler.HandleCommandAsync(routerContext);
 
-            CommandRouterResult? result = routerContext.Result;
+            CommandResult? result = routerContext.Result;
             result.Should().NotBeNull();
 
             result!.CheckerResult.Should().NotBeNull();
@@ -227,7 +227,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             routerContext.Result.Should().BeNull();
             await handler.HandleCommandAsync(routerContext);
 
-            CommandRouterResult? result = routerContext.Result;
+            CommandResult? result = routerContext.Result;
             result.Should().NotBeNull();
 
             result!.RunnerResult.Should().NotBeNull();
@@ -247,7 +247,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             routerContext.Result.Should().BeNull();
             await handler.HandleCommandAsync(routerContext);
 
-            CommandRouterResult? result = routerContext.Result;
+            CommandResult? result = routerContext.Result;
             result.Should().NotBeNull();
 
             result!.RunnerResult.Should().NotBeNull();
@@ -359,7 +359,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             licenseChecker = new MockLicenseCheckerInner();
             command = MockCommands.NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None);
             routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
-            routerContext = new CommandRouterContext(new(Guid.NewGuid().ToString(), "test"), routingContext, null);
+            routerContext = new CommandContext(new(Guid.NewGuid().ToString(), "test"), routingContext, null);
             commandRuntime = new MockCommandResolver();
             terminalHelpProvider = new MockTerminalHelpProvider();
             terminalEventHandler = new MockTerminalEventHandler();
@@ -516,7 +516,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         private Tuple<CommandDescriptor, Command> helpIdCommand = null!;
         private License license = null!;
         private MockLicenseCheckerInner licenseChecker = null!;
-        private CommandRouterContext routerContext = null!;
+        private CommandContext routerContext = null!;
         private TerminalRouterContext routingContext = null!;
         private MockTerminalEventHandler terminalEventHandler = null!;
         private MockTerminalHelpProvider terminalHelpProvider = null!;

@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
             string server = configuration.GetValue<string>("testclient:testserver:ip")
                             ?? throw new InvalidOperationException("Server IP address is missing.");

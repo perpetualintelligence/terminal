@@ -18,6 +18,6 @@ namespace OneImlx.Terminal.Commands.Parsers
         /// Extracts <see cref="Command"/> asynchronously.
         /// </summary>
         /// <param name="context">The option extraction context.</param>
-        public Task ParseCommandAsync(CommandRouterContext context);
+        public Task ParseCommandAsync(CommandContext context);
     }
 }

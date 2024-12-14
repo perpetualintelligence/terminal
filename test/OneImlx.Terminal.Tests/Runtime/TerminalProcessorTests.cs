@@ -78,9 +78,9 @@ namespace OneImlx.Terminal.Runtime
         {
             // Mock the setup for the command router
             List<string> routedCommands = [];
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
-                .ReturnsAsync(new CommandRouterResult());
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(c => routedCommands.Add(c.Request.Raw))
+                .ReturnsAsync(new CommandResult());
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
             int idx = 0;
@@ -103,7 +103,7 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task AddAsync_CallsExceptionHandler_WhenRouterFails()
         {
-            _mockCommandRouter.Setup(static r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).ThrowsAsync(new Exception("Router error"));
+            _mockCommandRouter.Setup(static r => r.RouteCommandAsync(It.IsAny<CommandContext>())).ThrowsAsync(new Exception("Router error"));
 
             // Act
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
@@ -121,8 +121,8 @@ namespace OneImlx.Terminal.Runtime
 
             // Setup that the mock command router was invoked
             List<string> routedCommands = [];
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(c => routedCommands.Add(c.Request.Raw));
 
             // Act
             await _terminalProcessor.AddAsync(TerminalInput.Single("id1", "command1"), "sender", "endpoint");
@@ -138,8 +138,8 @@ namespace OneImlx.Terminal.Runtime
         {
             // Mock the setup for the command router
             List<string> routedCommands = [];
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw));
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(c => routedCommands.Add(c.Request.Raw));
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
             int idx = 1;
@@ -163,9 +163,9 @@ namespace OneImlx.Terminal.Runtime
 
             // Setup that the mock command router was invoked
             List<string> routedCommands = [];
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Raw))
-                .ReturnsAsync(new CommandRouterResult());
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(c => routedCommands.Add(c.Request.Raw))
+                .ReturnsAsync(new CommandResult());
 
             OrderedDictionary commands1 = [];
             for (int i = 0; i < 1000; i++)
@@ -286,9 +286,9 @@ namespace OneImlx.Terminal.Runtime
 
             // Setup that the mock command router was invoked
             Dictionary<string, string> routedCommands = [];
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routedCommands.Add(c.Request.Id, c.Request.Raw))
-                .ReturnsAsync(new CommandRouterResult());
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(c => routedCommands.Add(c.Request.Id, c.Request.Raw))
+                .ReturnsAsync(new CommandResult());
 
             // Send batch of 100000 commands by using TerminalServices
             Dictionary<string, string> allCommands = [];
@@ -347,15 +347,15 @@ namespace OneImlx.Terminal.Runtime
             TerminalRequest testRequest = new("id1", "command1,command2,command3|");
 
             // Create mock command router results for each command
-            CommandRouterResult routerResult1 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result1"));
-            CommandRouterResult routerResult2 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result2"));
-            CommandRouterResult routerResult3 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result3"));
+            CommandResult routerResult1 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result1"));
+            CommandResult routerResult2 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result2"));
+            CommandResult routerResult3 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result3"));
 
             // Arrange
-            CommandRouterContext? routeContext = null;
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routeContext = c)
-                .ReturnsAsync((CommandRouterContext context) =>
+            CommandContext? routeContext = null;
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(c => routeContext = c)
+                .ReturnsAsync((CommandContext context) =>
                 {
                     return context.Request.Raw switch
                     {
@@ -402,17 +402,17 @@ namespace OneImlx.Terminal.Runtime
             TerminalRequest testRequest = new("id1", "command1,command2,command3,command4,command5|");
 
             // Create mock command router results: 4 valid and 1 null
-            CommandRouterResult routerResult1 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result1"));
-            CommandRouterResult routerResult2 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result2"));
-            CommandRouterResult routerResult3 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result3"));
-            CommandRouterResult routerResult4 = new(new CommandCheckerResult(), new CommandRunnerResult()); // Null Value
-            CommandRouterResult routerResult5 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result5"));
+            CommandResult routerResult1 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result1"));
+            CommandResult routerResult2 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result2"));
+            CommandResult routerResult3 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result3"));
+            CommandResult routerResult4 = new(new CommandCheckerResult(), new CommandRunnerResult()); // Null Value
+            CommandResult routerResult5 = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result5"));
 
             // Arrange
-            CommandRouterContext? routeContext = null;
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routeContext = c)
-                .ReturnsAsync((CommandRouterContext context) =>
+            CommandContext? routeContext = null;
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(c => routeContext = c)
+                .ReturnsAsync((CommandContext context) =>
                 {
                     return context.Request.Raw switch
                     {
@@ -464,12 +464,12 @@ namespace OneImlx.Terminal.Runtime
             TerminalRequest testRequest = new("id1", "command1|");
 
             // Create a mock command router result with
-            CommandRouterResult routerResult = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result"));
+            CommandResult routerResult = new(new CommandCheckerResult(), new CommandRunnerResult("sender_result"));
 
             // Arrange
-            CommandRouterContext? routeContext = null;
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(c => routeContext = c)
+            CommandContext? routeContext = null;
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(c => routeContext = c)
                 .ReturnsAsync(routerResult);
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
@@ -513,7 +513,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task StartProcessing_HandlesRouterException()
         {
             Exception? handeledException = null;
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).ThrowsAsync(new Exception("Router error"));
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>())).ThrowsAsync(new Exception("Router error"));
             _mockExceptionHandler.Setup(e => e.HandleExceptionAsync(It.IsAny<TerminalExceptionHandlerContext>())).Callback<TerminalExceptionHandlerContext>(c => handeledException = c.Exception);
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
@@ -527,8 +527,8 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task StartProcessing_Populates_Router_Context()
         {
-            CommandRouterContext? routeContext = null;
-            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandRouterContext>())).Callback<CommandRouterContext>(c => routeContext = c);
+            CommandContext? routeContext = null;
+            _mockCommandRouter.Setup(r => r.RouteCommandAsync(It.IsAny<CommandContext>())).Callback<CommandContext>(c => routeContext = c);
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
@@ -653,12 +653,12 @@ namespace OneImlx.Terminal.Runtime
             List<string> processedCommands = [];
             var lockObj = new object();
 
-            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(ctx =>
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(ctx =>
                 {
                     processedCommands.Add(ctx.Request.Raw);
                 })
-                .ReturnsAsync(new CommandRouterResult());
+                .ReturnsAsync(new CommandResult());
 
             // Start the processor
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
@@ -697,8 +697,8 @@ namespace OneImlx.Terminal.Runtime
             string? processedCommand = null;
             var lockObj = new object();
 
-            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(ctx =>
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(ctx =>
                 {
                     processedCommand = ctx.Request.Raw;
                 });
@@ -730,12 +730,12 @@ namespace OneImlx.Terminal.Runtime
             var processedCommands = new ConcurrentQueue<string>();
             var lockObj = new object();
 
-            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(ctx =>
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(ctx =>
                 {
                     processedCommands.Enqueue(ctx.Request.Raw);
                 })
-                .ReturnsAsync(new CommandRouterResult());
+                .ReturnsAsync(new CommandResult());
 
             // Create a large batch of commands to simulate streaming
             var ids = Enumerable.Range(1, 1500).Select(i => $"id{i}").ToArray();
@@ -778,8 +778,8 @@ namespace OneImlx.Terminal.Runtime
             var processedCommand = "";
             var lockObj = new object();
 
-            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandRouterContext>()))
-                .Callback<CommandRouterContext>(ctx =>
+            _mockCommandRouter.Setup(x => x.RouteCommandAsync(It.IsAny<CommandContext>()))
+                .Callback<CommandContext>(ctx =>
                 {
                     processedCommand = ctx.Request.Raw;
                 });

@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         }
 
         /// <inheritdoc/>
-        public async Task HandleCommandAsync(CommandRouterContext context)
+        public async Task HandleCommandAsync(CommandContext context)
         {
             logger.LogDebug("Handle request. request={0}", context.Request.Id);
 
@@ -56,10 +56,10 @@ namespace OneImlx.Terminal.Commands.Handlers
             Tuple<CommandCheckerResult, CommandRunnerResult> result = await CheckAndRunCommandInnerAsync(context);
 
             // Return the processed result
-            context.Result = new CommandRouterResult(result.Item1, result.Item2);
+            context.Result = new CommandResult(result.Item1, result.Item2);
         }
 
-        private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandRouterContext context)
+        private async Task<Tuple<CommandCheckerResult, CommandRunnerResult>> CheckAndRunCommandInnerAsync(CommandContext context)
         {
             Command command = context.EnsureParsedCommand().Command;
 
@@ -81,7 +81,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             }
         }
 
-        private async Task<CommandCheckerResult> CheckCommandInnerAsync(CommandRouterContext context)
+        private async Task<CommandCheckerResult> CheckCommandInnerAsync(CommandContext context)
         {
             Command command = context.EnsureParsedCommand().Command;
 
@@ -106,7 +106,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             return result;
         }
 
-        private async Task<CommandRunnerResult> RunCommandInnerAsync(CommandRouterContext context, bool runHelp)
+        private async Task<CommandRunnerResult> RunCommandInnerAsync(CommandContext context, bool runHelp)
         {
             Command command = context.EnsureParsedCommand().Command;
 

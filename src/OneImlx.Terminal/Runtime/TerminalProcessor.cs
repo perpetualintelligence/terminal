@@ -257,12 +257,12 @@ namespace OneImlx.Terminal.Runtime
                 }
 
                 logger.LogDebug("Routing the command. raw={0} sender={1}", request.Raw, senderId);
-                var context = new CommandRouterContext(request, terminalRouterContext, properties);
+                var context = new CommandContext(request, terminalRouterContext, properties);
                 var routeTask = commandRouter.RouteCommandAsync(context);
 
                 if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.StartContext.TerminalCancellationToken)) == routeTask)
                 {
-                    CommandRouterResult result = await routeTask;
+                    CommandResult result = await routeTask;
                     object? value = null;
                     if (result.RunnerResult != null)
                     {

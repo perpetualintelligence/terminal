@@ -33,7 +33,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         /// <inheritdoc/>
-        public async Task<CommandCheckerResult> CheckCommandAsync(CommandRouterContext context)
+        public async Task<CommandCheckerResult> CheckCommandAsync(CommandContext context)
         {
             logger.LogDebug("Check command. command={0}", context.EnsureParsedCommand().Command.Id);
 
@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             return new CommandCheckerResult();
         }
 
-        private async Task CheckArgumentsAsync(CommandRouterContext context)
+        private async Task CheckArgumentsAsync(CommandContext context)
         {
             // Cache commonly accessed properties
             var command = context.EnsureParsedCommand().Command;
@@ -91,7 +91,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             }
         }
 
-        private async Task CheckOptionsAsync(CommandRouterContext context)
+        private async Task CheckOptionsAsync(CommandContext context)
         {
             // Cache commonly accessed properties
             var command = context.EnsureParsedCommand().Command;

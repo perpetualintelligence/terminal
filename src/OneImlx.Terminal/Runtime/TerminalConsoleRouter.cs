@@ -104,7 +104,7 @@ namespace OneImlx.Terminal.Runtime
 
                         // Execute the command asynchronously
                         request = new(Guid.NewGuid().ToString(), raw!);
-                        CommandRouterContext routerContext = new(request, context, properties: null);
+                        CommandContext routerContext = new(request, context, properties: null);
                         var routeTask = commandRouter.RouteCommandAsync(routerContext);
                         if (await Task.WhenAny(routeTask, Task.Delay(options.Router.Timeout)) != routeTask)
                         {

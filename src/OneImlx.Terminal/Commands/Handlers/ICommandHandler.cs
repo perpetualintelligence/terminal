@@ -19,6 +19,6 @@ namespace OneImlx.Terminal.Commands.Handlers
         /// </summary>
         /// <param name="context">The handler context.</param>
         /// <returns>The handler result.</returns>
-        Task HandleCommandAsync(CommandRouterContext context);
+        Task HandleCommandAsync(CommandContext context);
     }
 }

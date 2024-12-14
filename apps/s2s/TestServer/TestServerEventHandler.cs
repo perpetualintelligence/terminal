@@ -21,7 +21,7 @@ namespace OneImlx.Terminal.Apps.TestServer
             throw new System.NotImplementedException();
         }
 
-        public Task AfterCommandRouteAsync(TerminalRequest request, Command? command, CommandRouterResult? result)
+        public Task AfterCommandRouteAsync(TerminalRequest request, Command? command, CommandResult? result)
         {
             throw new System.NotImplementedException();
         }

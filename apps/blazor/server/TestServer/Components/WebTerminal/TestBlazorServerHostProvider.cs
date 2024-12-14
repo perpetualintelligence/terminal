@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -175,7 +176,8 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         {
             services.AddHostedService<TestBlazorServerHostedService>();
 
-            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalUnicodeTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TestBlazorServerConsole>(new TerminalUnicodeTextHandler(), options =>
+            TerminalTextHandler textHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
+            var terminalBuilder = services.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalTextHandler, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TestBlazorServerConsole>(textHandler, options =>
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
                 options.Licensing.LicenseFile = licenseFile!;

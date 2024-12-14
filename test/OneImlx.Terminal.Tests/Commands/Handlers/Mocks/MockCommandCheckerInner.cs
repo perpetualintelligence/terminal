@@ -16,7 +16,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
 
         public bool ThrowException { get; set; }
 
-        public Task<CommandCheckerResult> CheckCommandAsync(CommandRouterContext context)
+        public Task<CommandCheckerResult> CheckCommandAsync(CommandContext context)
         {
             Called = true;
 

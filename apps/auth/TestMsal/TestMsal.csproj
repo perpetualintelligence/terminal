@@ -10,12 +10,16 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Graph" Version="5.63.0" />
+        <PackageReference Include="Microsoft.Graph" Version="5.67.0" />
         <PackageReference Include="Microsoft.Identity.Client" Version="4.66.2" />
-        <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <PackageReference Include="OneImlx.Terminal.Authentication" Version="5.12.1" />
         <PackageReference Include="System.Text.Json" Version="9.0.0" />
+        <!--<PackageReference Include="OneImlx.Terminal.Authentication" Version="6.0.0-preview.241214387" />-->
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\src\OneImlx.Terminal.Authentication\OneImlx.Terminal.Authentication.csproj" />
     </ItemGroup>
 
     <ItemGroup>

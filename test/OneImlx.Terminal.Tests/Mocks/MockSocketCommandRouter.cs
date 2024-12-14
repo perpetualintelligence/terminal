@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Mocks
         //This is used in the context of singleton Router
         public int RouteCounter { get; set; }
 
-        public async Task<CommandRouterResult> RouteCommandAsync(CommandRouterContext context)
+        public async Task<CommandResult> RouteCommandAsync(CommandContext context)
         {
             // Stats
             RouteCalled = true;
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Mocks
                 throw new TerminalException(explicitError);
             }
 
-            return new CommandRouterResult();
+            return new CommandResult();
         }
 
         private readonly CancellationTokenSource? cancelOnRouteCalled;

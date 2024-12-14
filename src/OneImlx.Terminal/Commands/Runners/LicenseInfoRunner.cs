@@ -27,7 +27,7 @@ namespace OneImlx.Terminal.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
             // Recheck the license to get the current consumption.
             // TODO: This should be tolerant of over-consumption since it is printing the usage. At present CheckLicenseAsync

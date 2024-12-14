@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
 
         public bool RunCalled { get; private set; }
 
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRouterContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
             this.helpProvider = helpProvider;
             DelegateHelpCalled = true;
@@ -30,19 +30,19 @@ namespace OneImlx.Terminal.Commands.Handlers.Mocks
             return new CommandRunnerResult();
         }
 
-        public Task<CommandRunnerResult> DelegateRunAsync(CommandRouterContext context, ILogger? logger = null)
+        public Task<CommandRunnerResult> DelegateRunAsync(CommandContext context, ILogger? logger = null)
         {
             DelegateRunCalled = true;
             return RunCommandAsync(context);
         }
 
-        public Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
+        public Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
             RunCalled = true;
             return Task.FromResult<CommandRunnerResult>(new MockCommandRunnerInnerResult());
         }
 
-        public async Task RunHelpAsync(CommandRouterContext context)
+        public async Task RunHelpAsync(CommandContext context)
         {
             await helpProvider.ProvideHelpAsync(new TerminalHelpProviderContext(context.EnsureParsedCommand().Command));
             HelpCalled = true;

@@ -19,11 +19,11 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
 
         public bool DoNotSetParsedCommand { get; set; }
 
-        public CommandRouterContext? PassedContext { get; internal set; }
+        public CommandContext? PassedContext { get; internal set; }
 
         public bool SetExplicitError { get; set; }
 
-        public Task ParseCommandAsync(CommandRouterContext context)
+        public Task ParseCommandAsync(CommandContext context)
         {
             Called = true;
             PassedContext = context;

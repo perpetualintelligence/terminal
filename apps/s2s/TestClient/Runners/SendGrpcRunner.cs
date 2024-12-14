@@ -25,7 +25,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             this.terminalConsole = terminalConsole ?? throw new ArgumentNullException(nameof(terminalConsole));
         }
 
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
             string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
             int port = configuration.GetValue<int>("testclient:testserver:port");

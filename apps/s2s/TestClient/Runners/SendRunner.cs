@@ -15,7 +15,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             this.terminalConsole = terminalConsole;
         }
 
-        public override Task<CommandRunnerResult> RunCommandAsync(CommandRouterContext context)
+        public override Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
             terminalConsole.WriteLineAsync("Sends messages to the test server.");
             return Task.FromResult(new CommandRunnerResult());

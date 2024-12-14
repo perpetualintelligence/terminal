@@ -50,10 +50,10 @@ namespace OneImlx.Terminal.Commands
         /// Routes the command request to the registered handler.
         /// </summary>
         /// <param name="context">The router context.</param>
-        /// <returns>The <see cref="CommandRouterResult"/> instance.</returns>
-        public async Task<CommandRouterResult> RouteCommandAsync(CommandRouterContext context)
+        /// <returns>The <see cref="CommandResult"/> instance.</returns>
+        public async Task<CommandResult> RouteCommandAsync(CommandContext context)
         {
-            CommandRouterResult? result = null;
+            CommandResult? result = null;
             ParsedCommand? parsedCommand = null;
             try
             {

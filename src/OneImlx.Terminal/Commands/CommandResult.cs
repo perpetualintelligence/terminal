@@ -13,21 +13,21 @@ namespace OneImlx.Terminal.Commands
     /// <summary>
     /// Represents the result of a command router.
     /// </summary>
-    public sealed class CommandRouterResult
+    public sealed class CommandResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandRouterResult"/> class.
+        /// Initializes a new instance of the <see cref="CommandResult"/> class.
         /// </summary>
-        public CommandRouterResult()
+        public CommandResult()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandRouterResult"/> class with specified checker and runner results.
+        /// Initializes a new instance of the <see cref="CommandResult"/> class with specified checker and runner results.
         /// </summary>
         /// <param name="checkerResult">The result of the command checker.</param>
         /// <param name="runnerResult">The result of the command runner.</param>
-        public CommandRouterResult(CommandCheckerResult checkerResult, CommandRunnerResult runnerResult)
+        public CommandResult(CommandCheckerResult checkerResult, CommandRunnerResult runnerResult)
         {
             CheckerResult = checkerResult;
             RunnerResult = runnerResult;

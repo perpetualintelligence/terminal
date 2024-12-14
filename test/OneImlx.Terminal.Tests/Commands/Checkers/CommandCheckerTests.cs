@@ -39,7 +39,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
             routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
-            routerContext = new CommandRouterContext(request, routingContext, null);
+            routerContext = new CommandContext(request, routingContext, null);
         }
 
         [Fact]
@@ -252,7 +252,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         private readonly CancellationTokenSource commandTokenSource = null!;
         private readonly IDataTypeMapper<Option> optionMapper = null!;
         private readonly TerminalRequest request = null!;
-        private readonly CommandRouterContext routerContext = null!;
+        private readonly CommandContext routerContext = null!;
         private readonly TerminalRouterContext routingContext = null!;
         private readonly TerminalOptions terminalOptions = null!;
         private readonly CancellationTokenSource terminalTokenSource = null!;

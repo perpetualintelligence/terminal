@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Commands.Runners
     public abstract class CommandRunner<TResult> : IDelegateCommandRunner, ICommandRunner<TResult> where TResult : CommandRunnerResult
     {
         /// <inheritdoc/>
-        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandRouterContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateHelpAsync(CommandContext context, ITerminalHelpProvider helpProvider, ILogger? logger = null)
         {
             this.helpProvider = helpProvider;
 
@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public async Task<CommandRunnerResult> DelegateRunAsync(CommandRouterContext context, ILogger? logger = null)
+        public async Task<CommandRunnerResult> DelegateRunAsync(CommandContext context, ILogger? logger = null)
         {
             this.logger = logger;
             logger?.LogDebug("Run command. command={0}", context.EnsureParsedCommand().Command.Id);
@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Commands.Runners
         }
 
         /// <inheritdoc/>
-        public abstract Task<TResult> RunCommandAsync(CommandRouterContext context);
+        public abstract Task<TResult> RunCommandAsync(CommandContext context);
 
         /// <summary>
         /// Runs the command help asynchronously.
@@ -49,7 +49,7 @@ namespace OneImlx.Terminal.Commands.Runners
         /// <param name="context">The command context.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task RunHelpAsync(CommandRouterContext context)
+        public virtual Task RunHelpAsync(CommandContext context)
         {
             if (helpProvider == null)
             {

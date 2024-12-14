@@ -13,7 +13,7 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <!--<PackageReference Include="OneImlx.Terminal" Version="5.12.1" />-->
+        <!--<PackageReference Include="OneImlx.Terminal.Client" Version="6.0.0-preview.241214387" />-->
     </ItemGroup>
 
     <ItemGroup>

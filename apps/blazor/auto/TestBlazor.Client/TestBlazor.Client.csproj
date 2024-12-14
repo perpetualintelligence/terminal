@@ -12,7 +12,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
 	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.4" />
-	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.4" />    
+	<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.4" />
+      <!--<PackageReference Include="OneImlx.Terminal" Version="6.0.0-preview.241214387" />-->
   </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\src\OneImlx.Terminal\OneImlx.Terminal.csproj" />
+    </ItemGroup>
 
 </Project>

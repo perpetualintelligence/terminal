@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
@@ -30,7 +31,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal.Runners
         /// <param name="context"></param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public override async Task<CommandRunnerResult> RunCommandAsync(CommandRunnerContext context)
+        public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
             await terminalConsole.ClearAsync();
             return new CommandRunnerResult();

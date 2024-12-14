@@ -12,11 +12,16 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
 	<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-    <PackageReference Include="OneImlx.Terminal" Version="5.12.1" />
+      <!--<PackageReference Include="OneImlx.Terminal.AspNetCore" Version="6.0.0-preview.241214387" />-->
   </ItemGroup>
+
   <ItemGroup>
 	  <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.4" />
       <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.4" />
       <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\src\OneImlx.Terminal.AspNetCore\OneImlx.Terminal.AspNetCore.csproj" />
+    </ItemGroup>
  </Project>

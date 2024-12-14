@@ -16,7 +16,7 @@ namespace OneImlx.Terminal.Commands
     /// <summary>
     /// The generic command router context.
     /// </summary>
-    public sealed class CommandRouterContext
+    public sealed class CommandContext
     {
         /// <summary>
         /// The command string.
@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Commands
         /// <param name="request">The request to process.</param>
         /// <param name="context">The terminal routing context.</param>
         /// <param name="properties">The additional router properties.</param>
-        public CommandRouterContext(
+        public CommandContext(
             TerminalRequest request,
             TerminalRouterContext context,
             Dictionary<string, object>? properties)
@@ -57,7 +57,7 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// The result of the command execution.
         /// </summary>
-        public CommandRouterResult? Result { get; internal set; }
+        public CommandResult? Result { get; internal set; }
 
         /// <summary>
         /// The terminal routing context.
@@ -95,11 +95,26 @@ namespace OneImlx.Terminal.Commands
         }
 
         /// <summary>
+        /// Ensures the command is available.
+        /// </summary>
+        /// <returns>The available command.</returns>
+        /// <exception cref="TerminalException">Thrown when the parsed command is not available.</exception>
+        public Command EnsureCommand()
+        {
+            if (ParsedCommand is null || ParsedCommand.Command is null)
+            {
+                throw new TerminalException(TerminalErrors.ServerError, "The command is not available.");
+            }
+
+            return ParsedCommand.Command;
+        }
+
+        /// <summary>
         /// Ensures the result is available.
         /// </summary>
         /// <returns>The available result.</returns>
         /// <exception cref="TerminalException">Thrown when the result is not available.</exception>
-        public CommandRouterResult EnsureResult()
+        public CommandResult EnsureResult()
         {
             if (Result is null)
             {
