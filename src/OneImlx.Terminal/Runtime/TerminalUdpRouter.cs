@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                terminalProcessor.StartProcessing(context, background: true, responseHandler: null);
+                terminalProcessor.StartProcessing(context, background: true, responseHandler: HandleResponseAsync);
                 while (true)
                 {
                     // Throw if cancellation is requested.
@@ -123,6 +123,11 @@ namespace OneImlx.Terminal.Runtime
                 logger.LogDebug("Terminal UDP router stopped. endpoint={0}", context.IPEndPoint);
                 IsRunning = false;
             }
+        }
+
+        private async Task HandleResponseAsync(TerminalOutput output)
+        {
+            throw new NotImplementedException();
         }
 
         private readonly ICommandRouter commandRouter;

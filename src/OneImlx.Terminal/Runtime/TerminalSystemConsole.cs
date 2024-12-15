@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         public TerminalSystemConsole()
         {
-            onethread = new SemaphoreSlim(1, 1); // Initialize with a single permit
+            oneThread = new SemaphoreSlim(1, 1); // Initialize with a single permit
         }
 
         /// <summary>
@@ -52,14 +52,14 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         public async Task ClearAsync()
         {
-            await onethread.WaitAsync();
+            await oneThread.WaitAsync();
             try
             {
                 Console.Clear();
             }
             finally
             {
-                onethread.Release();
+                oneThread.Release();
             }
         }
 
@@ -79,27 +79,20 @@ namespace OneImlx.Terminal.Runtime
         /// in the format <c>{question} ({answer1}/{answer2}/{answer3})?</c>.
         /// </param>
         /// <returns>The user's answer, or <c>null</c> if canceled.</returns>
-        public async Task<string?> ReadAnswerAsync(string question, params string[]? answers)
+        public async Task<string> ReadAnswerAsync(string question, params string[]? answers)
         {
-            await onethread.WaitAsync();
+            await oneThread.WaitAsync();
             try
             {
                 Console.Write(answers != null
                     ? $"{question} ({string.Join("/", answers)})? "
                     : $"{question}? ");
 
-                string? answer = Console.ReadLine();
-                if (answers != null && !answers.Contains(answer))
-                {
-                    Console.WriteLine($"The answer is not valid. Valid answers: {answers.JoinBySpace()}");
-                    return await ReadAnswerAsync(question, answers);
-                }
-
-                return answer;
+                return Console.ReadLine();
             }
             finally
             {
-                onethread.Release();
+                oneThread.Release();
             }
         }
 
@@ -109,14 +102,14 @@ namespace OneImlx.Terminal.Runtime
         /// <returns>The next line of input, or <c>null</c> if no more lines are available.</returns>
         public async Task<string?> ReadLineAsync()
         {
-            await onethread.WaitAsync();
+            await oneThread.WaitAsync();
             try
             {
                 return Console.ReadLine();
             }
             finally
             {
-                onethread.Release();
+                oneThread.Release();
             }
         }
 
@@ -127,14 +120,14 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="args">The format arguments.</param>
         public async Task WriteAsync(string value, params object[] args)
         {
-            await onethread.WaitAsync();
+            await oneThread.WaitAsync();
             try
             {
                 Console.Write(value, args);
             }
             finally
             {
-                onethread.Release();
+                oneThread.Release();
             }
         }
 
@@ -146,7 +139,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="args">The format arguments.</param>
         public async Task WriteColorAsync(ConsoleColor foregroundColor, string value, params object[] args)
         {
-            await onethread.WaitAsync();
+            await oneThread.WaitAsync();
             try
             {
                 Console.ForegroundColor = foregroundColor;
@@ -155,7 +148,7 @@ namespace OneImlx.Terminal.Runtime
             finally
             {
                 Console.ResetColor();
-                onethread.Release();
+                oneThread.Release();
             }
         }
 
@@ -166,14 +159,14 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="args">The format arguments.</param>
         public async Task WriteLineAsync(string value, params object[] args)
         {
-            await onethread.WaitAsync();
+            await oneThread.WaitAsync();
             try
             {
                 Console.WriteLine(value, args);
             }
             finally
             {
-                onethread.Release();
+                oneThread.Release();
             }
         }
 
@@ -182,14 +175,14 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         public async Task WriteLineAsync()
         {
-            await onethread.WaitAsync();
+            await oneThread.WaitAsync();
             try
             {
                 Console.WriteLine();
             }
             finally
             {
-                onethread.Release();
+                oneThread.Release();
             }
         }
 
@@ -201,7 +194,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="args">The format arguments.</param>
         public async Task WriteLineColorAsync(ConsoleColor foregroundColor, string value, params object[] args)
         {
-            await onethread.WaitAsync();
+            await oneThread.WaitAsync();
             try
             {
                 Console.ForegroundColor = foregroundColor;
@@ -210,10 +203,10 @@ namespace OneImlx.Terminal.Runtime
             finally
             {
                 Console.ResetColor();
-                onethread.Release();
+                oneThread.Release();
             }
         }
 
-        private readonly SemaphoreSlim onethread;
+        private readonly SemaphoreSlim oneThread;
     }
 }

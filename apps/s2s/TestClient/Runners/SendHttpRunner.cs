@@ -69,10 +69,10 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 string batchId = $"batch{clientIndex}";
                 TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
                 var batchOutput = await client.SendToTerminalAsync(batch, cToken);
-                for (int idx = 0; idx < batchOutput!.Input.Requests.Length; ++idx)
+                for (int idx = 0; idx < batch.Requests.Length; ++idx)
                 {
-                    var request = batchOutput.Input.Requests[idx];
-                    var result = batchOutput.Results[idx];
+                    var request = batch.Requests[idx];
+                    var result = batchOutput?.Results[idx];
                     await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
                 }
             }

@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestAuth
 {
@@ -23,7 +24,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
         /// <param name="logger">The logger.</param>
         public TestAuthHostedService(
             IServiceProvider serviceProvider,
-            TerminalOptions options,
+            IOptions<TerminalOptions> options,
             ITerminalConsole terminalConsole,
             ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, logger)
         {
@@ -34,7 +35,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        protected override Task CheckHostApplicationConfigurationAsync(TerminalOptions options)
+        protected override Task CheckHostApplicationConfigurationAsync(IOptions<TerminalOptions> options)
         {
             return Task.CompletedTask;
         }
@@ -47,7 +48,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
             // Set title
             Console.Title = "Test Application";
 
-            // These are async calls, but we are blocking here for as the  of the test.
+            // These are async calls, but we are blocking here for as the of the test.
             TerminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
 

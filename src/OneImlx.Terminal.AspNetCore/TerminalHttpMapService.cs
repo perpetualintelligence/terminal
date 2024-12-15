@@ -73,7 +73,7 @@ namespace OneImlx.Terminal.AspNetCore
             }
 
             string? clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
-            TerminalOutput output = await terminalProcessor.ExecuteAsync(input, senderId: null, clientIp);
+            TerminalOutput? output = await terminalProcessor.ExecuteAsync(input, senderId: null, clientIp);
             await httpContext.Response.WriteAsJsonAsync(output);
         }
 

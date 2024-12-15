@@ -113,7 +113,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public async Task<TerminalOutput> ExecuteAsync(TerminalInput input, string? senderId, string? senderEndpoint)
+        public async Task<TerminalOutput?> ExecuteAsync(TerminalInput input, string? senderId, string? senderEndpoint)
         {
             if (input == null)
             {
@@ -125,9 +125,17 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not running.");
             }
 
-            TerminalOutput response = new(input, new object?[input.Count], senderId, senderEndpoint);
-            await RouteRequestsAsync(response, terminalRouterContext);
-            return response;
+            TerminalOutput output = new(input, new object?[input.Count], senderId, senderEndpoint);
+            await RouteRequestsAsync(output, terminalRouterContext);
+
+            if (terminalOptions.Value.Router.DisableResponse)
+            {
+                return null;
+            }
+            else
+            {
+                return output;
+            }
         }
 
         /// <inheritdoc/>
@@ -324,6 +332,11 @@ namespace OneImlx.Terminal.Runtime
 
         private async Task StartResponseProcessingAsync(TerminalRouterContext terminalRouterContext)
         {
+            if (terminalOptions.Value.Router.DisableResponse)
+            {
+                return;
+            }
+
             // The infinite while(true) enable a continuous processing of the command queue until canceled.
             while (true)
             {

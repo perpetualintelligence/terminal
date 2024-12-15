@@ -36,10 +36,10 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public Task<string?> ReadAnswerAsync(string question, params string[]? answers)
+        public Task<string> ReadAnswerAsync(string question, params string[]? answers)
         {
             // Return an empty string as the answer
-            return Task.FromResult<string?>(default);
+            return Task.FromResult<string>(string.Empty);
         }
 
         /// <inheritdoc/>

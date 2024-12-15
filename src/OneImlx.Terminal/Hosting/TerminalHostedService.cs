@@ -1,23 +1,24 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Hosting
 {
@@ -30,24 +31,24 @@ namespace OneImlx.Terminal.Hosting
         /// Initializes a new instance.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="options">The configuration options.</param>
+        /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="terminalConsole"></param>
         /// <param name="logger">The logger.</param>
         public TerminalHostedService(
             IServiceProvider serviceProvider,
-            TerminalOptions options,
+            IOptions<TerminalOptions> terminalOptions,
             ITerminalConsole terminalConsole,
             ILogger<TerminalHostedService> logger)
         {
             HostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
             ServiceProvider = serviceProvider;
-            Options = options;
+            Options = terminalOptions;
             TerminalConsole = terminalConsole;
             Logger = logger;
         }
 
         /// <summary>
-        /// Starts the  hosted service asynchronously.
+        /// Starts the hosted service asynchronously.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -81,39 +82,14 @@ namespace OneImlx.Terminal.Hosting
                 // Do custom configuration check
                 await CheckHostApplicationConfigurationAsync(Options);
 
-                // Register the help options with command descriptors. This is intentionally done at the end so we don't take
-                // performance hit in case there is a license check failure.
+                // Register the help options with command descriptors. This is intentionally done at the end so we don't
+                // take performance hit in case there is a license check failure.
                 await RegisterHelpAsync();
             }
             catch (TerminalException ex)
             {
                 Logger.LogError($"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
             }
-        }
-
-        /// <summary>
-        /// Registers the help options based on configuration options.
-        /// </summary>
-        /// <returns></returns>
-        internal virtual Task RegisterHelpAsync()
-        {
-            if (Options.Help.Disabled.GetValueOrDefault())
-            {
-                return Task.CompletedTask;
-            }
-
-            return Task.Run(() =>
-            {
-                // This can be a long list of command, but it is executed only once during startup.
-                IEnumerable<CommandDescriptor> commandDescriptors = ServiceProvider.GetServices<CommandDescriptor>();
-                foreach (CommandDescriptor commandDescriptor in commandDescriptors)
-                {
-                    OptionDescriptor helpDescriptor = new(Options.Help.OptionId, nameof(Boolean), Options.Help.OptionDescription, OptionFlags.None, Options.Help.OptionAlias);
-
-                    commandDescriptor.OptionDescriptors ??= new OptionDescriptors(ServiceProvider.GetRequiredService<ITerminalTextHandler>());
-                    commandDescriptor.OptionDescriptors.RegisterHelp(helpDescriptor);
-                }
-            });
         }
 
         /// <summary>
@@ -146,10 +122,62 @@ namespace OneImlx.Terminal.Hosting
         }
 
         /// <summary>
+        /// Registers the help options based on configuration options.
+        /// </summary>
+        /// <returns></returns>
+        internal virtual Task RegisterHelpAsync()
+        {
+            HelpOptions helpOptions = Options.Value.Help;
+
+            if (helpOptions.Disabled.GetValueOrDefault())
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(() =>
+            {
+                // This can be a long list of command, but it is executed only once during startup.
+                IEnumerable<CommandDescriptor> commandDescriptors = ServiceProvider.GetServices<CommandDescriptor>();
+                foreach (CommandDescriptor commandDescriptor in commandDescriptors)
+                {
+                    OptionDescriptor helpDescriptor = new(helpOptions.OptionId, nameof(Boolean), helpOptions.OptionDescription, OptionFlags.None, helpOptions.OptionAlias);
+
+                    commandDescriptor.OptionDescriptors ??= new OptionDescriptors(ServiceProvider.GetRequiredService<ITerminalTextHandler>());
+                    commandDescriptor.OptionDescriptors.RegisterHelp(helpDescriptor);
+                }
+            });
+        }
+
+        /// <summary>
+        /// The host application lifetime.
+        /// </summary>
+        protected IHostApplicationLifetime HostApplicationLifetime { get; private set; }
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        protected ILogger<TerminalHostedService> Logger { get; private set; }
+
+        /// <summary>
+        /// The terminal configuration options.
+        /// </summary>
+        protected IOptions<TerminalOptions> Options { get; private set; }
+
+        /// <summary>
+        /// The service provider.
+        /// </summary>
+        protected IServiceProvider ServiceProvider { get; private set; }
+
+        /// <summary>
+        /// The terminal console.
+        /// </summary>
+        protected ITerminalConsole TerminalConsole { get; }
+
+        /// <summary>
         /// Allows the host application to perform additional configuration option checks.
         /// </summary>
         /// <returns></returns>
-        protected virtual Task CheckHostApplicationConfigurationAsync(TerminalOptions options)
+        protected virtual Task CheckHostApplicationConfigurationAsync(IOptions<TerminalOptions> options)
         {
             return Task.CompletedTask;
         }
@@ -163,8 +191,8 @@ namespace OneImlx.Terminal.Hosting
         }
 
         /// <summary>
-        /// Triggered when the application host has completed a graceful shutdown. The application will
-        /// not exit until all callbacks registered on this token have completed.
+        /// Triggered when the application host has completed a graceful shutdown. The application will not exit until
+        /// all callbacks registered on this token have completed.
         /// </summary>
         protected virtual void OnStopped()
         {
@@ -172,8 +200,8 @@ namespace OneImlx.Terminal.Hosting
         }
 
         /// <summary>
-        /// Triggered when the application host is starting a graceful shutdown. Shutdown will block until
-        /// all callbacks registered on this token have completed.
+        /// Triggered when the application host is starting a graceful shutdown. Shutdown will block until all callbacks
+        /// registered on this token have completed.
         /// </summary>
         protected virtual void OnStopping()
         {
@@ -221,10 +249,10 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <returns></returns>
-        private async Task CheckHostApplicationMandatoryConfigurationAsync(TerminalOptions options)
+        private async Task CheckHostApplicationMandatoryConfigurationAsync(IOptions<TerminalOptions> options)
         {
             IConfigurationOptionsChecker optionsChecker = ServiceProvider.GetRequiredService<IConfigurationOptionsChecker>();
-            await optionsChecker.CheckAsync(options);
+            await optionsChecker.CheckAsync(options.Value);
         }
 
         private async Task CheckLicenseAsync(LicenseExtractorResult result)
@@ -239,30 +267,5 @@ namespace OneImlx.Terminal.Hosting
             LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
             return result;
         }
-
-        /// <summary>
-        /// The terminal configuration options.
-        /// </summary>
-        protected TerminalOptions Options { get; private set; }
-
-        /// <summary>
-        /// The terminal console.
-        /// </summary>
-        protected ITerminalConsole TerminalConsole { get; }
-
-        /// <summary>
-        /// The host application lifetime.
-        /// </summary>
-        protected IHostApplicationLifetime HostApplicationLifetime { get; private set; }
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        protected ILogger<TerminalHostedService> Logger { get; private set; }
-
-        /// <summary>
-        /// The service provider.
-        /// </summary>
-        protected IServiceProvider ServiceProvider { get; private set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
@@ -17,13 +18,11 @@ namespace OneImlx.Terminal.Hosting.Mocks
 {
     public class MockTerminalCustomHostedService : TerminalHostedService
     {
-        public MockTerminalCustomHostedService(IServiceProvider serviceProvider, TerminalOptions terminalOptions, ITerminalConsole terminalConsole, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, logger)
+        public MockTerminalCustomHostedService(IServiceProvider serviceProvider, IOptions<TerminalOptions> terminalOptions, ITerminalConsole terminalConsole, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, logger)
         {
         }
 
         public ValueTuple<int, bool> CheckAppConfigCalled { get; set; }
-
-        public ValueTuple<int, bool> RegisterHelpArgumentCalled { get; set; }
 
         public bool OnStartedCalled { get; set; }
 
@@ -39,6 +38,8 @@ namespace OneImlx.Terminal.Hosting.Mocks
 
         public ValueTuple<int, bool> RegisterEventsCalled { get; set; }
 
+        public ValueTuple<int, bool> RegisterHelpArgumentCalled { get; set; }
+
         internal override Task PrintHostApplicationMandatoryLicensingAsync(License license)
         {
             PrintMandatoryLicCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
@@ -51,7 +52,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
             return Task.CompletedTask;
         }
 
-        protected override Task CheckHostApplicationConfigurationAsync(TerminalOptions options)
+        protected override Task CheckHostApplicationConfigurationAsync(IOptions<TerminalOptions> options)
         {
             CheckAppConfigCalled = new(MockTerminalHostedServiceStaticCounter.Increment(), true);
             return Task.CompletedTask;

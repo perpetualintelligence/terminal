@@ -91,6 +91,9 @@ namespace OneImlx.Terminal.Apps.TestClient
 
             // Wait for the host to shut down
             await host.WaitForShutdownAsync();
+
+            // Wait for user to acknowledge the shutdown
+            Console.ReadLine();
         }
     }
 }

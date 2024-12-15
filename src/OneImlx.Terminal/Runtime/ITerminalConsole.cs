@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="question">The question to print.</param>
         /// <param name="answers">The optional allowed answers.</param>
         /// <returns>The answer to the question.</returns>
-        public Task<string?> ReadAnswerAsync(string question, params string[]? answers);
+        public Task<string> ReadAnswerAsync(string question, params string[]? answers);
 
         /// <summary>
         /// Reads the next line of characters from the <see cref="ITerminalConsole"/> input stream asynchronously.

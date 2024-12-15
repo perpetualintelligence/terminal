@@ -1,11 +1,12 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using System;
@@ -15,11 +16,11 @@ namespace OneImlx.Terminal.Hosting.Mocks
 {
     internal class MockTerminalHostedService : TerminalHostedService
     {
-        public bool PrintHostApplicationHeaderCalled { get; private set; }
-
-        public MockTerminalHostedService(IServiceProvider serviceProvider, TerminalOptions options, ITerminalConsole terminalConsole, ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, logger)
+        public MockTerminalHostedService(IServiceProvider serviceProvider, IOptions<TerminalOptions> options, ITerminalConsole terminalConsole, ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, logger)
         {
         }
+
+        public bool PrintHostApplicationHeaderCalled { get; private set; }
 
         protected override Task PrintHostApplicationHeaderAsync()
         {

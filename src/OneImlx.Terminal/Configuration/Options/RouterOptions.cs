@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
 using System.Threading;
 using OneImlx.Terminal.Runtime;
 
@@ -19,6 +20,16 @@ namespace OneImlx.Terminal.Configuration.Options
         /// The terminal caret to show in the console. The default value is <c>&gt;</c>.
         /// </summary>
         public string Caret { get; set; } = ">";
+
+        /// <summary>
+        /// Gets or sets a value indicating whether responses are disabled. The default value is <c>false</c>.
+        /// </summary>
+        /// <remarks>
+        /// When disabled or set to <c>true</c>, the terminal server or host application operates in a
+        /// request-processing-only mode. In this mode, the server executes incoming requests but does not send back any
+        /// responses to the client.
+        /// </remarks>
+        public bool DisableResponse { get; set; }
 
         /// <summary>
         /// The maximum number of active remote client connections the router can accept. The default value is <c>5</c>.

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Licensing;
@@ -23,7 +24,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         /// <param name="logger">The logger.</param>
         public TestBlazorServerHostedService(
             IServiceProvider serviceProvider,
-            TerminalOptions options,
+            IOptions<TerminalOptions> options,
             ITerminalConsole terminalConsole,
             ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, logger)
         {
@@ -34,7 +35,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        protected override Task CheckHostApplicationConfigurationAsync(TerminalOptions options)
+        protected override Task CheckHostApplicationConfigurationAsync(IOptions<TerminalOptions> options)
         {
             return Task.CompletedTask;
         }
