@@ -1,16 +1,15 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using OneImlx.Terminal.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using OneImlx.Terminal.Commands;
 
 namespace OneImlx.Terminal.Hosting
 {
@@ -71,7 +70,15 @@ namespace OneImlx.Terminal.Hosting
             }
 
             // Owners
+            // - Root command or native commands cannot have an owner
             OwnerIdCollection? owners = lsp.GetService<OwnerIdCollection>();
+            if ((commandDescriptor.Type == CommandType.RootCommand || commandDescriptor.Type == CommandType.NativeCommand))
+            {
+                if (owners != null && owners.Count > 0)
+                {
+                    throw new TerminalException(TerminalErrors.InvalidCommand, "The command cannot have an owner. command_type={0} command={1}", commandDescriptor.Type, commandDescriptor.Id);
+                }
+            }
             commandDescriptor.OwnerIds = owners;
 
             // Tags

@@ -7,12 +7,11 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Mocks;
 
 namespace OneImlx.Terminal.Commands.Declarative
 {
-    [CommandDescriptor("id1_sub", "name", "description", CommandType.SubCommand, CommandFlags.None)]
+    [CommandDescriptor("id1_grp", "name", "description", CommandType.GroupCommand, CommandFlags.None)]
     [CommandChecker(typeof(MockCommandChecker))]
     [CommandTags("tag1", "tag2", "tag3")]
     [CommandCustomProperty("key1", "value1")]
@@ -23,7 +22,7 @@ namespace OneImlx.Terminal.Commands.Declarative
     [OptionValidation("opt2", typeof(RequiredAttribute))]
     [OptionDescriptor("ar3", nameof(String), "test arg desc3", OptionFlags.None)]
     [OptionValidation("opt3", typeof(RangeAttribute), 25, 40)]
-    public class MockSubNoCommandOwnerRunner : IDeclarativeRunner
+    public class MockGroupNoCommandOwnerRunner : IDeclarativeRunner
     {
     }
 }

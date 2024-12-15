@@ -5,14 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using OneImlx.Shared.Attributes.Validation;
-using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Extensions;
-using OneImlx.Terminal.Hosting;
-using OneImlx.Terminal.Runtime;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -20,6 +12,14 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using FluentAssertions;
+using OneImlx.Shared.Attributes.Validation;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Extensions;
+using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Runtime;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Declarative
@@ -328,9 +328,16 @@ namespace OneImlx.Terminal.Commands.Declarative
         }
 
         [Fact]
-        public void No_CommandOwner_Throws()
+        public void Group_No_CommandOwner_Throws()
         {
-            Action act = () => terminalBuilder.AddDeclarativeRunner<MockDeclarativeTargetNoCommandOwnerRunner>();
+            Action act = () => terminalBuilder.AddDeclarativeRunner<MockGroupNoCommandOwnerRunner>();
+            act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command owner.");
+        }
+
+        [Fact]
+        public void Sub_No_CommandOwner_Throws()
+        {
+            Action act = () => terminalBuilder.AddDeclarativeRunner<MockSubNoCommandOwnerRunner>();
             act.Should().Throw<TerminalException>().WithMessage("The declarative target does not define command owner.");
         }
 

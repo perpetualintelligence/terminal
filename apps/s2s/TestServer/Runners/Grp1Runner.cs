@@ -12,7 +12,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Runners
     /// The group <c>grp1</c> runner for the TestServer.
     /// </summary>
     [CommandOwners("ts")]
-    [CommandDescriptor("grp1", "Group 1", "Group1 description.", Commands.CommandType.Group, Commands.CommandFlags.None)]
+    [CommandDescriptor("grp1", "Group 1", "Group1 description.", Commands.CommandType.GroupCommand, Commands.CommandFlags.None)]
     [CommandChecker(typeof(CommandChecker))]
     public class Grp1Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {

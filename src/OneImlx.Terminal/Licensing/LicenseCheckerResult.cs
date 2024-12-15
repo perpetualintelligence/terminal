@@ -55,5 +55,10 @@ namespace OneImlx.Terminal.Licensing
         /// The sub command count.
         /// </summary>
         public long SubCommandCount { get; set; }
+
+        /// <summary>
+        /// The native command count.
+        /// </summary>
+        public long NativeCommandCount { get; set; }
     }
 }

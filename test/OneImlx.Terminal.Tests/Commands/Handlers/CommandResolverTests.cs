@@ -39,7 +39,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public void NullChecker_ResolveChecker_Throws()
         {
-            CommandDescriptor commandDescriptor = new("test", "test_name", "test_desc", CommandType.Group, CommandFlags.None)
+            CommandDescriptor commandDescriptor = new("test", "test_name", "test_desc", CommandType.GroupCommand, CommandFlags.None)
             {
                 Checker = null
             };
@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public void NullRunner_ResolveRunner_Throws()
         {
-            CommandDescriptor commandDescriptor = new("test", "test_name", "test_desc", CommandType.Group, CommandFlags.None)
+            CommandDescriptor commandDescriptor = new("test", "test_name", "test_desc", CommandType.GroupCommand, CommandFlags.None)
             {
                 Runner = null
             };
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public void ValidChecker_ResolveChecker_Success()
         {
-            CommandDescriptor commandDescriptor = new("validChecker", "valid_name", "valid_desc", CommandType.Group, CommandFlags.None)
+            CommandDescriptor commandDescriptor = new("validChecker", "valid_name", "valid_desc", CommandType.GroupCommand, CommandFlags.None)
             {
                 Checker = typeof(MockCommandCheckerInner)
             };
@@ -81,7 +81,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public void ValidRunner_ResolveRunner_Success()
         {
-            CommandDescriptor commandDescriptor = new("validRunner", "valid_name", "valid_desc", CommandType.Group, CommandFlags.None)
+            CommandDescriptor commandDescriptor = new("validRunner", "valid_name", "valid_desc", CommandType.GroupCommand, CommandFlags.None)
             {
                 Runner = typeof(MockCommandRunnerInner)
             };
@@ -95,7 +95,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public void InvalidTypeAsChecker_ResolveChecker_Throws()
         {
-            CommandDescriptor commandDescriptor = new("invalidTypeChecker", "invalid_name", "invalid_desc", CommandType.Group, CommandFlags.None)
+            CommandDescriptor commandDescriptor = new("invalidTypeChecker", "invalid_name", "invalid_desc", CommandType.GroupCommand, CommandFlags.None)
             {
                 Checker = typeof(MockCommandRunnerInner) // Set to a type that does not implement ICommandChecker
             };
@@ -110,7 +110,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public void InvalidTypeAsRunner_ResolveRunner_Throws()
         {
-            CommandDescriptor commandDescriptor = new("invalidTypeRunner", "invalid_name", "invalid_desc", CommandType.Group, CommandFlags.None)
+            CommandDescriptor commandDescriptor = new("invalidTypeRunner", "invalid_name", "invalid_desc", CommandType.GroupCommand, CommandFlags.None)
             {
                 Runner = typeof(MockCommandCheckerInner) // Set to a type that does not implement IDelegateCommandRunner
             };

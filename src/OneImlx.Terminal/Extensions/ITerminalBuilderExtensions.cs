@@ -475,7 +475,7 @@ namespace OneImlx.Terminal.Extensions
             {
                 commandBuilder.Owners(ownersAttr.Owners);
             }
-            else if (cmdAttr.CommandType != CommandType.Root)
+            else if (cmdAttr.CommandType == CommandType.GroupCommand || cmdAttr.CommandType == CommandType.SubCommand)
             {
                 throw new TerminalException(TerminalErrors.InvalidDeclaration, "The declarative target does not define command owner.");
             }

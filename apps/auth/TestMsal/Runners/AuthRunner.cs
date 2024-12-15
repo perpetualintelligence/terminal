@@ -11,7 +11,7 @@ namespace OneImlx.Terminal.Apps.TestAuth.Runners
     /// Command runner for the <c>test auth</c> group in the test app.
     /// </summary>
     [CommandOwners("test")]
-    [CommandDescriptor("auth", "Auth group", "Test auth group description.", Commands.CommandType.Group, Commands.CommandFlags.None)]
+    [CommandDescriptor("auth", "Auth group", "Test auth group description.", Commands.CommandType.GroupCommand, Commands.CommandFlags.None)]
     public class AuthRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         private readonly ITerminalConsole _terminalConsole;

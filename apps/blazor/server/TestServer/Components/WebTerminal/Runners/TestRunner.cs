@@ -11,7 +11,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal.Runners
     /// <summary>
     /// The root <c>test</c> runner for the TestApp.
     /// </summary>
-    [CommandDescriptor("test", "Test App", "Test application description.", Commands.CommandType.Root, Commands.CommandFlags.None)]
+    [CommandDescriptor("test", "Test App", "Test application description.", Commands.CommandType.RootCommand, Commands.CommandFlags.None)]
     [OptionDescriptor("version", nameof(String), "Test version description", Commands.OptionFlags.None, "v")]
     public class TestRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {

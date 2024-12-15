@@ -108,7 +108,7 @@ namespace OneImlx.Terminal.Apps.TestApp
         private static void RegisterCommands(ITerminalBuilder terminalBuilder)
         {
             // Root Command
-            terminalBuilder.DefineCommand<TestRunner>("test", "Test command", "Test Description", Commands.CommandType.Root, Commands.CommandFlags.None)
+            terminalBuilder.DefineCommand<TestRunner>("test", "Test command", "Test Description", Commands.CommandType.RootCommand, Commands.CommandFlags.None)
                                 .DefineArgument(1, "arg1", nameof(String), "The first argument", Commands.ArgumentFlags.None)
                                     .Add()
                                 .DefineArgument(2, "arg2", nameof(Int32), "The second argument", Commands.ArgumentFlags.None)
@@ -118,7 +118,7 @@ namespace OneImlx.Terminal.Apps.TestApp
                            .Add();
 
             // Grp1 Command
-            terminalBuilder.DefineCommand<Grp1Runner>("grp1", "Test Group1", "Test Group1 Description", Commands.CommandType.Group, Commands.CommandFlags.None)
+            terminalBuilder.DefineCommand<Grp1Runner>("grp1", "Test Group1", "Test Group1 Description", Commands.CommandType.GroupCommand, Commands.CommandFlags.None)
                            .Owners(new Commands.OwnerIdCollection("test"))
                            .Add();
 
@@ -128,7 +128,7 @@ namespace OneImlx.Terminal.Apps.TestApp
                            .Add();
 
             // Grp2 Command
-            terminalBuilder.DefineCommand<Grp2Runner>("grp2", "Test Group2", "Test Group1 Description", Commands.CommandType.Group, Commands.CommandFlags.None)
+            terminalBuilder.DefineCommand<Grp2Runner>("grp2", "Test Group2", "Test Group1 Description", Commands.CommandType.GroupCommand, Commands.CommandFlags.None)
                            .Owners(new Commands.OwnerIdCollection("grp1"))
                            .Add();
 

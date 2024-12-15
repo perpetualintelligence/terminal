@@ -55,6 +55,7 @@ namespace OneImlx.Terminal.Licensing
                 RootCommandCount = rootCommandCount,
                 CommandGroupCount = commandGroupCount,
                 SubCommandCount = subCommandCount,
+                NativeCommandCount = nativeCommandCount,
                 OptionCount = optionCount,
             };
         }
@@ -138,17 +139,21 @@ namespace OneImlx.Terminal.Licensing
                 foreach (var kvpCmd in commandDescriptors)
                 {
                     // Register the commands
-                    if (kvpCmd.Value.Type == Commands.CommandType.Root)
+                    if (kvpCmd.Value.Type == Commands.CommandType.RootCommand)
                     {
                         rootCommandCount += 1;
                     }
-                    else if (kvpCmd.Value.Type == Commands.CommandType.Group)
+                    else if (kvpCmd.Value.Type == Commands.CommandType.GroupCommand)
                     {
                         commandGroupCount += 1;
                     }
                     else if (kvpCmd.Value.Type == Commands.CommandType.SubCommand)
                     {
                         subCommandCount += 1;
+                    }
+                    else if (kvpCmd.Value.Type == Commands.CommandType.NativeCommand)
+                    {
+                        nativeCommandCount += 1;
                     }
                     else
                     {
@@ -212,6 +217,7 @@ namespace OneImlx.Terminal.Licensing
         private readonly TerminalOptions terminalOptions;
         private long commandGroupCount;
         private bool initialized;
+        private long nativeCommandCount;
         private long optionCount;
         private long rootCommandCount;
         private long subCommandCount;

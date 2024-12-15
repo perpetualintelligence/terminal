@@ -89,16 +89,16 @@ namespace OneImlx.Terminal.Mocks
             [
 
                 // Different name and prefix
-                NewCommandDefinition("pi", "pi", "the top org grouped command", CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("pi", "pi", "the top org grouped command", CommandType.RootCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("auth", "pi:auth", "the auth grouped command", CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("auth", "pi:auth", "the auth grouped command", CommandType.GroupCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
                 NewCommandDefinition("login", "pi:auth:login", "the login command within the auth group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
-                NewCommandDefinition("slogin", "pi:auth:slogin", "the silent login command within the auth group", CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("slogin", "pi:auth:slogin", "the silent login command within the auth group", CommandType.GroupCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Same name and prefix with args
                 NewCommandDefinition("oidc", "pi:auth:slogin:oidc", "the slient oidc login command within the slogin group", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
@@ -133,22 +133,22 @@ namespace OneImlx.Terminal.Mocks
             [
 
                 // Different name and prefix
-                NewCommandDefinition("root1", "name1", "desc1", CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("root1", "name1", "desc1", CommandType.RootCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("root2", "name2", "desc2", CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("root2", "name2", "desc2", CommandType.RootCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("root3", "name3", "desc3", CommandType.Root, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("root3", "name3", "desc3", CommandType.RootCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("grp1", "name1", "desc1", CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("grp1", "name1", "desc1", CommandType.GroupCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("grp2", "name2", "desc2", CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("grp2", "name2", "desc2", CommandType.GroupCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Different name and prefix
-                NewCommandDefinition("grp3", "name3", "desc3", CommandType.Group, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("grp3", "name3", "desc3", CommandType.GroupCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Different name and prefix
                 NewCommandDefinition("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, TestOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
@@ -170,10 +170,10 @@ namespace OneImlx.Terminal.Mocks
             [
 
                 // --- Hindi --- Root command
-                NewCommandDefinition("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड", CommandType.Root, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("यूनिकोड", "यूनिकोड नाम", "यूनिकोड रूट कमांड", CommandType.RootCommand, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Grouped command
-                NewCommandDefinition("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड", CommandType.Group, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
+                NewCommandDefinition("परीक्षण", "परीक्षण नाम", "यूनिकोड समूहीकृत कमांड", CommandType.GroupCommand, CommandFlags.None, null, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,
 
                 // Subcommand
                 NewCommandDefinition("प्रिंट", "प्रिंट नाम", "प्रिंट कमांड", CommandType.SubCommand, CommandFlags.None, TestHindiUnicodeOptionDescriptors, typeof(CommandChecker), typeof(CommandRunner < CommandRunnerResult >)).Item1,

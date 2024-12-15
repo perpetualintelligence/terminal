@@ -6,7 +6,7 @@
 */
 
 using System;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Runners
 {
@@ -45,10 +45,28 @@ namespace OneImlx.Terminal.Commands.Runners
             {
                 if (value is null)
                 {
-                    throw new InvalidOperationException("The value is not set.");
+                    throw new TerminalException(TerminalErrors.ServerError, "The value is not set on the command runner result.");
                 }
                 return value;
             }
+        }
+
+        /// <summary>
+        /// Creates an empty <see cref="CommandRunnerResult"/> with no value.
+        /// </summary>
+        /// <returns>A new instance of <see cref="CommandRunnerResult"/>.</returns>
+        public static CommandRunnerResult Empty()
+        {
+            return new CommandRunnerResult();
+        }
+
+        /// <summary>
+        /// Creates an empty <see cref="CommandRunnerResult"/> with no value.
+        /// </summary>
+        /// <returns>A task that creates a new instance of <see cref="CommandRunnerResult"/>.</returns>
+        public static Task<CommandRunnerResult> EmptyAsync()
+        {
+            return Task.FromResult(new CommandRunnerResult());
         }
 
         /// <summary>

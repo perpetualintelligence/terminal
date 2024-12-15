@@ -5,8 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
 using FluentAssertions;
+using OneImlx.Test.FluentAssertions;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Runners
@@ -64,11 +66,35 @@ namespace OneImlx.Terminal.Commands.Runners
         }
 
         [Fact]
+        public async Task Empty_Returns_New_Instance()
+        {
+            var result1 = CommandRunnerResult.Empty();
+            var result2 = CommandRunnerResult.Empty();
+            result1.Should().NotBeSameAs(result2);
+
+            var result3 = await CommandRunnerResult.EmptyAsync();
+            var result4 = await CommandRunnerResult.EmptyAsync();
+            result3.Should().NotBeSameAs(result4);
+
+            result1.Should().NotBeSameAs(result3);
+        }
+
+        [Fact]
+        public Task EmptyAysnc_Returns_Task()
+        {
+            var result = CommandRunnerResult.EmptyAsync();
+            result.Should().BeOfType<Task<CommandRunnerResult>>();
+            return result;
+        }
+
+        [Fact]
         public void Value_ShouldThrowInvalidOperationException_WhenValueIsNotSet()
         {
             var result = new CommandRunnerResult();
             Action act = () => { var value = result.Value; };
-            act.Should().Throw<InvalidOperationException>().WithMessage("The value is not set.");
+            act.Should().Throw<TerminalException>()
+               .WithErrorCode(TerminalErrors.ServerError)
+               .WithErrorDescription("The value is not set on the command runner result.");
         }
     }
 }

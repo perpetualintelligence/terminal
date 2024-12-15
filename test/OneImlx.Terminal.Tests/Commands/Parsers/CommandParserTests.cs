@@ -5,19 +5,19 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Parsers
@@ -45,14 +45,16 @@ namespace OneImlx.Terminal.Commands.Parsers
 
             commandDescriptors = new(textHandler,
             [
-                new("root1", "root1_name", "root1_desc", CommandType.Root, CommandFlags.None),
-                new("root2", "root2_name", "root2_desc", CommandType.Root, CommandFlags.None),
-                new("grp1", "grp1_name", "grp1_desc", CommandType.Group, CommandFlags.None, new OwnerIdCollection("root1"), argumentDescriptors: arguments),
-                new("grp2", "grp2_name", "grp2_desc", CommandType.Group, CommandFlags.None, new OwnerIdCollection("root2")),
+                new("root1", "root1_name", "root1_desc", CommandType.RootCommand, CommandFlags.None),
+                new("root2", "root2_name", "root2_desc", CommandType.RootCommand, CommandFlags.None),
+                new("root3", "root3_name", "root3_desc", CommandType.RootCommand, CommandFlags.None, new OwnerIdCollection("root2")),
+                new("grp1", "grp1_name", "grp1_desc", CommandType.GroupCommand, CommandFlags.None, new OwnerIdCollection("root1"), argumentDescriptors: arguments),
+                new("grp2", "grp2_name", "grp2_desc", CommandType.GroupCommand, CommandFlags.None, new OwnerIdCollection("root2")),
                 new("cmd1", "cmd1_name", "cmd1_desc", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("grp1")),
                 new("cmd2", "cmd2_name", "cmd2_desc", CommandType.SubCommand, CommandFlags.None, new OwnerIdCollection("grp2"), argumentDescriptors: arguments,  optionDescriptors: options),
                 new("cmd_nr1", "cmd_nr1_name", "cmd_nr1_desc", CommandType.SubCommand, CommandFlags.None),
                 new("cmd_nr2", "cmd_nr2_name", "cmd_nr2_desc", CommandType.SubCommand, CommandFlags.None)
+
             ]);
             commandStore = new TerminalInMemoryCommandStore(textHandler, commandDescriptors.Values);
 
@@ -114,7 +116,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             TerminalRequest request = new(Guid.NewGuid().ToString(), "root1");
             CommandContext context = new(request, terminalContext, null);
             await parser.ParseCommandAsync(context);
-            context.Should().NotBeNull();
+            context.Result.Should().BeNull();
 
             context.ParsedCommand.Should().NotBeNull();
             context.ParsedCommand!.Command.Id.Should().Be("root1");
@@ -167,11 +169,22 @@ namespace OneImlx.Terminal.Commands.Parsers
             await parser.ParseCommandAsync(context);
             context.ParsedCommand.Should().NotBeNull();
             context.ParsedCommand!.Command.Id.Should().Be("root2");
-            context.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.Root);
+            context.ParsedCommand.Command.Descriptor.Type.Should().Be(CommandType.RootCommand);
 
             context.ParsedCommand.Hierarchy.Should().BeNull();
             context.ParsedCommand.Command.Arguments.Should().BeNull();
             context.ParsedCommand.Command.Options.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Root_With_Owner_Does_Not_Throw()
+        {
+            // NOTE: This test should fail. But the root owner check is not performed at the parser level, it is
+            //       validated during the builder setup. ICommandBuilder.Add
+            TerminalRequest request = new(Guid.NewGuid().ToString(), "root2 root3");
+            CommandContext context = new(request, terminalContext, null);
+            await parser.ParseCommandAsync(context);
+            context.ParsedCommand.Should().NotBeNull();
         }
 
         [Fact]
@@ -186,6 +199,16 @@ namespace OneImlx.Terminal.Commands.Parsers
             context.ParsedCommand.Hierarchy.Should().BeNull();
             context.ParsedCommand.Command.Arguments.Should().BeNull();
             context.ParsedCommand.Command.Options.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Throws_If_Alias_Is_Unsupported()
+        {
+            var context = new CommandContext(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 Val1 -invalid_alias 25 --opt3 --opt4 \"val2\" --opt5"), terminalContext, null);
+            Func<Task> act = async () => await parser.ParseCommandAsync(context);
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode("unsupported_option")
+                .WithErrorDescription("The command does not support option or its alias. command=cmd2 option=invalid_alias");
         }
 
         [Fact]
@@ -277,16 +300,6 @@ namespace OneImlx.Terminal.Commands.Parsers
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("unsupported_argument")
                 .WithErrorDescription("The command does not support 3 arguments. command=grp1");
-        }
-
-        [Fact]
-        public async Task Throws_If_ALias_Is_Unsupported()
-        {
-            var context = new CommandContext(new TerminalRequest("id1", "root2 grp2 cmd2 --opt1 Val1 -invalid_alias 25 --opt3 --opt4 \"val2\" --opt5"), terminalContext, null);
-            Func<Task> act = async () => await parser.ParseCommandAsync(context);
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("unsupported_option")
-                .WithErrorDescription("The command does not support option or its alias. command=cmd2 option=invalid_alias");
         }
 
         [Fact]

@@ -8,6 +8,7 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Runtime;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -36,20 +37,30 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
-            string server = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
-            int port = configuration.GetValue<int>("testclient:testserver:port");
-
-            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "TCP concurrent and asynchronous demo");
-
-            var clientTasks = new Task[5];
-            for (int idx = 0; idx < clientTasks.Length; idx++)
+            try
             {
-                clientTasks[idx] = StartClientAsync(server, port, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
-            }
+                stopwatch.Restart();
 
-            await Task.WhenAll(clientTasks);
-            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "TCP client tasks completed successfully.");
-            return new CommandRunnerResult();
+                string server = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
+                int port = configuration.GetValue<int>("testclient:testserver:port");
+
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Blue, "TCP concurrent and asynchronous demo");
+
+                var clientTasks = new Task[5];
+                for (int idx = 0; idx < clientTasks.Length; idx++)
+                {
+                    clientTasks[idx] = StartClientAsync(server, port, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
+                }
+
+                await Task.WhenAll(clientTasks);
+
+                return new CommandRunnerResult();
+            }
+            finally
+            {
+                stopwatch.Stop();
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"TCP client tasks completed in {stopwatch.Elapsed.TotalSeconds} seconds.");
+            }
         }
 
         private async Task SendCommandsAsync(TcpClient tcpClient, int clientIndex, CancellationToken cToken)
@@ -121,7 +132,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             }
             finally
             {
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"[Client {clientIndex}] Streaming status: Expected Requests={expectedRequests} Actual Requests={processedRequests}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Blue, $"[Client {clientIndex}] Streaming status: Expected Requests={expectedRequests} Actual Requests={processedRequests}");
             }
         }
 
@@ -136,12 +147,12 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                     try
                     {
                         await tcpClient.ConnectAsync(IPAddress.Parse(server), port);
-                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"TCP client {clientIndex} connected to {tcpClient.Client.RemoteEndPoint}.");
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, $"TCP client {clientIndex} connected to {tcpClient.Client.RemoteEndPoint}.");
                         break;
                     }
                     catch (SocketException)
                     {
-                        await terminalConsole.WriteLineColorAsync(ConsoleColor.DarkYellow, "[Client {clientIndex}] Server not available, retrying in 5 seconds...");
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.DarkMagenta, "[Client {clientIndex}] Server not available, retrying in 5 seconds...");
                         await Task.Delay(5000, cToken);
                     }
                 }
@@ -155,11 +166,12 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 tcpClient.Close();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, $"[Client {clientIndex}] Connection closed.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, $"[Client {clientIndex}] Connection closed.");
             }
         }
 
         private readonly IConfiguration configuration;
+        private readonly Stopwatch stopwatch = new();
         private readonly ITerminalConsole terminalConsole;
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly IOptions<TerminalOptions> terminalOptions;

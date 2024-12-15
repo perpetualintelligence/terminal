@@ -15,12 +15,10 @@
 Quickly dive in with our [test apps](https://github.com/perpetualintelligence/terminal/tree/main/apps).
 
 ## Packages
-| Package                          | Description                                      |
-|----------------------------------|--------------------------------------------------|
-| ![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal?label=OneImlx.Terminal) | The cross-platform framework for building modern and secured terminal apps. |
-| ![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Authentication?label=OneImlx.Terminal.Authentication) | A cross-platform authentication framework for securing `OneImlx.Terminal` apps and servers. |
-| ![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.AspNetCore?label=OneImlx.Terminal.AspNetCore) | A cross-platform hosting framework for `OneImlx.Terminal` server apps, with ASP.NET Core hosting. |
-| ![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Client?label=OneImlx.Terminal.Client) | The cross-platform client library for the `OneImlx.Terminal` framework. |
+![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal?label=OneImlx.Terminal)  
+![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Authentication?label=OneImlx.Terminal.Authentication)  
+![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.AspNetCore?label=OneImlx.Terminal.AspNetCore)  
+![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Client?label=OneImlx.Terminal.Client)  
 
 ## **Key Features**:
 - Utilize microservices architecture, Dependency Injection (DI), and options pattern to design and configure your terminal apps.

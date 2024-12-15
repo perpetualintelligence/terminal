@@ -5,16 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Linq;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FluentAssertions;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Linq;
-using System.Text;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Hosting
@@ -25,6 +26,32 @@ namespace OneImlx.Terminal.Hosting
         {
             var hostBuilder = Host.CreateDefaultBuilder([]).ConfigureServices(ConfigureServicesDelegate);
             host = hostBuilder.Build();
+        }
+
+        [Fact]
+        public void Add_Native_With_Owner_Throws()
+        {
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "root1", "root1_desc", CommandType.NativeCommand, CommandFlags.None)
+                                                            .Owners(new("owner1", "owner2"));
+
+            Action act = () => commandBuilder.Add();
+            act.Should().Throw<TerminalException>()
+                        .WithErrorCode("invalid_command")
+                        .WithErrorDescription("The command cannot have an owner. command_type=NativeCommand command=id1");
+        }
+
+        [Fact]
+        public void Add_Root_With_Owner_Throws()
+        {
+            TerminalBuilder terminalBuilder = new(serviceCollection, new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
+            ICommandBuilder commandBuilder = terminalBuilder.DefineCommand<MockCommandRunner>("id1", "root1", "root1_desc", CommandType.RootCommand, CommandFlags.None)
+                                                            .Owners(new("owner1", "owner2"));
+
+            Action act = () => commandBuilder.Add();
+            act.Should().Throw<TerminalException>()
+                        .WithErrorCode("invalid_command")
+                        .WithErrorDescription("The command cannot have an owner. command_type=RootCommand command=id1");
         }
 
         [Fact]

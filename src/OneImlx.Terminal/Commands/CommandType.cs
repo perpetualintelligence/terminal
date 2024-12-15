@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -15,16 +15,22 @@ namespace OneImlx.Terminal.Commands
         /// <summary>
         /// The command represents the root command.
         /// </summary>
-        Root = 1,
+        RootCommand = 1,
 
         /// <summary>
-        /// The command represents a group of sub-commands.
+        /// The command represents a group of sub-commands within a root.
         /// </summary>
-        Group = 2,
+        GroupCommand = 2,
 
         /// <summary>
-        /// The command represents a sub-command.
+        /// The command represents a sub-command within a group.
         /// </summary>
-        SubCommand = 3
+        SubCommand = 3,
+
+        /// <summary>
+        /// The command represents a native command to the terminal. For example <c>cls</c> that clears the terminal, or
+        /// <c>run</c> command that executes a native OS command.
+        /// </summary>
+        NativeCommand = 4,
     }
 }
