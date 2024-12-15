@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -25,21 +26,29 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
-            string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
-            string port = configuration.GetValue<string>("testclient:testserver:port") ?? throw new InvalidOperationException("Server port is missing.");
-            string serverAddress = $"http://{ip}:{port}";
-
-            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "HTTP concurrent and asynchronous demo");
-
-            var clientTasks = new Task[5];
-            for (int idx = 0; idx < clientTasks.Length; idx++)
+            try
             {
-                clientTasks[idx] = StartHttpClientAsync(serverAddress, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
-            }
+                stopwatch.Restart();
+                string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
+                string port = configuration.GetValue<string>("testclient:testserver:port") ?? throw new InvalidOperationException("Server port is missing.");
+                string serverAddress = $"http://{ip}:{port}";
 
-            await Task.WhenAll(clientTasks);
-            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "HTTP client tasks completed successfully.");
-            return new CommandRunnerResult();
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "HTTP concurrent and asynchronous demo");
+
+                var clientTasks = new Task[5];
+                for (int idx = 0; idx < clientTasks.Length; idx++)
+                {
+                    clientTasks[idx] = StartHttpClientAsync(serverAddress, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
+                }
+
+                await Task.WhenAll(clientTasks);
+                return new CommandRunnerResult();
+            }
+            finally
+            {
+                stopwatch.Stop();
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"HTTP client tasks completed in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
+            }
         }
 
         private async Task SendHttpCommandsAsync(HttpClient client, int clientIndex, CancellationToken cToken)
@@ -99,6 +108,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly Stopwatch stopwatch = new();
         private readonly ITerminalConsole terminalConsole;
     }
 }

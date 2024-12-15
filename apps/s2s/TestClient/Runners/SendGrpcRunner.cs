@@ -8,6 +8,7 @@ using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -27,25 +28,33 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
-            string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
-            int port = configuration.GetValue<int>("testclient:testserver:port");
-            if (port == 0)
+            try
             {
-                throw new InvalidOperationException("Server port is missing.");
+                stopwatch.Restart();
+                string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
+                int port = configuration.GetValue<int>("testclient:testserver:port");
+                if (port == 0)
+                {
+                    throw new InvalidOperationException("Server port is missing.");
+                }
+                string serverAddress = $"http://{ip}:{port}";
+
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "gRPC concurrent and asynchronous demo.");
+
+                var clientTasks = new Task[5];
+                for (int idx = 0; idx < clientTasks.Length; idx++)
+                {
+                    clientTasks[idx] = StartClientAsync(serverAddress, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
+                }
+
+                await Task.WhenAll(clientTasks);
+                return new CommandRunnerResult();
             }
-            string serverAddress = $"http://{ip}:{port}";
-
-            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "gRPC concurrent and asynchronous demo.");
-
-            var clientTasks = new Task[5];
-            for (int idx = 0; idx < clientTasks.Length; idx++)
+            finally
             {
-                clientTasks[idx] = StartClientAsync(serverAddress, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
+                stopwatch.Stop();
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"gRPC client tasks completed in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
-
-            await Task.WhenAll(clientTasks);
-            await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "gRPC client tasks completed successfully.");
-            return new CommandRunnerResult();
         }
 
         private async Task SendCommandsAsync(TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client, int clientIndex, CancellationToken cToken)
@@ -107,6 +116,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
         }
 
         private readonly IConfiguration configuration;
+        private readonly Stopwatch stopwatch = new();
         private readonly ITerminalConsole terminalConsole;
     }
 }

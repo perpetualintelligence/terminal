@@ -1,4 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands;
@@ -7,14 +15,6 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -59,7 +59,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 stopwatch.Stop();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"TCP client tasks completed in {stopwatch.Elapsed.TotalSeconds} seconds.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"TCP client tasks completed in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
         }
 
