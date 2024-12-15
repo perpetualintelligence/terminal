@@ -15,7 +15,7 @@ using OneImlx.Terminal.Runtime;
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
     [CommandOwners("send")]
-    [CommandDescriptor("udp", "Send UDP", "Send UDP commands to the server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("udp", "UDP test", "Send UDP commands to the terminal server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
     public class SendUdpRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         public SendUdpRunner(ITerminalTextHandler terminalTextHandler, ITerminalConsole terminalConsole, IConfiguration configuration)

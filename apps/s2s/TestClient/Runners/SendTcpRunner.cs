@@ -19,7 +19,7 @@ using OneImlx.Terminal.Runtime;
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
     [CommandOwners("send")]
-    [CommandDescriptor("tcp", "Send TCP", "Send TCP commands to the server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("tcp", "TCP test", "Send TCP commands to the terminal server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
     public class SendTcpRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         public SendTcpRunner(IOptions<TerminalOptions> terminalOptions,

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -10,10 +10,10 @@ using System.Collections.Generic;
 namespace OneImlx.Terminal.Commands
 {
     /// <summary>
-    /// An immutable command. A command is a specific action or a set of actions that a user or an
-    /// application requests the underlying system to perform. It can be a simple action such as invoking a system
-    /// method or an OS command or representing a complex operation that calls a set of protected APIs over the internal
-    /// or external network. A command can virtually do anything in the context of your application or service.
+    /// An immutable command. A command is a specific action or a set of actions that a user or an application requests
+    /// the underlying system to perform. It can be a simple action such as invoking a system method or an OS command or
+    /// representing a complex operation that calls a set of protected APIs over the internal or external network. A
+    /// command can virtually do anything in the context of your application or service.
     /// </summary>
     /// <seealso cref="CommandDescriptor"/>
     /// <seealso cref="Option"/>
@@ -34,19 +34,14 @@ namespace OneImlx.Terminal.Commands
         }
 
         /// <summary>
-        /// The command descriptor.
-        /// </summary>
-        public CommandDescriptor Descriptor { get; }
-
-        /// <summary>
-        /// The command options.
-        /// </summary>
-        public Options? Options { get; set; }
-
-        /// <summary>
         /// The command arguments.
         /// </summary>
         public Arguments? Arguments { get; set; }
+
+        /// <summary>
+        /// The command custom properties.
+        /// </summary>
+        public Dictionary<string, object>? CustomProperties => Descriptor.CustomProperties;
 
         /// <summary>
         /// The command description.
@@ -54,9 +49,9 @@ namespace OneImlx.Terminal.Commands
         public string? Description => Descriptor.Description;
 
         /// <summary>
-        /// The command custom properties.
+        /// The command descriptor.
         /// </summary>
-        public Dictionary<string, object>? CustomProperties => Descriptor.CustomProperties;
+        public CommandDescriptor Descriptor { get; }
 
         /// <summary>
         /// The command id unique.
@@ -69,29 +64,59 @@ namespace OneImlx.Terminal.Commands
         public string Name => Descriptor.Name;
 
         /// <summary>
-        /// Attempts to get the option for the specified identifier.
+        /// The command options.
         /// </summary>
-        /// <param name="idOrAlias">The option identifier or its alias.</param>
-        /// <param name="option">The option if found.</param>
-        /// <returns><c>true</c> if the option is found.</returns>
-        public bool TryGetOption(string idOrAlias, out Option? option)
-        {
-            option = null;
+        public Options? Options { get; set; }
 
+        /// <summary>
+        /// Get the argument value for the specified id.
+        /// </summary>
+        /// <param name="id">The argument id.</param>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <returns>The option value.</returns>
+        /// <exception cref="TerminalException">If the option is not supported.</exception>
+        public TValue GetRequiredArgumentValue<TValue>(string id)
+        {
+            if (Arguments == null)
+            {
+                throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support any arguments. command={0}", Id);
+            }
+
+            return (TValue)Arguments[id].Value;
+        }
+
+        /// <summary>
+        /// Get the argument value at the specified index.
+        /// </summary>
+        /// <param name="index">The argument index.</param>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <returns>The option value.</returns>
+        /// <exception cref="TerminalException">If the option is not supported.</exception>
+        public TValue GetRequiredArgumentValue<TValue>(int index)
+        {
+            if (Arguments == null)
+            {
+                throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support any arguments. command={0}", Id);
+            }
+
+            return (TValue)Arguments[index].Value;
+        }
+
+        /// <summary>
+        /// Get the option value for the specified identifier.
+        /// </summary>
+        /// <param name="idOrAlias">The option id or its alias.</param>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <returns>The option value.</returns>
+        /// <exception cref="TerminalException">If the option is not supported.</exception>
+        public TValue GetRequiredOptionValue<TValue>(string idOrAlias)
+        {
             if (Options == null)
             {
-                return false;
+                throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support any options. command={0}", Id);
             }
 
-            try
-            {
-                option = Options[idOrAlias];
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return Options.GetOptionValue<TValue>(idOrAlias);
         }
 
         /// <summary>
@@ -121,20 +146,57 @@ namespace OneImlx.Terminal.Commands
         }
 
         /// <summary>
-        /// Get the option value for the specified identifier.
+        /// Attempts to get the argument value for the specified index.
         /// </summary>
-        /// <param name="idOrAlias">The option id or its alias.</param>
+        /// <param name="id">The argument identifier.</param>
+        /// <param name="value">The argument value.</param>
         /// <typeparam name="TValue">The type of value.</typeparam>
         /// <returns>The option value.</returns>
-        /// <exception cref="TerminalException">If the option is not supported.</exception>
-        public TValue GetRequiredOptionValue<TValue>(string idOrAlias)
+        /// <exception cref="TerminalException">If the argument is not supported.</exception>
+        public bool TryGetArgumentValue<TValue>(string id, out TValue? value)
         {
+            value = default;
+
+            try
+            {
+                if (Arguments == null)
+                {
+                    return false;
+                }
+
+                value = (TValue)Arguments[id].Value;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to get the option for the specified identifier.
+        /// </summary>
+        /// <param name="idOrAlias">The option identifier or its alias.</param>
+        /// <param name="option">The option if found.</param>
+        /// <returns><c>true</c> if the option is found.</returns>
+        public bool TryGetOption(string idOrAlias, out Option? option)
+        {
+            option = null;
+
             if (Options == null)
             {
-                throw new TerminalException(TerminalErrors.UnsupportedOption, "The command does not support any options. command={0}", Id);
+                return false;
             }
 
-            return Options.GetOptionValue<TValue>(idOrAlias);
+            try
+            {
+                option = Options[idOrAlias];
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -157,34 +219,6 @@ namespace OneImlx.Terminal.Commands
                 }
 
                 value = Options.GetOptionValue<TValue>(idOrAlias);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Attempts to get the argument value for the specified index.
-        /// </summary>
-        /// <param name="id">The argument identifier.</param>
-        /// <param name="value">The argument value.</param>
-        /// <typeparam name="TValue">The type of value.</typeparam>
-        /// <returns>The option value.</returns>
-        /// <exception cref="TerminalException">If the argument is not supported.</exception>
-        public bool TryGetArgumentValue<TValue>(string id, out TValue? value)
-        {
-            value = default;
-
-            try
-            {
-                if (Arguments == null)
-                {
-                    return false;
-                }
-
-                value = (TValue)Arguments[id].Value;
                 return true;
             }
             catch
