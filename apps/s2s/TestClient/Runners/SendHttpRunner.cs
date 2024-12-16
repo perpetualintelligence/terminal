@@ -26,16 +26,18 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
+            string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
+            string port = configuration.GetValue<string>("testclient:testserver:port") ?? throw new InvalidOperationException("Server port is missing.");
+            string serverAddress = $"http://{ip}:{port}";
+            int maxClients = configuration.GetValue<int>("testclient:max_clients");
+
             try
             {
                 stopwatch.Restart();
-                string ip = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
-                string port = configuration.GetValue<string>("testclient:testserver:port") ?? throw new InvalidOperationException("Server port is missing.");
-                string serverAddress = $"http://{ip}:{port}";
 
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "HTTP concurrent and asynchronous demo");
 
-                var clientTasks = new Task[5];
+                var clientTasks = new Task[maxClients];
                 for (int idx = 0; idx < clientTasks.Length; idx++)
                 {
                     clientTasks[idx] = StartHttpClientAsync(serverAddress, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
@@ -47,7 +49,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 stopwatch.Stop();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"HTTP client tasks completed in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"{maxClients * 12} requests completed by {maxClients} HTTP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
         }
 

@@ -38,17 +38,20 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
+            string server = configuration.GetValue<string>("testclient:testserver:ip")
+                           ?? throw new InvalidOperationException("Server IP address is missing.");
+            int port = configuration.GetValue<int?>("testclient:testserver:port")
+                           ?? throw new InvalidOperationException("Server port is missing or invalid.");
+            int maxClients = configuration.GetValue<int>("testclient:max_clients");
+
             try
             {
                 stopwatch.Restart();
-                string server = configuration.GetValue<string>("testclient:testserver:ip")
-                           ?? throw new InvalidOperationException("Server IP address is missing.");
-                int port = configuration.GetValue<int?>("testclient:testserver:port")
-                               ?? throw new InvalidOperationException("Server port is missing or invalid.");
+                
 
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "UDP concurrent and asynchronous demo");
 
-                var clientTasks = new Task[5];
+                var clientTasks = new Task[maxClients];
                 for (int idx = 0; idx < clientTasks.Length; idx++)
                 {
                     clientTasks[idx] = StartClientAsync(server, port, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
@@ -60,7 +63,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 stopwatch.Stop();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"UDP client tasks completed in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"{maxClients * 12} requests completed by {maxClients} UDP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
         }
 

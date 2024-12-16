@@ -56,6 +56,12 @@ namespace OneImlx.Terminal.Runtime
             try
             {
                 Console.Clear();
+
+                // Clear scrollback buffer
+                Console.Write("\u001b[3J");
+
+                // Move cursor to the top-left
+                Console.Write("\u001b[H");  
             }
             finally
             {
