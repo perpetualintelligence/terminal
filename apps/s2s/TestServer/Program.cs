@@ -66,6 +66,7 @@ namespace OneImlx.Terminal.Apps.TestServer
                     options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment; // Set deployment type.
                     options.Router.MaxLength = 64000; // Set max length for remote messages.
                     options.Router.Caret = "> "; // Caret for the terminal.
+                    options.Router.DisableResponse = Convert.ToBoolean(configuration["testserver:disable_response"]); // Disable response for the terminal.
                 });
 
             // Read the mode (protocol) from the configuration file.

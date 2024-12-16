@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Runtime
         /// The <see cref="ExecuteAsync"/> method processes the input immediately and returns the output. For background
         /// processing, use <see cref="AddAsync(TerminalInput, string?, string?)"/>.
         /// </remarks>
-        Task<TerminalOutput> ExecuteAsync(TerminalInput input, string? senderId, string? senderEndpoint);
+        Task<TerminalOutput?> ExecuteAsync(TerminalInput input, string? senderId, string? senderEndpoint);
 
         /// <summary>
         /// Starts processing terminal inputs with the specified context and configuration.

@@ -7,9 +7,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
-using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using System;
@@ -28,7 +26,6 @@ namespace OneImlx.Terminal.Runtime
     {
         public TerminalUdpRouterTests()
         {
-            commandRouterMock = new Mock<ICommandRouter>();
             exceptionHandlerMock = new Mock<ITerminalExceptionHandler>();
             terminalProcessorMock = new Mock<ITerminalProcessor>();
             textHandlerMock = new Mock<ITerminalTextHandler>();
@@ -145,7 +142,6 @@ namespace OneImlx.Terminal.Runtime
         private TerminalUdpRouter CreateUdpRouter()
         {
             return new TerminalUdpRouter(
-                commandRouterMock.Object,
                 exceptionHandlerMock.Object,
                 Microsoft.Extensions.Options.Options.Create(options),
                 textHandlerMock.Object,
@@ -173,7 +169,6 @@ namespace OneImlx.Terminal.Runtime
         }
 
         private readonly CancellationTokenSource commandCancellationSource;
-        private readonly Mock<ICommandRouter> commandRouterMock;
         private readonly Mock<ITerminalExceptionHandler> exceptionHandlerMock;
         private readonly ILogger<TerminalUdpRouter> loggerMock;
         private readonly MockListLoggerFactory mockListLoggerFactory;

@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.AspNetCore
                 throw new TerminalException(TerminalErrors.MissingCommand, "The input is missing in the gRPC request.");
             }
 
-            TerminalOutput output = await terminalProcessor.ExecuteAsync(input, senderId: null, senderEndpoint: null);
+            TerminalOutput? output = await terminalProcessor.ExecuteAsync(input, senderId: null, senderEndpoint: null);
 
             // Return the terminal output to the client.
             var protoOutput = new TerminalGrpcRouterProtoOutput

@@ -58,9 +58,10 @@ namespace OneImlx.Terminal.Hosting
             host = hostBuilder.Start();
 
             // Different hosted services to test behaviors
-            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, terminalConsole, logger);
-            mockCustomCliHostedService = new MockTerminalCustomHostedService(host.Services, terminalOptions, terminalConsole, logger);
-            mockCliEventsHostedService = new MockTerminalEventsHostedService(host.Services, terminalOptions, terminalConsole, logger);
+            var terminalIOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(terminalOptions);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, terminalConsole, logger);
+            mockCustomCliHostedService = new MockTerminalCustomHostedService(host.Services, terminalIOptions, terminalConsole, logger);
+            mockCliEventsHostedService = new MockTerminalEventsHostedService(host.Services, terminalIOptions, terminalConsole, logger);
         }
 
         public Task DisposeAsync()
@@ -268,6 +269,8 @@ namespace OneImlx.Terminal.Hosting
             TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
             terminalOptions.Help.Disabled = true;
 
+            var terminalIOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(terminalOptions);
+
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
@@ -295,7 +298,7 @@ namespace OneImlx.Terminal.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, terminalConsole, logger);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, terminalConsole, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
@@ -338,6 +341,7 @@ namespace OneImlx.Terminal.Hosting
         public async Task StartAsync_ShouldRegister_HelpArgument_ByDefault()
         {
             TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
+            var terminalIOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(terminalOptions);
             TerminalTextHandler textHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
 
             hostBuilder = Host.CreateDefaultBuilder()
@@ -365,7 +369,7 @@ namespace OneImlx.Terminal.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalOptions, terminalConsole, logger);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, terminalConsole, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();

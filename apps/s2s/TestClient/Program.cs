@@ -91,6 +91,10 @@ namespace OneImlx.Terminal.Apps.TestClient
 
             // Wait for the host to shut down
             await host.WaitForShutdownAsync();
+
+            // Wait for user to acknowledge the shutdown
+            Console.WriteLine("Press any key to close the terminal windows...");
+            Console.ReadLine();
         }
     }
 }

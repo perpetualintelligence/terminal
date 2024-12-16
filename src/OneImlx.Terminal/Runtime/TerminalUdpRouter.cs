@@ -6,7 +6,9 @@
 */
 
 using System;
+using System.Net;
 using System.Net.Sockets;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -40,21 +42,18 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// Initializes a new instance of the <see cref="TerminalUdpRouter"/> class.
         /// </summary>
-        /// <param name="commandRouter">The command router to request commands to.</param>
         /// <param name="exceptionHandler">The handler for exceptions that occur during routing.</param>
         /// <param name="terminalOptions">Configuration options for the terminal.</param>
         /// <param name="textHandler">The handler for processing text data.</param>
         /// <param name="terminalProcessor">The terminal processing queue.</param>
         /// <param name="logger">The logger for logging information and errors.</param>
         public TerminalUdpRouter(
-            ICommandRouter commandRouter,
             ITerminalExceptionHandler exceptionHandler,
             IOptions<TerminalOptions> terminalOptions,
             ITerminalTextHandler textHandler,
             ITerminalProcessor terminalProcessor,
             ILogger<TerminalUdpRouter> logger)
         {
-            this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
             this.terminalOptions = terminalOptions;
             this.textHandler = textHandler;
@@ -84,9 +83,10 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The network IP endpoint is missing in the UDP server routing request.");
             }
 
+            this.udpClient = new(context.IPEndPoint);
+
             try
             {
-                _udpClient = new UdpClient(context.IPEndPoint);
                 logger.LogDebug($"Terminal UDP router started. endpoint={context.IPEndPoint}");
                 IsRunning = true;
 
@@ -94,14 +94,14 @@ namespace OneImlx.Terminal.Runtime
                 // for processing commands immediately and does not wait for it to complete. The _ = discards the
                 // returned task since we don't need to await it in this context. It effectively runs in the background,
                 // processing commands as they are enqueued.
-                terminalProcessor.StartProcessing(context, background: true, responseHandler: null);
+                terminalProcessor.StartProcessing(context, background: true, responseHandler: HandleResponseAsync);
                 while (true)
                 {
                     // Throw if cancellation is requested.
                     context.StartContext.TerminalCancellationToken.ThrowIfCancellationRequested();
 
                     // Await either the receive task or a cancellation.
-                    var receiveTask = _udpClient.ReceiveAsync();
+                    var receiveTask = udpClient.ReceiveAsync();
                     await Task.WhenAny(receiveTask, Task.Delay(Timeout.Infinite, context.StartContext.TerminalCancellationToken));
 
                     // Process received data if the receive task completes.
@@ -118,19 +118,51 @@ namespace OneImlx.Terminal.Runtime
             }
             finally
             {
-                _udpClient?.Close();
+                udpClient?.Close();
                 await terminalProcessor.StopProcessingAsync(terminalOptions.Value.Router.Timeout);
                 logger.LogDebug("Terminal UDP router stopped. endpoint={0}", context.IPEndPoint);
                 IsRunning = false;
             }
         }
 
-        private readonly ICommandRouter commandRouter;
+        private async Task HandleResponseAsync(TerminalOutput output)
+        {
+            try
+            {
+                if (output.SenderEndpoint == null)
+                {
+                    throw new TerminalException(TerminalErrors.ServerError, "The sender endpoint is missing in the response.");
+                }
+
+                if (udpClient == null)
+                {
+                    throw new TerminalException(TerminalErrors.ServerError, "The UDP client is not initialized.");
+                }
+
+                // Split the string
+                string[] parts = output.SenderEndpoint.Split(':');
+                if (parts.Length != 2 || !int.TryParse(parts[1], out int port))
+                {
+                    throw new TerminalException(TerminalErrors.ServerError, "The sender endpoint has an invalid format.");
+                }
+
+                IPAddress ipAddress = IPAddress.Parse(parts[0]);
+                IPEndPoint senderEndpoint = new(ipAddress, port);
+
+                byte[] responseBytes = TerminalServices.DelimitBytes(JsonSerializer.SerializeToUtf8Bytes(output), terminalOptions.Value.Router.StreamDelimiter);
+                await udpClient.SendAsync(responseBytes, responseBytes.Length, senderEndpoint);
+            }
+            catch (Exception ex)
+            {
+                await exceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, null));
+            }
+        }
+
         private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly ILogger<TerminalUdpRouter> logger;
         private readonly IOptions<TerminalOptions> terminalOptions;
         private readonly ITerminalProcessor terminalProcessor;
         private readonly ITerminalTextHandler textHandler;
-        private UdpClient? _udpClient;
+        private UdpClient? udpClient;
     }
 }

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands;
@@ -15,6 +7,14 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Runtime;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -37,16 +37,17 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
+            string server = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
+            int port = configuration.GetValue<int>("testclient:testserver:port");
+            int maxClients = configuration.GetValue<int>("testclient:max_clients");
+
             try
             {
                 stopwatch.Restart();
 
-                string server = configuration["testclient:testserver:ip"] ?? throw new InvalidOperationException("Server IP address is missing.");
-                int port = configuration.GetValue<int>("testclient:testserver:port");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, "TCP concurrent and asynchronous demo");
 
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Blue, "TCP concurrent and asynchronous demo");
-
-                var clientTasks = new Task[5];
+                var clientTasks = new Task[maxClients];
                 for (int idx = 0; idx < clientTasks.Length; idx++)
                 {
                     clientTasks[idx] = StartClientAsync(server, port, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
@@ -59,30 +60,12 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 stopwatch.Stop();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"TCP client tasks completed in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"Completed {12 * maxClients} requests from {maxClients} TCP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
         }
 
-        private async Task SendCommandsAsync(TcpClient tcpClient, int clientIndex, CancellationToken cToken)
+        private async Task ReceiveResponsesAsync(TcpClient tcpClient, int clientIndex, CancellationToken cToken)
         {
-            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6"];
-            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"];
-
-            for (int idx = 0; idx < commands.Length; ++idx)
-            {
-                string id = cmdIds[idx];
-                string raw = commands[idx];
-
-                TerminalInput single = TerminalInput.Single(id, raw);
-                await tcpClient.SendToTerminalAsync(single, terminalOptions.Value.Router.StreamDelimiter, cToken);
-                await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{id}\" Raw=\"{raw}\" => Sent");
-            }
-
-            string batchId = $"batch{clientIndex}";
-            TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
-            await tcpClient.SendToTerminalAsync(batch, terminalOptions.Value.Router.StreamDelimiter, cToken);
-            await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" => Batch Sent");
-
             int processedRequests = 0;
             int expectedRequests = 12; // 6 Individual commands + 6 commands from Batch
             try
@@ -136,6 +119,27 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             }
         }
 
+        private async Task SendCommandsAsync(TcpClient tcpClient, int clientIndex, CancellationToken cToken)
+        {
+            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6"];
+            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"];
+
+            for (int idx = 0; idx < commands.Length; ++idx)
+            {
+                string id = cmdIds[idx];
+                string raw = commands[idx];
+
+                TerminalInput single = TerminalInput.Single(id, raw);
+                await tcpClient.SendToTerminalAsync(single, terminalOptions.Value.Router.StreamDelimiter, cToken);
+                await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{id}\" Raw=\"{raw}\" => Sent");
+            }
+
+            string batchId = $"batch{clientIndex}";
+            TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
+            await tcpClient.SendToTerminalAsync(batch, terminalOptions.Value.Router.StreamDelimiter, cToken);
+            await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" => Batch Sent");
+        }
+
         private async Task StartClientAsync(string server, int port, int clientIndex, CancellationToken cToken)
         {
             var tcpClient = new TcpClient();
@@ -157,7 +161,9 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                     }
                 }
 
-                await SendCommandsAsync(tcpClient, clientIndex, cToken);
+                Task sendTask = SendCommandsAsync(tcpClient, clientIndex, cToken);
+                Task receiveTask = ReceiveResponsesAsync(tcpClient, clientIndex, cToken);
+                await Task.WhenAll(sendTask, receiveTask);
             }
             catch (Exception ex)
             {

@@ -52,22 +52,22 @@ namespace OneImlx.Terminal.Runtime
             {
                 if (context.Request != null)
                 {
-                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The request was canceled. request={0} command={1}", context.Request.Id, context.Request.Raw);
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The terminal request was canceled. request={0} command={1}", context.Request.Id, context.Request.Raw);
                 }
                 else
                 {
-                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The request was canceled.");
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The terminal request was canceled.");
                 }
             }
             else
             {
                 if (context.Request != null)
                 {
-                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The request failed. request={0} command={1} info={2}", context.Request.Id, context.Request.Raw, context.Exception.Message);
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The terminal request failed. request={0} command={1} info={2}", context.Request.Id, context.Request.Raw, context.Exception.Message);
                 }
                 else
                 {
-                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The request failed. info={0}", context.Exception.Message);
+                    terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "The terminal request failed. info={0}", context.Exception.Message);
                 }
             }
 
