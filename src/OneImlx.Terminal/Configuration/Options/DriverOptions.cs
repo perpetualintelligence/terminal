@@ -22,8 +22,8 @@ namespace OneImlx.Terminal.Configuration.Options
         public bool Enabled { get; set; }
 
         /// <summary>
-        /// The terminal driver program name.
+        /// The terminal driver program root identifier.
         /// </summary>
-        public string? Name { get; set; }
+        public string? RootId { get; set; }
     }
 }

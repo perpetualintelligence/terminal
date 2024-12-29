@@ -54,6 +54,42 @@ public class TerminalConsoleRouterTests
     }
 
     [Fact]
+    public async Task RunAsync_Does_Not_Runs_Indefinitely_If_Route_Once()
+    {
+        tcs.CancelAfter(2000);
+
+        options.Driver.Enabled = true;
+        options.Driver.RootId = "test_root";
+        await router.RunAsync(new(startContext, routeOnce: true));
+
+        // Verify command is routed. Normally in 2 secs the RouteCommandAsync will be invoked multiple times due but
+        // here it will call once.
+        commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandContext>(ctx => ctx.Request.Raw == "test_root")), Times.Once);
+
+        // Verify IsRunning is set to false
+        router.IsRunning.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task RunAsync_Throws_When_Route_Once_But_Driver_Disabled()
+    {
+        tcs.CancelAfter(2000);
+
+        options.Driver.Enabled = false;
+        options.Driver.RootId = "test_root";
+        await router.RunAsync(new(startContext, routeOnce: true));
+
+        // Driver disabled for never called
+        commandRouterMock.Verify(c => c.RouteCommandAsync(It.IsAny<CommandContext>()), Times.Never);
+
+        exceptionHandlerMock.Verify(e => e.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(context =>
+            context.Exception is TerminalException && context.Exception.Message == "The route once is only valid for driver programs.")), Times.AtLeastOnce());
+
+        // Verify IsRunning is set to false
+        router.IsRunning.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task RunAsync_Handles_Exception()
     {
         tcs.CancelAfter(300);
@@ -99,7 +135,26 @@ public class TerminalConsoleRouterTests
     }
 
     [Fact]
-    public async Task RunAsync_Runs_Indefinately_Untill_Canceled()
+    public async Task RunAsync_Runs_First_Arg_As_Command_When_Args_Are_Passed()
+    {
+        tcs.CancelAfter(2000);
+
+        startContext = new TerminalStartContext(TerminalStartMode.Console, tcs.Token, CancellationToken.None, arguments: ["test_arg1 blah", "test_arg2", "test_arg3"]);
+
+        options.Driver.Enabled = true;
+        options.Driver.RootId = "test_root";
+
+        options.Parser.Separator = '+';
+        await router.RunAsync(new(startContext, routeOnce: true));
+
+        commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandContext>(ctx => ctx.Request.Raw == "test_root+test_arg1 blah")), Times.Once);
+
+        // Verify IsRunning is set to false
+        router.IsRunning.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task RunAsync_Runs_Indefinitely_Until_Canceled()
     {
         tcs.CancelAfter(2000);
 
@@ -114,6 +169,23 @@ public class TerminalConsoleRouterTests
         // Verify Canceled exception is handled
         exceptionHandlerMock.Verify(e => e.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(context =>
             context.Exception is OperationCanceledException)), Times.Once);
+
+        // Verify IsRunning is set to false
+        router.IsRunning.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task RunAsync_Runs_Root_When_No_Args_Are_Passed()
+    {
+        tcs.CancelAfter(2000);
+
+        options.Driver.Enabled = true;
+        options.Driver.RootId = "test_root";
+        await router.RunAsync(new(startContext, routeOnce: true));
+
+        // Verify command is routed. Normally in 2 secs the RouteCommandAsync will be invoked multiple times due but
+        // here it will call once.
+        commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandContext>(ctx => ctx.Request.Raw == "test_root")), Times.Once);
 
         // Verify IsRunning is set to false
         router.IsRunning.Should().BeFalse();
@@ -169,7 +241,7 @@ public class TerminalConsoleRouterTests
         await router.RunAsync(new(startContext));
 
         exceptionHandlerMock.Verify(e => e.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(context =>
-            context.Exception is TimeoutException && context.Exception.Message == "The command router timed out in 500 milliseconds.")), Times.AtLeastOnce());
+            context.Exception is TimeoutException && context.Exception.Message == "The terminal console router timed out in 500 milliseconds.")), Times.AtLeastOnce());
     }
 
     [Fact]
@@ -187,7 +259,7 @@ public class TerminalConsoleRouterTests
     private readonly Mock<ILogger<TerminalConsoleRouter>> loggerMock;
     private readonly TerminalOptions options;
     private readonly TerminalConsoleRouter router;
-    private readonly TerminalStartContext startContext;
     private readonly CancellationTokenSource tcs;
     private readonly Mock<ITerminalConsole> terminalConsoleMock;
+    private TerminalStartContext startContext;
 }

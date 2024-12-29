@@ -55,13 +55,16 @@ namespace OneImlx.Terminal.Runtime
             await oneThread.WaitAsync();
             try
             {
+                // Clear the console.
                 Console.Clear();
 
-                // Clear scrollback buffer
+                // 12/15/2024 10:26 PM
+                // ChatGPT: Suggestion for clearing the scrollback
                 Console.Write("\u001b[3J");
 
-                // Move cursor to the top-left
-                Console.Write("\u001b[H");  
+                // 12/15/2024 10:26 PM
+                // ChatGPT: Suggestion to move cursor to the top-left
+                Console.Write("\u001b[H");
             }
             finally
             {

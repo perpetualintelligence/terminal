@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Apps.TestApp.Checkers;
+using OneImlx.Terminal.Apps.Test.Checkers;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Declarative;
@@ -7,7 +7,7 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.TestApp.Runners
+namespace OneImlx.Terminal.Apps.Test.Runners
 {
     /// <summary>
     /// The sub-command <c>cmd2</c> runner for the TestApp.

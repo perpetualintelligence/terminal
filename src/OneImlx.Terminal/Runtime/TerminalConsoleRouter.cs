@@ -66,6 +66,9 @@ namespace OneImlx.Terminal.Runtime
             try
             {
                 IsRunning = true;
+                bool routeOnce = context.RouteOnce.GetValueOrDefault();
+                bool routed = false;
+
                 while (true)
                 {
                     TerminalRequest? request = null;
@@ -78,23 +81,58 @@ namespace OneImlx.Terminal.Runtime
                         // Honor the cancellation request.
                         if (context.StartContext.TerminalCancellationToken.IsCancellationRequested)
                         {
-                            throw new OperationCanceledException("Received terminal cancellation token, the terminal routing is canceled.");
+                            throw new OperationCanceledException("Received terminal cancellation token, the terminal console router is canceled.");
                         }
 
                         // Check if application is stopping
                         if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
                         {
-                            throw new OperationCanceledException("Application is stopping, the terminal routing is canceled.");
+                            throw new OperationCanceledException("Application is stopping, the terminal console router is canceled.");
                         }
 
-                        // Print the caret
-                        if (options.Router.Caret != null)
+                        // Route once handling for driver programs or indefinite routing for interactive terminals.
+                        string? raw = null;
+                        if (routeOnce)
                         {
-                            await terminalConsole.WriteAsync(options.Router.Caret);
+                            // Route once is only valid for driver programs.
+                            if (!options.Driver.Enabled)
+                            {
+                                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The route once is only valid for driver programs.");
+                            }
+
+                            // Driver programs executes the program in its entirety. So once the request is routed the
+                            // router should stop, even if there was an error.
+                            if (routed)
+                            {
+                                logger.LogDebug("The driver request is routed once, the terminal console router is complete.");
+                                break;
+                            }
+
+                            // Not yet routed, so route the driver program.
+                            string[] args = context.StartContext.Arguments ?? [];
+                            if (args != null)
+                            {
+                                if (args.Length != 0)
+                                {
+                                    raw = $"{options.Driver.RootId}{options.Parser.Separator}{args[0]}";
+                                }
+                                else
+                                {
+                                    raw = options.Driver.RootId;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Print the caret and read the user input.
+                            if (options.Router.Caret != null)
+                            {
+                                await terminalConsole.WriteAsync(options.Router.Caret);
+                            }
+                            raw = await terminalConsole.ReadLineAsync();
                         }
 
-                        // Read the user input and ignore empty commands
-                        string? raw = await terminalConsole.ReadLineAsync();
+                        // Determine if the raw string is to be ignored.
                         if (terminalConsole.Ignore(raw))
                         {
                             // Wait for next command.
@@ -108,11 +146,11 @@ namespace OneImlx.Terminal.Runtime
                         var routeTask = commandRouter.RouteCommandAsync(routerContext);
                         if (await Task.WhenAny(routeTask, Task.Delay(options.Router.Timeout)) != routeTask)
                         {
-                            throw new TimeoutException($"The command router timed out in {options.Router.Timeout} milliseconds.");
+                            throw new TimeoutException($"The terminal console router timed out in {options.Router.Timeout} milliseconds.");
                         }
 
-                        // Process the result
-                        var result = await routeTask;
+                        // Process the result. If this is a driver program then we terminate the loop.
+                        CommandResult result = await routeTask;
                     }
                     catch (OperationCanceledException oex)
                     {
@@ -126,6 +164,10 @@ namespace OneImlx.Terminal.Runtime
                         // Task.Wait bundles up any exception into Exception.InnerException
                         TerminalExceptionHandlerContext exContext = new(ex.InnerException ?? ex, request);
                         await exceptionHandler.HandleExceptionAsync(exContext);
+                    }
+                    finally
+                    {
+                        routed = true;
                     }
                 };
             }

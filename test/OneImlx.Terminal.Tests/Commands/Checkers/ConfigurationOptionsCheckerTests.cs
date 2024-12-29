@@ -72,24 +72,24 @@ namespace OneImlx.Terminal.Commands.Checkers
             Func<Task> func = async () => await optionsChecker.CheckAsync(options);
 
             // Driver Name null or whitespace with enabled driver.
-            options.Driver.Name = "";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The name is required if terminal root is a driver.");
+            options.Driver.RootId = "";
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The root is required for driver programs.");
 
-            options.Driver.Name = null;
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The name is required if terminal root is a driver.");
+            options.Driver.RootId = null;
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The root is required for driver programs.");
 
-            options.Driver.Name = "   ";
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The name is required if terminal root is a driver.");
+            options.Driver.RootId = "   ";
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The root is required for driver programs.");
 
             // Driver Name not null or whitespace with disabled driver.
             options.Driver.Enabled = false;
-            options.Driver.Name = "";
+            options.Driver.RootId = "";
             await func.Invoke();
 
-            options.Driver.Name = null;
+            options.Driver.RootId = null;
             await func.Invoke();
 
-            options.Driver.Name = "   ";
+            options.Driver.RootId = "   ";
             await func.Invoke();
         }
 

@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Configuration.Options
             DriverOptions options = new();
 
             options.Enabled.Should().BeFalse();
-            options.Name.Should().BeNull();
+            options.RootId.Should().BeNull();
         }
     }
 }
