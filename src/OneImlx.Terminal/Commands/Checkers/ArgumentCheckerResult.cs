@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -13,7 +13,7 @@ namespace OneImlx.Terminal.Commands.Checkers
     /// The argument checker result.
     /// </summary>
     /// <seealso cref="IArgumentChecker"/>
-    /// <seealso cref="ArgumentCheckerContext"/>
+    /// <seealso cref="CommandContext"/>
     public class ArgumentCheckerResult
     {
         /// <summary>

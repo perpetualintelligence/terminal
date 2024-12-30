@@ -55,7 +55,7 @@ namespace OneImlx.Terminal.Runtime
         /// <exception cref="TerminalException">Thrown when the start mode is not configured for HTTP.</exception>
         public async Task RunAsync(TerminalHttpRouterContext context)
         {
-            if (context.StartContext.StartMode != TerminalStartMode.Http)
+            if (context.StartMode != TerminalStartMode.Http)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "Invalid start mode for HTTP.");
             }
@@ -69,7 +69,7 @@ namespace OneImlx.Terminal.Runtime
                 terminalProcessor.StartProcessing(context, background: false);
 
                 // Wait for the terminal to be canceled.
-                await terminalProcessor.WaitUntilCanceledAsync(context.StartContext.TerminalCancellationToken);
+                await terminalProcessor.WaitUntilCanceledAsync(context.TerminalCancellationToken);
             }
             finally
             {

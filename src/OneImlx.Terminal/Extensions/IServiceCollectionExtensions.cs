@@ -28,7 +28,6 @@ namespace OneImlx.Terminal.Extensions
         /// Adds the <c>OneImlx.Terminal</c> services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="TStore">The type implementing <see cref="ITerminalCommandStore"/>.</typeparam>
-        /// <typeparam name="TText">The type implementing <see cref="ITerminalTextHandler"/>.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
         /// <param name="textHandler">The text handler.</param>
         /// <param name="setupAction">A delegate to configure the <see cref="TerminalOptions"/>.</param>

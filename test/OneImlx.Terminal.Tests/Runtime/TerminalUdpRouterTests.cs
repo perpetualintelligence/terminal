@@ -129,7 +129,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task RunAsync_ThrowsException_WhenIPEndPointIsNull()
         {
             // Arrange
-            var context = new TerminalUdpRouterContext(null!, new(TerminalStartMode.Udp, terminalCancellationSource.Token, commandCancellationSource.Token, null));
+            var context = new TerminalUdpRouterContext(null!, TerminalStartMode.Udp, terminalCancellationSource.Token, commandCancellationSource.Token, null);
             var udpRouter = CreateUdpRouter();
 
             // Act & Assert
@@ -153,8 +153,7 @@ namespace OneImlx.Terminal.Runtime
         private TerminalUdpRouterContext CreateValidContext()
         {
             var endpoint = new IPEndPoint(IPAddress.Loopback, 12345); // Use a real, high-numbered port for the test
-            var startContext = new TerminalStartContext(TerminalStartMode.Udp, terminalCancellationSource.Token, commandCancellationSource.Token, null);
-            return new TerminalUdpRouterContext(endpoint, startContext);
+            return new TerminalUdpRouterContext(endpoint, TerminalStartMode.Udp, terminalCancellationSource.Token, commandCancellationSource.Token, null);
         }
 
         // Helper method to send a real UDP message

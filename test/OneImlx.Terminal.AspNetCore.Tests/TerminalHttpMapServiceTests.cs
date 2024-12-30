@@ -30,7 +30,6 @@ namespace OneImlx.Terminal.AspNetCore
             mockProcessor = new Mock<ITerminalProcessor>();
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
-            mockStartContext = new TerminalStartContext(TerminalStartMode.Http, terminalTokenSource.Token, commandTokenSource.Token, null);
 
             // Create an instance of TerminalHttpMapService with the mocked dependencies
             terminalHttpMapService = new TerminalHttpMapService(mockTerminalRouter.Object, mockProcessor.Object, mockLogger.Object);
@@ -150,7 +149,6 @@ namespace OneImlx.Terminal.AspNetCore
         private readonly CancellationTokenSource commandTokenSource;
         private readonly Mock<ILogger<TerminalHttpMapService>> mockLogger;
         private readonly Mock<ITerminalProcessor> mockProcessor;
-        private readonly TerminalStartContext mockStartContext;
         private readonly Mock<ITerminalRouter<TerminalHttpRouterContext>> mockTerminalRouter;
         private readonly TerminalHttpMapService terminalHttpMapService;
         private readonly CancellationTokenSource terminalTokenSource;

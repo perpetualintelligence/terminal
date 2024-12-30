@@ -78,9 +78,9 @@ namespace OneImlx.Terminal.Runtime
         public virtual async Task RunAsync(TerminalTcpRouterContext context)
         {
             // Ensure we have supported start context
-            if (context.StartContext.StartMode != TerminalStartMode.Tcp)
+            if (context.StartMode != TerminalStartMode.Tcp)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for TCP routing. start_mode={0}", context.StartContext.StartMode);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for TCP routing. start_mode={0}", context.StartMode);
             }
 
             // Ensure we have a valid IP endpoint
@@ -112,7 +112,7 @@ namespace OneImlx.Terminal.Runtime
                 await AcceptClientsUntilCanceledAsync(context);
 
                 // Throw if canceled
-                context.StartContext.TerminalCancellationToken.ThrowIfCancellationRequested();
+                context.TerminalCancellationToken.ThrowIfCancellationRequested();
             }
             catch (Exception ex)
             {
@@ -174,7 +174,7 @@ namespace OneImlx.Terminal.Runtime
 
         private async Task AcceptClientsUntilCanceledAsync(TerminalTcpRouterContext context)
         {
-            CancellationToken terminalCancellationToken = context.StartContext.TerminalCancellationToken;
+            CancellationToken terminalCancellationToken = context.TerminalCancellationToken;
 
             if (_server == null)
             {
@@ -214,7 +214,7 @@ namespace OneImlx.Terminal.Runtime
         {
             while (true)
             {
-                if (tcpContext.StartContext.TerminalCancellationToken.IsCancellationRequested)
+                if (tcpContext.TerminalCancellationToken.IsCancellationRequested)
                 {
                     logger.LogDebug("Client request is canceled. client={0}", clientId);
                     break;

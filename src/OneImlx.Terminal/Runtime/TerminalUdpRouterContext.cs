@@ -1,11 +1,13 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -18,8 +20,19 @@ namespace OneImlx.Terminal.Runtime
         /// Initialize a new instance.
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint server will connect.</param>
-        /// <param name="startContext">The terminal start context.</param>
-        public TerminalUdpRouterContext(IPEndPoint iPEndPoint, TerminalStartContext startContext) : base(startContext)
+        /// <param name="startMode">The terminal start mode.</param>
+        /// <param name="terminalCancellationToken">The terminal cancellation token.</param>
+        /// <param name="commandCancellationToken">The command cancellation token.</param>
+        /// <param name="customProperties">The custom properties.</param>
+        /// <param name="arguments">The arguments.</param>
+        public TerminalUdpRouterContext(
+            IPEndPoint iPEndPoint,
+            TerminalStartMode startMode,
+            CancellationToken terminalCancellationToken,
+            CancellationToken commandCancellationToken,
+            Dictionary<string, object>? customProperties = null,
+            string[]? arguments = null)
+            : base(startMode, terminalCancellationToken, commandCancellationToken, customProperties, arguments)
         {
             IPEndPoint = iPEndPoint;
         }

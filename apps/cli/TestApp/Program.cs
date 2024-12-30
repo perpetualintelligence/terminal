@@ -170,8 +170,7 @@ namespace OneImlx.Terminal.Apps.Test
             {
                 { "new_terminal", newTerminal }
             };
-            TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token, customProperties, args);
-            TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext, routeOnce: !newTerminal);
+            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token, routeOnce: !newTerminal, customProperties, args);
 
             // Start the host builder and run terminal router till canceled.
             Host.CreateDefaultBuilder(args)

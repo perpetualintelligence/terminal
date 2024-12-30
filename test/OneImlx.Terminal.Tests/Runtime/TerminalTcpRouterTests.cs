@@ -5,6 +5,13 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Mocks;
+using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -15,14 +22,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using FluentAssertions;
-using Moq;
-using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Mocks;
-using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime.Tests
@@ -49,9 +48,6 @@ namespace OneImlx.Terminal.Runtime.Tests
 
             // Text encoding setup for mock
             textHandlerMock.Setup(static txt => txt.Encoding).Returns(Encoding.UTF8);
-
-            // Start context
-            startContext = new TerminalStartContext(TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
         }
 
         public static int FreeTcpPort()
@@ -69,7 +65,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Arrange
             var routerPort = FreeTcpPort();
             var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
+            var context = new TerminalTcpRouterContext(routerIpEndpoint, TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
 
             var tcpRouter = CreateTcpRouter();
 
@@ -102,7 +98,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Arrange
             var routerPort = FreeTcpPort();
             var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
+            var context = new TerminalTcpRouterContext(routerIpEndpoint, TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
 
             // Cancel router task
             terminalTokenSource.CancelAfter(2000);
@@ -131,7 +127,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Arrange
             var routerPort = FreeTcpPort();
             var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
+            var context = new TerminalTcpRouterContext(routerIpEndpoint, TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
             var testException = new Exception("Test exception");
 
             // Setup terminal processor to throw an exception during StartProcessing
@@ -153,7 +149,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Arrange
             var routerPort = FreeTcpPort();
             var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
+            var context = new TerminalTcpRouterContext(routerIpEndpoint, TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
 
             var tcpRouter = CreateTcpRouter();
 
@@ -174,7 +170,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Arrange
             var routerPort = FreeTcpPort();
             var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
+            var context = new TerminalTcpRouterContext(routerIpEndpoint, TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
 
             var tcpRouter = CreateTcpRouter();
 
@@ -221,7 +217,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             // Arrange
             var routerPort = FreeTcpPort();
             var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
+            var context = new TerminalTcpRouterContext(routerIpEndpoint, TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
 
             var tcpRouter = CreateTcpRouter();
 
@@ -272,7 +268,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         public async Task RunAsync_Throws_Exception_When_IPEndPoint_Is_Null()
         {
             // Arrange
-            var context = new TerminalTcpRouterContext(null!, startContext);
+            var context = new TerminalTcpRouterContext(null!, TerminalStartMode.Tcp, terminalTokenSource.Token, commandTokenSource.Token, null);
             var tcpRouter = CreateTcpRouter();
 
             // Act & Assert
@@ -286,10 +282,9 @@ namespace OneImlx.Terminal.Runtime.Tests
         public async Task RunAsync_Throws_Exception_When_Start_Mode_Is_Not_Tcp()
         {
             // Arrange
-            startContext = new TerminalStartContext(TerminalStartMode.Grpc, terminalTokenSource.Token, commandTokenSource.Token, null);
             var routerPort = FreeTcpPort();
             var routerIpEndpoint = new IPEndPoint(IPAddress.Loopback, routerPort);
-            var context = new TerminalTcpRouterContext(routerIpEndpoint, startContext);
+            var context = new TerminalTcpRouterContext(routerIpEndpoint, TerminalStartMode.Grpc, terminalTokenSource.Token, commandTokenSource.Token, null);
             var tcpRouter = CreateTcpRouter();
 
             // Act & Assert
@@ -339,6 +334,5 @@ namespace OneImlx.Terminal.Runtime.Tests
         private readonly CancellationTokenSource terminalTokenSource;
         private readonly TerminalTextHandler textHandler;
         private readonly Mock<ITerminalTextHandler> textHandlerMock;
-        private TerminalStartContext startContext;
     }
 }

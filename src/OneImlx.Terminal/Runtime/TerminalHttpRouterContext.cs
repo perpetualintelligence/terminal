@@ -5,7 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -18,8 +20,19 @@ namespace OneImlx.Terminal.Runtime
         /// Initializes a new instance of the <see cref="TerminalHttpRouterContext"/> class.
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint for server connections.</param>
-        /// <param name="startContext">The terminal start context.</param>
-        public TerminalHttpRouterContext(IPEndPoint iPEndPoint, TerminalStartContext startContext) : base(startContext)
+        /// <param name="startMode">The terminal start mode.</param>
+        /// <param name="terminalCancellationToken">The terminal router cancellation token.</param>
+        /// <param name="commandCancellationToken">The command router cancellation token.</param>
+        /// <param name="customProperties">The custom properties.</param>
+        /// <param name="arguments">The command line arguments.</param>
+        public TerminalHttpRouterContext(
+            IPEndPoint iPEndPoint,
+            TerminalStartMode startMode,
+            CancellationToken terminalCancellationToken,
+            CancellationToken commandCancellationToken,
+            Dictionary<string, object>? customProperties = null,
+            string[]? arguments = null)
+            : base(startMode, terminalCancellationToken, commandCancellationToken, customProperties, arguments)
         {
             IPEndPoint = iPEndPoint;
         }
@@ -27,6 +40,6 @@ namespace OneImlx.Terminal.Runtime
         /// <summary>
         /// The IP endpoint for the <see cref="HttpListener"/>. Clients need to send messages to this endpoint.
         /// </summary>
-        public IPEndPoint IPEndPoint { get; private set; }
+        public IPEndPoint IPEndPoint { get; }
     }
 }

@@ -1,12 +1,14 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -16,18 +18,29 @@ namespace OneImlx.Terminal.Runtime
     public sealed class TerminalTcpRouterContext : TerminalRouterContext
     {
         /// <summary>
-        /// The IP endpoint for the <see cref="TcpListener"/>. The clients need to send the messages to this end point.
-        /// </summary>
-        public IPEndPoint IPEndPoint { get; private set; }
-
-        /// <summary>
         /// Initialize a new instance.
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint server will connect.</param>
-        /// <param name="terminalStartContext">The terminal start context.</param>
-        public TerminalTcpRouterContext(IPEndPoint iPEndPoint, TerminalStartContext terminalStartContext) : base(terminalStartContext)
+        /// <param name="startMode">The terminal start mode.</param>
+        /// <param name="terminalCancellationToken">The terminal cancellation token.</param>
+        /// <param name="commandCancellationToken">The command cancellation token.</param>
+        /// <param name="customProperties">The custom properties.</param>
+        /// <param name="arguments">The command line arguments.</param>
+        public TerminalTcpRouterContext(
+            IPEndPoint iPEndPoint,
+            TerminalStartMode startMode,
+            CancellationToken terminalCancellationToken,
+            CancellationToken commandCancellationToken,
+            Dictionary<string, object>? customProperties = null,
+            string[]? arguments = null)
+            : base(startMode, terminalCancellationToken, commandCancellationToken, customProperties, arguments)
         {
             IPEndPoint = iPEndPoint;
         }
+
+        /// <summary>
+        /// The IP endpoint for the <see cref="TcpListener"/>. The clients need to send the messages to this end point.
+        /// </summary>
+        public IPEndPoint IPEndPoint { get; private set; }
     }
 }

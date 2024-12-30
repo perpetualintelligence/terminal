@@ -5,15 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
-using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Runners;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -23,6 +14,15 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using FluentAssertions;
+using Moq;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -32,12 +32,11 @@ namespace OneImlx.Terminal.Runtime
         public TerminalProcessorTests()
         {
             _terminalTokenSource = new CancellationTokenSource();
-            terminalStartContext = new TerminalStartContext(TerminalStartMode.Console, _terminalTokenSource.Token, CancellationToken.None, null, null);
             _mockCommandRouter = new Mock<ICommandRouter>();
             _mockExceptionHandler = new Mock<ITerminalExceptionHandler>();
             _mockLogger = new Mock<ILogger<TerminalProcessor>>();
             _mockOptions = new Mock<IOptions<TerminalOptions>>();
-            _mockTerminalRouterContext = new Mock<TerminalRouterContext>(terminalStartContext);
+            _mockTerminalRouterContext = new Mock<TerminalRouterContext>(TerminalStartMode.Console, _terminalTokenSource.Token, CancellationToken.None, null!, null!);
             _textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
 
             _mockOptions.Setup(static o => o.Value).Returns(new TerminalOptions
@@ -381,7 +380,7 @@ namespace OneImlx.Terminal.Runtime
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
             response.Should().NotBeNull();
-            response.Results.Should().HaveCount(3);
+            response!.Results.Should().HaveCount(3);
 
             // Assert first request and result
             response.Input.Requests[0].Raw.Should().Be("command1");
@@ -439,7 +438,7 @@ namespace OneImlx.Terminal.Runtime
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
             response.Should().NotBeNull();
-            response.Results.Should().HaveCount(5);
+            response!.Results.Should().HaveCount(5);
 
             // Assert requests and results
             response.Input.Requests[0].Raw.Should().Be("command1");
@@ -597,9 +596,7 @@ namespace OneImlx.Terminal.Runtime
         [InlineData(Timeout.Infinite)]
         public async Task StopProcessingAsync_Any_Timeout_And_Completed_Processing_Sets_IsProcessing_ToFalse(int timeout)
         {
-            var context = new Mock<TerminalRouterContext>(terminalStartContext).Object;
-
-            _terminalProcessor.StartProcessing(context, background: true);
+            _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
             _terminalProcessor.IsProcessing.Should().BeTrue();
             _terminalTokenSource.Cancel();
             await Task.Delay(500);
@@ -830,6 +827,5 @@ namespace OneImlx.Terminal.Runtime
         private readonly TerminalProcessor _terminalProcessor;
         private readonly CancellationTokenSource _terminalTokenSource;
         private readonly ITerminalTextHandler _textHandler;
-        private readonly TerminalStartContext terminalStartContext;
     }
 }

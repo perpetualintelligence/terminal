@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -116,8 +115,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
             {
                 terminalTokenSource = new CancellationTokenSource();
                 commandTokenSource = new CancellationTokenSource();
-                TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
-                TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
+                TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
 
                 // Get the license asynchronously so we can initialize the terminal host
                 licenseContents = await GetLicenseContentAsync();

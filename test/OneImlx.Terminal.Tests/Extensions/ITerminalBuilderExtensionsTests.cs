@@ -5,12 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Linq;
-using System.Threading;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
@@ -23,8 +20,11 @@ using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
-using Xunit;
+using System;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using Xunit;
 
 namespace OneImlx.Terminal.Extensions
 {
@@ -334,11 +334,12 @@ namespace OneImlx.Terminal.Extensions
         [Fact]
         public void AddStartContextShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddStartContext(new TerminalStartContext(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None));
+            terminalBuilder.AddTerminalRouterContext(new TerminalConsoleRouterContext(TerminalStartMode.Console, CancellationToken.None, CancellationToken.None));
 
-            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(TerminalStartContext)));
+            var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(TerminalRouterContext)));
             serviceDescriptor.Should().NotBeNull();
             serviceDescriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
+            serviceDescriptor.ImplementationInstance.Should().BeOfType<TerminalConsoleRouterContext>();
         }
 
         [Fact]

@@ -310,18 +310,6 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
-        /// Adds the <see cref="TerminalStartContext"/> to the service collection.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="terminalStartContext">The terminal start context.</param>
-        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
-        public static ITerminalBuilder AddStartContext(this ITerminalBuilder builder, TerminalStartContext terminalStartContext)
-        {
-            builder.Services.AddSingleton(terminalStartContext);
-            return builder;
-        }
-
-        /// <summary>
         /// Adds the <see cref="ITerminalRouter{TContext}"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -331,6 +319,18 @@ namespace OneImlx.Terminal.Extensions
             // Add terminal routing service.
             builder.Services.TryAddSingleton<ITerminalRouter<TContext>, TRouter>();
 
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the <see cref="TerminalRouterContext"/> to the service collection.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="terminalRouterContext">The terminal router context.</param>
+        /// <returns>The configured <see cref="ITerminalBuilder"/>.</returns>
+        public static ITerminalBuilder AddTerminalRouterContext<TContext>(this ITerminalBuilder builder, TContext terminalRouterContext) where TContext : TerminalRouterContext
+        {
+            builder.Services.AddSingleton<TerminalRouterContext>(terminalRouterContext);
             return builder;
         }
 

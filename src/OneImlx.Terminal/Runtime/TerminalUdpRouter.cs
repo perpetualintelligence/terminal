@@ -73,9 +73,9 @@ namespace OneImlx.Terminal.Runtime
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task RunAsync(TerminalUdpRouterContext context)
         {
-            if (context.StartContext.StartMode != TerminalStartMode.Udp)
+            if (context.StartMode != TerminalStartMode.Udp)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for UDP routing. start_mode={0}", context.StartContext.StartMode);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for UDP routing. start_mode={0}", context.StartMode);
             }
 
             if (context.IPEndPoint == null)
@@ -98,11 +98,11 @@ namespace OneImlx.Terminal.Runtime
                 while (true)
                 {
                     // Throw if cancellation is requested.
-                    context.StartContext.TerminalCancellationToken.ThrowIfCancellationRequested();
+                    context.TerminalCancellationToken.ThrowIfCancellationRequested();
 
                     // Await either the receive task or a cancellation.
                     var receiveTask = udpClient.ReceiveAsync();
-                    await Task.WhenAny(receiveTask, Task.Delay(Timeout.Infinite, context.StartContext.TerminalCancellationToken));
+                    await Task.WhenAny(receiveTask, Task.Delay(Timeout.Infinite, context.TerminalCancellationToken));
 
                     // Process received data if the receive task completes.
                     if (receiveTask.Status == TaskStatus.RanToCompletion)

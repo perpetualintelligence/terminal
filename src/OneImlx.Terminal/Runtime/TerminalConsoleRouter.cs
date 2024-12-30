@@ -57,9 +57,9 @@ namespace OneImlx.Terminal.Runtime
         public async Task RunAsync(TerminalConsoleRouterContext context)
         {
             // Make sure we have supported start context
-            if (context.StartContext.StartMode != TerminalStartMode.Console)
+            if (context.StartMode != TerminalStartMode.Console)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartContext.StartMode);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The requested start mode is not valid for console routing. start_mode={0}", context.StartMode);
             }
 
             // Track the application lifetime so we can know whether cancellation is requested.
@@ -79,7 +79,7 @@ namespace OneImlx.Terminal.Runtime
                         await Task.Delay(options.Router.RouteDelay);
 
                         // Honor the cancellation request.
-                        if (context.StartContext.TerminalCancellationToken.IsCancellationRequested)
+                        if (context.TerminalCancellationToken.IsCancellationRequested)
                         {
                             throw new OperationCanceledException("Received terminal cancellation token, the terminal console router is canceled.");
                         }
@@ -109,7 +109,7 @@ namespace OneImlx.Terminal.Runtime
                             }
 
                             // Not yet routed, so route the driver program.
-                            string[] args = context.StartContext.Arguments ?? [];
+                            string[] args = context.Arguments ?? [];
                             if (args != null)
                             {
                                 if (args.Length != 0)

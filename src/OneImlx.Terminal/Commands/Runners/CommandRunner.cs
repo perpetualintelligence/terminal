@@ -43,12 +43,7 @@ namespace OneImlx.Terminal.Commands.Runners
         /// <inheritdoc/>
         public abstract Task<TResult> RunCommandAsync(CommandContext context);
 
-        /// <summary>
-        /// Runs the command help asynchronously.
-        /// </summary>
-        /// <param name="context">The command context.</param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <inheritdoc/>
         public virtual Task RunHelpAsync(CommandContext context)
         {
             if (helpProvider == null)

@@ -268,7 +268,7 @@ namespace OneImlx.Terminal.Runtime
                 var context = new CommandContext(request, terminalRouterContext, properties);
                 var routeTask = commandRouter.RouteCommandAsync(context);
 
-                if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.StartContext.TerminalCancellationToken)) == routeTask)
+                if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.TerminalCancellationToken)) == routeTask)
                 {
                     CommandResult result = await routeTask;
                     object? value = null;
@@ -300,7 +300,7 @@ namespace OneImlx.Terminal.Runtime
                 {
                     // Wait until there is a signal or the cancellation. The requestSignal is used to signal that there
                     // is a new item in the queue, at the same time we don't hog the CPU in the outer while loop.
-                    await requestSignal.WaitAsync(terminalRouterContext.StartContext.TerminalCancellationToken);
+                    await requestSignal.WaitAsync(terminalRouterContext.TerminalCancellationToken);
                     if (!unprocessedRequests.IsEmpty)
                     {
                         // Process the request and dequeue the response
@@ -345,7 +345,7 @@ namespace OneImlx.Terminal.Runtime
                     // Wait until there is a signal or the cancellation is requested. The responseSignal is used to
                     // signal that there is a new item in the queue, at the same time we don't hog the CPU in the outer
                     // while loop.
-                    await responseSignal.WaitAsync(terminalRouterContext.StartContext.TerminalCancellationToken);
+                    await responseSignal.WaitAsync(terminalRouterContext.TerminalCancellationToken);
 
                     // Invoke the handler for the response asynchronously.
                     if (handler != null)

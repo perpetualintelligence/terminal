@@ -65,8 +65,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             requestParser = new TerminalRequestQueueParser(textHandler, terminalIOptions, new LoggerFactory().CreateLogger<TerminalRequestQueueParser>());
             parser = new CommandParser(requestParser, textHandler, commandStore, terminalIOptions, logger);
 
-            startContext = new TerminalStartContext(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None, null, null);
-            terminalContext = new Mock<TerminalCustomRouterContext>(startContext).Object;
+            terminalContext = new Mock<TerminalCustomRouterContext>(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None, null!, null!).Object;
         }
 
         [Fact]
@@ -180,7 +179,7 @@ namespace OneImlx.Terminal.Commands.Parsers
         public async Task Root_With_Owner_Does_Not_Throw()
         {
             // NOTE: This test should fail. But the root owner check is not performed at the parser level, it is
-            //       validated during the builder setup. ICommandBuilder.Add
+            // validated during the builder setup.
             TerminalRequest request = new(Guid.NewGuid().ToString(), "root2 root3");
             CommandContext context = new(request, terminalContext, null);
             await parser.ParseCommandAsync(context);
@@ -377,7 +376,6 @@ namespace OneImlx.Terminal.Commands.Parsers
                 .WithErrorDescription("The command does not support options. command=cmd1");
         }
 
-        public readonly TerminalStartContext startContext;
         public readonly TerminalRouterContext terminalContext;
         private readonly CommandDescriptors commandDescriptors;
         private readonly ITerminalCommandStore commandStore;
