@@ -6,7 +6,7 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.TestApp.Runners
+namespace OneImlx.Terminal.Apps.Test.Runners
 {
     /// <summary>
     /// The sub-command <c>cmd1</c> runner for the TestApp.

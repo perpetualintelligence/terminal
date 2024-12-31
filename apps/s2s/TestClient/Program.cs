@@ -83,8 +83,7 @@ namespace OneImlx.Terminal.Apps.TestClient
             CancellationTokenSource commandTokenSource = new();
 
             // Setup the terminal start context
-            TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
-            TerminalConsoleRouterContext terminalConsoleRouterContext = new(terminalStartContext);
+            TerminalConsoleRouterContext terminalConsoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
 
             // Run the terminal router
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(terminalConsoleRouterContext);

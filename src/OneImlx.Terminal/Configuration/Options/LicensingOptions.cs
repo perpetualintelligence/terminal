@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// its configurations are locked to a device, making license file updates potentially restricted.
         /// </para>
         /// <para>
-        /// <c>NOTE:</c> This option can be set if you have commercial plans
+        /// <c>NOTE:</c> This option can be set if you have an active commercial plans
         /// <see cref="TerminalLicensePlans.OnPremise"/> or <see cref="TerminalLicensePlans.Unlimited"/>. It is a
         /// violation of licensing terms to deploy or continue using the framework without an active commercial license plan.
         /// </para>

@@ -31,8 +31,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
             var mockTerminalRouter = new Mock<ITerminalRouter<TerminalHttpRouterContext>>();
             var mockTerminalProcessor = new Mock<ITerminalProcessor>();
             var mockLogger = new Mock<ILogger<TerminalHttpMapService>>();
-            var terminalStartContext = new TerminalStartContext(TerminalStartMode.Http, default, default, null);
-            var terminalRouterContext = new TerminalHttpRouterContext(iPEndPoint, terminalStartContext);
+            var terminalRouterContext = new TerminalHttpRouterContext(iPEndPoint, TerminalStartMode.Http, default, default, null);
 
             // Create a TestServer and configure services and pipeline in the test itself
             var builder = new WebHostBuilder()
@@ -53,7 +52,7 @@ namespace OneImlx.Terminal.AspNetCore.Tests
 
             // Setup router and processor to return true for IsRunning and IsProcessing
             TerminalInput terminalInput = TerminalInput.Single("test-id", "test-command");
-            TerminalOutput terminalOutput = new(terminalInput,["any"], null, null);
+            TerminalOutput terminalOutput = new(terminalInput, ["any"], null, null);
             bool executeCalled = false;
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);

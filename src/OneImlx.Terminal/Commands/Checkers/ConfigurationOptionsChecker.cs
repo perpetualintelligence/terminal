@@ -54,9 +54,9 @@ namespace OneImlx.Terminal.Commands.Checkers
                 if (options.Driver.Enabled)
                 {
                     // If linked to root command then name is required.
-                    if (options.Driver.Name.IsNullOrWhiteSpace())
+                    if (options.Driver.RootId.IsNullOrWhiteSpace())
                     {
-                        throw new TerminalException(TerminalErrors.InvalidConfiguration, "The name is required if terminal root is a driver.");
+                        throw new TerminalException(TerminalErrors.InvalidConfiguration, "The root is required for driver programs.");
                     }
                 }
             }

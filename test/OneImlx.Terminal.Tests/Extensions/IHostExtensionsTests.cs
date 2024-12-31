@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Extensions
             var mockLogger = new Mock<ILogger<ITerminalRouter<TerminalRouterContext>>>();
             var mockTerminalRouter = new Mock<ITerminalRouter<TerminalRouterContext>>();
             var mockServiceProvider = new Mock<IServiceProvider>();
-            var terminalRouterContext = new TerminalConsoleRouterContext(new TerminalStartContext(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None, null));
+            var terminalRouterContext = new TerminalConsoleRouterContext(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None, null);
 
             // Set up the service provider to return the logger and terminal router when requested
             mockServiceProvider.Setup(x => x.GetService(typeof(ILogger<ITerminalRouter<TerminalRouterContext>>)))

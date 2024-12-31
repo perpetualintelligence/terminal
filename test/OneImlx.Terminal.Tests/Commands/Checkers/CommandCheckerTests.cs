@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             commands = new TerminalInMemoryCommandStore(textHandler, MockCommands.Commands.Values);
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRouterContext(new TerminalStartContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token));
+            routingContext = new MockTerminalRouterContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token);
             routerContext = new CommandContext(request, routingContext, null);
         }
 

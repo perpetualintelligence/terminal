@@ -3,7 +3,7 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Runtime;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.TestApp.Checkers
+namespace OneImlx.Terminal.Apps.Test.Checkers
 {
     public class Cmd3CommandChecker : ICommandChecker
     {

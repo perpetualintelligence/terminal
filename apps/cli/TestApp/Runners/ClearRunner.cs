@@ -1,32 +1,31 @@
-﻿using OneImlx.Terminal.Commands;
+﻿using System.Threading.Tasks;
+using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
-using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal.Runners
+namespace OneImlx.Terminal.Apps.Test.Runners
 {
     /// <summary>
-    /// CLears the current terminal buffer.
+    /// Clears the console.
     /// </summary>
-    [CommandDescriptor("clear", "Clear", "Clear description", Commands.CommandType.NativeCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("cls", "Clear Console", "Clears the console.", CommandType.NativeCommand, CommandFlags.None)]
     public class ClearRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClearRunner"/> class.
+        /// </summary>
+        /// <param name="terminalConsole">The terminal console.</param>
         public ClearRunner(ITerminalConsole terminalConsole)
         {
             this.terminalConsole = terminalConsole;
         }
 
-        /// <summary>
-        /// Clears the terminal buffer.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <inheritdoc/>
         public override async Task<CommandRunnerResult> RunCommandAsync(CommandContext context)
         {
             await terminalConsole.ClearAsync();
-            return new CommandRunnerResult();
+            return await CommandRunnerResult.EmptyAsync();
         }
 
         private readonly ITerminalConsole terminalConsole;

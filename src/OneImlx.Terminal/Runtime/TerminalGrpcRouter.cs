@@ -48,7 +48,7 @@ namespace OneImlx.Terminal.Runtime
         /// <exception cref="TerminalException">Thrown when the start mode is not configured for gRPC.</exception>
         public async Task RunAsync(TerminalGrpcRouterContext context)
         {
-            if (context.StartContext.StartMode != TerminalStartMode.Grpc)
+            if (context.StartMode != TerminalStartMode.Grpc)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "Invalid start mode for gRPC.");
             }
@@ -63,7 +63,7 @@ namespace OneImlx.Terminal.Runtime
                 terminalProcessor.StartProcessing(context, background: false);
 
                 // Run indefinitely until the cancellation token is triggered
-                await terminalProcessor.WaitUntilCanceledAsync(context.StartContext.TerminalCancellationToken);
+                await terminalProcessor.WaitUntilCanceledAsync(context.TerminalCancellationToken);
             }
             finally
             {

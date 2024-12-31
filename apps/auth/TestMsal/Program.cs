@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.IO;
+using System.Text;
+using System.Threading;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,10 +16,6 @@ using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using Serilog;
-using System;
-using System.IO;
-using System.Text;
-using System.Threading;
 
 namespace OneImlx.Terminal.Apps.TestAuth
 {
@@ -105,8 +105,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
             CancellationTokenSource commandTokenSource = new();
 
             // Setup the terminal context and run the router indefinitely as a console.
-            TerminalStartContext terminalStartContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
-            TerminalConsoleRouterContext consoleRouterContext = new(terminalStartContext);
+            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
 
             // Start the host builder and run terminal router till canceled.
             Host.CreateDefaultBuilder(args)

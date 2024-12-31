@@ -7,7 +7,7 @@ using OneImlx.Terminal.Runtime;
 using System;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Apps.TestApp.Runners
+namespace OneImlx.Terminal.Apps.Test.Runners
 {
     /// <summary>
     /// The root <c>test</c> runner for the TestApp.

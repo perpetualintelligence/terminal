@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 var clientTasks = new Task[maxClients];
                 for (int idx = 0; idx < clientTasks.Length; idx++)
                 {
-                    clientTasks[idx] = StartClientAsync(serverAddress, idx, context.TerminalContext.StartContext.TerminalCancellationToken);
+                    clientTasks[idx] = StartClientAsync(serverAddress, idx, context.TerminalContext.TerminalCancellationToken);
                 }
 
                 await Task.WhenAll(clientTasks);
