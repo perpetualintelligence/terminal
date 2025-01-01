@@ -19,7 +19,6 @@ namespace OneImlx.Terminal.Configuration.Options
 
             options.DefaultScopes.Should().BeNull();
             options.ValidHosts.Should().BeNull();
-            options.HttpClientName.Should().BeNull();
             options.UserFlow.Should().BeNull();
         }
     }

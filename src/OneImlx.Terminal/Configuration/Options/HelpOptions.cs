@@ -15,7 +15,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <summary>
         /// Disables the help.
         /// </summary>
-        public bool? Disabled { get; set; }
+        public bool Disabled { get; set; }
 
         /// <summary>
         /// The help option alias.

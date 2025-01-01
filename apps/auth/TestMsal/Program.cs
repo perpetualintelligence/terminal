@@ -63,8 +63,6 @@ namespace OneImlx.Terminal.Apps.TestAuth
                 options =>
                 {
                     options.Authentication.Enabled = true;
-                    options.Authentication.AuthorizeOnRoute = false;
-                    options.Authentication.HttpClientName = "demo-http";
                     options.Authentication.DefaultScopes = ["email", "profile", "openid"];
 
                     options.Id = TerminalIdentifiers.TestApplicationId;

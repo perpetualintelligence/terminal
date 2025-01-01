@@ -5,15 +5,15 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -109,11 +109,6 @@ namespace OneImlx.Terminal.Licensing
             // No error, not allowed configured false
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictValueType = false;
-            await licenseChecker.CheckLicenseAsync(license);
-
-            // No error, not allowed not configured
-            license.Limits.StrictDataType = false;
-            terminalOptions.Checker.StrictValueType = null;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed not configured

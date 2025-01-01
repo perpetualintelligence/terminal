@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// </summary>
         /// <remarks>
         /// For client side environments such as a Standalone WebAssembly you can set the license contents directly. If
-        /// you set the license contents, the license file path will be ignored. You do however need set the name of the
+        /// you set the license contents, the license file path will be ignored. You do however need to set the name of the
         /// license file in the <see cref="LicenseFile"/> property.
         /// </remarks>
         /// <see cref="TerminalServices.EncodeLicenseContents(string)"/>

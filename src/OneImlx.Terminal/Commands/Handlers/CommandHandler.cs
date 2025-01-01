@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             Command command = context.EnsureParsedCommand().Command;
 
             // If we are executing a help command then we need to bypass all the checks.
-            if (!options.Value.Help.Disabled.GetValueOrDefault() &&
+            if (!options.Value.Help.Disabled &&
                 (command.TryGetOption(options.Value.Help.OptionId, out Option? helpOption) ||
                  command.TryGetOption(options.Value.Help.OptionAlias, out helpOption)
                 ))
