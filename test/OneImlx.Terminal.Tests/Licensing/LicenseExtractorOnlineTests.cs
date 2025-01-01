@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Licensing
             File.WriteAllText(nonJsonLicPath, nonJson);
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
 
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached: false);
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
@@ -183,10 +183,8 @@ namespace OneImlx.Terminal.Licensing
 
             limits.TerminalLimit.Should().Be(1);
             limits.RedistributionLimit.Should().Be(0);
-            limits.RootCommandLimit.Should().Be(1);
-            limits.GroupedCommandLimit.Should().Be(5);
-            limits.SubCommandLimit.Should().Be(25);
-            limits.OptionLimit.Should().Be(500);
+            limits.CommandLimit.Should().Be(25);
+            limits.InputLimit.Should().Be(500);
 
             limits.StrictDataType.Should().Be(true);
 

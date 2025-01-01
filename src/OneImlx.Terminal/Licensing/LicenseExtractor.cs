@@ -177,8 +177,8 @@ namespace OneImlx.Terminal.Licensing
             {
                 logger.LogDebug("Extract on-premise license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
-                if (terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.OnPremise ||
-                    terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Unlimited)
+                if (terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Enterprise ||
+                    terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Corporate)
                 {
                     logger.LogDebug("On-premise deployment is enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFile.Id, licenseFile.TenantId);
                     return new LicenseExtractorResult(OnPremiseDeploymentLicense(), null);

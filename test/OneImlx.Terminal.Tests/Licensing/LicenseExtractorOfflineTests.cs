@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.IO;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Json;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -32,7 +32,7 @@ namespace OneImlx.Terminal.Licensing
             File.WriteAllText(nonJsonLicPath, nonJson);
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
 
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached: false);
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());

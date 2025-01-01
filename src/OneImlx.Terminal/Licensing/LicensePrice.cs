@@ -54,25 +54,25 @@ namespace OneImlx.Terminal.Licensing
                     {
                         return new LicensePrice("USD", 0, 0, plan);
                     }
+                case TerminalLicensePlans.Solo:
+                    {
+                        return new LicensePrice("USD", 50, 550, plan);
+                    }
                 case TerminalLicensePlans.Micro:
                     {
-                        return new LicensePrice("USD", 49, 529, plan);
+                        return new LicensePrice("USD", 300, 3300, plan);
                     }
-                case TerminalLicensePlans.SMB:
+                case TerminalLicensePlans.Smb:
                     {
-                        return new LicensePrice("USD", 299, 3229, plan);
+                        return new LicensePrice("USD", 1200, 13200, plan);
                     }
                 case TerminalLicensePlans.Enterprise:
                     {
-                        return new LicensePrice("USD", 699, 7529, plan);
+                        return new LicensePrice("USD", 2400, 26400, plan);
                     }
-                case TerminalLicensePlans.OnPremise:
+                case TerminalLicensePlans.Corporate:
                     {
-                        return new LicensePrice("USD", 1299, 14029, plan);
-                    }
-                case TerminalLicensePlans.Unlimited:
-                    {
-                        return new LicensePrice("USD", 3299, 35629, plan);
+                        return new LicensePrice("USD", 4800, 52800, plan);
                     }
                 case TerminalLicensePlans.Custom:
                     {

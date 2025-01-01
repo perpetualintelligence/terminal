@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -7,6 +7,7 @@
 
 using FluentAssertions;
 using OneImlx.Shared.Licensing;
+using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -16,167 +17,147 @@ namespace OneImlx.Terminal.Licensing
     public class LicenseLimitsTests
     {
         [Fact]
-        public void CustomEdition_NoCustomClaimsShouldThrow()
+        public void Corporate_Sets_Limits_Correctly()
         {
-            Action act = static () => LicenseLimits.Create(TerminalLicensePlans.Custom);
-            act.Should().Throw<TerminalException>().WithMessage("The licensing for the custom plan requires a custom claims. plan=urn:oneimlx:terminal:plan:custom");
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Corporate);
+
+            limits.Plan.Should().Be(TerminalLicensePlans.Corporate);
+
+            limits.TerminalLimit.Should().Be(15);
+            limits.CommandLimit.Should().BeNull();
+            limits.InputLimit.Should().BeNull();
+            limits.RedistributionLimit.Should().BeNull();
+
+            limits.StrictDataType.Should().Be(true);
+            limits.Authentication.Should().Be(true);
         }
 
         [Fact]
-        public void CustomEdition_ShouldSetLimitsCorrectly()
+        public void Custom_NoClaims_Throws()
+        {
+            Action act = static () => LicenseLimits.Create(TerminalLicensePlans.Custom);
+            act.Should().Throw<TerminalException>()
+               .WithErrorCode(TerminalErrors.InvalidLicense)
+               .WithErrorDescription("The licensing for the custom plan requires a custom claims. plan=urn:oneimlx:terminal:plan:custom");
+        }
+
+        [Fact]
+        public void Custom_Sets_Limits_Correctly()
         {
             Dictionary<string, object> claims = new()
             {
                 { "terminal_limit", 1 },
+                { "command_limit", 3 },
+                { "input_limit", 6 },
                 { "redistribution_limit", 2 },
-                { "root_command_limit", 3 },
-                { "grouped_command_limit", 4 },
-                { "sub_command_limit", 5 },
-                { "option_limit", 6 },
 
                 { "strict_data_type", false },
-                { "authentication", false },
+                { "authentication", true },
             };
 
             LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Custom, claims);
             limits.Plan.Should().Be(TerminalLicensePlans.Custom);
 
             limits.TerminalLimit.Should().Be(1);
+            limits.CommandLimit.Should().Be(3);
+            limits.InputLimit.Should().Be(6);
             limits.RedistributionLimit.Should().Be(2);
-            limits.RootCommandLimit.Should().Be(3);
-            limits.GroupedCommandLimit.Should().Be(4);
-            limits.SubCommandLimit.Should().Be(5);
-            limits.OptionLimit.Should().Be(6);
 
             limits.StrictDataType.Should().Be(false);
-            limits.Authentication.Should().Be(false);
+            limits.Authentication.Should().Be(true);
         }
 
         [Fact]
-        public void DemoClaims_ShouldSetClaimsCorrectly()
+        public void Demo_Sets_Limits_Correctly()
         {
             LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Demo);
 
             limits.Plan.Should().Be(TerminalLicensePlans.Demo);
 
             limits.TerminalLimit.Should().Be(1);
+            limits.CommandLimit.Should().Be(25);
+            limits.InputLimit.Should().Be(250);
             limits.RedistributionLimit.Should().Be(0);
-            limits.RootCommandLimit.Should().Be(1);
-            limits.GroupedCommandLimit.Should().Be(5);
-            limits.SubCommandLimit.Should().Be(25);
-            limits.OptionLimit.Should().Be(500);
 
             limits.StrictDataType.Should().Be(true);
             limits.Authentication.Should().Be(true);
         }
 
         [Fact]
-        public void EnterpriseEdition_ShouldSetLimitsCorrectly()
+        public void Enterprise_Sets_Limits()
         {
             LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Enterprise);
 
             limits.Plan.Should().Be(TerminalLicensePlans.Enterprise);
 
-            limits.TerminalLimit.Should().Be(5);
-            limits.RedistributionLimit.Should().Be(5000);
-            limits.RootCommandLimit.Should().Be(3);
-            limits.GroupedCommandLimit.Should().Be(20);
-            limits.SubCommandLimit.Should().Be(100);
-            limits.OptionLimit.Should().Be(2000);
+            limits.TerminalLimit.Should().Be(10);
+            limits.CommandLimit.Should().Be(300);
+            limits.InputLimit.Should().Be(6000);
+            limits.RedistributionLimit.Should().Be(15000);
 
             limits.StrictDataType.Should().Be(true);
             limits.Authentication.Should().Be(true);
         }
 
         [Fact]
-        public void InvalidEdition_ShouldError()
+        public void InvalidEdition_Throws()
         {
-            try
-            {
-                LicenseLimits limits = LicenseLimits.Create("invalid_plan");
-            }
-            catch (Exception ex)
-            {
-                TerminalException eex = (TerminalException)ex;
-                eex.Error.ErrorCode.Should().Be(TerminalErrors.InvalidLicense);
-                eex.Error.FormatDescription().Should().Be("The license for the plan is not supported. plan=invalid_plan");
-            }
+            Action func = () => LicenseLimits.Create("invalid_plan");
+            func.Should().Throw<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidLicense)
+                .WithErrorDescription("The license for the plan is not supported. plan=invalid_plan");
         }
 
         [Fact]
-        public void OnPremiseEdition_ShouldSetLimitsCorrectly()
-        {
-            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.OnPremise);
-
-            limits.Plan.Should().Be(TerminalLicensePlans.OnPremise);
-
-            limits.TerminalLimit.Should().Be(25);
-            limits.RedistributionLimit.Should().Be(10000);
-            limits.RootCommandLimit.Should().Be(5);
-            limits.GroupedCommandLimit.Should().Be(50);
-            limits.SubCommandLimit.Should().Be(250);
-            limits.OptionLimit.Should().Be(5000);
-
-            limits.StrictDataType.Should().Be(true);
-            limits.Authentication.Should().Be(true);
-        }
-
-        [Fact]
-        public void UnlimitedEdition_ShouldSetLimitsCorrectly()
-        {
-            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Unlimited);
-
-            limits.Plan.Should().Be(TerminalLicensePlans.Unlimited);
-
-            limits.TerminalLimit.Should().Be(null);
-            limits.RedistributionLimit.Should().Be(null);
-            limits.RootCommandLimit.Should().Be(null);
-            limits.GroupedCommandLimit.Should().Be(null);
-            limits.SubCommandLimit.Should().Be(null);
-            limits.OptionLimit.Should().Be(null);
-
-            limits.StrictDataType.Should().Be(true);
-            limits.Authentication.Should().Be(true);
-        }
-
-        [Fact]
-        public void MicroEdition_ShouldSetLimitsCorrectly()
+        public void Micro_Sets_Limits_Correctly()
         {
             LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Micro);
 
             limits.Plan.Should().Be(TerminalLicensePlans.Micro);
 
+            limits.TerminalLimit.Should().Be(3);
+            limits.CommandLimit.Should().Be(50);
+            limits.InputLimit.Should().Be(500);
+            limits.RedistributionLimit.Should().Be(1000);
+
+            limits.StrictDataType.Should().Be(true);
+            limits.Authentication.Should().Be(true);
+        }
+
+        [Fact]
+        public void Smb_Sets_Limits_Correctly()
+        {
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Smb);
+
+            limits.Plan.Should().Be(TerminalLicensePlans.Smb);
+
+            limits.TerminalLimit.Should().Be(5);
+            limits.CommandLimit.Should().Be(100);
+            limits.InputLimit.Should().Be(2000);
+            limits.RedistributionLimit.Should().Be(5000);
+
+            limits.StrictDataType.Should().Be(true);
+            limits.Authentication.Should().Be(true);
+        }
+
+        [Fact]
+        public void Solo_Sets_Limits_Correctly()
+        {
+            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Solo);
+
+            limits.Plan.Should().Be(TerminalLicensePlans.Solo);
+
             limits.TerminalLimit.Should().Be(1);
+            limits.CommandLimit.Should().Be(25);
+            limits.InputLimit.Should().Be(250);
             limits.RedistributionLimit.Should().Be(0);
-            limits.RootCommandLimit.Should().Be(1);
-            limits.GroupedCommandLimit.Should().Be(5);
-            limits.SubCommandLimit.Should().Be(25);
-            limits.OptionLimit.Should().Be(500);
 
             limits.StrictDataType.Should().Be(false);
             limits.Authentication.Should().Be(false);
         }
 
         [Fact]
-        public void SMBEdition_ShouldSetLimitsCorrectly()
-        {
-            LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.SMB);
-
-            limits.Plan.Should().Be(TerminalLicensePlans.SMB);
-
-            limits.TerminalLimit.Should().Be(3);
-            limits.RedistributionLimit.Should().Be(1000);
-            limits.RootCommandLimit.Should().Be(1);
-            limits.GroupedCommandLimit.Should().Be(10);
-            limits.SubCommandLimit.Should().Be(50);
-            limits.OptionLimit.Should().Be(1000);
-
-            limits.StrictDataType.Should().Be(true);
-            limits.Authentication.Should().Be(false);
-        }
-
-        [Fact]
-        public void StandardPlans_ShouldIgnoreClaims()
+        public void StandardPlans_Ignores_Custom_Claims()
         {
             Dictionary<string, object> expected = new()
             {
@@ -188,11 +169,15 @@ namespace OneImlx.Terminal.Licensing
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
 
+            limits = LicenseLimits.Create(TerminalLicensePlans.Solo, expected);
+            limits.TerminalLimit.Should().NotBe(25332343);
+            limits.RedistributionLimit.Should().NotBe(36523211212212);
+
             limits = LicenseLimits.Create(TerminalLicensePlans.Micro, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
 
-            limits = LicenseLimits.Create(TerminalLicensePlans.SMB, expected);
+            limits = LicenseLimits.Create(TerminalLicensePlans.Smb, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
 
@@ -200,11 +185,7 @@ namespace OneImlx.Terminal.Licensing
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
 
-            limits = LicenseLimits.Create(TerminalLicensePlans.OnPremise, expected);
-            limits.TerminalLimit.Should().NotBe(25332343);
-            limits.RedistributionLimit.Should().NotBe(36523211212212);
-
-            limits = LicenseLimits.Create(TerminalLicensePlans.Unlimited, expected);
+            limits = LicenseLimits.Create(TerminalLicensePlans.Corporate, expected);
             limits.TerminalLimit.Should().NotBe(25332343);
             limits.RedistributionLimit.Should().NotBe(36523211212212);
         }

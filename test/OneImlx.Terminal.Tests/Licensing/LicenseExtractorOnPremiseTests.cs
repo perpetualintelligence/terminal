@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Licensing
             testOfflineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_OFFLINE_LIC");
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
 
             commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
         }
@@ -74,7 +74,7 @@ namespace OneImlx.Terminal.Licensing
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Extracts_From_Offline_Sets_Extraction_Mode_Based_On_Debugger(bool isDebuggerAttached)
+        public async Task Extracts_From_OffLine_Sets_Extraction_Mode_Based_On_Debugger(bool isDebuggerAttached)
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
@@ -107,9 +107,9 @@ namespace OneImlx.Terminal.Licensing
 
         [Theory]
         [InlineData(TerminalLicensePlans.Demo)]
+        [InlineData(TerminalLicensePlans.Solo)]
         [InlineData(TerminalLicensePlans.Micro)]
-        [InlineData(TerminalLicensePlans.SMB)]
-        [InlineData(TerminalLicensePlans.Enterprise)]
+        [InlineData(TerminalLicensePlans.Smb)]
         public async Task Invalid_LicensePlan_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
@@ -167,7 +167,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractLicenseAsync();
@@ -224,11 +224,9 @@ namespace OneImlx.Terminal.Licensing
             licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
             LicenseCheckerResult licResult = await licenseChecker.CheckLicenseAsync(result.License);
             licResult.Should().NotBeNull();
-            licResult.CommandGroupCount.Should().Be(3);
+            licResult.CommandCount.Should().Be(3);
             licResult.License.Should().BeSameAs(result.License);
-            licResult.OptionCount.Should().Be(90);
-            licResult.RootCommandCount.Should().Be(3);
-            licResult.SubCommandCount.Should().Be(5);
+            licResult.InputCount.Should().Be(90);
             licResult.TerminalCount.Should().Be(1);
         }
 
@@ -289,8 +287,8 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(TerminalLicensePlans.OnPremise)]
-        [InlineData(TerminalLicensePlans.Unlimited)]
+        [InlineData(TerminalLicensePlans.Enterprise)]
+        [InlineData(TerminalLicensePlans.Corporate)]
         public async Task Valid_LicensePlan_Does_Not_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
