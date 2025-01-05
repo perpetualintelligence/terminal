@@ -29,7 +29,8 @@ namespace OneImlx.Terminal.Licensing
             limits.RedistributionLimit.Should().BeNull();
 
             limits.StrictDataType.Should().Be(true);
-            limits.Authentication.Should().Be(true);
+            limits.Driver.Should().Be(true);
+            limits.Integration.Should().Be(true);
         }
 
         [Fact]
@@ -52,7 +53,8 @@ namespace OneImlx.Terminal.Licensing
                 { "redistribution_limit", 2 },
 
                 { "strict_data_type", false },
-                { "authentication", true },
+                { "driver", true },
+                { "integration", false },
             };
 
             LicenseLimits limits = LicenseLimits.Create(TerminalLicensePlans.Custom, claims);
@@ -64,7 +66,8 @@ namespace OneImlx.Terminal.Licensing
             limits.RedistributionLimit.Should().Be(2);
 
             limits.StrictDataType.Should().Be(false);
-            limits.Authentication.Should().Be(true);
+            limits.Driver.Should().Be(true);
+            limits.Integration.Should().Be(false);
         }
 
         [Fact]
@@ -80,7 +83,8 @@ namespace OneImlx.Terminal.Licensing
             limits.RedistributionLimit.Should().Be(0);
 
             limits.StrictDataType.Should().Be(true);
-            limits.Authentication.Should().Be(true);
+            limits.Driver.Should().Be(true);
+            limits.Integration.Should().Be(true);
         }
 
         [Fact]
@@ -96,7 +100,8 @@ namespace OneImlx.Terminal.Licensing
             limits.RedistributionLimit.Should().Be(15000);
 
             limits.StrictDataType.Should().Be(true);
-            limits.Authentication.Should().Be(true);
+            limits.Driver.Should().Be(true);
+            limits.Integration.Should().Be(true);
         }
 
         [Fact]
@@ -121,7 +126,8 @@ namespace OneImlx.Terminal.Licensing
             limits.RedistributionLimit.Should().Be(1000);
 
             limits.StrictDataType.Should().Be(true);
-            limits.Authentication.Should().Be(true);
+            limits.Driver.Should().Be(false);
+            limits.Integration.Should().Be(false);
         }
 
         [Fact]
@@ -137,7 +143,8 @@ namespace OneImlx.Terminal.Licensing
             limits.RedistributionLimit.Should().Be(5000);
 
             limits.StrictDataType.Should().Be(true);
-            limits.Authentication.Should().Be(true);
+            limits.Driver.Should().Be(true);
+            limits.Integration.Should().Be(false);
         }
 
         [Fact]
@@ -153,7 +160,8 @@ namespace OneImlx.Terminal.Licensing
             limits.RedistributionLimit.Should().Be(0);
 
             limits.StrictDataType.Should().Be(false);
-            limits.Authentication.Should().Be(false);
+            limits.Driver.Should().Be(false);
+            limits.Integration.Should().Be(false);
         }
 
         [Fact]

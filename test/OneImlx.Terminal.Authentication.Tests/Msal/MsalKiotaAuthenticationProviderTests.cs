@@ -1,21 +1,21 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
-using Microsoft.Kiota.Abstractions;
-using Moq;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
+using Microsoft.Kiota.Abstractions;
+using FluentAssertions;
+using Moq;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Authentication.Msal
@@ -94,13 +94,11 @@ namespace OneImlx.Terminal.Authentication.Msal
             requestInfo.Headers["Authorization"].Should().Contain($"Bearer {expectedToken}");
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(null)]
-        public async Task AuthenticateRequestAsync_Throws_If_Authentication_Is_Not_Enabled(bool? enabled)
+        [Fact]
+        public async Task AuthenticateRequestAsync_Throws_If_Authentication_Is_Not_Enabled()
         {
             // Not enabled
-            _terminalOptions.Authentication.Enabled = enabled;
+            _terminalOptions.Authentication.Enabled = false;
 
             var requestInfo = new RequestInformation { URI = new Uri("https://graph.microsoft.com") };
 

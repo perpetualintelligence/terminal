@@ -5,16 +5,19 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 using OneImlx.Terminals.Integration.Mocks;
+using OneImlx.Test.FluentAssertions;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Integration
@@ -29,7 +32,12 @@ namespace OneImlx.Terminal.Integration
             mutableCommandStore = new TerminalInMemoryCommandStore(textHandler, Array.Empty<CommandDescriptor>());
             MockListLoggerFactory mockListLoggerFactory = new();
             logger = mockListLoggerFactory.CreateLogger<PublishedCommandSource>();
-            publishedCommandSource = new PublishedCommandSource(textHandler, assemblyLoader, terminalCommandSourceChecker, mutableCommandStore, logger);
+
+            TerminalOptions options = MockTerminalOptions.NewAliasOptions();
+            options.Integration.Enabled = true;
+            terminalOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(options);
+
+            publishedCommandSource = new PublishedCommandSource(textHandler, assemblyLoader, terminalCommandSourceChecker, mutableCommandStore, terminalOptions, logger);
         }
 
         [Fact]
@@ -54,6 +62,23 @@ namespace OneImlx.Terminal.Integration
 
             var result = await mutableCommandStore.AllAsync();
             result.Count.Should().Be(0);
+        }
+
+        [Fact]
+        public async Task LoadCommandSourceAsync_Throws_If_Integration_Disabled()
+        {
+            terminalOptions.Value.Integration.Enabled = false;
+
+            PublishedCommandSourceContext commandSourceContext = new();
+            commandSourceContext.PublishedAssemblies.Add("MockAssembly1.dll", "mock//path//to//assembly");
+
+            terminalCommandSourceChecker.Called.Should().BeFalse();
+            Func<Task> act = async () => await publishedCommandSource.LoadCommandSourceAsync(commandSourceContext);
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidConfiguration)
+                .WithErrorDescription("The terminal integration is not enabled.");
+
+            terminalCommandSourceChecker.Called.Should().BeFalse();
         }
 
         [Fact]
@@ -91,6 +116,7 @@ namespace OneImlx.Terminal.Integration
         private readonly ITerminalCommandStore mutableCommandStore;
         private readonly PublishedCommandSource publishedCommandSource;
         private readonly MockPublishedCommandSourceChecker terminalCommandSourceChecker;
+        private readonly IOptions<TerminalOptions> terminalOptions;
         private readonly ITerminalTextHandler textHandler;
     }
 }

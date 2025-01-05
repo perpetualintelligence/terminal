@@ -84,9 +84,9 @@ namespace OneImlx.Terminal.Licensing
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictValueType = true;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured strict option value type is not allowed for your license plan.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The strict option value type is not allowed for your license plan.");
 
-            // No error, not allowed configured false
+            // No error, not allowed not configured
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictValueType = false;
             await licenseChecker.CheckLicenseAsync(license);
@@ -99,6 +99,56 @@ namespace OneImlx.Terminal.Licensing
             // No error, allowed and configured
             license.Limits.StrictDataType = true;
             terminalOptions.Checker.StrictValueType = true;
+            await licenseChecker.CheckLicenseAsync(license);
+        }
+
+        [Fact]
+        public async Task CheckAsync_DriverCheck_ShouldBehaveCorrectly()
+        {
+            // Error, not allowed but configured
+            license.Limits.Driver = false;
+            terminalOptions.Driver.Enabled = true;
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal driver option is not allowed for your license plan.");
+
+            // No error, not allowed not configured
+            license.Limits.Driver = false;
+            terminalOptions.Driver.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed not configured
+            license.Limits.Driver = true;
+            terminalOptions.Driver.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed and configured
+            license.Limits.Driver = true;
+            terminalOptions.Driver.Enabled = true;
+            await licenseChecker.CheckLicenseAsync(license);
+        }
+
+        [Fact]
+        public async Task CheckAsync_IntegrationCheck_ShouldBehaveCorrectly()
+        {
+            // Error, not allowed but configured
+            license.Limits.Integration = false;
+            terminalOptions.Integration.Enabled = true;
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal integration option is not allowed for your license plan.");
+
+            // No error, not allowed not configured
+            license.Limits.Integration = false;
+            terminalOptions.Integration.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed not configured
+            license.Limits.Integration = true;
+            terminalOptions.Integration.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed and configured
+            license.Limits.Integration = true;
+            terminalOptions.Integration.Enabled = true;
             await licenseChecker.CheckLicenseAsync(license);
         }
 

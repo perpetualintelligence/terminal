@@ -17,19 +17,29 @@ namespace OneImlx.Terminal.Licensing
     public sealed class LicenseLimits
     {
         /// <summary>
-        /// The terminal authentication. Defaults to <c>null</c> or no limit.
-        /// </summary>
-        public bool? Authentication { get; internal set; }
-
-        /// <summary>
         /// The maximum commands. Defaults to <c>null</c> or no limit.
         /// </summary>
         public int? CommandLimit { get; internal set; }
 
         /// <summary>
+        /// The terminal driver mode. Defaults to <c>false</c> or not supported.
+        /// </summary>
+        public bool Driver { get; internal set; }
+
+        /// <summary>
+        /// The licensed features.
+        /// </summary>
+        public Dictionary<string, string[]>? Features { get; internal set; }
+
+        /// <summary>
         /// The maximum arguments and options combined. Defaults to <c>null</c> for no limit.
         /// </summary>
         public int? InputLimit { get; internal set; }
+
+        /// <summary>
+        /// The terminal integration mode. Defaults to <c>false</c> or not supported.
+        /// </summary>
+        public bool Integration { get; internal set; }
 
         /// <summary>
         /// The license plan.
@@ -112,7 +122,8 @@ namespace OneImlx.Terminal.Licensing
                 RedistributionLimit = null,
 
                 StrictDataType = true,
-                Authentication = true
+                Driver = true,
+                Integration = true,
             };
         }
 
@@ -128,7 +139,8 @@ namespace OneImlx.Terminal.Licensing
                 RedistributionLimit = Convert.ToInt32(customClaims["redistribution_limit"]),
 
                 StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
-                Authentication = Convert.ToBoolean(customClaims["authentication"]),
+                Driver = Convert.ToBoolean(customClaims["driver"]),
+                Integration = Convert.ToBoolean(customClaims["integration"]),
             };
 
             return limits;
@@ -146,7 +158,8 @@ namespace OneImlx.Terminal.Licensing
                 RedistributionLimit = 0,
 
                 StrictDataType = true,
-                Authentication = true
+                Driver = true,
+                Integration = true,
             };
         }
 
@@ -162,7 +175,8 @@ namespace OneImlx.Terminal.Licensing
                 RedistributionLimit = 15000,
 
                 StrictDataType = true,
-                Authentication = true
+                Driver = true,
+                Integration = true,
             };
         }
 
@@ -178,7 +192,8 @@ namespace OneImlx.Terminal.Licensing
                 RedistributionLimit = 1000,
 
                 StrictDataType = true,
-                Authentication = true
+                Driver = false,
+                Integration = false
             };
         }
 
@@ -194,7 +209,8 @@ namespace OneImlx.Terminal.Licensing
                 RedistributionLimit = 5000,
 
                 StrictDataType = true,
-                Authentication = true
+                Driver = true,
+                Integration = false
             };
         }
 
@@ -210,7 +226,8 @@ namespace OneImlx.Terminal.Licensing
                 RedistributionLimit = 0,
 
                 StrictDataType = false,
-                Authentication = false
+                Driver = false,
+                Integration = false
             };
         }
     }

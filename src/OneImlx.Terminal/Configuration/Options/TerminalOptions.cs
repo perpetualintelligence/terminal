@@ -38,6 +38,11 @@ namespace OneImlx.Terminal.Configuration.Options
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
+        /// The integration configuration options.
+        /// </summary>
+        public IntegrationOptions Integration { get; set; } = new IntegrationOptions();
+
+        /// <summary>
         /// The licensing configuration options.
         /// </summary>
         public LicensingOptions Licensing { get; set; } = new LicensingOptions();

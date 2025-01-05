@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             cancellationToken.ThrowIfCancellationRequested();
 
             // Ensure authentication is enabled
-            if (!terminalOptions.Authentication.Enabled.GetValueOrDefault())
+            if (!terminalOptions.Authentication.Enabled)
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The terminal authentication is not enabled.");
             }

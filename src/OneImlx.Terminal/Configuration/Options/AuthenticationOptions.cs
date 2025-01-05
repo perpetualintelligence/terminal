@@ -25,7 +25,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <summary>
         /// Enables the authentication for the terminal.
         /// </summary>
-        public bool? Enabled { get; set; }
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the authentication user flow.
