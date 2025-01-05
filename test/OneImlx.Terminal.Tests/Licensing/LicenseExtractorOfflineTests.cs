@@ -223,7 +223,7 @@ namespace OneImlx.Terminal.Licensing
 
             // License claims
             result.License.Claims.Should().NotBeNull();
-            result.License.Limits.Should().NotBeNull();
+            result.License.Quota.Should().NotBeNull();
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
@@ -254,8 +254,8 @@ namespace OneImlx.Terminal.Licensing
             // no custom claims
             result.License.Claims.Custom.Should().BeNull();
 
-            // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
+            // quota
+            result.License.Quota.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();
@@ -283,7 +283,7 @@ namespace OneImlx.Terminal.Licensing
 
             // License claims
             result.License.Claims.Should().NotBeNull();
-            result.License.Limits.Should().NotBeNull();
+            result.License.Quota.Should().NotBeNull();
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
@@ -314,8 +314,8 @@ namespace OneImlx.Terminal.Licensing
             // no custom claims
             result.License.Claims.Custom.Should().BeNull();
 
-            // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
+            // quota
+            result.License.Quota.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();

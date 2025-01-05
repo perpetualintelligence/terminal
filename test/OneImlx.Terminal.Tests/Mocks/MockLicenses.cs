@@ -34,13 +34,13 @@ namespace OneImlx.Terminal.Mocks
                 {"nbf",  System.DateTimeOffset.UtcNow.AddHours(-0.5).ToUnixTimeSeconds() },
             });
 
-            TestLimits = LicenseLimits.Create(TerminalLicensePlans.Demo);
+            TestQuota = LicenseQuota.Create(TerminalLicensePlans.Demo);
 
-            TestLicense = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestLimits);
+            TestLicense = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestQuota);
         }
 
         public static LicenseClaims TestClaims = null!;
         public static License TestLicense = null!;
-        public static LicenseLimits TestLimits = null!;
+        public static LicenseQuota TestQuota = null!;
     }
 }

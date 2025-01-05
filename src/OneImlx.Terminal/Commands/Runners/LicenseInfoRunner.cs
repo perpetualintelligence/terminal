@@ -70,15 +70,15 @@ namespace OneImlx.Terminal.Commands.Runners
             }
 
             {
-                // Print Limits
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Limits");
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "terminal_limit={0}", PrintNumber(license.Limits.TerminalLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "command_limit={0}", PrintNumber(license.Limits.CommandLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "input_limit={0}", PrintNumber(license.Limits.InputLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, "redistribution_limit={0}", PrintNumber(license.Limits.RedistributionLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "driver={0}", license.Limits.Driver.ToString());
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "integration={0}", license.Limits.Integration.ToString());
+                // Print Quota
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Quota");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "terminal_limit={0}", PrintNumber(license.Quota.TerminalLimit));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "command_limit={0}", PrintNumber(license.Quota.CommandLimit));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "input_limit={0}", PrintNumber(license.Quota.InputLimit));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, "redistribution_limit={0}", PrintNumber(license.Quota.RedistributionLimit));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "strict_data_type={0}", license.Quota.StrictDataType.ToString());
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "driver={0}", license.Quota.Driver.ToString());
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "integration={0}", license.Quota.Integration.ToString());
 
                 if (license.Claims.Custom != null)
                 {

@@ -12,9 +12,9 @@ using OneImlx.Shared.Licensing;
 namespace OneImlx.Terminal.Licensing
 {
     /// <summary>
-    /// Defines the licensing limits based on the <see cref="TerminalLicensePlans"/>.
+    /// Defines the licensing quota based on the <see cref="TerminalLicensePlans"/>.
     /// </summary>
-    public sealed class LicenseLimits
+    public sealed class LicenseQuota
     {
         /// <summary>
         /// The maximum commands. Defaults to <c>null</c> or no limit.
@@ -42,6 +42,11 @@ namespace OneImlx.Terminal.Licensing
         public bool Integration { get; internal set; }
 
         /// <summary>
+        /// The maximum quota. Defaults to <c>null</c> or no limit.
+        /// </summary>
+        public Dictionary<string, long?>? Limits { get; internal set; }
+
+        /// <summary>
         /// The license plan.
         /// </summary>
         public string? Plan { get; internal set; }
@@ -57,16 +62,21 @@ namespace OneImlx.Terminal.Licensing
         public bool StrictDataType { get; internal set; }
 
         /// <summary>
+        /// The licensed switches.
+        /// </summary>
+        public Dictionary<string, bool>? Switches { get; internal set; }
+
+        /// <summary>
         /// The maximum terminals. Defaults to <c>null</c> or no limit.
         /// </summary>
         public int? TerminalLimit { get; internal set; }
 
         /// <summary>
-        /// Creates a new instance of <see cref="LicenseLimits"/> based on the specified SaaS plan.
+        /// Creates a new instance of <see cref="LicenseQuota"/> based on the specified SaaS plan.
         /// </summary>
         /// <param name="licensePlan">The license plan.</param>
         /// <param name="customClaims">The custom claims. Only used if SaaS plan is custom.</param>
-        public static LicenseLimits Create(string licensePlan, IDictionary<string, object>? customClaims = null)
+        public static LicenseQuota Create(string licensePlan, IDictionary<string, object>? customClaims = null)
         {
             switch (licensePlan)
             {
@@ -110,26 +120,41 @@ namespace OneImlx.Terminal.Licensing
             }
         }
 
-        private static LicenseLimits ForCorporate()
+        private static LicenseQuota ForCorporate()
         {
             return new()
             {
                 Plan = TerminalLicensePlans.Corporate,
 
-                TerminalLimit = 15,
-                CommandLimit = null,
-                InputLimit = null,
-                RedistributionLimit = null,
+                Limits = new Dictionary<string, long?>
+                {
+                    { "terminal", 15 },
+                    { "command", null },
+                    { "input", null },
+                    { "redistribution", null }
+                },
 
-                StrictDataType = true,
-                Driver = true,
-                Integration = true,
+                Switches = new Dictionary<string, bool>
+                {
+                    { "datatype", true },
+                    { "driver", true },
+                    { "integration", true }
+                },
+
+                Features = new Dictionary<string, string[]>
+                {
+                    { "authentication", new[] { "msal", "oauth", "oidc" } },
+                    { "encoding", new [] { "ascii", "utf8", "utf16-le", "utf16-be", "utf32" } },
+                    { "store", new [] { "inmemory", "custom" } },
+                    { "router", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
+                    { "deployment", new [] { "standard", "isolated" } },
+                }
             };
         }
 
-        private static LicenseLimits ForCustom(IDictionary<string, object> customClaims)
+        private static LicenseQuota ForCustom(IDictionary<string, object> customClaims)
         {
-            LicenseLimits limits = new()
+            LicenseQuota quota = new()
             {
                 Plan = TerminalLicensePlans.Custom,
 
@@ -143,10 +168,10 @@ namespace OneImlx.Terminal.Licensing
                 Integration = Convert.ToBoolean(customClaims["integration"]),
             };
 
-            return limits;
+            return quota;
         }
 
-        private static LicenseLimits ForDemo()
+        private static LicenseQuota ForDemo()
         {
             return new()
             {
@@ -163,7 +188,7 @@ namespace OneImlx.Terminal.Licensing
             };
         }
 
-        private static LicenseLimits ForEnterprise()
+        private static LicenseQuota ForEnterprise()
         {
             return new()
             {
@@ -180,7 +205,7 @@ namespace OneImlx.Terminal.Licensing
             };
         }
 
-        private static LicenseLimits ForMicro()
+        private static LicenseQuota ForMicro()
         {
             return new()
             {
@@ -197,7 +222,7 @@ namespace OneImlx.Terminal.Licensing
             };
         }
 
-        private static LicenseLimits ForSmb()
+        private static LicenseQuota ForSmb()
         {
             return new()
             {
@@ -214,7 +239,7 @@ namespace OneImlx.Terminal.Licensing
             };
         }
 
-        private static LicenseLimits ForSolo()
+        private static LicenseQuota ForSolo()
         {
             return new()
             {

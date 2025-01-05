@@ -170,7 +170,7 @@ namespace OneImlx.Terminal.Licensing
 
             // License claims
             result.License.Claims.Should().NotBeNull();
-            result.License.Limits.Should().NotBeNull();
+            result.License.Quota.Should().NotBeNull();
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
@@ -198,8 +198,8 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.Id.Should().BeNull(); // Id
             result.License.Claims.Custom.Should().BeNull();
 
-            // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
+            // quota
+            result.License.Quota.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();
@@ -289,7 +289,7 @@ namespace OneImlx.Terminal.Licensing
             license.LicenseKey.Should().Be("onprem-isolated-deployment");
             license.Plan.Should().Be(terminalOptions.Licensing.LicensePlan);
             license.Usage.Should().Be("onprem-isolated-deployment");
-            license.Limits.Should().BeEquivalentTo(LicenseLimits.Create(license.Plan, license.Claims.Custom));
+            license.Quota.Should().BeEquivalentTo(LicenseQuota.Create(license.Plan, license.Claims.Custom));
         }
 
         private readonly ITerminalCommandStore commandStore;

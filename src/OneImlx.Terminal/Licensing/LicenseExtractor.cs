@@ -197,10 +197,10 @@ namespace OneImlx.Terminal.Licensing
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
                 }
 
-                LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
+                LicenseQuota licenseQuota = LicenseQuota.Create(plan, claims.Custom);
                 return new LicenseExtractorResult
                 (
-                    new License(plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseLimits),
+                    new License(plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseQuota),
                     TerminalIdentifiers.OfflineLicenseMode
                 );
             }
@@ -299,7 +299,7 @@ namespace OneImlx.Terminal.Licensing
                 "onprem-isolated-deployment",
                 "onprem-isolated-deployment",
                 new LicenseClaims(),
-                LicenseLimits.Create(terminalOptions.Licensing.LicensePlan));
+                LicenseQuota.Create(terminalOptions.Licensing.LicensePlan));
         }
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
