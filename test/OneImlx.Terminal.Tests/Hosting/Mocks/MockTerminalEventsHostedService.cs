@@ -5,18 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
+using System;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Hosting.Mocks
 {
     public class MockTerminalEventsHostedService : TerminalHostedService
     {
-        public MockTerminalEventsHostedService(IServiceProvider serviceProvider, IOptions<TerminalOptions> terminalOptions, ITerminalConsole terminalConsole, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, logger)
+        public MockTerminalEventsHostedService(IServiceProvider serviceProvider, IOptions<TerminalOptions> terminalOptions, ITerminalConsole terminalConsole, ITerminalExceptionHandler terminalExceptionHandler, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, terminalExceptionHandler, logger)
         {
         }
 

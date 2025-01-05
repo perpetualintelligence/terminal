@@ -32,18 +32,21 @@ namespace OneImlx.Terminal.Hosting
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="terminalOptions">The configuration options.</param>
-        /// <param name="terminalConsole"></param>
+        /// <param name="terminalConsole">The terminal console.</param>
+        /// <param name="terminalExceptionHandler">The exception handler.</param>
         /// <param name="logger">The logger.</param>
         public TerminalHostedService(
             IServiceProvider serviceProvider,
             IOptions<TerminalOptions> terminalOptions,
             ITerminalConsole terminalConsole,
+            ITerminalExceptionHandler terminalExceptionHandler,
             ILogger<TerminalHostedService> logger)
         {
             HostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
             ServiceProvider = serviceProvider;
             Options = terminalOptions;
             TerminalConsole = terminalConsole;
+            this.terminalExceptionHandler = terminalExceptionHandler;
             Logger = logger;
         }
 
@@ -53,8 +56,6 @@ namespace OneImlx.Terminal.Hosting
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             // We catch the exception to avoid unhandled fatal exception
             try
             {
@@ -88,7 +89,7 @@ namespace OneImlx.Terminal.Hosting
             }
             catch (TerminalException ex)
             {
-                Logger.LogError($"{ex.Error.ErrorCode}={ex.Error.FormatDescription()}");
+                await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex));
             }
         }
 
@@ -267,5 +268,7 @@ namespace OneImlx.Terminal.Hosting
             LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
             return result;
         }
+
+        private readonly ITerminalExceptionHandler terminalExceptionHandler;
     }
 }

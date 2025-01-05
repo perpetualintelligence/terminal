@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Shared.Json;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.IO;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -26,6 +26,7 @@ namespace OneImlx.Terminal.Licensing
         {
             // Read the lic file from GitHub secrets
             testLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_OFFLINE_LIC");
+            testDemoLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_DEMO_LIC");
 
             string nonJson = "non json document";
             nonJsonLicPath = Path.Combine(AppContext.BaseDirectory, $"{Guid.NewGuid()}.json");
@@ -332,6 +333,23 @@ namespace OneImlx.Terminal.Licensing
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured.");
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ExtractFromJsonAsync_Isolated_With_Invalid_LicensePlan_Throws(bool debuggerAttached)
+        {
+            licenseDebugger.SetDebuggerAttached(debuggerAttached);
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testDemoLicPath;
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+
+            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not authorized for on-premise isolated deployment. plan=urn:oneimlx:terminal:plan:demo");
+        }
+
         private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)
         {
             // The demo json is too long for system env, so we use path for system env and json for github
@@ -347,9 +365,10 @@ namespace OneImlx.Terminal.Licensing
             return tempJsonLicPath;
         }
 
-        private readonly ILicenseDebugger licenseDebugger;
+        private readonly MockLicenseDebugger licenseDebugger;
         private readonly string nonJsonLicPath;
         private readonly TerminalOptions terminalOptions;
+        private readonly string testDemoLicPath;
         private readonly string testLicPath;
         private ILicenseExtractor licenseExtractor;
     }

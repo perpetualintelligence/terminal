@@ -26,7 +26,8 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
             IServiceProvider serviceProvider,
             IOptions<TerminalOptions> options,
             ITerminalConsole terminalConsole,
-            ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, logger)
+            ITerminalExceptionHandler  exceptionHandler,
+            ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, exceptionHandler, logger)
         {
         }
 

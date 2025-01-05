@@ -30,7 +30,8 @@ namespace OneImlx.Terminal.Apps.TestServer
             IOptions<TerminalOptions> terminalOptions,
             ITerminalConsole terminalConsole,
             IConfiguration configuration,
-            ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, logger)
+            ITerminalExceptionHandler exceptionHandler,
+            ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, exceptionHandler, logger)
         {
             this.configuration = configuration;
         }
