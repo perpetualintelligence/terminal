@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -27,19 +27,14 @@ namespace OneImlx.Terminal.Licensing
         }
 
         /// <summary>
-        /// The terminal count.
+        /// The command count.
         /// </summary>
-        public long TerminalCount { get; set; }
+        public long CommandCount { get; set; }
 
         /// <summary>
-        /// The option count.
+        /// The input (argument and option) count.
         /// </summary>
-        public long OptionCount { get; set; }
-
-        /// <summary>
-        /// The grouped command count.
-        /// </summary>
-        public long CommandGroupCount { get; set; }
+        public long InputCount { get; set; }
 
         /// <summary>
         /// The valid license.
@@ -47,18 +42,8 @@ namespace OneImlx.Terminal.Licensing
         public License License { get; }
 
         /// <summary>
-        /// The root command count.
+        /// The terminal count.
         /// </summary>
-        public long RootCommandCount { get; set; }
-
-        /// <summary>
-        /// The sub command count.
-        /// </summary>
-        public long SubCommandCount { get; set; }
-
-        /// <summary>
-        /// The native command count.
-        /// </summary>
-        public long NativeCommandCount { get; set; }
+        public long TerminalCount { get; set; }
     }
 }

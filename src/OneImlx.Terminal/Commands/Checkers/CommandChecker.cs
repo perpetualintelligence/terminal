@@ -75,7 +75,7 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // Check obsolete
-                if (flags.HasFlag(ArgumentFlags.Obsolete) && !terminalOptions.Checker.AllowObsolete.GetValueOrDefault())
+                if (flags.HasFlag(ArgumentFlags.Obsolete) && !terminalOptions.Checker.AllowObsolete)
                 {
                     throw new TerminalException(TerminalErrors.InvalidArgument, "The argument is obsolete. command={0} argument={1}", command.Id, arg.Id);
                 }
@@ -122,7 +122,7 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
 
                 // Check obsolete
-                if (flags.HasFlag(OptionFlags.Obsolete) && !terminalOptions.Checker.AllowObsolete.GetValueOrDefault())
+                if (flags.HasFlag(OptionFlags.Obsolete) && !terminalOptions.Checker.AllowObsolete)
                 {
                     throw new TerminalException(TerminalErrors.InvalidOption, "The option is obsolete. command={0} option={1}", command.Id, optKvp.Key);
                 }

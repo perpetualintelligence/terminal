@@ -15,11 +15,6 @@ namespace OneImlx.Terminal.Configuration.Options
     public sealed class AuthenticationOptions
     {
         /// <summary>
-        /// Attempts to authorize the request during command routing.
-        /// </summary>
-        public bool? AuthorizeOnRoute { get; set; }
-
-        /// <summary>
         /// Gets or sets the default authentication scopes.
         /// </summary>
         /// <remarks>
@@ -30,12 +25,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// <summary>
         /// Enables the authentication for the terminal.
         /// </summary>
-        public bool? Enabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name for the named <see cref="HttpClient"/>.
-        /// </summary>
-        public string? HttpClientName { get; set; }
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the authentication user flow.

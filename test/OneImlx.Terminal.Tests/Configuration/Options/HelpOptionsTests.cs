@@ -19,7 +19,7 @@ namespace OneImlx.Terminal.Configuration.Options
 
             options.OptionAlias.Should().Be("h");
             options.OptionId.Should().Be("help");
-            options.Disabled.Should().BeNull();
+            options.Disabled.Should().BeFalse();
         }
     }
 }

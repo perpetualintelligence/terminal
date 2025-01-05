@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2024 (c) Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -14,12 +14,12 @@ namespace OneImlx.Terminal.Authentication.Msal
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Client;
+    using Microsoft.Kiota.Abstractions;
     using FluentAssertions;
     using Moq;
     using OneImlx.Terminal.Configuration.Options;
-    using Xunit;
-    using Microsoft.Kiota.Abstractions;
     using OneImlx.Test.FluentAssertions;
+    using Xunit;
 
     public class MsalKiotaAccessTokenProviderTests
     {
@@ -36,21 +36,6 @@ namespace OneImlx.Terminal.Authentication.Msal
                     ValidHosts = ["graph.microsoft.com"]
                 }
             };
-        }
-
-        [Theory]
-        [InlineData(false)]
-        [InlineData(null)]
-        public async Task GetAuthorizationTokenAsync_Throws_If_Authentication_Is_Not_Enabled(bool? enabled)
-        {
-            // Not enabled
-            _terminalOptions.Authentication.Enabled = enabled;
-
-            var provider = CreateProvider();
-            Func<Task> func = async () => await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null); ;
-            await func.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription("The terminal authentication is not enabled.");
         }
 
         [Fact]
@@ -107,6 +92,19 @@ namespace OneImlx.Terminal.Authentication.Msal
             Func<Task> action = async () => await provider.GetAuthorizationTokenAsync(new Uri("https://invalid.com"), null);
 
             await action.Should().ThrowAsync<TerminalException>().WithMessage("The host is not authorized. uri=https://invalid.com/");
+        }
+
+        [Fact]
+        public async Task GetAuthorizationTokenAsync_Throws_If_Authentication_Is_Not_Enabled()
+        {
+            // Not enabled
+            _terminalOptions.Authentication.Enabled = false;
+
+            var provider = CreateProvider();
+            Func<Task> func = async () => await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null); ;
+            await func.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidConfiguration)
+                .WithErrorDescription("The terminal authentication is not enabled.");
         }
 
         [Fact]

@@ -181,7 +181,6 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
                 options.Licensing.LicenseFile = "oneimlx-demo-license.json";
                 options.Licensing.LicenseContents = TerminalServices.EncodeLicenseContents(licenseContents.NotNull());
                 options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
-                options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                 options.Router.Caret = "> ";
             });
 

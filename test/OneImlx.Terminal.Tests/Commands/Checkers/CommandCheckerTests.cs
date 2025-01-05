@@ -105,12 +105,8 @@ namespace OneImlx.Terminal.Commands.Checkers
             routerContext.License = MockLicenses.TestLicense;
             routerContext.ParsedCommand = extractedCommand;
 
-            terminalOptions.Checker.AllowObsolete = null;
-            Func<Task> func = async () => await checker.CheckCommandAsync(routerContext);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option is obsolete. command=id1 option=key1");
-
             terminalOptions.Checker.AllowObsolete = false;
-            func = async () => await checker.CheckCommandAsync(routerContext);
+            Func<Task> func = async () => await checker.CheckCommandAsync(routerContext);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidOption).WithErrorDescription("The option is obsolete. command=id1 option=key1");
         }
 

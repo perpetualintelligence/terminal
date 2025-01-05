@@ -20,13 +20,13 @@ namespace OneImlx.Terminal.Configuration.Options
         /// The obsolete check is done at runtime only if a user or an application attempts to run the command and
         /// passes an obsolete argument or an option.
         /// </remarks>
-        public bool? AllowObsolete { get; set; }
+        public bool AllowObsolete { get; set; }
 
         /// <summary>
         /// Determines whether the checker checks an option value type. If this option is enabled, the checker will try
         /// to map an option value to its corresponding .NET value type. If the mapping fails, the command will not run.
         /// </summary>
         /// <see cref="Commands.Checkers.IDataTypeMapper{TValue}"/>
-        public bool? StrictValueType { get; set; }
+        public bool StrictValueType { get; set; }
     }
 }

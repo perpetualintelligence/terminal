@@ -26,6 +26,7 @@ namespace OneImlx.Terminal.Configuration.Options
             options.Licensing.Should().NotBeNull();
             options.Router.Should().NotBeNull();
             options.Help.Should().NotBeNull();
+            options.Integration.Should().NotBeNull();
         }
     }
 }

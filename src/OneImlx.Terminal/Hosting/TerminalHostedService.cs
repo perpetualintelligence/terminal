@@ -129,7 +129,7 @@ namespace OneImlx.Terminal.Hosting
         {
             HelpOptions helpOptions = Options.Value.Help;
 
-            if (helpOptions.Disabled.GetValueOrDefault())
+            if (helpOptions.Disabled)
             {
                 return Task.CompletedTask;
             }

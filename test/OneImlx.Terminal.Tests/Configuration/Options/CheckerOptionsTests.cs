@@ -21,8 +21,8 @@ namespace OneImlx.Terminal.Configuration.Options
         {
             CheckerOptions options = new();
 
-            options.AllowObsolete.Should().BeNull();
-            options.StrictValueType.Should().BeNull();
+            options.AllowObsolete.Should().BeFalse();
+            options.StrictValueType.Should().BeFalse();
         }
     }
 }

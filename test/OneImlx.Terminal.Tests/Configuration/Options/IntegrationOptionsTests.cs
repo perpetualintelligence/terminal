@@ -10,16 +10,14 @@ using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options
 {
-    public class AuthenticationOptionsTests
+    public class IntegrationOptionsTests
     {
         [Fact]
-        public void AuthenticationOptions_HasCorrect_DefaultValues()
+        public void IntegrationOptions_HasCorrect_DefaultValues()
         {
-            AuthenticationOptions options = new();
+            IntegrationOptions options = new();
 
-            options.DefaultScopes.Should().BeNull();
-            options.ValidHosts.Should().BeNull();
-            options.UserFlow.Should().BeNull();
+            options.Enabled.Should().BeFalse();
         }
     }
 }

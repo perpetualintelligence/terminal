@@ -63,14 +63,11 @@ namespace OneImlx.Terminal.Apps.TestAuth
                 options =>
                 {
                     options.Authentication.Enabled = true;
-                    options.Authentication.AuthorizeOnRoute = false;
-                    options.Authentication.HttpClientName = "demo-http";
                     options.Authentication.DefaultScopes = ["email", "profile", "openid"];
 
                     options.Id = TerminalIdentifiers.TestApplicationId;
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
-                    options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                     options.Router.Caret = "> ";
                 });
 
