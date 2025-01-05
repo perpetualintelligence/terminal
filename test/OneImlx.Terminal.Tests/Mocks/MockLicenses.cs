@@ -1,11 +1,5 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
-
-    For license, terms, and data policies, go to:
-    https://terms.perpetualintelligence.com/articles/intro.html
-*/
-/*
-    Copyright (c) 2021 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
@@ -41,14 +35,12 @@ namespace OneImlx.Terminal.Mocks
             });
 
             TestLimits = LicenseLimits.Create(TerminalLicensePlans.Demo);
-            TestPrice = LicensePrice.Create(TerminalLicensePlans.Demo);
 
-            TestLicense = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestLimits, TestPrice);
+            TestLicense = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestLimits);
         }
 
         public static LicenseClaims TestClaims = null!;
         public static License TestLicense = null!;
         public static LicenseLimits TestLimits = null!;
-        public static LicensePrice TestPrice = null!;
     }
 }

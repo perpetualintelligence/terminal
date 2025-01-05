@@ -24,24 +24,16 @@ namespace OneImlx.Terminal.Licensing
         public LicenseExtractorOnPremiseTests()
         {
             // Read the lic file from Github secrets
-            testOnlineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_ONLINE_LIC");
             testOfflineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_OFFLINE_LIC");
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
 
             commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
         }
 
         public Task DisposeAsync()
         {
-            GC.SuppressFinalize(this);
-
-            if (File.Exists(testOnlineLicPath))
-            {
-                File.Delete(testOnlineLicPath);
-            }
-
             if (File.Exists(testOfflineLicPath))
             {
                 File.Delete(testOfflineLicPath);
@@ -74,11 +66,11 @@ namespace OneImlx.Terminal.Licensing
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Extracts_From_Offline_Sets_Extraction_Mode_Based_On_Debugger(bool isDebuggerAttached)
+        public async Task Extracts_From_OffLine_Sets_Extraction_Mode_Based_On_Debugger(bool isDebuggerAttached)
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -96,7 +88,7 @@ namespace OneImlx.Terminal.Licensing
             else
             {
                 result.ExtractionMode.Should().Be(null);
-                AssertOnPremiseDeploymentLicense(result.License);
+                AssertOnPremIsolatedDeploymentLicense(result.License);
             }
         }
 
@@ -107,13 +99,13 @@ namespace OneImlx.Terminal.Licensing
 
         [Theory]
         [InlineData(TerminalLicensePlans.Demo)]
+        [InlineData(TerminalLicensePlans.Solo)]
         [InlineData(TerminalLicensePlans.Micro)]
-        [InlineData(TerminalLicensePlans.SMB)]
-        [InlineData(TerminalLicensePlans.Enterprise)]
+        [InlineData(TerminalLicensePlans.Smb)]
         public async Task Invalid_LicensePlan_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
             terminalOptions.Licensing.LicensePlan = licPlan;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
@@ -166,8 +158,8 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
             var result = await licenseExtractor.ExtractLicenseAsync();
@@ -182,11 +174,11 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
-            result.License.LicenseKey.Should().Be("on-premise-deployment");
+            result.License.LicenseKey.Should().Be("onprem-isolated-deployment");
 
             // plan, mode and usage
-            result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
-            result.License.Usage.Should().Be("on-premise-deployment");
+            result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
+            result.License.Usage.Should().Be("onprem-isolated-deployment");
 
             // claims
             result.License.Claims.AcrValues.Should().BeNull();
@@ -207,13 +199,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.Custom.Should().BeNull();
 
             // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
-
-            // Price
-            result.License.Price.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
-            result.License.Price.Currency.Should().Be("USD");
-            result.License.Price.Monthly.Should().Be(3299.0);
-            result.License.Price.Yearly.Should().Be(35629.0);
+            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();
@@ -224,11 +210,9 @@ namespace OneImlx.Terminal.Licensing
             licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
             LicenseCheckerResult licResult = await licenseChecker.CheckLicenseAsync(result.License);
             licResult.Should().NotBeNull();
-            licResult.CommandGroupCount.Should().Be(3);
+            licResult.CommandCount.Should().Be(11);
             licResult.License.Should().BeSameAs(result.License);
-            licResult.OptionCount.Should().Be(90);
-            licResult.RootCommandCount.Should().Be(3);
-            licResult.SubCommandCount.Should().Be(5);
+            licResult.InputCount.Should().Be(90);
             licResult.TerminalCount.Should().Be(1);
         }
 
@@ -239,7 +223,7 @@ namespace OneImlx.Terminal.Licensing
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
 
@@ -252,30 +236,10 @@ namespace OneImlx.Terminal.Licensing
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task OnPremiseDeployment_Throws_For_Online_License(bool isDebuggerAttached)
-        {
-            // On-prem license is processed only if debugger is attached
-            licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
-
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testOnlineLicPath;
-
-            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription("The on-premise deployment is not supported for online license.");
-        }
-
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
         public async Task Unset_LicensePlan_Throws(bool isDebuggerAttached)
         {
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
@@ -289,12 +253,12 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(TerminalLicensePlans.OnPremise)]
-        [InlineData(TerminalLicensePlans.Unlimited)]
+        [InlineData(TerminalLicensePlans.Enterprise)]
+        [InlineData(TerminalLicensePlans.Corporate)]
         public async Task Valid_LicensePlan_Does_Not_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
             terminalOptions.Licensing.LicensePlan = licPlan;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
@@ -319,19 +283,18 @@ namespace OneImlx.Terminal.Licensing
             return tempJsonLicPath;
         }
 
-        private void AssertOnPremiseDeploymentLicense(License license)
+        private void AssertOnPremIsolatedDeploymentLicense(License license)
         {
             license.Claims.Should().BeEquivalentTo(new LicenseClaims());
-            license.LicenseKey.Should().Be("on-premise-deployment");
+            license.LicenseKey.Should().Be("onprem-isolated-deployment");
             license.Plan.Should().Be(terminalOptions.Licensing.LicensePlan);
-            license.Usage.Should().Be("on-premise-deployment");
+            license.Usage.Should().Be("onprem-isolated-deployment");
             license.Limits.Should().BeEquivalentTo(LicenseLimits.Create(license.Plan, license.Claims.Custom));
         }
 
         private readonly ITerminalCommandStore commandStore;
         private readonly TerminalOptions terminalOptions;
         private readonly string testOfflineLicPath;
-        private readonly string testOnlineLicPath;
         private ILicenseChecker licenseChecker = null!;
         private ILicenseDebugger licenseDebugger = null!;
         private ILicenseExtractor licenseExtractor = null!;

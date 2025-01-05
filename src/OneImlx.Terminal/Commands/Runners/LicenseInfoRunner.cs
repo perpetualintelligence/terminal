@@ -72,14 +72,13 @@ namespace OneImlx.Terminal.Commands.Runners
             {
                 // Print Limits
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Limits");
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "terminal_limit={0}", PrintNumber(license.Limits.RootCommandLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, "redistribution_limit={0}", PrintNumber(license.Limits.RedistributionLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "root_command_limit={0}", PrintNumber(license.Limits.RootCommandLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "grouped_command_limit={0}", PrintNumber(license.Limits.GroupedCommandLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "sub_command_limit={0}", PrintNumber(license.Limits.SubCommandLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option_limit={0}", PrintNumber(license.Limits.OptionLimit));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "terminal_limit={0}", PrintNumber(license.Limits.TerminalLimit));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "command_limit={0}", PrintNumber(license.Limits.CommandLimit));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "input_limit={0}", PrintNumber(license.Limits.InputLimit));
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, "redistribution_limit={0}", PrintNumber(license.Limits.RedistributionLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "strict_data_type={0}", license.Limits.StrictDataType.ToString());
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "authentication={0}", license.Limits.Authentication.ToString() ?? "<null>");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "driver={0}", license.Limits.Driver.ToString());
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "integration={0}", license.Limits.Integration.ToString());
 
                 if (license.Claims.Custom != null)
                 {
@@ -93,10 +92,8 @@ namespace OneImlx.Terminal.Commands.Runners
             {
                 // Print Usage
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "Usage");
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "root_command={0}", checkResult.RootCommandCount);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "command_groups={0}", checkResult.CommandGroupCount);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "sub_command={0}", checkResult.SubCommandCount);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "option={0}", checkResult.OptionCount);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "commands={0}", checkResult.CommandCount);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "inputs={0}", checkResult.InputCount);
             }
 
             return new CommandRunnerResult();

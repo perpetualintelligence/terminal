@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Apps.TestServer.Components.WebTerminal.Runners;
 using OneImlx.Terminal.Configuration.Options;
@@ -54,18 +51,18 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         }
 
         /// <summary>
-        /// Gets the terminal text handler.
+        /// Retrieves the running terminal host instance. Throws an exception if the host is not running, ensuring safe
+        /// access to a valid host instance.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public ITerminalTextHandler GetTerminalTextHandler()
+        /// <exception cref="InvalidOperationException">Thrown if the terminal host is not running.</exception>
+        public IHost GetTerminalHost()
         {
             if (!IsTerminalHostRunning)
             {
                 throw new InvalidOperationException("The terminal host is not running.");
             }
 
-            return terminalHost!.Services.GetRequiredService<ITerminalTextHandler>();
+            return terminalHost!;
         }
 
         /// <summary>
@@ -84,18 +81,18 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
         }
 
         /// <summary>
-        /// Retrieves the running terminal host instance. Throws an exception if the host is not running, ensuring safe
-        /// access to a valid host instance.
+        /// Gets the terminal text handler.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown if the terminal host is not running.</exception>
-        public IHost GetTerminalHost()
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public ITerminalTextHandler GetTerminalTextHandler()
         {
             if (!IsTerminalHostRunning)
             {
                 throw new InvalidOperationException("The terminal host is not running.");
             }
 
-            return terminalHost!;
+            return terminalHost!.Services.GetRequiredService<ITerminalTextHandler>();
         }
 
         /// <summary>
@@ -181,7 +178,6 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
                 options.Id = TerminalIdentifiers.TestApplicationId;
                 options.Licensing.LicenseFile = licenseFile!;
                 options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
-                options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment;
                 options.Router.Caret = "> ";
             });
 

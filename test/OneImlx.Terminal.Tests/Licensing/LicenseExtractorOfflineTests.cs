@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.IO;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Json;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -32,7 +32,7 @@ namespace OneImlx.Terminal.Licensing
             File.WriteAllText(nonJsonLicPath, nonJson);
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Unlimited;
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
 
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached: false);
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
@@ -229,11 +229,11 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().Be(testLicPath);
 
             // plan, mode and usage
-            result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
+            result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:org");
 
             // claims
-            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:unlimited urn:oneimlx:lic:usage:org 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:corporate urn:oneimlx:lic:usage:org 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
             result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/21d818a5-935c-496f-9faf-d9ff9d9645d8/v2.0");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
             result.License.Claims.TenantCountry.Should().Be("USA");
@@ -246,7 +246,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.TenantName.Should().Be("pi-test");
 
             //result.License.Claims.NotBefore.Should().NotBeNull();
-            result.License.Claims.Id.Should().Be("bb8969c6-b1a9-42ef-986b-a56db4b155f1"); // Test License Id
+            result.License.Claims.Id.Should().Be("312ce064-3a98-4228-bf5d-05df64ffa31d"); // Test License Id
             result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // Test subscription
             result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 
@@ -254,13 +254,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.Custom.Should().BeNull();
 
             // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
-
-            // Price
-            result.License.Price.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
-            result.License.Price.Currency.Should().Be("USD");
-            result.License.Price.Monthly.Should().Be(3299.0);
-            result.License.Price.Yearly.Should().Be(35629.0);
+            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();
@@ -295,11 +289,11 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().Be("license-with-contents");
 
             // plan, mode and usage
-            result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
+            result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:org");
 
             // claims
-            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:unlimited urn:oneimlx:lic:usage:org 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:corporate urn:oneimlx:lic:usage:org 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
             result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/21d818a5-935c-496f-9faf-d9ff9d9645d8/v2.0");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
             result.License.Claims.TenantCountry.Should().Be("USA");
@@ -312,7 +306,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.TenantName.Should().Be("pi-test");
 
             //result.License.Claims.NotBefore.Should().NotBeNull();
-            result.License.Claims.Id.Should().Be("bb8969c6-b1a9-42ef-986b-a56db4b155f1"); // Test License Id
+            result.License.Claims.Id.Should().Be("312ce064-3a98-4228-bf5d-05df64ffa31d"); // Test License Id
             result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // Test subscription
             result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 
@@ -320,13 +314,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.Custom.Should().BeNull();
 
             // limits
-            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
-
-            // Price
-            result.License.Price.Plan.Should().Be("urn:oneimlx:terminal:plan:unlimited");
-            result.License.Price.Currency.Should().Be("USD");
-            result.License.Price.Monthly.Should().Be(3299.0);
-            result.License.Price.Yearly.Should().Be(35629.0);
+            result.License.Limits.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();

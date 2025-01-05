@@ -25,43 +25,25 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
             licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
-            license = new License(TerminalLicensePlans.Unlimited, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Unlimited), LicensePrice.Create(TerminalLicensePlans.Unlimited));
+            license = new License(TerminalLicensePlans.Corporate, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseLimits.Create(TerminalLicensePlans.Corporate));
         }
 
         [Fact]
-        public async Task CheckAsync_ExceededCommandGroupLimit_ShouldError()
+        public async Task CheckAsync_ExceededCommandLimit_ShouldError()
         {
-            // grouped commands are 3
-            license.Limits.GroupedCommandLimit = 2;
+            // Commands are 11
+            license.Limits.CommandLimit = 2;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The grouped command limit exceeded. max_limit=2 current=3");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The command limit exceeded. max_limit=2 current=11");
         }
 
         [Fact]
-        public async Task CheckAsync_ExceededOptionLimit_ShouldError()
+        public async Task CheckAsync_ExceededInputLimit_ShouldError()
         {
-            // Args 13
-            license.Limits.OptionLimit = 2;
+            // Total options 90
+            license.Limits.InputLimit = 89;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The option limit exceeded. max_limit=2 current=90");
-        }
-
-        [Fact]
-        public async Task CheckAsync_ExceededRootCommandLimit_ShouldError()
-        {
-            // Root Commands are 3
-            license.Limits.RootCommandLimit = 2;
-            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The root command limit exceeded. max_limit=2 current=3");
-        }
-
-        [Fact]
-        public async Task CheckAsync_ExceededSubCommandLimit_ShouldError()
-        {
-            // Subs commands 5
-            license.Limits.SubCommandLimit = 2;
-            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The sub command limit exceeded. max_limit=2 current=5");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The input limit exceeded. max_limit=89 current=90");
         }
 
         [Fact]
@@ -84,10 +66,8 @@ namespace OneImlx.Terminal.Licensing
             result.License.Should().BeSameAs(license);
 
             result.TerminalCount.Should().Be(1);
-            result.RootCommandCount.Should().Be(3);
-            result.CommandGroupCount.Should().Be(3);
-            result.SubCommandCount.Should().Be(5);
-            result.OptionCount.Should().Be(90);
+            result.CommandCount.Should().Be(11);
+            result.InputCount.Should().Be(90);
         }
 
         [Fact]
@@ -104,9 +84,9 @@ namespace OneImlx.Terminal.Licensing
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictValueType = true;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The configured strict option value type is not allowed for your license plan.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The strict option value type is not allowed for your license plan.");
 
-            // No error, not allowed configured false
+            // No error, not allowed not configured
             license.Limits.StrictDataType = false;
             terminalOptions.Checker.StrictValueType = false;
             await licenseChecker.CheckLicenseAsync(license);
@@ -119,6 +99,56 @@ namespace OneImlx.Terminal.Licensing
             // No error, allowed and configured
             license.Limits.StrictDataType = true;
             terminalOptions.Checker.StrictValueType = true;
+            await licenseChecker.CheckLicenseAsync(license);
+        }
+
+        [Fact]
+        public async Task CheckAsync_DriverCheck_ShouldBehaveCorrectly()
+        {
+            // Error, not allowed but configured
+            license.Limits.Driver = false;
+            terminalOptions.Driver.Enabled = true;
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal driver option is not allowed for your license plan.");
+
+            // No error, not allowed not configured
+            license.Limits.Driver = false;
+            terminalOptions.Driver.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed not configured
+            license.Limits.Driver = true;
+            terminalOptions.Driver.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed and configured
+            license.Limits.Driver = true;
+            terminalOptions.Driver.Enabled = true;
+            await licenseChecker.CheckLicenseAsync(license);
+        }
+
+        [Fact]
+        public async Task CheckAsync_IntegrationCheck_ShouldBehaveCorrectly()
+        {
+            // Error, not allowed but configured
+            license.Limits.Integration = false;
+            terminalOptions.Integration.Enabled = true;
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal integration option is not allowed for your license plan.");
+
+            // No error, not allowed not configured
+            license.Limits.Integration = false;
+            terminalOptions.Integration.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed not configured
+            license.Limits.Integration = true;
+            terminalOptions.Integration.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed and configured
+            license.Limits.Integration = true;
+            terminalOptions.Integration.Enabled = true;
             await licenseChecker.CheckLicenseAsync(license);
         }
 

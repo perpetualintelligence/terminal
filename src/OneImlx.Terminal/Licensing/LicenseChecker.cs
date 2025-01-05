@@ -52,11 +52,8 @@ namespace OneImlx.Terminal.Licensing
             return new LicenseCheckerResult(license)
             {
                 TerminalCount = terminalCount,
-                RootCommandCount = rootCommandCount,
-                CommandGroupCount = commandGroupCount,
-                SubCommandCount = subCommandCount,
-                NativeCommandCount = nativeCommandCount,
-                OptionCount = optionCount,
+                CommandCount = commandCount,
+                InputCount = inputCount,
             };
         }
 
@@ -71,27 +68,15 @@ namespace OneImlx.Terminal.Licensing
             // Redistribution limit TODO, how do we check redistribution in a native bounded context
 
             // Root command limit
-            if (rootCommandCount > license.Limits.RootCommandLimit)
+            if (commandCount > license.Limits.CommandLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The root command limit exceeded. max_limit={0} current={1}", license.Limits.RootCommandLimit, rootCommandCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The command limit exceeded. max_limit={0} current={1}", license.Limits.CommandLimit, commandCount);
             }
 
-            // grouped command limit
-            if (commandGroupCount > license.Limits.GroupedCommandLimit)
+            // Input limit
+            if (inputCount > license.Limits.InputLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The grouped command limit exceeded. max_limit={0} current={1}", license.Limits.GroupedCommandLimit, commandGroupCount);
-            }
-
-            // grouped command limit
-            if (subCommandCount > license.Limits.SubCommandLimit)
-            {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The sub command limit exceeded. max_limit={0} current={1}", license.Limits.SubCommandLimit, subCommandCount);
-            }
-
-            // Option limit
-            if (optionCount > license.Limits.OptionLimit)
-            {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The option limit exceeded. max_limit={0} current={1}", license.Limits.OptionLimit, optionCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The input limit exceeded. max_limit={0} current={1}", license.Limits.InputLimit, inputCount);
             }
 
             // We have found a valid license within limit so reset the previous failed and return.
@@ -108,13 +93,19 @@ namespace OneImlx.Terminal.Licensing
             // Strict Data Type
             if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictValueType))
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured strict option value type is not allowed for your license plan.");
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The strict option value type is not allowed for your license plan.");
             }
 
-            // Authentication
-            if (!OptionsValid(limits.Authentication, terminalOptions.Authentication.Enabled))
+            // Driver
+            if (!OptionsValid(limits.Driver, terminalOptions.Driver.Enabled))
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The configured terminal authentication is not allowed for your license plan.");
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal driver option is not allowed for your license plan.");
+            }
+
+            // Integration
+            if (!OptionsValid(limits.Integration, terminalOptions.Integration.Enabled))
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal integration option is not allowed for your license plan.");
             }
 
             return Task.CompletedTask;
@@ -132,38 +123,25 @@ namespace OneImlx.Terminal.Licensing
                     return;
                 }
 
-                // TODO, how do we sync terminal count across apps
+                // All limits are per terminal. The terminal id is the authorized app id.
                 terminalCount = 1;
 
                 var commandDescriptors = await commandStore.AllAsync();
                 foreach (var kvpCmd in commandDescriptors)
                 {
-                    // Register the commands
-                    if (kvpCmd.Value.Type == Commands.CommandType.RootCommand)
+                    // Commands
+                    commandCount++;
+
+                    // Arguments
+                    if (kvpCmd.Value.ArgumentDescriptors != null)
                     {
-                        rootCommandCount += 1;
-                    }
-                    else if (kvpCmd.Value.Type == Commands.CommandType.GroupCommand)
-                    {
-                        commandGroupCount += 1;
-                    }
-                    else if (kvpCmd.Value.Type == Commands.CommandType.SubCommand)
-                    {
-                        subCommandCount += 1;
-                    }
-                    else if (kvpCmd.Value.Type == Commands.CommandType.NativeCommand)
-                    {
-                        nativeCommandCount += 1;
-                    }
-                    else
-                    {
-                        throw new TerminalException(TerminalErrors.InvalidCommand, "The command type is not supported. type={0}", kvpCmd.Value.Type);
+                        inputCount += kvpCmd.Value.ArgumentDescriptors.Count;
                     }
 
-                    // For now we only care about option count.
+                    // Options
                     if (kvpCmd.Value.OptionDescriptors != null)
                     {
-                        optionCount += kvpCmd.Value.OptionDescriptors.Count;
+                        inputCount += kvpCmd.Value.OptionDescriptors.Count;
                     }
                 }
 
@@ -215,12 +193,9 @@ namespace OneImlx.Terminal.Licensing
         private readonly ILogger<LicenseChecker> logger;
         private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
         private readonly TerminalOptions terminalOptions;
-        private long commandGroupCount;
+        private long commandCount;
         private bool initialized;
-        private long nativeCommandCount;
-        private long optionCount;
-        private long rootCommandCount;
-        private long subCommandCount;
+        private long inputCount;
         private int terminalCount;
     }
 }
