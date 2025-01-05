@@ -6,11 +6,11 @@
 */
 
 using FluentAssertions;
-using OneImlx.Terminal.AspNetCore;
+using OneImlx.Terminal.Server;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
 
-namespace OneImlx.Terminal.AspNetCore
+namespace OneImlx.Terminal.Server
 {
     public class AssemblyTests
     {

@@ -23,14 +23,20 @@ namespace OneImlx.Terminal.Licensing
 
             quota.Plan.Should().Be(TerminalLicensePlans.Corporate);
 
-            quota.TerminalLimit.Should().Be(15);
-            quota.CommandLimit.Should().BeNull();
-            quota.InputLimit.Should().BeNull();
-            quota.RedistributionLimit.Should().BeNull();
+            quota.Limits["terminal"].Should().Be(15);
+            quota.Limits["command"].Should().BeNull();
+            quota.Limits["input"].Should().BeNull();
+            quota.Limits["redistribution"].Should().BeNull();
 
-            quota.StrictDataType.Should().Be(true);
-            quota.Driver.Should().Be(true);
-            quota.Integration.Should().Be(true);
+            quota.Switches["datatype"].Should().Be(true);
+            quota.Switches["driver"].Should().Be(true);
+            quota.Switches["integration"].Should().Be(true);
+
+            quota.Features["authentication"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
+            quota.Features["encoding"].Should().BeEquivalentTo(["ascii", "utf8", "utf16-le", "utf16-be", "utf32"]);
+            quota.Features["store"].Should().BeEquivalentTo(["memory", "custom"]);
+            quota.Features["router"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
+            quota.Features["deployment"].Should().BeEquivalentTo(["standard", "isolated"]);
         }
 
         [Fact]

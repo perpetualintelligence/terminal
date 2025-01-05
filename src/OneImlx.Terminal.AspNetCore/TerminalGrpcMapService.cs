@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Grpc.Core;
 using OneImlx.Terminal.Runtime;
 
-namespace OneImlx.Terminal.AspNetCore
+namespace OneImlx.Terminal.Server
 {
     /// <summary>
     /// Represents the gRPC service responsible for managing gRPC communication in the <c>OneImlx</c> terminal framework.

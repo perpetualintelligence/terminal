@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The licensed features.
         /// </summary>
-        public Dictionary<string, string[]>? Features { get; internal set; }
+        public Dictionary<string, string[]> Features { get; internal set; } = [];
 
         /// <summary>
         /// The maximum arguments and options combined. Defaults to <c>null</c> for no limit.
@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum quota. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public Dictionary<string, long?>? Limits { get; internal set; }
+        public Dictionary<string, long?> Limits { get; internal set; } = [];
 
         /// <summary>
         /// The license plan.
@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The licensed switches.
         /// </summary>
-        public Dictionary<string, bool>? Switches { get; internal set; }
+        public Dictionary<string, bool> Switches { get; internal set; } = [];
 
         /// <summary>
         /// The maximum terminals. Defaults to <c>null</c> or no limit.
@@ -145,7 +145,7 @@ namespace OneImlx.Terminal.Licensing
                 {
                     { "authentication", new[] { "msal", "oauth", "oidc" } },
                     { "encoding", new [] { "ascii", "utf8", "utf16-le", "utf16-be", "utf32" } },
-                    { "store", new [] { "inmemory", "custom" } },
+                    { "store", new [] { "memory", "custom" } },
                     { "router", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
                     { "deployment", new [] { "standard", "isolated" } },
                 }

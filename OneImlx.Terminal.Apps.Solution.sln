@@ -62,9 +62,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBlazor.Client", "apps\b
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestWasm", "apps\blazor\wasm\TestWasm\TestWasm.csproj", "{C9A013E8-97B1-470E-A30F-1634DD8F4DEB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.AspNetCore", "src\OneImlx.Terminal.AspNetCore\OneImlx.Terminal.AspNetCore.csproj", "{34713239-FEED-4675-A528-C03372AD90D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Server", "src\OneImlx.Terminal.AspNetCore\OneImlx.Terminal.Server.csproj", "{34713239-FEED-4675-A528-C03372AD90D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.AspNetCore.Tests", "test\OneImlx.Terminal.AspNetCore.Tests\OneImlx.Terminal.AspNetCore.Tests.csproj", "{B960BA41-7E3B-4C64-8185-033AA6155B9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Server.Tests", "test\OneImlx.Terminal.AspNetCore.Tests\OneImlx.Terminal.Server.Tests.csproj", "{B960BA41-7E3B-4C64-8185-033AA6155B9A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneImlx.Terminal.Client", "src\OneImlx.Terminal.Client\OneImlx.Terminal.Client.csproj", "{243A070F-F038-4072-9C3F-240C2D4C4C85}"
 EndProject
