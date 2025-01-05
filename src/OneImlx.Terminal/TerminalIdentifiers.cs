@@ -33,14 +33,9 @@ namespace OneImlx.Terminal
         public const string OfflineLicenseMode = "offline";
 
         /// <summary>
-        /// The <c>online</c> license mode.
-        /// </summary>
-        public const string OnlineLicenseMode = "online";
-
-        /// <summary>
         /// The <c>onpremise</c> deployment.
         /// </summary>
-        public const string OnPremiseDeployment = "onpremise";
+        public const string OnPremiseIsolatedDeployment = "onprem-isolated";
 
         /// <summary>
         /// The <c>sender_endpoint</c> token.

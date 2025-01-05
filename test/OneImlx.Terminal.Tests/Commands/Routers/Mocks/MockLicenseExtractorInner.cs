@@ -5,10 +5,10 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Threading.Tasks;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
+using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Routers.Mocks
 {
@@ -16,7 +16,7 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
     {
         public bool NoLicense { get; set; }
 
-        public License TestLicense { get; set; } = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits, MockLicenses.TestPrice);
+        public License TestLicense { get; set; } = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits);
 
         public Task<LicenseExtractorResult> ExtractLicenseAsync()
         {

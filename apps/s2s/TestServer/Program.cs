@@ -63,7 +63,6 @@ namespace OneImlx.Terminal.Apps.TestServer
                     options.Id = TerminalIdentifiers.TestApplicationId; // Set the application ID.
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json"; // License file path.
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo; // License plan to use (Demo in this case).
-                    options.Licensing.Deployment = TerminalIdentifiers.OnPremiseDeployment; // Set deployment type.
                     options.Router.MaxLength = 64000; // Set max length for remote messages.
                     options.Router.Caret = "> "; // Caret for the terminal.
                     options.Router.DisableResponse = Convert.ToBoolean(configuration["testserver:disable_response"]); // Disable response for the terminal.

@@ -26,11 +26,10 @@ namespace OneImlx.Terminal
         [Fact]
         public void TerminalIdentifiers_Defines_Identifiers()
         {
-            typeof(TerminalIdentifiers).Should().HaveConstantCount(10);
+            typeof(TerminalIdentifiers).Should().HaveConstantCount(9);
 
-            TerminalIdentifiers.OnlineLicenseMode.Should().Be("online");
             TerminalIdentifiers.OfflineLicenseMode.Should().Be("offline");
-            TerminalIdentifiers.OnPremiseDeployment.Should().Be("onpremise");
+            TerminalIdentifiers.OnPremiseIsolatedDeployment.Should().Be("onprem-isolated");
             TerminalIdentifiers.CustomHandler.Should().Be("custom");
             TerminalIdentifiers.DefaultHandler.Should().Be("default");
             TerminalIdentifiers.TestApplicationId.Should().Be("08c6925f-a734-4e24-8d84-e06737420766");

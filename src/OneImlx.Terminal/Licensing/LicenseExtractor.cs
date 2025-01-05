@@ -125,9 +125,9 @@ namespace OneImlx.Terminal.Licensing
             }
         }
 
-        private static bool IsOnPremiseDeployment(string? deployment)
+        private static bool IsOnPremIsolatedDeployment(string? deployment)
         {
-            return deployment == TerminalIdentifiers.OnPremiseDeployment;
+            return deployment == TerminalIdentifiers.OnPremiseIsolatedDeployment;
         }
 
         private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseCheck checkModel)
@@ -173,7 +173,7 @@ namespace OneImlx.Terminal.Licensing
 
             // If debugger is not attached and on-premise deployment is enabled then skip license check and grant claims
             // based on license plan. If debugger is attached we always do a license check.
-            if (!licenseDebugger.IsDebuggerAttached() && IsOnPremiseDeployment(terminalOptions.Licensing.Deployment))
+            if (!licenseDebugger.IsDebuggerAttached() && IsOnPremIsolatedDeployment(terminalOptions.Licensing.Deployment))
             {
                 logger.LogDebug("Extract on-premise license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
 
@@ -181,7 +181,7 @@ namespace OneImlx.Terminal.Licensing
                     terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Corporate)
                 {
                     logger.LogDebug("On-premise deployment is enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFile.Id, licenseFile.TenantId);
-                    return new LicenseExtractorResult(OnPremiseDeploymentLicense(), null);
+                    return new LicenseExtractorResult(OnPremiseIsolatedLicense(), null);
                 }
                 else
                 {
@@ -231,85 +231,10 @@ namespace OneImlx.Terminal.Licensing
                 }
 
                 LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
-                LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
                 return new LicenseExtractorResult
                 (
-                    new License(plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseLimits, licensePrice),
+                    new License(plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseLimits),
                     TerminalIdentifiers.OfflineLicenseMode
-                );
-            }
-        }
-
-        private async Task<LicenseExtractorResult> EnsureOnlineLicenseAsync(LicenseFile licenseFile)
-        {
-            // Online license is obsolete
-            logger.LogDebug("Extract online license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
-
-            // On_premise deployment is not supported for online license
-            if (terminalOptions.Licensing.Deployment == TerminalIdentifiers.OnPremiseDeployment)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The on-premise deployment is not supported for online license.");
-            }
-
-            // Check JWS signed assertion (JWS key)
-            LicenseCheck checkModel = new()
-            {
-                Issuer = Shared.Constants.Issuer,
-                Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
-                Application = terminalOptions.Id,
-                AuthorizedParty = Shared.Constants.TerminalUrn,
-                TenantId = licenseFile.TenantId,
-                LicenseKey = licenseFile.LicenseKey,
-                Id = licenseFile.Id,
-                Mode = TerminalIdentifiers.OnlineLicenseMode
-            };
-
-            // Make sure we use the full base address
-            using (HttpResponseMessage response = await CheckOnlineLicenseAsync(checkModel))
-            {
-                if (!response.IsSuccessStatusCode)
-                {
-                    Error? error = await JsonSerializer.DeserializeAsync<Error>(await response.Content.ReadAsStreamAsync());
-                    throw new TerminalException(error!);
-                }
-
-                LicenseClaims? claims = await JsonSerializer.DeserializeAsync<LicenseClaims>(await response.Content.ReadAsStreamAsync()) ?? throw new TerminalException(TerminalErrors.InvalidLicense, "The license claims are invalid.");
-
-                // Make sure the acr contains the
-                string[] acrValues = claims.AcrValues.SplitBySpace();
-                if (acrValues.Length < 3)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
-                }
-
-                string plan = acrValues[0];
-                string usage = acrValues[1];
-                string brokerTenantId = acrValues[2];
-
-                // If the on-prem-deployment plan is set then check
-                if (plan != terminalOptions.Licensing.LicensePlan)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
-                }
-
-                // We just check the broker tenant to be present in offline mode
-                if (string.IsNullOrWhiteSpace(brokerTenantId))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
-                }
-
-                // Online license is only valid for demo license
-                if (plan != TerminalLicensePlans.Demo)
-                {
-                    logger.LogWarning("Online license check is obsolete and will be removed in future release. Please use offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
-                }
-
-                LicenseLimits licenseLimits = LicenseLimits.Create(plan, claims.Custom);
-                LicensePrice licensePrice = LicensePrice.Create(plan, claims.Custom);
-                return new LicenseExtractorResult
-                (
-                    new License(plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseLimits, licensePrice),
-                    TerminalIdentifiers.OnlineLicenseMode
                 );
             }
         }
@@ -378,11 +303,7 @@ namespace OneImlx.Terminal.Licensing
 
             // License check based on configured license handler.
             LicenseExtractorResult licenseExtractorResult;
-            if (licenseFile.Mode == TerminalIdentifiers.OnlineLicenseMode)
-            {
-                licenseExtractorResult = await EnsureOnlineLicenseAsync(licenseFile);
-            }
-            else if (licenseFile.Mode == TerminalIdentifiers.OfflineLicenseMode)
+            if (licenseFile.Mode == TerminalIdentifiers.OfflineLicenseMode)
             {
                 licenseExtractorResult = await EnsureOfflineLicenseAsync(licenseFile);
             }
@@ -399,15 +320,14 @@ namespace OneImlx.Terminal.Licensing
         /// Creates a license for on-premise production deployment.
         /// </summary>
         /// <seealso cref="LicensingOptions.Deployment"/>
-        private License OnPremiseDeploymentLicense()
+        private License OnPremiseIsolatedLicense()
         {
             return new License(
                 terminalOptions.Licensing.LicensePlan,
-                "on-premise-deployment",
-                "on-premise-deployment",
+                "onprem-isolated-deployment",
+                "onprem-isolated-deployment",
                 new LicenseClaims(),
-                LicenseLimits.Create(terminalOptions.Licensing.LicensePlan),
-                LicensePrice.Create(terminalOptions.Licensing.LicensePlan));
+                LicenseLimits.Create(terminalOptions.Licensing.LicensePlan));
         }
 
         private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
