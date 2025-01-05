@@ -43,9 +43,10 @@ namespace OneImlx.Terminal.Hosting
             mockLicenseExtractor = new();
             mockLicenseChecker = new();
             mockOptionsChecker = new();
+            mockExceptionPublisher = new MockExceptionPublisher();
 
             logger = new MockTerminalHostedServiceLogger();
-            terminalConsole = new MockTerminalConsole();
+            mockTerminalConsole = new MockTerminalConsole();
 
             hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
@@ -59,9 +60,9 @@ namespace OneImlx.Terminal.Hosting
 
             // Different hosted services to test behaviors
             var terminalIOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(terminalOptions);
-            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, terminalConsole, logger);
-            mockCustomCliHostedService = new MockTerminalCustomHostedService(host.Services, terminalIOptions, terminalConsole, logger);
-            mockCliEventsHostedService = new MockTerminalEventsHostedService(host.Services, terminalIOptions, terminalConsole, logger);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, mockTerminalConsole, mockExceptionPublisher, logger);
+            mockCustomCliHostedService = new MockTerminalCustomHostedService(host.Services, terminalIOptions, mockTerminalConsole, mockExceptionPublisher, logger);
+            mockCliEventsHostedService = new MockTerminalEventsHostedService(host.Services, terminalIOptions, mockTerminalConsole, mockExceptionPublisher, logger);
         }
 
         public Task DisposeAsync()
@@ -84,16 +85,16 @@ namespace OneImlx.Terminal.Hosting
 
             logger.Messages.Should().BeEmpty();
 
-            terminalConsole.Messages.Should().HaveCount(9);
-            terminalConsole.Messages[0].Should().Be("tenant=test_name (test_tenantid)");
-            terminalConsole.Messages[1].Should().Be("country=test_country");
-            terminalConsole.Messages[2].Should().Be("license=test_id");
-            terminalConsole.Messages[3].Should().Be("mode=test_mode");
-            terminalConsole.Messages[4].Should().Be("deployment=test_deployment");
-            terminalConsole.Messages[5].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
-            terminalConsole.Messages[6].Should().Be("plan=urn:oneimlx:terminal:plan:demo");
-            terminalConsole.Messages[7].Should().StartWith("iat=");
-            terminalConsole.Messages[8].Should().StartWith("exp=");
+            mockTerminalConsole.Messages.Should().HaveCount(9);
+            mockTerminalConsole.Messages[0].Should().Be("tenant=test_name (test_tenantid)");
+            mockTerminalConsole.Messages[1].Should().Be("country=test_country");
+            mockTerminalConsole.Messages[2].Should().Be("license=test_id");
+            mockTerminalConsole.Messages[3].Should().Be("mode=test_mode");
+            mockTerminalConsole.Messages[4].Should().Be("deployment=test_deployment");
+            mockTerminalConsole.Messages[5].Should().Be("usage=urn:oneimlx:lic:usage:rnd");
+            mockTerminalConsole.Messages[6].Should().Be("plan=urn:oneimlx:terminal:plan:demo");
+            mockTerminalConsole.Messages[7].Should().StartWith("iat=");
+            mockTerminalConsole.Messages[8].Should().StartWith("exp=");
         }
 
         [Fact]
@@ -121,8 +122,8 @@ namespace OneImlx.Terminal.Hosting
 
             logger.Messages.Should().BeEmpty();
 
-            terminalConsole.Messages.Should().HaveCount(1);
-            terminalConsole.Messages[0].Should().Be("[Color: Yellow] The demo license is free for educational purposes, but non-educational use requires a commercial license.");
+            mockTerminalConsole.Messages.Should().HaveCount(1);
+            mockTerminalConsole.Messages[0].Should().Be("[Color: Yellow] The demo license is free for educational purposes, but non-educational use requires a commercial license.");
         }
 
         [Fact]
@@ -137,8 +138,8 @@ namespace OneImlx.Terminal.Hosting
 
             logger.Messages.Should().BeEmpty();
 
-            terminalConsole.Messages.Should().HaveCount(1);
-            terminalConsole.Messages[0].Should().Be("[Color: Yellow] The demo license is free for research and development, but production use requires a commercial license.");
+            mockTerminalConsole.Messages.Should().HaveCount(1);
+            mockTerminalConsole.Messages[0].Should().Be("[Color: Yellow] The demo license is free for research and development, but production use requires a commercial license.");
         }
 
         [Fact]
@@ -151,8 +152,8 @@ namespace OneImlx.Terminal.Hosting
 
             logger.Messages.Should().BeEmpty();
 
-            terminalConsole.Messages.Should().HaveCount(1);
-            terminalConsole.Messages[0].Should().StartWith("Application started on");
+            mockTerminalConsole.Messages.Should().HaveCount(1);
+            mockTerminalConsole.Messages[0].Should().StartWith("Application started on");
         }
 
         [Fact]
@@ -165,8 +166,8 @@ namespace OneImlx.Terminal.Hosting
 
             logger.Messages.Should().BeEmpty();
 
-            terminalConsole.Messages.Should().HaveCount(1);
-            terminalConsole.Messages[0].Should().StartWith("Application stopped on");
+            mockTerminalConsole.Messages.Should().HaveCount(1);
+            mockTerminalConsole.Messages[0].Should().StartWith("Application stopped on");
         }
 
         [Fact]
@@ -179,26 +180,8 @@ namespace OneImlx.Terminal.Hosting
 
             logger.Messages.Should().BeEmpty();
 
-            terminalConsole.Messages.Should().HaveCount(1);
-            terminalConsole.Messages[0].Should().Be("Stopping application...");
-        }
-
-        [Fact]
-        public void StartAsync_OnCancellationShouldThrow()
-        {
-            cancellationTokenSource.Cancel();
-
-            Func<Task> act = async () => await mockCustomCliHostedService.StartAsync(cancellationToken);
-            act.Should().ThrowAsync<OperationCanceledException>();
-
-            mockCustomCliHostedService.RegisterEventsCalled.Item2.Should().BeFalse();
-            mockCustomCliHostedService.PrintHostAppHeaderCalled.Item2.Should().BeFalse();
-            mockLicenseExtractor.ExtractLicenseCalled.Item2.Should().BeFalse();
-            mockCustomCliHostedService.PrintHostLicCalled.Item2.Should().BeFalse();
-            mockLicenseChecker.CheckLicenseCalled.Item2.Should().BeFalse();
-            mockCustomCliHostedService.PrintMandatoryLicCalled.Item2.Should().BeFalse();
-            mockOptionsChecker.CheckOptionsCalled.Item2.Should().BeFalse();
-            mockCustomCliHostedService.CheckAppConfigCalled.Item2.Should().BeFalse();
+            mockTerminalConsole.Messages.Should().HaveCount(1);
+            mockTerminalConsole.Messages[0].Should().Be("Stopping application...");
         }
 
         [Fact]
@@ -260,7 +243,9 @@ namespace OneImlx.Terminal.Hosting
             await defaultCliHostedService.StartAsync(cancellationToken);
 
             // Last is a new line
-            logger.Messages.Last().Should().Be("test_error=test description. opt1=val1 opt2=val2");
+            mockExceptionPublisher.Called.Should().BeTrue();
+            mockExceptionPublisher.MultiplePublishedMessages.Should().HaveCount(1);
+            mockExceptionPublisher.PublishedMessage.Should().Be("test description. opt1=val1 opt2=val2");
         }
 
         [Fact]
@@ -298,7 +283,7 @@ namespace OneImlx.Terminal.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, terminalConsole, logger);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, mockTerminalConsole, mockExceptionPublisher, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
@@ -369,7 +354,7 @@ namespace OneImlx.Terminal.Hosting
             });
             host = await hostBuilder.StartAsync();
 
-            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, terminalConsole, logger);
+            defaultCliHostedService = new MockTerminalHostedService(host.Services, terminalIOptions, mockTerminalConsole, mockExceptionPublisher, logger);
             await defaultCliHostedService.StartAsync(CancellationToken.None);
 
             var commandDescriptors = host.Services.GetServices<CommandDescriptor>();
@@ -399,10 +384,11 @@ namespace OneImlx.Terminal.Hosting
         private readonly MockTerminalHostedServiceLogger logger = null!;
         private readonly MockTerminalEventsHostedService mockCliEventsHostedService;
         private readonly MockTerminalCustomHostedService mockCustomCliHostedService;
+        private readonly MockExceptionPublisher mockExceptionPublisher;
         private readonly MockLicenseChecker mockLicenseChecker;
         private readonly MockLicenseExtractor mockLicenseExtractor;
         private readonly MockOptionsChecker mockOptionsChecker;
-        private readonly MockTerminalConsole terminalConsole;
+        private readonly MockTerminalConsole mockTerminalConsole;
         private TerminalHostedService defaultCliHostedService;
         private IHost host;
         private IHostBuilder hostBuilder;

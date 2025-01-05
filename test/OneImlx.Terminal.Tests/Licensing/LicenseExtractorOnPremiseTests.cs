@@ -102,7 +102,7 @@ namespace OneImlx.Terminal.Licensing
         [InlineData(TerminalLicensePlans.Solo)]
         [InlineData(TerminalLicensePlans.Micro)]
         [InlineData(TerminalLicensePlans.Smb)]
-        public async Task Invalid_LicensePlan_Throws(string licPlan)
+        public async Task Valid_OnPrem_License_But_Invalid_LicensePlan_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
@@ -115,7 +115,7 @@ namespace OneImlx.Terminal.Licensing
             Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription($"The license plan is not authorized for on-premise deployment. plan={licPlan}");
+                .WithErrorDescription($"The license plan is not authorized for on-premise isolated deployment. plan={licPlan}");
         }
 
         [Theory]

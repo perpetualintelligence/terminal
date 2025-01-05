@@ -130,43 +130,6 @@ namespace OneImlx.Terminal.Licensing
             return deployment == TerminalIdentifiers.OnPremiseIsolatedDeployment;
         }
 
-        private async Task<HttpResponseMessage> CheckOnlineLicenseAsync(LicenseCheck checkModel)
-        {
-            // Setup the HTTP client
-            HttpClient httpClient = EnsureHttpClient();
-
-            // Primary and Secondary endpoints E.g. during certificate renewal the primary endpoints may fail so we fall
-            // back to secondary endpoints.
-            HttpResponseMessage httpResponseMessage;
-            var checkContent = new StringContent(JsonSerializer.Serialize(checkModel), Encoding.UTF8, "application/json");
-            try
-            {
-                httpResponseMessage = await httpClient.PostAsync(checkLicUrl, checkContent);
-            }
-            catch (HttpRequestException)
-            {
-                logger.LogWarning("The primary endpoint is not healthy. We are falling back to the secondary endpoint. Please contact the support team if you continue to see this warning after 24 hours.");
-                httpResponseMessage = await httpClient.PostAsync(fallbackCheckLicUrl, checkContent);
-            }
-            return httpResponseMessage;
-        }
-
-        /// <summary>
-        /// Should be called only for online check.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="TerminalException"></exception>
-        private HttpClient EnsureHttpClient()
-        {
-            if (httpClientFactory == null)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The IHttpClientFactory is not configured.");
-            }
-
-            // Setup the HTTP client
-            return httpClientFactory.CreateClient();
-        }
-
         private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFile licenseFile)
         {
             logger.LogDebug("Extract offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
@@ -175,17 +138,15 @@ namespace OneImlx.Terminal.Licensing
             // based on license plan. If debugger is attached we always do a license check.
             if (!licenseDebugger.IsDebuggerAttached() && IsOnPremIsolatedDeployment(terminalOptions.Licensing.Deployment))
             {
-                logger.LogDebug("Extract on-premise license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
-
-                if (terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Enterprise ||
-                    terminalOptions.Licensing.LicensePlan == TerminalLicensePlans.Corporate)
+                logger.LogDebug("Extract on-premise isolated license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
+                if (IsPlanValidForIsolatedDeployemnt(terminalOptions.Licensing.LicensePlan))
                 {
                     logger.LogDebug("On-premise deployment is enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFile.Id, licenseFile.TenantId);
                     return new LicenseExtractorResult(OnPremiseIsolatedLicense(), null);
                 }
                 else
                 {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise deployment. plan={0}", terminalOptions.Licensing.LicensePlan);
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise isolated deployment. plan={0}", terminalOptions.Licensing.LicensePlan);
                 }
             }
             else
@@ -218,10 +179,16 @@ namespace OneImlx.Terminal.Licensing
                 string usage = acrValues[1];
                 string brokerTenantId = acrValues[2];
 
-                // If the on-prem-deployment plan is set then check
+                // Mismatch in license plan
                 if (plan != terminalOptions.Licensing.LicensePlan)
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
+                }
+
+                // Mismatch in license usage
+                if (IsOnPremIsolatedDeployment(terminalOptions.Licensing.Deployment) && !IsPlanValidForIsolatedDeployemnt(terminalOptions.Licensing.LicensePlan))
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise isolated deployment. plan={0}", terminalOptions.Licensing.LicensePlan);
                 }
 
                 // We just check the broker tenant to be present in offline mode
@@ -314,6 +281,11 @@ namespace OneImlx.Terminal.Licensing
 
             logger.LogDebug("Extracted license. plan={0} usage={1} subject={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
             return licenseExtractorResult;
+        }
+
+        private bool IsPlanValidForIsolatedDeployemnt(string licensePlan)
+        {
+            return licensePlan == OneImlx.Shared.Licensing.TerminalLicensePlans.Enterprise || licensePlan == OneImlx.Shared.Licensing.TerminalLicensePlans.Corporate;
         }
 
         /// <summary>

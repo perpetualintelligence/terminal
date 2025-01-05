@@ -18,7 +18,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
 {
     public class MockTerminalCustomHostedService : TerminalHostedService
     {
-        public MockTerminalCustomHostedService(IServiceProvider serviceProvider, IOptions<TerminalOptions> terminalOptions, ITerminalConsole terminalConsole, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, logger)
+        public MockTerminalCustomHostedService(IServiceProvider serviceProvider, IOptions<TerminalOptions> terminalOptions, ITerminalConsole terminalConsole, ITerminalExceptionHandler terminalExceptionHandler, ILogger<TerminalHostedService> logger) : base(serviceProvider, terminalOptions, terminalConsole, terminalExceptionHandler, logger)
         {
         }
 
