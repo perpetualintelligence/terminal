@@ -54,7 +54,7 @@ jobs:
 
     # Checktout
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Print directory
     - name: Print
@@ -120,7 +120,7 @@ jobs:
     
     # Setup .Net with global.json
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
 
     # Build Terminal.DependentAssembly.csproj so it can be loaded during unit tests.
     - name: Build Dependency Project
@@ -137,11 +137,11 @@ jobs:
         nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
         registry: ${{ env.PI_PUBLISH_REGISTRY }}
 
-    # Publish OneImlx.Terminal.AspNetCore
-    - name: OneImlx.Terminal.AspNetCore
+    # Publish OneImlx.Terminal.Server
+    - name: OneImlx.Terminal.Server
       uses: ./.github/actions/push-package
       with:
-        project: OneImlx.Terminal.AspNetCore
+        project: OneImlx.Terminal.Server
         config: Release
         version: ${{ env.PI_CI_PACKAGE_VERSION }}
         ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
