@@ -17,7 +17,7 @@ Quickly dive in with our [test apps](https://github.com/perpetualintelligence/te
 ## Packages
 ![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal?label=OneImlx.Terminal)  
 ![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Authentication?label=OneImlx.Terminal.Authentication)  
-![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.AspNetCore?label=OneImlx.Terminal.AspNetCore)  
+![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Server?label=OneImlx.Terminal.Server)  
 ![NuGet](https://img.shields.io/nuget/vpre/OneImlx.Terminal.Client?label=OneImlx.Terminal.Client)  
 
 ## **Key Features**:

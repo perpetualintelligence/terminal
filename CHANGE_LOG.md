@@ -2,8 +2,9 @@
 > Feature Change | Breaking Change
 - Introduce gRPC terminal routing
 - Introduce HTTP terminal routing
-- Introduce `OneImlx.Terminal.AspNetCore` for hosting terminal servers in ASP.NET Core
-- Introduce `OneImlx.Terminal.Client` for client application communicating with terminal servers  
+- Introduce `OneImlx.Terminal.Server` for hosting terminal servers in ASP.NET Core
+- Introduce `OneImlx.Terminal.Client` for client application communicating with terminal servers
+- Update licensing and pricing
 
 # 5.12.3
 > Breaking Change
