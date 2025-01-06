@@ -100,7 +100,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfo_For_Custom_RND()
         {
-            License community = new(TerminalLicensePlans.Custom, LicenseUsage.RnD, "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits);
+            License community = new(TerminalLicensePlans.Custom, LicenseUsage.RnD, "testkey", MockLicenses.TestClaims, MockLicenses.TestQuota);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -113,7 +113,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoFor_Demo_Education()
         {
-            License community = new(TerminalLicensePlans.Demo, LicenseUsage.Educational, "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits);
+            License community = new(TerminalLicensePlans.Demo, LicenseUsage.Educational, "testkey", MockLicenses.TestClaims, MockLicenses.TestQuota);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -129,7 +129,7 @@ namespace OneImlx.Terminal.Hosting
         [Fact]
         public void StartAsync_Default_ShouldPrint_MandatoryLicenseInfoFor_Demo_RND()
         {
-            License community = new(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testkey", MockLicenses.TestClaims, MockLicenses.TestLimits);
+            License community = new(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testkey", MockLicenses.TestClaims, MockLicenses.TestQuota);
 
             // use reflection to call
             MethodInfo? printLic = defaultCliHostedService.GetType().GetMethod("PrintHostApplicationMandatoryLicensingAsync", BindingFlags.Instance | BindingFlags.NonPublic);

@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Commands.Checkers
             DataTypeMapperResult mapperResult = await mapper.MapToTypeAsync(option);
 
             // Check whether we need to check type
-            if (options.Checker.StrictValueType)
+            if (options.Checker.ValueDataType)
             {
                 // Check value compatibility
                 await StrictTypeCheckingAsync(option, mapperResult);

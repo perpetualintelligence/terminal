@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OneImlx.Terminal.AspNetCore.Extensions
+namespace OneImlx.Terminal.Server.Extensions
 {
     /// <summary>
     /// The <see cref="IEndpointRouteBuilder"/> extension methods.

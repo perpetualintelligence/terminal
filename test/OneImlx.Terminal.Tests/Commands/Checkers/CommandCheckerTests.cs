@@ -147,7 +147,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeCheckingDisabledInvalidValueTypeShouldNotErrorAsync()
         {
-            terminalOptions.Checker.StrictValueType = false;
+            terminalOptions.Checker.ValueDataType = false;
 
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, [optionDescriptor]));
@@ -167,7 +167,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeCheckingValueDelimiterValidValueTypeShouldErrorAsync()
         {
-            terminalOptions.Checker.StrictValueType = true;
+            terminalOptions.Checker.ValueDataType = true;
 
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, [optionDescriptor]));
@@ -186,7 +186,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeCheckingWithValidValueTypeShouldChangeTypeCorrectlyAsync()
         {
-            terminalOptions.Checker.StrictValueType = true;
+            terminalOptions.Checker.ValueDataType = true;
 
             OptionDescriptor optionDescriptor = new("key1", nameof(DateTime), "desc1", OptionFlags.None);
             CommandDescriptor descriptor = new("id1", "name1", "desc1", CommandType.SubCommand, CommandFlags.None, optionDescriptors: new(textHandler, [optionDescriptor]));

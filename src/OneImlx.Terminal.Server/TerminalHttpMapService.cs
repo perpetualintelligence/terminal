@@ -12,7 +12,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.AspNetCore
+namespace OneImlx.Terminal.Server
 {
     /// <summary>
     /// Represents the HTTP service responsible for managing HTTP communication in the <c>OneImlx</c> terminal

@@ -7,7 +7,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\OneImlx.Terminal.AspNetCore\OneImlx.Terminal.AspNetCore.csproj" />
+      <ProjectReference Include="..\..\src\OneImlx.Terminal.Server\OneImlx.Terminal.Server.csproj" />
     </ItemGroup>
 
 </Project>

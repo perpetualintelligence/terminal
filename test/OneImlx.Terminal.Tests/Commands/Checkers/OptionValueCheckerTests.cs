@@ -53,7 +53,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeChecking_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
-            options.Checker.StrictValueType = true;
+            options.Checker.ValueDataType = true;
 
             // Value is double, but we can convert it so this should not error.
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
@@ -69,7 +69,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeChecking_NotSupportedValue_ShouldErrorAsync()
         {
-            options.Checker.StrictValueType = true;
+            options.Checker.ValueDataType = true;
 
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
             Option value = new(identity, "test3");
@@ -81,7 +81,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeCheckingDisabled_InvalidMappedType_ButConvertible_ShouldNotErrorAsync()
         {
-            options.Checker.StrictValueType = false;
+            options.Checker.ValueDataType = false;
 
             // Value is double, strict checking is disabled so we will not convert it
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None);
@@ -97,7 +97,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeCheckingDisabled_NotSupportedValue_ShouldErrorAsync()
         {
-            options.Checker.StrictValueType = false;
+            options.Checker.ValueDataType = false;
 
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new OneOfAttribute("test1", "test2"))] };
             Option value = new(identity, "test3");
@@ -109,7 +109,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeCheckingDisabled_SystemTypeMatch_AndDataValidationFail_ShouldErrorAsync()
         {
-            options.Checker.StrictValueType = false;
+            options.Checker.ValueDataType = false;
 
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new CreditCardAttribute())] };
             Option value = new(identity, "invalid_4242424242424242");
@@ -121,7 +121,7 @@ namespace OneImlx.Terminal.Commands.Checkers
         [Fact]
         public async Task StrictTypeCheckingSystemTypeMatchAndDataValidationFailShouldErrorAsync()
         {
-            options.Checker.StrictValueType = true;
+            options.Checker.ValueDataType = true;
 
             OptionDescriptor identity = new("opt1", nameof(String), "desc1", OptionFlags.None) { ValueCheckers = [new DataValidationValueChecker<Option>(new CreditCardAttribute())] };
             Option value = new(identity, "invalid_4242424242424242");

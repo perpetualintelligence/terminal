@@ -21,13 +21,13 @@ namespace OneImlx.Terminal.Licensing
         /// <param name="usage">The license usage.</param>
         /// <param name="licenseKey">The license key.</param>
         /// <param name="claims">The license claims.</param>
-        /// <param name="limits">The license limits.</param>
-        public License(string plan, string usage, string licenseKey, LicenseClaims claims, LicenseLimits limits)
+        /// <param name="quota">The license quota.</param>
+        public License(string plan, string usage, string licenseKey, LicenseClaims claims, LicenseQuota quota)
         {
             Plan = plan;
             Usage = usage;
             this.licenseKey = licenseKey;
-            Limits = limits;
+            Quota = quota;
             Claims = claims;
         }
 
@@ -42,9 +42,9 @@ namespace OneImlx.Terminal.Licensing
         public override string LicenseKey => licenseKey;
 
         /// <summary>
-        /// The license limits.
+        /// The license quota.
         /// </summary>
-        public LicenseLimits Limits { get; }
+        public LicenseQuota Quota { get; }
 
         /// <summary>
         /// The license plan.

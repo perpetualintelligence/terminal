@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Configuration.Options
             CheckerOptions options = new();
 
             options.AllowObsolete.Should().BeFalse();
-            options.StrictValueType.Should().BeFalse();
+            options.ValueDataType.Should().BeFalse();
         }
     }
 }

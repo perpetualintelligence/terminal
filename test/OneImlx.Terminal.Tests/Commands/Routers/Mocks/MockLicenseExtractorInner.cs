@@ -16,7 +16,7 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
     {
         public bool NoLicense { get; set; }
 
-        public License TestLicense { get; set; } = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testKey", MockLicenses.TestClaims, MockLicenses.TestLimits);
+        public License TestLicense { get; set; } = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testKey", MockLicenses.TestClaims, MockLicenses.TestQuota);
 
         public Task<LicenseExtractorResult> ExtractLicenseAsync()
         {

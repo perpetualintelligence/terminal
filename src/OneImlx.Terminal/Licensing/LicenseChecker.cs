@@ -60,23 +60,23 @@ namespace OneImlx.Terminal.Licensing
         private Task<License> CheckLimitsAsync(License license)
         {
             // Terminal limit
-            if (terminalCount > license.Limits.TerminalLimit)
+            if (terminalCount > license.Quota.TerminalLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit={0} current={1}", license.Limits.TerminalLimit, terminalCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit={0} current={1}", license.Quota.TerminalLimit, terminalCount);
             }
 
             // Redistribution limit TODO, how do we check redistribution in a native bounded context
 
             // Root command limit
-            if (commandCount > license.Limits.CommandLimit)
+            if (commandCount > license.Quota.CommandLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The command limit exceeded. max_limit={0} current={1}", license.Limits.CommandLimit, commandCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The command limit exceeded. max_limit={0} current={1}", license.Quota.CommandLimit, commandCount);
             }
 
             // Input limit
-            if (inputCount > license.Limits.InputLimit)
+            if (inputCount > license.Quota.InputLimit)
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The input limit exceeded. max_limit={0} current={1}", license.Limits.InputLimit, inputCount);
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The input limit exceeded. max_limit={0} current={1}", license.Quota.InputLimit, inputCount);
             }
 
             // We have found a valid license within limit so reset the previous failed and return.
@@ -88,22 +88,22 @@ namespace OneImlx.Terminal.Licensing
             // Follow the pricing http://localhost:8080/articles/pi-cli/pricing.html We drive all customization through
             // options and the License sets the allowed options. So here we don't need to check the license plan, just
             // check the options value with license value.
-            LicenseLimits limits = license.Limits;
+            LicenseQuota quota = license.Quota;
 
             // Strict Data Type
-            if (!OptionsValid(limits.StrictDataType, terminalOptions.Checker.StrictValueType))
+            if (!OptionsValid(quota.ValueDataType, terminalOptions.Checker.ValueDataType))
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The strict option value type is not allowed for your license plan.");
             }
 
             // Driver
-            if (!OptionsValid(limits.Driver, terminalOptions.Driver.Enabled))
+            if (!OptionsValid(quota.Driver, terminalOptions.Driver.Enabled))
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal driver option is not allowed for your license plan.");
             }
 
             // Integration
-            if (!OptionsValid(limits.Integration, terminalOptions.Integration.Enabled))
+            if (!OptionsValid(quota.Integration, terminalOptions.Integration.Enabled))
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal integration option is not allowed for your license plan.");
             }
@@ -117,13 +117,13 @@ namespace OneImlx.Terminal.Licensing
             await semaphoreSlim.WaitAsync();
             try
             {
-                // Make sure we don't double down on limits.
+                // Make sure we don't double down on quota.
                 if (initialized)
                 {
                     return;
                 }
 
-                // All limits are per terminal. The terminal id is the authorized app id.
+                // All quota are per terminal. The terminal id is the authorized app id.
                 terminalCount = 1;
 
                 var commandDescriptors = await commandStore.AllAsync();

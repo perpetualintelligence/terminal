@@ -12,14 +12,14 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OneImlx.Terminal.AspNetCore.Extensions;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Server.Extensions;
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace OneImlx.Terminal.AspNetCore.Tests
+namespace OneImlx.Terminal.Server
 {
     public class EndpointRouteBuilderExtensionsTests
     {

@@ -10,7 +10,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.AspNetCore
+namespace OneImlx.Terminal.Server
 {
     public class MockServerCallContext : ServerCallContext
     {

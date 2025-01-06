@@ -20,7 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace OneImlx.Terminal.AspNetCore
+namespace OneImlx.Terminal.Server
 {
     public class TerminalGrpcMapServiceTests
     {
