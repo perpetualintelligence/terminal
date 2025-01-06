@@ -13,6 +13,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,23 +33,30 @@ namespace OneImlx.Terminal.Licensing
         public async Task CheckAsync_DriverCheck_ShouldBehaveCorrectly()
         {
             // Error, not allowed but configured
-            license.Quota.Driver = false;
+            var switches = new Dictionary<string, bool>(license.Quota.Switches)
+            {
+                ["driver"] = false
+            };
+            license.Quota.Switches = switches;
             terminalOptions.Driver.Enabled = true;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal driver option is not allowed for your license plan.");
 
             // No error, not allowed not configured
-            license.Quota.Driver = false;
+            switches["driver"] = false;
+            license.Quota.Switches = switches;
             terminalOptions.Driver.Enabled = false;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed not configured
-            license.Quota.Driver = true;
+            switches["driver"] = true;
+            license.Quota.Switches = switches;
             terminalOptions.Driver.Enabled = false;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed and configured
-            license.Quota.Driver = true;
+            switches["driver"] = true;
+            license.Quota.Switches = switches;
             terminalOptions.Driver.Enabled = true;
             await licenseChecker.CheckLicenseAsync(license);
         }
@@ -57,7 +65,11 @@ namespace OneImlx.Terminal.Licensing
         public async Task CheckAsync_ExceededCommandLimit_ShouldError()
         {
             // Commands are 11
-            license.Quota.CommandLimit = 2;
+            var limits = new Dictionary<string, object?>(license.Quota.Limits)
+            {
+                ["command"] = 2
+            };
+            license.Quota.Limits = limits;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The command limit exceeded. max_limit=2 current=11");
         }
@@ -66,7 +78,11 @@ namespace OneImlx.Terminal.Licensing
         public async Task CheckAsync_ExceededInputLimit_ShouldError()
         {
             // Total options 90
-            license.Quota.InputLimit = 89;
+            var limits = new Dictionary<string, object?>(license.Quota.Limits)
+            {
+                ["input"] = 89
+            };
+            license.Quota.Limits = limits;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The input limit exceeded. max_limit=89 current=90");
         }
@@ -75,7 +91,11 @@ namespace OneImlx.Terminal.Licensing
         public async Task CheckAsync_ExceededTerminalLimit_ShouldError()
         {
             // TODO For now the terminal count are 1 always
-            license.Quota.TerminalLimit = 0;
+            var limits = new Dictionary<string, object?>(license.Quota.Limits)
+            {
+                ["terminal"] = 0
+            };
+            license.Quota.Limits = limits;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal limit exceeded. max_limit=0 current=1");
         }
@@ -99,23 +119,30 @@ namespace OneImlx.Terminal.Licensing
         public async Task CheckAsync_IntegrationCheck_ShouldBehaveCorrectly()
         {
             // Error, not allowed but configured
-            license.Quota.Integration = false;
+            var switches = new Dictionary<string, bool>(license.Quota.Switches)
+            {
+                ["integration"] = false
+            };
+            license.Quota.Switches = switches;
             terminalOptions.Integration.Enabled = true;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal integration option is not allowed for your license plan.");
 
             // No error, not allowed not configured
-            license.Quota.Integration = false;
+            switches["integration"] = false;
+            license.Quota.Switches = switches;
             terminalOptions.Integration.Enabled = false;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed not configured
-            license.Quota.Integration = true;
+            switches["integration"] = true;
+            license.Quota.Switches = switches;
             terminalOptions.Integration.Enabled = false;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed and configured
-            license.Quota.Integration = true;
+            switches["integration"] = true;
+            license.Quota.Switches = switches;
             terminalOptions.Integration.Enabled = true;
             await licenseChecker.CheckLicenseAsync(license);
         }
@@ -131,24 +158,31 @@ namespace OneImlx.Terminal.Licensing
         public async Task CheckAsync_StrictTypeCheck_ShouldBehaveCorrectly()
         {
             // Error, not allowed but configured
-            license.Quota.StrictDataType = false;
-            terminalOptions.Checker.StrictValueType = true;
+            var switches = new Dictionary<string, bool>(license.Quota.Switches)
+            {
+                ["datatype"] = false
+            };
+            license.Quota.Switches = switches;
+            terminalOptions.Checker.ValueDataType = true;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The strict option value type is not allowed for your license plan.");
 
             // No error, not allowed not configured
-            license.Quota.StrictDataType = false;
-            terminalOptions.Checker.StrictValueType = false;
+            switches["datatype"] = false;
+            license.Quota.Switches = switches;
+            terminalOptions.Checker.ValueDataType = false;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed not configured
-            license.Quota.StrictDataType = true;
-            terminalOptions.Checker.StrictValueType = false;
+            switches["datatype"] = true;
+            license.Quota.Switches = switches;
+            terminalOptions.Checker.ValueDataType = false;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed and configured
-            license.Quota.StrictDataType = true;
-            terminalOptions.Checker.StrictValueType = true;
+            switches["datatype"] = true;
+            license.Quota.Switches = switches;
+            terminalOptions.Checker.ValueDataType = true;
             await licenseChecker.CheckLicenseAsync(license);
         }
 

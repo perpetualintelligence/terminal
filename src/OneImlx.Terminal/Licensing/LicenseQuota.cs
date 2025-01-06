@@ -17,34 +17,54 @@ namespace OneImlx.Terminal.Licensing
     public sealed class LicenseQuota
     {
         /// <summary>
-        /// The maximum commands. Defaults to <c>null</c> or no limit.
+        /// The authentication methods.
         /// </summary>
-        public int? CommandLimit { get; internal set; }
+        public IReadOnlyList<string> Authentications => Features["authentications"];
 
         /// <summary>
-        /// The terminal driver mode. Defaults to <c>false</c> or not supported.
+        /// The maximum commands. Returns <c>null</c> for no limit.
         /// </summary>
-        public bool Driver { get; internal set; }
+        public int? CommandLimit => (int?)Limits["command"];
+
+        /// <summary>
+        /// The strict date type. Returns <c>false</c> if not supported.
+        /// </summary>
+        public bool ValueDataType => Switches["datatype"];
+
+        /// <summary>
+        /// The deployment methods.
+        /// </summary>
+        public IReadOnlyList<string> Deployments => Features["deployments"];
+
+        /// <summary>
+        /// The terminal driver mode. Returns <c>false</c> if not supported.
+        /// </summary>
+        public bool Driver => Switches["driver"];
+
+        /// <summary>
+        /// The text encoding.
+        /// </summary>
+        public IReadOnlyList<string> Encodings => Features["encodings"];
 
         /// <summary>
         /// The licensed features.
         /// </summary>
-        public Dictionary<string, string[]> Features { get; internal set; } = [];
+        public IReadOnlyDictionary<string, string[]> Features { get; internal set; } = new Dictionary<string, string[]>();
 
         /// <summary>
-        /// The maximum arguments and options combined. Defaults to <c>null</c> for no limit.
+        /// The maximum arguments and options combined.Returns <c>null</c> for no limit.
         /// </summary>
-        public int? InputLimit { get; internal set; }
+        public int? InputLimit => (int?)Limits["input"];
 
         /// <summary>
         /// The terminal integration mode. Defaults to <c>false</c> or not supported.
         /// </summary>
-        public bool Integration { get; internal set; }
+        public bool Integration => Switches["integration"];
 
         /// <summary>
         /// The maximum quota. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public Dictionary<string, long?> Limits { get; internal set; } = [];
+        public IReadOnlyDictionary<string, object?> Limits { get; internal set; } = new Dictionary<string, object?>();
 
         /// <summary>
         /// The license plan.
@@ -54,22 +74,27 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum redistributions. Defaults to <c>null</c> or no redistribution limit.
         /// </summary>
-        public long? RedistributionLimit { get; internal set; }
+        public long? RedistributionLimit => (long?)Limits["redistribution"];
 
         /// <summary>
-        /// The string date type. Defaults to <c>null</c> or no limit.
+        /// The terminal routing methods.
         /// </summary>
-        public bool StrictDataType { get; internal set; }
+        public IReadOnlyList<string> Routers => Features["routers"];
+
+        /// <summary>
+        /// The terminal command stores.
+        /// </summary>
+        public IReadOnlyList<string> Stores => Features["stores"];
 
         /// <summary>
         /// The licensed switches.
         /// </summary>
-        public Dictionary<string, bool> Switches { get; internal set; } = [];
+        public IReadOnlyDictionary<string, bool> Switches { get; internal set; } = new Dictionary<string, bool>();
 
         /// <summary>
         /// The maximum terminals. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public int? TerminalLimit { get; internal set; }
+        public int? TerminalLimit => (int?)Limits["terminal"];
 
         /// <summary>
         /// Creates a new instance of <see cref="LicenseQuota"/> based on the specified SaaS plan.
@@ -78,6 +103,17 @@ namespace OneImlx.Terminal.Licensing
         /// <param name="customClaims">The custom claims. Only used if SaaS plan is custom.</param>
         public static LicenseQuota Create(string licensePlan, IDictionary<string, object>? customClaims = null)
         {
+            // Custom claims are required for the custom plan.
+            if (customClaims == null && licensePlan == OneImlx.Shared.Licensing.TerminalLicensePlans.Custom)
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The licensing for the custom plan requires a custom claims. plan={0}", licensePlan);
+            }
+
+            if (customClaims != null && licensePlan != OneImlx.Shared.Licensing.TerminalLicensePlans.Custom)
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The custom claims are valid only for custom plan. plan={0}", licensePlan);
+            }
+
             switch (licensePlan)
             {
                 case TerminalLicensePlans.Demo:
@@ -106,11 +142,6 @@ namespace OneImlx.Terminal.Licensing
                     }
                 case TerminalLicensePlans.Custom:
                     {
-                        if (customClaims == null)
-                        {
-                            throw new TerminalException(TerminalErrors.InvalidLicense, "The licensing for the custom plan requires a custom claims. plan={0}", licensePlan);
-                        }
-
                         return ForCustom(customClaims);
                     }
                 default:
@@ -126,7 +157,7 @@ namespace OneImlx.Terminal.Licensing
             {
                 Plan = TerminalLicensePlans.Corporate,
 
-                Limits = new Dictionary<string, long?>
+                Limits = new Dictionary<string, object?>
                 {
                     { "terminal", 15 },
                     { "command", null },
@@ -143,32 +174,45 @@ namespace OneImlx.Terminal.Licensing
 
                 Features = new Dictionary<string, string[]>
                 {
-                    { "authentication", new[] { "msal", "oauth", "oidc" } },
-                    { "encoding", new [] { "ascii", "utf8", "utf16-le", "utf16-be", "utf32" } },
-                    { "store", new [] { "memory", "custom" } },
-                    { "router", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
-                    { "deployment", new [] { "standard", "isolated" } },
+                    { "authentications", new[] { "msal", "oauth", "oidc" } },
+                    { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
+                    { "stores", new [] { "memory", "custom" } },
+                    { "routers", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
+                    { "deployments", new [] { "standard", "isolated" } },
                 }
             };
         }
 
         private static LicenseQuota ForCustom(IDictionary<string, object> customClaims)
         {
-            LicenseQuota quota = new()
+            return new()
             {
                 Plan = TerminalLicensePlans.Custom,
 
-                TerminalLimit = Convert.ToInt32(customClaims["terminal_limit"]),
-                CommandLimit = Convert.ToInt32(customClaims["command_limit"]),
-                InputLimit = Convert.ToInt32(customClaims["input_limit"]),
-                RedistributionLimit = Convert.ToInt32(customClaims["redistribution_limit"]),
+                Limits = new Dictionary<string, object?>
+                {
+                    { "terminal", Convert.ToInt32(customClaims["terminal"]) },
+                    { "command", Convert.ToInt32(customClaims["command"]) },
+                    { "input", Convert.ToInt32(customClaims["input"]) },
+                    { "redistribution", Convert.ToInt64(customClaims["redistribution"]) }
+                },
 
-                StrictDataType = Convert.ToBoolean(customClaims["strict_data_type"]),
-                Driver = Convert.ToBoolean(customClaims["driver"]),
-                Integration = Convert.ToBoolean(customClaims["integration"]),
+                Switches = new Dictionary<string, bool>
+                {
+                    { "datatype", Convert.ToBoolean(customClaims["datatype"]) },
+                    { "driver", Convert.ToBoolean(customClaims["driver"]) },
+                    { "integration", Convert.ToBoolean(customClaims["integration"]) }
+                },
+
+                Features = new Dictionary<string, string[]>
+                {
+                    { "authentications", (string[]) customClaims["authentications"] },
+                    { "encodings", (string[]) customClaims["encodings"] },
+                    { "stores", (string[]) customClaims["stores"] },
+                    { "routers", (string[]) customClaims["routers"] },
+                    { "deployments", (string[]) customClaims["deployments"] },
+                }
             };
-
-            return quota;
         }
 
         private static LicenseQuota ForDemo()
@@ -177,14 +221,29 @@ namespace OneImlx.Terminal.Licensing
             {
                 Plan = TerminalLicensePlans.Demo,
 
-                TerminalLimit = 1,
-                CommandLimit = 25,
-                InputLimit = 250,
-                RedistributionLimit = 0,
+                Limits = new Dictionary<string, object?>
+                {
+                    { "terminal", 1 },
+                    { "command", 25 },
+                    { "input", 250 },
+                    { "redistribution", 0 }
+                },
 
-                StrictDataType = true,
-                Driver = true,
-                Integration = true,
+                Switches = new Dictionary<string, bool>
+            {
+                { "datatype", true },
+                { "driver", true },
+                { "integration", true }
+            },
+
+                Features = new Dictionary<string, string[]>
+                {
+                    { "authentications", new[] { "msal", "oauth", "oidc" } },
+                    { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
+                    { "stores", new [] { "memory" } },
+                    { "routers", new [] { "console", "tcp", "udp", "grpc", "http" } },
+                    { "deployments", new [] { "standard" } },
+                }
             };
         }
 
@@ -194,14 +253,29 @@ namespace OneImlx.Terminal.Licensing
             {
                 Plan = TerminalLicensePlans.Enterprise,
 
-                TerminalLimit = 10,
-                CommandLimit = 300,
-                InputLimit = 6000,
-                RedistributionLimit = 15000,
+                Limits = new Dictionary<string, object?>
+                {
+                    { "terminal", 10 },
+                    { "command", 300 },
+                    { "input", 6000 },
+                    { "redistribution", 15000 }
+                },
 
-                StrictDataType = true,
-                Driver = true,
-                Integration = true,
+                Switches = new Dictionary<string, bool>
+                {
+                    { "datatype", true },
+                    { "driver", true },
+                    { "integration", true }
+                },
+
+                Features = new Dictionary<string, string[]>
+                {
+                    { "authentications", new[] { "msal", "oauth", "oidc" } },
+                    { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
+                    { "stores", new [] { "memory", "custom" } },
+                    { "routers", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
+                    { "deployments", new [] { "standard", "isolated" } },
+                }
             };
         }
 
@@ -211,14 +285,29 @@ namespace OneImlx.Terminal.Licensing
             {
                 Plan = TerminalLicensePlans.Micro,
 
-                TerminalLimit = 3,
-                CommandLimit = 50,
-                InputLimit = 500,
-                RedistributionLimit = 1000,
+                Limits = new Dictionary<string, object?>
+                {
+                    { "terminal", 3 },
+                    { "command", 50 },
+                    { "input", 500 },
+                    { "redistribution", 1000 }
+                },
 
-                StrictDataType = true,
-                Driver = false,
-                Integration = false
+                Switches = new Dictionary<string, bool>
+                {
+                    { "datatype", true },
+                    { "driver", false },
+                    { "integration", false }
+                },
+
+                Features = new Dictionary<string, string[]>
+                {
+                    { "authentications", new[] {"msal" } },
+                    { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
+                    { "stores", new [] { "memory" } },
+                    { "routers", new [] { "console" } },
+                    { "deployments", new [] { "standard" } },
+                }
             };
         }
 
@@ -228,14 +317,29 @@ namespace OneImlx.Terminal.Licensing
             {
                 Plan = TerminalLicensePlans.Smb,
 
-                TerminalLimit = 5,
-                CommandLimit = 100,
-                InputLimit = 2000,
-                RedistributionLimit = 5000,
+                Limits = new Dictionary<string, object?>
+                {
+                    { "terminal", 5 },
+                    { "command", 100 },
+                    { "input", 2000 },
+                    { "redistribution", 5000 }
+                },
 
-                StrictDataType = true,
-                Driver = true,
-                Integration = false
+                Switches = new Dictionary<string, bool>
+                {
+                    { "datatype", true },
+                    { "driver", true },
+                    { "integration", false }
+                },
+
+                Features = new Dictionary<string, string[]>
+                {
+                    { "authentications", new[] { "msal", "oauth", "oidc" } },
+                    { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
+                    { "stores", new [] { "memory" } },
+                    { "routers", new [] { "console", "tcp", "udp" } },
+                    { "deployments", new [] { "standard" } },
+                }
             };
         }
 
@@ -245,14 +349,29 @@ namespace OneImlx.Terminal.Licensing
             {
                 Plan = TerminalLicensePlans.Solo,
 
-                TerminalLimit = 1,
-                CommandLimit = 25,
-                InputLimit = 250,
-                RedistributionLimit = 0,
+                Limits = new Dictionary<string, object?>
+                {
+                    { "terminal", 1 },
+                    { "command", 25 },
+                    { "input", 250 },
+                    { "redistribution", 0 }
+                },
 
-                StrictDataType = false,
-                Driver = false,
-                Integration = false
+                Switches = new Dictionary<string, bool>
+                {
+                    { "datatype", false },
+                    { "driver", false },
+                    { "integration", false }
+                },
+
+                Features = new Dictionary<string, string[]>
+                {
+                    { "authentications", new[] { "none" } },
+                    { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
+                    { "stores", new [] { "memory" } },
+                    { "routers", new [] { "console" } },
+                    { "deployments", new [] { "standard" } },
+                }
             };
         }
     }

@@ -16,11 +16,25 @@ namespace OneImlx.Terminal.Licensing
 {
     public class LicenseQuotaTests
     {
+        [Theory]
+        [InlineData(TerminalLicensePlans.Demo)]
+        [InlineData(TerminalLicensePlans.Solo)]
+        [InlineData(TerminalLicensePlans.Micro)]
+        [InlineData(TerminalLicensePlans.Smb)]
+        [InlineData(TerminalLicensePlans.Enterprise)]
+        [InlineData(TerminalLicensePlans.Corporate)]
+        public void Claims_NoCustom_Throws(string plan)
+        {
+            Action act = () => LicenseQuota.Create(plan, new Dictionary<string, object>());
+            act.Should().Throw<TerminalException>()
+               .WithErrorCode(TerminalErrors.InvalidLicense)
+               .WithErrorDescription($"The custom claims are valid only for custom plan. plan={plan}");
+        }
+
         [Fact]
-        public void Corporate_Sets_Limits_Correctly()
+        public void Corporate_Sets_Quota_Correctly()
         {
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Corporate);
-
             quota.Plan.Should().Be(TerminalLicensePlans.Corporate);
 
             quota.Limits["terminal"].Should().Be(15);
@@ -32,82 +46,104 @@ namespace OneImlx.Terminal.Licensing
             quota.Switches["driver"].Should().Be(true);
             quota.Switches["integration"].Should().Be(true);
 
-            quota.Features["authentication"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
-            quota.Features["encoding"].Should().BeEquivalentTo(["ascii", "utf8", "utf16-le", "utf16-be", "utf32"]);
-            quota.Features["store"].Should().BeEquivalentTo(["memory", "custom"]);
-            quota.Features["router"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
-            quota.Features["deployment"].Should().BeEquivalentTo(["standard", "isolated"]);
+            quota.Features["authentications"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
+            quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
+            quota.Features["stores"].Should().BeEquivalentTo(["memory", "custom"]);
+            quota.Features["routers"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "isolated"]);
         }
 
         [Fact]
         public void Custom_NoClaims_Throws()
         {
-            Action act = static () => LicenseQuota.Create(TerminalLicensePlans.Custom);
+            Action act = () => LicenseQuota.Create(TerminalLicensePlans.Custom);
             act.Should().Throw<TerminalException>()
                .WithErrorCode(TerminalErrors.InvalidLicense)
                .WithErrorDescription("The licensing for the custom plan requires a custom claims. plan=urn:oneimlx:terminal:plan:custom");
         }
 
         [Fact]
-        public void Custom_Sets_Limits_Correctly()
+        public void Custom_Sets_Quota_Correctly()
         {
             Dictionary<string, object> claims = new()
             {
-                { "terminal_limit", 1 },
-                { "command_limit", 3 },
-                { "input_limit", 6 },
-                { "redistribution_limit", 2 },
+                { "terminal", 1 },
+                { "command", 3 },
+                { "input", 6 },
+                { "redistribution", 2 },
 
-                { "strict_data_type", false },
+                { "datatype", false },
                 { "driver", true },
                 { "integration", false },
+
+                { "authentications", new[] { "abc", "xyz" } },
+                { "encodings", new[] { "ascii", "utf8", "utf16", "utf32" } },
+                { "stores", new[] { "memory", "custom" } },
+                { "routers", new[] { "console", "tcp", "udp", "grpc", "http", "custom" } },
+                { "deployments", new[] { "standard", "isolated" } }
             };
 
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Custom, claims);
             quota.Plan.Should().Be(TerminalLicensePlans.Custom);
 
-            quota.TerminalLimit.Should().Be(1);
-            quota.CommandLimit.Should().Be(3);
-            quota.InputLimit.Should().Be(6);
-            quota.RedistributionLimit.Should().Be(2);
+            quota.Limits["terminal"].Should().Be(1);
+            quota.Limits["command"].Should().Be(3);
+            quota.Limits["input"].Should().Be(6);
+            quota.Limits["redistribution"].Should().Be(2);
 
-            quota.StrictDataType.Should().Be(false);
-            quota.Driver.Should().Be(true);
-            quota.Integration.Should().Be(false);
+            quota.Switches["datatype"].Should().Be(false);
+            quota.Switches["driver"].Should().Be(true);
+            quota.Switches["integration"].Should().Be(false);
+
+            quota.Features["authentications"].Should().BeEquivalentTo(["abc", "xyz"]);
+            quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
+            quota.Features["stores"].Should().BeEquivalentTo(["memory", "custom"]);
+            quota.Features["routers"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "isolated"]);
         }
 
         [Fact]
-        public void Demo_Sets_Limits_Correctly()
+        public void Demo_Sets_Quota_Correctly()
         {
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Demo);
-
             quota.Plan.Should().Be(TerminalLicensePlans.Demo);
 
-            quota.TerminalLimit.Should().Be(1);
-            quota.CommandLimit.Should().Be(25);
-            quota.InputLimit.Should().Be(250);
-            quota.RedistributionLimit.Should().Be(0);
+            quota.Limits["terminal"].Should().Be(1);
+            quota.Limits["command"].Should().Be(25);
+            quota.Limits["input"].Should().Be(250);
+            quota.Limits["redistribution"].Should().Be(0);
 
-            quota.StrictDataType.Should().Be(true);
-            quota.Driver.Should().Be(true);
-            quota.Integration.Should().Be(true);
+            quota.Switches["datatype"].Should().Be(true);
+            quota.Switches["driver"].Should().Be(true);
+            quota.Switches["integration"].Should().Be(true);
+
+            quota.Features["authentications"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
+            quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
+            quota.Features["stores"].Should().BeEquivalentTo(["memory"]);
+            quota.Features["routers"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard"]);
         }
 
         [Fact]
         public void Enterprise_Sets_Limits()
         {
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Enterprise);
-
             quota.Plan.Should().Be(TerminalLicensePlans.Enterprise);
 
-            quota.TerminalLimit.Should().Be(10);
-            quota.CommandLimit.Should().Be(300);
-            quota.InputLimit.Should().Be(6000);
-            quota.RedistributionLimit.Should().Be(15000);
+            quota.Limits["terminal"].Should().Be(10);
+            quota.Limits["command"].Should().Be(300);
+            quota.Limits["input"].Should().Be(6000);
+            quota.Limits["redistribution"].Should().Be(15000);
 
-            quota.StrictDataType.Should().Be(true);
-            quota.Driver.Should().Be(true);
-            quota.Integration.Should().Be(true);
+            quota.Switches["datatype"].Should().Be(true);
+            quota.Switches["driver"].Should().Be(true);
+            quota.Switches["integration"].Should().Be(true);
+
+            quota.Features["authentications"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
+            quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
+            quota.Features["stores"].Should().BeEquivalentTo(["memory", "custom"]);
+            quota.Features["routers"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "isolated"]);
         }
 
         [Fact]
@@ -120,88 +156,109 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
-        public void Micro_Sets_Limits_Correctly()
+        public void Micro_Sets_Quota_Correctly()
         {
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Micro);
-
             quota.Plan.Should().Be(TerminalLicensePlans.Micro);
 
-            quota.TerminalLimit.Should().Be(3);
-            quota.CommandLimit.Should().Be(50);
-            quota.InputLimit.Should().Be(500);
-            quota.RedistributionLimit.Should().Be(1000);
+            quota.Limits["terminal"].Should().Be(3);
+            quota.Limits["command"].Should().Be(50);
+            quota.Limits["input"].Should().Be(500);
+            quota.Limits["redistribution"].Should().Be(1000);
 
-            quota.StrictDataType.Should().Be(true);
-            quota.Driver.Should().Be(false);
-            quota.Integration.Should().Be(false);
+            quota.Switches["datatype"].Should().Be(true);
+            quota.Switches["driver"].Should().Be(false);
+            quota.Switches["integration"].Should().Be(false);
+
+            quota.Features["authentications"].Should().BeEquivalentTo(["msal"]);
+            quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
+            quota.Features["stores"].Should().BeEquivalentTo(["memory"]);
+            quota.Features["routers"].Should().BeEquivalentTo(["console"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard"]);
         }
 
         [Fact]
-        public void Smb_Sets_Limits_Correctly()
+        public void Properties_Returns_Correctly()
         {
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Smb);
-
-            quota.Plan.Should().Be(TerminalLicensePlans.Smb);
-
-            quota.TerminalLimit.Should().Be(5);
-            quota.CommandLimit.Should().Be(100);
-            quota.InputLimit.Should().Be(2000);
-            quota.RedistributionLimit.Should().Be(5000);
-
-            quota.StrictDataType.Should().Be(true);
-            quota.Driver.Should().Be(true);
-            quota.Integration.Should().Be(false);
-        }
-
-        [Fact]
-        public void Solo_Sets_Limits_Correctly()
-        {
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Solo);
-
-            quota.Plan.Should().Be(TerminalLicensePlans.Solo);
-
-            quota.TerminalLimit.Should().Be(1);
-            quota.CommandLimit.Should().Be(25);
-            quota.InputLimit.Should().Be(250);
-            quota.RedistributionLimit.Should().Be(0);
-
-            quota.StrictDataType.Should().Be(false);
-            quota.Driver.Should().Be(false);
-            quota.Integration.Should().Be(false);
-        }
-
-        [Fact]
-        public void StandardPlans_Ignores_Custom_Claims()
-        {
-            Dictionary<string, object> expected = new()
+            Dictionary<string, object> claims = new()
             {
-                { "terminal_limit", 25332343 },
-                { "redistribution_limit", 36523211212212 },
+                { "terminal", 1 },
+                { "command", 3 },
+                { "input", 6 },
+                { "redistribution", long.MaxValue },
+
+                { "datatype", false },
+                { "driver", true },
+                { "integration", false },
+
+                { "authentications", new[] { "msal", "oauth", "oidc" } },
+                { "encodings", new[] { "ascii", "utf8", "utf16", "utf32" } },
+                { "stores", new[] { "memory", "custom" } },
+                { "routers", new[] { "console", "tcp", "udp", "grpc", "http", "custom" } },
+                { "deployments", new[] { "standard", "isolated" } }
             };
 
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Demo, expected);
-            quota.TerminalLimit.Should().NotBe(25332343);
-            quota.RedistributionLimit.Should().NotBe(36523211212212);
+            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Custom, claims);
+            quota.Plan.Should().Be(TerminalLicensePlans.Custom);
 
-            quota = LicenseQuota.Create(TerminalLicensePlans.Solo, expected);
-            quota.TerminalLimit.Should().NotBe(25332343);
-            quota.RedistributionLimit.Should().NotBe(36523211212212);
+            quota.TerminalLimit.Should().Be(1);
+            quota.CommandLimit.Should().Be(3);
+            quota.InputLimit.Should().Be(6);
+            quota.RedistributionLimit.Should().Be(long.MaxValue);
 
-            quota = LicenseQuota.Create(TerminalLicensePlans.Micro, expected);
-            quota.TerminalLimit.Should().NotBe(25332343);
-            quota.RedistributionLimit.Should().NotBe(36523211212212);
+            quota.ValueDataType.Should().BeFalse();
+            quota.Driver.Should().BeTrue();
+            quota.Integration.Should().BeFalse();
 
-            quota = LicenseQuota.Create(TerminalLicensePlans.Smb, expected);
-            quota.TerminalLimit.Should().NotBe(25332343);
-            quota.RedistributionLimit.Should().NotBe(36523211212212);
+            quota.Authentications.Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
+            quota.Encodings.Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
+            quota.Stores.Should().BeEquivalentTo(["memory", "custom"]);
+            quota.Routers.Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
+            quota.Deployments.Should().BeEquivalentTo(["standard", "isolated"]);
+        }
 
-            quota = LicenseQuota.Create(TerminalLicensePlans.Enterprise, expected);
-            quota.TerminalLimit.Should().NotBe(25332343);
-            quota.RedistributionLimit.Should().NotBe(36523211212212);
+        [Fact]
+        public void Smb_Sets_Quota_Correctly()
+        {
+            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Smb);
+            quota.Plan.Should().Be(TerminalLicensePlans.Smb);
 
-            quota = LicenseQuota.Create(TerminalLicensePlans.Corporate, expected);
-            quota.TerminalLimit.Should().NotBe(25332343);
-            quota.RedistributionLimit.Should().NotBe(36523211212212);
+            quota.Limits["terminal"].Should().Be(5);
+            quota.Limits["command"].Should().Be(100);
+            quota.Limits["input"].Should().Be(2000);
+            quota.Limits["redistribution"].Should().Be(5000);
+
+            quota.Switches["datatype"].Should().Be(true);
+            quota.Switches["driver"].Should().Be(true);
+            quota.Switches["integration"].Should().Be(false);
+
+            quota.Features["authentications"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
+            quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
+            quota.Features["stores"].Should().BeEquivalentTo(["memory"]);
+            quota.Features["routers"].Should().BeEquivalentTo(["console", "tcp", "udp"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard"]);
+        }
+
+        [Fact]
+        public void Solo_Sets_Quota_Correctly()
+        {
+            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Solo);
+            quota.Plan.Should().Be(TerminalLicensePlans.Solo);
+
+            quota.Limits["terminal"].Should().Be(1);
+            quota.Limits["command"].Should().Be(25);
+            quota.Limits["input"].Should().Be(250);
+            quota.Limits["redistribution"].Should().Be(0);
+
+            quota.Switches["datatype"].Should().Be(false);
+            quota.Switches["driver"].Should().Be(false);
+            quota.Switches["integration"].Should().Be(false);
+
+            quota.Features["authentications"].Should().BeEquivalentTo(["none"]);
+            quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
+            quota.Features["stores"].Should().BeEquivalentTo(["memory"]);
+            quota.Features["routers"].Should().BeEquivalentTo(["console"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard"]);
         }
     }
 }

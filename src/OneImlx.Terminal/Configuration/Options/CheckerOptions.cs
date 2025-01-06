@@ -23,10 +23,11 @@ namespace OneImlx.Terminal.Configuration.Options
         public bool AllowObsolete { get; set; }
 
         /// <summary>
-        /// Determines whether the checker checks an option value type. If this option is enabled, the checker will try
-        /// to map an option value to its corresponding .NET value type. If the mapping fails, the command will not run.
+        /// Determines whether the checker checks an input value type. If this option is enabled, the checker will try
+        /// to map an argument or option value to its corresponding .NET value type. If the mapping fails, the command
+        /// will not run.
         /// </summary>
         /// <see cref="Commands.Checkers.IDataTypeMapper{TValue}"/>
-        public bool StrictValueType { get; set; }
+        public bool ValueDataType { get; set; }
     }
 }

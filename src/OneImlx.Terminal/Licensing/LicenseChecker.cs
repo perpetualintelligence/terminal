@@ -91,7 +91,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = license.Quota;
 
             // Strict Data Type
-            if (!OptionsValid(quota.StrictDataType, terminalOptions.Checker.StrictValueType))
+            if (!OptionsValid(quota.ValueDataType, terminalOptions.Checker.ValueDataType))
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The strict option value type is not allowed for your license plan.");
             }
