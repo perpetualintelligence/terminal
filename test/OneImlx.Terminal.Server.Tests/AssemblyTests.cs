@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Server
         [Fact]
         public void TypesNamespaceTest()
         {
-            typeof(TerminalGrpcMapService).Assembly.Should().HaveTypesInRootNamespace("OneImlx.Terminal.AspNetCore");
+            typeof(TerminalGrpcMapService).Assembly.Should().HaveTypesInRootNamespace("OneImlx.Terminal.Server");
         }
     }
 }

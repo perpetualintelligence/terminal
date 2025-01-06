@@ -7,7 +7,7 @@
 
 syntax = "proto3";
 
-option csharp_namespace = "OneImlx.Terminal.AspNetCore";
+option csharp_namespace = "OneImlx.Terminal.Server";
 
 // The OneImlx terminal router command service to request the command.
 service TerminalGrpcRouterProto {
