@@ -34,9 +34,16 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="7.0.0" />
         <PackageReference Include="Moq" Version="4.20.72" />
         <PackageReference Include="OneImlx.Test" Version="6.0.0" />
+    </ItemGroup>
+
+
+    <!--
+        Do not upgrade. This is the last version with Apache 2.0 license.
+    -->
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="[7.0.0]" />
     </ItemGroup>
 </Project>
 
