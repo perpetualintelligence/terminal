@@ -22,7 +22,7 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
 using OneImlx.Terminal.Hosting;
-using OneImlx.Terminal.Integration;
+using OneImlx.Terminal.Dynamics;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;

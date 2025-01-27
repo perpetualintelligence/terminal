@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 
-namespace OneImlx.Terminal.Integration
+namespace OneImlx.Terminal.Dynamics
 {
     /// <summary>
     /// The context for <see cref="PublishedCommandSource"/>

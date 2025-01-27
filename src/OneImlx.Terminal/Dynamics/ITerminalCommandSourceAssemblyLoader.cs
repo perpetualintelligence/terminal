@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Integration
+namespace OneImlx.Terminal.Dynamics
 {
     /// <summary>
     /// An abstraction to load assemblies that are command source within your terminal.

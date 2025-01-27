@@ -18,7 +18,7 @@ using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
 
-namespace OneImlx.Terminal.Integration
+namespace OneImlx.Terminal.Dynamics
 {
     /// <summary>
     /// The default implementation of <see cref="ITerminalCommandSource{TContext}"/> that loads terminal commands from

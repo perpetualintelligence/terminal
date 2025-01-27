@@ -8,7 +8,7 @@
 using OneImlx.Shared.Attributes.Validation;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
-using OneImlx.Terminal.Integration;
+using OneImlx.Terminal.Dynamics;
 using OneImlx.Terminal.Mocks;
 using System;
 using System.Collections.Generic;

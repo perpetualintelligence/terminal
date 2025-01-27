@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Integration
+namespace OneImlx.Terminal.Dynamics
 {
     /// <summary>
     /// An abstraction to checks the <see cref="ITerminalCommandSource{TContext}"/>.

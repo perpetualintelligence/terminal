@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Integration
+namespace OneImlx.Terminal.Dynamics
 {
     /// <summary>
     /// The default <see cref="AssemblyLoadContext"/> based <see cref="ITerminalCommandSourceAssemblyLoader{TContext}"/>.

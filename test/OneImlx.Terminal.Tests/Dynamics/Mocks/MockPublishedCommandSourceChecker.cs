@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using OneImlx.Terminal.Integration;
+using OneImlx.Terminal.Dynamics;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminals.Integration.Mocks
