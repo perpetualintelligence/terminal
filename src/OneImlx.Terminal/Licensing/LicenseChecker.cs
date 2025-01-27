@@ -91,7 +91,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = license.Quota;
 
             // Strict Data Type
-            if (!OptionsValid(quota.ValueDataType, terminalOptions.Checker.ValueDataType))
+            if (!OptionsValid(quota.DataType, terminalOptions.Checker.ValueDataType))
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The strict option value type is not allowed for your license plan.");
             }
@@ -103,9 +103,9 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Integration
-            if (!OptionsValid(quota.Integration, terminalOptions.Integration.Enabled))
+            if (!OptionsValid(quota.Dynamics, terminalOptions.Integration.Enabled))
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal integration option is not allowed for your license plan.");
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal dynamics option is not allowed for your license plan.");
             }
 
             return Task.CompletedTask;

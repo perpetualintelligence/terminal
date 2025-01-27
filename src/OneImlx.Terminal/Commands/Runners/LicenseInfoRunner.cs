@@ -77,9 +77,9 @@ namespace OneImlx.Terminal.Commands.Runners
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "command_limit={0}", GetNumberAsString(license.Quota.CommandLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "input_limit={0}", GetNumberAsString(license.Quota.InputLimit));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, "redistribution_limit={0}", GetNumberAsString(license.Quota.RedistributionLimit));
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "datatype={0}", license.Quota.ValueDataType);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "datatype={0}", license.Quota.DataType);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "driver={0}", license.Quota.Driver);
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "integration={0}", license.Quota.Integration);
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "dynamics={0}", license.Quota.Dynamics);
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "authentications={0}", GetCollectionAsString(license.Quota.Authentications));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "encodings={0}", GetCollectionAsString(license.Quota.Encodings));
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Cyan, "stores={0}", GetCollectionAsString(license.Quota.Stores));

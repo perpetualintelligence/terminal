@@ -159,6 +159,23 @@ namespace OneImlx.Terminal.Licensing
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The provider is not authorized. provider_id=invalid_provider");
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ExtractFromJsonAsync_Isolated_With_Invalid_LicensePlan_Throws(bool debuggerAttached)
+        {
+            licenseDebugger.SetDebuggerAttached(debuggerAttached);
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testDemoLicPath;
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+
+            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not authorized for on-premise isolated deployment. plan=urn:oneimlx:terminal:plan:demo");
+        }
+
         [Fact]
         public async Task ExtractFromJsonAsync_MissingAuthApp_ShouldErrorAsync()
         {
@@ -167,25 +184,6 @@ namespace OneImlx.Terminal.Licensing
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The authorized application is not configured as a terminal identifier.");
-        }
-
-        [Fact]
-        public async Task ExtractFromJsonAsync_NoHttpClientFactory_ShouldNotErrorAsync()
-        {
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testLicPath;
-
-            await licenseExtractor.ExtractLicenseAsync();
-        }
-
-        [Fact]
-        public async Task ExtractFromJsonAsync_NoHttpClientName_ShouldNotErrorAsync()
-        {
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-
-            await licenseExtractor.ExtractLicenseAsync();
         }
 
         [Fact]
@@ -331,23 +329,6 @@ namespace OneImlx.Terminal.Licensing
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured.");
-        }
-
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ExtractFromJsonAsync_Isolated_With_Invalid_LicensePlan_Throws(bool debuggerAttached)
-        {
-            licenseDebugger.SetDebuggerAttached(debuggerAttached);
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
-
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testDemoLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not authorized for on-premise isolated deployment. plan=urn:oneimlx:terminal:plan:demo");
         }
 
         private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)

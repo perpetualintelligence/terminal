@@ -44,7 +44,7 @@ namespace OneImlx.Terminal.Licensing
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(true);
-            quota.Switches["integration"].Should().Be(true);
+            quota.Switches["dynamics"].Should().Be(true);
 
             quota.Features["authentications"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
@@ -74,7 +74,7 @@ namespace OneImlx.Terminal.Licensing
 
                 { "datatype", false },
                 { "driver", true },
-                { "integration", false },
+                { "dynamics", false },
 
                 { "authentications", new[] { "abc", "xyz" } },
                 { "encodings", new[] { "ascii", "utf8", "utf16", "utf32" } },
@@ -93,7 +93,7 @@ namespace OneImlx.Terminal.Licensing
 
             quota.Switches["datatype"].Should().Be(false);
             quota.Switches["driver"].Should().Be(true);
-            quota.Switches["integration"].Should().Be(false);
+            quota.Switches["dynamics"].Should().Be(false);
 
             quota.Features["authentications"].Should().BeEquivalentTo(["abc", "xyz"]);
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
@@ -115,7 +115,7 @@ namespace OneImlx.Terminal.Licensing
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(true);
-            quota.Switches["integration"].Should().Be(true);
+            quota.Switches["dynamics"].Should().Be(true);
 
             quota.Features["authentications"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
@@ -137,7 +137,7 @@ namespace OneImlx.Terminal.Licensing
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(true);
-            quota.Switches["integration"].Should().Be(true);
+            quota.Switches["dynamics"].Should().Be(true);
 
             quota.Features["authentications"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
@@ -168,7 +168,7 @@ namespace OneImlx.Terminal.Licensing
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(false);
-            quota.Switches["integration"].Should().Be(false);
+            quota.Switches["dynamics"].Should().Be(false);
 
             quota.Features["authentications"].Should().BeEquivalentTo(["msal"]);
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
@@ -189,7 +189,7 @@ namespace OneImlx.Terminal.Licensing
 
                 { "datatype", false },
                 { "driver", true },
-                { "integration", false },
+                { "dynamics", false },
 
                 { "authentications", new[] { "msal", "oauth", "oidc" } },
                 { "encodings", new[] { "ascii", "utf8", "utf16", "utf32" } },
@@ -206,9 +206,9 @@ namespace OneImlx.Terminal.Licensing
             quota.InputLimit.Should().Be(6);
             quota.RedistributionLimit.Should().Be(long.MaxValue);
 
-            quota.ValueDataType.Should().BeFalse();
+            quota.DataType.Should().BeFalse();
             quota.Driver.Should().BeTrue();
-            quota.Integration.Should().BeFalse();
+            quota.Dynamics.Should().BeFalse();
 
             quota.Authentications.Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
             quota.Encodings.Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
@@ -230,7 +230,7 @@ namespace OneImlx.Terminal.Licensing
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(true);
-            quota.Switches["integration"].Should().Be(false);
+            quota.Switches["dynamics"].Should().Be(false);
 
             quota.Features["authentications"].Should().BeEquivalentTo(["msal", "oauth", "oidc"]);
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
@@ -252,7 +252,7 @@ namespace OneImlx.Terminal.Licensing
 
             quota.Switches["datatype"].Should().Be(false);
             quota.Switches["driver"].Should().Be(false);
-            quota.Switches["integration"].Should().Be(false);
+            quota.Switches["dynamics"].Should().Be(false);
 
             quota.Features["authentications"].Should().BeEquivalentTo(["none"]);
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);

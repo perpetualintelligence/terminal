@@ -27,11 +27,6 @@ namespace OneImlx.Terminal.Licensing
         public int? CommandLimit => (int?)Limits["command"];
 
         /// <summary>
-        /// The strict date type. Returns <c>false</c> if not supported.
-        /// </summary>
-        public bool ValueDataType => Switches["datatype"];
-
-        /// <summary>
         /// The deployment methods.
         /// </summary>
         public IReadOnlyList<string> Deployments => Features["deployments"];
@@ -40,6 +35,11 @@ namespace OneImlx.Terminal.Licensing
         /// The terminal driver mode. Returns <c>false</c> if not supported.
         /// </summary>
         public bool Driver => Switches["driver"];
+
+        /// <summary>
+        /// The terminal dynamics command mode. Defaults to <c>false</c> or not supported.
+        /// </summary>
+        public bool Dynamics => Switches["dynamics"];
 
         /// <summary>
         /// The text encoding.
@@ -55,11 +55,6 @@ namespace OneImlx.Terminal.Licensing
         /// The maximum arguments and options combined.Returns <c>null</c> for no limit.
         /// </summary>
         public int? InputLimit => (int?)Limits["input"];
-
-        /// <summary>
-        /// The terminal integration mode. Defaults to <c>false</c> or not supported.
-        /// </summary>
-        public bool Integration => Switches["integration"];
 
         /// <summary>
         /// The maximum quota. Defaults to <c>null</c> or no limit.
@@ -95,6 +90,11 @@ namespace OneImlx.Terminal.Licensing
         /// The maximum terminals. Defaults to <c>null</c> or no limit.
         /// </summary>
         public int? TerminalLimit => (int?)Limits["terminal"];
+
+        /// <summary>
+        /// The strict date type. Returns <c>false</c> if not supported.
+        /// </summary>
+        public bool DataType => Switches["datatype"];
 
         /// <summary>
         /// Creates a new instance of <see cref="LicenseQuota"/> based on the specified SaaS plan.
@@ -142,7 +142,7 @@ namespace OneImlx.Terminal.Licensing
                     }
                 case TerminalLicensePlans.Custom:
                     {
-                        return ForCustom(customClaims);
+                        return ForCustom(customClaims!);
                     }
                 default:
                     {
@@ -169,7 +169,7 @@ namespace OneImlx.Terminal.Licensing
                 {
                     { "datatype", true },
                     { "driver", true },
-                    { "integration", true }
+                    { "dynamics", true }
                 },
 
                 Features = new Dictionary<string, string[]>
@@ -201,7 +201,7 @@ namespace OneImlx.Terminal.Licensing
                 {
                     { "datatype", Convert.ToBoolean(customClaims["datatype"]) },
                     { "driver", Convert.ToBoolean(customClaims["driver"]) },
-                    { "integration", Convert.ToBoolean(customClaims["integration"]) }
+                    { "dynamics", Convert.ToBoolean(customClaims["dynamics"]) }
                 },
 
                 Features = new Dictionary<string, string[]>
@@ -233,7 +233,7 @@ namespace OneImlx.Terminal.Licensing
             {
                 { "datatype", true },
                 { "driver", true },
-                { "integration", true }
+                { "dynamics", true }
             },
 
                 Features = new Dictionary<string, string[]>
@@ -265,7 +265,7 @@ namespace OneImlx.Terminal.Licensing
                 {
                     { "datatype", true },
                     { "driver", true },
-                    { "integration", true }
+                    { "dynamics", true }
                 },
 
                 Features = new Dictionary<string, string[]>
@@ -297,7 +297,7 @@ namespace OneImlx.Terminal.Licensing
                 {
                     { "datatype", true },
                     { "driver", false },
-                    { "integration", false }
+                    { "dynamics", false }
                 },
 
                 Features = new Dictionary<string, string[]>
@@ -329,7 +329,7 @@ namespace OneImlx.Terminal.Licensing
                 {
                     { "datatype", true },
                     { "driver", true },
-                    { "integration", false }
+                    { "dynamics", false }
                 },
 
                 Features = new Dictionary<string, string[]>
@@ -361,7 +361,7 @@ namespace OneImlx.Terminal.Licensing
                 {
                     { "datatype", false },
                     { "driver", false },
-                    { "integration", false }
+                    { "dynamics", false }
                 },
 
                 Features = new Dictionary<string, string[]>
