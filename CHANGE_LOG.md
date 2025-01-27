@@ -5,6 +5,7 @@
 - Introduce `OneImlx.Terminal.Server` for hosting terminal servers in ASP.NET Core
 - Introduce `OneImlx.Terminal.Client` for client application communicating with terminal servers
 - Update licensing and pricing
+- Rename `Integration` to `Dynamics` for dynamic loading of commands
 
 # 5.12.3
 > Breaking Change

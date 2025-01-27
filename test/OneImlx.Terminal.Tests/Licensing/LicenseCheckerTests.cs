@@ -116,32 +116,32 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
-        public async Task CheckAsync_IntegrationCheck_ShouldBehaveCorrectly()
+        public async Task CheckAsync_DynamicsCheck_ShouldBehaveCorrectly()
         {
             // Error, not allowed but configured
             var switches = new Dictionary<string, bool>(license.Quota.Switches)
             {
-                ["integration"] = false
+                ["dynamics"] = false
             };
             license.Quota.Switches = switches;
             terminalOptions.Integration.Enabled = true;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal integration option is not allowed for your license plan.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal dynamics option is not allowed for your license plan.");
 
             // No error, not allowed not configured
-            switches["integration"] = false;
+            switches["dynamics"] = false;
             license.Quota.Switches = switches;
             terminalOptions.Integration.Enabled = false;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed not configured
-            switches["integration"] = true;
+            switches["dynamics"] = true;
             license.Quota.Switches = switches;
             terminalOptions.Integration.Enabled = false;
             await licenseChecker.CheckLicenseAsync(license);
 
             // No error, allowed and configured
-            switches["integration"] = true;
+            switches["dynamics"] = true;
             license.Quota.Switches = switches;
             terminalOptions.Integration.Enabled = true;
             await licenseChecker.CheckLicenseAsync(license);

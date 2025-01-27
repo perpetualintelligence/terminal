@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace OneImlx.Terminal.Integration
+namespace OneImlx.Terminal.Dynamics
 {
     public class PublishedAssemblyLoaderTests
     {

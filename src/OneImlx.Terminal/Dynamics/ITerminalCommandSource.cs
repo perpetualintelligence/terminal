@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 
-namespace OneImlx.Terminal.Integration
+namespace OneImlx.Terminal.Dynamics
 {
     /// <summary>
     /// An abstraction of a terminal command source.
