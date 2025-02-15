@@ -24,6 +24,7 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
+using OneImlx.Shared.Infrastructure;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -327,17 +328,20 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task Execute_ThrowsException_WhenBatchTooLong()
+        public async Task Execute_Errors_WhenBatchTooLong()
         {
             _mockOptions.Object.Value.Router.MaxLength = 1000;
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             var longRaw = new string('A', 1001);
-            Func<Task> act = () => _terminalProcessor.ExecuteAsync(TerminalInput.Single("id1", longRaw), "sender", "endpoint");
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode("invalid_request")
-                .WithErrorDescription("The command length exceeds the maximum allowed. max=1000");
+            TerminalOutput? output = await _terminalProcessor.ExecuteAsync(TerminalInput.Single("id1", longRaw), "sender", "endpoint");
+            output.Should().NotBeNull();
+            output!.Results.Should().HaveCount(1);
+            output.Results[0].Should().BeOfType<Error>();
+
+            Error error = (Error) output.Results[0]!;
+            error.FormatDescription().Should().Be("The command length exceeds the maximum allowed. max=1000");
         }
 
         [Fact]
