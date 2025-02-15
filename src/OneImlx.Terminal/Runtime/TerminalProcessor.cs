@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OneImlx.Shared.Infrastructure;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 
@@ -216,8 +217,6 @@ namespace OneImlx.Terminal.Runtime
             // We are good to route requests.
             for (int idx = 0; idx < lengthToProcess; ++idx)
             {
-                byte[] rawInput = rawInputs[idx];
-
                 TerminalInput? input = JsonSerializer.Deserialize<TerminalInput>(rawInputs[idx]);
                 if (input == null)
                 {
@@ -251,36 +250,57 @@ namespace OneImlx.Terminal.Runtime
             {
                 TerminalRequest request = terminalOutput.Input[idx];
 
-                string senderEndpoint = terminalOutput.SenderEndpoint ?? "$unknown$";
-                string senderId = terminalOutput.SenderId ?? "$unknown$";
-                Dictionary<string, object> properties = new()
-            {
-                { TerminalIdentifiers.SenderEndpointToken, senderEndpoint },
-                { TerminalIdentifiers.SenderIdToken, senderId }
-            };
-
-                if (request.Raw.Length > terminalOptions.Value.Router.MaxLength)
+                // If cancellation is requested then stop routing the requestBs.
+                if (terminalRouterContext.TerminalCancellationToken.IsCancellationRequested)
                 {
-                    throw new TerminalException(TerminalErrors.InvalidRequest, "The command length exceeds the maximum allowed. max={0}", terminalOptions.Value.Router.MaxLength);
+                    throw new OperationCanceledException("The terminal router is canceled.");
                 }
 
-                logger.LogDebug("Routing the command. raw={0} sender={1}", request.Raw, senderId);
-                var context = new CommandContext(request, terminalRouterContext, properties);
-                var routeTask = commandRouter.RouteCommandAsync(context);
-
-                if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.TerminalCancellationToken)) == routeTask)
-                {
-                    CommandResult result = await routeTask;
-                    object? value = null;
-                    if (result.RunnerResult != null)
+                try
+                {                   
+                    string senderEndpoint = terminalOutput.SenderEndpoint ?? "$unknown$";
+                    string senderId = terminalOutput.SenderId ?? "$unknown$";
+                    Dictionary<string, object> properties = new()
                     {
-                        value = result.RunnerResult.HasValue ? result.RunnerResult.Value : null;
+                        { TerminalIdentifiers.SenderEndpointToken, senderEndpoint },
+                        { TerminalIdentifiers.SenderIdToken, senderId }
+                    };
+
+                    if (request.Raw.Length > terminalOptions.Value.Router.MaxLength)
+                    {
+                        throw new TerminalException(TerminalErrors.InvalidRequest, "The command length exceeds the maximum allowed. max={0}", terminalOptions.Value.Router.MaxLength);
                     }
-                    terminalOutput.Results[idx] = value;
+
+                    logger.LogDebug("Routing the command. raw={0} sender={1}", request.Raw, senderId);
+                    var context = new CommandContext(request, terminalRouterContext, properties);
+                    var routeTask = commandRouter.RouteCommandAsync(context);
+
+                    if (await Task.WhenAny(routeTask, Task.Delay(terminalOptions.Value.Router.Timeout, terminalRouterContext.TerminalCancellationToken)) == routeTask)
+                    {
+                        CommandResult result = await routeTask;
+                        object? value = null;
+                        if (result.RunnerResult != null)
+                        {
+                            value = result.RunnerResult.HasValue ? result.RunnerResult.Value : null;
+                        }
+                        terminalOutput.Results[idx] = value;
+                    }
+                    else
+                    {
+                        throw new TimeoutException($"The command router timed out in {terminalOptions.Value.Router.Timeout} milliseconds.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    throw new TimeoutException($"The command router timed out in {terminalOptions.Value.Router.Timeout} milliseconds.");
+                    Error error = new(TerminalErrors.ServerError, ex.Message);
+                    if (ex is TerminalException tex)
+                    {
+                        error = tex.Error;
+                    }
+                    terminalOutput.Results[idx] = error;
+
+                    // This is a server to we handle the exception and log it. If the implementation throws then server stops.
+                    await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, request));
                 }
             }
         }
@@ -296,6 +316,8 @@ namespace OneImlx.Terminal.Runtime
 
             while (true)
             {
+                TerminalOutput? output = null;
+
                 try
                 {
                     // Wait until there is a signal or the cancellation. The requestSignal is used to signal that there
@@ -304,13 +326,11 @@ namespace OneImlx.Terminal.Runtime
                     if (!unprocessedRequests.IsEmpty)
                     {
                         // Process the request and dequeue the response
-                        unprocessedRequests.TryDequeue(out TerminalOutput? response);
-                        if (response != null)
+                        unprocessedRequests.TryDequeue(out output);
+                        if (output != null)
                         {
-                            // Request is processed and results are populated in the response, not push it to processed requests.
-                            await RouteRequestsAsync(response, terminalRouterContext);
-                            processedRequests.Push(response);
-                            responseSignal.Release();
+                            // Request is processed and results are populated in the output
+                            await RouteRequestsAsync(output, terminalRouterContext);
                         }
                         else
                         {
@@ -326,6 +346,15 @@ namespace OneImlx.Terminal.Runtime
                 catch (Exception ex)
                 {
                     await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, null));
+                }
+                finally
+                {
+                    // If the queue is empty, reset the signal to 0.
+                    if (output != null)
+                    {
+                        processedRequests.Push(output);
+                        responseSignal.Release();
+                    }
                 }
             }
         }

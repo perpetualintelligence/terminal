@@ -46,7 +46,6 @@ namespace OneImlx.Terminal.Client.Extensions
             serializeOptions ??= JsonSerializerOptions.Default;
             var response = await httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", input, serializeOptions, cancellationToken);
             response.EnsureSuccessStatusCode();
-            string json = await response.Content.ReadAsStringAsync();
             return await response.Content.ReadFromJsonAsync<TerminalOutput>(serializeOptions, cancellationToken);
         }
 

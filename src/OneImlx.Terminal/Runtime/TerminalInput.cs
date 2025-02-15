@@ -14,7 +14,7 @@ namespace OneImlx.Terminal.Runtime
     /// Represents the input that is sent to the terminal server as an ordered collection of <see cref="TerminalRequest"/>.
     /// </summary>
     /// <remarks>
-    /// The requests in the <see cref="TerminalInput"/> are executed by the router in the order they were added.
+    /// The requests in the <see cref="TerminalInput"/> are executed by the router in the order they are added.
     /// </remarks>
     public sealed class TerminalInput
     {
