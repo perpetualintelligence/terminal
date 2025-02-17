@@ -7,6 +7,7 @@
 
 using System;
 using System.Text.Json.Serialization;
+using OneImlx.Shared.Infrastructure;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -39,10 +40,22 @@ namespace OneImlx.Terminal.Runtime
         public string Id { get; }
 
         /// <summary>
+        /// Gets a value indicating whether the result is an <see cref="Error"/>.
+        /// </summary>
+        [JsonPropertyName("is_error")]
+        public bool IsError { get; set; }
+
+        /// <summary>
         /// The raw command or a batch that needs to be processed.
         /// </summary>
         [JsonPropertyName("raw")]
         public string Raw { get; }
+
+        /// <summary>
+        /// The result of the command or batch processing.
+        /// </summary>
+        [JsonPropertyName("result")]
+        public object? Result { get; set; }
 
         /// <inheritdoc/>
         public static bool operator !=(TerminalRequest? left, TerminalRequest? right)

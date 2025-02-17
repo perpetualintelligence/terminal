@@ -52,7 +52,7 @@ namespace OneImlx.Terminal.Server
 
             // Setup router and processor to return true for IsRunning and IsProcessing
             TerminalInput terminalInput = TerminalInput.Single("test-id", "test-command");
-            TerminalOutput terminalOutput = new(terminalInput, ["any"], null, null);
+            TerminalOutput terminalOutput = new(terminalInput, null, null);
             bool executeCalled = false;
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);
@@ -72,8 +72,8 @@ namespace OneImlx.Terminal.Server
             outputFromResponse!.Input.Should().NotBeSameAs(terminalOutput.Input);
 
             outputFromResponse!.Input.Requests[0].Id.Should().Be("test-id");
-            outputFromResponse!.Input.Requests[0].Raw.Should().Be("test-command");
-            outputFromResponse.GetDeserializedResult<string>(0).Should().Be("any");
+            outputFromResponse.Input.Requests[0].Raw.Should().Be("test-command");
+            outputFromResponse.Input.Requests[0].Result.Should().BeNull();
             outputFromResponse.SenderId.Should().BeNull();
             outputFromResponse.SenderEndpoint.Should().BeNull();
         }

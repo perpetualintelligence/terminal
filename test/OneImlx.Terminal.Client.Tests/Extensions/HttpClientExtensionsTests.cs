@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Client.Extensions
                 .ReturnsAsync(new HttpResponseMessage
                 {
                     // Any response we do not validate response here only the request.
-                    Content = JsonContent.Create(new TerminalOutput(TerminalInput.Batch("any_bid", [], []), [], null, null))
+                    Content = JsonContent.Create(new TerminalOutput(TerminalInput.Batch("any_bid", [], []), null, null))
                 });
 
             _httpClient = new HttpClient(_httpMessageHandlerMock.Object)

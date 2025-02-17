@@ -5,6 +5,16 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
+using OneImlx.Shared.Infrastructure;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,17 +24,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using FluentAssertions;
-using Moq;
-using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Commands.Runners;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Test.FluentAssertions;
 using Xunit;
-using OneImlx.Shared.Infrastructure;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -337,10 +337,9 @@ namespace OneImlx.Terminal.Runtime
             var longRaw = new string('A', 1001);
             TerminalOutput? output = await _terminalProcessor.ExecuteAsync(TerminalInput.Single("id1", longRaw), "sender", "endpoint");
             output.Should().NotBeNull();
-            output!.Results.Should().HaveCount(1);
-            output.Results[0].Should().BeOfType<Error>();
+            output!.Input.Requests[0].Result.Should().BeOfType<Error>();
 
-            Error error = (Error) output.Results[0]!;
+            Error error = (Error)output.Input.Requests[0].Result!;
             error.FormatDescription().Should().Be("The command length exceeds the maximum allowed. max=1000");
         }
 
@@ -384,19 +383,19 @@ namespace OneImlx.Terminal.Runtime
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
             response.Should().NotBeNull();
-            response!.Results.Should().HaveCount(3);
+            response!.Input.Requests.Should().HaveCount(3);
 
             // Assert first request and result
             response.Input.Requests[0].Raw.Should().Be("command1");
-            response.Results[0].Should().Be("sender_result1");
+            response.Input.Requests[0].Result.Should().Be("sender_result1");
 
             // Assert second request and result
             response.Input.Requests[1].Raw.Should().Be("command2");
-            response.Results[1].Should().Be("sender_result2");
+            response.Input.Requests[1].Result.Should().Be("sender_result2");
 
             // Assert third request and result
             response.Input.Requests[2].Raw.Should().Be("command3");
-            response.Results[2].Should().Be("sender_result3");
+            response.Input.Requests[2].Result.Should().Be("sender_result3");
         }
 
         [Fact]
@@ -442,23 +441,22 @@ namespace OneImlx.Terminal.Runtime
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
             response.Should().NotBeNull();
-            response!.Results.Should().HaveCount(5);
 
             // Assert requests and results
-            response.Input.Requests[0].Raw.Should().Be("command1");
-            response.Results[0].Should().Be("sender_result1");
+            response!.Input.Requests[0].Raw.Should().Be("command1");
+            response.Input.Requests[0].Result.Should().Be("sender_result1");
 
             response.Input.Requests[1].Raw.Should().Be("command2");
-            response.Results[1].Should().Be("sender_result2");
+            response.Input.Requests[1].Result.Should().Be("sender_result2");
 
             response.Input.Requests[2].Raw.Should().Be("command3");
-            response.Results[2].Should().Be("sender_result3");
+            response.Input.Requests[2].Result.Should().Be("sender_result3");
 
             response.Input.Requests[3].Raw.Should().Be("command4");
-            response.Results[3].Should().BeNull(); // Command4 returns null
+            response.Input.Requests[3].Result.Should().BeNull(); // Command4 returns null
 
             response.Input.Requests[4].Raw.Should().Be("command5");
-            response.Results[4].Should().Be("sender_result5");
+            response.Input.Requests[4].Result.Should().Be("sender_result5");
         }
 
         [Fact]
@@ -491,15 +489,14 @@ namespace OneImlx.Terminal.Runtime
 
             // Make sure response is correct
             response.Should().NotBeNull();
-            response.SenderId.Should().Be("sender_1");
+            response!.SenderId.Should().Be("sender_1");
             response.SenderEndpoint.Should().Be("sender_endpoint_1");
 
             response.Input.Requests.Should().HaveCount(1);
             response.Input.Requests[0].Id.Should().NotBeNullOrWhiteSpace();
             response.Input.Requests[0].Raw.Should().Be("command1");
 
-            response.Results.Should().HaveCount(1);
-            response.Results[0].Should().Be("sender_result");
+            response.Input.Requests[0].Result.Should().Be("sender_result");
         }
 
         [Fact]

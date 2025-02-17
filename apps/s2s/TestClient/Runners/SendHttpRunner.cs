@@ -73,8 +73,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         continue;
                     }
 
-                    string result = output.Results[0]?.ToString() ?? "No Result";
-                    if (output.Results[0] is JsonElement json && json.ValueKind == JsonValueKind.Object)
+                    string result = output.Input.Requests[0].Result?.ToString() ?? "No Result";
+                    if (output.Input.Requests[0].IsError)
                     {
                         Error error = output.GetDeserializedResult<Error>(0);
                         result = error.FormatDescription();
@@ -99,8 +99,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         continue;
                     }
 
-                    string result = batchOutput.Results[idx]?.ToString() ?? "No Result";
-                    if (batchOutput.Results[idx] is JsonElement json && json.ValueKind == JsonValueKind.Object)
+                    string result = batchOutput.Input.Requests[idx].Result?.ToString() ?? "No Result";
+                    if (batchOutput.Input.Requests[idx].IsError)
                     {
                         Error error = batchOutput.GetDeserializedResult<Error>(idx);
                         result = error.FormatDescription();

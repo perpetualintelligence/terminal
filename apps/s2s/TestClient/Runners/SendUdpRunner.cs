@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         for (int idx = 0; idx < output!.Input.Count; ++idx)
                         {
                             var request = output.Input.Requests[idx];
-                            object? result = output.Results[idx];
+                            object? result = output.Input.Requests[idx].Result;
                             string resultStr = result?.ToString() ?? "No Result";
 
                             if (output.Input.IsBatch)

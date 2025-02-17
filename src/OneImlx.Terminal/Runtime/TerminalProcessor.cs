@@ -99,7 +99,7 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Create a response object that will hold requests and results
-            TerminalOutput response = new(input, new object?[input.Count], senderId, senderEndpoint);
+            TerminalOutput response = new(input, senderId, senderEndpoint);
             unprocessedRequests.Enqueue(response);
             requestSignal.Release();
             return Task.CompletedTask;
@@ -126,7 +126,7 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not running.");
             }
 
-            TerminalOutput output = new(input, new object?[input.Count], senderId, senderEndpoint);
+            TerminalOutput output = new(input, senderId, senderEndpoint);
             await RouteRequestsAsync(output, terminalRouterContext);
 
             if (terminalOptions.Value.Router.DisableResponse)
@@ -283,7 +283,7 @@ namespace OneImlx.Terminal.Runtime
                         {
                             value = result.RunnerResult.HasValue ? result.RunnerResult.Value : null;
                         }
-                        terminalOutput.Results[idx] = value;
+                        terminalOutput.Input.Requests[idx].Result = value;
                     }
                     else
                     {
@@ -297,7 +297,8 @@ namespace OneImlx.Terminal.Runtime
                     {
                         error = tex.Error;
                     }
-                    terminalOutput.Results[idx] = error;
+                    terminalOutput.Input.Requests[idx].Result = error;
+                    terminalOutput.Input.Requests[idx].IsError = true;
 
                     // This is a server to we handle the exception and log it. If the implementation throws then server stops.
                     await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, request));

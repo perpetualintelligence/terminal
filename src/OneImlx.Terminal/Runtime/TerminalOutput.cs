@@ -20,20 +20,13 @@ namespace OneImlx.Terminal.Runtime
         /// Initializes a new instance of the <see cref="TerminalOutput"/> class.
         /// </summary>
         /// <param name="input">The terminal input.</param>
-        /// <param name="results">The results.</param>
         /// <param name="senderId">The sender id.</param>
         /// <param name="senderEndpoint">The sender endpoint.</param>
         [JsonConstructor]
-        public TerminalOutput(TerminalInput input, object?[] results, string? senderId, string? senderEndpoint)
+        public TerminalOutput(TerminalInput input, string? senderId, string? senderEndpoint)
         {
             Input = input ?? throw new ArgumentNullException(nameof(input));
 
-            if (input.Count != results.Length)
-            {
-                throw new TerminalException(TerminalErrors.InvalidRequest, "The input requests and results count does not match.");
-            }
-
-            Results = results;
             SenderId = senderId;
             SenderEndpoint = senderEndpoint;
         }
@@ -43,20 +36,6 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         [JsonPropertyName("input")]
         public TerminalInput Input { get; }
-
-        /// <summary>
-        /// The results mapped for each request in the <see cref="Input"/>. The index of the result corresponds to the
-        /// index of the <see cref="TerminalInput.Requests"/>.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="Results"/> property is an array of objects that correspond to result of each request in the
-        /// input. Since the <see cref="JsonSerializer"/> does not directly deserialize elements of
-        /// varying types, the results may initially be represented as <see cref="JsonElement"/>. To
-        /// access a specific result after deserialization, use the <see cref="GetDeserializedResult{T}(int)"/> method, which
-        /// converts the result to the desired type.
-        /// </remarks>
-        [JsonPropertyName("results")]
-        public object?[] Results { get; }
 
         /// <summary>
         /// The sender endpoint.
@@ -75,21 +54,21 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         public T GetDeserializedResult<T>(int index)
         {
-            if (index < 0 || index >= Results.Length)
+            if (index < 0 || index >= Input.Requests.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
             }
 
-            var result = Results[index];
+            var request = Input.Requests[index];
 
             // If the result is a JsonElement, deserialize it to the desired type
-            if (result is JsonElement jsonElement)
+            if (request.Result is JsonElement jsonElement)
             {
                 return jsonElement.Deserialize<T>() ?? throw new JsonException($"Result deserialization failed at index '{index}' for type '{typeof(T).FullName}'.");
             }
 
             // Return directly if already of the correct type
-            return (T)result!;
+            return (T)request.Result!;
         }
     }
 }

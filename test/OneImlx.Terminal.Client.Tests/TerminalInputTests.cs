@@ -127,19 +127,14 @@ namespace OneImlx.Terminal.Runtime.Tests
         [Fact]
         public void JsonSerialization_SerializesCorrectly()
         {
-            // Arrange
             var terminalInput = TerminalInput.Batch("batch1",
             [
                 new TerminalRequest("id1", "command1"),
                 new TerminalRequest("id2", "command2")
             ]);
 
-            // Act
             var json = JsonSerializer.Serialize(terminalInput);
-            var expectedJson = "{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"command1\"},{\"id\":\"id2\",\"raw\":\"command2\"}]}";
-
-            // Assert
-            json.Should().Be(expectedJson);
+            json.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"command1\",\"result\":null},{\"id\":\"id2\",\"is_error\":false,\"raw\":\"command2\",\"result\":null}]}");
         }
 
         [Fact]

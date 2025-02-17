@@ -60,7 +60,7 @@ namespace OneImlx.Terminal.Server
                 .Callback<TerminalInput, string?, string?>((input, senderId, senderEndpoint) =>
                 {
                     // Create and assign a mock response based on the input parameters
-                    addedOutput = new TerminalOutput(terminalInput, ["any"], senderId, senderEndpoint);
+                    addedOutput = new TerminalOutput(terminalInput, senderId, senderEndpoint);
                 })
                 .ReturnsAsync(() => addedOutput!);
 
@@ -68,7 +68,7 @@ namespace OneImlx.Terminal.Server
             addedOutput.Should().BeNull();
             var input = new TerminalGrpcRouterProtoInput { InputJson = JsonSerializer.Serialize(terminalInput) };
             var response = await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
-            response.OutputJson.Should().Be("{\"input\":{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"raw\":\"test-command\"}]},\"results\":[\"any\"],\"sender_endpoint\":null,\"sender_id\":null}");
+            response.OutputJson.Should().Be("{\"input\":{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"test-command\",\"result\":null}]},\"sender_endpoint\":null,\"sender_id\":null}");
 
             // Assert
             addedOutput.Should().NotBeNull();
@@ -78,8 +78,7 @@ namespace OneImlx.Terminal.Server
             addedOutput.Input.Requests[0].Raw.Should().Be("test-command");
             addedOutput.Input.BatchId.Should().BeNull();
 
-            addedOutput.Results.Should().HaveCount(1);
-            addedOutput.Results[0].Should().Be("any");
+            addedOutput.Input.Requests[0].Result.Should().BeNull();
         }
 
         // Test case to validate that if the CommandQueue is null, the system throws an exception

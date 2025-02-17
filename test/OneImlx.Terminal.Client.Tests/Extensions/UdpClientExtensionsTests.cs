@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                     serverReady.SetResult(true);
                     UdpReceiveResult result = await udpServer.ReceiveAsync();
                     string receivedMessage = Encoding.UTF8.GetString(result.Buffer);
-                    receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"cmd1\"},{\"id\":\"id2\",\"raw\":\"cmd2\"}]}\u001e");
+                    receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"cmd1\",\"result\":null},{\"id\":\"id2\",\"is_error\":false,\"raw\":\"cmd2\",\"result\":null}]}\u001e");
                 }
             });
 
@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                     serverReady.SetResult(true);
                     UdpReceiveResult result = await udpServer.ReceiveAsync();
                     string receivedMessage = Encoding.UTF8.GetString(result.Buffer);
-                    receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}\u001e");
+                    receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"is_error\":false,\"raw\":\"single-command\",\"result\":null}]}\u001e");
                 }
             });
 
@@ -85,7 +85,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                     serverReady.SetResult(true);
                     UdpReceiveResult result = await udpServer.ReceiveAsync();
                     string receivedMessage = Encoding.UTF8.GetString(result.Buffer);
-                    receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"raw\":\"single-command-1\"}]}\u001e");
+                    receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"is_error\":false,\"raw\":\"single-command-1\",\"result\":null}]}\u001e");
                 }
             });
 
