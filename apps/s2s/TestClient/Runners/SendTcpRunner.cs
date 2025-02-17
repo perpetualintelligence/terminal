@@ -156,13 +156,13 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 string id = cmdIds[idx];
                 string raw = commands[idx];
 
-                TerminalInput single = TerminalInput.Single(id, raw);
+                TerminalInputOutput single = TerminalInputOutput.Single(id, raw);
                 await tcpClient.SendToTerminalAsync(single, terminalOptions.Value.Router.StreamDelimiter, cToken);
                 await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{id}\" Raw=\"{raw}\" => Sent");
             }
 
             string batchId = $"batch{clientIndex}";
-            TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
+            TerminalInputOutput batch = TerminalInputOutput.Batch(batchId, cmdIds, commands);
             await tcpClient.SendToTerminalAsync(batch, terminalOptions.Value.Router.StreamDelimiter, cToken);
             await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" => Batch Sent");
         }

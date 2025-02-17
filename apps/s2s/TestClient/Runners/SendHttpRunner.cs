@@ -64,7 +64,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             {
                 foreach (var (cmdId, command) in cmdIds.Zip(commands))
                 {
-                    TerminalInput single = TerminalInput.Single(cmdId, command);
+                    TerminalInputOutput single = TerminalInputOutput.Single(cmdId, command);
                     TerminalOutput? output = await client.SendToTerminalAsync(single, cToken);
 
                     if (output == null)
@@ -88,7 +88,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 }
 
                 string batchId = $"batch{clientIndex}";
-                TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
+                TerminalInputOutput batch = TerminalInputOutput.Batch(batchId, cmdIds, commands);
                 TerminalOutput? batchOutput = await client.SendToTerminalAsync(batch, cToken);
                 for (int idx = 0; idx < batch.Requests.Length; ++idx)
                 {

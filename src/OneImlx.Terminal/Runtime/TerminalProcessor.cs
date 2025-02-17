@@ -26,7 +26,7 @@ namespace OneImlx.Terminal.Runtime
     /// The default implementation of <see cref="ITerminalProcessor"/> for processing inputs in a terminal environment.
     /// </summary>
     /// <remarks>
-    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalInput"/> that are processed
+    /// The <see cref="TerminalProcessor"/> manages a queue of <see cref="TerminalInputOutput"/> that are processed
     /// asynchronously in the background. It routes individual requests to the <see cref="ICommandRouter"/> for
     /// execution. The processor supports handling both single requests and batches of requests, as well as partial
     /// streams sent by clients.
@@ -71,7 +71,7 @@ namespace OneImlx.Terminal.Runtime
         public bool IsProcessing { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<TerminalInput> UnprocessedInputs
+        public IReadOnlyCollection<TerminalInputOutput> UnprocessedInputs
         {
             get
             {
@@ -81,7 +81,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public Task AddAsync(TerminalInput input, string? senderId, string? senderEndpoint)
+        public Task AddAsync(TerminalInputOutput input, string? senderId, string? senderEndpoint)
         {
             if (input == null)
             {
@@ -114,7 +114,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public async Task<TerminalOutput?> ExecuteAsync(TerminalInput input, string? senderId, string? senderEndpoint)
+        public async Task<TerminalOutput?> ExecuteAsync(TerminalInputOutput input, string? senderId, string? senderEndpoint)
         {
             if (input == null)
             {
@@ -217,7 +217,7 @@ namespace OneImlx.Terminal.Runtime
             // We are good to route requests.
             for (int idx = 0; idx < lengthToProcess; ++idx)
             {
-                TerminalInput? input = JsonSerializer.Deserialize<TerminalInput>(rawInputs[idx]);
+                TerminalInputOutput? input = JsonSerializer.Deserialize<TerminalInputOutput>(rawInputs[idx]);
                 if (input == null)
                 {
                     throw new TerminalException(TerminalErrors.InvalidRequest, "The input bytes cannot be deserialized to terminal input.");

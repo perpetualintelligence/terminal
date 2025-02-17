@@ -146,14 +146,14 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
             foreach (var (cmdId, command) in cmdIds.Zip(commands))
             {
-                TerminalInput single = TerminalInput.Single(cmdId, command);
+                TerminalInputOutput single = TerminalInputOutput.Single(cmdId, command);
                 await udpClient.SendToTerminalAsync(single, TerminalIdentifiers.StreamDelimiter, remoteEndPoint, cToken);
 
                 await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Sent");
             }
 
             string batchId = $"batch{clientIndex}";
-            TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
+            TerminalInputOutput batch = TerminalInputOutput.Batch(batchId, cmdIds, commands);
             await udpClient.SendToTerminalAsync(batch, TerminalIdentifiers.StreamDelimiter, remoteEndPoint, cToken);
 
             await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" => Batch Sent");

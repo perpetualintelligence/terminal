@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.Server
                 // Create a MemoryStream to simulate the HTTP request body with the serialized command
                 using (var requestStream = new MemoryStream())
                 {
-                    TerminalInput terminalInput = TerminalInput.Single("id1", "test-command");
+                    TerminalInputOutput terminalInput = TerminalInputOutput.Single("id1", "test-command");
                     await JsonSerializer.SerializeAsync(requestStream, terminalInput);
                     requestStream.Position = 0;
                     context.Request.Body = requestStream;
@@ -58,8 +58,8 @@ namespace OneImlx.Terminal.Server
                     mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 
                     TerminalOutput? addedOutput = null;
-                    mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInput>(), It.IsAny<string>(), It.IsAny<string>()))
-                        .Callback<TerminalInput, string?, string?>((input, senderId, senderEndpoint) =>
+                    mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInputOutput>(), It.IsAny<string>(), It.IsAny<string>()))
+                        .Callback<TerminalInputOutput, string?, string?>((input, senderId, senderEndpoint) =>
                         {
                             // Create and assign a mock response based on the input parameters
                             addedOutput = new TerminalOutput(terminalInput, senderId, senderEndpoint);
@@ -93,7 +93,7 @@ namespace OneImlx.Terminal.Server
         public async Task RouteCommand_Throws_When_Processor_Is_Not_Processing()
         {
             // Arrange
-            var input = TerminalInput.Single("test-id", "test-command");
+            var input = TerminalInputOutput.Single("test-id", "test-command");
             var context = new DefaultHttpContext();
 
             // Create a MemoryStream to simulate the HTTP request body with the serialized command
@@ -122,7 +122,7 @@ namespace OneImlx.Terminal.Server
         public async Task RouteCommand_Throws_When_Router_Is_Not_Running()
         {
             // Arrange
-            var input = TerminalInput.Single("test-id", "test-command");
+            var input = TerminalInputOutput.Single("test-id", "test-command");
             var context = new DefaultHttpContext();
 
             // Create a MemoryStream to simulate the HTTP request body with the serialized command

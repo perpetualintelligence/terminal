@@ -54,10 +54,10 @@ namespace OneImlx.Terminal.Server
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 
-            TerminalInput terminalInput = TerminalInput.Single("id1", "test-command");
+            TerminalInputOutput terminalInput = TerminalInputOutput.Single("id1", "test-command");
             TerminalOutput? addedOutput = null;
-            mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInput>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<TerminalInput, string?, string?>((input, senderId, senderEndpoint) =>
+            mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInputOutput>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<TerminalInputOutput, string?, string?>((input, senderId, senderEndpoint) =>
                 {
                     // Create and assign a mock response based on the input parameters
                     addedOutput = new TerminalOutput(terminalInput, senderId, senderEndpoint);

@@ -75,7 +75,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             tcpRouter.IsRunning.Should().BeTrue();
 
             // Send a real TCP message
-            var sentBytes = await SendTcpMessageAsync(TerminalInput.Single("id1", "test message"), routerIpEndpoint);
+            var sentBytes = await SendTcpMessageAsync(TerminalInputOutput.Single("id1", "test message"), routerIpEndpoint);
             await Task.Delay(200); // Allow time for processing
             terminalTokenSource.Cancel(); // Stop the router
             await routerTask;
@@ -186,7 +186,7 @@ namespace OneImlx.Terminal.Runtime.Tests
                 Task<(byte[], int)> clientTask = Task.Run(async () =>
                 {
                     string message = $"test message {localIdx}";
-                    return await SendTcpMessageAsync(TerminalInput.Single($"id{localIdx}", message), routerIpEndpoint);
+                    return await SendTcpMessageAsync(TerminalInputOutput.Single($"id{localIdx}", message), routerIpEndpoint);
                 });
 
                 clientTasks.Add(clientTask);
@@ -238,7 +238,7 @@ namespace OneImlx.Terminal.Runtime.Tests
                         messages.Add($"id {localIdx}.{jdx}", $"test message {localIdx}.{jdx}");
                     }
 
-                    TerminalInput input = TerminalInput.Batch($"batch{localIdx}", messages.Keys.Cast<string>().ToArray(), messages.Values.Cast<string>().ToArray());
+                    TerminalInputOutput input = TerminalInputOutput.Batch($"batch{localIdx}", messages.Keys.Cast<string>().ToArray(), messages.Values.Cast<string>().ToArray());
                     return await SendTcpMessageAsync(input, routerIpEndpoint);
                 });
 
@@ -306,7 +306,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         }
 
         // Helper to send TCP message
-        private async Task<(byte[], int)> SendTcpMessageAsync(TerminalInput input, IPEndPoint endpoint)
+        private async Task<(byte[], int)> SendTcpMessageAsync(TerminalInputOutput input, IPEndPoint endpoint)
         {
             // fix this test should not be relying on hardcoaded 4096 buffer size the tcp router passes buffer and
             // length to the terminal processor

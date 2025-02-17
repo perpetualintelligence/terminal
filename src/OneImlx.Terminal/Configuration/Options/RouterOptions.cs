@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Configuration.Options
         public int Timeout { get; set; } = 25000;
 
         /// <summary>
-        /// Represents the delimiter used to identify individual <see cref="TerminalInput"/> within a continuous stream
+        /// Represents the delimiter used to identify individual <see cref="TerminalInputOutput"/> within a continuous stream
         /// of bytes. The delimiter is set to <c>0x1E</c> (ASCII "Record Separator"), a non-printable control character
         /// commonly used to separate data and unlikely to appear in standard text.
         /// </summary>

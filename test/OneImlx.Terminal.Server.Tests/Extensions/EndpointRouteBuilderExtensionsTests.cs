@@ -51,12 +51,12 @@ namespace OneImlx.Terminal.Server
             var client = server.CreateClient();
 
             // Setup router and processor to return true for IsRunning and IsProcessing
-            TerminalInput terminalInput = TerminalInput.Single("test-id", "test-command");
+            TerminalInputOutput terminalInput = TerminalInputOutput.Single("test-id", "test-command");
             TerminalOutput terminalOutput = new(terminalInput, null, null);
             bool executeCalled = false;
             mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
             mockTerminalProcessor.Setup(x => x.IsProcessing).Returns(true);
-            mockTerminalProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInput>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockTerminalProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInputOutput>(), It.IsAny<string>(), It.IsAny<string>()))
                                  .Callback(() => executeCalled = true)
                                  .ReturnsAsync(terminalOutput);
 

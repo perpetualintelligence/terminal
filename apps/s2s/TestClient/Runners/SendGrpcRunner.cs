@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 // Send individually
                 foreach (var (cmdId, command) in cmdIds.Zip(commands))
                 {
-                    TerminalInput single = TerminalInput.Single(cmdId, command);
+                    TerminalInputOutput single = TerminalInputOutput.Single(cmdId, command);
                     TerminalGrpcRouterProtoOutput response = await client.SendToTerminalAsync(single, cToken);
                     TerminalOutput? output = JsonSerializer.Deserialize<TerminalOutput>(response.OutputJson);
 
@@ -95,7 +95,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
                 // Send as a batch
                 string batchId = $"batch{clientIndex}";
-                TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
+                TerminalInputOutput batch = TerminalInputOutput.Batch(batchId, cmdIds, commands);
                 TerminalGrpcRouterProtoOutput batchResponse = await client.SendToTerminalAsync(batch, cToken);
                 TerminalOutput? batchOutput = JsonSerializer.Deserialize<TerminalOutput>(batchResponse.OutputJson);
 

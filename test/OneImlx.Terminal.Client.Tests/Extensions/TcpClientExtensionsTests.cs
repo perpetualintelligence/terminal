@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 {
                     await tcpClient.ConnectAsync(localHost, port);
 
-                    TerminalInput batch = TerminalInput.Batch("batch1", ["id1", "id2"], ["cmd1", "cmd2"]);
+                    TerminalInputOutput batch = TerminalInputOutput.Batch("batch1", ["id1", "id2"], ["cmd1", "cmd2"]);
                     await tcpClient.SendToTerminalAsync(batch, streamDelimiter, CancellationToken.None);
 
                     await serverTask;
@@ -73,7 +73,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    TerminalInput batch = TerminalInput.Batch("bid", ["single-id"], ["single-command"]);
+                    TerminalInputOutput batch = TerminalInputOutput.Batch("bid", ["single-id"], ["single-command"]);
                     await tcpClient.SendToTerminalAsync(batch, streamDelimiter, CancellationToken.None);
 
                     await serverTask;
@@ -103,7 +103,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    TerminalInput single = TerminalInput.Single("single-id-1", "single-command-1");
+                    TerminalInputOutput single = TerminalInputOutput.Single("single-id-1", "single-command-1");
                     await tcpClient.SendToTerminalAsync(single, streamDelimiter, CancellationToken.None);
 
                     await serverTask;
@@ -116,7 +116,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
         {
             using (var tcpClient = new TcpClient())
             {
-                TerminalInput single = TerminalInput.Single("single-id", "single-command");
+                TerminalInputOutput single = TerminalInputOutput.Single("single-id", "single-command");
                 Func<Task> act = async () => await tcpClient.SendToTerminalAsync(single, streamDelimiter, CancellationToken.None);
 
                 await act.Should().ThrowAsync<TerminalException>()

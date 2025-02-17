@@ -90,7 +90,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act
             var routerTask = udpRouter.RunAsync(context);
-            TerminalInput input = TerminalInput.Single("id1", "test message");
+            TerminalInputOutput input = TerminalInputOutput.Single("id1", "test message");
             await SendUdpMessageAsync(input, context.IPEndPoint);
             await Task.Delay(100);
             terminalCancellationSource.Cancel();
@@ -112,7 +112,7 @@ namespace OneImlx.Terminal.Runtime
             var routerTask = udpRouter.RunAsync(context);
             udpRouter.IsRunning.Should().BeTrue();
 
-            TerminalInput input = TerminalInput.Single("id1", "test message");
+            TerminalInputOutput input = TerminalInputOutput.Single("id1", "test message");
             byte[] bytesSend = await SendUdpMessageAsync(input, context.IPEndPoint); // Send a real UDP message
             await Task.Delay(100);
             terminalCancellationSource.Cancel();
@@ -157,7 +157,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         // Helper method to send a real UDP message
-        private async Task<byte[]> SendUdpMessageAsync(TerminalInput input, IPEndPoint endpoint)
+        private async Task<byte[]> SendUdpMessageAsync(TerminalInputOutput input, IPEndPoint endpoint)
         {
             using (var client = new UdpClient())
             {

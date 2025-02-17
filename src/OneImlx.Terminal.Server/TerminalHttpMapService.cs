@@ -37,7 +37,7 @@ namespace OneImlx.Terminal.Server
         }
 
         /// <summary>
-        /// Routes the <see cref="TerminalInput"/> via HTTP.
+        /// Routes the <see cref="TerminalInputOutput"/> via HTTP.
         /// </summary>
         /// <param name="httpContext">The HTTP context containing the request.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Server
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not processing.");
             }
 
-            TerminalInput? input = await httpContext.Request.ReadFromJsonAsync<TerminalInput>();
+            TerminalInputOutput? input = await httpContext.Request.ReadFromJsonAsync<TerminalInputOutput>();
             if (input == null || input.Count <= 0)
             {
                 throw new TerminalException(TerminalErrors.MissingCommand, "The input is missing in the HTTP request.");

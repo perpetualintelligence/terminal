@@ -23,10 +23,10 @@ namespace OneImlx.Terminal.Client.Extensions
     public static class ClientExtensions
     {
         /// <summary>
-        /// Sends a <see cref="TerminalInput"/> object to a terminal server as an HTTP POST request.
+        /// Sends a <see cref="TerminalInputOutput"/> object to a terminal server as an HTTP POST request.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient"/> instance used to send the request.</param>
-        /// <param name="input">The <see cref="TerminalInput"/> to be sent.</param>
+        /// <param name="input">The <see cref="TerminalInputOutput"/> to be sent.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <param name="serializeOptions">
         /// The <see cref="JsonSerializerOptions"/> used to serialize the input. Defaults to <c>null</c>.
@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// object representing the response, or <c>null</c> if no response is returned.
         /// </returns>
         /// <remarks>The HTTP POST request is sent to the endpoint <c>oneimlx/terminal/httprouter</c> on the server.</remarks>
-        public static async Task<TerminalOutput?> SendToTerminalAsync(this HttpClient httpClient, TerminalInput input, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
+        public static async Task<TerminalOutput?> SendToTerminalAsync(this HttpClient httpClient, TerminalInputOutput input, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
             if (input == null)
             {
@@ -50,10 +50,10 @@ namespace OneImlx.Terminal.Client.Extensions
         }
 
         /// <summary>
-        /// Sends a <see cref="TerminalInput"/> object to a terminal server via a UDP message.
+        /// Sends a <see cref="TerminalInputOutput"/> object to a terminal server via a UDP message.
         /// </summary>
         /// <param name="udpClient">The <see cref="UdpClient"/> instance used to send the message.</param>
-        /// <param name="input">The <see cref="TerminalInput"/> to be sent.</param>
+        /// <param name="input">The <see cref="TerminalInputOutput"/> to be sent.</param>
         /// <param name="inputDelimiter">The stream delimiter.</param>
         /// <param name="remoteEndPoint">The <see cref="IPEndPoint"/> representing the remote server endpoint.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// The <see cref="JsonSerializerOptions"/> used to serialize the input. Defaults to <c>null</c>.
         /// </param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public static async Task SendToTerminalAsync(this UdpClient udpClient, TerminalInput input, byte inputDelimiter, IPEndPoint remoteEndPoint, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
+        public static async Task SendToTerminalAsync(this UdpClient udpClient, TerminalInputOutput input, byte inputDelimiter, IPEndPoint remoteEndPoint, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
             if (input == null)
             {
@@ -76,17 +76,17 @@ namespace OneImlx.Terminal.Client.Extensions
         }
 
         /// <summary>
-        /// Sends a <see cref="TerminalInput"/> object to a terminal server via a TCP connection.
+        /// Sends a <see cref="TerminalInputOutput"/> object to a terminal server via a TCP connection.
         /// </summary>
         /// <param name="tcpClient">The <see cref="TcpClient"/> instance used to send the message.</param>
-        /// <param name="input">The <see cref="TerminalInput"/> to be sent.</param>
+        /// <param name="input">The <see cref="TerminalInputOutput"/> to be sent.</param>
         /// <param name="inputDelimiter">The stream delimiter.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <param name="serializeOptions">
         /// The <see cref="JsonSerializerOptions"/> used to serialize the input. Defaults to <c>null</c>.
         /// </param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public static async Task SendToTerminalAsync(this TcpClient tcpClient, TerminalInput input, byte inputDelimiter, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
+        public static async Task SendToTerminalAsync(this TcpClient tcpClient, TerminalInputOutput input, byte inputDelimiter, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
             if (input == null)
             {
@@ -110,10 +110,10 @@ namespace OneImlx.Terminal.Client.Extensions
         }
 
         /// <summary>
-        /// Sends a <see cref="TerminalInput"/> object to a terminal server via a gRPC request.
+        /// Sends a <see cref="TerminalInputOutput"/> object to a terminal server via a gRPC request.
         /// </summary>
         /// <param name="grpcClient">The gRPC client instance used to send the request.</param>
-        /// <param name="input">The <see cref="TerminalInput"/> to be sent.</param>
+        /// <param name="input">The <see cref="TerminalInputOutput"/> to be sent.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while awaiting completion.</param>
         /// <param name="serializeOptions">
         /// The <see cref="JsonSerializerOptions"/> used to serialize the input. Defaults to <c>null</c>.
@@ -122,7 +122,7 @@ namespace OneImlx.Terminal.Client.Extensions
         /// A task representing the asynchronous operation. The task result contains the
         /// <see cref="TerminalGrpcRouterProtoOutput"/> from the server.
         /// </returns>
-        public static async Task<TerminalGrpcRouterProtoOutput> SendToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, TerminalInput input, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
+        public static async Task<TerminalGrpcRouterProtoOutput> SendToTerminalAsync(this TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient grpcClient, TerminalInputOutput input, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
             if (input == null)
             {

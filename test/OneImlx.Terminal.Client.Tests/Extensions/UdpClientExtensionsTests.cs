@@ -39,7 +39,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
             {
                 await serverReady.Task;
                 var remoteEndPoint = new IPEndPoint(IPAddress.Parse(localHost), port);
-                TerminalInput batch = TerminalInput.Batch("batch1", ["id1", "id2"], ["cmd1", "cmd2"]);
+                TerminalInputOutput batch = TerminalInputOutput.Batch("batch1", ["id1", "id2"], ["cmd1", "cmd2"]);
                 await udpClient.SendToTerminalAsync(batch, TerminalIdentifiers.StreamDelimiter, remoteEndPoint, CancellationToken.None);
 
                 await serverTask;
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
             {
                 await serverReady.Task;
                 var remoteEndPoint = new IPEndPoint(IPAddress.Parse(localHost), port);
-                TerminalInput batch = TerminalInput.Batch("bid", ["single-id"], ["single-command"]);
+                TerminalInputOutput batch = TerminalInputOutput.Batch("bid", ["single-id"], ["single-command"]);
                 await udpClient.SendToTerminalAsync(batch, TerminalIdentifiers.StreamDelimiter, remoteEndPoint, CancellationToken.None);
 
                 await serverTask;
@@ -93,7 +93,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
             {
                 await serverReady.Task;
                 var remoteEndPoint = new IPEndPoint(IPAddress.Parse(localHost), port);
-                TerminalInput single = TerminalInput.Single("single-id-1", "single-command-1");
+                TerminalInputOutput single = TerminalInputOutput.Single("single-id-1", "single-command-1");
                 await udpClient.SendToTerminalAsync(single, TerminalIdentifiers.StreamDelimiter, remoteEndPoint, CancellationToken.None);
 
                 await serverTask;
@@ -107,7 +107,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
             {
                 udpClient.Close();
 
-                TerminalInput single = TerminalInput.Single("single-id-1", "single-command-1");
+                TerminalInputOutput single = TerminalInputOutput.Single("single-id-1", "single-command-1");
                 Func<Task> act = async () => await udpClient.SendToTerminalAsync(single, TerminalIdentifiers.StreamDelimiter, new IPEndPoint(IPAddress.Parse(localHost), port), CancellationToken.None);
 
                 await act.Should().ThrowAsync<ObjectDisposedException>();

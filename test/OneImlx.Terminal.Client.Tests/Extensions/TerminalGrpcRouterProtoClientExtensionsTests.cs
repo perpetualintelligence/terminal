@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var commands = new[] { "command1", "command2", "command3" };
 
             // Act
-            TerminalInput input = TerminalInput.Batch("batch1", cmdIds, commands);
+            TerminalInputOutput input = TerminalInputOutput.Batch("batch1", cmdIds, commands);
             var response = await grpcClientMock.Object.SendToTerminalAsync(input, CancellationToken.None);
 
             // Assert
@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Client.Extensions
         public async Task SendToTerminalAsync_Sends_Input_As_Single_Correctly()
         {
             // Act
-            TerminalInput input = TerminalInput.Single("id1", raw: "test-command");
+            TerminalInputOutput input = TerminalInputOutput.Single("id1", raw: "test-command");
             var response = await grpcClientMock.Object.SendToTerminalAsync(input, CancellationToken.None);
 
             // Assert
