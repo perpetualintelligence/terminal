@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"cmd1\"},{\"id\":\"id2\",\"raw\":\"cmd2\"}]}\u001e");
+                        receivedMessage.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"cmd1\",\"result\":null},{\"id\":\"id2\",\"is_error\":false,\"raw\":\"cmd2\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}\u001e");
                     }
                 });
 
@@ -43,7 +43,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                 {
                     await tcpClient.ConnectAsync(localHost, port);
 
-                    TerminalInput batch = TerminalInput.Batch("batch1", ["id1", "id2"], ["cmd1", "cmd2"]);
+                    TerminalInputOutput batch = TerminalInputOutput.Batch("batch1", ["id1", "id2"], ["cmd1", "cmd2"]);
                     await tcpClient.SendToTerminalAsync(batch, streamDelimiter, CancellationToken.None);
 
                     await serverTask;
@@ -66,14 +66,14 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"raw\":\"single-command\"}]}\u001e");
+                        receivedMessage.Should().Be("{\"batch_id\":\"bid\",\"requests\":[{\"id\":\"single-id\",\"is_error\":false,\"raw\":\"single-command\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}\u001e");
                     }
                 });
 
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    TerminalInput batch = TerminalInput.Batch("bid", ["single-id"], ["single-command"]);
+                    TerminalInputOutput batch = TerminalInputOutput.Batch("bid", ["single-id"], ["single-command"]);
                     await tcpClient.SendToTerminalAsync(batch, streamDelimiter, CancellationToken.None);
 
                     await serverTask;
@@ -96,14 +96,14 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
                         byte[] buffer = new byte[1024];
                         int bytesRead = await networkStream.ReadAsync(buffer);
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"raw\":\"single-command-1\"}]}\u001e");
+                        receivedMessage.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"single-id-1\",\"is_error\":false,\"raw\":\"single-command-1\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}\u001e");
                     }
                 });
 
                 using (var tcpClient = new TcpClient())
                 {
                     await tcpClient.ConnectAsync(localHost, port);
-                    TerminalInput single = TerminalInput.Single("single-id-1", "single-command-1");
+                    TerminalInputOutput single = TerminalInputOutput.Single("single-id-1", "single-command-1");
                     await tcpClient.SendToTerminalAsync(single, streamDelimiter, CancellationToken.None);
 
                     await serverTask;
@@ -116,7 +116,7 @@ namespace OneImlx.Terminal.Client.Extensions.Tests
         {
             using (var tcpClient = new TcpClient())
             {
-                TerminalInput single = TerminalInput.Single("single-id", "single-command");
+                TerminalInputOutput single = TerminalInputOutput.Single("single-id", "single-command");
                 Func<Task> act = async () => await tcpClient.SendToTerminalAsync(single, streamDelimiter, CancellationToken.None);
 
                 await act.Should().ThrowAsync<TerminalException>()

@@ -22,7 +22,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             var raws = new[] { "command1", "command2" };
 
             // Act
-            var terminalInput = TerminalInput.Batch("batch1", ids, raws);
+            var terminalInput = TerminalInputOutput.Batch("batch1", ids, raws);
 
             // Assert
             terminalInput.Count.Should().Be(2);
@@ -45,7 +45,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             var raws = new[] { "command1" };
 
             // Act
-            Action act = () => TerminalInput.Batch("batch1", ids, raws);
+            Action act = () => TerminalInputOutput.Batch("batch1", ids, raws);
 
             // Assert
             act.Should().Throw<ArgumentException>()
@@ -56,7 +56,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         public void Batch_ThrowsArgumentException_WhenRequestsArrayIsEmpty()
         {
             // Act
-            Action act = () => TerminalInput.Batch("batch1", []);
+            Action act = () => TerminalInputOutput.Batch("batch1", []);
 
             // Assert
             act.Should().Throw<ArgumentException>()
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         public void Constructor_InitializesEmptyRequests()
         {
             // Act
-            var terminalInput = new TerminalInput();
+            var terminalInput = new TerminalInputOutput();
 
             // Assert
             terminalInput.Count.Should().Be(0);
@@ -80,7 +80,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         public void Indexer_GetsCorrectRequest()
         {
             // Arrange
-            var terminalInput = TerminalInput.Single("id1", "command1");
+            var terminalInput = TerminalInputOutput.Single("id1", "command1");
 
             // Act
             var request = terminalInput[0];
@@ -94,7 +94,7 @@ namespace OneImlx.Terminal.Runtime.Tests
         public void Indexer_SetsCorrectRequest()
         {
             // Arrange
-            var terminalInput = TerminalInput.Single("id1", "command1");
+            var terminalInput = TerminalInputOutput.Single("id1", "command1");
             var newRequest = new TerminalRequest("id2", "command2");
 
             // Act
@@ -112,7 +112,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             var json = "{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"command1\"},{\"id\":\"id2\",\"raw\":\"command2\"}],\"sender_endpoint\":\"endpoint1\",\"sender_id\":\"sender1\"}";
 
             // Act
-            var terminalInput = JsonSerializer.Deserialize<TerminalInput>(json);
+            var terminalInput = JsonSerializer.Deserialize<TerminalInputOutput>(json);
 
             // Assert
             terminalInput.Should().NotBeNull();
@@ -127,26 +127,21 @@ namespace OneImlx.Terminal.Runtime.Tests
         [Fact]
         public void JsonSerialization_SerializesCorrectly()
         {
-            // Arrange
-            var terminalInput = TerminalInput.Batch("batch1",
+            var terminalInput = TerminalInputOutput.Batch("batch1",
             [
                 new TerminalRequest("id1", "command1"),
                 new TerminalRequest("id2", "command2")
             ]);
 
-            // Act
             var json = JsonSerializer.Serialize(terminalInput);
-            var expectedJson = "{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"command1\"},{\"id\":\"id2\",\"raw\":\"command2\"}]}";
-
-            // Assert
-            json.Should().Be(expectedJson);
+            json.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"command1\",\"result\":null},{\"id\":\"id2\",\"is_error\":false,\"raw\":\"command2\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}");
         }
 
         [Fact]
         public void Single_CreatesTerminalInputWithOneRequest()
         {
             // Act
-            var terminalInput = TerminalInput.Single("id1", "command1");
+            var terminalInput = TerminalInputOutput.Single("id1", "command1");
 
             // Assert
             terminalInput.Count.Should().Be(1);

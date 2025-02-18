@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>
-    /// An abstraction for processing the <see cref="TerminalInput"/> individually or in batches, with optional
+    /// An abstraction for processing the <see cref="TerminalInputOutput"/> individually or in batches, with optional
     /// asynchronous handling of responses in the background.
     /// </summary>
     /// <remarks>
@@ -39,29 +39,24 @@ namespace OneImlx.Terminal.Runtime
         /// The returned collection represents the state of unprocessed inputs at the time of retrieval. The actual
         /// state may change by the time the caller processes it.
         /// </remarks>
-        IReadOnlyCollection<TerminalInput> UnprocessedInputs { get; }
+        IReadOnlyCollection<TerminalInputOutput> UnprocessedIOs { get; }
 
         /// <summary>
-        /// Asynchronously adds a <see cref="TerminalInput"/> for processing.
+        /// Asynchronously adds a <see cref="TerminalInputOutput"/> for processing.
         /// </summary>
-        /// <param name="input">The input to add.</param>
-        /// <param name="senderId">The identifier of the sender.</param>
-        /// <param name="senderEndpoint">The endpoint of the sender.</param>
+        /// <param name="terminalIO">The input to add.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        Task AddAsync(TerminalInput input, string? senderId, string? senderEndpoint);
+        Task AddAsync(TerminalInputOutput terminalIO);
 
         /// <summary>
-        /// Asynchronously executes the <see cref="TerminalInput"/> and returns the <see cref="TerminalOutput"/>.
+        /// Asynchronously executes the input and populates the output.
         /// </summary>
-        /// <param name="input">The input to execute.</param>
-        /// <param name="senderId">The identifier of the sender.</param>
-        /// <param name="senderEndpoint">The endpoint of the sender.</param>
-        /// <returns>A task representing the asynchronous operation, containing the <see cref="TerminalOutput"/>.</returns>
+        /// <param name="terminalIO">The input to execute.</param>
         /// <remarks>
         /// The <see cref="ExecuteAsync"/> method processes the input immediately and returns the output. For background
-        /// processing, use <see cref="AddAsync(TerminalInput, string?, string?)"/>.
+        /// processing, use <see cref="AddAsync(TerminalInputOutput)"/>.
         /// </remarks>
-        Task<TerminalOutput?> ExecuteAsync(TerminalInput input, string? senderId, string? senderEndpoint);
+        Task ExecuteAsync(TerminalInputOutput terminalIO);
 
         /// <summary>
         /// Starts processing terminal inputs with the specified context and configuration.
@@ -72,7 +67,7 @@ namespace OneImlx.Terminal.Runtime
         /// <c>false</c>, it processes individual requests and sends responses asynchronously.
         /// </param>
         /// <param name="responseHandler">An optional handler for processing responses.</param>
-        void StartProcessing(TerminalRouterContext terminalRouterContext, bool background, Func<TerminalOutput, Task>? responseHandler = null);
+        void StartProcessing(TerminalRouterContext terminalRouterContext, bool background, Func<TerminalInputOutput, Task>? responseHandler = null);
 
         /// <summary>
         /// Attempts to stop background processing within a specified timeout period.
@@ -85,7 +80,7 @@ namespace OneImlx.Terminal.Runtime
         Task<bool> StopProcessingAsync(int timeout);
 
         /// <summary>
-        /// Asynchronously streams a continuous flow of <see cref="TerminalInput"/> as a byte array.
+        /// Asynchronously streams a continuous flow of <see cref="TerminalInputOutput"/> as a byte array.
         /// </summary>
         /// <param name="bytes">The data to stream.</param>
         /// <param name="bytesLength">The length of the data to process. Use the total length to process all bytes.</param>

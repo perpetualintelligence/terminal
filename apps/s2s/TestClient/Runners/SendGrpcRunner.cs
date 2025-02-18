@@ -1,18 +1,19 @@
-﻿using Grpc.Core;
-using Grpc.Net.Client;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Grpc.Core;
+using Grpc.Net.Client;
+using OneImlx.Shared.Infrastructure;
 using OneImlx.Terminal.Client;
 using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -33,10 +34,10 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             string serverAddress = $"http://{ip}:{port}";
             int maxClients = configuration.GetValue<int>("testclient:max_clients");
 
-
             try
             {
                 stopwatch.Restart();
+                _commandCount = 0;
 
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "gRPC concurrent and asynchronous demo.");
 
@@ -52,36 +53,73 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 stopwatch.Stop();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"{maxClients * 12} requests completed by {maxClients} gRPC client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"{_commandCount} requests completed by {maxClients} gRPC client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
         }
 
         private async Task SendCommandsAsync(TerminalGrpcRouterProto.TerminalGrpcRouterProtoClient client, int clientIndex, CancellationToken cToken)
         {
-            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6"];
-            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"];
+            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6", "cmd7"];
+            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2", "ts invalid"];
 
             try
             {
+                // Send individually
                 foreach (var (cmdId, command) in cmdIds.Zip(commands))
                 {
-                    TerminalInput single = TerminalInput.Single(cmdId, command);
-                    var response = await client.SendToTerminalAsync(single, cToken);
-                    var output = JsonSerializer.Deserialize<TerminalOutput>(response.OutputJson);
+                    TerminalInputOutput single = TerminalInputOutput.Single(cmdId, command);
+                    TerminalGrpcRouterProtoOutput response = await client.SendToTerminalAsync(single, cToken);
+                    TerminalInputOutput? output = JsonSerializer.Deserialize<TerminalInputOutput>(response.OutputJson);
 
-                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={output?.Results[0] ?? "No Response"}");
+                    if (output == null)
+                    {
+                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => No Response");
+                        continue;
+                    }
+
+                    string result = output.Requests[0].Result?.ToString() ?? "No Result";
+                    if (output.Requests[0].IsError)
+                    {
+                        Error error = output.GetDeserializedResult<Error>(0);
+                        result = error.FormatDescription();
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={result}");
+                    }
+                    else
+                    {
+                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={result}");
+                    }
+
+                    _commandCount++;
                 }
 
+                // Send as a batch
                 string batchId = $"batch{clientIndex}";
-                TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
-                var batchResponse = await client.SendToTerminalAsync(batch, cToken);
-                TerminalOutput? batchOutput = JsonSerializer.Deserialize<TerminalOutput>(batchResponse.OutputJson);
+                TerminalInputOutput batch = TerminalInputOutput.Batch(batchId, cmdIds, commands);
+                TerminalGrpcRouterProtoOutput batchResponse = await client.SendToTerminalAsync(batch, cToken);
+                TerminalInputOutput? batchOutput = JsonSerializer.Deserialize<TerminalInputOutput>(batchResponse.OutputJson);
 
                 for (int idx = 0; idx < batch.Requests.Length; ++idx)
                 {
                     var request = batch.Requests[idx];
-                    var result = batchOutput?.Results[idx];
-                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
+                    if (batchOutput == null)
+                    {
+                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={"No Response"}");
+                        continue;
+                    }
+
+                    string result = batchOutput.Requests[idx].Result?.ToString() ?? "No Result";
+                    if (batchOutput.Requests[idx].IsError)
+                    {
+                        Error error = batchOutput.GetDeserializedResult<Error>(idx);
+                        result = error.FormatDescription();
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
+                    }
+                    else
+                    {
+                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
+                    }
+
+                    _commandCount++;
                 }
             }
             catch (RpcException ex)
@@ -117,5 +155,6 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
         private readonly IConfiguration configuration;
         private readonly Stopwatch stopwatch = new();
         private readonly ITerminalConsole terminalConsole;
+        private int _commandCount;
     }
 }

@@ -70,7 +70,7 @@ namespace OneImlx.Terminal.Runtime
             var testException = new Exception("Test exception");
 
             // Setup the terminal processor to throw an exception during StartProcessing
-            terminalProcessorMock.Setup(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>())).Throws(testException);
+            terminalProcessorMock.Setup(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalInputOutput, Task>>())).Throws(testException);
 
             // Act
             await udpRouter.RunAsync(context);
@@ -90,7 +90,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act
             var routerTask = udpRouter.RunAsync(context);
-            TerminalInput input = TerminalInput.Single("id1", "test message");
+            TerminalInputOutput input = TerminalInputOutput.Single("id1", "test message");
             await SendUdpMessageAsync(input, context.IPEndPoint);
             await Task.Delay(100);
             terminalCancellationSource.Cancel();
@@ -112,7 +112,7 @@ namespace OneImlx.Terminal.Runtime
             var routerTask = udpRouter.RunAsync(context);
             udpRouter.IsRunning.Should().BeTrue();
 
-            TerminalInput input = TerminalInput.Single("id1", "test message");
+            TerminalInputOutput input = TerminalInputOutput.Single("id1", "test message");
             byte[] bytesSend = await SendUdpMessageAsync(input, context.IPEndPoint); // Send a real UDP message
             await Task.Delay(100);
             terminalCancellationSource.Cancel();
@@ -120,7 +120,7 @@ namespace OneImlx.Terminal.Runtime
             udpRouter.IsRunning.Should().BeFalse();
 
             // Assert
-            terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>()), Times.Once);
+            terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalInputOutput, Task>>()), Times.Once);
             terminalProcessorMock.Verify(x => x.StreamAsync(bytesSend, bytesSend.Length, It.IsAny<string>(), It.Is<string>(ctx => ctx.Contains("127.0.0.1"))), Times.Once);
             terminalProcessorMock.Verify(x => x.StopProcessingAsync(options.Router.Timeout), Times.Once);
         }
@@ -157,7 +157,7 @@ namespace OneImlx.Terminal.Runtime
         }
 
         // Helper method to send a real UDP message
-        private async Task<byte[]> SendUdpMessageAsync(TerminalInput input, IPEndPoint endpoint)
+        private async Task<byte[]> SendUdpMessageAsync(TerminalInputOutput input, IPEndPoint endpoint)
         {
             using (var client = new UdpClient())
             {

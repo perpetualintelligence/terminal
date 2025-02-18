@@ -125,7 +125,7 @@ namespace OneImlx.Terminal.Runtime
             }
         }
 
-        private async Task HandleResponseAsync(TerminalOutput output)
+        private async Task HandleResponseAsync(TerminalInputOutput output)
         {
             try
             {

@@ -47,7 +47,7 @@ namespace OneImlx.Terminal.Server
                 // Create a MemoryStream to simulate the HTTP request body with the serialized command
                 using (var requestStream = new MemoryStream())
                 {
-                    TerminalInput terminalInput = TerminalInput.Single("id1", "test-command");
+                    TerminalInputOutput terminalInput = TerminalInputOutput.Single("id1", "test-command");
                     await JsonSerializer.SerializeAsync(requestStream, terminalInput);
                     requestStream.Position = 0;
                     context.Request.Body = requestStream;
@@ -56,35 +56,15 @@ namespace OneImlx.Terminal.Server
                     // Mock the router and processor behavior
                     mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
                     mockProcessor.Setup(x => x.IsProcessing).Returns(true);
-
-                    TerminalOutput? addedOutput = null;
-                    mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInput>(), It.IsAny<string>(), It.IsAny<string>()))
-                        .Callback<TerminalInput, string?, string?>((input, senderId, senderEndpoint) =>
-                        {
-                            // Create and assign a mock response based on the input parameters
-                            addedOutput = new TerminalOutput(terminalInput, ["any"], senderId, senderEndpoint);
-                        })
-                        .ReturnsAsync(() => addedOutput!);
+                    mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInputOutput>()));
 
                     // Act
-                    addedOutput.Should().BeNull();
                     await terminalHttpMapService.RouteAsync(context);
                     context.Response.ContentType.Should().Be("application/json; charset=utf-8");
                     context.Response.Body.Seek(0, SeekOrigin.Begin);
                     using var reader = new StreamReader(context.Response.Body);
                     string jsonResponse = await reader.ReadToEndAsync();
-                    jsonResponse.Should().Be("{\"input\":{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"raw\":\"test-command\"}]},\"results\":[\"any\"],\"sender_endpoint\":null,\"sender_id\":null}");
-
-                    // Assert
-                    addedOutput.Should().NotBeNull();
-                    addedOutput!.Input.Requests.Should().HaveCount(1);
-
-                    addedOutput.Input.Requests[0].Id.Should().Be("id1");
-                    addedOutput.Input.Requests[0].Raw.Should().Be("test-command");
-                    addedOutput.Input.BatchId.Should().BeNull();
-
-                    addedOutput.Results.Should().HaveCount(1);
-                    addedOutput.Results[0].Should().Be("any");
+                    jsonResponse.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"test-command\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}");
                 }
             }
         }
@@ -94,7 +74,7 @@ namespace OneImlx.Terminal.Server
         public async Task RouteCommand_Throws_When_Processor_Is_Not_Processing()
         {
             // Arrange
-            var input = TerminalInput.Single("test-id", "test-command");
+            var input = TerminalInputOutput.Single("test-id", "test-command");
             var context = new DefaultHttpContext();
 
             // Create a MemoryStream to simulate the HTTP request body with the serialized command
@@ -123,7 +103,7 @@ namespace OneImlx.Terminal.Server
         public async Task RouteCommand_Throws_When_Router_Is_Not_Running()
         {
             // Arrange
-            var input = TerminalInput.Single("test-id", "test-command");
+            var input = TerminalInputOutput.Single("test-id", "test-command");
             var context = new DefaultHttpContext();
 
             // Create a MemoryStream to simulate the HTTP request body with the serialized command

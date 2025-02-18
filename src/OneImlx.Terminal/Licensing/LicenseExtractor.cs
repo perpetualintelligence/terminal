@@ -302,8 +302,6 @@ namespace OneImlx.Terminal.Licensing
                 LicenseQuota.Create(terminalOptions.Licensing.LicensePlan));
         }
 
-        private readonly string checkLicUrl = "https://api.perpetualintelligence.com/public/checklicense";
-        private readonly string fallbackCheckLicUrl = "https://piapim.azure-api.net/public/checklicense";
         private readonly IHttpClientFactory? httpClientFactory;
         private readonly ILicenseDebugger licenseDebugger;
         private readonly ILogger<LicenseExtractor> logger;

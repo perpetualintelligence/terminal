@@ -36,7 +36,7 @@ namespace OneImlx.Terminal.Client.Extensions
                 .ReturnsAsync(new HttpResponseMessage
                 {
                     // Any response we do not validate response here only the request.
-                    Content = JsonContent.Create(new TerminalOutput(TerminalInput.Batch("any_bid", [], []), [], null, null))
+                    Content = JsonContent.Create(TerminalInputOutput.Batch("any_bid", [], [], null, null))
                 });
 
             _httpClient = new HttpClient(_httpMessageHandlerMock.Object)
@@ -53,12 +53,12 @@ namespace OneImlx.Terminal.Client.Extensions
             var commands = new[] { "command1", "command2", "command3" };
 
             // Act
-            TerminalInput input = TerminalInput.Batch(Guid.NewGuid().ToString(), cmdIds, commands);
-            TerminalOutput? output = await _httpClient.SendToTerminalAsync(input, CancellationToken.None);
+            TerminalInputOutput input = TerminalInputOutput.Batch(Guid.NewGuid().ToString(), cmdIds, commands);
+            await _httpClient.SendToTerminalAsync(input, CancellationToken.None);
 
             // Verify that the HTTP request content was correct
             _capturedRequest!.RequestUri.Should().Be(new Uri("http://localhost/oneimlx/terminal/httprouter"));
-            TerminalInput? actualContent = await _capturedRequest.Content!.ReadFromJsonAsync<TerminalInput>();
+            TerminalInputOutput? actualContent = await _capturedRequest.Content!.ReadFromJsonAsync<TerminalInputOutput>();
             actualContent.Should().NotBeNull();
             actualContent!.Count.Should().Be(3);
 
@@ -82,12 +82,12 @@ namespace OneImlx.Terminal.Client.Extensions
             var command = "test-command";
 
             // Act
-            TerminalInput input = TerminalInput.Single("cmd1", command);
-            TerminalOutput? output = await _httpClient.SendToTerminalAsync(input, CancellationToken.None);
+            TerminalInputOutput input = TerminalInputOutput.Single("cmd1", command);
+            await _httpClient.SendToTerminalAsync(input, CancellationToken.None);
 
             // Verify that the HTTP request content was correct
             _capturedRequest!.RequestUri.Should().Be(new Uri("http://localhost/oneimlx/terminal/httprouter"));
-            TerminalInput? actualContent = await _capturedRequest.Content!.ReadFromJsonAsync<TerminalInput>();
+            TerminalInputOutput? actualContent = await _capturedRequest.Content!.ReadFromJsonAsync<TerminalInputOutput>();
             actualContent.Should().NotBeNull();
             actualContent!.Count.Should().Be(1);
             actualContent[0].Id.Should().Be("cmd1");

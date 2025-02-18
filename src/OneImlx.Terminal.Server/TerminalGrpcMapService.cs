@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Grpc.Core;
+using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Runtime;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Grpc.Core;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Server
 {
@@ -37,7 +37,7 @@ namespace OneImlx.Terminal.Server
         /// <summary>
         /// Routes the <see cref="TerminalGrpcRouterProtoInput"/> to the appropriate command runner.
         /// </summary>
-        /// <param name="protoInput">The gRPC input containing the <see cref="TerminalInput"/>.</param>
+        /// <param name="protoInput">The gRPC input containing the <see cref="TerminalInputOutput"/>.</param>
         /// <param name="context">The gRPC server call context.</param>
         /// <returns>A task representing the asynchronous operation, including the <see cref="TerminalGrpcRouterProtoOutput"/>.</returns>
         /// <exception cref="TerminalException">Thrown when the terminal gRPC router is not running.</exception>
@@ -58,18 +58,19 @@ namespace OneImlx.Terminal.Server
             }
 
             // Convert to terminal input.
-            TerminalInput? input = JsonSerializer.Deserialize<TerminalInput>(protoInput.InputJson);
+            TerminalInputOutput? input = JsonSerializer.Deserialize<TerminalInputOutput>(protoInput.InputJson);
             if (input == null || input.Count <= 0)
             {
-                throw new TerminalException(TerminalErrors.MissingCommand, "The input is missing in the gRPC request.");
+                throw new TerminalException(TerminalErrors.MissingCommand, "The input requests are missing in the gRPC route.");
             }
 
-            TerminalOutput? output = await terminalProcessor.ExecuteAsync(input, senderId: null, senderEndpoint: null);
+            // Execute the commands
+            await terminalProcessor.ExecuteAsync(input);
 
             // Return the terminal output to the client.
             var protoOutput = new TerminalGrpcRouterProtoOutput
             {
-                OutputJson = JsonSerializer.Serialize(output)
+                OutputJson = JsonSerializer.Serialize(input)
             };
             return protoOutput;
         }

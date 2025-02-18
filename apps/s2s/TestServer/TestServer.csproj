@@ -9,8 +9,7 @@
   </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore.Server" Version="2.66.0" />
-        <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.66.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using OneImlx.Shared.Infrastructure;
 using OneImlx.Terminal.Client.Extensions;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Declarative;
@@ -34,6 +35,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             try
             {
                 stopwatch.Restart();
+                _commandCount = 0;
 
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "HTTP concurrent and asynchronous demo");
 
@@ -49,33 +51,69 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 stopwatch.Stop();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"{maxClients * 12} requests completed by {maxClients} HTTP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"{_commandCount} requests completed by {maxClients} HTTP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
         }
 
         private async Task SendHttpCommandsAsync(HttpClient client, int clientIndex, CancellationToken cToken)
         {
-            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6"];
-            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2"];
+            string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6", "cmd7"];
+            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2", "ts grp1 grp2 cmd2 invalid"];
 
             try
             {
                 foreach (var (cmdId, command) in cmdIds.Zip(commands))
                 {
-                    TerminalInput single = TerminalInput.Single(cmdId, command);
-                    var output = await client.SendToTerminalAsync(single, cToken);
+                    TerminalInputOutput single = TerminalInputOutput.Single(cmdId, command);
+                    TerminalInputOutput? output = await client.SendToTerminalAsync(single, cToken);
 
-                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={output?.Results[0] ?? "No Response"}");
+                    if (output == null)
+                    {
+                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => No Response");
+                        continue;
+                    }
+
+                    string result = output.Requests[0].Result?.ToString() ?? "No Result";
+                    if (output.Requests[0].IsError)
+                    {
+                        Error error = output.GetDeserializedResult<Error>(0);
+                        result = error.FormatDescription();
+
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={result}");
+                    }
+                    else
+                    {
+                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={result}");
+                    }
+
+                    _commandCount += 1;
                 }
 
                 string batchId = $"batch{clientIndex}";
-                TerminalInput batch = TerminalInput.Batch(batchId, cmdIds, commands);
-                var batchOutput = await client.SendToTerminalAsync(batch, cToken);
+                TerminalInputOutput batch = TerminalInputOutput.Batch(batchId, cmdIds, commands);
+                TerminalInputOutput? batchOutput = await client.SendToTerminalAsync(batch, cToken);
                 for (int idx = 0; idx < batch.Requests.Length; ++idx)
                 {
                     var request = batch.Requests[idx];
-                    var result = batchOutput?.Results[idx];
-                    await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
+                    if (batchOutput == null)
+                    {
+                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={"No Response"}");
+                        continue;
+                    }
+
+                    string result = batchOutput.Requests[idx].Result?.ToString() ?? "No Result";
+                    if (batchOutput.Requests[idx].IsError)
+                    {
+                        Error error = batchOutput.GetDeserializedResult<Error>(idx);
+                        result = error.FormatDescription();
+                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
+                    }
+                    else
+                    {
+                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
+                    }
+
+                    _commandCount += 1;
                 }
             }
             catch (HttpRequestException ex)
@@ -112,5 +150,6 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
         private readonly IHttpClientFactory httpClientFactory;
         private readonly Stopwatch stopwatch = new();
         private readonly ITerminalConsole terminalConsole;
+        private int _commandCount;
     }
 }

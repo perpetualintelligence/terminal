@@ -246,7 +246,7 @@ namespace OneImlx.Terminal.Hosting
 
         /// <summary>
         /// This method check the mandatory configuration options. Applications cannot customize or change the mandatory
-        /// configuration options, but they can perform additional configuration checks with <see cref="CheckHostApplicationConfigurationAsync(TerminalOptions)"/>.
+        /// configuration options, but they can perform additional configuration checks with <see cref="CheckHostApplicationConfigurationAsync(IOptions{TerminalOptions})"/>.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <returns></returns>

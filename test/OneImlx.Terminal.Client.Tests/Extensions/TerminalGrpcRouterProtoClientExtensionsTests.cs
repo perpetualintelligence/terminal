@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Client.Extensions
             var commands = new[] { "command1", "command2", "command3" };
 
             // Act
-            TerminalInput input = TerminalInput.Batch("batch1", cmdIds, commands);
+            TerminalInputOutput input = TerminalInputOutput.Batch("batch1", cmdIds, commands);
             var response = await grpcClientMock.Object.SendToTerminalAsync(input, CancellationToken.None);
 
             // Assert
@@ -48,7 +48,7 @@ namespace OneImlx.Terminal.Client.Extensions
 
             // Validate the captured request with FluentAssertions
             capturedRequest.Should().NotBeNull();
-            capturedRequest!.InputJson.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"raw\":\"command1\"},{\"id\":\"id2\",\"raw\":\"command2\"},{\"id\":\"id3\",\"raw\":\"command3\"}]}");
+            capturedRequest!.InputJson.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"command1\",\"result\":null},{\"id\":\"id2\",\"is_error\":false,\"raw\":\"command2\",\"result\":null},{\"id\":\"id3\",\"is_error\":false,\"raw\":\"command3\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}");
 
             // Ensure that RouteCommandAsync was called exactly once
             routeCommandCallCount.Should().Be(1); // Using FluentAssertions to verify the call count
@@ -58,7 +58,7 @@ namespace OneImlx.Terminal.Client.Extensions
         public async Task SendToTerminalAsync_Sends_Input_As_Single_Correctly()
         {
             // Act
-            TerminalInput input = TerminalInput.Single("id1", raw: "test-command");
+            TerminalInputOutput input = TerminalInputOutput.Single("id1", raw: "test-command");
             var response = await grpcClientMock.Object.SendToTerminalAsync(input, CancellationToken.None);
 
             // Assert
@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Client.Extensions
 
             // Validate the captured request with FluentAssertions
             capturedRequest.Should().NotBeNull();
-            capturedRequest!.InputJson.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"raw\":\"test-command\"}]}");
+            capturedRequest!.InputJson.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"test-command\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}");
 
             // Ensure that RouteCommandAsync was called exactly once
             routeCommandCallCount.Should().Be(1); // Using FluentAssertions to verify the call count

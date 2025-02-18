@@ -37,7 +37,6 @@ namespace OneImlx.Terminal.Runtime
         /// <param name="options">The configuration options.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
         /// <param name="terminalProcessor">The terminal processing queue.</param>
-        /// <param name="terminalTextHandler">The terminal text handler.</param>
         /// <param name="logger">The logger.</param>
         /// <remarks>
         /// This constructor creates a new instance of the <see cref="TerminalTcpRouter"/> class. It takes several
@@ -47,12 +46,10 @@ namespace OneImlx.Terminal.Runtime
             IOptions<TerminalOptions> options,
             ITerminalExceptionHandler exceptionHandler,
             ITerminalProcessor terminalProcessor,
-            ITerminalTextHandler terminalTextHandler,
             ILogger<TerminalTcpRouter> logger)
         {
             this.exceptionHandler = exceptionHandler;
             this.terminalProcessor = terminalProcessor;
-            this.terminalTextHandler = terminalTextHandler;
             this.options = options;
             this.logger = logger;
             this.tcpClients = new ConcurrentDictionary<string, TcpClient>();
@@ -243,7 +240,7 @@ namespace OneImlx.Terminal.Runtime
             }
         }
 
-        private async Task HandleResponseAsync(TerminalOutput response)
+        private async Task HandleResponseAsync(TerminalInputOutput terminalIO)
         {
             TcpClient? client = null;
             string? clientId = null;
@@ -251,14 +248,14 @@ namespace OneImlx.Terminal.Runtime
             try
             {
                 // Client id is invalid
-                clientId = response.SenderId ?? throw new TerminalException(TerminalErrors.ServerError, "The sender identifier is missing the response.");
+                clientId = terminalIO.SenderId ?? throw new TerminalException(TerminalErrors.ServerError, "The sender identifier is missing the response.");
                 tcpClients.TryGetValue(clientId, out client);
                 if (client == null)
                 {
                     throw new TerminalException(TerminalErrors.ServerError, "The client id is not found in the client collection. client={0}", clientId);
                 }
 
-                byte[] responseBytes = TerminalServices.DelimitBytes(JsonSerializer.SerializeToUtf8Bytes(response), options.Value.Router.StreamDelimiter);
+                byte[] responseBytes = TerminalServices.DelimitBytes(JsonSerializer.SerializeToUtf8Bytes(terminalIO), options.Value.Router.StreamDelimiter);
                 await client.GetStream().WriteAsync(responseBytes, 0, responseBytes.Length);
             }
             catch (Exception ex)
@@ -290,7 +287,6 @@ namespace OneImlx.Terminal.Runtime
         private readonly ConcurrentDictionary<string, bool> tcpClientClosure;
         private readonly ConcurrentDictionary<string, TcpClient> tcpClients;
         private readonly ITerminalProcessor terminalProcessor;
-        private readonly ITerminalTextHandler terminalTextHandler;
         private TcpListener? _server;
         private SemaphoreSlim? clientSemiphore;
     }
