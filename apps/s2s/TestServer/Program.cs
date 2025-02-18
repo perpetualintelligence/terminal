@@ -11,11 +11,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Apps.TestServer.Runners;
-using OneImlx.Terminal.Server;
-using OneImlx.Terminal.Server.Extensions;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Server;
+using OneImlx.Terminal.Server.Extensions;
 using OneImlx.Terminal.Stores;
 using Serilog;
 
@@ -93,7 +93,6 @@ namespace OneImlx.Terminal.Apps.TestServer
                 case "grpc":
                     terminalBuilder.AddTerminalRouter<TerminalGrpcRouter, TerminalGrpcRouterContext>();
                     services.AddGrpc();
-                    services.AddGrpcReflection();
                     break;
 
                 case "http":
@@ -231,7 +230,6 @@ namespace OneImlx.Terminal.Apps.TestServer
             host = app;
 
             app.MapGrpcService<TerminalGrpcMapService>();
-            app.MapGrpcReflectionService();
 
             await app.StartAsync();
             await StartRouterAsync();
