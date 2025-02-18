@@ -13,12 +13,12 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <!--<PackageReference Include="OneImlx.Terminal.Server" Version="6.0.0-preview.241214387" />-->
+        <PackageReference Include="OneImlx.Terminal.Server" Version="6.0.0-rc.250218417" />
     </ItemGroup>
 
-    <ItemGroup>
+    <!--<ItemGroup>
       <ProjectReference Include="..\..\..\src\OneImlx.Terminal.Server\OneImlx.Terminal.Server.csproj" />
-    </ItemGroup>
+    </ItemGroup>-->
 
     <ItemGroup>
       <None Update="appsettings.json">
