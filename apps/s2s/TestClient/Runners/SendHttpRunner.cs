@@ -35,6 +35,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             try
             {
                 stopwatch.Restart();
+                _commandCount = 0;
 
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "HTTP concurrent and asynchronous demo");
 
@@ -50,7 +51,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 stopwatch.Stop();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"{maxClients * 14} requests completed by {maxClients} HTTP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"{_commandCount} requests completed by {maxClients} HTTP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
         }
 
@@ -84,6 +85,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                     {
                         await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={result}");
                     }
+
+                    _commandCount += 1;
                 }
 
                 string batchId = $"batch{clientIndex}";
@@ -109,6 +112,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                     {
                         await terminalConsole.WriteLineAsync($"[Client {clientIndex}] BatchId=\"{batchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={result ?? "No Response"}");
                     }
+
+                    _commandCount += 1;
                 }
             }
             catch (HttpRequestException ex)
@@ -145,5 +150,6 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
         private readonly IHttpClientFactory httpClientFactory;
         private readonly Stopwatch stopwatch = new();
         private readonly ITerminalConsole terminalConsole;
+        private int _commandCount;
     }
 }

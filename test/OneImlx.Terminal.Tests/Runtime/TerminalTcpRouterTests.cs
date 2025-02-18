@@ -301,7 +301,6 @@ namespace OneImlx.Terminal.Runtime.Tests
                 Microsoft.Extensions.Options.Options.Create(options),
                 exceptionHandlerMock.Object,
                 terminalProcessorMock.Object,
-                textHandlerMock.Object,
                 loggerMock);
         }
 

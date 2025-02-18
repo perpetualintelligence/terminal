@@ -211,6 +211,15 @@ namespace OneImlx.Terminal.Runtime
                 {
                     throw new TerminalException(TerminalErrors.InvalidRequest, "The input bytes cannot be deserialized to terminal input.");
                 }
+
+                if (input.SenderId != null && input.SenderId != senderId)
+                {
+                    throw new TerminalException(TerminalErrors.InvalidRequest, "The sender id does not match the input.");
+                }
+
+                // Streams routers (TCP, UDP) only deal with bytes so they cannot set this.
+                input.SenderId = senderId;
+                input.SenderEndpoint = senderEndpoint;
                 await AddAsync(input);
             }
         }

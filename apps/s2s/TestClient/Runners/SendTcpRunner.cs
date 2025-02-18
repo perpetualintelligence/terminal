@@ -45,6 +45,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             try
             {
                 stopwatch.Restart();
+                _commandCount = 0;
 
                 await terminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, "TCP concurrent and asynchronous demo");
 
@@ -61,20 +62,19 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             finally
             {
                 stopwatch.Stop();
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"Completed {14 * maxClients} requests from {maxClients} TCP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Green, $"Completed {maxClients * _commandCount} requests from {maxClients} TCP client tasks in {stopwatch.Elapsed.TotalMilliseconds} milliseconds.");
             }
         }
 
         private async Task ReceiveResponsesAsync(TcpClient tcpClient, int clientIndex, CancellationToken cToken)
         {
             int processedRequests = 0;
-            int expectedRequests = 14; // 6 Individual commands + 6 commands from Batch
             try
             {
                 using NetworkStream stream = tcpClient.GetStream();
                 while (tcpClient.Connected)
                 {
-                    if (processedRequests == expectedRequests)
+                    if (processedRequests == _commandCount)
                     {
                         break;
                     }
@@ -142,14 +142,17 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
             }
             finally
             {
-                await terminalConsole.WriteLineColorAsync(ConsoleColor.Blue, $"[Client {clientIndex}] Streaming status: Expected Requests={expectedRequests} Actual Requests={processedRequests}");
+                await terminalConsole.WriteLineColorAsync(ConsoleColor.Blue, $"[Client {clientIndex}] Streaming status: Expected={_commandCount} Processed={processedRequests}");
             }
         }
 
         private async Task SendCommandsAsync(TcpClient tcpClient, int clientIndex, CancellationToken cToken)
         {
             string[] cmdIds = ["cmd1", "cmd2", "cmd3", "cmd4", "cmd5", "cmd6", "cmd7"];
-            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2", "invalid"];
+            string[] commands = ["ts", "ts -v", "ts grp1", "ts grp1 cmd1", "ts grp1 grp2", "ts grp1 grp2 cmd2", "ts invalid"];
+
+            // Single and bulk commands (2) * 7 = 14
+            _commandCount = commands.Length * 2;
 
             for (int idx = 0; idx < commands.Length; ++idx)
             {
@@ -209,5 +212,6 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly IOptions<TerminalOptions> terminalOptions;
         private readonly ITerminalTextHandler terminalTextHandler;
+        private int _commandCount;
     }
 }
