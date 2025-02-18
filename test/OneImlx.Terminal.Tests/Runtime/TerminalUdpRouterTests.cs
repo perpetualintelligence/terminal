@@ -70,7 +70,7 @@ namespace OneImlx.Terminal.Runtime
             var testException = new Exception("Test exception");
 
             // Setup the terminal processor to throw an exception during StartProcessing
-            terminalProcessorMock.Setup(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>())).Throws(testException);
+            terminalProcessorMock.Setup(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalInputOutput, Task>>())).Throws(testException);
 
             // Act
             await udpRouter.RunAsync(context);
@@ -120,7 +120,7 @@ namespace OneImlx.Terminal.Runtime
             udpRouter.IsRunning.Should().BeFalse();
 
             // Assert
-            terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>()), Times.Once);
+            terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalInputOutput, Task>>()), Times.Once);
             terminalProcessorMock.Verify(x => x.StreamAsync(bytesSend, bytesSend.Length, It.IsAny<string>(), It.Is<string>(ctx => ctx.Contains("127.0.0.1"))), Times.Once);
             terminalProcessorMock.Verify(x => x.StopProcessingAsync(options.Router.Timeout), Times.Once);
         }

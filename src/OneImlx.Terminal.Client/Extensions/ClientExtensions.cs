@@ -31,12 +31,9 @@ namespace OneImlx.Terminal.Client.Extensions
         /// <param name="serializeOptions">
         /// The <see cref="JsonSerializerOptions"/> used to serialize the input. Defaults to <c>null</c>.
         /// </param>
-        /// <returns>
-        /// A task representing the asynchronous operation. The task result contains a <see cref="TerminalOutput"/>
-        /// object representing the response, or <c>null</c> if no response is returned.
-        /// </returns>
+        /// <returns>A task representing the asynchronous operation.</returns>
         /// <remarks>The HTTP POST request is sent to the endpoint <c>oneimlx/terminal/httprouter</c> on the server.</remarks>
-        public static async Task<TerminalOutput?> SendToTerminalAsync(this HttpClient httpClient, TerminalInputOutput input, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
+        public static async Task<TerminalInputOutput?> SendToTerminalAsync(this HttpClient httpClient, TerminalInputOutput input, CancellationToken cancellationToken, JsonSerializerOptions? serializeOptions = null)
         {
             if (input == null)
             {
@@ -46,7 +43,7 @@ namespace OneImlx.Terminal.Client.Extensions
             serializeOptions ??= JsonSerializerOptions.Default;
             var response = await httpClient.PostAsJsonAsync("oneimlx/terminal/httprouter", input, serializeOptions, cancellationToken);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<TerminalOutput>(serializeOptions, cancellationToken);
+            return await response.Content.ReadFromJsonAsync<TerminalInputOutput>(serializeOptions, cancellationToken);
         }
 
         /// <summary>

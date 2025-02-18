@@ -134,7 +134,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             ]);
 
             var json = JsonSerializer.Serialize(terminalInput);
-            json.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"command1\",\"result\":null},{\"id\":\"id2\",\"is_error\":false,\"raw\":\"command2\",\"result\":null}]}");
+            json.Should().Be("{\"batch_id\":\"batch1\",\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"command1\",\"result\":null},{\"id\":\"id2\",\"is_error\":false,\"raw\":\"command2\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}");
         }
 
         [Fact]

@@ -56,34 +56,15 @@ namespace OneImlx.Terminal.Server
                     // Mock the router and processor behavior
                     mockTerminalRouter.Setup(x => x.IsRunning).Returns(true);
                     mockProcessor.Setup(x => x.IsProcessing).Returns(true);
-
-                    TerminalOutput? addedOutput = null;
-                    mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInputOutput>(), It.IsAny<string>(), It.IsAny<string>()))
-                        .Callback<TerminalInputOutput, string?, string?>((input, senderId, senderEndpoint) =>
-                        {
-                            // Create and assign a mock response based on the input parameters
-                            addedOutput = new TerminalOutput(terminalInput, senderId, senderEndpoint);
-                        })
-                        .ReturnsAsync(() => addedOutput!);
+                    mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInputOutput>()));
 
                     // Act
-                    addedOutput.Should().BeNull();
                     await terminalHttpMapService.RouteAsync(context);
                     context.Response.ContentType.Should().Be("application/json; charset=utf-8");
                     context.Response.Body.Seek(0, SeekOrigin.Begin);
                     using var reader = new StreamReader(context.Response.Body);
                     string jsonResponse = await reader.ReadToEndAsync();
-                    jsonResponse.Should().Be("{\"input\":{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"test-command\",\"result\":null}]},\"sender_endpoint\":null,\"sender_id\":null}");
-
-                    // Assert
-                    addedOutput.Should().NotBeNull();
-                    addedOutput!.Input.Requests.Should().HaveCount(1);
-
-                    addedOutput.Input.Requests[0].Id.Should().Be("id1");
-                    addedOutput.Input.Requests[0].Raw.Should().Be("test-command");
-                    addedOutput.Input.BatchId.Should().BeNull();
-
-                    addedOutput.Input.Requests[0].Result.Should().BeNull();
+                    jsonResponse.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"test-command\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}");
                 }
             }
         }

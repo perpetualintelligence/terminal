@@ -61,7 +61,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task Add_Without_Processing_And_Background_Throws()
         {
             // Add with sender endpoint and sender id
-            Func<Task> act = async () => await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id1", "command1"), "sender_1", "sender_endpoint_1");
+            Func<Task> act = async () => await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id1", "command1", "sender_1", "sender_endpoint_1"));
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_request")
                 .WithErrorDescription("The terminal processor is not running.");
@@ -89,8 +89,8 @@ namespace OneImlx.Terminal.Runtime
                 ++idx;
                 string[] cmdIds = [$"id_{idx}_0", $"id_{idx}_1", $"id_{idx}_2"];
                 string[] cmds = [$"command_{idx}_0", $"command_{idx}_1", $"command_{idx}_2"];
-                TerminalInputOutput batch = TerminalInputOutput.Batch("batch1", cmdIds, cmds);
-                return _terminalProcessor.AddAsync(batch, "sender", "endpoint");
+                TerminalInputOutput batch = TerminalInputOutput.Batch("batch1", cmdIds, cmds, "sender", "endpoint");
+                return _terminalProcessor.AddAsync(batch);
             });
             await Task.WhenAll(tasks);
 
@@ -107,7 +107,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Act
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id1", "command1"), "sender", "endpoint");
+            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id1", "command1", "sender", "endpoint"));
             await Task.Delay(500);
 
             // Assert exception handler was called
@@ -125,7 +125,7 @@ namespace OneImlx.Terminal.Runtime
                 .Callback<CommandContext>(c => routedCommands.Add(c.Request.Raw));
 
             // Act
-            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id1", "command1"), "sender", "endpoint");
+            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id1", "command1", "sender", "endpoint"));
             await Task.Delay(500);
 
             // Assert only a single command was processed
@@ -145,7 +145,7 @@ namespace OneImlx.Terminal.Runtime
             int idx = 1;
             var tasks = Enumerable.Range(0, 500).Select(e =>
             {
-                return _terminalProcessor.AddAsync(TerminalInputOutput.Single($"id{idx++}", $"command{idx++}"), "sender", "endpoint");
+                return _terminalProcessor.AddAsync(TerminalInputOutput.Single($"id{idx++}", $"command{idx++}", "sender", "endpoint"));
             });
             await Task.WhenAll(tasks);
 
@@ -228,28 +228,28 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Create batches for each command collection
-            var batch1 = TerminalInputOutput.Batch("batch1", commands1.Keys.Cast<string>().ToArray(), commands1.Values.Cast<string>().ToArray());
-            var batch2 = TerminalInputOutput.Batch("batch2", commands2.Keys.Cast<string>().ToArray(), commands2.Values.Cast<string>().ToArray());
-            var batch3 = TerminalInputOutput.Batch("batch3", commands3.Keys.Cast<string>().ToArray(), commands3.Values.Cast<string>().ToArray());
-            var batch4 = TerminalInputOutput.Batch("batch4", commands4.Keys.Cast<string>().ToArray(), commands4.Values.Cast<string>().ToArray());
-            var batch5 = TerminalInputOutput.Batch("batch5", commands5.Keys.Cast<string>().ToArray(), commands5.Values.Cast<string>().ToArray());
-            var batch6 = TerminalInputOutput.Batch("batch6", commands6.Keys.Cast<string>().ToArray(), commands6.Values.Cast<string>().ToArray());
-            var batch7 = TerminalInputOutput.Batch("batch7", commands7.Keys.Cast<string>().ToArray(), commands7.Values.Cast<string>().ToArray());
-            var batch8 = TerminalInputOutput.Batch("batch8", commands8.Keys.Cast<string>().ToArray(), commands8.Values.Cast<string>().ToArray());
-            var batch9 = TerminalInputOutput.Batch("batch9", commands9.Keys.Cast<string>().ToArray(), commands9.Values.Cast<string>().ToArray());
-            var batch10 = TerminalInputOutput.Batch("batch10", commands10.Keys.Cast<string>().ToArray(), commands10.Values.Cast<string>().ToArray());
+            var batch1 = TerminalInputOutput.Batch("batch1", commands1.Keys.Cast<string>().ToArray(), commands1.Values.Cast<string>().ToArray(), "sender1", "endpoint1");
+            var batch2 = TerminalInputOutput.Batch("batch2", commands2.Keys.Cast<string>().ToArray(), commands2.Values.Cast<string>().ToArray(), "sender2", "endpoint2");
+            var batch3 = TerminalInputOutput.Batch("batch3", commands3.Keys.Cast<string>().ToArray(), commands3.Values.Cast<string>().ToArray(), "sender3", "endpoint3");
+            var batch4 = TerminalInputOutput.Batch("batch4", commands4.Keys.Cast<string>().ToArray(), commands4.Values.Cast<string>().ToArray(), "sender4", "endpoint4");
+            var batch5 = TerminalInputOutput.Batch("batch5", commands5.Keys.Cast<string>().ToArray(), commands5.Values.Cast<string>().ToArray(), "sender5", "endpoint5");
+            var batch6 = TerminalInputOutput.Batch("batch6", commands6.Keys.Cast<string>().ToArray(), commands6.Values.Cast<string>().ToArray(), "sender6", "endpoint6");
+            var batch7 = TerminalInputOutput.Batch("batch7", commands7.Keys.Cast<string>().ToArray(), commands7.Values.Cast<string>().ToArray(), "sender7", "endpoint7");
+            var batch8 = TerminalInputOutput.Batch("batch8", commands8.Keys.Cast<string>().ToArray(), commands8.Values.Cast<string>().ToArray(), "sender8", "endpoint8");
+            var batch9 = TerminalInputOutput.Batch("batch9", commands9.Keys.Cast<string>().ToArray(), commands9.Values.Cast<string>().ToArray(), "sender9", "endpoint9");
+            var batch10 = TerminalInputOutput.Batch("batch10", commands10.Keys.Cast<string>().ToArray(), commands10.Values.Cast<string>().ToArray(), "sender10", "endpoint10");
 
             // Add all batches asynchronously
-            Task addBatch1 = _terminalProcessor.AddAsync(batch1, "sender1", "endpoint1");
-            Task addBatch2 = _terminalProcessor.AddAsync(batch2, "sender2", "endpoint2");
-            Task addBatch3 = _terminalProcessor.AddAsync(batch3, "sender3", "endpoint3");
-            Task addBatch4 = _terminalProcessor.AddAsync(batch4, "sender4", "endpoint4");
-            Task addBatch5 = _terminalProcessor.AddAsync(batch5, "sender5", "endpoint5");
-            Task addBatch6 = _terminalProcessor.AddAsync(batch6, "sender6", "endpoint6");
-            Task addBatch7 = _terminalProcessor.AddAsync(batch7, "sender7", "endpoint7");
-            Task addBatch8 = _terminalProcessor.AddAsync(batch8, "sender8", "endpoint8");
-            Task addBatch9 = _terminalProcessor.AddAsync(batch9, "sender9", "endpoint9");
-            Task addBatch10 = _terminalProcessor.AddAsync(batch10, "sender10", "endpoint10");
+            Task addBatch1 = _terminalProcessor.AddAsync(batch1);
+            Task addBatch2 = _terminalProcessor.AddAsync(batch2);
+            Task addBatch3 = _terminalProcessor.AddAsync(batch3);
+            Task addBatch4 = _terminalProcessor.AddAsync(batch4);
+            Task addBatch5 = _terminalProcessor.AddAsync(batch5);
+            Task addBatch6 = _terminalProcessor.AddAsync(batch6);
+            Task addBatch7 = _terminalProcessor.AddAsync(batch7);
+            Task addBatch8 = _terminalProcessor.AddAsync(batch8);
+            Task addBatch9 = _terminalProcessor.AddAsync(batch9);
+            Task addBatch10 = _terminalProcessor.AddAsync(batch10);
 
             // Wait for all batches to be processed
             await Task.WhenAll(addBatch1, addBatch2, addBatch3, addBatch4, addBatch5, addBatch6, addBatch7, addBatch8, addBatch9, addBatch10);
@@ -259,7 +259,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Verify all commands are processed
             routedCommands.Should().HaveCount(10000);
-            _terminalProcessor.UnprocessedInputs.Should().HaveCount(0);
+            _terminalProcessor.UnprocessedIOs.Should().HaveCount(0);
 
             // Collect the processed commands into groups by their prefixes (e.g., "command_1_", "command_2_", etc.)
             Dictionary<string, List<string>> groupedCommands = routedCommands.GroupBy(r => r.Split('_')[1])
@@ -296,8 +296,8 @@ namespace OneImlx.Terminal.Runtime
             {
                 allCommands.Add($"id{i}", $"command{i}");
             }
-            var longBatch = TerminalInputOutput.Batch("batch_id", allCommands.Keys.ToArray(), allCommands.Values.ToArray());
-            await _terminalProcessor.AddAsync(longBatch, "sender", "endpoint");
+            var longBatch = TerminalInputOutput.Batch("batch_id", allCommands.Keys.ToArray(), allCommands.Values.ToArray(), "sender", "endpoint");
+            await _terminalProcessor.AddAsync(longBatch);
 
             await _terminalProcessor.StopProcessingAsync(5000);
 
@@ -305,7 +305,7 @@ namespace OneImlx.Terminal.Runtime
             // code is not too slow. We are also checking that all commands are present in the batch at the same time
             // reducing the batch size so that the test does not take too long to run.
             routedCommands.Should().HaveCount(100000);
-            _terminalProcessor.UnprocessedInputs.Should().HaveCount(0);
+            _terminalProcessor.UnprocessedIOs.Should().HaveCount(0);
             foreach (var request in routedCommands)
             {
                 if (allCommands.ContainsValue(request.Value))
@@ -335,11 +335,12 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             var longRaw = new string('A', 1001);
-            TerminalOutput? output = await _terminalProcessor.ExecuteAsync(TerminalInputOutput.Single("id1", longRaw), "sender", "endpoint");
-            output.Should().NotBeNull();
-            output!.Input.Requests[0].Result.Should().BeOfType<Error>();
 
-            Error error = (Error)output.Input.Requests[0].Result!;
+            TerminalInputOutput terminalIO = TerminalInputOutput.Single("id1", longRaw, "sender", "endpoint");
+            await _terminalProcessor.ExecuteAsync(terminalIO);
+            terminalIO.Requests[0].Result.Should().BeOfType<Error>();
+
+            Error error = (Error)terminalIO.Requests[0].Result!;
             error.FormatDescription().Should().Be("The command length exceeds the maximum allowed. max=1000");
         }
 
@@ -371,9 +372,8 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            TerminalInputOutput batch = TerminalInputOutput.Batch("id1", ["id1", "id2", "id3"], ["command1", "command2", "command3"]);
-
-            var response = await _terminalProcessor.ExecuteAsync(batch, "sender_1", "sender_endpoint_1");
+            TerminalInputOutput batch = TerminalInputOutput.Batch("id1", ["id1", "id2", "id3"], ["command1", "command2", "command3"], "sender_1", "sender_endpoint_1");
+            await _terminalProcessor.ExecuteAsync(batch);
 
             // Assert route context and response
             routeContext.Should().NotBeNull();
@@ -382,20 +382,19 @@ namespace OneImlx.Terminal.Runtime
             routeContext.Properties!["sender_id"].Should().Be("sender_1");
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
-            response.Should().NotBeNull();
-            response!.Input.Requests.Should().HaveCount(3);
+            batch.Requests.Should().HaveCount(3);
 
             // Assert first request and result
-            response.Input.Requests[0].Raw.Should().Be("command1");
-            response.Input.Requests[0].Result.Should().Be("sender_result1");
+            batch.Requests[0].Raw.Should().Be("command1");
+            batch.Requests[0].Result.Should().Be("sender_result1");
 
             // Assert second request and result
-            response.Input.Requests[1].Raw.Should().Be("command2");
-            response.Input.Requests[1].Result.Should().Be("sender_result2");
+            batch.Requests[1].Raw.Should().Be("command2");
+            batch.Requests[1].Result.Should().Be("sender_result2");
 
             // Assert third request and result
-            response.Input.Requests[2].Raw.Should().Be("command3");
-            response.Input.Requests[2].Result.Should().Be("sender_result3");
+            batch.Requests[2].Raw.Should().Be("command3");
+            batch.Requests[2].Result.Should().Be("sender_result3");
         }
 
         [Fact]
@@ -430,8 +429,8 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            TerminalInputOutput input = TerminalInputOutput.Batch("id1", new[] { "id1", "id2", "id3", "id4", "id5" }, new[] { "command1", "command2", "command3", "command4", "command5" });
-            var response = await _terminalProcessor.ExecuteAsync(input, "sender_1", "sender_endpoint_1");
+            TerminalInputOutput terminalIO = TerminalInputOutput.Batch("id1", ["id1", "id2", "id3", "id4", "id5"], ["command1", "command2", "command3", "command4", "command5"], "sender_1", "sender_endpoint_1");
+            await _terminalProcessor.ExecuteAsync(terminalIO);
 
             // Assert route context and response
             routeContext.Should().NotBeNull();
@@ -440,23 +439,21 @@ namespace OneImlx.Terminal.Runtime
             routeContext.Properties!["sender_id"].Should().Be("sender_1");
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
-            response.Should().NotBeNull();
-
             // Assert requests and results
-            response!.Input.Requests[0].Raw.Should().Be("command1");
-            response.Input.Requests[0].Result.Should().Be("sender_result1");
+            terminalIO.Requests[0].Raw.Should().Be("command1");
+            terminalIO.Requests[0].Result.Should().Be("sender_result1");
 
-            response.Input.Requests[1].Raw.Should().Be("command2");
-            response.Input.Requests[1].Result.Should().Be("sender_result2");
+            terminalIO.Requests[1].Raw.Should().Be("command2");
+            terminalIO.Requests[1].Result.Should().Be("sender_result2");
 
-            response.Input.Requests[2].Raw.Should().Be("command3");
-            response.Input.Requests[2].Result.Should().Be("sender_result3");
+            terminalIO.Requests[2].Raw.Should().Be("command3");
+            terminalIO.Requests[2].Result.Should().Be("sender_result3");
 
-            response.Input.Requests[3].Raw.Should().Be("command4");
-            response.Input.Requests[3].Result.Should().BeNull(); // Command4 returns null
+            terminalIO.Requests[3].Raw.Should().Be("command4");
+            terminalIO.Requests[3].Result.Should().BeNull(); // Command4 returns null
 
-            response.Input.Requests[4].Raw.Should().Be("command5");
-            response.Input.Requests[4].Result.Should().Be("sender_result5");
+            terminalIO.Requests[4].Raw.Should().Be("command5");
+            terminalIO.Requests[4].Result.Should().Be("sender_result5");
         }
 
         [Fact]
@@ -476,7 +473,8 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Act
-            var response = await _terminalProcessor.ExecuteAsync(TerminalInputOutput.Single("id1", "command1"), "sender_1", "sender_endpoint_1");
+            TerminalInputOutput terminalIO = TerminalInputOutput.Single("id1", "command1", "sender_1", "sender_endpoint_1");
+            await _terminalProcessor.ExecuteAsync(terminalIO);
 
             // Make sure context is correctly populated
             routeContext.Should().NotBeNull();
@@ -488,22 +486,21 @@ namespace OneImlx.Terminal.Runtime
             routeContext.TerminalContext.Should().BeSameAs(_mockTerminalRouterContext.Object);
 
             // Make sure response is correct
-            response.Should().NotBeNull();
-            response!.SenderId.Should().Be("sender_1");
-            response.SenderEndpoint.Should().Be("sender_endpoint_1");
+            terminalIO.SenderId.Should().Be("sender_1");
+            terminalIO.SenderEndpoint.Should().Be("sender_endpoint_1");
 
-            response.Input.Requests.Should().HaveCount(1);
-            response.Input.Requests[0].Id.Should().NotBeNullOrWhiteSpace();
-            response.Input.Requests[0].Raw.Should().Be("command1");
-
-            response.Input.Requests[0].Result.Should().Be("sender_result");
+            terminalIO.Requests.Should().HaveCount(1);
+            terminalIO.Requests[0].Id.Should().NotBeNullOrWhiteSpace();
+            terminalIO.Requests[0].Raw.Should().Be("command1");
+            terminalIO.Requests[0].Result.Should().Be("sender_result");
         }
 
         [Fact]
         public async Task ExecuteAsync_Without_Processing_Throws()
         {
             // Act
-            Func<Task> act = async () => await _terminalProcessor.ExecuteAsync(TerminalInputOutput.Single("id", "command1"), "sender", "endpoint");
+            TerminalInputOutput terminalIO = TerminalInputOutput.Single("id1", "command1", "sender_1", "sender_endpoint_1");
+            Func<Task> act = async () => await _terminalProcessor.ExecuteAsync(terminalIO);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("server_error")
                 .WithErrorDescription("The terminal processor is not running.");
@@ -517,7 +514,7 @@ namespace OneImlx.Terminal.Runtime
             _mockExceptionHandler.Setup(e => e.HandleExceptionAsync(It.IsAny<TerminalExceptionHandlerContext>())).Callback<TerminalExceptionHandlerContext>(c => handeledException = c.Exception);
 
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id", "command1"), "sender", "endpoint");
+            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id", "command1", "sender", "endpoint"));
             await Task.Delay(500);
 
             handeledException.Should().NotBeNull();
@@ -533,7 +530,7 @@ namespace OneImlx.Terminal.Runtime
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
 
             // Add with sender endpoint and sender id
-            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id", "command1"), "sender_1", "sender_endpoint_1");
+            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id", "command1", "sender_1", "sender_endpoint_1"));
             await Task.Delay(500);
 
             routeContext.Should().NotBeNull();
@@ -548,7 +545,7 @@ namespace OneImlx.Terminal.Runtime
 
             // Add without sender endpoint and sender id
             routeContext = null;
-            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id", "command2"), null, null);
+            await _terminalProcessor.AddAsync(TerminalInputOutput.Single("id", "command2", null, null));
             await Task.Delay(500);
 
             routeContext.Should().NotBeNull();
@@ -683,7 +680,7 @@ namespace OneImlx.Terminal.Runtime
             processedCommands.Should().BeEquivalentTo(["command1", "command2"]);
 
             // Ensure there are not unprocessed requests since the batch is partial
-            _terminalProcessor.UnprocessedInputs.Should().HaveCount(0);
+            _terminalProcessor.UnprocessedIOs.Should().HaveCount(0);
         }
 
         [Fact]
@@ -716,7 +713,7 @@ namespace OneImlx.Terminal.Runtime
             processedCommand.Should().BeNull();
 
             // Ensure there are not unprocessed requests since the batch is incomplete
-            _terminalProcessor.UnprocessedInputs.Should().HaveCount(0);
+            _terminalProcessor.UnprocessedIOs.Should().HaveCount(0);
         }
 
         [Fact]
@@ -764,7 +761,7 @@ namespace OneImlx.Terminal.Runtime
             processedCommands.ToArray().Should().BeEquivalentTo(commands);
 
             // Ensure no unprocessed requests are left
-            _terminalProcessor.UnprocessedInputs.Should().BeEmpty();
+            _terminalProcessor.UnprocessedIOs.Should().BeEmpty();
         }
 
         [Fact]
@@ -798,7 +795,7 @@ namespace OneImlx.Terminal.Runtime
             processedCommand.Should().Be("command1");
 
             // Ensure no unprocessed requests are left
-            _terminalProcessor.UnprocessedInputs.Should().BeEmpty();
+            _terminalProcessor.UnprocessedIOs.Should().BeEmpty();
         }
 
         [Fact]

@@ -243,7 +243,7 @@ namespace OneImlx.Terminal.Runtime
             }
         }
 
-        private async Task HandleResponseAsync(TerminalOutput response)
+        private async Task HandleResponseAsync(TerminalInputOutput terminalIO)
         {
             TcpClient? client = null;
             string? clientId = null;
@@ -251,14 +251,14 @@ namespace OneImlx.Terminal.Runtime
             try
             {
                 // Client id is invalid
-                clientId = response.SenderId ?? throw new TerminalException(TerminalErrors.ServerError, "The sender identifier is missing the response.");
+                clientId = terminalIO.SenderId ?? throw new TerminalException(TerminalErrors.ServerError, "The sender identifier is missing the response.");
                 tcpClients.TryGetValue(clientId, out client);
                 if (client == null)
                 {
                     throw new TerminalException(TerminalErrors.ServerError, "The client id is not found in the client collection. client={0}", clientId);
                 }
 
-                byte[] responseBytes = TerminalServices.DelimitBytes(JsonSerializer.SerializeToUtf8Bytes(response), options.Value.Router.StreamDelimiter);
+                byte[] responseBytes = TerminalServices.DelimitBytes(JsonSerializer.SerializeToUtf8Bytes(terminalIO), options.Value.Router.StreamDelimiter);
                 await client.GetStream().WriteAsync(responseBytes, 0, responseBytes.Length);
             }
             catch (Exception ex)

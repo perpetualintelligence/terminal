@@ -69,7 +69,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 {
                     TerminalInputOutput single = TerminalInputOutput.Single(cmdId, command);
                     TerminalGrpcRouterProtoOutput response = await client.SendToTerminalAsync(single, cToken);
-                    TerminalOutput? output = JsonSerializer.Deserialize<TerminalOutput>(response.OutputJson);
+                    TerminalInputOutput? output = JsonSerializer.Deserialize<TerminalInputOutput>(response.OutputJson);
 
                     if (output == null)
                     {
@@ -77,12 +77,11 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         continue;
                     }
 
-                    string result = output.Input.Requests[0].Result?.ToString() ?? "No Result";
-                    if (output.Input.Requests[0].IsError)
+                    string result = output.Requests[0].Result?.ToString() ?? "No Result";
+                    if (output.Requests[0].IsError)
                     {
                         Error error = output.GetDeserializedResult<Error>(0);
                         result = error.FormatDescription();
-
                         await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] Request=\"{cmdId}\" Raw=\"{command}\" => Result={result}");
                     }
                     else
@@ -97,7 +96,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 string batchId = $"batch{clientIndex}";
                 TerminalInputOutput batch = TerminalInputOutput.Batch(batchId, cmdIds, commands);
                 TerminalGrpcRouterProtoOutput batchResponse = await client.SendToTerminalAsync(batch, cToken);
-                TerminalOutput? batchOutput = JsonSerializer.Deserialize<TerminalOutput>(batchResponse.OutputJson);
+                TerminalInputOutput? batchOutput = JsonSerializer.Deserialize<TerminalInputOutput>(batchResponse.OutputJson);
 
                 for (int idx = 0; idx < batch.Requests.Length; ++idx)
                 {
@@ -108,8 +107,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         continue;
                     }
 
-                    string result = batchOutput.Input.Requests[idx].Result?.ToString() ?? "No Result";
-                    if (batchOutput.Input.Requests[idx].IsError)
+                    string result = batchOutput.Requests[idx].Result?.ToString() ?? "No Result";
+                    if (batchOutput.Requests[idx].IsError)
                     {
                         Error error = batchOutput.GetDeserializedResult<Error>(idx);
                         result = error.FormatDescription();

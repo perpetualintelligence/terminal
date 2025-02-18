@@ -5,11 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using Grpc.Core;
+using Microsoft.Extensions.Logging;
+using OneImlx.Terminal.Runtime;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Grpc.Core;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Server
 {
@@ -61,15 +61,16 @@ namespace OneImlx.Terminal.Server
             TerminalInputOutput? input = JsonSerializer.Deserialize<TerminalInputOutput>(protoInput.InputJson);
             if (input == null || input.Count <= 0)
             {
-                throw new TerminalException(TerminalErrors.MissingCommand, "The input is missing in the gRPC request.");
+                throw new TerminalException(TerminalErrors.MissingCommand, "The input requests are missing in the gRPC route.");
             }
 
-            TerminalOutput? output = await terminalProcessor.ExecuteAsync(input, senderId: null, senderEndpoint: null);
+            // Execute the commands
+            await terminalProcessor.ExecuteAsync(input);
 
             // Return the terminal output to the client.
             var protoOutput = new TerminalGrpcRouterProtoOutput
             {
-                OutputJson = JsonSerializer.Serialize(output)
+                OutputJson = JsonSerializer.Serialize(input)
             };
             return protoOutput;
         }

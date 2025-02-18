@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -65,7 +64,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                 foreach (var (cmdId, command) in cmdIds.Zip(commands))
                 {
                     TerminalInputOutput single = TerminalInputOutput.Single(cmdId, command);
-                    TerminalOutput? output = await client.SendToTerminalAsync(single, cToken);
+                    TerminalInputOutput? output = await client.SendToTerminalAsync(single, cToken);
 
                     if (output == null)
                     {
@@ -73,8 +72,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         continue;
                     }
 
-                    string result = output.Input.Requests[0].Result?.ToString() ?? "No Result";
-                    if (output.Input.Requests[0].IsError)
+                    string result = output.Requests[0].Result?.ToString() ?? "No Result";
+                    if (output.Requests[0].IsError)
                     {
                         Error error = output.GetDeserializedResult<Error>(0);
                         result = error.FormatDescription();
@@ -89,7 +88,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
 
                 string batchId = $"batch{clientIndex}";
                 TerminalInputOutput batch = TerminalInputOutput.Batch(batchId, cmdIds, commands);
-                TerminalOutput? batchOutput = await client.SendToTerminalAsync(batch, cToken);
+                TerminalInputOutput? batchOutput = await client.SendToTerminalAsync(batch, cToken);
                 for (int idx = 0; idx < batch.Requests.Length; ++idx)
                 {
                     var request = batch.Requests[idx];
@@ -99,8 +98,8 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         continue;
                     }
 
-                    string result = batchOutput.Input.Requests[idx].Result?.ToString() ?? "No Result";
-                    if (batchOutput.Input.Requests[idx].IsError)
+                    string result = batchOutput.Requests[idx].Result?.ToString() ?? "No Result";
+                    if (batchOutput.Requests[idx].IsError)
                     {
                         Error error = batchOutput.GetDeserializedResult<Error>(idx);
                         result = error.FormatDescription();

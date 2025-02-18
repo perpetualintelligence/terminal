@@ -69,12 +69,13 @@ namespace OneImlx.Terminal.Server
             TerminalInputOutput? input = await httpContext.Request.ReadFromJsonAsync<TerminalInputOutput>();
             if (input == null || input.Count <= 0)
             {
-                throw new TerminalException(TerminalErrors.MissingCommand, "The input is missing in the HTTP request.");
+                throw new TerminalException(TerminalErrors.MissingCommand, "The input requests are missing in the HTTP route.");
             }
 
             string? clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
-            TerminalOutput? output = await terminalProcessor.ExecuteAsync(input, senderId: null, clientIp);
-            await httpContext.Response.WriteAsJsonAsync(output);
+            input.SenderEndpoint = clientIp;
+            await terminalProcessor.ExecuteAsync(input);
+            await httpContext.Response.WriteAsJsonAsync(input);
         }
 
         // Private fields to hold injected dependencies and state information.

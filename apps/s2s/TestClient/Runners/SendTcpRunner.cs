@@ -1,4 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Terminal.Client.Extensions;
@@ -8,14 +16,6 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
@@ -87,34 +87,34 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                         byte[][] outputs = buffer.Take(bytesRead).ToArray().Split(terminalOptions.Value.Router.StreamDelimiter, ignoreEmpty: true, out _);
                         foreach (byte[] opt in outputs)
                         {
-                            TerminalOutput? output = JsonSerializer.Deserialize<TerminalOutput>(opt);
+                            TerminalInputOutput? output = JsonSerializer.Deserialize<TerminalInputOutput>(opt);
                             if (output == null)
                             {
                                 continue;
                             }
 
-                            for (int idx = 0; idx < output.Input.Count; ++idx)
+                            for (int idx = 0; idx < output.Count; ++idx)
                             {
-                                var request = output.Input.Requests[idx];
-                                object? result = output.Input.Requests[idx].Result;
+                                var request = output.Requests[idx];
+                                object? result = output.Requests[idx].Result;
                                 string resultStr = result?.ToString() ?? "No Result";
 
-                                if (output.Input.IsBatch)
+                                if (output.IsBatch)
                                 {
-                                    if (result is JsonElement json && json.ValueKind == JsonValueKind.Object)
+                                    if (request.IsError)
                                     {
                                         Error error = output.GetDeserializedResult<Error>(idx);
                                         resultStr = error.FormatDescription();
-                                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] BatchId=\"{output.Input.BatchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={resultStr}");
+                                        await terminalConsole.WriteLineColorAsync(ConsoleColor.Red, $"[Client {clientIndex}] BatchId=\"{output.BatchId}\" Request=\"{request.Id}\" Raw=\"{request.Raw}\" => Result={resultStr}");
                                     }
                                     else
                                     {
-                                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Response: BatchId=\"{output.Input.BatchId}\" Request=\"{output.Input[idx].Id}\" => Result={resultStr}");
+                                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Response: BatchId=\"{output.BatchId}\" Request=\"{output[idx].Id}\" => Result={resultStr}");
                                     }
                                 }
                                 else
                                 {
-                                    if(result is JsonElement json && json.ValueKind == JsonValueKind.Object)
+                                    if (request.IsError)
                                     {
                                         Error error = output.GetDeserializedResult<Error>(idx);
                                         resultStr = error.FormatDescription();
@@ -122,7 +122,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
                                     }
                                     else
                                     {
-                                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Response: Request=\"{output.Input[idx].Id}\" => Result={resultStr}");
+                                        await terminalConsole.WriteLineAsync($"[Client {clientIndex}] Response: Request=\"{output[idx].Id}\" => Result={resultStr}");
                                     }
                                 }
 

@@ -55,7 +55,7 @@ namespace OneImlx.Terminal.Runtime
             this.logger = logger;
 
             processedRequests = [];
-            unprocessedRequests = [];
+            unprocessedIOs = [];
             requestProcessing = Task.CompletedTask;
             responseProcessing = Task.CompletedTask;
             requestSignal = new SemaphoreSlim(0);
@@ -71,19 +71,19 @@ namespace OneImlx.Terminal.Runtime
         public bool IsProcessing { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<TerminalInputOutput> UnprocessedInputs
+        public IReadOnlyCollection<TerminalInputOutput> UnprocessedIOs
         {
             get
             {
                 // Return all the requests from the unprocessed response queue.
-                return unprocessedRequests.Select(r => r.Input).ToArray();
+                return unprocessedIOs.ToArray();
             }
         }
 
         /// <inheritdoc/>
-        public Task AddAsync(TerminalInputOutput input, string? senderId, string? senderEndpoint)
+        public Task AddAsync(TerminalInputOutput terminalIO)
         {
-            if (input == null)
+            if (terminalIO == null)
             {
                 throw new TerminalException(TerminalErrors.InvalidRequest, "The input cannot be null.");
             }
@@ -99,8 +99,7 @@ namespace OneImlx.Terminal.Runtime
             }
 
             // Create a response object that will hold requests and results
-            TerminalOutput response = new(input, senderId, senderEndpoint);
-            unprocessedRequests.Enqueue(response);
+            unprocessedIOs.Enqueue(terminalIO);
             requestSignal.Release();
             return Task.CompletedTask;
         }
@@ -114,9 +113,9 @@ namespace OneImlx.Terminal.Runtime
         }
 
         /// <inheritdoc/>
-        public async Task<TerminalOutput?> ExecuteAsync(TerminalInputOutput input, string? senderId, string? senderEndpoint)
+        public async Task ExecuteAsync(TerminalInputOutput terminalIO)
         {
-            if (input == null)
+            if (terminalIO == null)
             {
                 throw new TerminalException(TerminalErrors.InvalidRequest, "The input cannot be null.");
             }
@@ -126,21 +125,11 @@ namespace OneImlx.Terminal.Runtime
                 throw new TerminalException(TerminalErrors.ServerError, "The terminal processor is not running.");
             }
 
-            TerminalOutput output = new(input, senderId, senderEndpoint);
-            await RouteRequestsAsync(output, terminalRouterContext);
-
-            if (terminalOptions.Value.Router.DisableResponse)
-            {
-                return null;
-            }
-            else
-            {
-                return output;
-            }
+            await RouteRequestsAsync(terminalIO, terminalRouterContext);
         }
 
         /// <inheritdoc/>
-        public void StartProcessing(TerminalRouterContext terminalRouterContext, bool background, Func<TerminalOutput, Task>? responseHandler = null)
+        public void StartProcessing(TerminalRouterContext terminalRouterContext, bool background, Func<TerminalInputOutput, Task>? responseHandler = null)
         {
             // IMPORTANT: We don't await so both request and response processing happens in the background.
             requestProcessing = StartRequestProcessingAsync(terminalRouterContext, background);
@@ -222,7 +211,7 @@ namespace OneImlx.Terminal.Runtime
                 {
                     throw new TerminalException(TerminalErrors.InvalidRequest, "The input bytes cannot be deserialized to terminal input.");
                 }
-                await AddAsync(input, senderId, senderEndpoint);
+                await AddAsync(input);
             }
         }
 
@@ -239,16 +228,16 @@ namespace OneImlx.Terminal.Runtime
             }
         }
 
-        private void RegisterResponseHandler(Func<TerminalOutput, Task> handler)
+        private void RegisterResponseHandler(Func<TerminalInputOutput, Task> handler)
         {
             this.handler = handler ?? throw new TerminalException(TerminalErrors.InvalidRequest, "The response handler cannot be null.");
         }
 
-        private async Task RouteRequestsAsync(TerminalOutput terminalOutput, TerminalRouterContext terminalRouterContext)
+        private async Task RouteRequestsAsync(TerminalInputOutput terminalOutput, TerminalRouterContext terminalRouterContext)
         {
-            for (int idx = 0; idx < terminalOutput.Input.Count; ++idx)
+            for (int idx = 0; idx < terminalOutput.Count; ++idx)
             {
-                TerminalRequest request = terminalOutput.Input[idx];
+                TerminalRequest request = terminalOutput[idx];
 
                 // If cancellation is requested then stop routing the requestBs.
                 if (terminalRouterContext.TerminalCancellationToken.IsCancellationRequested)
@@ -257,7 +246,7 @@ namespace OneImlx.Terminal.Runtime
                 }
 
                 try
-                {                   
+                {
                     string senderEndpoint = terminalOutput.SenderEndpoint ?? "$unknown$";
                     string senderId = terminalOutput.SenderId ?? "$unknown$";
                     Dictionary<string, object> properties = new()
@@ -283,7 +272,7 @@ namespace OneImlx.Terminal.Runtime
                         {
                             value = result.RunnerResult.HasValue ? result.RunnerResult.Value : null;
                         }
-                        terminalOutput.Input.Requests[idx].Result = value;
+                        terminalOutput.Requests[idx].Result = value;
                     }
                     else
                     {
@@ -297,8 +286,8 @@ namespace OneImlx.Terminal.Runtime
                     {
                         error = tex.Error;
                     }
-                    terminalOutput.Input.Requests[idx].Result = error;
-                    terminalOutput.Input.Requests[idx].IsError = true;
+                    terminalOutput.Requests[idx].Result = error;
+                    terminalOutput.Requests[idx].IsError = true;
 
                     // This is a server to we handle the exception and log it. If the implementation throws then server stops.
                     await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex, request));
@@ -317,17 +306,17 @@ namespace OneImlx.Terminal.Runtime
 
             while (true)
             {
-                TerminalOutput? output = null;
+                TerminalInputOutput? output = null;
 
                 try
                 {
                     // Wait until there is a signal or the cancellation. The requestSignal is used to signal that there
                     // is a new item in the queue, at the same time we don't hog the CPU in the outer while loop.
                     await requestSignal.WaitAsync(terminalRouterContext.TerminalCancellationToken);
-                    if (!unprocessedRequests.IsEmpty)
+                    if (!unprocessedIOs.IsEmpty)
                     {
                         // Process the request and dequeue the response
-                        unprocessedRequests.TryDequeue(out output);
+                        unprocessedIOs.TryDequeue(out output);
                         if (output != null)
                         {
                             // Request is processed and results are populated in the output
@@ -398,15 +387,15 @@ namespace OneImlx.Terminal.Runtime
 
         private readonly ICommandRouter commandRouter;
         private readonly ILogger logger;
-        private readonly Stack<TerminalOutput> processedRequests;
+        private readonly Stack<TerminalInputOutput> processedRequests;
         private readonly SemaphoreSlim requestSignal;
         private readonly SemaphoreSlim responseSignal;
         private readonly ConcurrentDictionary<string, Queue<byte>> streamingRequests;
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
         private readonly IOptions<TerminalOptions> terminalOptions;
         private readonly ITerminalTextHandler textHandler;
-        private readonly ConcurrentQueue<TerminalOutput> unprocessedRequests;
-        private Func<TerminalOutput, Task>? handler;
+        private readonly ConcurrentQueue<TerminalInputOutput> unprocessedIOs;
+        private Func<TerminalInputOutput, Task>? handler;
         private Task requestProcessing;
         private Task responseProcessing;
         private TerminalRouterContext? terminalRouterContext;

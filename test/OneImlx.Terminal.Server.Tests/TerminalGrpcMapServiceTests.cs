@@ -5,19 +5,19 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
-using Grpc.Core;
-using Microsoft.Extensions.Logging;
-using Moq;
-using OneImlx.Terminal.Commands;
-using OneImlx.Terminal.Configuration.Options;
-using OneImlx.Terminal.Runtime;
-using OneImlx.Test.FluentAssertions;
 using System;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using FluentAssertions;
+using Grpc.Core;
+using Moq;
+using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Test.FluentAssertions;
 using Xunit;
 
 namespace OneImlx.Terminal.Server
@@ -55,30 +55,11 @@ namespace OneImlx.Terminal.Server
             mockProcessor.Setup(x => x.IsProcessing).Returns(true);
 
             TerminalInputOutput terminalInput = TerminalInputOutput.Single("id1", "test-command");
-            TerminalOutput? addedOutput = null;
-            mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInputOutput>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<TerminalInputOutput, string?, string?>((input, senderId, senderEndpoint) =>
-                {
-                    // Create and assign a mock response based on the input parameters
-                    addedOutput = new TerminalOutput(terminalInput, senderId, senderEndpoint);
-                })
-                .ReturnsAsync(() => addedOutput!);
+            mockProcessor.Setup(x => x.ExecuteAsync(It.IsAny<TerminalInputOutput>()));
 
-            // Act
-            addedOutput.Should().BeNull();
             var input = new TerminalGrpcRouterProtoInput { InputJson = JsonSerializer.Serialize(terminalInput) };
             var response = await terminalGrpcMapService.RouteCommand(input, testServerCallContext);
-            response.OutputJson.Should().Be("{\"input\":{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"test-command\",\"result\":null}]},\"sender_endpoint\":null,\"sender_id\":null}");
-
-            // Assert
-            addedOutput.Should().NotBeNull();
-            addedOutput!.Input.Requests.Should().HaveCount(1);
-
-            addedOutput.Input.Requests[0].Id.Should().Be("id1");
-            addedOutput.Input.Requests[0].Raw.Should().Be("test-command");
-            addedOutput.Input.BatchId.Should().BeNull();
-
-            addedOutput.Input.Requests[0].Result.Should().BeNull();
+            response.OutputJson.Should().Be("{\"batch_id\":null,\"requests\":[{\"id\":\"id1\",\"is_error\":false,\"raw\":\"test-command\",\"result\":null}],\"sender_endpoint\":null,\"sender_id\":null}");
         }
 
         // Test case to validate that if the CommandQueue is null, the system throws an exception

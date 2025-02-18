@@ -83,7 +83,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             tcpRouter.IsRunning.Should().BeFalse();
 
             // Verify invocations
-            terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>()), Times.Once);
+            terminalProcessorMock.Verify(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalInputOutput, Task>>()), Times.Once);
             terminalProcessorMock.Verify(x => x.StreamAsync(
                 sentBytes.Item1,
                 sentBytes.Item2,
@@ -131,7 +131,7 @@ namespace OneImlx.Terminal.Runtime.Tests
             var testException = new Exception("Test exception");
 
             // Setup terminal processor to throw an exception during StartProcessing
-            terminalProcessorMock.Setup(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalOutput, Task>>())).Throws(testException);
+            terminalProcessorMock.Setup(x => x.StartProcessing(context, true, It.IsAny<Func<TerminalInputOutput, Task>>())).Throws(testException);
 
             var tcpRouter = CreateTcpRouter();
 
