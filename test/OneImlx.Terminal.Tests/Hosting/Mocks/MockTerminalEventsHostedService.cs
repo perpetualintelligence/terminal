@@ -20,28 +20,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
         {
         }
 
-        public bool OnStartedCalled { get; set; }
-
-        public bool OnStoppedCalled { get; set; }
-
-        public bool OnStoppingCalled { get; set; }
-
-        protected override void OnStarted()
-        {
-            OnStartedCalled = true;
-        }
-
-        protected override void OnStopped()
-        {
-            OnStoppedCalled = true;
-        }
-
-        protected override void OnStopping()
-        {
-            OnStoppingCalled = true;
-        }
-
-        protected override Task PrintHostApplicationHeaderAsync()
+        protected override Task ConfigureLifetimeAsync()
         {
             return Task.CompletedTask;
         }

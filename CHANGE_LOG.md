@@ -6,6 +6,7 @@
 - Introduce `OneImlx.Terminal.Client` for client application communicating with terminal servers
 - Update licensing and pricing
 - Rename `Integration` to `Dynamics` for dynamic loading of commands
+- Simplify terminal startup and use IHostApplicationLifetime for graceful shutdown
 
 # 5.12.3
 > Breaking Change

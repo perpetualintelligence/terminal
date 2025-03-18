@@ -24,27 +24,28 @@ namespace OneImlx.Terminal.Apps.Test
         /// <param name="logger">The logger.</param>
         public TestAppHostedService(
             IServiceProvider serviceProvider,
+            IHostApplicationLifetime hostApplicationLifetime,
             IOptions<TerminalOptions> options,
             ITerminalConsole terminalConsole,
             ITerminalExceptionHandler exceptionHandler,
             ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, exceptionHandler, logger)
         {
+            this.hostApplicationLifetime = hostApplicationLifetime;
         }
 
-        /// <summary>
-        /// Perform custom configuration option checks at startup.
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        protected override Task CheckHostApplicationConfigurationAsync(IOptions<TerminalOptions> options)
+        /// <inheritdoc/>
+        protected override Task ConfigureLifetimeAsync()
         {
+            hostApplicationLifetime.ApplicationStarted.Register(OnStarted);
+            hostApplicationLifetime.ApplicationStopping.Register(OnStopping);
+            hostApplicationLifetime.ApplicationStopped.Register(OnStopped);
             return Task.CompletedTask;
         }
 
         /// <summary>
         /// The <see cref="IHostApplicationLifetime.ApplicationStarted"/> handler.
         /// </summary>
-        protected override void OnStarted()
+        private void OnStarted()
         {
             // Print the driver status
             if (Options.Value.Driver.Enabled)
@@ -55,6 +56,11 @@ namespace OneImlx.Terminal.Apps.Test
             {
                 Console.Title = "Test Application";
             }
+
+            TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------").Wait();
+            TerminalConsole.WriteLineAsync("Demo OneImlx.Terminal framework integration with a driver terminal app.").Wait();
+            TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------").Wait();
+
             TerminalConsole.WriteLineColorAsync(ConsoleColor.Magenta, "Driver='{0}' Root='{1}'", Options.Value.Driver.Enabled, Options.Value.Driver.RootId ?? "<unknonw>").Wait();
 
             // These are async calls, but we are blocking here for as the of the test.
@@ -64,7 +70,7 @@ namespace OneImlx.Terminal.Apps.Test
         /// <summary>
         /// The <see cref="IHostApplicationLifetime.ApplicationStopped"/> handler.
         /// </summary>
-        protected override void OnStopped()
+        private void OnStopped()
         {
             TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
@@ -72,33 +78,11 @@ namespace OneImlx.Terminal.Apps.Test
         /// <summary>
         /// The <see cref="IHostApplicationLifetime.ApplicationStopping"/> handler.
         /// </summary>
-        protected override void OnStopping()
+        private void OnStopping()
         {
             TerminalConsole.WriteLineAsync("Stopping application...").Wait();
         }
 
-        /// <summary>
-        /// Print <c>cli</c> terminal header.
-        /// </summary>
-        /// <returns></returns>
-        protected override async Task PrintHostApplicationHeaderAsync()
-        {
-            await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
-            await TerminalConsole.WriteLineAsync("Demo OneImlx.Terminal framework integration with a driver terminal app.");
-            await TerminalConsole.WriteLineAsync("---------------------------------------------------------------------------------------------");
-
-            await TerminalConsole.WriteLineAsync("Starting application...");
-        }
-
-        /// <summary>
-        /// Print host application licensing information.
-        /// </summary>
-        /// <param name="license">The extracted license.</param>
-        /// <returns></returns>
-        protected override Task PrintHostApplicationLicensingAsync(License license)
-        {
-            // Print custom licensing info or remove it completely.
-            return Task.CompletedTask;
-        }
+        private readonly IHostApplicationLifetime hostApplicationLifetime;
     }
 }

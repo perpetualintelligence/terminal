@@ -42,12 +42,11 @@ namespace OneImlx.Terminal.Hosting
             ITerminalExceptionHandler terminalExceptionHandler,
             ILogger<TerminalHostedService> logger)
         {
-            HostApplicationLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
             ServiceProvider = serviceProvider;
             Options = terminalOptions;
             TerminalConsole = terminalConsole;
             this.terminalExceptionHandler = terminalExceptionHandler;
-            Logger = logger;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -59,29 +58,17 @@ namespace OneImlx.Terminal.Hosting
             // We catch the exception to avoid unhandled fatal exception
             try
             {
-                // Register Application Lifetime events
-                await RegisterHostApplicationEventsAsync(HostApplicationLifetime);
-
-                // Print Header
-                await PrintHostApplicationHeaderAsync();
+                // Configure the application lifetime.
+                await ConfigureLifetimeAsync();
 
                 // Extract license
-                LicenseExtractorResult result = await ExtractLicenseAsync();
-
-                // We have extracted the license, print lic info
-                await PrintHostApplicationLicensingAsync(result.License);
-
-                // Do license check
-                await CheckLicenseAsync(result);
+                var licenseResult = await ExtractLicenseAsync();
 
                 // Print mandatory licensing for community and demo license
-                await PrintHostApplicationMandatoryLicensingAsync(result.License);
+                await PrintWarningIfDemoAsync(licenseResult.License);
 
                 // Do mandatory configuration check
-                await CheckHostApplicationMandatoryConfigurationAsync(Options);
-
-                // Do custom configuration check
-                await CheckHostApplicationConfigurationAsync(Options);
+                await CheckConfigurationAsync(Options);
 
                 // Register the help options with command descriptors. This is intentionally done at the end so we don't
                 // take performance hit in case there is a license check failure.
@@ -103,11 +90,10 @@ namespace OneImlx.Terminal.Hosting
         }
 
         /// <summary>
-        /// This method prints the mandatory licensing details. Applications cannot customize or change the mandatory
-        /// licensing information, but they can print additional custom information with <see cref="PrintHostApplicationLicensingAsync(License)"/>.
+        /// This method prints the demo warning licensing details.
         /// </summary>
         /// <param name="license">The extracted license.</param>
-        internal virtual async Task PrintHostApplicationMandatoryLicensingAsync(License license)
+        private async Task PrintWarningIfDemoAsync(License license)
         {
             if (license.Plan == TerminalLicensePlans.Demo)
             {
@@ -126,7 +112,7 @@ namespace OneImlx.Terminal.Hosting
         /// Registers the help options based on configuration options.
         /// </summary>
         /// <returns></returns>
-        internal virtual Task RegisterHelpAsync()
+        private Task RegisterHelpAsync()
         {
             HelpOptions helpOptions = Options.Value.Help;
 
@@ -150,16 +136,6 @@ namespace OneImlx.Terminal.Hosting
         }
 
         /// <summary>
-        /// The host application lifetime.
-        /// </summary>
-        protected IHostApplicationLifetime HostApplicationLifetime { get; private set; }
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        protected ILogger<TerminalHostedService> Logger { get; private set; }
-
-        /// <summary>
         /// The terminal configuration options.
         /// </summary>
         protected IOptions<TerminalOptions> Options { get; private set; }
@@ -175,91 +151,20 @@ namespace OneImlx.Terminal.Hosting
         protected ITerminalConsole TerminalConsole { get; }
 
         /// <summary>
-        /// Allows the host application to perform additional configuration option checks.
+        /// Configures the application's lifetime with <see cref="IHostApplicationLifetime"/>.
         /// </summary>
-        /// <returns></returns>
-        protected virtual Task CheckHostApplicationConfigurationAsync(IOptions<TerminalOptions> options)
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Triggered when the application host has fully started.
-        /// </summary>
-        protected virtual void OnStarted()
-        {
-            TerminalConsole.WriteLineAsync("Application started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
-        }
-
-        /// <summary>
-        /// Triggered when the application host has completed a graceful shutdown. The application will not exit until
-        /// all callbacks registered on this token have completed.
-        /// </summary>
-        protected virtual void OnStopped()
-        {
-            TerminalConsole.WriteLineAsync("Application stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
-        }
-
-        /// <summary>
-        /// Triggered when the application host is starting a graceful shutdown. Shutdown will block until all callbacks
-        /// registered on this token have completed.
-        /// </summary>
-        protected virtual void OnStopping()
-        {
-            TerminalConsole.WriteLineAsync("Stopping application...").Wait();
-        }
-
-        /// <summary>
-        /// Allows the host application to print the custom header.
-        /// </summary>
-        protected abstract Task PrintHostApplicationHeaderAsync();
-
-        /// <summary>
-        /// Allows host application to print custom licensing information.
-        /// </summary>
-        /// <param name="license"></param>
-        /// <returns></returns>
-        protected virtual async Task PrintHostApplicationLicensingAsync(License license)
-        {
-            // Print the license information
-            await TerminalConsole.WriteLineAsync("tenant={0} ({1})", license.Claims.TenantName, license.Claims.TenantId);
-            await TerminalConsole.WriteLineAsync("country={0}", license.Claims.TenantCountry);
-            await TerminalConsole.WriteLineAsync("license={0}", license.Claims.Id);
-            await TerminalConsole.WriteLineAsync("mode={0}", license.Claims.Mode);
-            await TerminalConsole.WriteLineAsync("deployment={0}", license.Claims.Deployment ?? "");
-            await TerminalConsole.WriteLineAsync("usage={0}", license.Usage);
-            await TerminalConsole.WriteLineAsync("plan={0}", license.Plan);
-            await TerminalConsole.WriteLineAsync("iat={0}", license.Claims.IssuedAt);
-            await TerminalConsole.WriteLineAsync("exp={0}", license.Claims.ExpiryAt);
-        }
-
-        /// <summary>
-        /// Allows the application to register its custom <see cref="IHostApplicationLifetime"/> events.
-        /// </summary>
-        protected virtual Task RegisterHostApplicationEventsAsync(IHostApplicationLifetime hostApplicationLifetime)
-        {
-            hostApplicationLifetime.ApplicationStarted.Register(OnStarted);
-            hostApplicationLifetime.ApplicationStopping.Register(OnStopping);
-            hostApplicationLifetime.ApplicationStopped.Register(OnStopped);
-            return Task.CompletedTask;
-        }
+        protected abstract Task ConfigureLifetimeAsync();
 
         /// <summary>
         /// This method check the mandatory configuration options. Applications cannot customize or change the mandatory
-        /// configuration options, but they can perform additional configuration checks with <see cref="CheckHostApplicationConfigurationAsync(IOptions{TerminalOptions})"/>.
+        /// configuration options, but they can perform additional configuration checks with <see cref="CheckConfigurationAsync(IOptions{TerminalOptions})"/>.
         /// </summary>
         /// <param name="options">The configuration options.</param>
         /// <returns></returns>
-        private async Task CheckHostApplicationMandatoryConfigurationAsync(IOptions<TerminalOptions> options)
+        private async Task CheckConfigurationAsync(IOptions<TerminalOptions> options)
         {
             IConfigurationOptionsChecker optionsChecker = ServiceProvider.GetRequiredService<IConfigurationOptionsChecker>();
             await optionsChecker.CheckAsync(options.Value);
-        }
-
-        private async Task CheckLicenseAsync(LicenseExtractorResult result)
-        {
-            ILicenseChecker licenseChecker = ServiceProvider.GetRequiredService<ILicenseChecker>();
-            await licenseChecker.CheckLicenseAsync(result.License);
         }
 
         private async Task<LicenseExtractorResult> ExtractLicenseAsync()
@@ -270,5 +175,6 @@ namespace OneImlx.Terminal.Hosting
         }
 
         private readonly ITerminalExceptionHandler terminalExceptionHandler;
+        private readonly ILogger<TerminalHostedService> logger;
     }
 }
