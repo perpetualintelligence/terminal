@@ -9,7 +9,7 @@ using FluentAssertions;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
 
-namespace OneImlx.Terminal
+namespace OneImlx.Terminal.Shared
 {
     public class TerminalErrorsTest
     {

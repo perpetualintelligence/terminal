@@ -9,7 +9,7 @@ using FluentAssertions;
 using System;
 using Xunit;
 
-namespace OneImlx.Terminal
+namespace OneImlx.Terminal.Shared
 {
     public class TerminalServicesTests
     {
