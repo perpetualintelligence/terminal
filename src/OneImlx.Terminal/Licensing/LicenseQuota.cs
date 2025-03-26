@@ -89,7 +89,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum terminals. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public int? TerminalLimit => (int?)Limits["terminal"];
+        public int? TerminalLimit => (int?)Limits["terminals"];
 
         /// <summary>
         /// The strict date type. Returns <c>false</c> if not supported.
@@ -159,7 +159,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Limits = new Dictionary<string, object?>
                 {
-                    { "terminal", 15 },
+                    { "terminals", 15 },
                     { "command", null },
                     { "input", null },
                     { "redistribution", null }
@@ -191,7 +191,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Limits = new Dictionary<string, object?>
                 {
-                    { "terminal", Convert.ToInt32(customClaims["terminal"]) },
+                    { "terminals", Convert.ToInt32(customClaims["terminals"]) },
                     { "command", Convert.ToInt32(customClaims["command"]) },
                     { "input", Convert.ToInt32(customClaims["input"]) },
                     { "redistribution", Convert.ToInt64(customClaims["redistribution"]) }
@@ -223,7 +223,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Limits = new Dictionary<string, object?>
                 {
-                    { "terminal", 1 },
+                    { "terminals", 1 },
                     { "command", 25 },
                     { "input", 250 },
                     { "redistribution", 0 }
@@ -255,7 +255,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Limits = new Dictionary<string, object?>
                 {
-                    { "terminal", 10 },
+                    { "terminals", 10 },
                     { "command", 300 },
                     { "input", 6000 },
                     { "redistribution", 15000 }
@@ -287,7 +287,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Limits = new Dictionary<string, object?>
                 {
-                    { "terminal", 3 },
+                    { "terminals", 3 },
                     { "command", 50 },
                     { "input", 500 },
                     { "redistribution", 1000 }
@@ -319,7 +319,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Limits = new Dictionary<string, object?>
                 {
-                    { "terminal", 5 },
+                    { "terminals", 5 },
                     { "command", 100 },
                     { "input", 2000 },
                     { "redistribution", 5000 }
@@ -351,7 +351,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Limits = new Dictionary<string, object?>
                 {
-                    { "terminal", 1 },
+                    { "terminals", 1 },
                     { "command", 25 },
                     { "input", 250 },
                     { "redistribution", 0 }

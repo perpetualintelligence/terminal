@@ -37,7 +37,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Corporate);
             quota.Plan.Should().Be(TerminalLicensePlans.Corporate);
 
-            quota.Limits["terminal"].Should().Be(15);
+            quota.Limits["terminals"].Should().Be(15);
             quota.Limits["command"].Should().BeNull();
             quota.Limits["input"].Should().BeNull();
             quota.Limits["redistribution"].Should().BeNull();
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Licensing
         {
             Dictionary<string, object> claims = new()
             {
-                { "terminal", 1 },
+                { "terminals", 1 },
                 { "command", 3 },
                 { "input", 6 },
                 { "redistribution", 2 },
@@ -86,7 +86,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Custom, claims);
             quota.Plan.Should().Be(TerminalLicensePlans.Custom);
 
-            quota.Limits["terminal"].Should().Be(1);
+            quota.Limits["terminals"].Should().Be(1);
             quota.Limits["command"].Should().Be(3);
             quota.Limits["input"].Should().Be(6);
             quota.Limits["redistribution"].Should().Be(2);
@@ -108,7 +108,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Demo);
             quota.Plan.Should().Be(TerminalLicensePlans.Demo);
 
-            quota.Limits["terminal"].Should().Be(1);
+            quota.Limits["terminals"].Should().Be(1);
             quota.Limits["command"].Should().Be(25);
             quota.Limits["input"].Should().Be(250);
             quota.Limits["redistribution"].Should().Be(0);
@@ -130,7 +130,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Enterprise);
             quota.Plan.Should().Be(TerminalLicensePlans.Enterprise);
 
-            quota.Limits["terminal"].Should().Be(10);
+            quota.Limits["terminals"].Should().Be(10);
             quota.Limits["command"].Should().Be(300);
             quota.Limits["input"].Should().Be(6000);
             quota.Limits["redistribution"].Should().Be(15000);
@@ -161,7 +161,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Micro);
             quota.Plan.Should().Be(TerminalLicensePlans.Micro);
 
-            quota.Limits["terminal"].Should().Be(3);
+            quota.Limits["terminals"].Should().Be(3);
             quota.Limits["command"].Should().Be(50);
             quota.Limits["input"].Should().Be(500);
             quota.Limits["redistribution"].Should().Be(1000);
@@ -182,7 +182,7 @@ namespace OneImlx.Terminal.Licensing
         {
             Dictionary<string, object> claims = new()
             {
-                { "terminal", 1 },
+                { "terminals", 1 },
                 { "command", 3 },
                 { "input", 6 },
                 { "redistribution", long.MaxValue },
@@ -223,7 +223,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Smb);
             quota.Plan.Should().Be(TerminalLicensePlans.Smb);
 
-            quota.Limits["terminal"].Should().Be(5);
+            quota.Limits["terminals"].Should().Be(5);
             quota.Limits["command"].Should().Be(100);
             quota.Limits["input"].Should().Be(2000);
             quota.Limits["redistribution"].Should().Be(5000);
@@ -245,7 +245,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Solo);
             quota.Plan.Should().Be(TerminalLicensePlans.Solo);
 
-            quota.Limits["terminal"].Should().Be(1);
+            quota.Limits["terminals"].Should().Be(1);
             quota.Limits["command"].Should().Be(25);
             quota.Limits["input"].Should().Be(250);
             quota.Limits["redistribution"].Should().Be(0);

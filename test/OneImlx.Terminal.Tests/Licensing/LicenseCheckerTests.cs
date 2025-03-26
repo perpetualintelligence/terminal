@@ -93,7 +93,7 @@ namespace OneImlx.Terminal.Licensing
             // TODO For now the terminal count are 1 always
             var limits = new Dictionary<string, object?>(license.Quota.Limits)
             {
-                ["terminal"] = 0
+                ["terminals"] = 0
             };
             license.Quota.Limits = limits;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
