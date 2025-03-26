@@ -14,6 +14,7 @@ using OneImlx.Terminal.Apps.Test.Runners;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 using Serilog;
 

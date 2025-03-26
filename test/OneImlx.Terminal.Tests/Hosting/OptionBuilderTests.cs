@@ -16,6 +16,7 @@ using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using Xunit;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Hosting
 {

@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Net.Http;
-
 namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>

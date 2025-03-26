@@ -7,7 +7,7 @@
 
 using OneImlx.Shared.Infrastructure;
 
-namespace OneImlx.Terminal
+namespace OneImlx.Terminal.Shared
 {
     /// <summary>
     /// The exception that represents a terminal error.

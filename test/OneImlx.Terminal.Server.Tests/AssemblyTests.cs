@@ -6,7 +6,6 @@
 */
 
 using FluentAssertions;
-using OneImlx.Terminal.Server;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
 

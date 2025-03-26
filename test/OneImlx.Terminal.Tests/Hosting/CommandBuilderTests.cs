@@ -17,6 +17,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Hosting
 {

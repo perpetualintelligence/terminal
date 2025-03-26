@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Grpc.Core;
 using Moq;
-using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using Xunit;
 
 namespace OneImlx.Terminal.Client.Extensions

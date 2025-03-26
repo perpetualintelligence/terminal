@@ -7,6 +7,7 @@
 
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading;

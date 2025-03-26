@@ -6,7 +6,6 @@
 */
 
 using System;
-using System.Text.Json.Serialization;
 using FluentAssertions;
 using Xunit;
 

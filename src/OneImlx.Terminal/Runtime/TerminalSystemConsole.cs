@@ -6,10 +6,8 @@
 */
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OneImlx.Shared.Extensions;
 
 namespace OneImlx.Terminal.Runtime
 {

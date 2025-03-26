@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Server.Extensions;
+using OneImlx.Terminal.Shared;
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;

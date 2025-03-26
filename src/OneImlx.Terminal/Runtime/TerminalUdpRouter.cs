@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Shared;
 

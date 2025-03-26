@@ -5,6 +5,15 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using OneImlx.Shared.Attributes.Validation;
+using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Extensions;
+using OneImlx.Terminal.Hosting;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,14 +21,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using FluentAssertions;
-using OneImlx.Shared.Attributes.Validation;
-using OneImlx.Terminal.Commands.Checkers;
-using OneImlx.Terminal.Extensions;
-using OneImlx.Terminal.Hosting;
-using OneImlx.Terminal.Runtime;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Declarative

@@ -1,10 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using OneImlx.Terminal.Commands.Checkers;
+﻿using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Declarative;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Runtime;
-using System;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Apps.TestWasm.WebTerminal.Runners
 {

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Shared;
 using System;
 using System.Net;
 using System.Net.Sockets;

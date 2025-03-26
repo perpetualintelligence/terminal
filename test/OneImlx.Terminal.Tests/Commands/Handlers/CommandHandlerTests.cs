@@ -14,6 +14,7 @@ using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Linq;

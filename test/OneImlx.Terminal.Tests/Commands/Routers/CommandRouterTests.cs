@@ -12,6 +12,7 @@ using OneImlx.Terminal.Commands.Routers.Mocks;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Threading;

@@ -8,7 +8,7 @@
 using FluentAssertions;
 using Moq;
 using Moq.Protected;
-using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;

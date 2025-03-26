@@ -9,10 +9,10 @@ using System;
 using System.Text.Json.Serialization;
 using OneImlx.Shared.Infrastructure;
 
-namespace OneImlx.Terminal.Runtime
+namespace OneImlx.Terminal.Shared
 {
     /// <summary>
-    /// A <see cref="ITerminalProcessor"/> request that is equatable over its identifier.
+    /// A temrinal request that is equatable over its identifier.
     /// </summary>
     public sealed class TerminalRequest : IEquatable<TerminalRequest?>
     {
