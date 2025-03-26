@@ -6,8 +6,8 @@
 */
 
 using System.Threading.Tasks;
-using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks
 {

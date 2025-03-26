@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands
 {

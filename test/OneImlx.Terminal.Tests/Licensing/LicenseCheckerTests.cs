@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using System;

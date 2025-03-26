@@ -7,9 +7,7 @@
 
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +19,7 @@ using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -35,13 +34,11 @@ namespace OneImlx.Terminal.Licensing
         /// <param name="licenseDebugger">The license debugger.</param>
         /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(ILicenseDebugger licenseDebugger, TerminalOptions terminalOptions, ILogger<LicenseExtractor> logger, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(ILicenseDebugger licenseDebugger, TerminalOptions terminalOptions, ILogger<LicenseExtractor> logger)
         {
             this.licenseDebugger = licenseDebugger;
             this.terminalOptions = terminalOptions;
             this.logger = logger;
-            this.httpClientFactory = httpClientFactory;
         }
 
         /// <summary>
@@ -154,10 +151,10 @@ namespace OneImlx.Terminal.Licensing
                 // Check JWS signed assertion (JWS key)
                 LicenseCheck checkModel = new()
                 {
-                    Issuer = Shared.Constants.Issuer,
+                    Issuer = OneImlx.Shared.Constants.Issuer,
                     Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
                     Application = terminalOptions.Id,
-                    AuthorizedParty = Shared.Constants.TerminalUrn,
+                    AuthorizedParty = OneImlx.Shared.Constants.TerminalUrn,
                     TenantId = licenseFile.TenantId,
                     LicenseKey = licenseFile.LicenseKey,
                     Id = licenseFile.Id,
@@ -302,7 +299,6 @@ namespace OneImlx.Terminal.Licensing
                 LicenseQuota.Create(terminalOptions.Licensing.LicensePlan));
         }
 
-        private readonly IHttpClientFactory? httpClientFactory;
         private readonly ILicenseDebugger licenseDebugger;
         private readonly ILogger<LicenseExtractor> logger;
         private readonly SemaphoreSlim semaphoreSlim = new(1, 1);

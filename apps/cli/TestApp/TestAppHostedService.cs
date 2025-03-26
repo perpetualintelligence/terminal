@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Hosting;
-using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Apps.Test

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.FluentUI.AspNetCore.Components;
 using OneImlx.Terminal.Apps.TestBlazor.Components;
 using OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal;
-using System;
 
 namespace OneImlx.Terminal.Apps.TestBlazor
 {

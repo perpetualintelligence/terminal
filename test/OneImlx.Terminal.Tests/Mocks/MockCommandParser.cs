@@ -8,7 +8,6 @@
 using System.Threading.Tasks;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Parsers;
-using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Mocks
 {

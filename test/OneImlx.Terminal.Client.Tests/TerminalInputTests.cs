@@ -6,6 +6,7 @@
 */
 
 using FluentAssertions;
+using OneImlx.Terminal.Shared;
 using System;
 using System.Text.Json;
 using Xunit;

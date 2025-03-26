@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 
 namespace OneImlx.Terminal.Commands.Parsers

@@ -8,6 +8,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands.Runners
 {

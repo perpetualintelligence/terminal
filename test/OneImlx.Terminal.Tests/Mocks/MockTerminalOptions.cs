@@ -6,6 +6,7 @@
 */
 
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Mocks
 {

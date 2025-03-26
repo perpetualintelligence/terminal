@@ -13,6 +13,7 @@ using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
 using OneImlx.Terminal.Licensing;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands
 {

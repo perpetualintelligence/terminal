@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Moq;
+using OneImlx.Terminal.Shared;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;

@@ -8,6 +8,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OneImlx.Terminal.Shared;
 using System;
 using System.IO;
 using System.Linq;

@@ -11,6 +11,7 @@ using OneImlx.Terminal.Commands.Parsers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using System;

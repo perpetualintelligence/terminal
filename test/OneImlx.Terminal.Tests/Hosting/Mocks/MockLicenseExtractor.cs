@@ -7,6 +7,7 @@
 
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Shared;
 using System;
 using System.Threading.Tasks;
 

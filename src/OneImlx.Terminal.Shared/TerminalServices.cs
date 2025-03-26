@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace OneImlx.Terminal
+namespace OneImlx.Terminal.Shared
 {
     /// <summary>
     /// Provides common terminal services.

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using OneImlx.Terminal.Commands;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Hosting
 {

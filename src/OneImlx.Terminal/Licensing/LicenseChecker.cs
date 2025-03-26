@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 
 namespace OneImlx.Terminal.Licensing

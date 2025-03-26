@@ -6,7 +6,7 @@
 */
 
 using FluentAssertions;
-using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Net;

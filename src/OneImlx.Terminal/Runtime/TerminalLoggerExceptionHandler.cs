@@ -9,6 +9,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Infrastructure;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Runtime
 {

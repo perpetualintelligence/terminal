@@ -7,7 +7,6 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Mocks;
 
 namespace OneImlx.Terminal.Commands.Declarative

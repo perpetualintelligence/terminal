@@ -14,12 +14,12 @@ namespace OneImlx.Terminal.Authentication.Msal
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Client;
-    using Microsoft.Kiota.Abstractions;
     using FluentAssertions;
     using Moq;
     using OneImlx.Terminal.Configuration.Options;
     using OneImlx.Test.FluentAssertions;
     using Xunit;
+    using OneImlx.Terminal.Shared;
 
     public class MsalKiotaAccessTokenProviderTests
     {

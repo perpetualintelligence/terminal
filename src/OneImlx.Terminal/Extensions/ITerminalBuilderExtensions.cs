@@ -26,6 +26,7 @@ using OneImlx.Terminal.Dynamics;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Extensions
 {

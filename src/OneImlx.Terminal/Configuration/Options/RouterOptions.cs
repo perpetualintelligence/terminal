@@ -5,9 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
 using System.Threading;
-using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Configuration.Options
 {

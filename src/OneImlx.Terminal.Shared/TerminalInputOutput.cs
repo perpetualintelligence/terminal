@@ -9,7 +9,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace OneImlx.Terminal.Runtime
+namespace OneImlx.Terminal.Shared
 {
     /// <summary>
     /// Represents the terminal IO class that is sent to the terminal server as an ordered collection of <see cref="TerminalRequest"/>.

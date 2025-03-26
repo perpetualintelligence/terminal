@@ -7,6 +7,7 @@
 
 using FluentAssertions;
 using OneImlx.Shared.Licensing;
+using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;

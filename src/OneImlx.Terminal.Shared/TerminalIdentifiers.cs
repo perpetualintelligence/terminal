@@ -5,9 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Runtime.CompilerServices;
-
-namespace OneImlx.Terminal
+namespace OneImlx.Terminal.Shared
 {
     /// <summary>
     /// The standard terminal identifiers.

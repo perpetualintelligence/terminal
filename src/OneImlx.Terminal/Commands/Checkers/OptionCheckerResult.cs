@@ -6,7 +6,6 @@
 */
 
 using System;
-using OneImlx.Shared.Infrastructure;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {

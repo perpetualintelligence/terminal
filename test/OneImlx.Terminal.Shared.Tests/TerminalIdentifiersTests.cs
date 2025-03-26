@@ -5,13 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using FluentAssertions;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
 
-namespace OneImlx.Terminal
+namespace OneImlx.Terminal.Shared
 {
     public class TerminalIdentifiersTests
     {

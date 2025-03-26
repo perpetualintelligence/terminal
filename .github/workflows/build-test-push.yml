@@ -127,7 +127,7 @@ jobs:
       run: dotnet build ./test/OneImlx.Terminal.DependentAssembly/OneImlx.Terminal.DependentAssembly.csproj -c Release --verbosity minimal
 
     # Publish OneImlx.Terminal.Shared
-    - name: OneImlx.Terminal
+    - name: OneImlx.Terminal.Shared
       uses: ./.github/actions/push-package
       with:
         project: OneImlx.Terminal.Shared

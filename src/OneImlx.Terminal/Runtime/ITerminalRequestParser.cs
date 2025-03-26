@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Terminal.Shared;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Runtime

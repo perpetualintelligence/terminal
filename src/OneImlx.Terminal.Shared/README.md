@@ -1,8 +1,6 @@
-# OneImlx.Terminal
+# OneImlx.Terminal.Shared
 
-***Open. Flexible. Cross-Platform.***
-
-> **The most flexible cross-platform framework for building modern and secured terminal apps.**
+> **The cross-platform shared library for the `OneImlx.Terminal` framework.**
 
 `OneImlx.Terminal` is the cross-platform adaptable framework designed for crafting modern CLI and terminal applications. We cut through the terminal infrastructure complexity, letting you concentrate on building enterprise grade terminal applications with Unicode support, and extensive command hierarchies.
 

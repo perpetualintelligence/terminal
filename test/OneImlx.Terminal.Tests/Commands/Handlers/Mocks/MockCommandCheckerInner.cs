@@ -6,6 +6,7 @@
 */
 
 using OneImlx.Terminal.Commands.Checkers;
+using OneImlx.Terminal.Shared;
 using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Commands.Handlers.Mocks

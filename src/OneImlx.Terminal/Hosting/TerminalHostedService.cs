@@ -6,7 +6,6 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +18,7 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 
 namespace OneImlx.Terminal.Hosting

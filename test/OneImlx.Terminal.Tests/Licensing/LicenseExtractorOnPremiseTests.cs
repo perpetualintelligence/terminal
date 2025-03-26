@@ -5,17 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Xunit;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -51,7 +52,7 @@ namespace OneImlx.Terminal.Licensing
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
             terminalOptions.Licensing.Deployment = null;
 
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
@@ -72,7 +73,7 @@ namespace OneImlx.Terminal.Licensing
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
 
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
@@ -98,27 +99,6 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(TerminalLicensePlans.Demo)]
-        [InlineData(TerminalLicensePlans.Solo)]
-        [InlineData(TerminalLicensePlans.Micro)]
-        [InlineData(TerminalLicensePlans.Smb)]
-        public async Task Valid_OnPrem_License_But_Invalid_LicensePlan_Throws(string licPlan)
-        {
-            licenseDebugger = new MockLicenseDebugger(false);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
-            terminalOptions.Licensing.LicensePlan = licPlan;
-
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
-            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription($"The license plan is not authorized for on-premise isolated deployment. plan={licPlan}");
-        }
-
-        [Theory]
         [InlineData(true, "invalid_deployment")]
         [InlineData(true, "    ")]
         [InlineData(true, "")]
@@ -134,7 +114,7 @@ namespace OneImlx.Terminal.Licensing
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
             terminalOptions.Licensing.Deployment = deployment;
 
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
@@ -151,7 +131,7 @@ namespace OneImlx.Terminal.Licensing
         {
             // Before extract get should be null
             licenseDebugger = new MockLicenseDebugger(false);
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             License? licenseFromGet = await licenseExtractor.GetLicenseAsync();
             licenseFromGet.Should().BeNull();
@@ -160,7 +140,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             var result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();
@@ -225,7 +205,7 @@ namespace OneImlx.Terminal.Licensing
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
 
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
@@ -245,7 +225,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
             terminalOptions.Licensing.LicensePlan = null!;
 
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
             Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
@@ -264,8 +244,29 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
             await licenseExtractor.ExtractLicenseAsync();
+        }
+
+        [Theory]
+        [InlineData(TerminalLicensePlans.Demo)]
+        [InlineData(TerminalLicensePlans.Solo)]
+        [InlineData(TerminalLicensePlans.Micro)]
+        [InlineData(TerminalLicensePlans.Smb)]
+        public async Task Valid_OnPrem_License_But_Invalid_LicensePlan_Throws(string licPlan)
+        {
+            licenseDebugger = new MockLicenseDebugger(false);
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.LicensePlan = licPlan;
+
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
+
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
+            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidConfiguration)
+                .WithErrorDescription($"The license plan is not authorized for on-premise isolated deployment. plan={licPlan}");
         }
 
         private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)
