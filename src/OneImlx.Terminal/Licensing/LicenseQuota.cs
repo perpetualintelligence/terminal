@@ -24,7 +24,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum commands. Returns <c>null</c> for no limit.
         /// </summary>
-        public int? CommandLimit => (int?)Limits["command"];
+        public int? CommandLimit => (int?)Limits["commands"];
 
         /// <summary>
         /// The deployment methods.
@@ -54,7 +54,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum arguments and options combined.Returns <c>null</c> for no limit.
         /// </summary>
-        public int? InputLimit => (int?)Limits["input"];
+        public int? InputLimit => (int?)Limits["inputs"];
 
         /// <summary>
         /// The maximum quota. Defaults to <c>null</c> or no limit.
@@ -69,7 +69,7 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum redistributions. Defaults to <c>null</c> or no redistribution limit.
         /// </summary>
-        public long? RedistributionLimit => (long?)Limits["redistribution"];
+        public long? RedistributionLimit => (long?)Limits["redistributions"];
 
         /// <summary>
         /// The terminal routing methods.
@@ -160,9 +160,9 @@ namespace OneImlx.Terminal.Licensing
                 Limits = new Dictionary<string, object?>
                 {
                     { "terminals", 15 },
-                    { "command", null },
-                    { "input", null },
-                    { "redistribution", null }
+                    { "commands", null },
+                    { "inputs", null },
+                    { "redistributions", null }
                 },
 
                 Switches = new Dictionary<string, bool>
@@ -192,9 +192,9 @@ namespace OneImlx.Terminal.Licensing
                 Limits = new Dictionary<string, object?>
                 {
                     { "terminals", Convert.ToInt32(customClaims["terminals"]) },
-                    { "command", Convert.ToInt32(customClaims["command"]) },
-                    { "input", Convert.ToInt32(customClaims["input"]) },
-                    { "redistribution", Convert.ToInt64(customClaims["redistribution"]) }
+                    { "commands", Convert.ToInt32(customClaims["commands"]) },
+                    { "inputs", Convert.ToInt32(customClaims["inputs"]) },
+                    { "redistributions", Convert.ToInt64(customClaims["redistributions"]) }
                 },
 
                 Switches = new Dictionary<string, bool>
@@ -224,9 +224,9 @@ namespace OneImlx.Terminal.Licensing
                 Limits = new Dictionary<string, object?>
                 {
                     { "terminals", 1 },
-                    { "command", 25 },
-                    { "input", 250 },
-                    { "redistribution", 0 }
+                    { "commands", 25 },
+                    { "inputs", 250 },
+                    { "redistributions", 0 }
                 },
 
                 Switches = new Dictionary<string, bool>
@@ -256,9 +256,9 @@ namespace OneImlx.Terminal.Licensing
                 Limits = new Dictionary<string, object?>
                 {
                     { "terminals", 10 },
-                    { "command", 300 },
-                    { "input", 6000 },
-                    { "redistribution", 15000 }
+                    { "commands", 300 },
+                    { "inputs", 6000 },
+                    { "redistributions", 15000 }
                 },
 
                 Switches = new Dictionary<string, bool>
@@ -288,9 +288,9 @@ namespace OneImlx.Terminal.Licensing
                 Limits = new Dictionary<string, object?>
                 {
                     { "terminals", 3 },
-                    { "command", 50 },
-                    { "input", 500 },
-                    { "redistribution", 1000 }
+                    { "commands", 50 },
+                    { "inputs", 500 },
+                    { "redistributions", 1000 }
                 },
 
                 Switches = new Dictionary<string, bool>
@@ -320,9 +320,9 @@ namespace OneImlx.Terminal.Licensing
                 Limits = new Dictionary<string, object?>
                 {
                     { "terminals", 5 },
-                    { "command", 100 },
-                    { "input", 2000 },
-                    { "redistribution", 5000 }
+                    { "commands", 100 },
+                    { "inputs", 2000 },
+                    { "redistributions", 5000 }
                 },
 
                 Switches = new Dictionary<string, bool>
@@ -352,9 +352,9 @@ namespace OneImlx.Terminal.Licensing
                 Limits = new Dictionary<string, object?>
                 {
                     { "terminals", 1 },
-                    { "command", 25 },
-                    { "input", 250 },
-                    { "redistribution", 0 }
+                    { "commands", 25 },
+                    { "inputs", 250 },
+                    { "redistributions", 0 }
                 },
 
                 Switches = new Dictionary<string, bool>

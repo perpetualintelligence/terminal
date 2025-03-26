@@ -38,9 +38,9 @@ namespace OneImlx.Terminal.Licensing
             quota.Plan.Should().Be(TerminalLicensePlans.Corporate);
 
             quota.Limits["terminals"].Should().Be(15);
-            quota.Limits["command"].Should().BeNull();
-            quota.Limits["input"].Should().BeNull();
-            quota.Limits["redistribution"].Should().BeNull();
+            quota.Limits["commands"].Should().BeNull();
+            quota.Limits["inputs"].Should().BeNull();
+            quota.Limits["redistributions"].Should().BeNull();
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(true);
@@ -68,9 +68,9 @@ namespace OneImlx.Terminal.Licensing
             Dictionary<string, object> claims = new()
             {
                 { "terminals", 1 },
-                { "command", 3 },
-                { "input", 6 },
-                { "redistribution", 2 },
+                { "commands", 3 },
+                { "inputs", 6 },
+                { "redistributions", 2 },
 
                 { "datatype", false },
                 { "driver", true },
@@ -87,9 +87,9 @@ namespace OneImlx.Terminal.Licensing
             quota.Plan.Should().Be(TerminalLicensePlans.Custom);
 
             quota.Limits["terminals"].Should().Be(1);
-            quota.Limits["command"].Should().Be(3);
-            quota.Limits["input"].Should().Be(6);
-            quota.Limits["redistribution"].Should().Be(2);
+            quota.Limits["commands"].Should().Be(3);
+            quota.Limits["inputs"].Should().Be(6);
+            quota.Limits["redistributions"].Should().Be(2);
 
             quota.Switches["datatype"].Should().Be(false);
             quota.Switches["driver"].Should().Be(true);
@@ -109,9 +109,9 @@ namespace OneImlx.Terminal.Licensing
             quota.Plan.Should().Be(TerminalLicensePlans.Demo);
 
             quota.Limits["terminals"].Should().Be(1);
-            quota.Limits["command"].Should().Be(25);
-            quota.Limits["input"].Should().Be(250);
-            quota.Limits["redistribution"].Should().Be(0);
+            quota.Limits["commands"].Should().Be(25);
+            quota.Limits["inputs"].Should().Be(250);
+            quota.Limits["redistributions"].Should().Be(0);
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(true);
@@ -131,9 +131,9 @@ namespace OneImlx.Terminal.Licensing
             quota.Plan.Should().Be(TerminalLicensePlans.Enterprise);
 
             quota.Limits["terminals"].Should().Be(10);
-            quota.Limits["command"].Should().Be(300);
-            quota.Limits["input"].Should().Be(6000);
-            quota.Limits["redistribution"].Should().Be(15000);
+            quota.Limits["commands"].Should().Be(300);
+            quota.Limits["inputs"].Should().Be(6000);
+            quota.Limits["redistributions"].Should().Be(15000);
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(true);
@@ -162,9 +162,9 @@ namespace OneImlx.Terminal.Licensing
             quota.Plan.Should().Be(TerminalLicensePlans.Micro);
 
             quota.Limits["terminals"].Should().Be(3);
-            quota.Limits["command"].Should().Be(50);
-            quota.Limits["input"].Should().Be(500);
-            quota.Limits["redistribution"].Should().Be(1000);
+            quota.Limits["commands"].Should().Be(50);
+            quota.Limits["inputs"].Should().Be(500);
+            quota.Limits["redistributions"].Should().Be(1000);
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(false);
@@ -183,9 +183,9 @@ namespace OneImlx.Terminal.Licensing
             Dictionary<string, object> claims = new()
             {
                 { "terminals", 1 },
-                { "command", 3 },
-                { "input", 6 },
-                { "redistribution", long.MaxValue },
+                { "commands", 3 },
+                { "inputs", 6 },
+                { "redistributions", long.MaxValue },
 
                 { "datatype", false },
                 { "driver", true },
@@ -224,9 +224,9 @@ namespace OneImlx.Terminal.Licensing
             quota.Plan.Should().Be(TerminalLicensePlans.Smb);
 
             quota.Limits["terminals"].Should().Be(5);
-            quota.Limits["command"].Should().Be(100);
-            quota.Limits["input"].Should().Be(2000);
-            quota.Limits["redistribution"].Should().Be(5000);
+            quota.Limits["commands"].Should().Be(100);
+            quota.Limits["inputs"].Should().Be(2000);
+            quota.Limits["redistributions"].Should().Be(5000);
 
             quota.Switches["datatype"].Should().Be(true);
             quota.Switches["driver"].Should().Be(true);
@@ -246,9 +246,9 @@ namespace OneImlx.Terminal.Licensing
             quota.Plan.Should().Be(TerminalLicensePlans.Solo);
 
             quota.Limits["terminals"].Should().Be(1);
-            quota.Limits["command"].Should().Be(25);
-            quota.Limits["input"].Should().Be(250);
-            quota.Limits["redistribution"].Should().Be(0);
+            quota.Limits["commands"].Should().Be(25);
+            quota.Limits["inputs"].Should().Be(250);
+            quota.Limits["redistributions"].Should().Be(0);
 
             quota.Switches["datatype"].Should().Be(false);
             quota.Switches["driver"].Should().Be(false);

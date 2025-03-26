@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Licensing
             // Commands are 11
             var limits = new Dictionary<string, object?>(license.Quota.Limits)
             {
-                ["command"] = 2
+                ["commands"] = 2
             };
             license.Quota.Limits = limits;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
@@ -80,7 +80,7 @@ namespace OneImlx.Terminal.Licensing
             // Total options 90
             var limits = new Dictionary<string, object?>(license.Quota.Limits)
             {
-                ["input"] = 89
+                ["inputs"] = 89
             };
             license.Quota.Limits = limits;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
