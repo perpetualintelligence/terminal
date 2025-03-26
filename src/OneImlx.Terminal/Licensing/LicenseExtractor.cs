@@ -21,6 +21,7 @@ using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -152,10 +153,10 @@ namespace OneImlx.Terminal.Licensing
                 // Check JWS signed assertion (JWS key)
                 LicenseCheck checkModel = new()
                 {
-                    Issuer = Shared.Constants.Issuer,
+                    Issuer = OneImlx.Shared.Constants.Issuer,
                     Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
                     Application = terminalOptions.Id,
-                    AuthorizedParty = Shared.Constants.TerminalUrn,
+                    AuthorizedParty = OneImlx.Shared.Constants.TerminalUrn,
                     TenantId = licenseFile.TenantId,
                     LicenseKey = licenseFile.LicenseKey,
                     Id = licenseFile.Id,
