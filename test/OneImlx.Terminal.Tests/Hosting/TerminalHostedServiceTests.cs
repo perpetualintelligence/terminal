@@ -5,16 +5,9 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using FluentAssertions;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
@@ -25,6 +18,11 @@ using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
+using System;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Hosting
@@ -145,7 +143,7 @@ namespace OneImlx.Terminal.Hosting
         public async Task StartAsync_ShouldNotRegister_HelpArgument_IfDisabled()
         {
             TerminalOptions terminalOptions = MockTerminalOptions.NewAliasOptions();
-            terminalOptions.Help.Disabled = true;
+            terminalOptions.Help.Enabled = false;
 
             var terminalIOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(terminalOptions);
 

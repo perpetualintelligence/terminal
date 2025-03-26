@@ -320,7 +320,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public async Task HelpShouldNotBeCalledIfDisabledAndRequested()
         {
-            terminalOptions.Value.Help.Disabled = true;
+            terminalOptions.Value.Help.Enabled = false;
 
             helpIdCommand.Item1.Checker = typeof(MockCommandCheckerInner);
             helpIdCommand.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -467,7 +467,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         [Fact]
         public async Task RunShouldBeCalledIfHelpIsDisabled()
         {
-            terminalOptions.Value.Help.Disabled = true;
+            terminalOptions.Value.Help.Enabled = false;
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);

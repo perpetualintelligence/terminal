@@ -158,7 +158,7 @@ namespace OneImlx.Terminal.Hosting
         {
             HelpOptions helpOptions = Options.Value.Help;
 
-            if (helpOptions.Disabled)
+            if (!helpOptions.Enabled)
             {
                 return;
             }
