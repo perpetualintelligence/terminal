@@ -49,9 +49,6 @@ namespace OneImlx.Terminal.Commands.Handlers
         {
             logger.LogDebug("Handle request. request={0}", context.Request.Id);
 
-            // Check the license
-            await licenseChecker.CheckLicenseAsync(context.EnsureLicense());
-
             // Check and run the command
             Tuple<CommandCheckerResult, CommandRunnerResult> result = await CheckAndRunCommandInnerAsync(context);
 
@@ -64,7 +61,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             Command command = context.EnsureParsedCommand().Command;
 
             // If we are executing a help command then we need to bypass all the checks.
-            if (!options.Value.Help.Disabled &&
+            if ( options.Value.Help.Enabled &&
                 (command.TryGetOption(options.Value.Help.OptionId, out Option? helpOption) ||
                  command.TryGetOption(options.Value.Help.OptionAlias, out helpOption)
                 ))

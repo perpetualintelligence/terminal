@@ -10,12 +10,12 @@ using Xunit;
 
 namespace OneImlx.Terminal.Configuration.Options
 {
-    public class IntegrationOptionsTests
+    public class DynamicsOptionsTests
     {
         [Fact]
-        public void IntegrationOptions_HasCorrect_DefaultValues()
+        public void HasCorrect_DefaultValues()
         {
-            IntegrationOptions options = new();
+            DynamicsOptions options = new();
 
             options.Enabled.Should().BeFalse();
         }

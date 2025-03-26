@@ -22,9 +22,8 @@ namespace OneImlx.Terminal.Hosting.Mocks
 
         public bool PrintHostApplicationHeaderCalled { get; private set; }
 
-        protected override Task PrintHostApplicationHeaderAsync()
+        protected override Task ConfigureLifetimeAsync()
         {
-            PrintHostApplicationHeaderCalled = true;
             return Task.CompletedTask;
         }
     }

@@ -7,7 +7,7 @@
         <Description>
             The cross-platform client library for the `OneImlx.Terminal` framework.
         </Description>
-        <PackageTags>terminal cli options flags commands oneimlx unicode tcp utp http grpc</PackageTags>
+        <PackageTags>terminal cli options flags commands oneimlx unicode tcp udp http grpc</PackageTags>
     </PropertyGroup>
 
     <!--
@@ -15,11 +15,15 @@
     -->
     <ItemGroup>
         <Protobuf Include="Protos\oneimlx_terminal.proto" GrpcServices="Client" />
-        <PackageReference Include="Google.Protobuf" Version="3.29.2" />
-        <PackageReference Include="Grpc.Net.Common" Version="2.67.0" />
-        <PackageReference Include="Grpc.Tools" Version="2.68.1">
+        <PackageReference Include="Google.Protobuf" Version="3.30.1" />
+        <PackageReference Include="Grpc.Net.Common" Version="2.70.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.3" />
+        <PackageReference Include="Grpc.Tools" Version="2.71.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.Net.Http.Json" Version="9.0.3">
+            <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
     </ItemGroup>
    
@@ -29,12 +33,12 @@
     <Choose>
         <When Condition="'$(PI_CI_REFERENCE)'=='cross'">
             <ItemGroup>
-                <ProjectReference Include="..\OneImlx.Terminal\OneImlx.Terminal.csproj" />
+                <ProjectReference Include="..\OneImlx.Terminal.Shared\OneImlx.Terminal.Shared.csproj" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="OneImlx.Terminal" Version="$(PI_CI_PACKAGE_VERSION)" />
+                <PackageReference Include="OneImlx.Terminal.Shared" Version="$(PI_CI_PACKAGE_VERSION)" />
             </ItemGroup>
         </Otherwise>
     </Choose>

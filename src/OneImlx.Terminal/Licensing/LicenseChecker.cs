@@ -5,8 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -65,8 +63,6 @@ namespace OneImlx.Terminal.Licensing
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal limit exceeded. max_limit={0} current={1}", license.Quota.TerminalLimit, terminalCount);
             }
 
-            // Redistribution limit TODO, how do we check redistribution in a native bounded context
-
             // Root command limit
             if (commandCount > license.Quota.CommandLimit)
             {
@@ -103,7 +99,7 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Integration
-            if (!OptionsValid(quota.Dynamics, terminalOptions.Integration.Enabled))
+            if (!OptionsValid(quota.Dynamics, terminalOptions.Dynamics.Enabled))
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal dynamics option is not allowed for your license plan.");
             }
@@ -151,31 +147,6 @@ namespace OneImlx.Terminal.Licensing
             {
                 semaphoreSlim.Release();
             }
-        }
-
-        private bool OptionsValid(string[]? allowed, string? actual, bool? allowNullActual = true)
-        {
-            // The actual value can be null, it represents that the user has not configured the feature.
-            if (actual == null)
-            {
-                if (allowNullActual.GetValueOrDefault())
-                {
-                    return true;
-                }
-                else
-                {
-                    // Some options have non null default value.
-                    return false;
-                }
-            }
-
-            // If expected is null then actual cannot be non null
-            if (allowed == null)
-            {
-                return false;
-            }
-
-            return allowed.Contains(actual);
         }
 
         private bool OptionsValid(bool? allowed, bool? actual)

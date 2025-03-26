@@ -29,7 +29,7 @@ namespace OneImlx.Terminal.Extensions
             ILogger<ITerminalRouter<TContext>> logger = host.Services.GetRequiredService<ILogger<ITerminalRouter<TContext>>>();
             logger.LogDebug("Start terminal router. type={0} context={1}", typeof(TRouting).Name, typeof(TContext).Name);
 
-            // Now run a blocking loop till cancelled.
+            // Now run a blocking loop till canceled.
             ITerminalRouter<TContext> routingService = host.Services.GetRequiredService<ITerminalRouter<TContext>>();
             await routingService.RunAsync(context);
 

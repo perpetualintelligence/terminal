@@ -13,15 +13,15 @@ namespace OneImlx.Terminal.Configuration.Options
     public sealed class HelpOptions
     {
         /// <summary>
-        /// Disables the help.
+        /// Enables the help.
         /// </summary>
-        public bool Disabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// The help option alias.
         /// </summary>
         /// <remarks>
-        /// Unless <see cref="Disabled"/>, the help option alias is automatically added to the command options. The
+        /// Unless disabled, the help option alias is automatically added to the command options. The
         /// <see cref="OptionAlias"/> must be unique across all option aliases for all commands.
         /// </remarks>
         public string OptionAlias { get; set; } = "h";
@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// The help option identifier.
         /// </summary>
         /// <remarks>
-        /// Unless <see cref="Disabled"/>, the help option identifier is automatically added to the command options. The
+        /// Unless disabled, the help option identifier is automatically added to the command options. The
         /// <see cref="OptionId"/> must be unique across all option identifiers for all commands.
         /// </remarks>
         public string OptionId { get; set; } = "help";

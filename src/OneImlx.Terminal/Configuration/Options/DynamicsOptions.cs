@@ -8,12 +8,12 @@
 namespace OneImlx.Terminal.Configuration.Options
 {
     /// <summary>
-    /// The integration configuration options.
+    /// The dynamics configuration options.
     /// </summary>
-    public sealed class IntegrationOptions
+    public sealed class DynamicsOptions
     {
         /// <summary>
-        /// Enables the integration for the terminal.
+        /// Enables the dynamic command registration for the terminal.
         /// </summary>
         public bool Enabled { get; set; }
     }

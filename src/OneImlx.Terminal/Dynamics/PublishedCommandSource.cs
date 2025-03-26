@@ -87,9 +87,9 @@ namespace OneImlx.Terminal.Dynamics
         public async Task LoadCommandSourceAsync(PublishedCommandSourceContext context)
         {
             // Ensure integration is enabled
-            if (!terminalOptions.Value.Integration.Enabled)
+            if (!terminalOptions.Value.Dynamics.Enabled)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The terminal integration is not enabled.");
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The terminal dynamics is not enabled.");
             }
 
             // Checks the terminal source.

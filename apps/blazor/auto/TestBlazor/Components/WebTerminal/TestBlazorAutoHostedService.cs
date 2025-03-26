@@ -24,27 +24,28 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         /// <param name="logger">The logger.</param>
         public TestBlazorAutoHostedService(
             IServiceProvider serviceProvider,
+            IHostApplicationLifetime hostApplicationLifetime,
             IOptions<TerminalOptions> options,
             ITerminalConsole terminalConsole,
             ITerminalExceptionHandler exceptionHandler,
             ILogger<TerminalHostedService> logger) : base(serviceProvider, options, terminalConsole, exceptionHandler, logger)
         {
+            this.hostApplicationLifetime = hostApplicationLifetime;
         }
 
-        /// <summary>
-        /// Perform custom configuration option checks at startup.
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        protected override Task CheckHostApplicationConfigurationAsync(IOptions<TerminalOptions> options)
+        /// <inheritdoc/>
+        protected override Task ConfigureLifetimeAsync()
         {
+            hostApplicationLifetime.ApplicationStarted.Register(OnStarted);
+            hostApplicationLifetime.ApplicationStopping.Register(OnStopping);
+            hostApplicationLifetime.ApplicationStopped.Register(OnStopped);
             return Task.CompletedTask;
         }
 
         /// <summary>
         /// The <see cref="IHostApplicationLifetime.ApplicationStarted"/> handler.
         /// </summary>
-        protected override void OnStarted()
+        private void OnStarted()
         {
             // These are async calls, but we are blocking here for as the of the test.
             TerminalConsole.WriteLineAsync("Blazor hosted web assembly terminal started on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
@@ -53,7 +54,7 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         /// <summary>
         /// The <see cref="IHostApplicationLifetime.ApplicationStopped"/> handler.
         /// </summary>
-        protected override void OnStopped()
+        private void OnStopped()
         {
             TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "Blazor hosted web assembly terminal stopped on {0}.", DateTime.UtcNow.ToLocalTime().ToString()).Wait();
         }
@@ -61,28 +62,11 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         /// <summary>
         /// The <see cref="IHostApplicationLifetime.ApplicationStopping"/> handler.
         /// </summary>
-        protected override void OnStopping()
+        private void OnStopping()
         {
             TerminalConsole.WriteLineAsync("Stopping web terminal...").Wait();
         }
 
-        /// <summary>
-        /// Print <c>cli</c> terminal header.
-        /// </summary>
-        /// <returns></returns>
-        protected override async Task PrintHostApplicationHeaderAsync()
-        {
-            await TerminalConsole.WriteLineAsync("Starting web terminal...");
-        }
-
-        /// <summary>
-        /// Print host application licensing information.
-        /// </summary>
-        /// <param name="license">The extracted license.</param>
-        /// <returns></returns>
-        protected override Task PrintHostApplicationLicensingAsync(License license)
-        {
-            return Task.CompletedTask;
-        }
+        private readonly IHostApplicationLifetime hostApplicationLifetime;
     }
 }
