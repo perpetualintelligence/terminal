@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Runtime
             {
                 // Always dequeue a segment because we're expecting it to be an option.
                 string option = segmentsQueue.Dequeue();
-                _ = TerminalServices.IsOption(option, terminalOptions, out bool isAlias);
+                _ = TerminalServices.IsOption(option, terminalOptions.Parser.OptionPrefix, out bool isAlias);
 
                 // If the option alias is disabled then we do not support short, long and hybrid options.
                 // - With alias: -a, --all, --long-option,
@@ -90,7 +90,7 @@ namespace OneImlx.Terminal.Runtime
                 if (segmentsQueue.Count > 0)
                 {
                     string optionValue = segmentsQueue.Peek();
-                    if (!TerminalServices.IsOption(optionValue, terminalOptions, out _))
+                    if (!TerminalServices.IsOption(optionValue, terminalOptions.Parser.OptionPrefix, out _))
                     {
                         // Ensure token ends with a delimiter
                         if (optionValue.First() == terminalOptions.Parser.ValueDelimiter)
@@ -172,7 +172,7 @@ namespace OneImlx.Terminal.Runtime
             {
                 // Break loop if segment represents an option.
                 string token = segmentQueue.Peek();
-                if (TerminalServices.IsOption(token, terminalOptions, out _))
+                if (TerminalServices.IsOption(token, terminalOptions.Parser.OptionPrefix, out _))
                 {
                     break;
                 }

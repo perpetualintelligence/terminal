@@ -5,6 +5,11 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+// This is used to unit test the behavior of the terminal framework's internal types.
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("OneImlx.Terminal.Tests")]
+
 namespace OneImlx.Terminal.Runtime
 {
     /// <summary>

@@ -9,11 +9,12 @@
   </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+        <PackageReference Include="Grpc.Net.Client" Version="2.70.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
         <PackageReference Include="OneImlx.Terminal.Client" Version="6.0.0-rc.250218417" />
+        <PackageReference Include="OneImlx.Terminal" Version="6.0.0-rc.250218417" />
     </ItemGroup>
 
     <!--<ItemGroup>

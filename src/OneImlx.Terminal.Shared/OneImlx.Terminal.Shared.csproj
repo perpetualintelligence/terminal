@@ -10,4 +10,8 @@
         <PackageTags>terminal cli options flags commands oneimlx unicode</PackageTags>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="OneImlx.Shared" Version="6.1.1-rc.26325205" />
+    </ItemGroup>
+
 </Project>

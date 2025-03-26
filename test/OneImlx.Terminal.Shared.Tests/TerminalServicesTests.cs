@@ -6,7 +6,6 @@
 */
 
 using FluentAssertions;
-using OneImlx.Terminal.Configuration.Options;
 using System;
 using Xunit;
 
@@ -16,12 +15,6 @@ namespace OneImlx.Terminal
     {
         public TerminalServicesTests()
         {
-            _terminalOptions = new TerminalOptions
-            {
-                Router = new RouterOptions
-                {
-                }
-            };
         }
 
         [Fact]
@@ -65,14 +58,10 @@ namespace OneImlx.Terminal
         public void IsOption_ShouldReturnFalse_WhenTokenIsNotOption()
         {
             // Arrange
-            var terminalOptions = new TerminalOptions
-            {
-                Parser = new ParserOptions { OptionPrefix = '-' }
-            };
             string token = "notAnOption";
 
             // Act
-            bool result = TerminalServices.IsOption(token, terminalOptions, out bool isAlias);
+            bool result = TerminalServices.IsOption(token, '-', out bool isAlias);
 
             // Assert
             result.Should().BeFalse();
@@ -83,14 +72,10 @@ namespace OneImlx.Terminal
         public void IsOption_ShouldReturnTrue_WhenTokenIsOption()
         {
             // Arrange
-            var terminalOptions = new TerminalOptions
-            {
-                Parser = new ParserOptions { OptionPrefix = '-' }
-            };
             string token = "--option";
 
             // Act
-            bool result = TerminalServices.IsOption(token, terminalOptions, out bool isAlias);
+            bool result = TerminalServices.IsOption(token, '-', out bool isAlias);
 
             // Assert
             result.Should().BeTrue();
@@ -101,20 +86,14 @@ namespace OneImlx.Terminal
         public void IsOption_ShouldReturnTrueAndSetIsAlias_WhenTokenIsAlias()
         {
             // Arrange
-            var terminalOptions = new TerminalOptions
-            {
-                Parser = new ParserOptions { OptionPrefix = '-' }
-            };
             string token = "-alias";
 
             // Act
-            bool result = TerminalServices.IsOption(token, terminalOptions, out bool isAlias);
+            bool result = TerminalServices.IsOption(token, '-', out bool isAlias);
 
             // Assert
             result.Should().BeTrue();
             isAlias.Should().BeTrue();
         }
-
-        private readonly TerminalOptions _terminalOptions;
     }
 }

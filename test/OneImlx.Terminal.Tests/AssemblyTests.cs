@@ -16,13 +16,13 @@ namespace OneImlx.Terminal
         [Fact]
         public void TypesLocationTest()
         {
-            typeof(TerminalErrors).Assembly.Should().HaveTypesInValidLocations();
+            typeof(OneImlx.Terminal.Runtime.Terminal).Assembly.Should().HaveTypesInValidLocations();
         }
 
         [Fact]
         public void TypesNamespaceTest()
         {
-            typeof(TerminalErrors).Assembly.Should().HaveTypesInRootNamespace("OneImlx.Terminal");
+            typeof(OneImlx.Terminal.Runtime.Terminal).Assembly.Should().HaveTypesInRootNamespace("OneImlx.Terminal");
         }
     }
 }

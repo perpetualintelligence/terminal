@@ -7,9 +7,6 @@
 
 using System.Runtime.CompilerServices;
 
-// This is used to unit test the behavior of the terminal framework's internal types.
-[assembly: InternalsVisibleTo("OneImlx.Terminal.Tests")]
-
 namespace OneImlx.Terminal
 {
     /// <summary>

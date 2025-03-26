@@ -126,6 +126,17 @@ jobs:
     - name: Build Dependency Project
       run: dotnet build ./test/OneImlx.Terminal.DependentAssembly/OneImlx.Terminal.DependentAssembly.csproj -c Release --verbosity minimal
 
+    # Publish OneImlx.Terminal.Shared
+    - name: OneImlx.Terminal
+      uses: ./.github/actions/push-package
+      with:
+        project: OneImlx.Terminal.Shared
+        config: Release
+        version: ${{ env.PI_CI_PACKAGE_VERSION }}
+        ghapikey: ${{ env.PI_GITHUB_PAT_ENV }}
+        nugetapikey: ${{ env.PI_NUGET_PAT_ENV }}
+        registry: ${{ env.PI_PUBLISH_REGISTRY }}
+
     # Publish OneImlx.Terminal
     - name: OneImlx.Terminal
       uses: ./.github/actions/push-package
