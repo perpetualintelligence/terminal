@@ -2,8 +2,8 @@
 
   <Import Project="..\..\build\props\Test.props" />  
 
-  <ItemGroup>    
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />    
+  <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
   </ItemGroup>
 
  <ItemGroup>

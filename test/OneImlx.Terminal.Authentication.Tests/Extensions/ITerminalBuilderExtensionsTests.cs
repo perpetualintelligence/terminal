@@ -7,6 +7,8 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Moq;
@@ -23,7 +25,8 @@ namespace OneImlx.Terminal.Authentication.Extensions
         public void AddMsalAuthentication_RegistersRequiredServicesWithCorrectLifetimes()
         {
             var services = new ServiceCollection();
-            services.AddLogging();
+            services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
+            services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
             services.AddSingleton(new TerminalOptions());
 
             var builder = new Mock<ITerminalBuilder>();

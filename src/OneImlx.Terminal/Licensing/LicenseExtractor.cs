@@ -35,13 +35,11 @@ namespace OneImlx.Terminal.Licensing
         /// <param name="licenseDebugger">The license debugger.</param>
         /// <param name="terminalOptions">The configuration options.</param>
         /// <param name="logger">The logger.</param>
-        /// <param name="httpClientFactory">The optional HTTP client factory</param>
-        public LicenseExtractor(ILicenseDebugger licenseDebugger, TerminalOptions terminalOptions, ILogger<LicenseExtractor> logger, IHttpClientFactory? httpClientFactory = null)
+        public LicenseExtractor(ILicenseDebugger licenseDebugger, TerminalOptions terminalOptions, ILogger<LicenseExtractor> logger)
         {
             this.licenseDebugger = licenseDebugger;
             this.terminalOptions = terminalOptions;
             this.logger = logger;
-            this.httpClientFactory = httpClientFactory;
         }
 
         /// <summary>
@@ -302,7 +300,6 @@ namespace OneImlx.Terminal.Licensing
                 LicenseQuota.Create(terminalOptions.Licensing.LicensePlan));
         }
 
-        private readonly IHttpClientFactory? httpClientFactory;
         private readonly ILicenseDebugger licenseDebugger;
         private readonly ILogger<LicenseExtractor> logger;
         private readonly SemaphoreSlim semaphoreSlim = new(1, 1);

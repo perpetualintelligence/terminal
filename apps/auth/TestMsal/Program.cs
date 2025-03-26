@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
             // Configure the hosted service
             collection.AddHostedService<TestAuthHostedService>();
 
-            // We are using on-line license so configure HTTP
+            // Add Http client for authentication
             collection.AddHttpClient("demo-http").AddHttpMessageHandler<TestAuthDelegatingHandler>();
 
             // Before we configure the terminal, we need to configure the public client from MSAL. This is required for

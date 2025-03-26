@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.IO;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Json;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -82,7 +82,7 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Id = "invalid_app";
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnauthorizedAccess).WithErrorDescription("The application is not authorized. app=invalid_app");
@@ -93,7 +93,7 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Id = "invalid_auth_app";
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.UnauthorizedAccess).WithErrorDescription("The application is not authorized. app=invalid_auth_app");
@@ -153,7 +153,7 @@ namespace OneImlx.Terminal.Licensing
         {
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The provider is not authorized. provider_id=invalid_provider");
@@ -170,7 +170,7 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testDemoLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not authorized for on-premise isolated deployment. plan=urn:oneimlx:terminal:plan:demo");
@@ -211,7 +211,7 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             var result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();
@@ -271,7 +271,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseContents = TerminalServices.EncodeLicenseContents(File.ReadAllText(testLicPath));
             terminalOptions.Licensing.LicenseFile = "license-with-contents";
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>(), new MockHttpClientFactory());
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             var result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();

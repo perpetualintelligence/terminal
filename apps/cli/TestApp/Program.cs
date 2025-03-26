@@ -46,9 +46,6 @@ namespace OneImlx.Terminal.Apps.Test
             // Configure the hosted service
             collection.AddHostedService<TestAppHostedService>();
 
-            // We are using on-line license so configure HTTP
-            collection.AddHttpClient("demo-http");
-
             // NOTE: Specify your demo or commercial license file. Specify your application id.
             TerminalTextHandler textHandler = new(StringComparison.OrdinalIgnoreCase, Encoding.Unicode);
             ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(textHandler,
