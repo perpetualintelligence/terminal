@@ -491,20 +491,18 @@ namespace OneImlx.Terminal.Commands.Handlers
         }
 
         [Fact]
-        public async Task ValidCheckerAndRunnerShouldCheckCorrectLicenseFeaturesAsync()
+        public async Task ValidCheckerAndRunnerShould_Not_CheckLicenseAsync()
         {
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
 
             ParsedCommand extractedCommand = new(command.Item2, null);
-            routerContext.License = license;
             routerContext.ParsedCommand = extractedCommand;
 
             await handler.HandleCommandAsync(routerContext);
 
-            licenseChecker.Called.Should().BeTrue();
-            licenseChecker.PassedLicense.Should().NotBeNull();
-            licenseChecker.PassedLicense!.Should().BeSameAs(license);
+            licenseChecker.Called.Should().BeFalse();
+            licenseChecker.PassedLicense.Should().BeNull();
         }
 
         private Tuple<CommandDescriptor, Command> command = null!;

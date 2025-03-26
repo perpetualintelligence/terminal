@@ -49,9 +49,6 @@ namespace OneImlx.Terminal.Commands.Handlers
         {
             logger.LogDebug("Handle request. request={0}", context.Request.Id);
 
-            // Check the license
-            await licenseChecker.CheckLicenseAsync(context.EnsureLicense());
-
             // Check and run the command
             Tuple<CommandCheckerResult, CommandRunnerResult> result = await CheckAndRunCommandInnerAsync(context);
 

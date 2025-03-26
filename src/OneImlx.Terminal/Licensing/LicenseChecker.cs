@@ -99,7 +99,7 @@ namespace OneImlx.Terminal.Licensing
             }
 
             // Integration
-            if (!OptionsValid(quota.Dynamics, terminalOptions.Integration.Enabled))
+            if (!OptionsValid(quota.Dynamics, terminalOptions.Dynamics.Enabled))
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal dynamics option is not allowed for your license plan.");
             }

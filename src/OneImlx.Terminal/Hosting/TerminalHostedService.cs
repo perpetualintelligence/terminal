@@ -19,6 +19,7 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Stores;
 
 namespace OneImlx.Terminal.Hosting
 {
@@ -61,17 +62,15 @@ namespace OneImlx.Terminal.Hosting
                 // Configure the application lifetime.
                 await ConfigureLifetimeAsync();
 
-                // Extract license
-                var licenseResult = await ExtractLicenseAsync();
-
-                // Print mandatory licensing for community and demo license
-                await PrintWarningIfDemoAsync(licenseResult.License);
-
                 // Do mandatory configuration check
                 await CheckConfigurationAsync(Options);
 
-                // Register the help options with command descriptors. This is intentionally done at the end so we don't
-                // take performance hit in case there is a license check failure.
+                // Do license check
+                await CheckLicenseAsync();
+
+                // Register help options with command descriptors. Retrieving all commands from the store is
+                // intentionally done at the end to avoid a performance hit in case the license check fails.
+
                 await RegisterHelpAsync();
             }
             catch (TerminalException ex)
@@ -87,52 +86,6 @@ namespace OneImlx.Terminal.Hosting
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// This method prints the demo warning licensing details.
-        /// </summary>
-        /// <param name="license">The extracted license.</param>
-        private async Task PrintWarningIfDemoAsync(License license)
-        {
-            if (license.Plan == TerminalLicensePlans.Demo)
-            {
-                if (license.Usage == LicenseUsage.Educational)
-                {
-                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "The demo license is free for educational purposes, but non-educational use requires a commercial license.");
-                }
-                else if (license.Usage == LicenseUsage.RnD)
-                {
-                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "The demo license is free for research and development, but production use requires a commercial license.");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Registers the help options based on configuration options.
-        /// </summary>
-        /// <returns></returns>
-        private Task RegisterHelpAsync()
-        {
-            HelpOptions helpOptions = Options.Value.Help;
-
-            if (helpOptions.Disabled)
-            {
-                return Task.CompletedTask;
-            }
-
-            return Task.Run(() =>
-            {
-                // This can be a long list of command, but it is executed only once during startup.
-                IEnumerable<CommandDescriptor> commandDescriptors = ServiceProvider.GetServices<CommandDescriptor>();
-                foreach (CommandDescriptor commandDescriptor in commandDescriptors)
-                {
-                    OptionDescriptor helpDescriptor = new(helpOptions.OptionId, nameof(Boolean), helpOptions.OptionDescription, OptionFlags.None, helpOptions.OptionAlias);
-
-                    commandDescriptor.OptionDescriptors ??= new OptionDescriptors(ServiceProvider.GetRequiredService<ITerminalTextHandler>());
-                    commandDescriptor.OptionDescriptors.RegisterHelp(helpDescriptor);
-                }
-            });
         }
 
         /// <summary>
@@ -167,14 +120,62 @@ namespace OneImlx.Terminal.Hosting
             await optionsChecker.CheckAsync(options.Value);
         }
 
-        private async Task<LicenseExtractorResult> ExtractLicenseAsync()
+        private async Task CheckLicenseAsync()
         {
             ILicenseExtractor licenseExtractor = ServiceProvider.GetRequiredService<ILicenseExtractor>();
-            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
-            return result;
+            LicenseExtractorResult exResult = await licenseExtractor.ExtractLicenseAsync();
+
+            ILicenseChecker licenseChecker = ServiceProvider.GetRequiredService<ILicenseChecker>();
+            LicenseCheckerResult chResult = await licenseChecker.CheckLicenseAsync(exResult.License);
+
+            await PrintWarningIfDemoAsync(exResult.License);
         }
 
-        private readonly ITerminalExceptionHandler terminalExceptionHandler;
+        /// <summary>
+        /// This method prints the demo warning licensing details.
+        /// </summary>
+        /// <param name="license">The extracted license.</param>
+        private async Task PrintWarningIfDemoAsync(Licensing.License license)
+        {
+            if (license.Plan == TerminalLicensePlans.Demo)
+            {
+                if (license.Usage == LicenseUsage.Educational)
+                {
+                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "The demo license is free for educational purposes, but non-educational use requires a commercial license.");
+                }
+                else if (license.Usage == LicenseUsage.RnD)
+                {
+                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Yellow, "The demo license is free for research and development, but production use requires a commercial license.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers the help options based on configuration options.
+        /// </summary>
+        /// <returns></returns>
+        private async Task RegisterHelpAsync()
+        {
+            HelpOptions helpOptions = Options.Value.Help;
+
+            if (helpOptions.Disabled)
+            {
+                return;
+            }
+
+            // This can be a long list of command, but it is executed only once during startup.
+            ITerminalCommandStore terminalCommandStore = ServiceProvider.GetRequiredService<ITerminalCommandStore>();
+            var commandDescriptors = await terminalCommandStore.AllAsync();
+            foreach (CommandDescriptor commandDescriptor in commandDescriptors.Values)
+            {
+                OptionDescriptor helpDescriptor = new(helpOptions.OptionId, nameof(Boolean), helpOptions.OptionDescription, OptionFlags.None, helpOptions.OptionAlias);
+
+                commandDescriptor.OptionDescriptors ??= new OptionDescriptors(ServiceProvider.GetRequiredService<ITerminalTextHandler>());
+                commandDescriptor.OptionDescriptors.RegisterHelp(helpDescriptor);
+            }
+        }
+
         private readonly ILogger<TerminalHostedService> logger;
+        private readonly ITerminalExceptionHandler terminalExceptionHandler;
     }
 }

@@ -55,7 +55,8 @@ namespace OneImlx.Terminal.Hosting
                 services.AddSingleton<ILicenseExtractor>(mockLicenseExtractor);
                 services.AddSingleton<ILicenseChecker>(mockLicenseChecker);
                 services.AddSingleton<IConfigurationOptionsChecker>(mockOptionsChecker);
-                services.AddSingleton<ITerminalTextHandler, TerminalTextHandler>();
+                services.AddSingleton<ITerminalTextHandler>(new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII));
+                services.AddSingleton<ITerminalCommandStore, TerminalInMemoryCommandStore>();
             });
             host = hostBuilder.Start();
 
@@ -122,11 +123,9 @@ namespace OneImlx.Terminal.Hosting
         }
 
         [Fact]
-        public async Task StartAsync_ShouldCallCustomizationAsync()
+        public async Task StartAsync_ShouldCallConfigureLifetimeAsync()
         {
-            MockTerminalHostedServiceStaticCounter.Restart();
             await mockCustomCliHostedService.StartAsync(cancellationToken);
-
             mockCustomCliHostedService.ConfigureLifetimeCalled.Should().BeTrue();
         }
 
@@ -209,9 +208,6 @@ namespace OneImlx.Terminal.Hosting
                         .DefineOption("id2", nameof(Int32), "test opt2", OptionFlags.None, "alias_id2").Add()
                         .DefineOption("id3", nameof(Boolean), "test opt3", OptionFlags.None).Add()
                     .Checker<MockCommandChecker>()
-                    .Add()
-                    .DefineCommand<MockCommandRunner>("cmd1", "cmd1", "test1", CommandType.SubCommand, CommandFlags.None)
-                    .Checker<MockCommandChecker>()
                     .Add();
 
                 // Replace with Mock DIs
@@ -235,16 +231,6 @@ namespace OneImlx.Terminal.Hosting
                 helpAttr!.Alias.Should().Be(terminalOptions.Help.OptionAlias);
                 helpAttr.Description.Should().Be(terminalOptions.Help.OptionDescription);
             }
-        }
-
-        private TerminalHostedService DefaultHostedService(IServiceProvider arg)
-        {
-            return defaultCliHostedService;
-        }
-
-        private MockTerminalEventsHostedService EventsHostedService(IServiceProvider arg)
-        {
-            return mockCliEventsHostedService;
         }
 
         private readonly CancellationToken cancellationToken;

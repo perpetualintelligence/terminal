@@ -38,9 +38,9 @@ namespace OneImlx.Terminal.Configuration.Options
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// The integration configuration options.
+        /// The dynamics configuration options.
         /// </summary>
-        public IntegrationOptions Integration { get; set; } = new IntegrationOptions();
+        public DynamicsOptions Dynamics { get; set; } = new DynamicsOptions();
 
         /// <summary>
         /// The licensing configuration options.

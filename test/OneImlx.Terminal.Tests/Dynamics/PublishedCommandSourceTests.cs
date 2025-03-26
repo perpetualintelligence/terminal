@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Dynamics
             logger = mockListLoggerFactory.CreateLogger<PublishedCommandSource>();
 
             TerminalOptions options = MockTerminalOptions.NewAliasOptions();
-            options.Integration.Enabled = true;
+            options.Dynamics.Enabled = true;
             terminalOptions = Microsoft.Extensions.Options.Options.Create<TerminalOptions>(options);
 
             publishedCommandSource = new PublishedCommandSource(textHandler, assemblyLoader, terminalCommandSourceChecker, mutableCommandStore, terminalOptions, logger);
@@ -67,7 +67,7 @@ namespace OneImlx.Terminal.Dynamics
         [Fact]
         public async Task LoadCommandSourceAsync_Throws_If_Integration_Disabled()
         {
-            terminalOptions.Value.Integration.Enabled = false;
+            terminalOptions.Value.Dynamics.Enabled = false;
 
             PublishedCommandSourceContext commandSourceContext = new();
             commandSourceContext.PublishedAssemblies.Add("MockAssembly1.dll", "mock//path//to//assembly");
@@ -76,7 +76,7 @@ namespace OneImlx.Terminal.Dynamics
             Func<Task> act = async () => await publishedCommandSource.LoadCommandSourceAsync(commandSourceContext);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription("The terminal integration is not enabled.");
+                .WithErrorDescription("The terminal dynamics is not enabled.");
 
             terminalCommandSourceChecker.Called.Should().BeFalse();
         }
