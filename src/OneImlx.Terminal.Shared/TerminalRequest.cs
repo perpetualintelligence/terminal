@@ -12,7 +12,7 @@ using OneImlx.Shared.Infrastructure;
 namespace OneImlx.Terminal.Shared
 {
     /// <summary>
-    /// A temrinal request that is equatable over its identifier.
+    /// A terminal request that is equatable over its identifier.
     /// </summary>
     public sealed class TerminalRequest : IEquatable<TerminalRequest?>
     {
