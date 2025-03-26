@@ -8,6 +8,7 @@
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using System.Text.Json;
 using System.Threading.Tasks;
 

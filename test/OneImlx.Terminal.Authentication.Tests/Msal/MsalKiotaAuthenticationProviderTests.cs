@@ -17,6 +17,7 @@ using Moq;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Authentication.Msal
 {

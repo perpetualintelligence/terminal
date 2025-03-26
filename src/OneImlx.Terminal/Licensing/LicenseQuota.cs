@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using OneImlx.Shared.Licensing;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Licensing
 {

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {

@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {

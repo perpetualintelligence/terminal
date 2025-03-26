@@ -6,6 +6,7 @@
 */
 
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using System.Collections;
 using System.Collections.Generic;
 

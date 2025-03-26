@@ -20,6 +20,7 @@ namespace OneImlx.Terminal.Authentication.Msal
     using OneImlx.Terminal.Configuration.Options;
     using OneImlx.Test.FluentAssertions;
     using Xunit;
+    using OneImlx.Terminal.Shared;
 
     public class MsalKiotaAccessTokenProviderTests
     {

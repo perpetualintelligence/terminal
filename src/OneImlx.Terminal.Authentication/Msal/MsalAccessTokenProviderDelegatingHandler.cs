@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Kiota.Abstractions.Authentication;
+using OneImlx.Terminal.Shared;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;

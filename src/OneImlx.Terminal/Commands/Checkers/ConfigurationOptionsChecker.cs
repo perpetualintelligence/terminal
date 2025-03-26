@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands.Checkers
 {

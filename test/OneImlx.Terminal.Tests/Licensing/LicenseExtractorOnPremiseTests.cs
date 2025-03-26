@@ -16,6 +16,7 @@ using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using Xunit;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Licensing
 {

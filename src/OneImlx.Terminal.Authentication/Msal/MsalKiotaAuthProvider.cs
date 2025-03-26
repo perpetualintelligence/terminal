@@ -16,6 +16,7 @@ using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 using OneImlx.Shared.Extensions;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Authentication.Msal
 {

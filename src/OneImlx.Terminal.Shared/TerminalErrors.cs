@@ -5,7 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-namespace OneImlx.Terminal
+namespace OneImlx.Terminal.Shared
 {
     /// <summary>
     /// The errors for the terminal framework.

@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands.Handlers
 {

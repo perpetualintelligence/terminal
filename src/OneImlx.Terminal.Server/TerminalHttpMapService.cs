@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;

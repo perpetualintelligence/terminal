@@ -8,6 +8,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
+using OneImlx.Terminal.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;

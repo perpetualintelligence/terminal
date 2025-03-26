@@ -7,6 +7,7 @@
 
 using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Runners;
+using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Commands
 {
