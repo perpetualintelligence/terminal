@@ -200,6 +200,35 @@ namespace OneImlx.Terminal.Extensions
         }
 
         /// <summary>
+        /// Adds dynamics services to the terminal builder for loading commands from an external source. This method
+        /// registers the specified command source, command source checker, and command source assembly loader as
+        /// singletons in the service collection.
+        /// </summary>
+        /// <typeparam name="TContext">
+        /// The type of the context used in the command source, checker, and loader. Must be a class.
+        /// </typeparam>
+        /// <typeparam name="TSource">The type of the terminal command source. Must be a class implementing <see cref="ITerminalCommandSource{TContext}"/>.</typeparam>
+        /// <typeparam name="TChecker">
+        /// The type of the terminal command source checker. Must be a class implementing <see cref="ITerminalCommandSourceChecker{TContext}"/>.
+        /// </typeparam>
+        /// <typeparam name="TLoader">
+        /// The type of the terminal command source assembly loader. Must be a class implementing <see cref="ITerminalCommandSourceAssemblyLoader{TContext}"/>.
+        /// </typeparam>
+        /// <param name="builder">The terminal builder to which the integration services are added.</param>
+        /// <returns>The <see cref="ITerminalBuilder"/> with the added integration services, enabling method chaining.</returns>
+        public static ITerminalBuilder AddDynamics<TContext, TSource, TChecker, TLoader>(this ITerminalBuilder builder)
+            where TContext : class
+            where TSource : class, ITerminalCommandSource<TContext>
+            where TChecker : class, ITerminalCommandSourceChecker<TContext>
+            where TLoader : class, ITerminalCommandSourceAssemblyLoader<TContext>
+        {
+            builder.Services.AddSingleton<ITerminalCommandSource<TContext>, TSource>();
+            builder.Services.AddSingleton<ITerminalCommandSourceChecker<TContext>, TChecker>();
+            builder.Services.AddSingleton<ITerminalCommandSourceAssemblyLoader<TContext>, TLoader>();
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the <see cref="ITerminalEventHandler"/> to the service collection.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -232,35 +261,6 @@ namespace OneImlx.Terminal.Extensions
         public static ITerminalBuilder AddHelpProvider<THelpProvider>(this ITerminalBuilder builder) where THelpProvider : class, ITerminalHelpProvider
         {
             builder.Services.AddSingleton<ITerminalHelpProvider, THelpProvider>();
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds integration services to the terminal builder for loading commands from an external source. This method
-        /// registers the specified command source, command source checker, and command source assembly loader as
-        /// singletons in the service collection.
-        /// </summary>
-        /// <typeparam name="TContext">
-        /// The type of the context used in the command source, checker, and loader. Must be a class.
-        /// </typeparam>
-        /// <typeparam name="TSource">The type of the terminal command source. Must be a class implementing <see cref="ITerminalCommandSource{TContext}"/>.</typeparam>
-        /// <typeparam name="TChecker">
-        /// The type of the terminal command source checker. Must be a class implementing <see cref="ITerminalCommandSourceChecker{TContext}"/>.
-        /// </typeparam>
-        /// <typeparam name="TLoader">
-        /// The type of the terminal command source assembly loader. Must be a class implementing <see cref="ITerminalCommandSourceAssemblyLoader{TContext}"/>.
-        /// </typeparam>
-        /// <param name="builder">The terminal builder to which the integration services are added.</param>
-        /// <returns>The <see cref="ITerminalBuilder"/> with the added integration services, enabling method chaining.</returns>
-        public static ITerminalBuilder AddIntegration<TContext, TSource, TChecker, TLoader>(this ITerminalBuilder builder)
-            where TContext : class
-            where TSource : class, ITerminalCommandSource<TContext>
-            where TChecker : class, ITerminalCommandSourceChecker<TContext>
-            where TLoader : class, ITerminalCommandSourceAssemblyLoader<TContext>
-        {
-            builder.Services.AddSingleton<ITerminalCommandSource<TContext>, TSource>();
-            builder.Services.AddSingleton<ITerminalCommandSourceChecker<TContext>, TChecker>();
-            builder.Services.AddSingleton<ITerminalCommandSourceAssemblyLoader<TContext>, TLoader>();
             return builder;
         }
 

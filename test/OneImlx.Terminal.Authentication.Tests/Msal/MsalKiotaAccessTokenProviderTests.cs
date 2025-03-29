@@ -31,7 +31,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             {
                 Authentication = new AuthenticationOptions
                 {
-                    Enabled = true,
+                    Provider = "msal",
                     DefaultScopes = ["User.Read"],
                     ValidHosts = ["graph.microsoft.com"]
                 }
@@ -98,13 +98,13 @@ namespace OneImlx.Terminal.Authentication.Msal
         public async Task GetAuthorizationTokenAsync_Throws_If_Authentication_Is_Not_Enabled()
         {
             // Not enabled
-            _terminalOptions.Authentication.Enabled = false;
+            _terminalOptions.Authentication.Provider = "none";
 
             var provider = CreateProvider();
             Func<Task> func = async () => await provider.GetAuthorizationTokenAsync(new Uri("https://graph.microsoft.com"), null); ;
             await func.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription("The terminal authentication is not enabled.");
+                .WithErrorDescription("The terminal MSAL authentication is not enabled.");
         }
 
         [Fact]

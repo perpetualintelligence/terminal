@@ -167,7 +167,7 @@ namespace OneImlx.Terminal.Licensing
         {
             licenseDebugger.SetDebuggerAttached(debuggerAttached);
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testDemoLicPath;

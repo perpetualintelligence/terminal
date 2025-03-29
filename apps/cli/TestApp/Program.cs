@@ -59,7 +59,6 @@ namespace OneImlx.Terminal.Apps.Test
 
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
-                    options.Licensing.Deployment = null;
                     options.Router.Caret = "> ";
                 }
                                                                                                                                                                                                );
@@ -126,7 +125,9 @@ namespace OneImlx.Terminal.Apps.Test
                     process.WaitForExit();
 
                     if (int.TryParse(output.Trim(), out int parsedPid))
+                    {
                         parentPid = parsedPid;
+                    }
                 }
 
                 if (parentPid > 0)

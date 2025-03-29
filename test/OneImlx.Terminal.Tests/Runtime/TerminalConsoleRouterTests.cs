@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using Moq;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -26,7 +26,6 @@ namespace OneImlx.Terminal.Runtime
         {
             tcs = new CancellationTokenSource();
             terminalConsoleMock = new Mock<ITerminalConsole>();
-            applicationLifetimeMock = new Mock<IHostApplicationLifetime>();
             commandRouterMock = new Mock<ICommandRouter>();
             exceptionHandlerMock = new Mock<ITerminalExceptionHandler>();
             loggerMock = new Mock<ILogger<TerminalConsoleRouter>>();
@@ -40,7 +39,6 @@ namespace OneImlx.Terminal.Runtime
             };
             router = new TerminalConsoleRouter(
                 terminalConsoleMock.Object,
-                applicationLifetimeMock.Object,
                 commandRouterMock.Object,
                 exceptionHandlerMock.Object,
                 options,
@@ -141,8 +139,8 @@ namespace OneImlx.Terminal.Runtime
 
             await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
 
-            // Verify command is routed. This may be invoked multiple times due to the cancellation token. We are verifying
-            // at least 5 times to ensure the router is running for a while.
+            // Verify command is routed. This may be invoked multiple times due to the cancellation token. We are
+            // verifying at least 5 times to ensure the router is running for a while.
             commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandContext>(ctx => ctx.Request.Raw == "test_command")), Times.AtLeast(5));
 
             // Verify Canceled exception is handled
@@ -178,16 +176,6 @@ namespace OneImlx.Terminal.Runtime
             router.IsRunning.Should().BeTrue();
             tcs.CancelAfter(100);
             await Task.Delay(300);
-            router.IsRunning.Should().BeFalse();
-        }
-
-        [Fact]
-        public async Task RunAsync_Stops_When_Application_Lifetime_Is_CanceledAsync()
-        {
-            terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("test_command");
-            applicationLifetimeMock.Setup(a => a.ApplicationStopping).Returns(new CancellationToken(true));
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
-            await Task.Delay(200);
             router.IsRunning.Should().BeFalse();
         }
 
@@ -251,7 +239,6 @@ namespace OneImlx.Terminal.Runtime
             terminalConsoleMock.Verify(t => t.WriteAsync(It.Is<string>(s => s == options.Router.Caret)), Times.AtLeastOnce);
         }
 
-        private readonly Mock<IHostApplicationLifetime> applicationLifetimeMock;
         private readonly Mock<ICommandRouter> commandRouterMock;
         private readonly Mock<ITerminalExceptionHandler> exceptionHandlerMock;
         private readonly Mock<ILogger<TerminalConsoleRouter>> loggerMock;

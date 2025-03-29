@@ -112,7 +112,7 @@ namespace OneImlx.Terminal.Extensions
             provider.GetService<ILicenseDebugger>().Should().BeOfType<LicenseDebugger>();
 
             // Terminal router
-            //provider.GetService<ITerminalRouter<TerminalConsoleRouterContext>>().Should().BeOfType<TerminalConsoleRouter>();
+            provider.GetService<ITerminalRouter<TerminalConsoleRouterContext>>().Should().BeOfType<TerminalConsoleRouter>();
         }
 
         [Fact]

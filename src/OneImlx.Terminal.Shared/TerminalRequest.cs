@@ -12,7 +12,7 @@ using OneImlx.Shared.Infrastructure;
 namespace OneImlx.Terminal.Shared
 {
     /// <summary>
-    /// A terminal request that is equatable over its identifier.
+    /// A terminal request with a unique identifier, raw input, result, and error status.
     /// </summary>
     public sealed class TerminalRequest : IEquatable<TerminalRequest?>
     {

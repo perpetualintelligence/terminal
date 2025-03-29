@@ -24,21 +24,18 @@ namespace OneImlx.Terminal.Runtime
         /// Initialize a new <see cref="TerminalConsoleRouter"/> instance.
         /// </summary>
         /// <param name="terminalConsole">The terminal console.</param>
-        /// <param name="applicationLifetime">The host application lifetime instance.</param>
         /// <param name="commandRouter">The command router.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
         /// <param name="options">The configuration options.</param>
         /// <param name="logger">The logger.</param>
         public TerminalConsoleRouter(
             ITerminalConsole terminalConsole,
-            IHostApplicationLifetime applicationLifetime,
             ICommandRouter commandRouter,
             ITerminalExceptionHandler exceptionHandler,
             TerminalOptions options,
             ILogger<TerminalConsoleRouter> logger)
         {
             this.terminalConsole = terminalConsole;
-            this.applicationLifetime = applicationLifetime;
             this.commandRouter = commandRouter;
             this.exceptionHandler = exceptionHandler;
             this.options = options;
@@ -49,6 +46,11 @@ namespace OneImlx.Terminal.Runtime
         /// Gets a value indicating whether the console terminal is running.
         /// </summary>
         public bool IsRunning { get; private set; }
+
+        /// <summary>
+        /// The terminal router name.
+        /// </summary>
+        public string Name => "console";
 
         /// <summary>
         /// Runs to the terminal as a console asynchronously.
@@ -83,12 +85,6 @@ namespace OneImlx.Terminal.Runtime
                         if (context.TerminalCancellationToken.IsCancellationRequested)
                         {
                             throw new OperationCanceledException("Received terminal cancellation token, the terminal console router is canceled.");
-                        }
-
-                        // Check if application is stopping
-                        if (applicationLifetime.ApplicationStopping.IsCancellationRequested)
-                        {
-                            throw new OperationCanceledException("Application is stopping, the terminal console router is canceled.");
                         }
 
                         // Route once handling for driver programs or indefinite routing for interactive terminals.
@@ -170,7 +166,8 @@ namespace OneImlx.Terminal.Runtime
                     {
                         routed = true;
                     }
-                };
+                }
+                ;
             }
             finally
             {
@@ -178,7 +175,6 @@ namespace OneImlx.Terminal.Runtime
             }
         }
 
-        private readonly IHostApplicationLifetime applicationLifetime;
         private readonly ICommandRouter commandRouter;
         private readonly ITerminalExceptionHandler exceptionHandler;
         private readonly ILogger<TerminalConsoleRouter> logger;

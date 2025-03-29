@@ -10,11 +10,13 @@ using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,9 +26,10 @@ namespace OneImlx.Terminal.Licensing
     {
         public LicenseCheckerTests()
         {
+            textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.UTF8);
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
-            licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
+            licenseChecker = new LicenseChecker(commandStore, textHandler, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
             license = new License(TerminalLicensePlans.Corporate, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseQuota.Create(TerminalLicensePlans.Corporate));
         }
 
@@ -41,7 +44,7 @@ namespace OneImlx.Terminal.Licensing
             license.Quota.Switches = switches;
             terminalOptions.Driver.Enabled = true;
             Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal driver option is not allowed for your license plan.");
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal driver is not allowed for your license plan.");
 
             // No error, not allowed not configured
             switches["driver"] = false;
@@ -59,6 +62,38 @@ namespace OneImlx.Terminal.Licensing
             switches["driver"] = true;
             license.Quota.Switches = switches;
             terminalOptions.Driver.Enabled = true;
+            await licenseChecker.CheckLicenseAsync(license);
+        }
+
+        [Fact]
+        public async Task CheckAsync_DynamicsCheck_ShouldBehaveCorrectly()
+        {
+            // Error, not allowed but configured
+            var switches = new Dictionary<string, bool>(license.Quota.Switches)
+            {
+                ["dynamics"] = false
+            };
+            license.Quota.Switches = switches;
+            terminalOptions.Dynamics.Enabled = true;
+            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal dynamics is not allowed for your license plan.");
+
+            // No error, not allowed not configured
+            switches["dynamics"] = false;
+            license.Quota.Switches = switches;
+            terminalOptions.Dynamics.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed not configured
+            switches["dynamics"] = true;
+            license.Quota.Switches = switches;
+            terminalOptions.Dynamics.Enabled = false;
+            await licenseChecker.CheckLicenseAsync(license);
+
+            // No error, allowed and configured
+            switches["dynamics"] = true;
+            license.Quota.Switches = switches;
+            terminalOptions.Dynamics.Enabled = true;
             await licenseChecker.CheckLicenseAsync(license);
         }
 
@@ -117,38 +152,6 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
-        public async Task CheckAsync_DynamicsCheck_ShouldBehaveCorrectly()
-        {
-            // Error, not allowed but configured
-            var switches = new Dictionary<string, bool>(license.Quota.Switches)
-            {
-                ["dynamics"] = false
-            };
-            license.Quota.Switches = switches;
-            terminalOptions.Dynamics.Enabled = true;
-            Func<Task> func = async () => await licenseChecker.CheckLicenseAsync(license);
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidLicense).WithErrorDescription("The terminal dynamics option is not allowed for your license plan.");
-
-            // No error, not allowed not configured
-            switches["dynamics"] = false;
-            license.Quota.Switches = switches;
-            terminalOptions.Dynamics.Enabled = false;
-            await licenseChecker.CheckLicenseAsync(license);
-
-            // No error, allowed not configured
-            switches["dynamics"] = true;
-            license.Quota.Switches = switches;
-            terminalOptions.Dynamics.Enabled = false;
-            await licenseChecker.CheckLicenseAsync(license);
-
-            // No error, allowed and configured
-            switches["dynamics"] = true;
-            license.Quota.Switches = switches;
-            terminalOptions.Dynamics.Enabled = true;
-            await licenseChecker.CheckLicenseAsync(license);
-        }
-
-        [Fact]
         public async Task CheckAsync_OptionsValid_ShouldBehaveCorrectly()
         {
             // Valid value should not error
@@ -191,5 +194,6 @@ namespace OneImlx.Terminal.Licensing
         private readonly License license;
         private readonly ILicenseChecker licenseChecker;
         private readonly TerminalOptions terminalOptions;
+        private readonly TerminalTextHandler textHandler;
     }
 }

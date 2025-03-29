@@ -60,13 +60,13 @@ namespace OneImlx.Terminal.Shared
         public TerminalRequest[] Requests { get; private set; }
 
         /// <summary>
-        /// The sender endpoint. This is typically set automatically by the <see cref="ITerminalRouter{TContext}"/>.
+        /// The sender endpoint if known. This is typically set automatically by the router.
         /// </summary>
         [JsonPropertyName("sender_endpoint")]
         public string? SenderEndpoint { get; set; }
 
         /// <summary>
-        /// The sender identifier. This is typically set automatically by the <see cref="ITerminalRouter{TContext}"/>.
+        /// The sender identifier if known. This is typically set automatically by the router.
         /// </summary>
         [JsonPropertyName("sender_id")]
         public string? SenderId { get; set; }

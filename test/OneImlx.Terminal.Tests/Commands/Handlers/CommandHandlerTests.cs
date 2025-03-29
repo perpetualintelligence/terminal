@@ -154,7 +154,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         public async Task DoesNotError_If_TerminalEventHandler_Is_NOT_Configured()
         {
             // Pass null to terminal event handler
-            handler = new CommandHandler(commandRuntime, licenseChecker, terminalOptions, terminalHelpProvider, new LoggerFactory().CreateLogger<CommandHandler>());
+            handler = new CommandHandler(commandRuntime, terminalOptions, terminalHelpProvider, new LoggerFactory().CreateLogger<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -174,7 +174,7 @@ namespace OneImlx.Terminal.Commands.Handlers
         public async Task DoesNotError_If_TerminalEventHandler_Is_NOT_Configured_Via_Constructor()
         {
             // Pass null to terminal event handler
-            handler = new CommandHandler(commandRuntime, licenseChecker, terminalOptions, terminalHelpProvider, new LoggerFactory().CreateLogger<CommandHandler>());
+            handler = new CommandHandler(commandRuntime, terminalOptions, terminalHelpProvider, new LoggerFactory().CreateLogger<CommandHandler>());
 
             command.Item1.Checker = typeof(MockCommandCheckerInner);
             command.Item1.Runner = typeof(MockCommandRunnerInner);
@@ -381,7 +381,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             Options helpAliasOptions = new(unicodeHandler, [new(helpAliasOptionDescriptors.First().Value, true)]);
             helpAliasCommand = MockCommands.NewCommandDefinition("helpAlias", "helpAliasName", "helpAliasDesc", CommandType.SubCommand, CommandFlags.None, helpAliasOptionDescriptors, options: helpAliasOptions);
 
-            handler = new CommandHandler(commandRuntime, licenseChecker, terminalOptions, terminalHelpProvider, new LoggerFactory().CreateLogger<CommandHandler>(), terminalEventHandler);
+            handler = new CommandHandler(commandRuntime, terminalOptions, terminalHelpProvider, new LoggerFactory().CreateLogger<CommandHandler>(), terminalEventHandler);
 
             return Task.CompletedTask;
         }

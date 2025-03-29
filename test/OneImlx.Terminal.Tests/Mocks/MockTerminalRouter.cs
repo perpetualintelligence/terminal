@@ -19,6 +19,8 @@ namespace OneImlx.Terminal.Mocks
 
         public bool IsRunning { get; private set; } = false;
 
+        public string Name => "custom";
+
         public Task RunAsync(MockRoutingContext context)
         {
             Called = true;

@@ -63,7 +63,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
             ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(textHandler,
                 options =>
                 {
-                    options.Authentication.Enabled = true;
+                    options.Authentication.Provider = "msal";
                     options.Authentication.DefaultScopes = ["email", "profile", "openid"];
 
                     options.Id = TerminalIdentifiers.TestApplicationId;

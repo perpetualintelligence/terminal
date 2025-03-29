@@ -5,10 +5,16 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneImlx.Terminal.Configuration.Options;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 
@@ -22,9 +28,14 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public LicenseChecker(ITerminalCommandStore commandStore, TerminalOptions terminalOptions, ILogger<LicenseChecker> logger)
+        public LicenseChecker(
+            ITerminalCommandStore commandStore,
+            ITerminalTextHandler textHandler,
+            TerminalOptions terminalOptions,
+            ILogger<LicenseChecker> logger)
         {
             this.commandStore = commandStore;
+            this.textHandler = textHandler;
             this.terminalOptions = terminalOptions;
             this.logger = logger;
         }
@@ -96,16 +107,73 @@ namespace OneImlx.Terminal.Licensing
             // Driver
             if (!OptionsValid(quota.Driver, terminalOptions.Driver.Enabled))
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal driver option is not allowed for your license plan.");
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal driver is not allowed for your license plan.");
             }
 
-            // Integration
+            // Dynamics
             if (!OptionsValid(quota.Dynamics, terminalOptions.Dynamics.Enabled))
             {
-                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal dynamics option is not allowed for your license plan.");
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The terminal dynamics is not allowed for your license plan.");
+            }
+
+            // Authentications
+            if (!OptionsValid(quota.Authentications, terminalOptions.Authentication.Provider))
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, $"The terminal authentication `{terminalOptions.Authentication.Provider}` is not allowed for your license plan.");
+            }
+
+            // Deployments
+            if (!OptionsValid(quota.Deployments, terminalOptions.Licensing.Deployment))
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, $"The terminal deployment `{terminalOptions.Licensing.Deployment}` is not allowed for your license plan.");
+            }
+
+            // Stores
+            string acutualStore = commandStore.GetType().IsAssignableFrom(typeof(TerminalInMemoryCommandStore)) ? "memory" : "custom";
+            if (!OptionsValid(quota.Stores, acutualStore))
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, $"The terminal store `{acutualStore}` is not allowed for your license plan.");
+            }
+
+            // Encodings
+            string actualEncoding = GetTextHandlerEncoding(textHandler.Encoding);
+            if (!OptionsValid(quota.Encodings, actualEncoding))
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, $"The terminal text handler `{actualEncoding}` is not allowed for your license plan.");
+            }
+
+            // Routers
+            if (!OptionsValid(quota.Routers, terminalOptions.Router.Name))
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, $"The terminal router `{terminalOptions.Router.Name}` is not allowed for your license plan.");
             }
 
             return Task.CompletedTask;
+        }
+
+        private string GetTextHandlerEncoding(Encoding encoding)
+        {
+            if (encoding.Equals(Encoding.ASCII))
+            {
+                return "ascii";
+            }
+
+            if (encoding.Equals(Encoding.UTF8))
+            {
+                return "utf8";
+            }
+
+            if (encoding.Equals(Encoding.Unicode))
+            {
+                return "utf16";
+            }
+
+            if (encoding.Equals(Encoding.UTF32))
+            {
+                return "utf32";
+            }
+
+            return "none";
         }
 
         private async Task InitializeLockAsync(License license)
@@ -150,10 +218,20 @@ namespace OneImlx.Terminal.Licensing
             }
         }
 
-        private bool OptionsValid(bool? allowed, bool? actual)
+        private bool OptionsValid(IEnumerable<string> allowed, string? actual)
         {
-            // An expected value can be true or false, actual value cannot be true if expected value is false.
-            if (allowed.GetValueOrDefault() == false && actual.GetValueOrDefault() == true)
+            if (allowed.Contains(actual, StringComparer.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool OptionsValid(bool allowed, bool actual)
+        {
+            // An allowed value can be true or false, actual value cannot be true if allowed value is false.
+            if (allowed == false && actual == true)
             {
                 return false;
             }
@@ -165,6 +243,7 @@ namespace OneImlx.Terminal.Licensing
         private readonly ILogger<LicenseChecker> logger;
         private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
         private readonly TerminalOptions terminalOptions;
+        private readonly ITerminalTextHandler textHandler;
         private long commandCount;
         private bool initialized;
         private long inputCount;

@@ -67,6 +67,11 @@ namespace OneImlx.Terminal.Runtime
         public bool IsRunning { get; protected set; }
 
         /// <summary>
+        /// The terminal router name.
+        /// </summary>
+        public string Name => "udp";
+
+        /// <summary>
         /// Asynchronously runs the UDP router, listening for incoming UDP packets and processing them.
         /// </summary>
         /// <param name="context">The UDP router context containing configuration and runtime information.</param>

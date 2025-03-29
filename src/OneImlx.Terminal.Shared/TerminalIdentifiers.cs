@@ -28,9 +28,14 @@ namespace OneImlx.Terminal.Shared
         public const string OfflineLicenseMode = "offline";
 
         /// <summary>
+        /// The <c>isolated</c> deployment.
+        /// </summary>
+        public const string IsolatedDeployment = "isolated";
+
+        /// <summary>
         /// The <c>onpremise</c> deployment.
         /// </summary>
-        public const string OnPremiseIsolatedDeployment = "onprem-isolated";
+        public const string OnPremiseDeployment = "onpremise";
 
         /// <summary>
         /// The <c>sender_endpoint</c> token.

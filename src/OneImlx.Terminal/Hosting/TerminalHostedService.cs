@@ -70,12 +70,19 @@ namespace OneImlx.Terminal.Hosting
 
                 // Register help options with command descriptors. Retrieving all commands from the store is
                 // intentionally done at the end to avoid a performance hit in case the license check fails.
-
                 await RegisterHelpAsync();
             }
             catch (TerminalException ex)
             {
-                await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex));
+                if(ex.Error.ErrorCode == TerminalErrors.InvalidLicense)
+                {
+                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, ex.Message);
+                    throw;
+                }
+                else
+                {
+                    await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex));
+                }
             }
         }
 

@@ -6,6 +6,7 @@
 */
 
 using System.Threading;
+using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Configuration.Options
@@ -45,6 +46,17 @@ namespace OneImlx.Terminal.Configuration.Options
         public int MaxLength { get; set; } = 1024;
 
         /// <summary>
+        /// The terminal router name. The default value is <c>console</c>.
+        /// </summary>
+        /// <remarks>
+        /// This value is used for licensing checks and should match the router's
+        /// <see cref="ITerminalRouter{TContext}.Name"/>. Set this value to <c>tcp</c>, <c>udp</c>, <c>grpc</c>,
+        /// <c>http</c>, <c>console</c>, or a custom value prefixed with <c>custom_</c> based on the type of router
+        /// being used.
+        /// </remarks>
+        public string Name { get; set; } = "console";
+
+        /// <summary>
         /// Define the route delay in milliseconds. The default value is <c>50</c> milliseconds.
         /// </summary>
         public int RouteDelay { get; set; } = 50;
@@ -60,9 +72,9 @@ namespace OneImlx.Terminal.Configuration.Options
         public int Timeout { get; set; } = 25000;
 
         /// <summary>
-        /// Represents the delimiter used to identify individual <see cref="TerminalInputOutput"/> within a continuous stream
-        /// of bytes. The delimiter is set to <c>0x1E</c> (ASCII "Record Separator"), a non-printable control character
-        /// commonly used to separate data and unlikely to appear in standard text.
+        /// Represents the delimiter used to identify individual <see cref="TerminalInputOutput"/> within a continuous
+        /// stream of bytes. The delimiter is set to <c>0x1E</c> (ASCII "Record Separator"), a non-printable control
+        /// character commonly used to separate data and unlikely to appear in standard text.
         /// </summary>
         public byte StreamDelimiter = TerminalIdentifiers.StreamDelimiter;
     }

@@ -122,9 +122,9 @@ namespace OneImlx.Terminal.Licensing
             }
         }
 
-        private static bool IsOnPremIsolatedDeployment(string? deployment)
+        private static bool IsIsolatedDeployment(string deployment)
         {
-            return deployment == TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            return deployment == TerminalIdentifiers.IsolatedDeployment;
         }
 
         private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFile licenseFile)
@@ -133,7 +133,7 @@ namespace OneImlx.Terminal.Licensing
 
             // If debugger is not attached and on-premise deployment is enabled then skip license check and grant claims
             // based on license plan. If debugger is attached we always do a license check.
-            if (!licenseDebugger.IsDebuggerAttached() && IsOnPremIsolatedDeployment(terminalOptions.Licensing.Deployment))
+            if (!licenseDebugger.IsDebuggerAttached() && IsIsolatedDeployment(terminalOptions.Licensing.Deployment))
             {
                 logger.LogDebug("Extract on-premise isolated license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
                 if (IsPlanValidForIsolatedDeployemnt(terminalOptions.Licensing.LicensePlan))
@@ -183,7 +183,7 @@ namespace OneImlx.Terminal.Licensing
                 }
 
                 // Mismatch in license usage
-                if (IsOnPremIsolatedDeployment(terminalOptions.Licensing.Deployment) && !IsPlanValidForIsolatedDeployemnt(terminalOptions.Licensing.LicensePlan))
+                if (IsIsolatedDeployment(terminalOptions.Licensing.Deployment) && !IsPlanValidForIsolatedDeployemnt(terminalOptions.Licensing.LicensePlan))
                 {
                     throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise isolated deployment. plan={0}", terminalOptions.Licensing.LicensePlan);
                 }

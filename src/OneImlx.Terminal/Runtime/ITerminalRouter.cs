@@ -6,6 +6,7 @@
 */
 
 using System.Threading.Tasks;
+using OneImlx.Terminal.Configuration.Options;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -24,6 +25,12 @@ namespace OneImlx.Terminal.Runtime
         /// Gets a value indicating whether the terminal router is running.
         /// </summary>
         public bool IsRunning { get; }
+
+        /// <summary>
+        /// The terminal router name.
+        /// </summary>
+        /// <remarks>The <see cref="Name"/> property is used for licensing checks and should match <see cref="RouterOptions.Name"/>.</remarks>
+        public string Name { get; }
 
         /// <summary>
         /// Runs terminal router asynchronously.

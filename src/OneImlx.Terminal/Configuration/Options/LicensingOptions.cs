@@ -25,11 +25,11 @@ namespace OneImlx.Terminal.Configuration.Options
     public sealed class LicensingOptions
     {
         /// <summary>
-        /// The deployment environment. Defaults to <c>null</c>.
+        /// The deployment environment. Defaults to <c>standard</c>.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// When set to <see cref="TerminalIdentifiers.OnPremiseIsolatedDeployment"/>, the
+        /// When set to <see cref="TerminalIdentifiers.IsolatedDeployment"/>, the
         /// <see cref="ILicenseExtractor"/> skips the license check. This setting is crucial for environments like
         /// secure data centers, hardware-centric locations, or factories, where Internet access is minimal or
         /// nonexistent. In such settings, the software and its configurations are locked to a device, making license
@@ -41,7 +41,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// violation of licensing terms to deploy or continue using the framework without an active commercial license plan.
         /// </para>
         /// </remarks>
-        public string? Deployment { get; set; }
+        public string Deployment { get; set; } = "standard";
 
         /// <summary>
         /// The license contents. Defaults to <c>null</c>.

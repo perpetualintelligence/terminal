@@ -48,6 +48,11 @@ namespace OneImlx.Terminal.Runtime
         public bool IsRunning { get; protected set; }
 
         /// <summary>
+        /// The terminal router name.
+        /// </summary>
+        public string Name => "http";
+
+        /// <summary>
         /// Runs the HTTP router asynchronously and begins handling client requests indefinitely. The server will
         /// continue running until a cancellation is requested via the context.
         /// </summary>

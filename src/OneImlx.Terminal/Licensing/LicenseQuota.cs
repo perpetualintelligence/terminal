@@ -28,6 +28,11 @@ namespace OneImlx.Terminal.Licensing
         public int? CommandLimit => (int?)Limits["commands"];
 
         /// <summary>
+        /// The strict date type. Returns <c>false</c> if not supported.
+        /// </summary>
+        public bool DataType => Switches["datatype"];
+
+        /// <summary>
         /// The deployment methods.
         /// </summary>
         public IReadOnlyList<string> Deployments => Features["deployments"];
@@ -91,11 +96,6 @@ namespace OneImlx.Terminal.Licensing
         /// The maximum terminals. Defaults to <c>null</c> or no limit.
         /// </summary>
         public int? TerminalLimit => (int?)Limits["terminals"];
-
-        /// <summary>
-        /// The strict date type. Returns <c>false</c> if not supported.
-        /// </summary>
-        public bool DataType => Switches["datatype"];
 
         /// <summary>
         /// Creates a new instance of <see cref="LicenseQuota"/> based on the specified SaaS plan.
@@ -175,11 +175,11 @@ namespace OneImlx.Terminal.Licensing
 
                 Features = new Dictionary<string, string[]>
                 {
-                    { "authentications", new[] { "msal", "oauth", "oidc" } },
+                    { "authentications", new[] { "msal", "oauth", "oidc", "none" } },
                     { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
                     { "stores", new [] { "memory", "custom" } },
                     { "routers", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
-                    { "deployments", new [] { "standard", "isolated" } },
+                    { "deployments", new [] { "standard", "onpremise", "isolated" } },
                 }
             };
         }
@@ -239,7 +239,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Features = new Dictionary<string, string[]>
                 {
-                    { "authentications", new[] { "msal", "oauth", "oidc" } },
+                    { "authentications", new[] { "msal", "oauth", "oidc", "none" } },
                     { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
                     { "stores", new [] { "memory" } },
                     { "routers", new [] { "console", "tcp", "udp", "grpc", "http" } },
@@ -271,11 +271,11 @@ namespace OneImlx.Terminal.Licensing
 
                 Features = new Dictionary<string, string[]>
                 {
-                    { "authentications", new[] { "msal", "oauth", "oidc" } },
+                    { "authentications", new[] { "msal", "oauth", "oidc", "none" } },
                     { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
                     { "stores", new [] { "memory", "custom" } },
                     { "routers", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
-                    { "deployments", new [] { "standard", "isolated" } },
+                    { "deployments", new [] { "standard", "onpremise", "isolated" } },
                 }
             };
         }
@@ -303,7 +303,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Features = new Dictionary<string, string[]>
                 {
-                    { "authentications", new[] {"msal" } },
+                    { "authentications", new[] {"msal", "none" } },
                     { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
                     { "stores", new [] { "memory" } },
                     { "routers", new [] { "console" } },
@@ -335,7 +335,7 @@ namespace OneImlx.Terminal.Licensing
 
                 Features = new Dictionary<string, string[]>
                 {
-                    { "authentications", new[] { "msal", "oauth", "oidc" } },
+                    { "authentications", new[] { "msal", "oauth", "oidc", "none" } },
                     { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
                     { "stores", new [] { "memory" } },
                     { "routers", new [] { "console", "tcp", "udp" } },

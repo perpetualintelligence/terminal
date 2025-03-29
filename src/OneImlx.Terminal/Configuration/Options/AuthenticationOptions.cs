@@ -21,9 +21,9 @@ namespace OneImlx.Terminal.Configuration.Options
         public string[]? DefaultScopes { get; set; }
 
         /// <summary>
-        /// Enables the authentication for the terminal.
+        /// The authentication provider.
         /// </summary>
-        public bool Enabled { get; set; }
+        public string Provider { get; set; } = "none";
 
         /// <summary>
         /// Gets or sets the authentication user flow.

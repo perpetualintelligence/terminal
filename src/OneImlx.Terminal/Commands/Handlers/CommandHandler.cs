@@ -13,7 +13,6 @@ using OneImlx.Terminal.Commands.Checkers;
 using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Events;
-using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Commands.Handlers
@@ -28,14 +27,12 @@ namespace OneImlx.Terminal.Commands.Handlers
         /// </summary>
         public CommandHandler(
             ICommandResolver commandResolver,
-            ILicenseChecker licenseChecker,
             IOptions<TerminalOptions> options,
             ITerminalHelpProvider terminalHelpProvider,
             ILogger<CommandHandler> logger,
             ITerminalEventHandler? terminalEventHandler = null)
         {
             this.commandRuntime = commandResolver ?? throw new ArgumentNullException(nameof(commandResolver));
-            this.licenseChecker = licenseChecker ?? throw new ArgumentNullException(nameof(licenseChecker));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.terminalHelpProvider = terminalHelpProvider ?? throw new ArgumentNullException(nameof(terminalHelpProvider));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -61,7 +58,7 @@ namespace OneImlx.Terminal.Commands.Handlers
             Command command = context.EnsureParsedCommand().Command;
 
             // If we are executing a help command then we need to bypass all the checks.
-            if ( options.Value.Help.Enabled &&
+            if (options.Value.Help.Enabled &&
                 (command.TryGetOption(options.Value.Help.OptionId, out Option? helpOption) ||
                  command.TryGetOption(options.Value.Help.OptionAlias, out helpOption)
                 ))
@@ -140,7 +137,6 @@ namespace OneImlx.Terminal.Commands.Handlers
         }
 
         private readonly ICommandResolver commandRuntime;
-        private readonly ILicenseChecker licenseChecker;
         private readonly ILogger<CommandHandler> logger;
         private readonly IOptions<TerminalOptions> options;
         private readonly ITerminalEventHandler? terminalEventHandler;

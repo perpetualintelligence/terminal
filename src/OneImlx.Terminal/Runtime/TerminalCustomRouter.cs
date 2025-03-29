@@ -20,6 +20,11 @@ namespace OneImlx.Terminal.Runtime
         public abstract bool IsRunning { get; }
 
         /// <summary>
+        /// The terminal router name.
+        /// </summary>
+        public abstract string Name { get; }
+
+        /// <summary>
         /// Routes to a custom service implementation.
         /// </summary>
         /// <param name="context">The custom routing service context.</param>

@@ -63,6 +63,11 @@ namespace OneImlx.Terminal.Runtime
         public bool IsRunning { get; protected set; }
 
         /// <summary>
+        /// The terminal router name.
+        /// </summary>
+        public string Name => "tcp";
+
+        /// <summary>
         /// Runs the TCP server for handling client connections asynchronously.
         /// </summary>
         /// <param name="context">The routing context.</param>

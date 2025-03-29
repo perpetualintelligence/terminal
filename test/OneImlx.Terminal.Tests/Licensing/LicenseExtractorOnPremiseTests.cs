@@ -5,18 +5,20 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
+using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
-using OneImlx.Terminal.Shared;
 
 namespace OneImlx.Terminal.Licensing
 {
@@ -29,6 +31,8 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
+
+            textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.UTF8);
 
             commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
         }
@@ -71,7 +75,7 @@ namespace OneImlx.Terminal.Licensing
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
@@ -107,7 +111,7 @@ namespace OneImlx.Terminal.Licensing
         [InlineData(false, "    ")]
         [InlineData(false, "")]
         [InlineData(false, null)]
-        public async Task Invalid_Or_Null_Deployment_Extracts_From_Offline(bool isDebuggerAttached, string? deployment)
+        public async Task Invalid_Or_Null_Deployment_Extracts_From_OffLine(bool isDebuggerAttached, string? deployment)
         {
             // We always check for license if debugger is attached. If debugger is not attached then we check if
             // OnPremiseDeployment is set. Onprem license is processed only if debugger is attached
@@ -138,7 +142,7 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
@@ -187,7 +191,7 @@ namespace OneImlx.Terminal.Licensing
             licenseFromGet.Should().BeSameAs(result.License);
 
             // Check on-prem-deployment license
-            licenseChecker = new LicenseChecker(commandStore, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
+            licenseChecker = new LicenseChecker(commandStore, textHandler, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
             LicenseCheckerResult licResult = await licenseChecker.CheckLicenseAsync(result.License);
             licResult.Should().NotBeNull();
             licResult.CommandCount.Should().Be(11);
@@ -199,11 +203,11 @@ namespace OneImlx.Terminal.Licensing
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task OnPremiseDeployment_Does_Not_Throws_For_Offline_License(bool isDebuggerAttached)
+        public async Task OnPremiseDeployment_Does_Not_Throws_For_OffLine_License(bool isDebuggerAttached)
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
@@ -219,7 +223,7 @@ namespace OneImlx.Terminal.Licensing
         public async Task Unset_LicensePlan_Throws(bool isDebuggerAttached)
         {
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
@@ -238,7 +242,7 @@ namespace OneImlx.Terminal.Licensing
         public async Task Valid_LicensePlan_Does_Not_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
             terminalOptions.Licensing.LicensePlan = licPlan;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
@@ -256,7 +260,7 @@ namespace OneImlx.Terminal.Licensing
         public async Task Valid_OnPrem_License_But_Invalid_LicensePlan_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.OnPremiseIsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
             terminalOptions.Licensing.LicensePlan = licPlan;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
@@ -299,5 +303,6 @@ namespace OneImlx.Terminal.Licensing
         private ILicenseChecker licenseChecker = null!;
         private ILicenseDebugger licenseDebugger = null!;
         private ILicenseExtractor licenseExtractor = null!;
+        private TerminalTextHandler textHandler = null!;
     }
 }
