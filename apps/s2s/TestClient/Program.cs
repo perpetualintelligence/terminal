@@ -12,6 +12,7 @@ using OneImlx.Terminal.Apps.TestClient.Runners;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Hosting;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 using Serilog;
 
@@ -82,7 +83,7 @@ namespace OneImlx.Terminal.Apps.TestClient
             CancellationTokenSource commandTokenSource = new();
 
             // Setup the terminal start context
-            TerminalConsoleRouterContext terminalConsoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
+            TerminalConsoleRouterContext terminalConsoleRouterContext = new(TerminalStartMode.Console, commandTokenSource.Token);
 
             // Run the terminal router
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(terminalConsoleRouterContext);
@@ -91,7 +92,7 @@ namespace OneImlx.Terminal.Apps.TestClient
             await host.WaitForShutdownAsync();
 
             // Wait for user to acknowledge the shutdown
-            Console.WriteLine("Press any key to close the terminal windows...");
+            Console.WriteLine("Press any key to close the terminal window...");
             Console.ReadLine();
         }
     }

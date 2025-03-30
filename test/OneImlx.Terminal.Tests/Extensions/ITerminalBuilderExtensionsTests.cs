@@ -334,7 +334,7 @@ namespace OneImlx.Terminal.Extensions
         [Fact]
         public void AddStartContextShouldCorrectlyInitialize()
         {
-            terminalBuilder.AddTerminalRouterContext(new TerminalConsoleRouterContext(TerminalStartMode.Console, CancellationToken.None, CancellationToken.None));
+            terminalBuilder.AddTerminalRouterContext(new TerminalConsoleRouterContext(TerminalStartMode.Console, CancellationToken.None));
 
             var serviceDescriptor = terminalBuilder.Services.FirstOrDefault(static e => e.ServiceType.Equals(typeof(TerminalRouterContext)));
             serviceDescriptor.Should().NotBeNull();

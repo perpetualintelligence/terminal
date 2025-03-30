@@ -64,19 +64,17 @@ namespace OneImlx.Terminal.Runtime
         /// particularly useful in scenarios where a complete shutdown of the terminal's operational context is
         /// required, such as during application termination or critical error handling.
         /// </remarks>
-        public CancellationToken TerminalCancellationToken { get; }
+        public CancellationToken TerminalCancellationToken { get; internal set; }
 
         /// <summary>
         /// Initializes a new <see cref="TerminalRouterContext"/> instance.
         /// </summary>
         /// <param name="startMode">The terminal start mode.</param>
-        /// <param name="terminalCancellationToken">The terminal router cancellation token.</param>
         /// <param name="commandCancellationToken">The command router cancellation token.</param>
         /// <param name="customProperties">The custom properties.</param>
         /// <param name="arguments">The command line arguments.</param>
         protected TerminalRouterContext(
             TerminalStartMode startMode,
-            CancellationToken terminalCancellationToken,
             CancellationToken commandCancellationToken,
             Dictionary<string, object>? customProperties = null,
             string[]? arguments = null)
@@ -85,7 +83,6 @@ namespace OneImlx.Terminal.Runtime
             CommandCancellationToken = commandCancellationToken;
             CustomProperties = customProperties;
             StartMode = startMode;
-            TerminalCancellationToken = terminalCancellationToken;
         }
     }
 }

@@ -30,8 +30,10 @@ namespace OneImlx.Terminal.Runtime
             exceptionHandlerMock = new Mock<ITerminalExceptionHandler>();
             terminalProcessorMock = new Mock<ITerminalProcessor>();
             textHandlerMock = new Mock<ITerminalTextHandler>();
+
             terminalCancellationSource = new CancellationTokenSource();
             commandCancellationSource = new CancellationTokenSource();
+
             options = new TerminalOptions();
 
             mockListLoggerFactory = new();
@@ -130,7 +132,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task RunAsync_ThrowsException_WhenIPEndPointIsNull()
         {
             // Arrange
-            var context = new TerminalUdpRouterContext(null!, TerminalStartMode.Udp, terminalCancellationSource.Token, commandCancellationSource.Token, null);
+            var context = new TerminalUdpRouterContext(null!, TerminalStartMode.Udp, commandCancellationSource.Token, null);
             var udpRouter = CreateUdpRouter();
 
             // Act & Assert
@@ -154,7 +156,11 @@ namespace OneImlx.Terminal.Runtime
         private TerminalUdpRouterContext CreateValidContext()
         {
             var endpoint = new IPEndPoint(IPAddress.Loopback, 12345); // Use a real, high-numbered port for the test
-            return new TerminalUdpRouterContext(endpoint, TerminalStartMode.Udp, terminalCancellationSource.Token, commandCancellationSource.Token, null);
+            var context = new TerminalUdpRouterContext(endpoint, TerminalStartMode.Udp, commandCancellationSource.Token, null)
+            {
+                TerminalCancellationToken = terminalCancellationSource.Token
+            };
+            return context;
         }
 
         // Helper method to send a real UDP message

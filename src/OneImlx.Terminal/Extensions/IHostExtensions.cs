@@ -29,6 +29,11 @@ namespace OneImlx.Terminal.Extensions
             ILogger<ITerminalRouter<TContext>> logger = host.Services.GetRequiredService<ILogger<ITerminalRouter<TContext>>>();
             logger.LogDebug("Start terminal router. type={0} context={1}", typeof(TRouting).Name, typeof(TContext).Name);
 
+            // Link the application lifetime token with the terminal router token to sync the closure.
+            logger.LogDebug("Setup terminal router cancellation with application stopping token.");
+            var applicationLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+            context.TerminalCancellationToken = applicationLifetime.ApplicationStopping;
+
             // Now run a blocking loop till canceled.
             ITerminalRouter<TContext> routingService = host.Services.GetRequiredService<ITerminalRouter<TContext>>();
             await routingService.RunAsync(context);

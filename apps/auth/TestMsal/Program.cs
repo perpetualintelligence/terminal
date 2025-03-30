@@ -63,7 +63,7 @@ namespace OneImlx.Terminal.Apps.TestAuth
             ITerminalBuilder terminalBuilder = collection.AddTerminalConsole<TerminalInMemoryCommandStore, TerminalConsoleHelpProvider, TerminalConsoleExceptionHandler, TerminalSystemConsole>(textHandler,
                 options =>
                 {
-                    options.Authentication.Provider = "msal";
+                    options.Authentication.Provider = "msail";
                     options.Authentication.DefaultScopes = ["email", "profile", "openid"];
 
                     options.Id = TerminalIdentifiers.TestApplicationId;
@@ -99,11 +99,10 @@ namespace OneImlx.Terminal.Apps.TestAuth
         private static void Main(string[] args)
         {
             // Allows cancellation for the entire terminal and individual commands.
-            CancellationTokenSource terminalTokenSource = new();
             CancellationTokenSource commandTokenSource = new();
 
             // Setup the terminal context and run the router indefinitely as a console.
-            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
+            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, commandTokenSource.Token);
 
             // Start the host builder and run terminal router till canceled.
             Host.CreateDefaultBuilder(args)

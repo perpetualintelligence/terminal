@@ -80,7 +80,7 @@ namespace OneImlx.Terminal.Commands.Routers
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandParser, commandHandler, logger, eventHandler);
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRouterContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token);
+            routingContext = new MockTerminalRouterContext(TerminalStartMode.Custom, commandTokenSource.Token);
 
             return Task.CompletedTask;
         }

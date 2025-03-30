@@ -25,7 +25,7 @@ namespace OneImlx.Terminal.Commands.Runners
         {
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRouterContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token);
+            routingContext = new MockTerminalRouterContext(TerminalStartMode.Custom, commandTokenSource.Token);
             routerContext = new CommandContext(new(Guid.NewGuid().ToString(), "test"), routingContext, null);
         }
 

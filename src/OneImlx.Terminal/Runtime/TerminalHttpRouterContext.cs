@@ -21,18 +21,16 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint for server connections.</param>
         /// <param name="startMode">The terminal start mode.</param>
-        /// <param name="terminalCancellationToken">The terminal router cancellation token.</param>
         /// <param name="commandCancellationToken">The command router cancellation token.</param>
         /// <param name="customProperties">The custom properties.</param>
         /// <param name="arguments">The command line arguments.</param>
         public TerminalHttpRouterContext(
             IPEndPoint iPEndPoint,
             TerminalStartMode startMode,
-            CancellationToken terminalCancellationToken,
             CancellationToken commandCancellationToken,
             Dictionary<string, object>? customProperties = null,
             string[]? arguments = null)
-            : base(startMode, terminalCancellationToken, commandCancellationToken, customProperties, arguments)
+            : base(startMode, commandCancellationToken, customProperties, arguments)
         {
             IPEndPoint = iPEndPoint;
         }

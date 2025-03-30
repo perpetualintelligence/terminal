@@ -160,7 +160,6 @@ namespace OneImlx.Terminal.Apps.Test
             bool newTerminal = IsNewTerminal();
 
             // Allows cancellation for the entire terminal and individual commands.
-            CancellationTokenSource terminalTokenSource = new();
             CancellationTokenSource commandTokenSource = new();
 
             // Setup the terminal context and run the router indefinitely as a console.
@@ -169,7 +168,7 @@ namespace OneImlx.Terminal.Apps.Test
             {
                 { "new_terminal", newTerminal }
             };
-            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token, routeOnce: !newTerminal, customProperties, args);
+            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, commandTokenSource.Token, routeOnce: !newTerminal, customProperties, args);
 
             // Start the host builder and run terminal router till canceled.
             Host.CreateDefaultBuilder(args)

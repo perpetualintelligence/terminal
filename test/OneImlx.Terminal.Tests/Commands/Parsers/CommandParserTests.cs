@@ -66,7 +66,7 @@ namespace OneImlx.Terminal.Commands.Parsers
             requestParser = new TerminalRequestQueueParser(textHandler, terminalIOptions, new LoggerFactory().CreateLogger<TerminalRequestQueueParser>());
             parser = new CommandParser(requestParser, textHandler, commandStore, terminalIOptions, logger);
 
-            terminalContext = new Mock<TerminalCustomRouterContext>(TerminalStartMode.Custom, CancellationToken.None, CancellationToken.None, null!, null!).Object;
+            terminalContext = new Mock<TerminalCustomRouterContext>(TerminalStartMode.Custom, CancellationToken.None, null!, null!).Object;
         }
 
         [Fact]
