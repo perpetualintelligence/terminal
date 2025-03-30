@@ -71,6 +71,12 @@ namespace OneImlx.Terminal.Commands
                 License license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the hosted service correctly.");
                 context.License = license;
 
+                // Ensure the license is valid.
+                if(license.Failed != null)
+                {
+                    throw new TerminalException(license.Failed);
+                }
+
                 // Parse the command
                 await commandParser.ParseCommandAsync(context);
                 parsedCommand = context.ParsedCommand;

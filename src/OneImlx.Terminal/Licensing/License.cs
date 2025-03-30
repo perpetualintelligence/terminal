@@ -5,6 +5,7 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using OneImlx.Shared.Infrastructure;
 using OneImlx.Shared.Licensing;
 
 namespace OneImlx.Terminal.Licensing
@@ -37,19 +38,24 @@ namespace OneImlx.Terminal.Licensing
         public LicenseClaims Claims { get; }
 
         /// <summary>
+        /// Indicates whether the license is in a failed state.
+        /// </summary>
+        public Error? Failed { get; private set; }
+
+        /// <summary>
         /// The license key.
         /// </summary>
         public override string LicenseKey => licenseKey;
 
         /// <summary>
-        /// The license quota.
-        /// </summary>
-        public LicenseQuota Quota { get; }
-
-        /// <summary>
         /// The license plan.
         /// </summary>
         public string Plan { get; }
+
+        /// <summary>
+        /// The license quota.
+        /// </summary>
+        public LicenseQuota Quota { get; }
 
         /// <summary>
         /// The license usage.
@@ -61,6 +67,21 @@ namespace OneImlx.Terminal.Licensing
         /// </summary>
         public override void Dispose()
         {
+        }
+
+        /// <summary>
+        /// Sets the license to failed state with an error.
+        /// </summary>
+        /// <param name="error"></param>
+        public void SetFailed(Error error)
+        {
+            if (Failed != null)
+            {
+                // If already failed, we do not override the existing error.
+                return;
+            }
+
+            Failed = error;
         }
 
         private readonly string licenseKey;
