@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Runtime
             _mockExceptionHandler = new Mock<ITerminalExceptionHandler>();
             _mockLogger = new Mock<ILogger<TerminalProcessor>>();
             _mockOptions = new Mock<IOptions<TerminalOptions>>();
-            _mockTerminalRouterContext = new Mock<TerminalRouterContext>(TerminalStartMode.Console, CancellationToken.None, null!, null!);
+            _mockTerminalRouterContext = new Mock<TerminalRouterContext>(TerminalStartMode.Console, null!, null!);
             _textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
 
             _mockOptions.Setup(static o => o.Value).Returns(new TerminalOptions
