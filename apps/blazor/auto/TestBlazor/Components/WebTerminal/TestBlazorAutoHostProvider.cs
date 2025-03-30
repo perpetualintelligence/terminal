@@ -114,9 +114,8 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
 
             try
             {
-                terminalTokenSource = new CancellationTokenSource();
                 commandTokenSource = new CancellationTokenSource();
-                TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token);
+                TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console);
 
                 // Get the license asynchronously so we can initialize the terminal host
                 licenseContents = await GetLicenseContentAsync();
@@ -219,6 +218,5 @@ namespace OneImlx.Terminal.Apps.TestBlazor.Components.WebTerminal
         private CancellationTokenSource? commandTokenSource;
         private string? licenseContents;
         private IHost? terminalHost;
-        private CancellationTokenSource? terminalTokenSource;
     }
 }

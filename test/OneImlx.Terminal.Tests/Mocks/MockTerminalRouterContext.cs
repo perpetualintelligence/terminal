@@ -16,9 +16,8 @@ namespace OneImlx.Terminal.Mocks
         public MockTerminalRouterContext(
             TerminalStartMode startMode,
             CancellationToken commandCancellationToken,
-            CancellationToken terminalCancellationToken,
             Dictionary<string, object>? customProperties = null,
-            string[]? arguments = null) : base(startMode, terminalCancellationToken, commandCancellationToken, customProperties, arguments)
+            string[]? arguments = null) : base(startMode, customProperties, arguments)
         {
         }
     }

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -159,17 +158,13 @@ namespace OneImlx.Terminal.Apps.Test
         {
             bool newTerminal = IsNewTerminal();
 
-            // Allows cancellation for the entire terminal and individual commands.
-            CancellationTokenSource terminalTokenSource = new();
-            CancellationTokenSource commandTokenSource = new();
-
             // Setup the terminal context and run the router indefinitely as a console.
             // NOTE: Driver is enabled, so you can run the terminal as a native driver program. Ensure args are passed.
             Dictionary<string, object> customProperties = new()
             {
                 { "new_terminal", newTerminal }
             };
-            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, terminalTokenSource.Token, commandTokenSource.Token, routeOnce: !newTerminal, customProperties, args);
+            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, routeOnce: !newTerminal, customProperties, args);
 
             // Start the host builder and run terminal router till canceled.
             Host.CreateDefaultBuilder(args)

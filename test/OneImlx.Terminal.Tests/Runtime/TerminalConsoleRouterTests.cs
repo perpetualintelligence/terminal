@@ -5,17 +5,16 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Runtime
@@ -58,7 +57,11 @@ namespace OneImlx.Terminal.Runtime
 
             options.Driver.Enabled = true;
             options.Driver.RootId = "test_root";
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None, routeOnce: true));
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, routeOnce: true)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
+            await router.RunAsync(context);
 
             // Verify command is routed. Normally in 2 secs the RouteCommandAsync will be invoked multiple times due but
             // here it will call once.
@@ -75,7 +78,11 @@ namespace OneImlx.Terminal.Runtime
 
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ThrowsAsync(new NotSupportedException("Test exception"));
 
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
+            await router.RunAsync(context);
 
             // Verify NotSupportedException is handled. This may be invoked multiple times due to the cancellation token.
             exceptionHandlerMock.Verify(e => e.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(context =>
@@ -96,7 +103,11 @@ namespace OneImlx.Terminal.Runtime
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("xyz");
 
             tcs.CancelAfter(200);
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
+            await router.RunAsync(context);
             commandRouterMock.Verify(c => c.RouteCommandAsync(It.IsAny<CommandContext>()), Times.Never);
         }
 
@@ -107,10 +118,31 @@ namespace OneImlx.Terminal.Runtime
 
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("test_command");
 
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
+            await router.RunAsync(context);
 
             // Verify command is routed. This may be invoked multiple times due to the cancellation token.
             commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandContext>(ctx => ctx.Request.Raw == "test_command")), Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public async Task RunAsync_Runs_And_Stops()
+        {
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
+
+            var runTask = router.RunAsync(context);
+            await Task.Delay(100);
+            router.IsRunning.Should().BeTrue();
+
+            tcs.CancelAfter(100);
+            await Task.Delay(300);
+            router.IsRunning.Should().BeFalse();
         }
 
         [Fact]
@@ -121,8 +153,12 @@ namespace OneImlx.Terminal.Runtime
             options.Driver.Enabled = true;
             options.Driver.RootId = "test_root";
 
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, routeOnce: true, customProperties: null, arguments: ["test_arg1 blah", "test_arg2", "test_arg3"])
+            {
+                TerminalCancellationToken = tcs.Token
+            };
             options.Parser.Separator = '+';
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None, routeOnce: true, customProperties: null, arguments: ["test_arg1 blah", "test_arg2", "test_arg3"]));
+            await router.RunAsync(context);
 
             commandRouterMock.Verify(c => c.RouteCommandAsync(It.Is<CommandContext>(ctx => ctx.Request.Raw == "test_root+test_arg1 blah")), Times.Once);
 
@@ -137,7 +173,11 @@ namespace OneImlx.Terminal.Runtime
 
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("test_command");
 
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
+            await router.RunAsync(context);
 
             // Verify command is routed. This may be invoked multiple times due to the cancellation token. We are
             // verifying at least 5 times to ensure the router is running for a while.
@@ -156,9 +196,13 @@ namespace OneImlx.Terminal.Runtime
         {
             tcs.CancelAfter(2000);
 
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, routeOnce: true)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
             options.Driver.Enabled = true;
             options.Driver.RootId = "test_root";
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None, routeOnce: true));
+            await router.RunAsync(context);
 
             // Verify command is routed. Normally in 2 secs the RouteCommandAsync will be invoked multiple times due but
             // here it will call once.
@@ -169,20 +213,9 @@ namespace OneImlx.Terminal.Runtime
         }
 
         [Fact]
-        public async Task RunAsync_Should_Running_Correctly()
-        {
-            var runTask = router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
-            await Task.Delay(100);
-            router.IsRunning.Should().BeTrue();
-            tcs.CancelAfter(100);
-            await Task.Delay(300);
-            router.IsRunning.Should().BeFalse();
-        }
-
-        [Fact]
         public async Task RunAsync_Throws_If_StartMode_IsNot_Console()
         {
-            var context = new TerminalConsoleRouterContext(TerminalStartMode.Grpc, CancellationToken.None, CancellationToken.None);
+            var context = new TerminalConsoleRouterContext(TerminalStartMode.Grpc);
             Func<Task> act = async () => await router.RunAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_configuration")
@@ -194,9 +227,13 @@ namespace OneImlx.Terminal.Runtime
         {
             tcs.CancelAfter(2000);
 
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, routeOnce: true)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
             options.Driver.Enabled = false;
             options.Driver.RootId = "test_root";
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None, routeOnce: true));
+            await router.RunAsync(context);
 
             // Driver disabled for never called
             commandRouterMock.Verify(c => c.RouteCommandAsync(It.IsAny<CommandContext>()), Times.Never);
@@ -224,7 +261,11 @@ namespace OneImlx.Terminal.Runtime
                                  return new CommandResult();
                              });
 
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
+            await router.RunAsync(context);
 
             exceptionHandlerMock.Verify(e => e.HandleExceptionAsync(It.Is<TerminalExceptionHandlerContext>(context =>
                 context.Exception is TimeoutException && context.Exception.Message == "The terminal console router timed out in 500 milliseconds.")), Times.AtLeastOnce());
@@ -234,8 +275,13 @@ namespace OneImlx.Terminal.Runtime
         public async Task RunAsync_Writes_Caret_To_Console()
         {
             tcs.CancelAfter(200);
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
+            {
+                TerminalCancellationToken = tcs.Token
+            };
+
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("test_command");
-            await router.RunAsync(new(TerminalStartMode.Console, tcs.Token, CancellationToken.None));
+            await router.RunAsync(context);
             terminalConsoleMock.Verify(t => t.WriteAsync(It.Is<string>(s => s == options.Router.Caret)), Times.AtLeastOnce);
         }
 

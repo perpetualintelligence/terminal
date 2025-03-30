@@ -102,9 +102,6 @@ namespace OneImlx.Terminal.Runtime
                 terminalProcessor.StartProcessing(context, background: true, responseHandler: HandleResponseAsync);
                 while (true)
                 {
-                    // Throw if cancellation is requested.
-                    context.TerminalCancellationToken.ThrowIfCancellationRequested();
-
                     // Await either the receive task or a cancellation.
                     var receiveTask = udpClient.ReceiveAsync();
                     await Task.WhenAny(receiveTask, Task.Delay(Timeout.Infinite, context.TerminalCancellationToken));
@@ -114,6 +111,11 @@ namespace OneImlx.Terminal.Runtime
                     {
                         UdpReceiveResult receivedResult = receiveTask.Result;
                         await terminalProcessor.StreamAsync(receivedResult.Buffer, receivedResult.Buffer.Length, receivedResult.RemoteEndPoint.ToString(), receivedResult.RemoteEndPoint.ToString());
+                    }
+                    else
+                    {
+                        // Throw cancellation exception so its handled by the exception handler.
+                        context.TerminalCancellationToken.ThrowIfCancellationRequested();
                     }
                 }
             }

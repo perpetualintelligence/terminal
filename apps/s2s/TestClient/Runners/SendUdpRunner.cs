@@ -8,6 +8,7 @@ using OneImlx.Terminal.Commands.Runners;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Extensions;
 using OneImlx.Terminal.Runtime;
+using OneImlx.Terminal.Shared;
 using System;
 using System.Diagnostics;
 using System.Linq;

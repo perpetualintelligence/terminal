@@ -5,18 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Terminal.Commands.Routers.Mocks;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Routers
@@ -56,6 +56,17 @@ namespace OneImlx.Terminal.Commands.Routers
         }
 
         [Fact]
+        public async Task Failed_License_Blocks_Router()
+        {
+            licenseExtractor.TestLicense.SetFailed(new OneImlx.Shared.Infrastructure.Error("test_lic_error", "test_lic_error_desc"));
+
+            commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandParser, commandHandler, logger, asyncEventHandler: null);
+            CommandContext routerContext = new(new(Guid.NewGuid().ToString(), "test_command_string"), routingContext, null);
+            Func<Task> func = async () => await commandRouter.RouteCommandAsync(routerContext);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode("test_lic_error").WithErrorDescription("test_lic_error_desc");
+        }
+
+        [Fact]
         public async Task HandlerErrorShouldNotRouteFurtherAsync()
         {
             commandHandler.IsExplicitError = true;
@@ -80,7 +91,7 @@ namespace OneImlx.Terminal.Commands.Routers
             commandRouter = new CommandRouter(terminalOptions, licenseExtractor, commandParser, commandHandler, logger, eventHandler);
             terminalTokenSource = new CancellationTokenSource();
             commandTokenSource = new CancellationTokenSource();
-            routingContext = new MockTerminalRouterContext(TerminalStartMode.Custom, terminalTokenSource.Token, commandTokenSource.Token);
+            routingContext = new MockTerminalRouterContext(TerminalStartMode.Custom, commandTokenSource.Token);
 
             return Task.CompletedTask;
         }

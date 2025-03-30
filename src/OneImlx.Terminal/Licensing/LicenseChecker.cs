@@ -11,8 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OneImlx.Shared.Infrastructure;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Shared;
@@ -48,16 +48,32 @@ namespace OneImlx.Terminal.Licensing
         /// <inheritdoc/>
         public async Task<LicenseCheckerResult> CheckLicenseAsync(License license)
         {
-            logger.LogDebug("Check license. plan={0} usage={1} subject={2} tenant={3}", license.Plan, license.Usage, license.Claims.Subject, license.Claims.TenantId);
+            try
+            {
+                logger.LogDebug("Check license. plan={0} usage={1} subject={2} tenant={3}", license.Plan, license.Usage, license.Claims.Subject, license.Claims.TenantId);
 
-            // Initialize if needed
-            await InitializeLockAsync(license);
+                // Initialize if needed
+                await InitializeLockAsync(license);
 
-            // Check Limits
-            await CheckLimitsAsync(license);
+                // Check Limits
+                await CheckLimitsAsync(license);
 
-            // Check Options
-            await CheckOptionsAsync(license);
+                // Check Options
+                await CheckOptionsAsync(license);
+            }
+            catch (Exception ex)
+            {
+                if (ex is TerminalException tex)
+                {
+                    license.SetFailed(tex.Error);
+                }
+                else
+                {
+                    license.SetFailed(new Error(TerminalErrors.ServerError, ex.Message));
+                }
+
+                throw;
+            }
 
             return new LicenseCheckerResult(license)
             {

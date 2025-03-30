@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Runtime
             _mockExceptionHandler = new Mock<ITerminalExceptionHandler>();
             _mockLogger = new Mock<ILogger<TerminalProcessor>>();
             _mockOptions = new Mock<IOptions<TerminalOptions>>();
-            _mockTerminalRouterContext = new Mock<TerminalRouterContext>(TerminalStartMode.Console, _terminalTokenSource.Token, CancellationToken.None, null!, null!);
+            _mockTerminalRouterContext = new Mock<TerminalRouterContext>(TerminalStartMode.Console, null!, null!);
             _textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
 
             _mockOptions.Setup(static o => o.Value).Returns(new TerminalOptions
@@ -595,10 +595,13 @@ namespace OneImlx.Terminal.Runtime
         [InlineData(Timeout.Infinite)]
         public async Task StopProcessingAsync_Any_Timeout_And_Completed_Processing_Sets_IsProcessing_ToFalse(int timeout)
         {
+            _mockTerminalRouterContext.Object.TerminalCancellationToken = _terminalTokenSource.Token;
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
             _terminalProcessor.IsProcessing.Should().BeTrue();
+
             _terminalTokenSource.Cancel();
             await Task.Delay(500);
+
             var timedOut = await _terminalProcessor.StopProcessingAsync(timeout);
             timedOut.Should().BeFalse();
             _terminalProcessor.IsProcessing.Should().BeFalse();
@@ -607,10 +610,12 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task StopProcessingAsync_Sets_IsProcessing_ToFalse()
         {
+            _mockTerminalRouterContext.Object.TerminalCancellationToken = _terminalTokenSource.Token;
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            _terminalTokenSource.CancelAfter(300);
-
             _terminalProcessor.IsProcessing.Should().BeTrue();
+
+            _terminalTokenSource.CancelAfter(300);
+            
             bool timeout = await _terminalProcessor.StopProcessingAsync(Timeout.Infinite);
             _terminalProcessor.IsProcessing.Should().BeFalse();
             timeout.Should().BeFalse();
@@ -629,9 +634,12 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task StopProcessingAsync_TimesOut_Return_True_Sets_IsProcessing_ToTrue()
         {
+            _mockTerminalRouterContext.Object.TerminalCancellationToken = _terminalTokenSource.Token;
             _terminalProcessor.StartProcessing(_mockTerminalRouterContext.Object, background: true);
-            _terminalTokenSource.CancelAfter(400);
             _terminalProcessor.IsProcessing.Should().BeTrue();
+
+            _terminalTokenSource.CancelAfter(400);
+            
             bool timeout = await _terminalProcessor.StopProcessingAsync(100);
             _terminalProcessor.IsProcessing.Should().BeTrue();
             timeout.Should().BeTrue();

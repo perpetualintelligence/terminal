@@ -6,7 +6,6 @@
 */
 
 using System.Collections.Generic;
-using System.Threading;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -19,18 +18,14 @@ namespace OneImlx.Terminal.Runtime
         /// Initializes a new instance of <see cref="TerminalConsoleRouterContext"/>.
         /// </summary>
         /// <param name="startMode">The terminal start mode.</param>
-        /// <param name="terminalCancellationToken">The terminal router cancellation token.</param>
-        /// <param name="commandCancellationToken">The command router cancellation token.</param>
         /// <param name="routeOnce">Determines whether the router will route the request only once.</param>
         /// <param name="customProperties">The custom properties.</param>
         /// <param name="arguments">The command line arguments.</param>
         public TerminalConsoleRouterContext(
             TerminalStartMode startMode,
-            CancellationToken terminalCancellationToken,
-            CancellationToken commandCancellationToken,            
             bool? routeOnce = null,
             Dictionary<string, object>? customProperties = null,
-            string[]? arguments = null) : base(startMode, terminalCancellationToken, commandCancellationToken, customProperties, arguments)
+            string[]? arguments = null) : base(startMode, customProperties, arguments)
         {
             RouteOnce = routeOnce;
         }

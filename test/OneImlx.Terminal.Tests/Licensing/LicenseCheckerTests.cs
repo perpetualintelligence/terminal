@@ -137,6 +137,34 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Fact]
+        public async Task CheckAsync_Failure_Sets_Failed()
+        {
+            // Commands are 11
+            var limits = new Dictionary<string, object?>(license.Quota.Limits)
+            {
+                ["commands"] = 2
+            };
+
+            license.Quota.Limits = limits;
+
+            Exception? ex = null;
+
+            try
+            {
+                await licenseChecker.CheckLicenseAsync(license);
+            }
+            catch (Exception caught)
+            {
+                ex = caught;
+                license.Failed.Should().NotBeNull();
+                license.Failed.ErrorCode.Should().Be(TerminalErrors.InvalidLicense);
+                license.Failed.FormatDescription().Should().Be("The command limit exceeded. max_limit=2 current=11");
+            }
+
+            ex.Should().NotBeNull("An exception during license check was expected.");
+        }
+
+        [Fact]
         public async Task CheckAsync_InitializeShouldSetPropertiesCorrectly()
         {
             // Use unlimited license so this will not fail.
@@ -145,6 +173,7 @@ namespace OneImlx.Terminal.Licensing
 
             result.License.Should().NotBeNull();
             result.License.Should().BeSameAs(license);
+            result.License.Failed.Should().BeNull();
 
             result.TerminalCount.Should().Be(1);
             result.CommandCount.Should().Be(11);

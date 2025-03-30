@@ -29,18 +29,6 @@ namespace OneImlx.Terminal.Runtime
         public string[]? Arguments { get; }
 
         /// <summary>
-        /// The cancellation token to cancel the current command routing.
-        /// </summary>
-        /// <remarks>
-        /// This cancellation token is used for granular control over individual long-running commands. When triggered,
-        /// it cancels only the currently executing command without affecting the overall terminal routing. This allows
-        /// for selective interruption of commands, which is useful in scenarios where a specific operation needs to be
-        /// stopped due to changes in user input or application state, while allowing the terminal to continue routing
-        /// new commands.
-        /// </remarks>
-        public CancellationToken CommandCancellationToken { get; }
-
-        /// <summary>
         /// The custom properties.
         /// </summary>
         /// <remarks>
@@ -64,28 +52,22 @@ namespace OneImlx.Terminal.Runtime
         /// particularly useful in scenarios where a complete shutdown of the terminal's operational context is
         /// required, such as during application termination or critical error handling.
         /// </remarks>
-        public CancellationToken TerminalCancellationToken { get; }
+        public CancellationToken TerminalCancellationToken { get; internal set; }
 
         /// <summary>
         /// Initializes a new <see cref="TerminalRouterContext"/> instance.
         /// </summary>
         /// <param name="startMode">The terminal start mode.</param>
-        /// <param name="terminalCancellationToken">The terminal router cancellation token.</param>
-        /// <param name="commandCancellationToken">The command router cancellation token.</param>
         /// <param name="customProperties">The custom properties.</param>
         /// <param name="arguments">The command line arguments.</param>
         protected TerminalRouterContext(
             TerminalStartMode startMode,
-            CancellationToken terminalCancellationToken,
-            CancellationToken commandCancellationToken,
             Dictionary<string, object>? customProperties = null,
             string[]? arguments = null)
         {
             Arguments = arguments;
-            CommandCancellationToken = commandCancellationToken;
             CustomProperties = customProperties;
             StartMode = startMode;
-            TerminalCancellationToken = terminalCancellationToken;
         }
     }
 }

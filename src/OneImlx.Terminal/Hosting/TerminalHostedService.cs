@@ -72,17 +72,21 @@ namespace OneImlx.Terminal.Hosting
                 // intentionally done at the end to avoid a performance hit in case the license check fails.
                 await RegisterHelpAsync();
             }
-            catch (TerminalException ex)
+            catch (Exception ex)
             {
-                if(ex.Error.ErrorCode == TerminalErrors.InvalidLicense)
+                // If this is a license failure then stop application.
+                if (ex is TerminalException tex && tex.Error.ErrorCode == TerminalErrors.InvalidLicense)
                 {
-                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, ex.Message);
-                    throw;
+                    await TerminalConsole.WriteLineColorAsync(ConsoleColor.Red, "License check failed during startup.");
+                    await Task.Delay(500);
+
+                    IHostApplicationLifetime hostApplicationLifetime = ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
+                    hostApplicationLifetime.StopApplication();
+                    await Task.Delay(2000);
                 }
-                else
-                {
-                    await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex));
-                }
+
+                // Give a change to handler
+                await terminalExceptionHandler.HandleExceptionAsync(new TerminalExceptionHandlerContext(ex));
             }
         }
 
