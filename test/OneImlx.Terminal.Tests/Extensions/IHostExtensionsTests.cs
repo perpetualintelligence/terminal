@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Extensions
             var mockTerminalRouter = new Mock<ITerminalRouter<TerminalRouterContext>>();
             var mockServiceProvider = new Mock<IServiceProvider>();
 
-            var terminalRouterContext = new TerminalConsoleRouterContext(TerminalStartMode.Custom, CancellationToken.None, null);
+            var terminalRouterContext = new TerminalConsoleRouterContext(TerminalStartMode.Custom, null);
 
             var appStoppingCts = new CancellationTokenSource();
             appStoppingCts.CancelAfter(50000);

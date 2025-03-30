@@ -6,7 +6,6 @@
 */
 
 using System.Collections.Generic;
-using System.Threading;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -18,9 +17,8 @@ namespace OneImlx.Terminal.Runtime
         /// <inheritdoc/>
         protected TerminalCustomRouterContext(
             TerminalStartMode startMode,
-            CancellationToken commandCancellationToken,
             Dictionary<string, object>? customProperties = null,
-            string[]? arguments = null) : base(startMode, commandCancellationToken, customProperties, arguments)
+            string[]? arguments = null) : base(startMode, customProperties, arguments)
         {
         }
     }

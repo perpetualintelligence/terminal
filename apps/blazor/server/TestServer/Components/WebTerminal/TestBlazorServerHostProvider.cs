@@ -113,7 +113,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
             try
             {
                 commandTokenSource = new CancellationTokenSource();
-                TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, commandTokenSource.Token);
+                TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console);
 
                 // Get the license asynchronously so we can initialize the terminal host
                 licenseFile = await GetLicenseContentAsync();

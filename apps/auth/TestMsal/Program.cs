@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -98,11 +97,8 @@ namespace OneImlx.Terminal.Apps.TestAuth
 
         private static void Main(string[] args)
         {
-            // Allows cancellation for the entire terminal and individual commands.
-            CancellationTokenSource commandTokenSource = new();
-
             // Setup the terminal context and run the router indefinitely as a console.
-            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console, commandTokenSource.Token);
+            TerminalConsoleRouterContext consoleRouterContext = new(TerminalStartMode.Console);
 
             // Start the host builder and run terminal router till canceled.
             Host.CreateDefaultBuilder(args)

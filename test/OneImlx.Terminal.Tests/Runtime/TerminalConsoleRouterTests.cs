@@ -57,7 +57,7 @@ namespace OneImlx.Terminal.Runtime
 
             options.Driver.Enabled = true;
             options.Driver.RootId = "test_root";
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None, routeOnce: true)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, routeOnce: true)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -78,7 +78,7 @@ namespace OneImlx.Terminal.Runtime
 
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ThrowsAsync(new NotSupportedException("Test exception"));
 
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -103,7 +103,7 @@ namespace OneImlx.Terminal.Runtime
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("xyz");
 
             tcs.CancelAfter(200);
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -118,7 +118,7 @@ namespace OneImlx.Terminal.Runtime
 
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("test_command");
 
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -131,7 +131,7 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task RunAsync_Runs_And_Stops()
         {
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -153,7 +153,7 @@ namespace OneImlx.Terminal.Runtime
             options.Driver.Enabled = true;
             options.Driver.RootId = "test_root";
 
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None, routeOnce: true, customProperties: null, arguments: ["test_arg1 blah", "test_arg2", "test_arg3"])
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, routeOnce: true, customProperties: null, arguments: ["test_arg1 blah", "test_arg2", "test_arg3"])
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -173,7 +173,7 @@ namespace OneImlx.Terminal.Runtime
 
             terminalConsoleMock.Setup(t => t.ReadLineAsync()).ReturnsAsync("test_command");
 
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -196,7 +196,7 @@ namespace OneImlx.Terminal.Runtime
         {
             tcs.CancelAfter(2000);
 
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None, routeOnce: true)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, routeOnce: true)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -215,7 +215,7 @@ namespace OneImlx.Terminal.Runtime
         [Fact]
         public async Task RunAsync_Throws_If_StartMode_IsNot_Console()
         {
-            var context = new TerminalConsoleRouterContext(TerminalStartMode.Grpc, CancellationToken.None);
+            var context = new TerminalConsoleRouterContext(TerminalStartMode.Grpc);
             Func<Task> act = async () => await router.RunAsync(context);
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode("invalid_configuration")
@@ -227,7 +227,7 @@ namespace OneImlx.Terminal.Runtime
         {
             tcs.CancelAfter(2000);
 
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None, routeOnce: true)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, routeOnce: true)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -261,7 +261,7 @@ namespace OneImlx.Terminal.Runtime
                                  return new CommandResult();
                              });
 
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
             {
                 TerminalCancellationToken = tcs.Token
             };
@@ -275,7 +275,7 @@ namespace OneImlx.Terminal.Runtime
         public async Task RunAsync_Writes_Caret_To_Console()
         {
             tcs.CancelAfter(200);
-            TerminalConsoleRouterContext context = new(TerminalStartMode.Console, CancellationToken.None)
+            TerminalConsoleRouterContext context = new(TerminalStartMode.Console)
             {
                 TerminalCancellationToken = tcs.Token
             };

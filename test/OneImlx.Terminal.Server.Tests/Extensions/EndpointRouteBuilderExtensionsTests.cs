@@ -32,7 +32,7 @@ namespace OneImlx.Terminal.Server
             var mockTerminalRouter = new Mock<ITerminalRouter<TerminalHttpRouterContext>>();
             var mockTerminalProcessor = new Mock<ITerminalProcessor>();
             var mockLogger = new Mock<ILogger<TerminalHttpMapService>>();
-            var terminalRouterContext = new TerminalHttpRouterContext(iPEndPoint, TerminalStartMode.Http, default, default, null);
+            var terminalRouterContext = new TerminalHttpRouterContext(iPEndPoint, TerminalStartMode.Http, null, null);
 
             // Create a TestServer and configure services and pipeline in the test itself
             var builder = new WebHostBuilder()

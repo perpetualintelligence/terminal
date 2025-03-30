@@ -8,7 +8,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace OneImlx.Terminal.Runtime
 {
@@ -22,16 +21,14 @@ namespace OneImlx.Terminal.Runtime
         /// </summary>
         /// <param name="iPEndPoint">The network IP endpoint server will connect.</param>
         /// <param name="startMode">The terminal start mode.</param>
-        /// <param name="commandCancellationToken">The command cancellation token.</param>
         /// <param name="customProperties">The custom properties.</param>
         /// <param name="arguments">The command line arguments.</param>
         public TerminalTcpRouterContext(
             IPEndPoint iPEndPoint,
             TerminalStartMode startMode,
-            CancellationToken commandCancellationToken,
             Dictionary<string, object>? customProperties = null,
             string[]? arguments = null)
-            : base(startMode, commandCancellationToken, customProperties, arguments)
+            : base(startMode, customProperties, arguments)
         {
             IPEndPoint = iPEndPoint;
         }

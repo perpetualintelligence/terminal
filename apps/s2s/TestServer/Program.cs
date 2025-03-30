@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -145,14 +144,14 @@ namespace OneImlx.Terminal.Apps.TestServer
         // Handles the execution of the console router for the terminal.
         private static async Task RunConsoleRouterAsync()
         {
-            TerminalConsoleRouterContext routerContext = new(TerminalStartMode.Console, CancellationToken.None);
+            TerminalConsoleRouterContext routerContext = new(TerminalStartMode.Console);
             await host!.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(routerContext);
         }
 
         // Handles the execution of the gRPC router for the terminal.
         private static async Task RunGrpcRouterAsync()
         {
-            TerminalGrpcRouterContext routerContext = new(TerminalStartMode.Grpc, CancellationToken.None);
+            TerminalGrpcRouterContext routerContext = new(TerminalStartMode.Grpc);
             await host!.RunTerminalRouterAsync<TerminalGrpcRouter, TerminalGrpcRouterContext>(routerContext);
         }
 
@@ -179,7 +178,7 @@ namespace OneImlx.Terminal.Apps.TestServer
 
             IPAddress serverLocalIp = IPAddress.Parse(ipAddress);
             IPEndPoint iPEndPoint = new(serverLocalIp, port);
-            TerminalHttpRouterContext routerContext = new(iPEndPoint, TerminalStartMode.Http, CancellationToken.None);
+            TerminalHttpRouterContext routerContext = new(iPEndPoint, TerminalStartMode.Http);
 
             await host!.RunTerminalRouterAsync<TerminalHttpRouter, TerminalHttpRouterContext>(routerContext);
         }
@@ -192,7 +191,7 @@ namespace OneImlx.Terminal.Apps.TestServer
 
             IPAddress serverLocalIp = IPAddress.Parse(ipAddress);
             IPEndPoint iPEndPoint = new(serverLocalIp, port);
-            TerminalTcpRouterContext routerContext = new(iPEndPoint, TerminalStartMode.Tcp, CancellationToken.None);
+            TerminalTcpRouterContext routerContext = new(iPEndPoint, TerminalStartMode.Tcp);
             await host!.RunTerminalRouterAsync<TerminalTcpRouter, TerminalTcpRouterContext>(routerContext);
         }
 
@@ -204,7 +203,7 @@ namespace OneImlx.Terminal.Apps.TestServer
 
             IPAddress serverLocalIp = IPAddress.Parse(ipAddress);
             IPEndPoint iPEndPoint = new(serverLocalIp, port);
-            TerminalUdpRouterContext routerContext = new(iPEndPoint, TerminalStartMode.Udp, CancellationToken.None);
+            TerminalUdpRouterContext routerContext = new(iPEndPoint, TerminalStartMode.Udp);
             await host!.RunTerminalRouterAsync<TerminalUdpRouter, TerminalUdpRouterContext>(routerContext);
         }
 

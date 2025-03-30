@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,12 +77,8 @@ namespace OneImlx.Terminal.Apps.TestClient
             var host = builder.Build();
             await host.StartAsync();
 
-            // Allows cancellation for the entire terminal and individual commands.
-            CancellationTokenSource terminalTokenSource = new();
-            CancellationTokenSource commandTokenSource = new();
-
             // Setup the terminal start context
-            TerminalConsoleRouterContext terminalConsoleRouterContext = new(TerminalStartMode.Console, commandTokenSource.Token);
+            TerminalConsoleRouterContext terminalConsoleRouterContext = new(TerminalStartMode.Console);
 
             // Run the terminal router
             await host.RunTerminalRouterAsync<TerminalConsoleRouter, TerminalConsoleRouterContext>(terminalConsoleRouterContext);
