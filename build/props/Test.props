@@ -35,7 +35,7 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Moq" Version="4.20.72" />
-        <PackageReference Include="OneImlx.Test" Version="6.1.1-rc.26325205" />
+        <PackageReference Include="OneImlx.Test" Version="6.1.2-rc.5425209" />
     </ItemGroup>
 
 

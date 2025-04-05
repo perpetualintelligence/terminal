@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using OneImlx.Shared.Authorization;
 using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Shared.Licensing;
@@ -46,18 +45,14 @@ namespace OneImlx.Terminal.Licensing
         /// </summary>
         public async Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
-            logger.LogDebug("Extract license.");
-
             // For singleton DI service we don't extract license keys once extracted.
             licenseExtractorResult ??= await ExtractFromJsonAsync();
-
             return licenseExtractorResult;
         }
 
         /// <inheritdoc/>
         public Task<License?> GetLicenseAsync()
         {
-            logger.LogDebug("Get license.");
             return Task.FromResult(licenseExtractorResult?.License);
         }
 
@@ -129,8 +124,6 @@ namespace OneImlx.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFile licenseFile)
         {
-            logger.LogDebug("Extract offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
-
             // If debugger is not attached and on-premise deployment is enabled then skip license check and grant claims
             // based on license plan. If debugger is attached we always do a license check.
             if (!licenseDebugger.IsDebuggerAttached() && IsIsolatedDeployment(terminalOptions.Licensing.Deployment))
@@ -152,7 +145,7 @@ namespace OneImlx.Terminal.Licensing
                 LicenseCheck checkModel = new()
                 {
                     Issuer = OneImlx.Shared.Constants.Issuer,
-                    Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
+                    Audience = GetAudience(licenseFile.TenantId),
                     Application = terminalOptions.Id,
                     AuthorizedParty = OneImlx.Shared.Constants.TerminalUrn,
                     TenantId = licenseFile.TenantId,
@@ -205,8 +198,6 @@ namespace OneImlx.Terminal.Licensing
 
         private async Task<LicenseExtractorResult> ExtractFromJsonAsync()
         {
-            logger.LogDebug("Extract from JSON license key.");
-
             // Missing app id
             if (string.IsNullOrWhiteSpace(terminalOptions.Id))
             {
@@ -276,8 +267,13 @@ namespace OneImlx.Terminal.Licensing
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license mode is not valid. mode={0}", licenseFile.Mode);
             }
 
-            logger.LogDebug("Extracted license. plan={0} usage={1} subject={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
+            logger.LogDebug("Extract license. plan={0} usage={1} subject={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
             return licenseExtractorResult;
+        }
+
+        private string GetAudience(string tenantId)
+        {
+            return string.Format("https://login.perpetualintelligence.com/{0}/v2.0", tenantId);
         }
 
         private bool IsPlanValidForIsolatedDeployemnt(string licensePlan)
