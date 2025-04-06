@@ -332,20 +332,6 @@ namespace OneImlx.Terminal.Licensing
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured.");
         }
 
-        [Fact]
-        public async Task Missing_LicensePlan_Throws()
-        {
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testLicPath;
-            terminalOptions.Licensing.LicensePlan = null!;
-
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
-            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription("The license plan is not specified.");
-        }
-
         private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)
         {
             // The demo json is too long for system env, so we use path for system env and json for github

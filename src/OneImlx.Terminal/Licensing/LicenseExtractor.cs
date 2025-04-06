@@ -45,22 +45,10 @@ namespace OneImlx.Terminal.Licensing
         /// </summary>
         public async Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
-            // License plan is mandatory
-            if (string.IsNullOrWhiteSpace(_terminalOptions.Licensing.LicensePlan))
+            // Ensure license plan is valid.B
+            if (!TerminalLicensePlans.IsValidPlan(_terminalOptions.Licensing.LicensePlan))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not specified.");
-            }
-
-            // Deployment plan is mandatory
-            if (string.IsNullOrWhiteSpace(_terminalOptions.Licensing.Deployment))
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license deployment is not specified.");
-            }
-
-            // Deployment should be either air gapped or standard
-            if (_terminalOptions.Licensing.Deployment != TerminalIdentifiers.AirGappedDeployment && _terminalOptions.Licensing.Deployment != TerminalIdentifiers.StandardDeployment)
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license deployment is not valid. deployment={0}", _terminalOptions.Licensing.Deployment);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid. plan={0}", _terminalOptions.Licensing.LicensePlan);
             }
 
             // In on-prem or air-gapped deployments with locked-down environments, skip license check if no debugger is
@@ -254,13 +242,7 @@ namespace OneImlx.Terminal.Licensing
             if (_terminalOptions.Licensing.LicenseContents == null && !File.Exists(_terminalOptions.Licensing.LicenseFile))
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid. file={0}", _terminalOptions.Licensing.LicenseFile);
-            }
-
-            // Missing or invalid license plan.
-            if (!TerminalLicensePlans.IsValidPlan(_terminalOptions.Licensing.LicensePlan))
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid. plan={0}", _terminalOptions.Licensing.LicensePlan);
-            }
+            }           
 
             // Avoid file locking for multiple threads.
             LicenseFile? licenseFile;
