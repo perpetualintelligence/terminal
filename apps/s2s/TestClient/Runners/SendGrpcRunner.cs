@@ -19,7 +19,7 @@ using OneImlx.Terminal.Shared;
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
     [CommandOwners("send")]
-    [CommandDescriptor("grpc", "gRPC test", "Send gRPC commands to the terminal server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("grpc", "gRPC test", "Send gRPC commands to the terminal server.", CommandType.SubCommand, CommandFlags.None)]
     public class SendGrpcRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         public SendGrpcRunner(IConfiguration configuration, ITerminalConsole terminalConsole)

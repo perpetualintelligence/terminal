@@ -29,11 +29,10 @@ namespace OneImlx.Terminal.Configuration.Options
         /// </summary>
         /// <remarks>
         /// <para>
-        /// When set to <see cref="TerminalIdentifiers.IsolatedDeployment"/>, the
-        /// <see cref="ILicenseExtractor"/> skips the license check. This setting is crucial for environments like
-        /// secure data centers, hardware-centric locations, or factories, where Internet access is minimal or
-        /// nonexistent. In such settings, the software and its configurations are locked to a device, making license
-        /// file updates potentially restricted.
+        /// When set to <see cref="TerminalIdentifiers.AirGappedDeployment"/>, the <see cref="ILicenseExtractor"/> skips
+        /// the license check. This setting is crucial for environments like secure data centers, hardware-centric
+        /// locations, or factories, where Internet access is minimal or nonexistent. In such settings, the software and
+        /// its configurations are locked to a device, making license file updates potentially restricted.
         /// </para>
         /// <para>
         /// <c>NOTE:</c> This option can be set if you have an active commercial plans
@@ -41,7 +40,7 @@ namespace OneImlx.Terminal.Configuration.Options
         /// violation of licensing terms to deploy or continue using the framework without an active commercial license plan.
         /// </para>
         /// </remarks>
-        public string Deployment { get; set; } = "standard";
+        public string Deployment { get; set; } = TerminalIdentifiers.StandardDeployment;
 
         /// <summary>
         /// The license contents. Defaults to <c>null</c>.

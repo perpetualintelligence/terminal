@@ -14,7 +14,7 @@ namespace OneImlx.Terminal.Apps.TestAuth.Runners
     /// Command runner for fetching user information from Microsoft Graph API after authentication.
     /// </summary>
     [CommandOwners("auth")]
-    [CommandDescriptor("user", "Get user", "Fetches user information from Microsoft Graph API.", Commands.CommandType.GroupCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("user", "Get user", "Fetches user information from Microsoft Graph API.", CommandType.GroupCommand, CommandFlags.None)]
     public class AuthUserRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         /// <summary>

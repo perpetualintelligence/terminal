@@ -7,7 +7,7 @@ using OneImlx.Terminal.Runtime;
 
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
-    [CommandDescriptor("tc", "Test root", "Sample test client for testing the server.", Commands.CommandType.RootCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("tc", "Test root", "Sample test client for testing the server.", CommandType.RootCommand, CommandFlags.None)]
     public class TestClientRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         public TestClientRunner(ITerminalConsole terminalConsole, ILogger<TestClientRunner> logger)

@@ -5,18 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Shared.Json;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.IO;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -65,6 +65,23 @@ namespace OneImlx.Terminal.Licensing
             {
                 File.Delete(nonJsonLicPath);
             }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ExtractFromJsonAsync_AirGapped_With_Invalid_LicensePlan_Throws(bool debuggerAttached)
+        {
+            licenseDebugger.SetDebuggerAttached(debuggerAttached);
+            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
+
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testDemoLicPath;
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
+
+            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not authorized for air gapped deployment. plan=urn:oneimlx:terminal:plan:demo");
         }
 
         [Fact]
@@ -158,23 +175,6 @@ namespace OneImlx.Terminal.Licensing
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The provider is not authorized. provider_id=invalid_provider");
-        }
-
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ExtractFromJsonAsync_Isolated_With_Invalid_LicensePlan_Throws(bool debuggerAttached)
-        {
-            licenseDebugger.SetDebuggerAttached(debuggerAttached);
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
-
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testDemoLicPath;
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
-
-            Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
-            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not authorized for on-premise isolated deployment. plan=urn:oneimlx:terminal:plan:demo");
         }
 
         [Fact]
@@ -330,6 +330,20 @@ namespace OneImlx.Terminal.Licensing
 
             Func<Task> func = async () => await licenseExtractor.ExtractLicenseAsync();
             await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license file is not configured.");
+        }
+
+        [Fact]
+        public async Task Missing_LicensePlan_Throws()
+        {
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testLicPath;
+            terminalOptions.Licensing.LicensePlan = null!;
+
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
+            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidConfiguration)
+                .WithErrorDescription("The license plan is not specified.");
         }
 
         private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)

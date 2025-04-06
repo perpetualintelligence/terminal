@@ -5,8 +5,12 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
@@ -14,10 +18,6 @@ using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -37,101 +37,81 @@ namespace OneImlx.Terminal.Licensing
             commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
         }
 
-        public Task DisposeAsync()
+        [Theory]
+        [InlineData(TerminalLicensePlans.Enterprise)]
+        [InlineData(TerminalLicensePlans.Corporate)]
+        public async Task AirGapped_LicensePlan_Does_Not_Throws(string licPlan)
         {
-            if (File.Exists(testOfflineLicPath))
-            {
-                File.Delete(testOfflineLicPath);
-            }
+            licenseDebugger = new MockLicenseDebugger(false);
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
+            terminalOptions.Licensing.LicensePlan = licPlan;
 
-            return Task.CompletedTask;
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
+
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
+            await licenseExtractor.ExtractLicenseAsync();
         }
 
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Extracts_From_Offline_If_OnPremiseDeployment_Not_Configured(bool isDebuggerAttached)
+        public async Task AirGapped_Missing_LicensePlan_Throws(bool isDebuggerAttached)
         {
-            // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = null;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
+
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
+            terminalOptions.Licensing.LicensePlan = null!;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
+            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidConfiguration)
+                .WithErrorDescription("The license plan is not specified.");
+        }
+
+        [Theory]
+        [InlineData(TerminalLicensePlans.Demo)]
+        [InlineData(TerminalLicensePlans.Solo)]
+        [InlineData(TerminalLicensePlans.Micro)]
+        [InlineData(TerminalLicensePlans.Smb)]
+        public async Task AirGapped_With_Invalid_LicensePlan_Throws(string licPlan)
+        {
+            licenseDebugger = new MockLicenseDebugger(false);
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
+            terminalOptions.Licensing.LicensePlan = licPlan;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
-            result.License.Should().NotBeNull();
-
-            // The license is not for on-prem and extraction was done offline
-            result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
+            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidConfiguration)
+                .WithErrorDescription($"The license plan is not authorized for air gapped deployment. plan={licPlan}");
         }
 
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Extracts_From_OffLine_Sets_Extraction_Mode_Based_On_Debugger(bool isDebuggerAttached)
+        public async Task AirGappedDeployment_Does_Not_Throws_For_Valid_License(bool isDebuggerAttached)
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
-            result.License.Should().NotBeNull();
-
-            // The license is for on-prem and no extraction was done via online
-            if (isDebuggerAttached)
-            {
-                result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
-            }
-            else
-            {
-                result.ExtractionMode.Should().Be(null);
-                AssertOnPremIsolatedDeploymentLicense(result.License);
-            }
-        }
-
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        [Theory]
-        [InlineData(true, "invalid_deployment")]
-        [InlineData(true, "    ")]
-        [InlineData(true, "")]
-        [InlineData(true, null)]
-        [InlineData(false, "invalid_deployment")]
-        [InlineData(false, "    ")]
-        [InlineData(false, "")]
-        [InlineData(false, null)]
-        public async Task Invalid_Or_Null_Deployment_Extracts_From_OffLine(bool isDebuggerAttached, string? deployment)
-        {
-            // We always check for license if debugger is attached. If debugger is not attached then we check if
-            // OnPremiseDeployment is set. Onprem license is processed only if debugger is attached
-            licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = deployment;
-
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
-
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-
-            LicenseExtractorResult? result = await licenseExtractor.ExtractLicenseAsync();
-            result.License.Should().NotBeNull();
-
-            // The license is for on-prem but the extraction was done via online
-            result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
+            await licenseExtractor.ExtractLicenseAsync();
         }
 
         [Fact]
-        public async Task OnPremDeployment_Enabled_No_Debugger_Grants_Claims_Based_On_Configured_License_Plan()
+        public async Task AirGappedDeployment_No_Debugger_Grants_Claims_Based_On_Configured_License_Plan()
         {
             // Before extract get should be null
             licenseDebugger = new MockLicenseDebugger(false);
@@ -142,7 +122,7 @@ namespace OneImlx.Terminal.Licensing
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
             terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
@@ -158,11 +138,11 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().NotBeNull();
 
             // license key
-            result.License.LicenseKey.Should().Be("onprem-isolated-deployment");
+            result.License.LicenseKey.Should().Be(TerminalIdentifiers.AirGappedKey);
 
             // plan, mode and usage
-            result.License.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
-            result.License.Usage.Should().Be("onprem-isolated-deployment");
+            result.License.Plan.Should().Be(TerminalLicensePlans.Corporate);
+            result.License.Usage.Should().Be(TerminalIdentifiers.AirGappedUsage);
 
             // claims
             result.License.Claims.AcrValues.Should().BeNull();
@@ -183,7 +163,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.Custom.Should().BeNull();
 
             // quota
-            result.License.Quota.Plan.Should().Be("urn:oneimlx:terminal:plan:corporate");
+            result.License.Quota.Plan.Should().Be(TerminalLicensePlans.Corporate);
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();
@@ -200,77 +180,115 @@ namespace OneImlx.Terminal.Licensing
             licResult.TerminalCount.Should().Be(1);
         }
 
+        public Task DisposeAsync()
+        {
+            if (File.Exists(testOfflineLicPath))
+            {
+                File.Delete(testOfflineLicPath);
+            }
+
+            return Task.CompletedTask;
+        }
+
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task OnPremiseDeployment_Does_Not_Throws_For_OffLine_License(bool isDebuggerAttached)
+        public async Task Extraction_Mode_Is_Offline_For_Standard_Deployment(bool isDebuggerAttached)
         {
             // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.StandardDeployment;
 
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            await licenseExtractor.ExtractLicenseAsync();
+            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
+            result.License.Should().NotBeNull();
+
+            // The license is not for on-prem and extraction was done offline
+            result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
         }
 
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Unset_LicensePlan_Throws(bool isDebuggerAttached)
+        public async Task Extracts_From_AirGapped_Sets_Extraction_Mode_Based_On_Debugger(bool isDebuggerAttached)
         {
+            // On-prem license is processed only if debugger is attached
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
+            terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
+
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-            terminalOptions.Licensing.LicensePlan = null!;
 
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
-            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
-            await act.Should().ThrowAsync<TerminalException>()
-                .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription("The license plan is not valid. plan=");
+            LicenseExtractorResult result = await licenseExtractor.ExtractLicenseAsync();
+            result.License.Should().NotBeNull();
+
+            // The license is for on-prem and no extraction was done via online
+            if (isDebuggerAttached)
+            {
+                result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
+            }
+            else
+            {
+                result.ExtractionMode.Should().Be(null);
+                AssertAurGappedDeploymentLicense(result.License);
+            }
+        }
+
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         [Theory]
-        [InlineData(TerminalLicensePlans.Enterprise)]
-        [InlineData(TerminalLicensePlans.Corporate)]
-        public async Task Valid_LicensePlan_Does_Not_Throws(string licPlan)
+        [InlineData(true, "invalid_deployment")]
+        [InlineData(false, "invalid_deployment")]
+        public async Task Invalid_Deployment_Throws(bool isDebuggerAttached, string deployment)
         {
-            licenseDebugger = new MockLicenseDebugger(false);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
-            terminalOptions.Licensing.LicensePlan = licPlan;
+            // We always check for license if debugger is attached. If debugger is not attached then we check if
+            // OnPremiseDeployment is set. Onprem license is processed only if debugger is attached
+            licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
+            terminalOptions.Licensing.Deployment = deployment!;
+
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
 
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
-            await licenseExtractor.ExtractLicenseAsync();
-        }
-
-        [Theory]
-        [InlineData(TerminalLicensePlans.Demo)]
-        [InlineData(TerminalLicensePlans.Solo)]
-        [InlineData(TerminalLicensePlans.Micro)]
-        [InlineData(TerminalLicensePlans.Smb)]
-        public async Task Valid_OnPrem_License_But_Invalid_LicensePlan_Throws(string licPlan)
-        {
-            licenseDebugger = new MockLicenseDebugger(false);
-            terminalOptions.Licensing.Deployment = TerminalIdentifiers.IsolatedDeployment;
-            terminalOptions.Licensing.LicensePlan = licPlan;
-
-            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
-            terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
-
-            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
             Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
             await act.Should().ThrowAsync<TerminalException>()
                 .WithErrorCode(TerminalErrors.InvalidConfiguration)
-                .WithErrorDescription($"The license plan is not authorized for on-premise isolated deployment. plan={licPlan}");
+                .WithErrorDescription($"The license deployment is not valid. deployment={deployment}");
+        }
+
+        [Theory]
+        [InlineData(true, "    ")]
+        [InlineData(true, "")]
+        [InlineData(true, null)]
+        [InlineData(false, "    ")]
+        [InlineData(false, "")]
+        [InlineData(false, null)]
+        public async Task Null_Deployment_Throws(bool isDebuggerAttached, string? deployment)
+        {
+            // We always check for license if debugger is attached. If debugger is not attached then we check if
+            // OnPremiseDeployment is set. Onprem license is processed only if debugger is attached
+            licenseDebugger = new MockLicenseDebugger(isDebuggerAttached);
+            terminalOptions.Licensing.Deployment = deployment!;
+
+            licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
+
+            terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
+            terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
+
+            Func<Task> act = async () => await licenseExtractor.ExtractLicenseAsync();
+            await act.Should().ThrowAsync<TerminalException>()
+                .WithErrorCode(TerminalErrors.InvalidConfiguration)
+                .WithErrorDescription("The license deployment is not specified.");
         }
 
         private static string GetJsonLicenseFileForLocalHostGitHubSecretForCICD(string env)
@@ -288,13 +306,14 @@ namespace OneImlx.Terminal.Licensing
             return tempJsonLicPath;
         }
 
-        private void AssertOnPremIsolatedDeploymentLicense(License license)
+        private void AssertAurGappedDeploymentLicense(License license)
         {
             license.Claims.Should().BeEquivalentTo(new LicenseClaims());
-            license.LicenseKey.Should().Be("onprem-isolated-deployment");
+            license.LicenseKey.Should().Be(TerminalIdentifiers.AirGappedKey);
             license.Plan.Should().Be(terminalOptions.Licensing.LicensePlan);
-            license.Usage.Should().Be("onprem-isolated-deployment");
+            license.Usage.Should().Be(TerminalIdentifiers.AirGappedUsage);
             license.Quota.Should().BeEquivalentTo(LicenseQuota.Create(license.Plan, license.Claims.Custom));
+            license.Failed.Should().BeNull();
         }
 
         private readonly ITerminalCommandStore commandStore;
