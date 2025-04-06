@@ -5,17 +5,17 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FluentAssertions;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Commands.Checkers
@@ -67,6 +67,17 @@ namespace OneImlx.Terminal.Commands.Checkers
         }
 
         [Fact]
+        public async Task Invalid_Licensing_Deployment_Throws()
+        {
+#pragma warning disable CS8601 // Possible null reference assignment.
+            options.Licensing.Deployment = "invalid_deployment";
+#pragma warning restore CS8601 // Possible null reference assignment.
+
+            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license deployment is not valid. deployment=invalid_deployment");
+        }
+
+        [Fact]
         public async Task LinkedToRoot_Requires_Terminal_Name()
         {
             options.Driver.Enabled = true;
@@ -92,6 +103,34 @@ namespace OneImlx.Terminal.Commands.Checkers
 
             options.Driver.RootId = "   ";
             await func.Invoke();
+        }
+
+        [Theory]
+        [InlineData("  ")]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task Missing_Licensing_Deployment_Throws(string? deployment)
+        {
+#pragma warning disable CS8601 // Possible null reference assignment.
+            options.Licensing.Deployment = deployment;
+#pragma warning restore CS8601 // Possible null reference assignment.
+
+            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license deployment is not specified.");
+        }
+
+        [Theory]
+        [InlineData("  ")]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task Missing_Licensing_Plan_Throws(string? plan)
+        {
+#pragma warning disable CS8601 // Possible null reference assignment.
+            options.Licensing.LicensePlan = plan;
+#pragma warning restore CS8601 // Possible null reference assignment.
+
+            Func<Task> func = async () => await optionsChecker.CheckAsync(options);
+            await func.Should().ThrowAsync<TerminalException>().WithErrorCode(TerminalErrors.InvalidConfiguration).WithErrorDescription("The license plan is not specified.");
         }
 
         [Fact]

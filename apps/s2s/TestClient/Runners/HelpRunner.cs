@@ -10,7 +10,7 @@ namespace OneImlx.Terminal.Apps.TestClient.Runners
     /// <summary>
     /// Runs native OS commands.
     /// </summary>
-    [CommandDescriptor("help", "Help Command", "Displays all supported commands.", Commands.CommandType.NativeCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("help", "Help Command", "Displays all supported commands.", CommandType.NativeCommand, CommandFlags.None)]
     public class HelpRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         /// <summary>

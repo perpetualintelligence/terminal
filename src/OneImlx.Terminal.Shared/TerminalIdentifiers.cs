@@ -13,6 +13,26 @@ namespace OneImlx.Terminal.Shared
     public sealed class TerminalIdentifiers
     {
         /// <summary>
+        /// The air gapped deployment. Ideal for on-premise secured installations.
+        /// </summary>
+        public const string AirGappedDeployment = "air_gapped";
+
+        /// <summary>
+        /// The <c>standard</c> deployment. 
+        /// </summary>
+        public const string StandardDeployment = "standard";
+
+        /// <summary>
+        /// The air gapped key that is automatically set.
+        /// </summary>
+        public const string AirGappedKey = "air_gapped_key";
+
+        /// <summary>
+        /// The air gapped usage that is automatically set.
+        /// </summary>
+        public const string AirGappedUsage = "air_gapped_usage";
+
+        /// <summary>
         /// The <c>custom</c> handler.
         /// </summary>
         public const string CustomHandler = "custom";
@@ -26,16 +46,6 @@ namespace OneImlx.Terminal.Shared
         /// The <c>offline</c> license mode.
         /// </summary>
         public const string OfflineLicenseMode = "offline";
-
-        /// <summary>
-        /// The <c>isolated</c> deployment.
-        /// </summary>
-        public const string IsolatedDeployment = "isolated";
-
-        /// <summary>
-        /// The <c>onpremise</c> deployment.
-        /// </summary>
-        public const string OnPremiseDeployment = "onpremise";
 
         /// <summary>
         /// The <c>sender_endpoint</c> token.

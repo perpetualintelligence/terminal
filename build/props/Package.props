@@ -7,7 +7,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     
     <PropertyGroup>
-        <Copyright>Copyright (c) 2019 Perpetual Intelligence L.L.C. All Rights Reserved.</Copyright>
+        <Copyright>Copyright (c) 2019-2025. Perpetual Intelligence L.L.C. All Rights Reserved.</Copyright>
         <Authors>Perpetual Intelligence L.L.C.</Authors>
         <Company>Perpetual Intelligence L.L.C.</Company>
         <Product>oneterminal</Product>
@@ -35,7 +35,7 @@
         The Include location is relative to the src/<package>.csproj that will import the props file.
     -->
     <ItemGroup>
-        <None Include="..\..\build\images\icon.png" Link="icon.png" Pack="true" PackagePath="\"/>
+        <None Include="../../build/images/icon.png" Link="icon.png" Pack="true" PackagePath="/" />
     </ItemGroup>
 
     <!--
@@ -44,15 +44,17 @@
         The Include location is relative to the src/<package>/readme.md that will import the props file.
     -->
     <ItemGroup>
-        <None Include="..\..\src\$(MSBuildProjectName)\README.md" Pack="true" PackagePath="\"/>
+        <None Include="../../src/$(MSBuildProjectName)/README.md" Pack="true" PackagePath="/" />
     </ItemGroup>
 
     <ItemGroup>
         <!--
             This is relative to the src folder as that is where the prop file is imported.
         -->
-        <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="../../LICENSE" Pack="true" PackagePath="" />
+        <None Include="../../NOTICE.md" Pack="true" PackagePath="" />
     </ItemGroup>
+
 </Project>
 
 

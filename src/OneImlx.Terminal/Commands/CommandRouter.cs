@@ -68,14 +68,13 @@ namespace OneImlx.Terminal.Commands
                 }
 
                 // Ensure we have the license extracted before routing
-                License license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the hosted service correctly.");
-                context.License = license;
-
-                // Ensure the license is valid.
-                if(license.Failed != null)
+                License license = await licenseExtractor.GetLicenseAsync() ?? throw new TerminalException(TerminalErrors.InvalidLicense, "Failed to extract a valid license. Please configure the hosted service correctly.");               
+                if (license.Failed != null)
                 {
                     throw new TerminalException(license.Failed);
                 }
+                context.License = license;
+                logger.LogDebug("Get license. id={0} tenant={1} plan={2}", license.Claims.Id, license.Claims.TenantId, license.Plan);
 
                 // Parse the command
                 await commandParser.ParseCommandAsync(context);

@@ -25,7 +25,7 @@ namespace OneImlx.Terminal.Runtime
         {
             terminalTextHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
             mockLogger = new Mock<ILogger<TerminalRequestQueueParser>>();
-            terminalOptions = Microsoft.Extensions.Options.Options.Create(new TerminalOptions());
+            terminalOptions = Options.Create(new TerminalOptions());
             parser = new TerminalRequestQueueParser(terminalTextHandler, terminalOptions, mockLogger.Object);
         }
 

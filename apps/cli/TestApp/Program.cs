@@ -35,7 +35,7 @@ namespace OneImlx.Terminal.Apps.Test
 
             // Configure logging of your choice, here we are configuring Serilog
             var loggerConfig = new LoggerConfiguration();
-            loggerConfig.MinimumLevel.Error();
+            loggerConfig.MinimumLevel.Debug();
             loggerConfig.WriteTo.Console();
             Log.Logger = loggerConfig.CreateLogger();
             builder.AddSerilog(Log.Logger);
@@ -58,6 +58,8 @@ namespace OneImlx.Terminal.Apps.Test
 
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
                     options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+                    options.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
+
                     options.Router.Caret = "> ";
                 }
                                                                                                                                                                                                );

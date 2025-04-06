@@ -13,7 +13,7 @@ namespace OneImlx.Terminal.Apps.Test.Runners
     /// The sub-command <c>cmd2</c> runner for the TestApp.
     /// </summary>
     [CommandOwners("grp2")]
-    [CommandDescriptor("cmd3", "Command 3", "Command3 description.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("cmd3", "Command 3", "Command3 description.", CommandType.SubCommand, CommandFlags.None)]
     [CommandChecker(typeof(Cmd3CommandChecker))]
     public class Cmd3Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {

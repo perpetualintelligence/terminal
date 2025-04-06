@@ -21,7 +21,7 @@ using OneImlx.Terminal.Shared;
 namespace OneImlx.Terminal.Apps.TestClient.Runners
 {
     [CommandOwners("send")]
-    [CommandDescriptor("tcp", "TCP test", "Send TCP commands to the terminal server.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("tcp", "TCP test", "Send TCP commands to the terminal server.", CommandType.SubCommand, CommandFlags.None)]
     public class SendTcpRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         public SendTcpRunner(IOptions<TerminalOptions> terminalOptions,

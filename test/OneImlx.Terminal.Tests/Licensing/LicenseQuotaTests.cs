@@ -51,7 +51,7 @@ namespace OneImlx.Terminal.Licensing
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
             quota.Features["stores"].Should().BeEquivalentTo(["memory", "custom"]);
             quota.Features["routers"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
-            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "onpremise", "isolated"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "air_gapped"]);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace OneImlx.Terminal.Licensing
                 { "encodings", new[] { "ascii", "utf8", "utf16", "utf32" } },
                 { "stores", new[] { "memory", "custom" } },
                 { "routers", new[] { "console", "tcp", "udp", "grpc", "http", "custom" } },
-                { "deployments", new[] { "standard", "isolated" } }
+                { "deployments", new[] { "standard", "air_gapped" } }
             };
 
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Custom, claims);
@@ -100,7 +100,7 @@ namespace OneImlx.Terminal.Licensing
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
             quota.Features["stores"].Should().BeEquivalentTo(["memory", "custom"]);
             quota.Features["routers"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
-            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "isolated"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "air_gapped"]);
         }
 
         [Fact]
@@ -144,7 +144,7 @@ namespace OneImlx.Terminal.Licensing
             quota.Features["encodings"].Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
             quota.Features["stores"].Should().BeEquivalentTo(["memory", "custom"]);
             quota.Features["routers"].Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
-            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "onpremise", "isolated"]);
+            quota.Features["deployments"].Should().BeEquivalentTo(["standard", "air_gapped"]);
         }
 
         [Fact]
@@ -196,7 +196,7 @@ namespace OneImlx.Terminal.Licensing
                 { "encodings", new[] { "ascii", "utf8", "utf16", "utf32" } },
                 { "stores", new[] { "memory", "custom" } },
                 { "routers", new[] { "console", "tcp", "udp", "grpc", "http", "custom" } },
-                { "deployments", new[] { "standard", "onpremise", "isolated" } }
+                { "deployments", new[] { "standard", "air_gapped" } }
             };
 
             LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Custom, claims);
@@ -215,7 +215,7 @@ namespace OneImlx.Terminal.Licensing
             quota.Encodings.Should().BeEquivalentTo(["ascii", "utf8", "utf16", "utf32"]);
             quota.Stores.Should().BeEquivalentTo(["memory", "custom"]);
             quota.Routers.Should().BeEquivalentTo(["console", "tcp", "udp", "grpc", "http", "custom"]);
-            quota.Deployments.Should().BeEquivalentTo(["standard", "onpremise", "isolated"]);
+            quota.Deployments.Should().BeEquivalentTo(["standard", "air_gapped"]);
         }
 
         [Fact]

@@ -105,12 +105,12 @@ namespace OneImlx.Terminal.Licensing
         public static LicenseQuota Create(string licensePlan, IDictionary<string, object>? customClaims = null)
         {
             // Custom claims are required for the custom plan.
-            if (customClaims == null && licensePlan == OneImlx.Shared.Licensing.TerminalLicensePlans.Custom)
+            if (customClaims == null && licensePlan == TerminalLicensePlans.Custom)
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The licensing for the custom plan requires a custom claims. plan={0}", licensePlan);
             }
 
-            if (customClaims != null && licensePlan != OneImlx.Shared.Licensing.TerminalLicensePlans.Custom)
+            if (customClaims != null && licensePlan != TerminalLicensePlans.Custom)
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The custom claims are valid only for custom plan. plan={0}", licensePlan);
             }
@@ -179,7 +179,7 @@ namespace OneImlx.Terminal.Licensing
                     { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
                     { "stores", new [] { "memory", "custom" } },
                     { "routers", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
-                    { "deployments", new [] { "standard", "onpremise", "isolated" } },
+                    { "deployments", new [] { "standard", "air_gapped" } },
                 }
             };
         }
@@ -275,7 +275,7 @@ namespace OneImlx.Terminal.Licensing
                     { "encodings", new [] { "ascii", "utf8", "utf16", "utf32" } },
                     { "stores", new [] { "memory", "custom" } },
                     { "routers", new [] { "console", "tcp", "udp", "grpc", "http", "custom" } },
-                    { "deployments", new [] { "standard", "onpremise", "isolated" } },
+                    { "deployments", new [] { "standard", "air_gapped" } },
                 }
             };
         }

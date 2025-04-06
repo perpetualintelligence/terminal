@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using OneImlx.Shared.Authorization;
 using OneImlx.Shared.Extensions;
 using OneImlx.Shared.Infrastructure;
 using OneImlx.Shared.Licensing;
@@ -36,9 +35,9 @@ namespace OneImlx.Terminal.Licensing
         /// <param name="logger">The logger.</param>
         public LicenseExtractor(ILicenseDebugger licenseDebugger, TerminalOptions terminalOptions, ILogger<LicenseExtractor> logger)
         {
-            this.licenseDebugger = licenseDebugger;
-            this.terminalOptions = terminalOptions;
-            this.logger = logger;
+            this._licenseDebugger = licenseDebugger;
+            this._terminalOptions = terminalOptions;
+            this._logger = logger;
         }
 
         /// <summary>
@@ -46,22 +45,34 @@ namespace OneImlx.Terminal.Licensing
         /// </summary>
         public async Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
-            logger.LogDebug("Extract license.");
+            // Ensure license plan is valid.B
+            if (!TerminalLicensePlans.IsValidPlan(_terminalOptions.Licensing.LicensePlan))
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid. plan={0}", _terminalOptions.Licensing.LicensePlan);
+            }
 
-            // For singleton DI service we don't extract license keys once extracted.
-            licenseExtractorResult ??= await ExtractFromJsonAsync();
+            // In on-prem or air-gapped deployments with locked-down environments, skip license check if no debugger is
+            // attached. Always perform license validation when a debugger is attached. Grant claims based on the
+            // license plan when skipping.
+            if (IsAirGappedDeployment(_terminalOptions.Licensing.Deployment) && !_licenseDebugger.IsDebuggerAttached())
+            {
+                _licenseExtractorResult = ExtractAirGapped();
+            }
+            else
+            {
+                _licenseExtractorResult = await ExtractJsonAsync();
+            }
 
-            return licenseExtractorResult;
+            return _licenseExtractorResult;
         }
 
         /// <inheritdoc/>
         public Task<License?> GetLicenseAsync()
         {
-            logger.LogDebug("Get license.");
-            return Task.FromResult(licenseExtractorResult?.License);
+            return Task.FromResult(_licenseExtractorResult?.License);
         }
 
-        private static async Task<LicenseClaims> CheckOfflineLicenseAsync(LicenseCheck checkModel)
+        private static async Task<LicenseClaims> CheckLicenseAsync(LicenseCheck checkModel)
         {
             // Make sure validation key is not null
             if (checkModel.ValidationKey == null)
@@ -122,129 +133,131 @@ namespace OneImlx.Terminal.Licensing
             }
         }
 
-        private static bool IsIsolatedDeployment(string deployment)
+        private static bool IsAirGappedDeployment(string deployment)
         {
-            return deployment == TerminalIdentifiers.IsolatedDeployment;
+            return (deployment == TerminalIdentifiers.AirGappedDeployment);
         }
 
-        private async Task<LicenseExtractorResult> EnsureOfflineLicenseAsync(LicenseFile licenseFile)
+        /// <summary>
+        /// Creates a license for on-premise production deployment.
+        /// </summary>
+        /// <seealso cref="LicensingOptions.Deployment"/>
+        private License AirGappedLicense()
         {
-            logger.LogDebug("Extract offline license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
+            return new License(
+                _terminalOptions.Licensing.LicensePlan,
+                TerminalIdentifiers.AirGappedUsage,
+                TerminalIdentifiers.AirGappedKey,
+                new LicenseClaims(),
+                LicenseQuota.Create(_terminalOptions.Licensing.LicensePlan));
+        }
 
-            // If debugger is not attached and on-premise deployment is enabled then skip license check and grant claims
-            // based on license plan. If debugger is attached we always do a license check.
-            if (!licenseDebugger.IsDebuggerAttached() && IsIsolatedDeployment(terminalOptions.Licensing.Deployment))
+        private async Task<LicenseExtractorResult> EnsureLicenseAsync(LicenseFile licenseFile)
+        {
+            LicenseCheck checkModel = new()
             {
-                logger.LogDebug("Extract on-premise isolated license. id={0} tenant={1}", licenseFile.Id, licenseFile.TenantId);
-                if (IsPlanValidForIsolatedDeployemnt(terminalOptions.Licensing.LicensePlan))
-                {
-                    logger.LogDebug("On-premise deployment is enabled. Skipping license check. plan={0} id={1} tenant={2}", terminalOptions.Licensing.LicensePlan, licenseFile.Id, licenseFile.TenantId);
-                    return new LicenseExtractorResult(OnPremiseIsolatedLicense(), null);
-                }
-                else
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise isolated deployment. plan={0}", terminalOptions.Licensing.LicensePlan);
-                }
+                Issuer = OneImlx.Shared.Constants.Issuer,
+                Audience = GetAudience(licenseFile.TenantId),
+                Application = _terminalOptions.Id,
+                AuthorizedParty = OneImlx.Shared.Constants.TerminalUrn,
+                TenantId = licenseFile.TenantId,
+                LicenseKey = licenseFile.LicenseKey,
+                Id = licenseFile.Id,
+                ValidationKey = licenseFile.ValidationKey,
+                Mode = TerminalIdentifiers.OfflineLicenseMode
+            };
+
+            // Check the license key
+            LicenseClaims claims = await CheckLicenseAsync(checkModel);
+
+            // Make sure the acr contains the
+            string[] acrValues = claims.AcrValues.SplitBySpace();
+            if (acrValues.Length < 3)
+            {
+                throw new TerminalException(TerminalErrors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
+            }
+
+            string plan = acrValues[0];
+            string usage = acrValues[1];
+            string brokerTenantId = acrValues[2];
+
+            // Mismatch in license plan
+            if (plan != _terminalOptions.Licensing.LicensePlan)
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, _terminalOptions.Licensing.LicensePlan);
+            }
+
+            // Mismatch in air gapped license usage
+            if (IsAirGappedDeployment(_terminalOptions.Licensing.Deployment) && !IsAirGappedPlan(_terminalOptions.Licensing.LicensePlan))
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for air gapped deployment. plan={0}", _terminalOptions.Licensing.LicensePlan);
+            }
+
+            // We just check the broker tenant to be present in offline mode
+            if (string.IsNullOrWhiteSpace(brokerTenantId))
+            {
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
+            }
+
+            LicenseQuota licenseQuota = LicenseQuota.Create(plan, claims.Custom);
+            return new LicenseExtractorResult
+            (
+                new License(plan, usage, _terminalOptions.Licensing.LicenseFile!, claims, licenseQuota),
+                TerminalIdentifiers.OfflineLicenseMode
+            );
+        }
+
+        private LicenseExtractorResult ExtractAirGapped()
+        {
+            // Air gapped deployment is only supported for Enterprise and Corporate license plans.
+            LicenseExtractorResult? licenseExtractorResult = null;
+            if (IsAirGappedPlan(_terminalOptions.Licensing.LicensePlan))
+            {
+                licenseExtractorResult = new LicenseExtractorResult(AirGappedLicense(), null);
             }
             else
             {
-                // Check JWS signed assertion (JWS key)
-                LicenseCheck checkModel = new()
-                {
-                    Issuer = OneImlx.Shared.Constants.Issuer,
-                    Audience = AuthEndpoints.PiB2CIssuer(licenseFile.TenantId),
-                    Application = terminalOptions.Id,
-                    AuthorizedParty = OneImlx.Shared.Constants.TerminalUrn,
-                    TenantId = licenseFile.TenantId,
-                    LicenseKey = licenseFile.LicenseKey,
-                    Id = licenseFile.Id,
-                    ValidationKey = licenseFile.ValidationKey,
-                    Mode = TerminalIdentifiers.OfflineLicenseMode
-                };
-
-                // Make sure we use the full base address
-                LicenseClaims claims = await CheckOfflineLicenseAsync(checkModel);
-
-                // Make sure the acr contains the
-                string[] acrValues = claims.AcrValues.SplitBySpace();
-                if (acrValues.Length < 3)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
-                }
-
-                string plan = acrValues[0];
-                string usage = acrValues[1];
-                string brokerTenantId = acrValues[2];
-
-                // Mismatch in license plan
-                if (plan != terminalOptions.Licensing.LicensePlan)
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized. expected={0} actual={1}", plan, terminalOptions.Licensing.LicensePlan);
-                }
-
-                // Mismatch in license usage
-                if (IsIsolatedDeployment(terminalOptions.Licensing.Deployment) && !IsPlanValidForIsolatedDeployemnt(terminalOptions.Licensing.LicensePlan))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for on-premise isolated deployment. plan={0}", terminalOptions.Licensing.LicensePlan);
-                }
-
-                // We just check the broker tenant to be present in offline mode
-                if (string.IsNullOrWhiteSpace(brokerTenantId))
-                {
-                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
-                }
-
-                LicenseQuota licenseQuota = LicenseQuota.Create(plan, claims.Custom);
-                return new LicenseExtractorResult
-                (
-                    new License(plan, usage, terminalOptions.Licensing.LicenseFile!, claims, licenseQuota),
-                    TerminalIdentifiers.OfflineLicenseMode
-                );
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for air gapped deployment. plan={0}", _terminalOptions.Licensing.LicensePlan);
             }
+
+            _logger.LogDebug("Extract air gapped license. plan={0} usage={1} sub={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
+            return licenseExtractorResult;
         }
 
-        private async Task<LicenseExtractorResult> ExtractFromJsonAsync()
+        private async Task<LicenseExtractorResult> ExtractJsonAsync()
         {
-            logger.LogDebug("Extract from JSON license key.");
-
             // Missing app id
-            if (string.IsNullOrWhiteSpace(terminalOptions.Id))
+            if (string.IsNullOrWhiteSpace(_terminalOptions.Id))
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The authorized application is not configured as a terminal identifier.");
             }
 
             // Missing key
-            if (string.IsNullOrWhiteSpace(terminalOptions.Licensing.LicenseFile))
+            if (string.IsNullOrWhiteSpace(_terminalOptions.Licensing.LicenseFile))
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file is not configured.");
             }
 
             // License file needs to be a valid path if license contents is not set.
-            if (terminalOptions.Licensing.LicenseContents == null && !File.Exists(terminalOptions.Licensing.LicenseFile))
+            if (_terminalOptions.Licensing.LicenseContents == null && !File.Exists(_terminalOptions.Licensing.LicenseFile))
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid. file={0}", terminalOptions.Licensing.LicenseFile);
-            }
-
-            // Missing or invalid license plan.
-            if (!TerminalLicensePlans.IsValidPlan(terminalOptions.Licensing.LicensePlan))
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid. plan={0}", terminalOptions.Licensing.LicensePlan);
-            }
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid. file={0}", _terminalOptions.Licensing.LicenseFile);
+            }           
 
             // Avoid file locking for multiple threads.
             LicenseFile? licenseFile;
-            await semaphoreSlim.WaitAsync();
+            await _semaphoreSlim.WaitAsync();
             try
             {
                 // Decode the license contents if set.
-                if (terminalOptions.Licensing.LicenseContents != null)
+                if (_terminalOptions.Licensing.LicenseContents != null)
                 {
-                    licenseFile = JsonSerializer.Deserialize<LicenseFile>(TerminalServices.DecodeLicenseContents(terminalOptions.Licensing.LicenseContents));
+                    licenseFile = JsonSerializer.Deserialize<LicenseFile>(TerminalServices.DecodeLicenseContents(_terminalOptions.Licensing.LicenseContents));
                 }
                 else
                 {
                     // Make sure the lic stream is disposed to avoid locking.
-                    using (Stream licStream = File.OpenRead(terminalOptions.Licensing.LicenseFile))
+                    using (Stream licStream = File.OpenRead(_terminalOptions.Licensing.LicenseFile))
                     {
                         licenseFile = await JsonSerializer.DeserializeAsync<LicenseFile>(licStream);
                     }
@@ -252,57 +265,49 @@ namespace OneImlx.Terminal.Licensing
             }
             catch (Exception ex)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file or contents are not valid. file={0} info={1}", terminalOptions.Licensing.LicenseFile, ex.Message);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file or contents are not valid. file={0} info={1}", _terminalOptions.Licensing.LicenseFile, ex.Message);
             }
             finally
             {
-                semaphoreSlim.Release();
+                _semaphoreSlim.Release();
             }
 
             // Make sure the model is valid.
             if (licenseFile == null)
             {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file cannot be read. file={0}", terminalOptions.Licensing.LicenseFile);
+                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file cannot be read. file={0}", _terminalOptions.Licensing.LicenseFile);
             }
 
             // License check based on configured license handler.
-            LicenseExtractorResult licenseExtractorResult;
+            LicenseExtractorResult? licenseExtractorResult;
             if (licenseFile.Mode == TerminalIdentifiers.OfflineLicenseMode)
             {
-                licenseExtractorResult = await EnsureOfflineLicenseAsync(licenseFile);
+                licenseExtractorResult = await EnsureLicenseAsync(licenseFile);
             }
             else
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license mode is not valid. mode={0}", licenseFile.Mode);
             }
 
-            logger.LogDebug("Extracted license. plan={0} usage={1} subject={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
+            _logger.LogDebug("Extract standard license. plan={0} usage={1} sub={2} tenant={3}", licenseExtractorResult.License.Plan, licenseExtractorResult.License.Usage, licenseExtractorResult.License.Claims.Subject, licenseExtractorResult.License.Claims.TenantId);
             return licenseExtractorResult;
         }
 
-        private bool IsPlanValidForIsolatedDeployemnt(string licensePlan)
+        private string GetAudience(string tenantId)
         {
-            return licensePlan == OneImlx.Shared.Licensing.TerminalLicensePlans.Enterprise || licensePlan == OneImlx.Shared.Licensing.TerminalLicensePlans.Corporate;
+            return string.Format("https://login.perpetualintelligence.com/{0}/v2.0", tenantId);
         }
 
-        /// <summary>
-        /// Creates a license for on-premise production deployment.
-        /// </summary>
-        /// <seealso cref="LicensingOptions.Deployment"/>
-        private License OnPremiseIsolatedLicense()
+        private bool IsAirGappedPlan(string licensePlan)
         {
-            return new License(
-                terminalOptions.Licensing.LicensePlan,
-                "onprem-isolated-deployment",
-                "onprem-isolated-deployment",
-                new LicenseClaims(),
-                LicenseQuota.Create(terminalOptions.Licensing.LicensePlan));
+            return licensePlan == TerminalLicensePlans.Enterprise ||
+                   licensePlan == TerminalLicensePlans.Corporate;
         }
 
-        private readonly ILicenseDebugger licenseDebugger;
-        private readonly ILogger<LicenseExtractor> logger;
-        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
-        private readonly TerminalOptions terminalOptions;
-        private LicenseExtractorResult? licenseExtractorResult;
+        private readonly ILicenseDebugger _licenseDebugger;
+        private readonly ILogger<LicenseExtractor> _logger;
+        private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
+        private readonly TerminalOptions _terminalOptions;
+        private LicenseExtractorResult? _licenseExtractorResult;
     }
 }

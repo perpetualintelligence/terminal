@@ -125,6 +125,27 @@ namespace OneImlx.Terminal.Commands.Checkers
                 }
             }
 
+            // Licensing
+            {
+                // License plan is mandatory
+                if (string.IsNullOrWhiteSpace(options.Licensing.LicensePlan))
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not specified.");
+                }
+
+                // Deployment plan is mandatory
+                if (string.IsNullOrWhiteSpace(options.Licensing.Deployment))
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license deployment is not specified.");
+                }
+
+                // Deployment should be either air gapped or standard
+                if (!TerminalIdentifiers.AirGappedDeployment.Equals(options.Licensing.Deployment, StringComparison.Ordinal) && !TerminalIdentifiers.StandardDeployment.Equals(options.Licensing.Deployment, StringComparison.Ordinal))
+                {
+                    throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license deployment is not valid. deployment={0}", options.Licensing.Deployment);
+                }
+            }
+
             return Task.CompletedTask;
         }
 

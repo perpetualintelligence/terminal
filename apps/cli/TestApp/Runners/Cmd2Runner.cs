@@ -11,7 +11,7 @@ namespace OneImlx.Terminal.Apps.Test.Runners
     /// The sub-command <c>cmd2</c> runner for the TestApp.
     /// </summary>
     [CommandOwners("grp2")]
-    [CommandDescriptor("cmd2", "Command 2", "Command2 description.", Commands.CommandType.SubCommand, Commands.CommandFlags.None)]
+    [CommandDescriptor("cmd2", "Command 2", "Command2 description.", CommandType.SubCommand, CommandFlags.None)]
     public class Cmd2Runner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
         private readonly ITerminalConsole terminalConsole;

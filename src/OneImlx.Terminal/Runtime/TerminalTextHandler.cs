@@ -40,7 +40,7 @@ namespace OneImlx.Terminal.Runtime
         /// <inheritdoc/>
         public bool CharEquals(char? ch1, char? ch2)
         {
-            return char.Equals(ch1, ch2);
+            return Equals(ch1, ch2);
         }
 
         /// <summary>
