@@ -5,9 +5,14 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FluentAssertions;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Commands;
 using OneImlx.Terminal.Commands.Checkers;
@@ -18,19 +23,10 @@ using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Stores;
-using System;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Hosting
 {
-    /// <summary>
-    /// Run test sequentially because we modify the static Console.SetOut
-    /// </summary>
-    [Collection("Sequential")]
     public class TerminalHostedServiceTests : IAsyncLifetime
     {
         public TerminalHostedServiceTests()
@@ -73,6 +69,18 @@ namespace OneImlx.Terminal.Hosting
         public Task InitializeAsync()
         {
             return Task.CompletedTask;
+        }
+
+        [Fact]
+        public async Task StartAsync_Calls_Config_Check_Before_Licensing()
+        {
+            await mockCustomCliHostedService.StartAsync(cancellationToken);
+
+            mockOptionsChecker.CheckOptionsCalled.Item2.Should().BeTrue();
+            mockLicenseExtractor.ExtractLicenseCalled.Item2.Should().BeTrue();
+
+            // Config called before licensing
+            mockOptionsChecker.CheckOptionsCalled.Item1.Should().BeLessThan(mockLicenseExtractor.ExtractLicenseCalled.Item1);
         }
 
         [Fact]
