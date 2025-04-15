@@ -42,7 +42,7 @@ namespace OneImlx.Terminal.Apps.TestClient
                 {
                     options.Id = TerminalIdentifiers.TestApplicationId;
                     options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
-                    options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+                    options.Licensing.LicensePlan = ProductCatalog.TerminalPlanDemo;
                     options.Router.Caret = "> ";
                 });
 

@@ -5,12 +5,8 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
@@ -18,6 +14,10 @@ using OneImlx.Terminal.Runtime;
 using OneImlx.Terminal.Shared;
 using OneImlx.Terminal.Stores;
 using OneImlx.Test.FluentAssertions;
+using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Licensing
             testOfflineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_OFFLINE_LIC");
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
+            terminalOptions.Licensing.LicensePlan = ProductCatalog.TerminalPlanCorporate;
 
             textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.UTF8);
 
@@ -57,8 +57,8 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(TerminalLicensePlans.Enterprise)]
-        [InlineData(TerminalLicensePlans.Corporate)]
+        [InlineData(ProductCatalog.TerminalPlanEnterprise)]
+        [InlineData(ProductCatalog.TerminalPlanCorporate)]
         public async Task AirGapped_LicensePlan_Does_Not_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
@@ -73,10 +73,10 @@ namespace OneImlx.Terminal.Licensing
         }
 
         [Theory]
-        [InlineData(TerminalLicensePlans.Demo)]
-        [InlineData(TerminalLicensePlans.Solo)]
-        [InlineData(TerminalLicensePlans.Micro)]
-        [InlineData(TerminalLicensePlans.Smb)]
+        [InlineData(ProductCatalog.TerminalPlanDemo)]
+        [InlineData(ProductCatalog.TerminalPlanSolo)]
+        [InlineData(ProductCatalog.TerminalPlanMicro)]
+        [InlineData(ProductCatalog.TerminalPlanSmb)]
         public async Task AirGapped_With_Invalid_LicensePlan_Throws(string licPlan)
         {
             licenseDebugger = new MockLicenseDebugger(false);
@@ -123,7 +123,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
             terminalOptions.Licensing.LicenseFile = testOfflineLicPath;
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
+            terminalOptions.Licensing.LicensePlan = ProductCatalog.TerminalPlanCorporate;
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
 
             var result = await licenseExtractor.ExtractLicenseAsync();
@@ -141,7 +141,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.LicenseKey.Should().Be(TerminalIdentifiers.AirGappedKey);
 
             // plan, mode and usage
-            result.License.Plan.Should().Be(TerminalLicensePlans.Corporate);
+            result.License.Plan.Should().Be(ProductCatalog.TerminalPlanCorporate);
             result.License.Usage.Should().Be(TerminalIdentifiers.AirGappedUsage);
 
             // claims
@@ -163,7 +163,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.Custom.Should().BeNull();
 
             // quota
-            result.License.Quota.Plan.Should().Be(TerminalLicensePlans.Corporate);
+            result.License.Quota.Plan.Should().Be(ProductCatalog.TerminalPlanCorporate);
 
             // After extract and Get should return the correct license
             licenseFromGet = await licenseExtractor.GetLicenseAsync();

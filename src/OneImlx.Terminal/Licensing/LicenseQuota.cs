@@ -13,7 +13,7 @@ using OneImlx.Terminal.Shared;
 namespace OneImlx.Terminal.Licensing
 {
     /// <summary>
-    /// Defines the licensing quota based on the <see cref="TerminalLicensePlans"/>.
+    /// Defines the licensing quota based on the <see cref="ProductCatalog.TerminalFramework"/> license plans.
     /// </summary>
     public sealed class LicenseQuota
     {
@@ -105,43 +105,43 @@ namespace OneImlx.Terminal.Licensing
         public static LicenseQuota Create(string licensePlan, IDictionary<string, object>? customClaims = null)
         {
             // Custom claims are required for the custom plan.
-            if (customClaims == null && licensePlan == TerminalLicensePlans.Custom)
+            if (customClaims == null && licensePlan == ProductCatalog.TerminalPlanCustom)
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The licensing for the custom plan requires a custom claims. plan={0}", licensePlan);
             }
 
-            if (customClaims != null && licensePlan != TerminalLicensePlans.Custom)
+            if (customClaims != null && licensePlan != ProductCatalog.TerminalPlanCustom)
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The custom claims are valid only for custom plan. plan={0}", licensePlan);
             }
 
             switch (licensePlan)
             {
-                case TerminalLicensePlans.Demo:
+                case ProductCatalog.TerminalPlanDemo:
                     {
                         return ForDemo();
                     }
-                case TerminalLicensePlans.Solo:
+                case ProductCatalog.TerminalPlanSolo:
                     {
                         return ForSolo();
                     }
-                case TerminalLicensePlans.Micro:
+                case ProductCatalog.TerminalPlanMicro:
                     {
                         return ForMicro();
                     }
-                case TerminalLicensePlans.Smb:
+                case ProductCatalog.TerminalPlanSmb:
                     {
                         return ForSmb();
                     }
-                case TerminalLicensePlans.Enterprise:
+                case ProductCatalog.TerminalPlanEnterprise:
                     {
                         return ForEnterprise();
                     }
-                case TerminalLicensePlans.Corporate:
+                case ProductCatalog.TerminalPlanCorporate:
                     {
                         return ForCorporate();
                     }
-                case TerminalLicensePlans.Custom:
+                case ProductCatalog.TerminalPlanCustom:
                     {
                         return ForCustom(customClaims!);
                     }
@@ -156,7 +156,7 @@ namespace OneImlx.Terminal.Licensing
         {
             return new()
             {
-                Plan = TerminalLicensePlans.Corporate,
+                Plan = ProductCatalog.TerminalPlanCorporate,
 
                 Limits = new Dictionary<string, object?>
                 {
@@ -188,7 +188,7 @@ namespace OneImlx.Terminal.Licensing
         {
             return new()
             {
-                Plan = TerminalLicensePlans.Custom,
+                Plan = ProductCatalog.TerminalPlanCustom,
 
                 Limits = new Dictionary<string, object?>
                 {
@@ -220,7 +220,7 @@ namespace OneImlx.Terminal.Licensing
         {
             return new()
             {
-                Plan = TerminalLicensePlans.Demo,
+                Plan = ProductCatalog.TerminalPlanDemo,
 
                 Limits = new Dictionary<string, object?>
                 {
@@ -252,7 +252,7 @@ namespace OneImlx.Terminal.Licensing
         {
             return new()
             {
-                Plan = TerminalLicensePlans.Enterprise,
+                Plan = ProductCatalog.TerminalPlanEnterprise,
 
                 Limits = new Dictionary<string, object?>
                 {
@@ -284,7 +284,7 @@ namespace OneImlx.Terminal.Licensing
         {
             return new()
             {
-                Plan = TerminalLicensePlans.Micro,
+                Plan = ProductCatalog.TerminalPlanMicro,
 
                 Limits = new Dictionary<string, object?>
                 {
@@ -316,7 +316,7 @@ namespace OneImlx.Terminal.Licensing
         {
             return new()
             {
-                Plan = TerminalLicensePlans.Smb,
+                Plan = ProductCatalog.TerminalPlanSmb,
 
                 Limits = new Dictionary<string, object?>
                 {
@@ -348,7 +348,7 @@ namespace OneImlx.Terminal.Licensing
         {
             return new()
             {
-                Plan = TerminalLicensePlans.Solo,
+                Plan = ProductCatalog.TerminalPlanSolo,
 
                 Limits = new Dictionary<string, object?>
                 {

@@ -56,8 +56,8 @@ namespace OneImlx.Terminal.Apps.Test
                     options.Driver.Enabled = true;
                     options.Driver.RootId = "test";
 
-                    options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-demo-test.json";
-                    options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+                    options.Licensing.LicenseFile = "C:\\this\\lic\\oneimlx-terminal-offline-test.json";
+                    options.Licensing.LicensePlan = ProductCatalog.TerminalPlanDemo;
                     options.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
 
                     options.Router.Caret = "> ";

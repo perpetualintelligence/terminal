@@ -63,8 +63,8 @@ namespace OneImlx.Terminal.Configuration.Options
         public string LicenseFile { get; set; } = string.Empty;
 
         /// <summary>
-        /// The license plan. Defaults to <see cref="TerminalLicensePlans.Demo"/>.
+        /// The license plan. Defaults to <see cref="ProductCatalog.TerminalPlanDemo"/>.
         /// </summary>
-        public string LicensePlan { get; set; } = TerminalLicensePlans.Demo;
+        public string LicensePlan { get; set; } = ProductCatalog.TerminalPlanDemo;
     }
 }

@@ -18,12 +18,12 @@ namespace OneImlx.Terminal.Licensing
     public class LicenseQuotaTests
     {
         [Theory]
-        [InlineData(TerminalLicensePlans.Demo)]
-        [InlineData(TerminalLicensePlans.Solo)]
-        [InlineData(TerminalLicensePlans.Micro)]
-        [InlineData(TerminalLicensePlans.Smb)]
-        [InlineData(TerminalLicensePlans.Enterprise)]
-        [InlineData(TerminalLicensePlans.Corporate)]
+        [InlineData(ProductCatalog.TerminalPlanDemo)]
+        [InlineData(ProductCatalog.TerminalPlanSolo)]
+        [InlineData(ProductCatalog.TerminalPlanMicro)]
+        [InlineData(ProductCatalog.TerminalPlanSmb)]
+        [InlineData(ProductCatalog.TerminalPlanEnterprise)]
+        [InlineData(ProductCatalog.TerminalPlanCorporate)]
         public void Claims_NoCustom_Throws(string plan)
         {
             Action act = () => LicenseQuota.Create(plan, new Dictionary<string, object>());
@@ -35,8 +35,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void Corporate_Sets_Quota_Correctly()
         {
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Corporate);
-            quota.Plan.Should().Be(TerminalLicensePlans.Corporate);
+            LicenseQuota quota = LicenseQuota.Create(ProductCatalog.TerminalPlanCorporate);
+            quota.Plan.Should().Be(ProductCatalog.TerminalPlanCorporate);
 
             quota.Limits["terminals"].Should().Be(15);
             quota.Limits["commands"].Should().BeNull();
@@ -57,7 +57,7 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void Custom_NoClaims_Throws()
         {
-            Action act = () => LicenseQuota.Create(TerminalLicensePlans.Custom);
+            Action act = () => LicenseQuota.Create(ProductCatalog.TerminalPlanCustom);
             act.Should().Throw<TerminalException>()
                .WithErrorCode(TerminalErrors.InvalidLicense)
                .WithErrorDescription("The licensing for the custom plan requires a custom claims. plan=urn:oneimlx:terminal:plan:custom");
@@ -84,8 +84,8 @@ namespace OneImlx.Terminal.Licensing
                 { "deployments", new[] { "standard", "air_gapped" } }
             };
 
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Custom, claims);
-            quota.Plan.Should().Be(TerminalLicensePlans.Custom);
+            LicenseQuota quota = LicenseQuota.Create(ProductCatalog.TerminalPlanCustom, claims);
+            quota.Plan.Should().Be(ProductCatalog.TerminalPlanCustom);
 
             quota.Limits["terminals"].Should().Be(1);
             quota.Limits["commands"].Should().Be(3);
@@ -106,8 +106,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void Demo_Sets_Quota_Correctly()
         {
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Demo);
-            quota.Plan.Should().Be(TerminalLicensePlans.Demo);
+            LicenseQuota quota = LicenseQuota.Create(ProductCatalog.TerminalPlanDemo);
+            quota.Plan.Should().Be(ProductCatalog.TerminalPlanDemo);
 
             quota.Limits["terminals"].Should().Be(1);
             quota.Limits["commands"].Should().Be(25);
@@ -128,8 +128,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void Enterprise_Sets_Limits()
         {
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Enterprise);
-            quota.Plan.Should().Be(TerminalLicensePlans.Enterprise);
+            LicenseQuota quota = LicenseQuota.Create(ProductCatalog.TerminalPlanEnterprise);
+            quota.Plan.Should().Be(ProductCatalog.TerminalPlanEnterprise);
 
             quota.Limits["terminals"].Should().Be(10);
             quota.Limits["commands"].Should().Be(300);
@@ -159,8 +159,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void Micro_Sets_Quota_Correctly()
         {
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Micro);
-            quota.Plan.Should().Be(TerminalLicensePlans.Micro);
+            LicenseQuota quota = LicenseQuota.Create(ProductCatalog.TerminalPlanMicro);
+            quota.Plan.Should().Be(ProductCatalog.TerminalPlanMicro);
 
             quota.Limits["terminals"].Should().Be(3);
             quota.Limits["commands"].Should().Be(50);
@@ -199,8 +199,8 @@ namespace OneImlx.Terminal.Licensing
                 { "deployments", new[] { "standard", "air_gapped" } }
             };
 
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Custom, claims);
-            quota.Plan.Should().Be(TerminalLicensePlans.Custom);
+            LicenseQuota quota = LicenseQuota.Create(ProductCatalog.TerminalPlanCustom, claims);
+            quota.Plan.Should().Be(ProductCatalog.TerminalPlanCustom);
 
             quota.TerminalLimit.Should().Be(1);
             quota.CommandLimit.Should().Be(3);
@@ -221,8 +221,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void Smb_Sets_Quota_Correctly()
         {
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Smb);
-            quota.Plan.Should().Be(TerminalLicensePlans.Smb);
+            LicenseQuota quota = LicenseQuota.Create(ProductCatalog.TerminalPlanSmb);
+            quota.Plan.Should().Be(ProductCatalog.TerminalPlanSmb);
 
             quota.Limits["terminals"].Should().Be(5);
             quota.Limits["commands"].Should().Be(100);
@@ -243,8 +243,8 @@ namespace OneImlx.Terminal.Licensing
         [Fact]
         public void Solo_Sets_Quota_Correctly()
         {
-            LicenseQuota quota = LicenseQuota.Create(TerminalLicensePlans.Solo);
-            quota.Plan.Should().Be(TerminalLicensePlans.Solo);
+            LicenseQuota quota = LicenseQuota.Create(ProductCatalog.TerminalPlanSolo);
+            quota.Plan.Should().Be(ProductCatalog.TerminalPlanSolo);
 
             quota.Limits["terminals"].Should().Be(1);
             quota.Limits["commands"].Should().Be(25);
