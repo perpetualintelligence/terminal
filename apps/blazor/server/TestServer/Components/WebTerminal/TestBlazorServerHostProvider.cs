@@ -177,7 +177,7 @@ namespace OneImlx.Terminal.Apps.TestServer.Components.WebTerminal
             {
                 options.Id = TerminalIdentifiers.TestApplicationId;
                 options.Licensing.LicenseFile = licenseFile!;
-                options.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+                options.Licensing.LicensePlan = ProductCatalog.TerminalPlanDemo;
                 options.Router.Caret = "> ";
             });
 

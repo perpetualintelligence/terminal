@@ -148,7 +148,7 @@ namespace OneImlx.Terminal.Hosting
         /// <param name="license">The extracted license.</param>
         private async Task PrintWarningIfDemoAsync(Licensing.License license)
         {
-            if (license.Plan == TerminalLicensePlans.Demo)
+            if (license.Plan == ProductCatalog.TerminalPlanDemo)
             {
                 if (license.Usage == LicenseUsage.Educational)
                 {

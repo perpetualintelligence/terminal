@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Licensing
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
             commandStore = new TerminalInMemoryCommandStore(MockCommands.LicensingCommands.TextHandler, MockCommands.LicensingCommands.Values);
             licenseChecker = new LicenseChecker(commandStore, textHandler, terminalOptions, new LoggerFactory().CreateLogger<LicenseChecker>());
-            license = new License(TerminalLicensePlans.Corporate, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseQuota.Create(TerminalLicensePlans.Corporate));
+            license = new License(ProductCatalog.TerminalPlanCorporate, LicenseUsage.RnD, "testLicKey2", MockLicenses.TestClaims, LicenseQuota.Create(ProductCatalog.TerminalPlanCorporate));
         }
 
         [Fact]

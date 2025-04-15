@@ -34,9 +34,9 @@ namespace OneImlx.Terminal.Mocks
                 {"nbf",  System.DateTimeOffset.UtcNow.AddHours(-0.5).ToUnixTimeSeconds() },
             });
 
-            TestQuota = LicenseQuota.Create(TerminalLicensePlans.Demo);
+            TestQuota = LicenseQuota.Create(ProductCatalog.TerminalPlanDemo);
 
-            TestLicense = new License(TerminalLicensePlans.Demo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestQuota);
+            TestLicense = new License(ProductCatalog.TerminalPlanDemo, LicenseUsage.RnD, "testLicKey1", TestClaims, TestQuota);
         }
 
         public static LicenseClaims TestClaims = null!;

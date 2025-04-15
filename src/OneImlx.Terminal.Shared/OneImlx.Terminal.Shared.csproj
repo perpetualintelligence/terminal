@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="OneImlx.Shared" Version="6.1.2-rc.5425209" />
+      <PackageReference Include="OneImlx.Shared" Version="6.1.2-rc.15425211" />
     </ItemGroup>
 
 </Project>

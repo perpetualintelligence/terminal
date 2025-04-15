@@ -20,7 +20,7 @@ namespace OneImlx.Terminal.Configuration.Options
 
             options.LicenseContents.Should().BeNull();
             options.LicenseFile.Should().BeEmpty();
-            options.LicensePlan.Should().Be(TerminalLicensePlans.Demo);
+            options.LicensePlan.Should().Be(ProductCatalog.TerminalPlanDemo);
             options.Deployment.Should().Be("standard");
         }
     }

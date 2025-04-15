@@ -45,8 +45,8 @@ namespace OneImlx.Terminal.Licensing
         /// </summary>
         public async Task<LicenseExtractorResult> ExtractLicenseAsync()
         {
-            // Ensure license plan is valid.B
-            if (!TerminalLicensePlans.IsValidPlan(_terminalOptions.Licensing.LicensePlan))
+            // Ensure license plan is valid.
+            if (!ProductCatalog.IsValidPlan(ProductCatalog.TerminalFramework, _terminalOptions.Licensing.LicensePlan))
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not valid. plan={0}", _terminalOptions.Licensing.LicensePlan);
             }
@@ -300,8 +300,8 @@ namespace OneImlx.Terminal.Licensing
 
         private bool IsAirGappedPlan(string licensePlan)
         {
-            return licensePlan == TerminalLicensePlans.Enterprise ||
-                   licensePlan == TerminalLicensePlans.Corporate;
+            return licensePlan == ProductCatalog.TerminalPlanEnterprise ||
+                   licensePlan == ProductCatalog.TerminalPlanCorporate;
         }
 
         private readonly ILicenseDebugger _licenseDebugger;

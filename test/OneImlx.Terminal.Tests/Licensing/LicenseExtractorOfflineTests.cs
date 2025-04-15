@@ -34,7 +34,7 @@ namespace OneImlx.Terminal.Licensing
             File.WriteAllText(nonJsonLicPath, nonJson);
 
             terminalOptions = MockTerminalOptions.NewLegacyOptions();
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Corporate;
+            terminalOptions.Licensing.LicensePlan = ProductCatalog.TerminalPlanCorporate;
 
             licenseDebugger = new MockLicenseDebugger(isDebuggerAttached: false);
             licenseExtractor = new LicenseExtractor(licenseDebugger, terminalOptions, new LoggerFactory().CreateLogger<LicenseExtractor>());
@@ -73,7 +73,7 @@ namespace OneImlx.Terminal.Licensing
         public async Task ExtractFromJsonAsync_AirGapped_With_Invalid_LicensePlan_Throws(bool debuggerAttached)
         {
             licenseDebugger.SetDebuggerAttached(debuggerAttached);
-            terminalOptions.Licensing.LicensePlan = TerminalLicensePlans.Demo;
+            terminalOptions.Licensing.LicensePlan = ProductCatalog.TerminalPlanDemo;
             terminalOptions.Licensing.Deployment = TerminalIdentifiers.AirGappedDeployment;
 
             terminalOptions.Id = TerminalIdentifiers.TestApplicationId;
