@@ -41,13 +41,6 @@ namespace OneImlx.Terminal.Runtime
             {
                 logger.LogError(ee.Error.ErrorDescription, ee.Error.Args ?? []);
             }
-            else if (context.Exception is MultiErrorException me)
-            {
-                foreach (Error err in me.Errors)
-                {
-                    logger.LogError(err.ErrorDescription, err.Args ?? []);
-                }
-            }
             else if (context.Exception is OperationCanceledException oe)
             {
                 if (context.Request != null)

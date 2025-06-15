@@ -3,7 +3,7 @@
     <Import Project="..\..\build\props\Test.props" />
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>

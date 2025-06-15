@@ -22,9 +22,9 @@ using Xunit;
 
 namespace OneImlx.Terminal.Licensing
 {
-    public class LicenseExtractorOnPremiseTests : IAsyncLifetime
+    public class LicenseExtractorAirGappedTests : IAsyncLifetime
     {
-        public LicenseExtractorOnPremiseTests()
+        public LicenseExtractorAirGappedTests()
         {
             // Read the lic file from Github secrets
             testOfflineLicPath = GetJsonLicenseFileForLocalHostGitHubSecretForCICD("PI_TERMINAL_TEST_OFFLINE_LIC");

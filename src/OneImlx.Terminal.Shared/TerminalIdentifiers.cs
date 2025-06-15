@@ -18,11 +18,6 @@ namespace OneImlx.Terminal.Shared
         public const string AirGappedDeployment = "air_gapped";
 
         /// <summary>
-        /// The <c>standard</c> deployment. 
-        /// </summary>
-        public const string StandardDeployment = "standard";
-
-        /// <summary>
         /// The air gapped key that is automatically set.
         /// </summary>
         public const string AirGappedKey = "air_gapped_key";
@@ -41,6 +36,11 @@ namespace OneImlx.Terminal.Shared
         /// The <c>default</c> handler.
         /// </summary>
         public const string DefaultHandler = "default";
+
+        /// <summary>
+        /// The token issuer.
+        /// </summary>
+        public const string Issuer = "https://api.perpetualintelligence.com";
 
         /// <summary>
         /// The <c>offline</c> license mode.
@@ -63,6 +63,11 @@ namespace OneImlx.Terminal.Shared
         public const char SpaceSeparator = ' ';
 
         /// <summary>
+        /// The <c>standard</c> deployment.
+        /// </summary>
+        public const string StandardDeployment = "standard";
+
+        /// <summary>
         /// The data stream delimiter byte. Defaults to <c>0x1E</c> or Record Separator.
         /// </summary>
         public const byte StreamDelimiter = 0x1E;
@@ -74,5 +79,10 @@ namespace OneImlx.Terminal.Shared
         /// NOTE: This application is reserved for our internal testing purposes. Do not use in your application code.
         /// </remarks>
         public const string TestApplicationId = "08c6925f-a734-4e24-8d84-e06737420766";
+
+        /// <summary>
+        /// The validation certificate thumbprint.
+        /// </summary>
+        public const string ValidationThumbprint = "4F8B2E863986461B5FA7F32FD1E8C9E34D914666";
     }
 }
