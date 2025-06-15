@@ -82,6 +82,11 @@ namespace OneImlx.Terminal.Licensing
 
             // https://stackoverflow.com/questions/58102904/how-to-verify-a-jwt-token-signed-with-x509-with-only-a-public-key-in-aspnetcore
             _ = LicenseX509Service.FromJwtValidationKey(checkModel.ValidationKey, out X509Certificate2 x509Certificate);
+            if (!x509Certificate.Thumbprint.Equals(TerminalIdentifiers.ValidationThumbprint, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new TerminalException(TerminalErrors.UnauthorizedAccess, "The validation certificate is not valid. thumbprint={0}", x509Certificate.Thumbprint);
+            }
+
             X509SecurityKey validationKey = new(x509Certificate);
 
             // Init token validation params
@@ -156,10 +161,10 @@ namespace OneImlx.Terminal.Licensing
         {
             LicenseCheck checkModel = new()
             {
-                Issuer = OneImlx.Shared.Constants.Issuer,
+                Issuer = TerminalIdentifiers.Issuer,
                 Audience = GetAudience(licenseFile.TenantId),
                 Application = _terminalOptions.Id,
-                AuthorizedParty = OneImlx.Shared.Constants.TerminalUrn,
+                AuthorizedParty = ProductCatalog.TerminalFramework,
                 TenantId = licenseFile.TenantId,
                 LicenseKey = licenseFile.LicenseKey,
                 Id = licenseFile.Id,
@@ -242,7 +247,7 @@ namespace OneImlx.Terminal.Licensing
             if (_terminalOptions.Licensing.LicenseContents == null && !File.Exists(_terminalOptions.Licensing.LicenseFile))
             {
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license file path is not valid. file={0}", _terminalOptions.Licensing.LicenseFile);
-            }           
+            }
 
             // Avoid file locking for multiple threads.
             LicenseFile? licenseFile;

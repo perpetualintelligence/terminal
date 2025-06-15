@@ -16,7 +16,7 @@ namespace OneImlx.Terminal.Shared
         [Fact]
         public void TerminalIdentifiers_Defines_Identifiers()
         {
-            typeof(TerminalIdentifiers).Should().HaveConstantCount(12);
+            typeof(TerminalIdentifiers).Should().HaveConstantCount(14);
 
             TerminalIdentifiers.OfflineLicenseMode.Should().Be("offline");
             TerminalIdentifiers.StandardDeployment.Should().Be("standard");
@@ -30,6 +30,9 @@ namespace OneImlx.Terminal.Shared
             TerminalIdentifiers.SenderIdToken.Should().Be("sender_id");
             TerminalIdentifiers.SenderEndpointToken.Should().Be("sender_endpoint");
             TerminalIdentifiers.SpaceSeparator.Should().Be(' ');
+            TerminalIdentifiers.Issuer.Should().Be("https://api.perpetualintelligence.com");
+            TerminalIdentifiers.ValidationThumbprint.Should().Be("4F8B2E863986461B5FA7F32FD1E8C9E34D914666");
+
         }
     }
 }

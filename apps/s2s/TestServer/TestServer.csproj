@@ -14,7 +14,7 @@
         
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.70.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
         <!--<PackageReference Include="OneImlx.Terminal.Server" Version="6.0.0-rc.250218417" />-->

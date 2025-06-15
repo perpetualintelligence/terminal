@@ -1,8 +1,8 @@
-# 6.1.x
+# 6.2.x
 > Feature Change | Breaking Change
 - Introduce gRPC terminal routing
 - Introduce HTTP terminal routing
-- Introduce `OneImlx.Terminal.Shares` for shared terminal services
+- Introduce `OneImlx.Terminal.Shared` for shared terminal services
 - Introduce `OneImlx.Terminal.Server` for hosting terminal servers in ASP.NET Core
 - Introduce `OneImlx.Terminal.Client` for client application communicating with terminal servers
 - Update licensing and pricing
