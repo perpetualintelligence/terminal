@@ -1,4 +1,4 @@
-# 6.2.x
+# 6.3.x
 > Feature Change | Breaking Change
 - Introduce gRPC terminal routing
 - Introduce HTTP terminal routing
@@ -8,6 +8,7 @@
 - Update licensing and pricing
 - Rename `Integration` to `Dynamics` for dynamic loading of commands
 - Simplify terminal startup and use IHostApplicationLifetime for graceful shutdown
+- Update license schema
 
 # 5.12.3
 > Breaking Change

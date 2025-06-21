@@ -5,18 +5,18 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using FluentAssertions;
+using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using OneImlx.Shared.Json;
 using OneImlx.Shared.Licensing;
 using OneImlx.Terminal.Configuration.Options;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Shared;
 using OneImlx.Test.FluentAssertions;
-using System;
-using System.IO;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OneImlx.Terminal.Licensing
@@ -217,9 +217,6 @@ namespace OneImlx.Terminal.Licensing
             var result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();
 
-            // ensure passed and extraction handler
-            result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
-
             // License claims
             result.License.Claims.Should().NotBeNull();
             result.License.Quota.Should().NotBeNull();
@@ -233,7 +230,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:org");
 
             // claims
-            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:corporate urn:oneimlx:lic:usage:org 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:corporate urn:oneimlx:lic:usage:org");
             result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/21d818a5-935c-496f-9faf-d9ff9d9645d8/v2.0");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
             result.License.Claims.TenantCountry.Should().Be("USA");
@@ -246,7 +243,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.TenantName.Should().Be("pi-test");
 
             //result.License.Claims.NotBefore.Should().NotBeNull();
-            result.License.Claims.Id.Should().Be("312ce064-3a98-4228-bf5d-05df64ffa31d"); // Test License Id
+            result.License.Claims.Id.Should().Be("565f7c6d-6e32-41c7-b80f-64d4efd6b885"); // Test License Id
             result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // Test subscription
             result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 
@@ -277,9 +274,6 @@ namespace OneImlx.Terminal.Licensing
             var result = await licenseExtractor.ExtractLicenseAsync();
             result.License.Should().NotBeNull();
 
-            // ensure passed and extraction handler
-            result.ExtractionMode.Should().Be(TerminalIdentifiers.OfflineLicenseMode);
-
             // License claims
             result.License.Claims.Should().NotBeNull();
             result.License.Quota.Should().NotBeNull();
@@ -293,7 +287,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Usage.Should().Be("urn:oneimlx:lic:usage:org");
 
             // claims
-            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:corporate urn:oneimlx:lic:usage:org 91b7fb8e-3fd1-4a80-9978-99c6bfbe2d32");
+            result.License.Claims.AcrValues.Should().Be("urn:oneimlx:terminal:plan:corporate urn:oneimlx:lic:usage:org");
             result.License.Claims.Audience.Should().Be("https://login.perpetualintelligence.com/21d818a5-935c-496f-9faf-d9ff9d9645d8/v2.0");
             result.License.Claims.AuthorizedParty.Should().Be("urn:oneimlx:terminal");
             result.License.Claims.TenantCountry.Should().Be("USA");
@@ -306,7 +300,7 @@ namespace OneImlx.Terminal.Licensing
             result.License.Claims.TenantName.Should().Be("pi-test");
 
             //result.License.Claims.NotBefore.Should().NotBeNull();
-            result.License.Claims.Id.Should().Be("312ce064-3a98-4228-bf5d-05df64ffa31d"); // Test License Id
+            result.License.Claims.Id.Should().Be("565f7c6d-6e32-41c7-b80f-64d4efd6b885"); // Test License Id
             result.License.Claims.Subject.Should().Be("eaf50a3b-2e60-4029-cf41-4f1b65fdf749"); // Test subscription
             result.License.Claims.TenantId.Should().Be("21d818a5-935c-496f-9faf-d9ff9d9645d8");
 

@@ -1,15 +1,15 @@
 ﻿/*
-    Copyright (c) 2023 Perpetual Intelligence L.L.C. All Rights Reserved.
+    Copyright © 2019-2025 Perpetual Intelligence L.L.C. All rights reserved.
 
     For license, terms, and data policies, go to:
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
+using System;
+using System.Threading.Tasks;
 using OneImlx.Terminal.Licensing;
 using OneImlx.Terminal.Mocks;
 using OneImlx.Terminal.Shared;
-using System;
-using System.Threading.Tasks;
 
 namespace OneImlx.Terminal.Hosting.Mocks
 {
@@ -28,7 +28,7 @@ namespace OneImlx.Terminal.Hosting.Mocks
                 throw new TerminalException("test_error", "test description. opt1={0} opt2={1}", "val1", "val2");
             }
 
-            return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense, MockLicenses.TestLicense.Claims.Mode));
+            return Task.FromResult(new LicenseExtractorResult(MockLicenses.TestLicense));
         }
 
         public Task<License?> GetLicenseAsync()

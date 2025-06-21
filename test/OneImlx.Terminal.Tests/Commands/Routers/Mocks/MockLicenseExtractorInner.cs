@@ -22,10 +22,10 @@ namespace OneImlx.Terminal.Commands.Routers.Mocks
         {
             if (NoLicense)
             {
-                return Task.FromResult(new LicenseExtractorResult(null!, null!));
+                return Task.FromResult(new LicenseExtractorResult(null!));
             }
 
-            return Task.FromResult(new LicenseExtractorResult(TestLicense, TestLicense.Claims.Mode));
+            return Task.FromResult(new LicenseExtractorResult(TestLicense));
         }
 
         public Task<License?> GetLicenseAsync()

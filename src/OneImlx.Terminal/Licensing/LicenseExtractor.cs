@@ -177,14 +177,13 @@ namespace OneImlx.Terminal.Licensing
 
             // Make sure the acr contains the
             string[] acrValues = claims.AcrValues.SplitBySpace();
-            if (acrValues.Length < 3)
+            if (acrValues.Length != 2)
             {
                 throw new TerminalException(TerminalErrors.InvalidLicense, "The acr values are not valid. acr={0}", claims.AcrValues);
             }
 
             string plan = acrValues[0];
             string usage = acrValues[1];
-            string brokerTenantId = acrValues[2];
 
             // Mismatch in license plan
             if (plan != _terminalOptions.Licensing.LicensePlan)
@@ -198,18 +197,8 @@ namespace OneImlx.Terminal.Licensing
                 throw new TerminalException(TerminalErrors.InvalidConfiguration, "The license plan is not authorized for air gapped deployment. plan={0}", _terminalOptions.Licensing.LicensePlan);
             }
 
-            // We just check the broker tenant to be present in offline mode
-            if (string.IsNullOrWhiteSpace(brokerTenantId))
-            {
-                throw new TerminalException(TerminalErrors.InvalidConfiguration, "The broker tenant is missing.");
-            }
-
             LicenseQuota licenseQuota = LicenseQuota.Create(plan, claims.Custom);
-            return new LicenseExtractorResult
-            (
-                new License(plan, usage, _terminalOptions.Licensing.LicenseFile!, claims, licenseQuota),
-                TerminalIdentifiers.OfflineLicenseMode
-            );
+            return new LicenseExtractorResult(new License(plan, usage, _terminalOptions.Licensing.LicenseFile!, claims, licenseQuota));
         }
 
         private LicenseExtractorResult ExtractAirGapped()
@@ -218,7 +207,7 @@ namespace OneImlx.Terminal.Licensing
             LicenseExtractorResult? licenseExtractorResult = null;
             if (IsAirGappedPlan(_terminalOptions.Licensing.LicensePlan))
             {
-                licenseExtractorResult = new LicenseExtractorResult(AirGappedLicense(), null);
+                licenseExtractorResult = new LicenseExtractorResult(AirGappedLicense());
             }
             else
             {
