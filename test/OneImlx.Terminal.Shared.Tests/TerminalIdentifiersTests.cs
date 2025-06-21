@@ -25,14 +25,13 @@ namespace OneImlx.Terminal.Shared
             TerminalIdentifiers.AirGappedUsage.Should().Be("air_gapped_usage");
             TerminalIdentifiers.CustomHandler.Should().Be("custom");
             TerminalIdentifiers.DefaultHandler.Should().Be("default");
-            TerminalIdentifiers.TestApplicationId.Should().Be("08c6925f-a734-4e24-8d84-e06737420766");
+            TerminalIdentifiers.TestApplicationId.Should().Be("25541a95-5b25-4efc-a838-89c99946c310");
             TerminalIdentifiers.StreamDelimiter.Should().Be(0x1E);
             TerminalIdentifiers.SenderIdToken.Should().Be("sender_id");
             TerminalIdentifiers.SenderEndpointToken.Should().Be("sender_endpoint");
             TerminalIdentifiers.SpaceSeparator.Should().Be(' ');
             TerminalIdentifiers.Issuer.Should().Be("https://api.perpetualintelligence.com");
             TerminalIdentifiers.ValidationThumbprint.Should().Be("4F8B2E863986461B5FA7F32FD1E8C9E34D914666");
-
         }
     }
 }

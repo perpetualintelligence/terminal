@@ -78,7 +78,7 @@ namespace OneImlx.Terminal.Shared
         /// <remarks>
         /// NOTE: This application is reserved for our internal testing purposes. Do not use in your application code.
         /// </remarks>
-        public const string TestApplicationId = "08c6925f-a734-4e24-8d84-e06737420766";
+        public const string TestApplicationId = "25541a95-5b25-4efc-a838-89c99946c310";
 
         /// <summary>
         /// The validation certificate thumbprint.

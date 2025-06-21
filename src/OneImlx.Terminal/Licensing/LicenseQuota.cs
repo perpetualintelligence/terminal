@@ -60,7 +60,13 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum arguments and options combined.Returns <c>null</c> for no limit.
         /// </summary>
-        public int? InputLimit => (int?)Limits["inputs"];
+        public int? InputLimit
+        {
+            get
+            {
+                return Limits["inputs"] == null ? null : Convert.ToInt32(Limits["inputs"]);
+            }
+        }
 
         /// <summary>
         /// The maximum quota. Defaults to <c>null</c> or no limit.
@@ -75,7 +81,13 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum redistributions. Defaults to <c>null</c> or no redistribution limit.
         /// </summary>
-        public long? RedistributionLimit => (long?)Limits["redistributions"];
+        public long? RedistributionLimit
+        {
+            get
+            {
+                return Limits["redistributions"] == null ? null : Convert.ToInt64(Limits["redistributions"]);
+            }
+        }
 
         /// <summary>
         /// The terminal routing methods.
@@ -95,7 +107,13 @@ namespace OneImlx.Terminal.Licensing
         /// <summary>
         /// The maximum terminals. Defaults to <c>null</c> or no limit.
         /// </summary>
-        public int? TerminalLimit => (int?)Limits["terminals"];
+        public int? TerminalLimit
+        {
+            get
+            {
+                return Limits["terminals"] == null ? null : Convert.ToInt32(Limits["terminals"]);
+            }
+        }
 
         /// <summary>
         /// Creates a new instance of <see cref="LicenseQuota"/> based on the specified SaaS plan.
