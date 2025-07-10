@@ -18,7 +18,7 @@ We extend our sincere thanks to the developers and maintainers of these open-sou
 ## Libraries
 - [xUnit](https://xunit.net/) — Licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  
 - [Moq](https://github.com/moq/moq4) — Licensed under the [BSD-3-Clause License](https://opensource.org/licenses/BSD-3-Clause)  
-- [FluentAssertions](https://www.nuget.org/packages/FluentAssertions) — Licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  
+- [FluentAssertions v7](https://www.nuget.org/packages/FluentAssertions) — Licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  
 - [coverlet](https://www.nuget.org/packages/coverlet.collector) — Licensed under the [MIT License](https://opensource.org/licenses/MIT)  
 - [ReportGenerator](https://github.com/danielpalme/ReportGenerator) — Licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  
 - [gRPC](https://grpc.io/) — Licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  
