@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Duende.IdentityModel.OidcClient" Version="6.0.1" />
         <PackageReference Include="Microsoft.Graph" Version="5.81.0" />
         <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.72.1" />
     </ItemGroup>

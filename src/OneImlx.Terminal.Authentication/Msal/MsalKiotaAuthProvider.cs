@@ -29,15 +29,15 @@ namespace OneImlx.Terminal.Authentication.Msal
         /// Initializes a new instance.
         /// </summary>
         /// <param name="terminalOptions">The terminal options.</param>
-        /// <param name="msalTokenAcquisition">The MSAL token acquisition.</param>
+        /// <param name="tokenAcquisition">The MSAL token acquisition.</param>
         /// <param name="logger">The logger.</param>
         public MsalKiotaAuthProvider(
             TerminalOptions terminalOptions,
-            IMsalTokenAcquisition msalTokenAcquisition,
+            ITokenAcquisition tokenAcquisition,
             ILogger<MsalKiotaAuthProvider> logger)
         {
             this.terminalOptions = terminalOptions ?? throw new ArgumentNullException(nameof(terminalOptions));
-            this.msalTokenAcquisition = msalTokenAcquisition ?? throw new ArgumentNullException(nameof(msalTokenAcquisition));
+            this.tokenAcquisition = tokenAcquisition ?? throw new ArgumentNullException(nameof(tokenAcquisition));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -111,8 +111,9 @@ namespace OneImlx.Terminal.Authentication.Msal
             List<string> scopes = ExtractScopesFromContext(additionalAuthenticationContext);
 
             // Get the first account
-            IEnumerable<IAccount> accounts = await msalTokenAcquisition.GetAccountsAsync(terminalOptions.Authentication.UserFlow);
-            IAccount? account = accounts.FirstOrDefault();
+            IEnumerable<TokenAcquisitionIdentity> identities = await tokenAcquisition.GetIdentitiesAsync(terminalOptions.Authentication.UserFlow);
+            TokenAcquisitionIdentity identity = identities.FirstOrDefault();
+            IAccount? account = identities.FirstOrDefault()?.Raw as IAccount;
             if (account == null)
             {
                 logger.LogDebug("Failed to acquire accounts. user_flow={1}", terminalOptions.Authentication.UserFlow);
@@ -122,16 +123,16 @@ namespace OneImlx.Terminal.Authentication.Msal
                 logger.LogDebug("Acquired accounts, using the first account. environment={0} account={1}", account.Environment, account.Username);
             }
 
-            AuthenticationResult? result;
+            TokenAcquisitionResult? result;
             try
             {
-                result = await msalTokenAcquisition.AcquireTokenSilentAsync(scopes, account!);
+                result = await tokenAcquisition.AcquireTokenSilentAsync(new(scopes, identity));
                 logger.LogInformation("Acquired token silently. scopes={0}", scopes.JoinBySpace());
             }
             catch (MsalUiRequiredException ex)
             {
                 logger.LogDebug("Acquiring token interactively. info={0}", ex.Message);
-                result = await msalTokenAcquisition.AcquireTokenInteractiveAsync(scopes);
+                result = await tokenAcquisition.AcquireTokenInteractiveAsync(new(scopes));
                 logger.LogInformation("Acquired token interactively. scopes={0}", scopes.JoinBySpace());
             }
 
@@ -162,7 +163,7 @@ namespace OneImlx.Terminal.Authentication.Msal
         }
 
         private readonly ILogger<MsalKiotaAuthProvider> logger;
-        private readonly IMsalTokenAcquisition msalTokenAcquisition;
         private readonly TerminalOptions terminalOptions;
+        private readonly ITokenAcquisition tokenAcquisition;
     }
 }

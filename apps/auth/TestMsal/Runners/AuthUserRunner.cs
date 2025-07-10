@@ -17,7 +17,7 @@ namespace OneImlx.Terminal.Apps.TestAuth.Runners
     [CommandDescriptor("user", "Get user", "Fetches user information from Microsoft Graph API.", CommandType.GroupCommand, CommandFlags.None)]
     public class AuthUserRunner : CommandRunner<CommandRunnerResult>, IDeclarativeRunner
     {
-        /// <summary>
+        /// <summary>.
         /// Initializes a new instance.
         /// </summary>
         /// <param name="terminalConsole">Terminal console service.</param>

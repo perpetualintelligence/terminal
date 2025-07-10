@@ -30,7 +30,7 @@ namespace OneImlx.Terminal.Dynamics
             textHandler = new TerminalTextHandler(StringComparison.OrdinalIgnoreCase, Encoding.ASCII);
             assemblyLoader = new MockPublishedAssemblyLoader();
             terminalCommandSourceChecker = new MockPublishedCommandSourceChecker();
-            mutableCommandStore = new TerminalInMemoryCommandStore(textHandler, Array.Empty<CommandDescriptor>());
+            mutableCommandStore = new TerminalInMemoryCommandStore(textHandler, []);
             MockListLoggerFactory mockListLoggerFactory = new();
             logger = mockListLoggerFactory.CreateLogger<PublishedCommandSource>();
 

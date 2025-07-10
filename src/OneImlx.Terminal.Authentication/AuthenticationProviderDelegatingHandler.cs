@@ -5,10 +5,6 @@
     https://terms.perpetualintelligence.com/articles/intro.html
 */
 
-using Microsoft.Extensions.Logging;
-using Microsoft.Kiota.Abstractions;
-using Microsoft.Kiota.Abstractions.Authentication;
-using OneImlx.Terminal.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,25 +12,21 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Abstractions.Authentication;
+using OneImlx.Terminal.Shared;
 
-namespace OneImlx.Terminal.Authentication.Msal
+namespace OneImlx.Terminal.Authentication
 {
     /// <summary>
     /// Delegating handler that authenticates an HTTP request using an <see cref="IAuthenticationProvider"/>.
     /// </summary>
-    public class MsalAuthenticationProviderDelegatingHandler : DelegatingHandler
+    /// <remarks>Initializes a new instance of the <see cref="AuthenticationProviderDelegatingHandler"/> class.</remarks>
+    /// <param name="authenticationProvider">The authentication provider.</param>
+    /// <param name="logger"></param>
+    public class AuthenticationProviderDelegatingHandler(IAuthenticationProvider authenticationProvider, ILogger<AuthenticationProviderDelegatingHandler> logger) : DelegatingHandler
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MsalAuthenticationProviderDelegatingHandler"/> class.
-        /// </summary>
-        /// <param name="authenticationProvider">The authentication provider.</param>
-        /// <param name="logger"></param>
-        public MsalAuthenticationProviderDelegatingHandler(IAuthenticationProvider authenticationProvider, ILogger<MsalAuthenticationProviderDelegatingHandler> logger)
-        {
-            this.authenticationProvider = authenticationProvider ?? throw new ArgumentNullException(nameof(authenticationProvider));
-            this.logger = logger;
-        }
-
         /// <summary>
         /// Performs preflight processing on the HTTP request message.
         /// </summary>
@@ -93,7 +85,7 @@ namespace OneImlx.Terminal.Authentication.Msal
             return (Method)Enum.Parse(typeof(Method), httpMethod.Method, ignoreCase: true);
         }
 
-        private readonly IAuthenticationProvider authenticationProvider;
-        private readonly ILogger<MsalAuthenticationProviderDelegatingHandler> logger;
+        private readonly IAuthenticationProvider authenticationProvider = authenticationProvider ?? throw new ArgumentNullException(nameof(authenticationProvider));
+        private readonly ILogger<AuthenticationProviderDelegatingHandler> logger = logger;
     }
 }

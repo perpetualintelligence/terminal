@@ -38,7 +38,7 @@ namespace OneImlx.Terminal.Authentication.Extensions
             var serviceProvider = services.BuildServiceProvider();
 
             serviceProvider.GetService<IPublicClientApplication>().Should().NotBeNull();
-            serviceProvider.GetService<IMsalTokenAcquisition>().Should().NotBeNull();
+            serviceProvider.GetService<ITokenAcquisition>().Should().NotBeNull();
             serviceProvider.GetService<IAuthenticationProvider>().Should().BeOfType<MsalKiotaAuthProvider>();
             serviceProvider.GetService<IAccessTokenProvider>().Should().BeOfType<MsalKiotaAuthProvider>();
             serviceProvider.GetService<TestHandler>().Should().NotBeNull();
@@ -46,7 +46,7 @@ namespace OneImlx.Terminal.Authentication.Extensions
             services.Should().Contain(static descriptor =>
                 descriptor.ServiceType == typeof(IPublicClientApplication) && descriptor.Lifetime == ServiceLifetime.Singleton)
                 .And.Contain(static descriptor =>
-                descriptor.ServiceType == typeof(IMsalTokenAcquisition) && descriptor.Lifetime == ServiceLifetime.Scoped)
+                descriptor.ServiceType == typeof(ITokenAcquisition) && descriptor.Lifetime == ServiceLifetime.Scoped)
                 .And.Contain(static descriptor =>
                 descriptor.ServiceType == typeof(IAuthenticationProvider) && descriptor.Lifetime == ServiceLifetime.Scoped)
                 .And.Contain(static descriptor =>
